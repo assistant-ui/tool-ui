@@ -148,7 +148,7 @@ export default function HomePage() {
       <div className="relative z-10 max-w-2xl space-y-8 p-8 text-left">
         <h1 className="text-6xl font-bold tracking-tight">ToolUI</h1>
         <h2 className="text-2xl tracking-tight">
-          Open source tool call components for AI chat interfaces
+          Open source AI tool call components for chat
         </h2>
         <p className="text-muted-foreground text-lg">
           Responsive, accessible, themeable, data-driven. <br />

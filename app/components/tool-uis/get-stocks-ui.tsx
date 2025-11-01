@@ -147,8 +147,6 @@ export const GetStocksUI = makeAssistantToolUI<
         <DataTable
           columns={columns}
           rows={formattedRows}
-          sortBy="symbol"
-          sortDirection="asc"
         />
       </div>
     );
