@@ -34,6 +34,7 @@ export function DataTableActions({ row }: DataTableActionsProps) {
             variant={action.variant || 'default'}
             size="sm"
             onClick={() => onAction(action.id, row, { messageId })}
+            className="min-h-[44px] @md:min-h-[36px]" // 44px on mobile, 36px on desktop
           >
             {action.label}
           </Button>
@@ -46,7 +47,11 @@ export function DataTableActions({ row }: DataTableActionsProps) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+        <Button
+          variant="ghost"
+          size="sm"
+          className="h-10 w-10 p-0 @md:h-8 @md:w-8" // 40px on mobile, 32px on desktop
+        >
           <span className="sr-only">Open menu</span>
           <MoreHorizontal className="h-4 w-4" />
         </Button>

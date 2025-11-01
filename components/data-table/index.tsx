@@ -8,7 +8,9 @@ export { DataTableBody } from './data-table-body'
 export { DataTableRow } from './data-table-row'
 export { DataTableCell } from './data-table-cell'
 export { DataTableActions } from './data-table-actions'
+export { DataTableAccordionCard } from './data-table-accordion-card'
 
 export type { DataTableProps, Column, Action } from './data-table'
 
 export * from './utilities'
+export { useScrollShadow } from './use-scroll-shadow'

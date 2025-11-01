@@ -6,7 +6,7 @@
 import { useState } from 'react'
 import { DataTable } from './index'
 
-// Sample data
+// Sample data - Basic columns
 const sampleColumns = [
   { key: 'symbol', label: 'Symbol' },
   { key: 'name', label: 'Company' },
@@ -15,12 +15,23 @@ const sampleColumns = [
   { key: 'volume', label: 'Volume', align: 'right' as const },
 ]
 
+// Sample data with column priorities (for mobile)
+const sampleColumnsWithPriority = [
+  { key: 'symbol', label: 'Symbol', priority: 'primary' as const },
+  { key: 'name', label: 'Company', priority: 'primary' as const },
+  { key: 'price', label: 'Price', align: 'right' as const, priority: 'primary' as const },
+  { key: 'change', label: 'Change %', align: 'right' as const, priority: 'secondary' as const },
+  { key: 'volume', label: 'Volume', align: 'right' as const, priority: 'secondary' as const },
+  { key: 'marketCap', label: 'Market Cap', align: 'right' as const, priority: 'secondary' as const },
+  { key: 'pe', label: 'P/E Ratio', align: 'right' as const, priority: 'tertiary' as const },
+]
+
 const sampleRows = [
-  { symbol: 'AAPL', name: 'Apple Inc.', price: 178.25, change: 2.3, volume: 52430000 },
-  { symbol: 'GOOGL', name: 'Alphabet Inc.', price: 142.50, change: -0.8, volume: 28920000 },
-  { symbol: 'MSFT', name: 'Microsoft Corp.', price: 380.00, change: 1.2, volume: 31250000 },
-  { symbol: 'AMZN', name: 'Amazon.com Inc.', price: 155.75, change: 3.1, volume: 45680000 },
-  { symbol: 'TSLA', name: 'Tesla Inc.', price: 242.80, change: -1.5, volume: 98540000 },
+  { symbol: 'AAPL', name: 'Apple Inc.', price: 178.25, change: 2.3, volume: 52430000, marketCap: '2.8T', pe: 29.5 },
+  { symbol: 'GOOGL', name: 'Alphabet Inc.', price: 142.50, change: -0.8, volume: 28920000, marketCap: '1.8T', pe: 24.3 },
+  { symbol: 'MSFT', name: 'Microsoft Corp.', price: 380.00, change: 1.2, volume: 31250000, marketCap: '2.9T', pe: 35.7 },
+  { symbol: 'AMZN', name: 'Amazon.com Inc.', price: 155.75, change: 3.1, volume: 45680000, marketCap: '1.6T', pe: 68.2 },
+  { symbol: 'TSLA', name: 'Tesla Inc.', price: 242.80, change: -1.5, volume: 98540000, marketCap: '768B', pe: 42.1 },
 ]
 
 const sampleActions = [
@@ -37,6 +48,22 @@ export function DataTableExample() {
       <div>
         <h2 className="text-2xl font-bold mb-4">Basic Table</h2>
         <DataTable columns={sampleColumns} rows={sampleRows} />
+      </div>
+
+      <div>
+        <h2 className="text-2xl font-bold mb-4">With Column Priorities (Mobile Responsive)</h2>
+        <p className="text-sm text-muted-foreground mb-4">
+          On mobile: Primary columns show in card header, secondary columns in expandable section, tertiary columns hidden.
+        </p>
+        <DataTable
+          columns={sampleColumnsWithPriority}
+          rows={sampleRows}
+          actions={sampleActions}
+          onAction={(actionId, row) => {
+            console.log(`Action: ${actionId}`, row)
+            alert(`${actionId} ${row.symbol}`)
+          }}
+        />
       </div>
 
       <div>

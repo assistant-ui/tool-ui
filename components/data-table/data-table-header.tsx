@@ -59,9 +59,10 @@ export function DataTableHead({ column }: DataTableHeadProps) {
   return (
     <th
       className={cn(
-        'px-4 py-3 text-sm font-medium text-muted-foreground',
+        'px-4 text-sm font-medium text-muted-foreground',
+        'py-3 @md:py-3', // Larger touch target on mobile
         alignClass,
-        isSortable && 'cursor-pointer select-none hover:text-foreground transition-colors'
+        isSortable && 'cursor-pointer select-none hover:text-foreground transition-colors active:bg-muted/50'
       )}
       style={column.width ? { width: column.width } : undefined}
       onClick={handleClick}

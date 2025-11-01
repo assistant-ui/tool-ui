@@ -2,25 +2,38 @@
 
 A flexible, accessible data table component for assistant-ui's widget registry. Built with Radix UI primitives and Tailwind CSS.
 
-**Version:** 0.1.0
+**Version:** 0.2.0
 **License:** Apache-2.0
 
 ## Features
 
-- ✅ Responsive design (table on desktop, cards on mobile)
-- ✅ Column sorting with visual indicators
+### Desktop
+- ✅ Full table layout with sortable columns
+- ✅ Horizontal scroll with gradient shadow affordances
 - ✅ Row actions (inline buttons or dropdown menu)
-- ✅ Empty and loading states
+- ✅ Visual sort indicators (chevron icons)
+
+### Mobile
+- ✅ **Accordion card layout** - expandable cards for detailed data
+- ✅ **Column priority system** - control which fields show prominently
+- ✅ **Touch-optimized** - 44px minimum touch targets
+- ✅ **Smart defaults** - first 2 columns primary, rest secondary
+- ✅ Auto-adapts at 768px breakpoint
+
+### Universal
+- ✅ Empty and loading states with skeletons
 - ✅ Accessible keyboard navigation
 - ✅ Dark mode support
 - ✅ Compound component API for customization
 
 ## Installation
 
-The component requires these dependencies (likely already installed):
+The component requires these dependencies:
 
 ```bash
-npm install @radix-ui/react-dropdown-menu lucide-react
+npm install @radix-ui/react-dropdown-menu @radix-ui/react-accordion lucide-react
+# or
+pnpm add @radix-ui/react-dropdown-menu @radix-ui/react-accordion lucide-react
 ```
 
 Copy the following files to your project:
@@ -34,13 +47,18 @@ components/data-table/
 ├── data-table-row.tsx
 ├── data-table-cell.tsx
 ├── data-table-actions.tsx
+├── data-table-accordion-card.tsx  # NEW - Mobile card component
+├── use-scroll-shadow.ts           # NEW - Scroll detection hook
 └── utilities.ts
 ```
 
-Also ensure you have the dropdown-menu UI component:
+Also ensure you have these UI components:
 
 ```
-components/ui/dropdown-menu.tsx
+components/ui/
+├── dropdown-menu.tsx
+├── accordion.tsx  # NEW
+└── button.tsx
 ```
 
 ## Basic Usage
@@ -88,13 +106,23 @@ function MyComponent() {
 
 ```typescript
 interface Column {
-  key: string                      // Unique identifier, maps to row data
-  label: string                    // Display header text
-  sortable?: boolean               // Default: true
-  align?: 'left' | 'right' | 'center'  // Default: 'left'
-  width?: string                   // Optional CSS width (e.g., "150px")
+  key: string                         // Unique identifier, maps to row data
+  label: string                       // Display header text
+  sortable?: boolean                  // Default: true
+  align?: 'left' | 'right' | 'center' // Default: 'left'
+  width?: string                      // Optional CSS width (e.g., "150px")
+
+  // Mobile Responsiveness (NEW in v0.2.0)
+  priority?: 'primary' | 'secondary' | 'tertiary'  // Mobile display priority
+  hideOnMobile?: boolean              // Simple override to hide on mobile
 }
 ```
+
+**Mobile Priority System:**
+- `primary`: Always visible in mobile card header (recommended: 2-3 columns)
+- `secondary`: Hidden in collapsed card, shown when expanded (most columns)
+- `tertiary`: Completely hidden on mobile (optional/advanced fields)
+- No priority specified: Auto-assigned (first 2 columns = primary, rest = secondary)
 
 ### Action
 
@@ -180,6 +208,94 @@ const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>()
 />
 ```
 
+## Mobile Responsiveness
+
+The DataTable automatically adapts to mobile devices with an accordion card layout and intelligent column prioritization.
+
+### Basic Mobile Example
+
+```tsx
+<DataTable
+  columns={[
+    { key: 'name', label: 'Product' },              // Auto: primary
+    { key: 'price', label: 'Price', align: 'right' }, // Auto: primary
+    { key: 'category', label: 'Category' },          // Auto: secondary (collapsed)
+    { key: 'stock', label: 'Stock', align: 'right' }, // Auto: secondary (collapsed)
+  ]}
+  rows={products}
+/>
+```
+
+**On Mobile (<768px):**
+- First 2 columns (`name`, `price`) show in card header
+- Remaining columns (`category`, `stock`) appear when card is expanded
+- User taps card to expand/collapse details
+
+### Explicit Column Priorities
+
+For tables with many columns, explicitly set priorities:
+
+```tsx
+<DataTable
+  columns={[
+    { key: 'symbol', label: 'Symbol', priority: 'primary' },
+    { key: 'name', label: 'Company', priority: 'primary' },
+    { key: 'price', label: 'Price', priority: 'primary', align: 'right' },
+
+    { key: 'change', label: 'Change %', priority: 'secondary', align: 'right' },
+    { key: 'volume', label: 'Volume', priority: 'secondary', align: 'right' },
+    { key: 'marketCap', label: 'Market Cap', priority: 'secondary', align: 'right' },
+
+    { key: 'pe', label: 'P/E Ratio', priority: 'tertiary', align: 'right' },
+    { key: 'eps', label: 'EPS', priority: 'tertiary', align: 'right' },
+  ]}
+  rows={stocks}
+/>
+```
+
+**Mobile Behavior:**
+- **Primary** (Symbol, Company, Price): Always visible in card header
+- **Secondary** (Change, Volume, Market Cap): Shown when card expanded
+- **Tertiary** (P/E, EPS): Completely hidden on mobile
+
+### Hide Specific Columns on Mobile
+
+```tsx
+<DataTable
+  columns={[
+    { key: 'name', label: 'Product' },
+    { key: 'price', label: 'Price', align: 'right' },
+    { key: 'internalId', label: 'ID', hideOnMobile: true }, // Hidden on mobile
+  ]}
+  rows={products}
+/>
+```
+
+### Desktop Scroll Affordances
+
+Wide tables on desktop show gradient shadows when scrollable:
+
+```tsx
+<DataTable
+  columns={manyColumns} // 10+ columns
+  rows={data}
+/>
+```
+
+**Visual Indicators:**
+- Gradient fade appears on left when scrolled right
+- Gradient fade appears on right when more content available
+- Touch-optimized momentum scrolling
+
+### Touch Optimization
+
+All interactive elements are automatically optimized for touch:
+
+- **Sortable headers**: Enhanced tap area
+- **Action buttons**: 44px minimum height on mobile
+- **Accordion triggers**: Large touch target
+- **Active states**: Visual feedback on tap
+
 ## Utility Functions
 
 The component exports helpful utility functions:
@@ -238,11 +354,24 @@ getActionLabel('Delete', { id: 123, title: 'My Item' }, 'title')
 
 ## Responsive Behavior
 
-The DataTable automatically adapts to screen size:
+The DataTable automatically adapts to **container size** (not viewport size) using CSS container queries. This allows it to work correctly in viewport simulators and constrained layouts.
 
-- **Desktop (≥768px):** Full table layout with horizontal scroll if needed
-- **Tablet (≥640px, <768px):** Full table with tighter spacing
-- **Mobile (<640px):** Card layout with labels inline
+- **Desktop (container ≥768px):**
+  - Full table layout with sortable columns
+  - Horizontal scroll with gradient shadow affordances
+  - Compact touch targets (36px)
+
+- **Mobile (container <768px):**
+  - Accordion card layout (expandable)
+  - Primary columns in card header (always visible)
+  - Secondary columns in expanded section (tap to reveal)
+  - Tertiary columns hidden
+  - Large touch targets (44px minimum)
+  - Actions moved to expanded section
+
+**Container Breakpoint:** 768px (Tailwind `@md` container query)
+
+> **Note:** The component uses container queries (`@md:`) instead of media queries (`md:`), so it responds to its parent container's width, not the viewport. This makes it work perfectly in viewport simulators, component playgrounds, and responsive layouts.
 
 ## Accessibility
 
@@ -354,15 +483,16 @@ Custom CSS variables (inherited from your theme):
 
 ## Limitations
 
-This v0.1.0 release does not include:
+This v0.2.0 release does not include:
 
-- Virtualization (performance degrades >100 rows)
+- Virtualization (performance degrades >100 rows - recommend pagination)
 - Column reordering/resizing
 - Multi-column sorting
 - Inline editing
 - Custom cell renderers
 - Export to CSV/Excel
 - Confirmation dialogs (requiresConfirmation flag is defined but not implemented)
+- Column visibility toggle UI (use priority system instead)
 
 For these features, consider [TanStack Table](https://tanstack.com/table) or [AG Grid](https://www.ag-grid.com/).
 
@@ -376,9 +506,20 @@ For these features, consider [TanStack Table](https://tanstack.com/table) or [AG
 - If using controlled sort, ensure `onSort` updates parent state
 - Verify column has `sortable: true` (default)
 
-**Mobile layout not showing?**
-- Check viewport width (<640px triggers cards)
-- Ensure Tailwind responsive classes are configured
+**Mobile accordion layout not showing?**
+- Check viewport width (<768px triggers accordion cards)
+- Ensure Tailwind `md` breakpoint is configured correctly
+- Verify accordion UI component is installed
+
+**Columns not showing on mobile?**
+- Check column `priority` settings (tertiary columns are hidden)
+- Verify `hideOnMobile` isn't set to `true`
+- First 2 columns default to primary (visible)
+
+**Scroll shadows not appearing?**
+- Ensure table content is wider than container
+- Check that CSS variables (`--background`) are defined
+- Verify scroll detection hook is working (try resizing window)
 
 **Dark mode issues?**
 - Verify CSS variables are defined in your global styles
@@ -389,6 +530,39 @@ For these features, consider [TanStack Table](https://tanstack.com/table) or [AG
 Apache-2.0
 
 ## Changelog
+
+### 0.2.0 (2025-11-01)
+
+Major mobile responsiveness improvements:
+
+**New Features:**
+- ✨ Accordion card layout for mobile (expandable cards)
+- ✨ Column priority system (`primary`, `secondary`, `tertiary`)
+- ✨ Smart column priority defaults (auto-assigns first 2 as primary)
+- ✨ Horizontal scroll gradient shadows for desktop
+- ✨ Touch-optimized interactions (44px minimum touch targets)
+- ✨ `hideOnMobile` column option for simple hiding
+- ✨ New `useScrollShadow` hook for scroll detection
+- ✨ **Container queries** instead of media queries (works in simulators!)
+
+**New Components:**
+- `DataTableAccordionCard` - Mobile accordion card component
+- `useScrollShadow` - Hook for detecting scroll position
+
+**Breaking Changes:**
+- Mobile breakpoint changed from 640px to 768px
+- Mobile cards now use accordion layout instead of simple cards
+- Actions moved to expanded section on mobile (was always visible)
+- **Uses container queries (`@md:`)** instead of media queries (`md:`)
+  - Component now responds to container width, not viewport width
+  - Works correctly in viewport simulators and constrained layouts
+
+**Improvements:**
+- Enhanced accessibility with proper accordion ARIA
+- Better visual feedback for touch interactions
+- Reduced motion support for animations
+- Improved documentation with mobile examples
+- Works in component playgrounds and viewport simulators
 
 ### 0.1.0 (2025-10-31)
 
