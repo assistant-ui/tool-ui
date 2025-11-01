@@ -9,6 +9,7 @@ import {
 } from "react";
 import Link from "next/link";
 import { DemoChat } from "@/app/components/demo-chat";
+import { RotatingCube } from "@/app/components/rotating-cube";
 import { Button } from "@/components/ui/button";
 import { Monitor, Smartphone, Tablet } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -146,6 +147,9 @@ export default function HomePage() {
 
       {/* Left Column - Static */}
       <div className="relative z-10 max-w-2xl space-y-8 p-8 text-left">
+        <div className="flex justify-start">
+          <RotatingCube />
+        </div>
         <h1 className="text-6xl font-bold tracking-tight">ToolUI</h1>
         <h2 className="text-2xl tracking-tight">
           Open source AI tool call components for chat
