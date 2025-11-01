@@ -2,9 +2,10 @@
 
 import { ReactNode, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Moon, Sun, Monitor, Smartphone, Tablet } from "lucide-react";
+import { Monitor, Smartphone, Tablet } from "lucide-react";
 import { ComponentNav } from "./components/component-nav";
 import { PlaygroundProvider } from "./playground-context";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 type ViewportSize = "mobile" | "tablet" | "desktop";
 
@@ -13,17 +14,10 @@ export default function PlaygroundLayout({
 }: {
   children: ReactNode;
 }) {
-  const [theme, setTheme] = useState<"light" | "dark">("light");
   const [viewport, setViewport] = useState<ViewportSize>("desktop");
 
-  const toggleTheme = () => {
-    const newTheme = theme === "light" ? "dark" : "light";
-    setTheme(newTheme);
-    document.documentElement.classList.toggle("dark");
-  };
-
   return (
-    <PlaygroundProvider value={{ theme, viewport }}>
+    <PlaygroundProvider value={{ viewport }}>
       <div className="flex h-screen flex-col">
         {/* Header - Spans full width */}
         <header className="bg-background flex shrink-0 items-center justify-between border-b px-6 py-4">
@@ -60,13 +54,7 @@ export default function PlaygroundLayout({
             </div>
 
             {/* Theme Toggle */}
-            <Button variant="outline" size="icon" onClick={toggleTheme}>
-              {theme === "light" ? (
-                <Moon className="h-4 w-4" />
-              ) : (
-                <Sun className="h-4 w-4" />
-              )}
-            </Button>
+            <ThemeToggle />
           </div>
         </header>
 

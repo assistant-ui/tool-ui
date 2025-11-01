@@ -27,6 +27,7 @@
     --chart-3: 197 37% 24%;
     --chart-4: 43 74% 66%;
     --chart-5: 27 87% 67%;
+    --dot-grid-color: 215 20% 77%;
   }
 
   .dark {
@@ -54,6 +55,7 @@
     --chart-3: 30 80% 55%;
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
+    --dot-grid-color: 215 28% 26%;
   }
 }
 
@@ -168,6 +170,15 @@
   }
   .dark .dark\:bg-white\/35 {
     background-color: rgb(255 255 255 / 0.35);
+  }
+
+  .bg-dot-grid {
+    background-image: radial-gradient(
+      circle at center,
+      hsl(var(--dot-grid-color)) 1px,
+      transparent 1px
+    );
+    background-size: 24px 24px;
   }
 
   /* Accordion animations */

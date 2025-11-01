@@ -10,7 +10,8 @@ import {
 import Link from "next/link";
 import { DemoChat } from "@/app/components/demo-chat";
 import { Button } from "@/components/ui/button";
-import { Moon, Sun, Monitor, Smartphone, Tablet } from "lucide-react";
+import { Monitor, Smartphone, Tablet } from "lucide-react";
+import { ThemeToggle } from "@/components/theme-toggle";
 import {
   Panel,
   PanelGroup,
@@ -30,7 +31,6 @@ const CHAT_LAYOUTS: Record<ViewportSize, [number, number, number]> = {
 };
 
 export default function HomePage() {
-  const [theme, setTheme] = useState<"light" | "dark">("light");
   const [viewport, setViewport] = useState<ViewportSize>("desktop");
   const panelGroupRef = useRef<ImperativePanelGroupHandle | null>(null);
   const isSyncingLayout = useRef(false);
@@ -102,18 +102,18 @@ export default function HomePage() {
     }
   };
 
-  const toggleTheme = () => {
-    const newTheme = theme === "light" ? "dark" : "light";
-    setTheme(newTheme);
-    document.documentElement.classList.toggle("dark");
-  };
-
   return (
-    <main className="flex min-h-screen flex-row items-center justify-center bg-gray-50 bg-[radial-gradient(circle,#d1d5db_1px,transparent_1px)] bg-size-[24px_24px]">
+    <main className="bg-background relative flex min-h-screen flex-row items-center justify-center">
+      {/* Background pattern overlay */}
+      <div
+        className="bg-dot-grid pointer-events-none absolute inset-0 opacity-60 transition-colors dark:opacity-40"
+        aria-hidden
+      />
+
       {/* Controls - Fixed in top right */}
-      <div className="fixed top-8 right-8 z-10 flex items-center gap-2">
+      <div className="fixed top-8 right-8 z-20 flex items-center gap-2">
         {/* Viewport Controls */}
-        <div className="flex gap-1 rounded-md border bg-white p-1 shadow-sm">
+        <div className="bg-background flex gap-1 rounded-md border p-1 shadow-sm">
           <Button
             variant={viewport === "mobile" ? "secondary" : "ghost"}
             size="icon"
@@ -141,22 +141,11 @@ export default function HomePage() {
         </div>
 
         {/* Theme Toggle */}
-        <Button
-          variant="outline"
-          size="icon"
-          className="bg-white shadow-sm"
-          onClick={toggleTheme}
-        >
-          {theme === "light" ? (
-            <Moon className="h-4 w-4" />
-          ) : (
-            <Sun className="h-4 w-4" />
-          )}
-        </Button>
+        <ThemeToggle />
       </div>
 
       {/* Left Column - Static */}
-      <div className="max-w-2xl space-y-8 p-8 text-left">
+      <div className="relative z-10 max-w-2xl space-y-8 p-8 text-left">
         <h1 className="text-6xl font-bold tracking-tight">ToolUI</h1>
         <h2 className="text-2xl tracking-tight">
           Open source tool call components for AI chat interfaces
@@ -177,7 +166,7 @@ export default function HomePage() {
       </div>
 
       {/* Right Column - Resizable Chat Container */}
-      <div className="flex h-screen flex-1 p-8">
+      <div className="relative z-10 flex h-screen flex-1 p-8">
         <ResizableChat
           panelGroupRef={panelGroupRef}
           handleLayout={handleLayout}
@@ -212,7 +201,7 @@ const ResizableChat = memo(function ResizableChat({
 
       {/* Left resize handle */}
       <PanelResizeHandle className="group relative w-4 transition-colors">
-        <div className="absolute top-1/2 left-1/2 h-12 w-1 -translate-x-1/2 -translate-y-1/2 rounded-full bg-gray-300 opacity-40 transition-all group-hover:bg-gray-400 group-hover:opacity-100 group-data-resize-handle-active:bg-gray-500 group-data-resize-handle-active:opacity-100" />
+        <div className="absolute top-1/2 left-1/2 h-12 w-1 -translate-x-1/2 -translate-y-1/2 rounded-full bg-gray-300 opacity-40 transition-all group-hover:bg-gray-400 group-hover:opacity-100 group-data-resize-handle-active:bg-gray-500 group-data-resize-handle-active:opacity-100 dark:bg-gray-600 dark:group-hover:bg-gray-500 dark:group-data-resize-handle-active:bg-gray-400" />
       </PanelResizeHandle>
 
       {/* Chat container */}
@@ -223,14 +212,14 @@ const ResizableChat = memo(function ResizableChat({
         style={{ overflow: "visible" }}
         className="flex justify-center"
       >
-        <div className="pointer-events-auto flex h-full w-full rounded-4xl border border-gray-300 bg-white shadow-lg transition-all">
+        <div className="bg-background pointer-events-auto flex h-full w-full rounded-4xl border shadow-lg transition-all">
           <DemoChat />
         </div>
       </Panel>
 
       {/* Right resize handle */}
       <PanelResizeHandle className="group relative w-4 transition-colors">
-        <div className="absolute top-1/2 left-1/2 h-12 w-1 -translate-x-1/2 -translate-y-1/2 rounded-full bg-gray-300 transition-colors group-hover:bg-gray-400 group-data-resize-handle-active:bg-gray-500" />
+        <div className="absolute top-1/2 left-1/2 h-12 w-1 -translate-x-1/2 -translate-y-1/2 rounded-full bg-gray-300 transition-colors group-hover:bg-gray-400 group-data-resize-handle-active:bg-gray-500 dark:bg-gray-600 dark:group-hover:bg-gray-500 dark:group-data-resize-handle-active:bg-gray-400" />
       </PanelResizeHandle>
 
       {/* Right spacing */}

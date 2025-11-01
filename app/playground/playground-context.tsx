@@ -5,7 +5,6 @@ import { createContext, useContext, ReactNode } from "react";
 type ViewportSize = "mobile" | "tablet" | "desktop";
 
 interface PlaygroundContextType {
-  theme: "light" | "dark";
   viewport: ViewportSize;
 }
 

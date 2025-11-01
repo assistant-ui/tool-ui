@@ -12,7 +12,7 @@ export const Thread: FC = () => {
   return (
     <ThreadPrimitive.Root className="flex h-full flex-1 flex-col">
       {/* Messages Viewport */}
-      <ThreadPrimitive.Viewport className="m-8 flex-1 overflow-y-auto">
+      <ThreadPrimitive.Viewport className="flex-1 overflow-y-auto p-4">
         {/* Welcome message when empty */}
         <ThreadPrimitive.If empty>
           <div className="flex h-full flex-col items-center justify-center">
@@ -65,7 +65,7 @@ export const Thread: FC = () => {
       </ThreadPrimitive.ScrollToBottom>
 
       {/* Composer */}
-      <ComposerPrimitive.Root className="relative mx-4 mb-4 flex items-center rounded-full bg-gray-100 px-4 py-2">
+      <ComposerPrimitive.Root className="relative mx-4 mb-4 flex items-center rounded-full bg-muted px-4 py-2">
         <ComposerPrimitive.Input
           data-composer-input
           placeholder="Ask about stocks..."
