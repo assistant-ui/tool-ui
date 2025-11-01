@@ -5,14 +5,14 @@ import {
   ComposerPrimitive,
   MessagePrimitive,
 } from "@assistant-ui/react";
-import { SendHorizontalIcon } from "lucide-react";
+import { ArrowUp } from "lucide-react";
 import type { FC } from "react";
 
 export const Thread: FC = () => {
   return (
     <ThreadPrimitive.Root className="flex h-full flex-1 flex-col">
       {/* Messages Viewport */}
-      <ThreadPrimitive.Viewport className="flex-1 overflow-y-auto bg-inherit px-4 pt-8">
+      <ThreadPrimitive.Viewport className="m-8 flex-1 overflow-y-auto">
         {/* Welcome message when empty */}
         <ThreadPrimitive.If empty>
           <div className="flex h-full flex-col items-center justify-center">
@@ -65,25 +65,23 @@ export const Thread: FC = () => {
       </ThreadPrimitive.ScrollToBottom>
 
       {/* Composer */}
-      <div className="border-t bg-inherit px-4 py-4">
-        <ComposerPrimitive.Root className="bg-background flex w-full items-end gap-2 rounded-lg border p-2">
-          <ComposerPrimitive.Input
-            data-composer-input
-            placeholder="Ask about stocks..."
-            className="placeholder:text-muted-foreground max-h-40 flex-1 resize-none bg-transparent px-2 py-1.5 text-sm outline-none"
-          />
-          <ThreadPrimitive.If running={false}>
-            <ComposerPrimitive.Send className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-md p-2 disabled:opacity-50">
-              <SendHorizontalIcon className="h-4 w-4" />
-            </ComposerPrimitive.Send>
-          </ThreadPrimitive.If>
-          <ThreadPrimitive.If running>
-            <ComposerPrimitive.Cancel className="bg-destructive text-destructive-foreground hover:bg-destructive/90 rounded-md p-2">
-              ⏹
-            </ComposerPrimitive.Cancel>
-          </ThreadPrimitive.If>
-        </ComposerPrimitive.Root>
-      </div>
+      <ComposerPrimitive.Root className="relative mx-4 mb-4 flex items-center rounded-full bg-gray-100 px-4 py-2">
+        <ComposerPrimitive.Input
+          data-composer-input
+          placeholder="Ask about stocks..."
+          className="placeholder:text-muted-foreground max-h-40 flex-1 resize-none bg-transparent pr-2 text-sm outline-none"
+        />
+        <ThreadPrimitive.If running={false}>
+          <ComposerPrimitive.Send className="bg-primary text-primary-foreground hover:bg-primary/90 shrink-0 rounded-full p-2 disabled:opacity-50">
+            <ArrowUp className="h-4 w-4" />
+          </ComposerPrimitive.Send>
+        </ThreadPrimitive.If>
+        <ThreadPrimitive.If running>
+          <ComposerPrimitive.Cancel className="bg-destructive text-destructive-foreground hover:bg-destructive/90 shrink-0 rounded-full p-2">
+            ⏹
+          </ComposerPrimitive.Cancel>
+        </ThreadPrimitive.If>
+      </ComposerPrimitive.Root>
     </ThreadPrimitive.Root>
   );
 };
@@ -102,7 +100,7 @@ const UserMessage: FC = () => {
 // Assistant Message Component
 const AssistantMessage: FC = () => {
   return (
-    <MessagePrimitive.Root className="mb-4 flex justify-start border border-red-500">
+    <MessagePrimitive.Root className="mb-4 flex justify-start">
       <div className="w-full">
         <MessagePrimitive.Content
           components={{
@@ -112,7 +110,7 @@ const AssistantMessage: FC = () => {
               </div>
             ),
             ToolGroup: ({ children }) => (
-              <div className="border border-red-500">{children}</div>
+              <div className="w-full">{children}</div>
             ),
           }}
         />
