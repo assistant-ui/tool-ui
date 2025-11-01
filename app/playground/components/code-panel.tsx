@@ -68,9 +68,9 @@ export function CodePanel({
   };
 
   return (
-    <div className="border-t bg-muted/50">
+    <div className="shrink-0 border-t bg-muted/50">
       <div className="px-6 py-3">
-        <details open>
+        <details>
           <summary className="flex cursor-pointer items-center justify-between text-sm font-medium">
             <span>Generated Code</span>
             <Button
@@ -95,8 +95,8 @@ export function CodePanel({
               )}
             </Button>
           </summary>
-          <div className="mt-3 rounded-md bg-background p-4">
-            <pre className="overflow-x-auto text-xs">
+          <div className="mt-3 max-h-64 overflow-auto rounded-md bg-background p-4">
+            <pre className="text-xs">
               <code>{code}</code>
             </pre>
           </div>
