@@ -2,7 +2,9 @@ import { Card } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
+import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { X } from "lucide-react";
 import { PresetSelector } from "./preset-selector";
 import { PresetName } from "@/lib/sample-data";
 
@@ -16,6 +18,7 @@ interface ControlsPanelProps {
   onSortChange: (sortBy?: string, direction?: "asc" | "desc") => void;
   emptyMessage: string;
   onEmptyMessageChange: (message: string) => void;
+  onClose?: () => void;
 }
 
 export function ControlsPanel({
@@ -28,14 +31,30 @@ export function ControlsPanel({
   onSortChange,
   emptyMessage,
   onEmptyMessageChange,
+  onClose,
 }: ControlsPanelProps) {
   return (
-    <Tabs defaultValue="presets" className="w-full">
-      <TabsList className="grid w-full grid-cols-3">
-        <TabsTrigger value="presets">Presets</TabsTrigger>
-        <TabsTrigger value="config">Config</TabsTrigger>
-        <TabsTrigger value="state">State</TabsTrigger>
-      </TabsList>
+    <div className="flex h-full flex-col">
+      {onClose && (
+        <div className="mb-4 flex items-center justify-between">
+          <h3 className="font-semibold">Controls</h3>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={onClose}
+            className="h-8 w-8"
+            title="Close controls"
+          >
+            <X className="h-4 w-4" />
+          </Button>
+        </div>
+      )}
+      <Tabs defaultValue="presets" className="flex-1">
+        <TabsList className="grid w-full grid-cols-3">
+          <TabsTrigger value="presets">Presets</TabsTrigger>
+          <TabsTrigger value="config">Config</TabsTrigger>
+          <TabsTrigger value="state">State</TabsTrigger>
+        </TabsList>
 
       <TabsContent value="presets" className="space-y-4">
         <PresetSelector
@@ -115,5 +134,6 @@ export function ControlsPanel({
         </Card>
       </TabsContent>
     </Tabs>
+    </div>
   );
 }
