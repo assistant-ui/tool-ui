@@ -8,23 +8,31 @@ import * as React from 'react'
 import { ChevronUp, ChevronDown, ChevronsUpDown } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useDataTable } from './data-table'
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip'
 
 export function DataTableHeader() {
   const { columns, actions } = useDataTable()
 
   return (
-    <thead className="bg-muted/50 border-b sticky top-0">
-      <tr>
-        {columns.map((column) => (
-          <DataTableHead key={column.key} column={column} />
-        ))}
-        {actions && actions.length > 0 && (
-          <th className="px-4 py-3 text-left text-sm font-medium text-muted-foreground">
-            Actions
-          </th>
-        )}
-      </tr>
-    </thead>
+    <TooltipProvider delayDuration={300}>
+      <thead className="bg-muted/50 border-b sticky top-0">
+        <tr>
+          {columns.map((column) => (
+            <DataTableHead key={column.key} column={column} />
+          ))}
+          {actions && actions.length > 0 && (
+            <th className="px-4 py-3 text-left text-sm font-medium text-muted-foreground">
+              Actions
+            </th>
+          )}
+        </tr>
+      </thead>
+    </TooltipProvider>
   )
 }
 
@@ -32,6 +40,7 @@ interface DataTableHeadProps {
   column: {
     key: string
     label: string
+    abbr?: string
     sortable?: boolean
     align?: 'left' | 'right' | 'center'
     width?: string
@@ -56,11 +65,16 @@ export function DataTableHead({ column }: DataTableHeadProps) {
     center: 'text-center',
   }[column.align || 'left']
 
+  // Determine display text (abbreviation or full label)
+  const displayText = column.abbr || column.label
+  const shouldShowTooltip = column.abbr || displayText.length > 15
+
   return (
     <th
       className={cn(
         'px-4 text-sm font-medium text-muted-foreground',
         'py-3 @md:py-3', // Larger touch target on mobile
+        'max-w-[150px]', // Constrain width for truncation
         alignClass,
         isSortable && 'cursor-pointer select-none hover:text-foreground transition-colors active:bg-muted/50'
       )}
@@ -76,12 +90,34 @@ export function DataTableHead({ column }: DataTableHeadProps) {
     >
       <div
         className={cn(
-          'inline-flex items-center gap-1',
+          'inline-flex items-center gap-1 min-w-0', // min-w-0 allows flex child to shrink
           column.align === 'right' && 'flex-row-reverse',
           column.align === 'center' && 'justify-center'
         )}
       >
-        <span>{column.label}</span>
+        {shouldShowTooltip ? (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <span className="truncate">
+                {column.abbr ? (
+                  <abbr
+                    title={column.label}
+                    className="no-underline cursor-help border-b border-dotted border-current"
+                  >
+                    {column.abbr}
+                  </abbr>
+                ) : (
+                  column.label
+                )}
+              </span>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>{column.label}</p>
+            </TooltipContent>
+          </Tooltip>
+        ) : (
+          <span className="truncate">{column.label}</span>
+        )}
         {isSortable && (
           <span className="shrink-0">
             {!isSorted && (

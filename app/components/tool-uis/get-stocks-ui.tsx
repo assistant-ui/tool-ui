@@ -91,7 +91,8 @@ export const GetStocksUI = makeAssistantToolUI<
       },
       {
         key: "changePercent",
-        label: "Change %",
+        label: "Change Percent",
+        abbr: "Change %",
         sortable: true,
         align: "right",
         priority: "secondary", // Shown when accordion expanded
@@ -99,27 +100,31 @@ export const GetStocksUI = makeAssistantToolUI<
       {
         key: "volume",
         label: "Volume",
+        abbr: "Vol",
         sortable: true,
         align: "right",
         priority: "secondary", // Shown when accordion expanded
       },
       {
         key: "marketCap",
-        label: "Market Cap",
+        label: "Market Capitalization",
+        abbr: "Mkt Cap",
         sortable: true,
         align: "right",
         priority: "secondary", // Shown when accordion expanded
       },
       {
         key: "pe",
-        label: "P/E",
+        label: "Price to Earnings Ratio",
+        abbr: "P/E",
         sortable: true,
         align: "right",
         priority: "tertiary", // Hidden on mobile
       },
       {
         key: "eps",
-        label: "EPS",
+        label: "Earnings Per Share",
+        abbr: "EPS",
         sortable: true,
         align: "right",
         priority: "tertiary", // Hidden on mobile

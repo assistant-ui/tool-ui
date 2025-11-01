@@ -12,6 +12,7 @@ import { useScrollShadow } from "./use-scroll-shadow";
 export interface Column {
   key: string;
   label: string;
+  abbr?: string; // Optional abbreviation for header display
   sortable?: boolean;
   align?: "left" | "right" | "center";
   width?: string;
