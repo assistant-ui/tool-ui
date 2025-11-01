@@ -3,14 +3,13 @@
 import { useState } from "react";
 import { notFound } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { Moon, Sun, Monitor, Smartphone, Tablet } from "lucide-react";
+import { Monitor } from "lucide-react";
 import { ControlsPanel } from "../components/controls-panel";
 import { CodePanel } from "../components/code-panel";
 import { DataTable } from "@/components/registry/data-table";
 import { PresetName, presets } from "@/lib/sample-data";
 import { getComponentById } from "@/lib/components-registry";
-
-type ViewportSize = "mobile" | "tablet" | "desktop";
+import { usePlayground } from "../playground-context";
 
 interface PageProps {
   params: Promise<{
@@ -30,8 +29,7 @@ export default function ComponentPage({ params }: PageProps) {
     setComponentId(p.component);
   });
 
-  const [theme, setTheme] = useState<"light" | "dark">("light");
-  const [viewport, setViewport] = useState<ViewportSize>("desktop");
+  const { viewport } = usePlayground();
   const [currentPreset, setCurrentPreset] = useState<PresetName>("stocks");
   const [isLoading, setIsLoading] = useState(false);
   const [sortBy, setSortBy] = useState<string | undefined>(undefined);
@@ -40,12 +38,6 @@ export default function ComponentPage({ params }: PageProps) {
   );
   const [emptyMessage, setEmptyMessage] = useState("No data available");
   const [controlsCollapsed, setControlsCollapsed] = useState(false);
-
-  const toggleTheme = () => {
-    const newTheme = theme === "light" ? "dark" : "light";
-    setTheme(newTheme);
-    document.documentElement.classList.toggle("dark");
-  };
 
   const handleSortChange = (
     newSortBy?: string,
@@ -68,54 +60,7 @@ export default function ComponentPage({ params }: PageProps) {
   }
 
   return (
-    <>
-      {/* Header */}
-      <header className="flex shrink-0 items-center justify-between border-b bg-background px-6 py-4">
-        <div className="flex items-center gap-4">
-          <h1 className="text-xl font-bold">tool-ui Playground</h1>
-        </div>
-        <div className="flex items-center gap-2">
-          {/* Viewport Controls */}
-          <div className="flex gap-1 rounded-md border p-1">
-            <Button
-              variant={viewport === "mobile" ? "secondary" : "ghost"}
-              size="icon"
-              onClick={() => setViewport("mobile")}
-              title="Mobile view"
-            >
-              <Smartphone className="h-4 w-4" />
-            </Button>
-            <Button
-              variant={viewport === "tablet" ? "secondary" : "ghost"}
-              size="icon"
-              onClick={() => setViewport("tablet")}
-              title="Tablet view"
-            >
-              <Tablet className="h-4 w-4" />
-            </Button>
-            <Button
-              variant={viewport === "desktop" ? "secondary" : "ghost"}
-              size="icon"
-              onClick={() => setViewport("desktop")}
-              title="Desktop view"
-            >
-              <Monitor className="h-4 w-4" />
-            </Button>
-          </div>
-
-          {/* Theme Toggle */}
-          <Button variant="outline" size="icon" onClick={toggleTheme}>
-            {theme === "light" ? (
-              <Moon className="h-4 w-4" />
-            ) : (
-              <Sun className="h-4 w-4" />
-            )}
-          </Button>
-        </div>
-      </header>
-
-      {/* Main Content Area */}
-      <div className="flex flex-1 overflow-hidden">
+    <div className="flex flex-1 overflow-hidden">
         {/* Preview Panel */}
         <div className="flex flex-1 flex-col">
           <div className="flex-1 overflow-y-auto bg-background p-6">
@@ -184,7 +129,6 @@ export default function ComponentPage({ params }: PageProps) {
             <Monitor className="h-5 w-5" />
           </Button>
         )}
-      </div>
-    </>
+    </div>
   );
 }
