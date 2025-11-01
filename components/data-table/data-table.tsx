@@ -162,7 +162,7 @@ export function DataTable({
 
   return (
     <DataTableContext.Provider value={contextValue}>
-      <div className={cn("w-full @container", className)}>
+      <div className={cn("@container w-full", className)}>
         {/* Desktop: Table layout */}
         <div className="hidden @md:block">
           <div className="relative">
@@ -171,7 +171,7 @@ export function DataTable({
               className={cn(
                 "relative w-full overflow-auto rounded-md border",
                 "touch-pan-x", // Enable momentum scrolling on mobile
-                maxHeight && "max-h-[var(--max-height)]",
+                maxHeight && "max-h-[--max-height]",
               )}
               style={
                 maxHeight
@@ -200,10 +200,10 @@ export function DataTable({
 
             {/* Scroll shadow affordances */}
             {scrollShadow.canScrollLeft && (
-              <div className="from-background pointer-events-none absolute top-0 bottom-0 left-0 z-10 w-8 bg-gradient-to-r to-transparent" />
+              <div className="from-background pointer-events-none absolute top-0 bottom-0 left-0 z-10 w-8 bg-linear-to-r to-transparent" />
             )}
             {scrollShadow.canScrollRight && (
-              <div className="from-background pointer-events-none absolute top-0 right-0 bottom-0 z-10 w-8 bg-gradient-to-l to-transparent" />
+              <div className="from-background pointer-events-none absolute top-0 right-0 bottom-0 z-10 w-8 bg-linear-to-l to-transparent" />
             )}
           </div>
         </div>
