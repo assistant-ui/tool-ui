@@ -2,23 +2,25 @@ import Link from "next/link";
 
 export default function HomePage() {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center p-8">
-      <div className="max-w-2xl space-y-8 text-center">
-        <h1 className="text-4xl font-bold tracking-tight">
-          tool-ui Component Library
-        </h1>
-        <p className="text-lg text-muted-foreground">
-          Open source component library for rendering tool call widgets in
-          TypeScript/React chat applications.
+    <main className="flex min-h-screen flex-row items-center justify-center">
+      <div className="max-w-2xl space-y-8 p-8 text-left">
+        <h1 className="text-6xl font-bold tracking-tight">Tool UI</h1>
+        <p className="text-muted-foreground text-lg">
+          Open source tool call components for AI chat interfaces. Responsive,
+          accessible, data-driven. Built with React, TypeScript, and Tailwind.
+          Animated with Motion.
         </p>
-        <div className="flex justify-center gap-4">
+        <div className="flex justify-start gap-4">
           <Link
             href="/playground"
-            className="rounded-md bg-primary px-6 py-3 font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+            className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-md px-6 py-3 font-medium transition-colors"
           >
             Go to Playground
           </Link>
         </div>
+      </div>
+      <div className="flex h-screen flex-1 items-center justify-center bg-amber-300">
+        Example assistant-ui message thread with Tool UI components.
       </div>
     </main>
   );
