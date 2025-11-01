@@ -118,6 +118,21 @@
   .border-primary\/20 {
     border-color: hsl(var(--primary) / 0.2);
   }
+  .border-border {
+    border-color: hsl(var(--border));
+  }
+  .bg-card {
+    background-color: hsl(var(--card));
+  }
+  .text-card-foreground {
+    color: hsl(var(--card-foreground));
+  }
+  .ring-ring {
+    --tw-ring-color: hsl(var(--ring));
+  }
+  .ring-offset-background {
+    --tw-ring-offset-color: hsl(var(--background));
+  }
   .text-foreground {
     color: hsl(var(--foreground));
   }
@@ -157,9 +172,6 @@
 }
 
 @layer base {
-  * {
-    border-color: hsl(var(--border));
-  }
   body {
     background-color: hsl(var(--background));
     color: hsl(var(--foreground));
