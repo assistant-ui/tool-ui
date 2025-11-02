@@ -2,30 +2,25 @@
 // Last updated: 2025-10-31
 // License: Apache-2.0
 
-'use client'
+"use client";
 
-import * as React from 'react'
-import { cn } from '@/lib/utils'
-import { useDataTable } from './data-table'
-import { DataTableCell } from './data-table-cell'
-import { DataTableActions } from './data-table-actions'
+import * as React from "react";
+import { cn } from "@/lib/utils";
+import { useDataTable } from "./data-table";
+import { DataTableCell } from "./data-table-cell";
+import { DataTableActions } from "./data-table-actions";
 
 interface DataTableRowProps {
-  row: Record<string, any>
-  index: number
-  className?: string
+  row: Record<string, any>;
+  index: number;
+  className?: string;
 }
 
 export function DataTableRow({ row, className }: DataTableRowProps) {
-  const { columns, actions } = useDataTable()
+  const { columns, actions } = useDataTable();
 
   return (
-    <tr
-      className={cn(
-        'border-b hover:bg-muted/50 transition-colors',
-        className
-      )}
-    >
+    <tr className={cn("hover:bg-muted/50 border-b", className)}>
       {columns.map((column) => (
         <DataTableCell
           key={column.key}
@@ -39,5 +34,5 @@ export function DataTableRow({ row, className }: DataTableRowProps) {
         </td>
       )}
     </tr>
-  )
+  );
 }

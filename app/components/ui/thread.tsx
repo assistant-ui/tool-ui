@@ -65,15 +65,15 @@ export const Thread: FC = () => {
       </ThreadPrimitive.ScrollToBottom>
 
       {/* Composer */}
-      <ComposerPrimitive.Root className="relative mx-4 mb-4 flex items-center rounded-full bg-muted px-4 py-2">
+      <ComposerPrimitive.Root className="bg-muted relative mx-4 mb-4 flex items-center rounded-full px-4 py-2">
         <ComposerPrimitive.Input
           data-composer-input
           placeholder="Ask about stocks..."
-          className="placeholder:text-muted-foreground max-h-40 flex-1 resize-none bg-transparent pr-2 text-sm outline-none"
+          className="placeholder:text-muted-foreground max-h-40 flex-1 resize-none bg-transparent pl-4 text-lg outline-none"
         />
         <ThreadPrimitive.If running={false}>
           <ComposerPrimitive.Send className="bg-primary text-primary-foreground hover:bg-primary/90 shrink-0 rounded-full p-2 disabled:opacity-50">
-            <ArrowUp className="h-4 w-4" />
+            <ArrowUp className="size6" />
           </ComposerPrimitive.Send>
         </ThreadPrimitive.If>
         <ThreadPrimitive.If running>

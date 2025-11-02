@@ -9,7 +9,7 @@ import {
 } from "react";
 import Link from "next/link";
 import { DemoChat } from "@/app/components/demo-chat";
-import { RotatingCube } from "@/app/components/rotating-cube";
+import { App as HypercubeCanvas } from "@/app/components/rotating-hypercube";
 import { Button } from "@/components/ui/button";
 import { Monitor, Smartphone, Tablet } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -104,7 +104,7 @@ export default function HomePage() {
   };
 
   return (
-    <main className="bg-background relative flex min-h-screen flex-row items-center justify-center">
+    <main className="bg-background relative flex min-h-screen flex-row items-end justify-center">
       {/* Background pattern overlay */}
       <div
         className="bg-dot-grid pointer-events-none absolute inset-0 opacity-60 transition-colors dark:opacity-40"
@@ -146,11 +146,11 @@ export default function HomePage() {
       </div>
 
       {/* Left Column - Static */}
-      <div className="relative z-10 max-w-2xl space-y-8 p-8 text-left">
-        <div className="flex justify-start">
-          <RotatingCube />
+      <div className="relative z-10 max-w-2xl space-y-8 p-8 pb-24 text-left">
+        <div className="-ml-8 flex items-end justify-start">
+          <HypercubeCanvas />
         </div>
-        <h1 className="text-6xl font-bold tracking-tight">ToolUI</h1>
+        <h1 className="mb-2 text-6xl font-bold tracking-tight">ToolUI</h1>
         <h2 className="text-2xl tracking-tight">
           Open source AI tool call components for chat
         </h2>
