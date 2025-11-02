@@ -22,7 +22,7 @@ export default function PlaygroundLayout({
         {/* Header - Spans full width */}
         <header className="bg-background flex shrink-0 items-center justify-between border-b px-6 py-4">
           <div className="flex items-center gap-4">
-            <h1 className="text-xl font-bold">tool-ui Playground</h1>
+            <h1 className="text-xl font-bold">ToolUI Playground</h1>
           </div>
           <div className="flex items-center gap-2">
             {/* Viewport Controls */}

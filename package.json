@@ -30,6 +30,7 @@
     "@radix-ui/react-tooltip": "^1.2.8",
     "@react-three/drei": "^10.7.6",
     "@react-three/fiber": "^9.4.0",
+    "@react-three/postprocessing": "^3.0.4",
     "@upstash/ratelimit": "^2.0.6",
     "@upstash/redis": "^1.35.6",
     "ai": "^5.0.86",

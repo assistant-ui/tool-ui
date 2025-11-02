@@ -1,14 +1,56 @@
 import { useRef, useEffect, useState, useMemo } from "react";
-import { Canvas, useFrame, useThree } from "@react-three/fiber";
+import { Canvas, useFrame, useThree, extend } from "@react-three/fiber";
 import {
   Edges,
   MeshPortalMaterial,
   Environment,
   Sky,
   RoundedBox,
+  shaderMaterial,
 } from "@react-three/drei";
 import { useControls } from "leva";
 import * as THREE from "three";
+
+// Custom shader material for sun glow with fresnel effect
+const SunGlowMaterial = shaderMaterial(
+  {
+    glowColor: new THREE.Color(0xffdd00),
+    coefficient: 0.5,
+    power: 3.0,
+  },
+  // Vertex Shader
+  `
+    varying vec3 vNormal;
+    varying vec3 vPositionNormal;
+
+    void main() {
+      vNormal = normalize(normalMatrix * normal);
+      vPositionNormal = normalize((modelViewMatrix * vec4(position, 1.0)).xyz);
+      gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+    }
+  `,
+  // Fragment Shader
+  `
+    uniform vec3 glowColor;
+    uniform float coefficient;
+    uniform float power;
+
+    varying vec3 vNormal;
+    varying vec3 vPositionNormal;
+
+    void main() {
+      vec3 normal = normalize(vNormal);
+      vec3 viewDir = normalize(vPositionNormal);
+
+      // Fresnel effect - glow at edges
+      float intensity = pow(coefficient + abs(dot(normal, viewDir)), power);
+
+      gl_FragColor = vec4(glowColor, 1.0) * intensity;
+    }
+  `
+);
+
+extend({ SunGlowMaterial });
 
 // Scene types for different scenic views
 type SceneType = "sun" | "barGraph" | "dataTable" | "masonryGallery";
@@ -20,6 +62,79 @@ const SCENE_TYPES: SceneType[] = [
   "masonryGallery",
 ];
 
+// Large puffy cloud component for iOS-style weather icon
+function Cloud({
+  position,
+  scale = 1,
+  speed = 1,
+}: {
+  position: [number, number, number];
+  scale?: number;
+  speed?: number;
+}) {
+  const cloudRef = useRef<THREE.Group>(null);
+
+  useFrame((state) => {
+    if (cloudRef.current) {
+      // Very gentle floating animation
+      cloudRef.current.position.y =
+        position[1] + Math.sin(state.clock.elapsedTime * speed) * 0.08;
+    }
+  });
+
+  // Create large puffy cloud from multiple spheres - iOS weather icon style
+  const puffs = [
+    // Bottom row - base of cloud
+    { pos: [-0.5, -0.15, 0], scale: 1.0 },
+    { pos: [0, -0.15, 0], scale: 1.1 },
+    { pos: [0.5, -0.15, 0], scale: 1.0 },
+
+    // Middle row - main body
+    { pos: [-0.6, 0, 0], scale: 0.95 },
+    { pos: [-0.3, 0, 0.05], scale: 1.05 },
+    { pos: [0, 0, -0.05], scale: 1.15 },
+    { pos: [0.3, 0, 0.05], scale: 1.1 },
+    { pos: [0.6, 0, 0], scale: 0.95 },
+
+    // Top row - puffy top
+    { pos: [-0.4, 0.18, 0], scale: 0.85 },
+    { pos: [-0.1, 0.2, 0], scale: 0.95 },
+    { pos: [0.2, 0.22, 0], scale: 0.9 },
+    { pos: [0.5, 0.18, 0], scale: 0.8 },
+
+    // Extra puffs for fullness
+    { pos: [-0.2, 0.08, 0.1], scale: 0.75 },
+    { pos: [0.35, 0.08, -0.1], scale: 0.7 },
+  ];
+
+  return (
+    <group ref={cloudRef} position={position} scale={scale}>
+      {puffs.map((puff, i) => (
+        <mesh
+          key={i}
+          position={puff.pos as [number, number, number]}
+          scale={puff.scale}
+          castShadow
+          receiveShadow
+          renderOrder={1}
+        >
+          <sphereGeometry args={[0.35, 24, 24]} />
+          <meshStandardMaterial
+            color="#FFFFFF"
+            transparent
+            opacity={0.96}
+            roughness={0.85}
+            metalness={0}
+            fog={false}
+            depthWrite={true}
+            depthTest={true}
+          />
+        </mesh>
+      ))}
+    </group>
+  );
+}
+
 function SunScene({
   faceWidth,
   faceHeight,
@@ -29,12 +144,18 @@ function SunScene({
   faceHeight: number;
   roomDepth: number;
 }) {
-  const sunRef = useRef<THREE.Mesh>(null);
+  const sunRef = useRef<THREE.Group>(null);
+  const coronaRef = useRef<THREE.Mesh>(null);
 
-  useFrame((state, delta) => {
+  useFrame((_state, delta) => {
     if (sunRef.current) {
       // Gentle rotation of the sun
-      sunRef.current.rotation.y += delta * 0.2;
+      sunRef.current.rotation.y += delta * 0.15;
+    }
+    if (coronaRef.current) {
+      // Subtle pulsing of the corona
+      const scale = 1 + Math.sin(_state.clock.elapsedTime * 0.5) * 0.05;
+      coronaRef.current.scale.setScalar(scale);
     }
   });
 
@@ -45,8 +166,8 @@ function SunScene({
       {/* Atmospheric sky */}
       <Sky
         distance={4500}
-        turbidity={10}
-        rayleigh={3}
+        turbidity={8}
+        rayleigh={4}
         mieCoefficient={0.005}
         mieDirectionalG={0.8}
         sunPosition={[0, 10, -10]}
@@ -56,54 +177,165 @@ function SunScene({
       {/* Enclosing sphere to ensure rich blue background */}
       <mesh scale={[skyScale, skyScale, skyScale]}>
         <sphereGeometry args={[1, 64, 64]} />
-        <meshBasicMaterial color="#1E3A8A" side={THREE.BackSide} />
+        <meshBasicMaterial color="#2563EB" side={THREE.BackSide} />
       </mesh>
 
-      {/* Glowing sun sphere */}
-      <mesh ref={sunRef} position={[0, 0, -roomDepth * 0.4]}>
-        <sphereGeometry args={[0.8, 64, 64]} />
-        <meshStandardMaterial
-          color="#FFD700"
-          emissive="#FFA500"
-          emissiveIntensity={2}
-          roughness={0.1}
-          metalness={0.1}
-        />
-      </mesh>
+      {/* Sun with enhanced shader-based glow - positioned to peek out from behind cloud */}
+      {/* Positioned further back to prevent z-fighting with cloud */}
+      <group ref={sunRef} position={[0.3, 0.4, -roomDepth * 0.45]}>
+        {/* Bright core sun sphere */}
+        <mesh renderOrder={0}>
+          <sphereGeometry args={[0.5, 64, 64]} />
+          <meshBasicMaterial color="#FFFFF8" depthTest={true} />
+        </mesh>
 
-      {/* Glow effect around the sun */}
-      <mesh position={[0, 0, -roomDepth * 0.4]}>
-        <sphereGeometry args={[1.0, 64, 64]} />
-        <meshStandardMaterial
-          color="#FFD700"
-          emissive="#FFD700"
-          emissiveIntensity={1}
-          transparent
-          opacity={0.3}
-          roughness={0}
-        />
-      </mesh>
+        {/* Inner bright ring */}
+        <mesh scale={1.4} renderOrder={0}>
+          <sphereGeometry args={[0.5, 64, 64]} />
+          <meshBasicMaterial
+            color="#FFEE44"
+            transparent
+            opacity={0.9}
+            blending={THREE.AdditiveBlending}
+            depthWrite={false}
+            depthTest={true}
+          />
+        </mesh>
 
-      {/* Ambient light from the sun */}
-      <ambientLight intensity={0.9} color="#FFEFD5" />
+        {/* Close corona glow - intense */}
+        <mesh scale={1.8} renderOrder={0}>
+          <sphereGeometry args={[0.5, 64, 64]} />
+          <meshBasicMaterial
+            color="#FFDD22"
+            transparent
+            opacity={0.6}
+            blending={THREE.AdditiveBlending}
+            depthWrite={false}
+            depthTest={true}
+          />
+        </mesh>
+
+        {/* Corona glow using custom shader */}
+        <mesh ref={coronaRef} scale={2.5} renderOrder={0}>
+          <sphereGeometry args={[0.5, 64, 64]} />
+          {/* @ts-expect-error - Custom shader material from extend */}
+          <sunGlowMaterial
+            transparent
+            blending={THREE.AdditiveBlending}
+            side={THREE.BackSide}
+            depthWrite={false}
+            depthTest={true}
+            glowColor={new THREE.Color(0xffdd00)}
+            coefficient={0.25}
+            power={2.0}
+          />
+        </mesh>
+
+        {/* Mid glow layer - reduced intensity */}
+        <mesh scale={3.5} renderOrder={0}>
+          <sphereGeometry args={[0.5, 64, 64]} />
+          {/* @ts-expect-error - Custom shader material from extend */}
+          <sunGlowMaterial
+            transparent
+            blending={THREE.AdditiveBlending}
+            side={THREE.BackSide}
+            depthWrite={false}
+            depthTest={true}
+            glowColor={new THREE.Color(0xffbb00)}
+            coefficient={0.12}
+            power={2.5}
+          />
+        </mesh>
+
+        {/* Outer glow layer - softer */}
+        <mesh scale={5.0} renderOrder={0}>
+          <sphereGeometry args={[0.5, 64, 64]} />
+          {/* @ts-expect-error - Custom shader material from extend */}
+          <sunGlowMaterial
+            transparent
+            blending={THREE.AdditiveBlending}
+            side={THREE.BackSide}
+            depthWrite={false}
+            depthTest={true}
+            glowColor={new THREE.Color(0xff9900)}
+            coefficient={0.06}
+            power={3.5}
+          />
+        </mesh>
+
+        {/* Additional diffuse glow */}
+        <mesh scale={2.0} renderOrder={0}>
+          <sphereGeometry args={[0.5, 32, 32]} />
+          <meshBasicMaterial
+            color="#FFCC00"
+            transparent
+            opacity={0.25}
+            blending={THREE.AdditiveBlending}
+            depthWrite={false}
+            depthTest={true}
+          />
+        </mesh>
+      </group>
+
+      {/* Enhanced sun lighting */}
+      <ambientLight intensity={1.3} color="#FFF9E6" />
+
+      {/* Main sun light from the sun position */}
       <pointLight
-        position={[0, 0, -roomDepth * 0.4]}
-        intensity={3}
+        position={[0.3, 0.4, -roomDepth * 0.45]}
+        intensity={10}
+        color="#FFEE88"
+        distance={15}
+        decay={1.5}
+        castShadow
+      />
+
+      {/* Directional light for cloud definition from sun position */}
+      <directionalLight
+        position={[0.3, 0.4, -roomDepth * 0.38]}
+        intensity={2.5}
+        color="#FFE599"
+        castShadow
+        shadow-mapSize-width={1024}
+        shadow-mapSize-height={1024}
+      />
+
+      {/* Additional rim lights for atmosphere */}
+      <pointLight
+        position={[2, 1, -roomDepth * 0.4]}
+        intensity={2}
+        color="#FFD700"
+        distance={10}
+        decay={2}
+      />
+      <pointLight
+        position={[-2, -1, -roomDepth * 0.4]}
+        intensity={2}
         color="#FFD700"
         distance={10}
         decay={2}
       />
 
-      {/* Subtle ground haze */}
+      {/* Single large puffy cloud - iOS weather icon style */}
+      {/* Cloud is positioned clearly in front of sun with proper depth separation */}
+      <Cloud
+        position={[-0.05, -0.5, -roomDepth * 0.32]}
+        scale={2.0}
+        speed={0.6}
+      />
+
+      {/* Subtle ground haze with warmer tones */}
       <mesh
         position={[0, -faceHeight * 0.4, -roomDepth * 0.45]}
         rotation={[-Math.PI / 2, 0, 0]}
       >
         <planeGeometry args={[faceWidth * 4, faceWidth * 4]} />
         <meshStandardMaterial
-          color="#FDE68A"
+          color="#FEF3C7"
+          emissive="#FDE68A"
+          emissiveIntensity={0.3}
           transparent
-          opacity={0.2}
+          opacity={0.3}
           roughness={1}
           metalness={0}
         />
