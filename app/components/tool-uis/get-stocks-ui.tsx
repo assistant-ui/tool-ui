@@ -3,6 +3,7 @@
 import { makeAssistantToolUI } from "@assistant-ui/react";
 import { DataTable, type Column } from "@/components/data-table";
 import type { GetStocksOutput } from "@/app/tools/get-stocks";
+import type { Stock } from "@/lib/mock-data/stocks";
 
 /**
  * Tool UI for get_stocks - renders stock data using DataTable
@@ -132,7 +133,7 @@ export const GetStocksUI = makeAssistantToolUI<
     ];
 
     // Format stock data for display
-    const formattedRows = stocks.map((stock: any) => ({
+    const formattedRows = stocks.map((stock: Stock) => ({
       symbol: stock.symbol,
       name: stock.name,
       price: `$${stock.price.toFixed(2)}`,

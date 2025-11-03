@@ -5,7 +5,7 @@
 /**
  * Sort an array of objects by a key
  */
-export function sortData<T extends Record<string, any>>(
+export function sortData<T extends Record<string, string | number | boolean | null>>(
   data: T[],
   key: string,
   direction: 'asc' | 'desc'
@@ -85,7 +85,7 @@ export function formatCellValue(
  */
 export function getActionLabel(
   actionLabel: string,
-  row: Record<string, any>,
+  row: Record<string, string | number | boolean | null>,
   identifierKey?: string
 ): string {
   const identifier = identifierKey

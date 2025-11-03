@@ -25,16 +25,6 @@ import {
   type LucideIcon,
 } from "lucide-react";
 
-// Icon options for each concept
-const ICON_OPTIONS = {
-  Charts: { BarChart3, LineChart, PieChart },
-  Weather: { Cloud, CloudRain, Sun, CloudSun },
-  Tables: { Table },
-  "Smiling Face": { Smile, Laugh, SmilePlus },
-  "Image Gallery": { Images, ImageIcon },
-  Diagram: { Network, Workflow, GitBranch },
-};
-
 // Color Palettes
 const COLOR_PALETTES = {
   original: ["#ff6b6b", "#4ecdc4", "#45b7d1", "#f9ca24", "#95e1d3", "#c44569"],
@@ -505,16 +495,19 @@ function Cube() {
   });
 
   // Build rotation increments
-  const ROTATION_INCREMENTS: number[] = [];
-  if (animation.use90Degrees) ROTATION_INCREMENTS.push(Math.PI / 2);
-  if (animation.use180Degrees) ROTATION_INCREMENTS.push(Math.PI);
-  if (ROTATION_INCREMENTS.length === 0) ROTATION_INCREMENTS.push(Math.PI / 2);
+  const ROTATION_INCREMENTS = useMemo(() => {
+    const increments: number[] = [];
+    if (animation.use90Degrees) increments.push(Math.PI / 2);
+    if (animation.use180Degrees) increments.push(Math.PI);
+    if (increments.length === 0) increments.push(Math.PI / 2);
+    return increments;
+  }, [animation.use90Degrees, animation.use180Degrees]);
 
-  const ROTATION_PATTERNS = [
+  const ROTATION_PATTERNS = useMemo(() => [
     { axis: "y" as const, label: "horizontal" },
     { axis: "x" as const, label: "vertical" },
     { axis: "z" as const, label: "roll" },
-  ];
+  ], []);
 
   // Update initial rotation
   useEffect(() => {
@@ -553,7 +546,7 @@ function Cube() {
     }, animation.intervalMs);
 
     return () => clearInterval(interval);
-  }, [animation.intervalMs, ROTATION_INCREMENTS]);
+  }, [animation.intervalMs, ROTATION_INCREMENTS, ROTATION_PATTERNS]);
 
   // Smooth rotation interpolation & animation time
   useFrame((_, delta) => {
@@ -696,11 +689,6 @@ function Cube() {
           );
 
       case "Enhanced Glow":
-        const pulseIntensity = glowControls.pulse
-          ? glowControls.emissiveIntensity *
-            (1 + 0.3 * Math.sin(timeRef.current * glowControls.pulseSpeed))
-          : glowControls.emissiveIntensity;
-
         return Array(6)
           .fill(0)
           .map(
@@ -708,7 +696,7 @@ function Cube() {
               new THREE.MeshPhysicalMaterial({
                 color: glowControls.baseColor,
                 emissive: glowControls.emissiveColor,
-                emissiveIntensity: pulseIntensity,
+                emissiveIntensity: glowControls.emissiveIntensity,
                 metalness: 0.2,
                 roughness: 0.1,
               }),
@@ -731,23 +719,19 @@ function Cube() {
         });
 
       case "Animated Shader":
-        const time = timeRef.current * shaderControls.speed;
         return Array(6)
           .fill(0)
           .map((_, i) => {
-            const hue = shaderControls.hueShift ? (time + i * 0.16) % 1 : i / 6;
-            const wave = shaderControls.wavePattern
-              ? 0.5 + 0.5 * Math.sin(time * 2 + i)
-              : 1;
+            const hue = i / 6;
             const color = new THREE.Color().setHSL(
               hue,
               0.8,
-              0.5 * wave * shaderControls.intensity,
+              0.5 * shaderControls.intensity,
             );
             return new THREE.MeshPhysicalMaterial({
               color,
               emissive: color,
-              emissiveIntensity: 0.5 * wave,
+              emissiveIntensity: 0.5,
               metalness: 0.3,
               roughness: 0.2,
             });
@@ -767,7 +751,6 @@ function Cube() {
     glowControls,
     paletteControls,
     shaderControls,
-    timeRef.current,
   ]);
 
   // Icon mapping helper

@@ -64,7 +64,7 @@ export function useScrollShadow(
       resizeObserver.disconnect()
       window.removeEventListener('resize', checkScroll)
     }
-  }, [checkScroll])
+  }, [checkScroll, ref])
 
   return state
 }

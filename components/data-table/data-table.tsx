@@ -50,7 +50,7 @@ export interface DataTableProps {
   // Event handlers
   onAction?: (
     actionId: string,
-    row: Record<string, any>,
+    row: Record<string, string | number | boolean | null>,
     context?: {
       messageId?: string;
       sendMessage?: (message: string) => void;
@@ -64,7 +64,7 @@ export interface DataTableProps {
 
 interface DataTableContextValue {
   columns: Column[];
-  rows: Array<Record<string, any>>;
+  rows: Array<Record<string, string | number | boolean | null>>;
   actions?: Action[];
   sortBy?: string;
   sortDirection?: "asc" | "desc";

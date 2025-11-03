@@ -16,7 +16,7 @@ import {
 import { useDataTable } from './data-table'
 
 interface DataTableActionsProps {
-  row: Record<string, any>
+  row: Record<string, string | number | boolean | null>
 }
 
 export function DataTableActions({ row }: DataTableActionsProps) {

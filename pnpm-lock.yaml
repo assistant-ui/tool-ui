@@ -111,6 +111,9 @@ importers:
       '@eslint/eslintrc':
         specifier: ^3.3.1
         version: 3.3.1
+      '@next/eslint-plugin-next':
+        specifier: 15.5.4
+        version: 15.5.4
       '@tailwindcss/postcss':
         specifier: ^4.1.14
         version: 4.1.16

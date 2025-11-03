@@ -102,7 +102,6 @@ interface MasonryGallerySceneParams {
   gapRatio: number;
   hoverDistance: number;
   animSpeed: number;
-  cornerRadius: number;
   gridY: number;
   itemWidthRatio: number;
   itemHeightRatio: number;
@@ -427,18 +426,22 @@ function BarGraphScene({
   ];
 
   // Initialize bar states - preserve existing state to prevent re-initialization hitch
-  if (barStates.current.length !== bars.length) {
-    barStates.current = bars.map(
-      (_, i) =>
-        barStates.current[i] || {
-          current: 1,
-          target:
-            params.minHeightScale +
-            Math.random() * (params.maxHeightScale - params.minHeightScale),
-          speed: 0.3 + Math.random() * 0.4,
-        },
-    );
-  }
+  const barsLength = bars.length;
+  useEffect(() => {
+    if (barStates.current.length !== barsLength) {
+      barStates.current = Array.from(
+        { length: barsLength },
+        (_, i) =>
+          barStates.current[i] || {
+            current: 1,
+            target:
+              params.minHeightScale +
+              Math.random() * (params.maxHeightScale - params.minHeightScale),
+            speed: 0.3 + Math.random() * 0.4,
+          },
+      );
+    }
+  }, [barsLength, params.minHeightScale, params.maxHeightScale]);
 
   const totalWidth = bars.length * params.barSpacing;
   const startX = -totalWidth / 2 + params.barSpacing / 2;
@@ -644,6 +647,7 @@ function DataTableScene({
 
       {/* Data cards */}
       <group position={[0, 0, -roomDepth * 0.4]}>
+        {/* eslint-disable-next-line react-hooks/refs */}
         {dataRows.map((row, i) => {
           const yPos = startY - i * params.cardSpacing;
           const zOffset = i * 0.02; // Subtle stagger
@@ -887,8 +891,9 @@ function MasonryGalleryScene({
         color1: gradientColors[0],
         color2: gradientColors[1],
         color3: undefined,
-        hoverOffset: Math.random() * Math.PI * 2,
-        hoverSpeed: 0.5 + Math.random() * 0.5,
+        // Use deterministic "random" values based on index for stable animations
+        hoverOffset: (i * 1.618033988749895) % (Math.PI * 2), // Golden ratio for distribution
+        hoverSpeed: 0.5 + ((i * 0.1) % 0.5),
       });
     }
 
@@ -910,14 +915,17 @@ function MasonryGalleryScene({
   const scrollOffset = useRef(0);
 
   // Initialize image states - preserve existing state to prevent re-initialization hitch
-  if (imageStates.current.length !== images.length) {
-    imageStates.current = images.map(
-      (_, i) =>
-        imageStates.current[i] || {
-          current: 0,
-        },
-    );
-  }
+  useEffect(() => {
+    if (imageStates.current.length !== images.length) {
+      imageStates.current = Array.from(
+        { length: images.length },
+        (_, i) =>
+          imageStates.current[i] || {
+            current: 0,
+          },
+      );
+    }
+  }, [images.length]);
 
   useFrame((_, delta) => {
     // Perpetual scrolling to the left
@@ -1021,7 +1029,6 @@ function MasonryGalleryScene({
               color1={img.color1}
               color2={img.color2}
               color3={img.color3}
-              cornerRadius={params.cornerRadius}
             />
           </group>
         ))}
@@ -1037,7 +1044,6 @@ function ImageCard({
   color1,
   color2,
   color3,
-  cornerRadius,
 }: {
   width: number;
   height: number;
@@ -1045,7 +1051,6 @@ function ImageCard({
   color1: string;
   color2: string;
   color3?: string;
-  cornerRadius: number;
 }) {
   const depth = 0.05;
 
@@ -1389,13 +1394,6 @@ export const App = ({ cubeWidth: propCubeWidth }: { cubeWidth?: number }) => {
         max: 5,
         step: 0.1,
         label: "Scroll Speed",
-      },
-      cornerRadius: {
-        value: 0.03,
-        min: 0,
-        max: 0.1,
-        step: 0.005,
-        label: "Corner Radius",
       },
       gridY: {
         value: 0.5,
@@ -1789,6 +1787,7 @@ function CameraController({
   useEffect(() => {
     camera.position.set(...position);
     if ("fov" in camera && camera.fov !== undefined) {
+      // eslint-disable-next-line react-hooks/immutability
       camera.fov = fov;
       camera.updateProjectionMatrix();
     }
@@ -1904,6 +1903,7 @@ function RotatingCube({
   // Update face scenes when selectedScene changes (if locked and not showing all faces)
   useEffect(() => {
     if (locked && !showAllFaces) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setFaceScenes({
         front: selectedScene,
         back: selectedScene,

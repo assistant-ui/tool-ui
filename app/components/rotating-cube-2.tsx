@@ -125,18 +125,20 @@ function TransitioningShape({
   nextShape,
   transitionRef,
 }: TransitioningShapeProps) {
-  const outgoingMaterial = useMemo(() => createMorphMaterial("outgoing"), []);
-  const incomingMaterial = useMemo(() => createMorphMaterial("incoming"), []);
+  const outgoingMaterialRef = useRef(createMorphMaterial("outgoing"));
+  const incomingMaterialRef = useRef(createMorphMaterial("incoming"));
 
   const outgoingMeshRef = useRef<THREE.Mesh>(null);
   const incomingMeshRef = useRef<THREE.Mesh>(null);
 
   useEffect(() => {
+    const outgoingMaterial = outgoingMaterialRef.current;
+    const incomingMaterial = incomingMaterialRef.current;
     return () => {
       outgoingMaterial.dispose();
       incomingMaterial.dispose();
     };
-  }, [incomingMaterial, outgoingMaterial]);
+  }, []);
 
   useEffect(() => {
     if (incomingMeshRef.current) {
@@ -152,7 +154,7 @@ function TransitioningShape({
     const extent = cubeSize * 0.5;
 
     const outgoingUniforms =
-      (outgoingMaterial.userData.uniforms as {
+      (outgoingMaterialRef.current.userData.uniforms as {
         maskProgress?: { value: number };
         maskDirection?: { value: THREE.Vector3 };
         maskSoftness?: { value: number };
@@ -160,7 +162,7 @@ function TransitioningShape({
       }) || {};
 
     const incomingUniforms =
-      (incomingMaterial.userData.uniforms as {
+      (incomingMaterialRef.current.userData.uniforms as {
         maskProgress?: { value: number };
         maskDirection?: { value: THREE.Vector3 };
         maskSoftness?: { value: number };
@@ -170,10 +172,12 @@ function TransitioningShape({
     const progress = transition.active ? transition.progress : 0;
     const maskedProgress = 1 - progress;
 
+    // Intentionally mutating Three.js material uniforms for animation
     if (outgoingUniforms.maskDirection) {
       outgoingUniforms.maskDirection.value.copy(axisDirection);
     }
     if (outgoingUniforms.maskExtent) {
+      // eslint-disable-next-line react-hooks/immutability
       outgoingUniforms.maskExtent.value = extent;
     }
     if (outgoingUniforms.maskSoftness) {
@@ -187,6 +191,7 @@ function TransitioningShape({
       incomingUniforms.maskDirection.value.copy(axisDirection);
     }
     if (incomingUniforms.maskExtent) {
+      // eslint-disable-next-line react-hooks/immutability
       incomingUniforms.maskExtent.value = extent;
     }
     if (incomingUniforms.maskSoftness) {
@@ -205,7 +210,7 @@ function TransitioningShape({
     <group>
       <mesh
         ref={outgoingMeshRef}
-        material={outgoingMaterial}
+        material={outgoingMaterialRef.current}
         castShadow
         receiveShadow
       >
@@ -213,7 +218,7 @@ function TransitioningShape({
       </mesh>
       <mesh
         ref={incomingMeshRef}
-        material={incomingMaterial}
+        material={incomingMaterialRef.current}
         castShadow
         receiveShadow
       >
@@ -281,7 +286,7 @@ function Cube() {
     return () => clearInterval(interval);
   }, []);
 
-  useFrame((_, delta) => {
+  useFrame(() => {
     if (!groupRef.current) return;
 
     const group = groupRef.current;

@@ -17,7 +17,7 @@ import { useDataTable } from "./data-table";
 import type { Column } from "./data-table";
 
 interface DataTableAccordionCardProps {
-  row: Record<string, any>;
+  row: Record<string, string | number | boolean | null>;
   index: number;
 }
 
@@ -157,7 +157,7 @@ function SimpleCard({
   row,
   columns,
 }: {
-  row: Record<string, any>;
+  row: Record<string, string | number | boolean | null>;
   columns: Column[];
 }) {
   const { onAction, actions, messageId } = useDataTable();

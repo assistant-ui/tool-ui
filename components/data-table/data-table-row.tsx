@@ -11,7 +11,7 @@ import { DataTableCell } from "./data-table-cell";
 import { DataTableActions } from "./data-table-actions";
 
 interface DataTableRowProps {
-  row: Record<string, any>;
+  row: Record<string, string | number | boolean | null>;
   index: number;
   className?: string;
 }
