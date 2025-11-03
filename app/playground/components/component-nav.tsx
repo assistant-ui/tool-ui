@@ -32,7 +32,7 @@ export function ComponentNav() {
   return (
     <aside
       className={cn(
-        "flex shrink-0 flex-col border-r bg-muted/30 transition-all duration-300",
+        "bg-muted/30 flex shrink-0 flex-col border-r transition-all duration-300",
         collapsed ? "w-16" : "w-60",
       )}
     >
@@ -67,7 +67,7 @@ export function ComponentNav() {
               key={component.id}
               href={component.path}
               className={cn(
-                "flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors",
+                "flex items-center gap-3 rounded-md px-3 py-2 text-sm",
                 isActive
                   ? "bg-primary text-primary-foreground"
                   : "hover:bg-muted",
@@ -78,9 +78,11 @@ export function ComponentNav() {
               <Icon className={cn("h-5 w-5 shrink-0")} />
               {!collapsed && (
                 <div className="flex flex-col overflow-hidden">
-                  <span className="truncate font-medium">{component.label}</span>
+                  <span className="truncate font-medium">
+                    {component.label}
+                  </span>
                   {!isActive && (
-                    <span className="truncate text-xs text-muted-foreground">
+                    <span className="text-muted-foreground truncate text-xs">
                       {component.description}
                     </span>
                   )}

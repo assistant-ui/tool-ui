@@ -1135,17 +1135,16 @@ function renderSceneContent(
 
 const PLANE_OFFSET = 0.005; // Offset to prevent z-fighting and ensure proper rendering
 
-// Default values
 const DEFAULT_CUBE_WIDTH = 4;
 const DEFAULT_CUBE_HEIGHT = 3.4;
 const DEFAULT_CUBE_DEPTH = 0.5;
 const DEFAULT_ROOM_DEPTH = 2.5;
 const DEFAULT_CAMERA_X = 4;
-const DEFAULT_CAMERA_Y = 1; // Lowered to be more level with the cube
+const DEFAULT_CAMERA_Y = 1;
 const DEFAULT_CAMERA_Z = 4;
 const DEFAULT_CAMERA_FOV = 50;
-const DEFAULT_ROTATION_SPEED = 6;
-const DEFAULT_PAUSE_DURATION = 1;
+const DEFAULT_ROTATION_SPEED = 3.4;
+const DEFAULT_PAUSE_DURATION = 2;
 const DEFAULT_INITIAL_ROTATION_X = 0;
 const DEFAULT_INITIAL_ROTATION_Y = 80;
 const DEFAULT_INITIAL_ROTATION_Z = 0;
@@ -1270,7 +1269,7 @@ export const App = ({ cubeWidth: propCubeWidth }: { cubeWidth?: number }) => {
         label: "Bar Width",
       },
       animSpeed: {
-        value: 3.0,
+        value: 2.0,
         min: 0,
         max: 3,
         step: 0.1,

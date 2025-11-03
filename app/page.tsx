@@ -117,7 +117,7 @@ export default function HomePage() {
     <main className="relative flex min-h-screen flex-row items-end justify-center">
       {/* Background pattern overlay */}
       <div
-        className="bg-dot-grid pointer-events-none absolute inset-0 opacity-60 transition-colors dark:opacity-40"
+        className="bg-dot-grid pointer-events-none absolute inset-0 opacity-60 dark:opacity-40"
         aria-hidden
       />
 
@@ -156,14 +156,16 @@ export default function HomePage() {
       </div>
 
       {/* Left Column - Static */}
-      <div className="relative z-10 max-w-2xl space-y-10 p-8 pb-21 text-left">
-        <div className="mb-0 -ml-4 flex items-end justify-start">
+      <div className="relative z-10 flex max-w-2xl flex-col gap-6 p-8 pb-21 text-left">
+        <div className="-mb-4 -ml-4 flex items-end justify-start">
           <HypercubeCanvas cubeWidth={cubeWidth} />
         </div>
-        <h1 className="mb-3 text-6xl font-bold tracking-tight">ToolUI</h1>
-        <h2 className="text-2xl tracking-tight">
-          Open source AI tool call components for chat
-        </h2>
+        <div className="flex flex-col gap-2">
+          <h1 className="text-6xl font-bold tracking-tight">ToolUI</h1>
+          <h2 className="text-2xl tracking-tight">
+            UI widgets for AI tool calls
+          </h2>
+        </div>
         <p className="text-muted-foreground text-lg">
           Responsive, accessible, themeable, data-driven. <br />
           Built with React, TypeScript, and Tailwind. <br />
@@ -172,7 +174,7 @@ export default function HomePage() {
         <div className="flex justify-start gap-4">
           <Link
             href="/playground"
-            className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-md px-6 py-3 font-medium transition-colors"
+            className="bg-primary text-primary-foreground rounded-md px-6 py-3 font-medium"
           >
             Go to Playground
           </Link>
@@ -214,7 +216,7 @@ const ResizableChat = memo(function ResizableChat({
       <Panel defaultSize={defaultLayout[0]} minSize={0} />
 
       {/* Left resize handle */}
-      <PanelResizeHandle className="group relative w-4 transition-colors">
+      <PanelResizeHandle className="group relative w-4">
         <div className="absolute top-1/2 left-1/2 h-12 w-1 -translate-x-1/2 -translate-y-1/2 rounded-full bg-gray-300 opacity-40 transition-all group-hover:bg-gray-400 group-hover:opacity-100 group-data-resize-handle-active:bg-gray-500 group-data-resize-handle-active:opacity-100 dark:bg-gray-600 dark:group-hover:bg-gray-500 dark:group-data-resize-handle-active:bg-gray-400" />
       </PanelResizeHandle>
 
@@ -224,7 +226,7 @@ const ResizableChat = memo(function ResizableChat({
         minSize={CHAT_MIN_SIZE}
         maxSize={CHAT_MAX_SIZE}
         style={{ overflow: "visible" }}
-        className="flex justify-center"
+        className="relative flex justify-center"
       >
         <div className="bg-background pointer-events-auto flex h-full w-full rounded-4xl border shadow-lg transition-all">
           <DemoChat />
@@ -232,8 +234,8 @@ const ResizableChat = memo(function ResizableChat({
       </Panel>
 
       {/* Right resize handle */}
-      <PanelResizeHandle className="group relative w-4 transition-colors">
-        <div className="absolute top-1/2 left-1/2 h-12 w-1 -translate-x-1/2 -translate-y-1/2 rounded-full bg-gray-300 transition-colors group-hover:bg-gray-400 group-data-resize-handle-active:bg-gray-500 dark:bg-gray-600 dark:group-hover:bg-gray-500 dark:group-data-resize-handle-active:bg-gray-400" />
+      <PanelResizeHandle className="group relative w-4">
+        <div className="absolute top-1/2 left-1/2 h-12 w-1 -translate-x-1/2 -translate-y-1/2 rounded-full bg-gray-300 group-hover:bg-gray-400 group-data-resize-handle-active:bg-gray-500 dark:bg-gray-600 dark:group-hover:bg-gray-500 dark:group-data-resize-handle-active:bg-gray-400" />
       </PanelResizeHandle>
 
       {/* Right spacing */}

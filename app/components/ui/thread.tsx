@@ -59,11 +59,6 @@ export const Thread: FC = () => {
         />
       </ThreadPrimitive.Viewport>
 
-      {/* Scroll to Bottom Button */}
-      <ThreadPrimitive.ScrollToBottom className="bg-background hover:bg-muted absolute right-4 bottom-20 rounded-full border p-2 shadow-md">
-        ↓
-      </ThreadPrimitive.ScrollToBottom>
-
       {/* Composer */}
       <ComposerPrimitive.Root className="bg-muted relative mx-4 mb-4 flex items-center rounded-full border px-4 py-2 shadow-sm">
         <ComposerPrimitive.Input
