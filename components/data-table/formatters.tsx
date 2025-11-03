@@ -57,7 +57,7 @@ function DeltaValue({ value, options }: DeltaValueProps) {
 
   // Token-based coloring (shadcn tokens)
   const colorClass = isGood
-    ? "text-accent-foreground"
+    ? "text-success-foreground"
     : isBad
       ? "text-destructive-foreground"
       : "text-muted-foreground";
@@ -123,7 +123,7 @@ function CurrencyValue({ value, options }: CurrencyValueProps) {
     maximumFractionDigits: decimals,
   }).format(value);
 
-  return <span className="tabular-nums">{formatted}</span>;
+  return <span className="font-mono tabular-nums">{formatted}</span>;
 }
 
 interface PercentValueProps {
@@ -145,7 +145,7 @@ function PercentValue({ value, options }: PercentValueProps) {
         ? `-${absFormatted}`
         : absFormatted;
 
-  return <span className="tabular-nums">{signed}%</span>;
+  return <span className="font-mono tabular-nums">{signed}%</span>;
 }
 
 interface DateValueProps {
@@ -304,7 +304,7 @@ function NumberValue({ value, options }: NumberValueProps) {
   const display = showSign && value > 0 ? `+${formatted}` : formatted;
 
   return (
-    <span className="tabular-nums">
+    <span className="font-mono tabular-nums">
       {display}
       {unit}
     </span>
@@ -393,64 +393,23 @@ export function renderFormattedValue(
 
   switch (fmt?.kind) {
     case "delta":
-      return (
-        <DeltaValue
-          value={Number(value)}
-          options={fmt}
-        />
-      );
+      return <DeltaValue value={Number(value)} options={fmt} />;
     case "status":
-      return (
-        <StatusBadge
-          value={String(value)}
-          options={fmt}
-        />
-      );
+      return <StatusBadge value={String(value)} options={fmt} />;
     case "currency":
-      return (
-        <CurrencyValue
-          value={Number(value)}
-          options={fmt}
-        />
-      );
+      return <CurrencyValue value={Number(value)} options={fmt} />;
     case "percent":
-      return (
-        <PercentValue
-          value={Number(value)}
-          options={fmt}
-        />
-      );
+      return <PercentValue value={Number(value)} options={fmt} />;
     case "date":
       return <DateValue value={String(value)} options={fmt} />;
     case "boolean":
-      return (
-        <BooleanValue
-          value={Boolean(value)}
-          options={fmt}
-        />
-      );
+      return <BooleanValue value={Boolean(value)} options={fmt} />;
     case "link":
-      return (
-        <LinkValue
-          value={String(value)}
-          options={fmt}
-          row={row}
-        />
-      );
+      return <LinkValue value={String(value)} options={fmt} row={row} />;
     case "number":
-      return (
-        <NumberValue
-          value={Number(value)}
-          options={fmt}
-        />
-      );
+      return <NumberValue value={Number(value)} options={fmt} />;
     case "badge":
-      return (
-        <BadgeValue
-          value={String(value)}
-          options={fmt}
-        />
-      );
+      return <BadgeValue value={String(value)} options={fmt} />;
     case "array":
       return (
         <ArrayValue
