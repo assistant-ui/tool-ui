@@ -33,6 +33,9 @@ const CHAT_LAYOUTS: Record<ViewportSize, [number, number, number]> = {
 
 export default function HomePage() {
   const [viewport, setViewport] = useState<ViewportSize>("desktop");
+  const [chatPanelSize, setChatPanelSize] = useState<number>(
+    CHAT_LAYOUTS.desktop[1],
+  );
   const panelGroupRef = useRef<ImperativePanelGroupHandle | null>(null);
   const isSyncingLayout = useRef(false);
   const defaultLayout = CHAT_LAYOUTS.desktop;
@@ -87,6 +90,7 @@ export default function HomePage() {
         panelGroupRef.current.setLayout([spacing, clampedChat, spacing]);
       }
 
+      setChatPanelSize(clampedChat);
       updateViewportFromChatSize(clampedChat);
     },
     [updateViewportFromChatSize],
@@ -96,12 +100,18 @@ export default function HomePage() {
     setViewport(nextViewport);
 
     const layout = CHAT_LAYOUTS[nextViewport];
+    setChatPanelSize(layout[1]);
 
     if (panelGroupRef.current) {
       isSyncingLayout.current = true;
       panelGroupRef.current.setLayout(layout);
     }
   };
+
+  // Map chat panel size (50-100) to cube width (2.0-4.0)
+  const cubeWidth =
+    2.0 +
+    ((chatPanelSize - CHAT_MIN_SIZE) / (CHAT_MAX_SIZE - CHAT_MIN_SIZE)) * 2.0;
 
   return (
     <main className="relative flex min-h-screen flex-row items-end justify-center">
@@ -147,8 +157,8 @@ export default function HomePage() {
 
       {/* Left Column - Static */}
       <div className="relative z-10 max-w-2xl space-y-10 p-8 pb-21 text-left">
-        <div className="-ml-8 flex items-end justify-start">
-          <HypercubeCanvas />
+        <div className="mb-0 -ml-4 flex items-end justify-start">
+          <HypercubeCanvas cubeWidth={cubeWidth} />
         </div>
         <h1 className="mb-3 text-6xl font-bold tracking-tight">ToolUI</h1>
         <h2 className="text-2xl tracking-tight">
