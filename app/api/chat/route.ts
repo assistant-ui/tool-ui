@@ -8,7 +8,6 @@ export const runtime = "edge";
 
 export async function POST(req: Request) {
   try {
-    // Check API key configuration
     if (!process.env.OPENAI_API_KEY) {
       return new Response(
         JSON.stringify({
@@ -21,7 +20,6 @@ export async function POST(req: Request) {
       );
     }
 
-    // Rate limiting - get IP address from headers
     const ip =
       req.headers.get("x-forwarded-for")?.split(",")[0] ||
       req.headers.get("x-real-ip") ||
@@ -47,7 +45,6 @@ export async function POST(req: Request) {
       );
     }
 
-    // Parse request body
     const { messages } = await req.json();
 
     if (!messages || !Array.isArray(messages)) {
@@ -60,10 +57,8 @@ export async function POST(req: Request) {
       );
     }
 
-    // Convert UIMessage[] to ModelMessage[]
     const modelMessages = convertToModelMessages(messages);
 
-    // Stream response from OpenAI
     const result = streamText({
       model: openai("gpt-4o"),
       messages: modelMessages,
@@ -84,7 +79,6 @@ Be concise and helpful in your responses.`,
               ),
           }),
           execute: async ({ query }) => {
-            // Parse query to extract symbols if mentioned
             const upperQuery = query.toUpperCase();
             const commonSymbols = [
               "AAPL",
@@ -100,7 +94,6 @@ Be concise and helpful in your responses.`,
               upperQuery.includes(symbol)
             );
 
-            // Determine if asking for tech stocks specifically
             const isTechQuery =
               upperQuery.includes("TECH") ||
               upperQuery.includes("TECHNOLOGY") ||

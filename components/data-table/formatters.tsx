@@ -178,7 +178,15 @@ function DateValue({ value, options }: DateValueProps) {
     }).format(date);
   }
 
-  return <span>{formatted}</span>;
+  const title = new Intl.DateTimeFormat("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  }).format(date);
+
+  return <span title={title}>{formatted}</span>;
 }
 
 function getRelativeTime(date: Date): string {
@@ -280,24 +288,11 @@ function NumberValue({ value, options }: NumberValueProps) {
   const compact = options?.compact ?? false;
   const showSign = options?.showSign ?? false;
 
-  let formatted: string;
-
-  if (compact && Math.abs(value) >= 1000) {
-    // Compact notation: 1.2K, 3.4M, etc.
-    const absValue = Math.abs(value);
-    if (absValue >= 1_000_000_000) {
-      formatted = (value / 1_000_000_000).toFixed(1) + "B";
-    } else if (absValue >= 1_000_000) {
-      formatted = (value / 1_000_000).toFixed(1) + "M";
-    } else {
-      formatted = (value / 1_000).toFixed(1) + "K";
-    }
-  } else {
-    formatted = new Intl.NumberFormat("en-US", {
-      minimumFractionDigits: decimals,
-      maximumFractionDigits: decimals,
-    }).format(value);
-  }
+  const formatted = new Intl.NumberFormat("en-US", {
+    minimumFractionDigits: decimals,
+    maximumFractionDigits: decimals,
+    notation: compact ? "compact" : "standard",
+  }).format(value);
 
   const display = showSign && value > 0 ? `+${formatted}` : formatted;
 

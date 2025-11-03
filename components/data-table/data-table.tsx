@@ -63,6 +63,7 @@ interface DataTableContextValue {
   onSort?: (key: string) => void;
   onAction?: DataTableProps["onAction"];
   messageId?: string;
+  isLoading?: boolean;
 }
 
 const DataTableContext = React.createContext<DataTableContextValue | undefined>(
@@ -150,6 +151,7 @@ export function DataTable({
     onSort: handleSort,
     onAction,
     messageId,
+    isLoading,
   };
 
   return (

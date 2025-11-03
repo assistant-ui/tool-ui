@@ -44,13 +44,14 @@ interface DataTableHeadProps {
 }
 
 export function DataTableHead({ column }: DataTableHeadProps) {
-  const { sortBy, sortDirection, onSort } = useDataTable();
+  const { sortBy, sortDirection, onSort, isLoading } = useDataTable();
   const isSortable = column.sortable !== false;
   const isSorted = sortBy === column.key;
   const direction = isSorted ? sortDirection : undefined;
+  const isDisabled = isLoading || !isSortable;
 
   const handleClick = () => {
-    if (isSortable && onSort) {
+    if (!isDisabled && onSort) {
       onSort(column.key);
     }
   };
@@ -71,8 +72,9 @@ export function DataTableHead({ column }: DataTableHeadProps) {
         "py-3 @md:py-3",
         "max-w-[150px]",
         alignClass,
-        isSortable &&
+        !isDisabled &&
           "hover:text-foreground active:bg-muted/50 cursor-pointer select-none",
+        isDisabled && "opacity-60 cursor-not-allowed",
       )}
       style={column.width ? { width: column.width } : undefined}
       onClick={handleClick}
@@ -83,6 +85,7 @@ export function DataTableHead({ column }: DataTableHeadProps) {
             : "descending"
           : undefined
       }
+      aria-disabled={isDisabled || undefined}
     >
       <div
         className={cn(

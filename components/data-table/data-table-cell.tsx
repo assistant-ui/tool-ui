@@ -36,7 +36,7 @@ export function DataTableCell({
       className={cn(
         "px-4 py-3 text-sm",
         alignClass,
-        "max-w-[200px]",
+        "max-w-[200px] truncate",
         className,
       )}
     >

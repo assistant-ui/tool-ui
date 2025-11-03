@@ -23,29 +23,26 @@ export const GetStocksUI = makeAssistantToolUI<
 >({
   toolName: "get_stocks",
   render: ({ result, status }) => {
-    // Show loading state while tool is executing
     if (status.type === "running") {
       return (
         <div className="rounded-lg border p-4">
-          <p className="text-sm text-muted-foreground">
+          <p className="text-muted-foreground text-sm">
             Fetching stock data...
           </p>
         </div>
       );
     }
 
-    // Show error state if tool execution failed
     if (status.type === "incomplete") {
       return (
-        <div className="rounded-lg border border-destructive/50 bg-destructive/10 p-4">
-          <p className="text-sm text-destructive">
+        <div className="border-destructive/50 bg-destructive/10 rounded-lg border p-4">
+          <p className="text-destructive text-sm">
             Failed to fetch stock data. Please try again.
           </p>
         </div>
       );
     }
 
-    // Tool completed successfully - render data
     if (!result) {
       return null;
     }
@@ -55,40 +52,39 @@ export const GetStocksUI = makeAssistantToolUI<
     if (count === 0) {
       return (
         <div className="rounded-lg border p-4">
-          <p className="text-sm text-muted-foreground">
+          <p className="text-muted-foreground text-sm">
             No stocks found matching your criteria.
           </p>
         </div>
       );
     }
 
-    // Define DataTable columns with mobile priorities
     const columns: Column[] = [
       {
         key: "symbol",
         label: "Symbol",
         sortable: true,
-        priority: "primary", // Always visible on mobile
+        priority: "primary",
       },
       {
         key: "name",
         label: "Company",
         sortable: true,
-        priority: "primary", // Always visible on mobile
+        priority: "primary",
       },
       {
         key: "price",
         label: "Price",
         sortable: true,
         align: "right",
-        priority: "primary", // Always visible on mobile
+        priority: "primary",
       },
       {
         key: "change",
         label: "Change",
         sortable: true,
         align: "right",
-        priority: "secondary", // Shown when accordion expanded
+        priority: "secondary",
       },
       {
         key: "changePercent",
@@ -96,7 +92,7 @@ export const GetStocksUI = makeAssistantToolUI<
         abbr: "Change %",
         sortable: true,
         align: "right",
-        priority: "secondary", // Shown when accordion expanded
+        priority: "secondary",
       },
       {
         key: "volume",
@@ -104,7 +100,7 @@ export const GetStocksUI = makeAssistantToolUI<
         abbr: "Vol",
         sortable: true,
         align: "right",
-        priority: "secondary", // Shown when accordion expanded
+        priority: "secondary",
       },
       {
         key: "marketCap",
@@ -112,7 +108,7 @@ export const GetStocksUI = makeAssistantToolUI<
         abbr: "Mkt Cap",
         sortable: true,
         align: "right",
-        priority: "secondary", // Shown when accordion expanded
+        priority: "secondary",
       },
       {
         key: "pe",
@@ -120,7 +116,7 @@ export const GetStocksUI = makeAssistantToolUI<
         abbr: "P/E",
         sortable: true,
         align: "right",
-        priority: "tertiary", // Hidden on mobile
+        priority: "tertiary",
       },
       {
         key: "eps",
@@ -128,17 +124,22 @@ export const GetStocksUI = makeAssistantToolUI<
         abbr: "EPS",
         sortable: true,
         align: "right",
-        priority: "tertiary", // Hidden on mobile
+        priority: "tertiary",
       },
     ];
 
-    // Format stock data for display
     const formattedRows = stocks.map((stock: Stock) => ({
       symbol: stock.symbol,
       name: stock.name,
       price: `$${stock.price.toFixed(2)}`,
-      change: stock.change >= 0 ? `+$${stock.change.toFixed(2)}` : `-$${Math.abs(stock.change).toFixed(2)}`,
-      changePercent: stock.changePercent >= 0 ? `+${stock.changePercent.toFixed(2)}%` : `${stock.changePercent.toFixed(2)}%`,
+      change:
+        stock.change >= 0
+          ? `+$${stock.change.toFixed(2)}`
+          : `-$${Math.abs(stock.change).toFixed(2)}`,
+      changePercent:
+        stock.changePercent >= 0
+          ? `+${stock.changePercent.toFixed(2)}%`
+          : `${stock.changePercent.toFixed(2)}%`,
       volume: stock.volume.toLocaleString(),
       marketCap: `$${(stock.marketCap / 1_000_000_000).toFixed(1)}B`,
       pe: stock.pe?.toFixed(1) ?? "—",
@@ -147,7 +148,7 @@ export const GetStocksUI = makeAssistantToolUI<
 
     return (
       <div className="space-y-2">
-        <div className="text-sm text-muted-foreground">
+        <div className="text-muted-foreground text-sm">
           Showing {count} {count === 1 ? "stock" : "stocks"}
         </div>
         <DataTable columns={columns} data={formattedRows} />

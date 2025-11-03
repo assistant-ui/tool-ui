@@ -294,6 +294,7 @@ Wide tables on desktop show gradient shadows when scrollable:
 All interactive elements are automatically optimized for touch:
 
 - **Sortable headers**: Enhanced tap area
+  - Sorting is disabled while loading
 - **Action buttons**: 44px minimum height on mobile
 - **Accordion triggers**: Large touch target
 - **Active states**: Visual feedback on tap
