@@ -6,8 +6,28 @@ import { sortData } from "./utilities";
 import { useScrollShadow } from "./use-scroll-shadow";
 import type { FormatConfig } from "./formatters";
 
-export interface Column {
-  key: string;
+export type RowPrimitive = string | number | boolean | null | Date | string[];
+export type DataTableRowData = Record<string, RowPrimitive>;
+export type RowData = Record<string, unknown>;
+export type ColumnKey<T extends object> = Extract<keyof T, string>;
+
+type FormatFor<V> = V extends number
+  ? Extract<FormatConfig, { kind: "number" | "currency" | "percent" | "delta" }>
+  : V extends boolean
+    ? Extract<FormatConfig, { kind: "boolean" | "status" | "badge" }>
+    : V extends Date
+      ? Extract<FormatConfig, { kind: "date" }>
+      : V extends string[]
+        ? Extract<FormatConfig, { kind: "array" }>
+        : V extends string
+          ? Extract<FormatConfig, { kind: "text" | "link" | "date" | "badge" | "status" }>
+          : Extract<FormatConfig, { kind: "text" }>;
+
+export interface Column<
+  T extends object = RowData,
+  K extends ColumnKey<T> = ColumnKey<T>,
+> {
+  key: K;
   label: string;
   abbr?: string;
   sortable?: boolean;
@@ -15,7 +35,7 @@ export interface Column {
   width?: string;
   priority?: "primary" | "secondary" | "tertiary";
   hideOnMobile?: boolean;
-  format?: FormatConfig;
+  format?: FormatFor<T[K]>;
 }
 
 export interface Action {
@@ -25,17 +45,12 @@ export interface Action {
   requiresConfirmation?: boolean;
 }
 
-export type DataTableRowData = Record<
-  string,
-  string | number | boolean | null | Date | string[]
->;
-
-export interface DataTableProps {
-  columns: Column[];
-  data: DataTableRowData[];
+export interface DataTableProps<T extends object = RowData> {
+  columns: Column<T>[];
+  data: T[];
   actions?: Action[];
-  rowIdKey?: string;
-  sortBy?: string;
+  rowIdKey?: ColumnKey<T>;
+  sortBy?: ColumnKey<T>;
   sortDirection?: "asc" | "desc";
   emptyMessage?: string;
   isLoading?: boolean;
@@ -43,25 +58,25 @@ export interface DataTableProps {
   messageId?: string;
   onAction?: (
     actionId: string,
-    row: DataTableRowData,
+    row: T,
     context?: {
       messageId?: string;
       sendMessage?: (message: string) => void;
     },
   ) => void;
-  onSort?: (columnKey?: string, direction?: "asc" | "desc") => void;
+  onSort?: (columnKey?: ColumnKey<T>, direction?: "asc" | "desc") => void;
   className?: string;
 }
 
-interface DataTableContextValue {
-  columns: Column[];
-  data: DataTableRowData[];
+interface DataTableContextValue<T extends object = RowData> {
+  columns: Column<T>[];
+  data: T[];
   actions?: Action[];
-  rowIdKey?: string;
-  sortBy?: string;
+  rowIdKey?: ColumnKey<T>;
+  sortBy?: ColumnKey<T>;
   sortDirection?: "asc" | "desc";
-  onSort?: (key: string) => void;
-  onAction?: DataTableProps["onAction"];
+  onSort?: (key: ColumnKey<T>) => void;
+  onAction?: DataTableProps<T>["onAction"];
   messageId?: string;
   isLoading?: boolean;
 }
@@ -70,15 +85,17 @@ const DataTableContext = React.createContext<DataTableContextValue | undefined>(
   undefined,
 );
 
-export function useDataTable() {
-  const context = React.useContext(DataTableContext);
+export function useDataTable<T extends object = RowData>() {
+  const context = React.useContext(DataTableContext) as
+    | DataTableContextValue<T>
+    | undefined;
   if (!context) {
     throw new Error("useDataTable must be used within a DataTable");
   }
   return context;
 }
 
-export function DataTable({
+export function DataTable<T extends object = RowData>({
   columns,
   data: rawData,
   actions,
@@ -92,9 +109,9 @@ export function DataTable({
   onAction,
   onSort,
   className,
-}: DataTableProps) {
+}: DataTableProps<T>) {
   const [internalSortBy, setInternalSortBy] = React.useState<
-    string | undefined
+    ColumnKey<T> | undefined
   >(controlledSortBy);
   const [internalSortDirection, setInternalSortDirection] = React.useState<
     "asc" | "desc" | undefined
@@ -109,7 +126,7 @@ export function DataTable({
   }, [rawData, sortBy, sortDirection]);
 
   const handleSort = React.useCallback(
-    (key: string) => {
+    (key: ColumnKey<T>) => {
       let newDirection: "asc" | "desc" | undefined;
 
       if (sortBy === key) {
@@ -141,7 +158,7 @@ export function DataTable({
   const scrollContainerRef = React.useRef<HTMLDivElement>(null);
   const scrollShadow = useScrollShadow(scrollContainerRef);
 
-  const contextValue: DataTableContextValue = {
+  const contextValue: DataTableContextValue<T> = {
     columns,
     data,
     actions,
@@ -155,7 +172,7 @@ export function DataTable({
   };
 
   return (
-    <DataTableContext.Provider value={contextValue}>
+    <DataTableContext.Provider value={contextValue as unknown as DataTableContextValue}>
       <div className={cn("@container w-full", className)}>
         <div className="hidden @md:block">
           <div className="relative">
@@ -211,7 +228,7 @@ export function DataTable({
               const keyVal = rowIdKey ? row[rowIdKey] : undefined;
               const rowKey = keyVal != null ? String(keyVal) : String(i);
               return (
-                <DataTableAccordionCard key={rowKey} row={row} index={i} />
+                <DataTableAccordionCard key={rowKey} row={row as unknown as DataTableRowData} index={i} />
               );
             })
           )}

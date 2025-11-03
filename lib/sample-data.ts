@@ -1,4 +1,4 @@
-import type { Column, Action } from "@/components/data-table";
+import type { Column, Action, RowPrimitive } from "@/components/data-table";
 
 export interface DataTableConfig {
   columns: Column[];
@@ -9,10 +9,10 @@ export interface DataTableConfig {
 
 export const sampleStocks: DataTableConfig = {
   columns: [
-    { key: "symbol", label: "Symbol" },
-    { key: "price", label: "Price", align: "right", format: { kind: "currency", currency: "USD", decimals: 2 } },
-    { key: "change", label: "Change %", align: "right", format: { kind: "percent", decimals: 2, showSign: true, basis: "unit" } },
-    { key: "volume", label: "Volume", align: "right", format: { kind: "number", compact: true } },
+    { key: "symbol", label: "Symbol" } as Column<Record<string, RowPrimitive>>, 
+    { key: "price", label: "Price", align: "right", format: { kind: "currency", currency: "USD", decimals: 2 } } as Column<Record<string, RowPrimitive>>,
+    { key: "change", label: "Change %", align: "right", format: { kind: "percent", decimals: 2, showSign: true, basis: "unit" } } as Column<Record<string, RowPrimitive>>,
+    { key: "volume", label: "Volume", align: "right", format: { kind: "number", compact: true } } as Column<Record<string, RowPrimitive>>,
   ],
   data: [
     { symbol: "AAPL", price: 178.25, change: 2.3, volume: 52431200 },
@@ -31,10 +31,10 @@ export const sampleStocks: DataTableConfig = {
 
 export const sampleProducts: DataTableConfig = {
   columns: [
-    { key: "name", label: "Product" },
-    { key: "category", label: "Category", format: { kind: "badge", colorMap: { Tools: "info", Electronics: "warning", Accessories: "neutral" } } },
-    { key: "price", label: "Price", align: "right", format: { kind: "currency", currency: "USD", decimals: 2 } },
-    { key: "stock", label: "In Stock", align: "right", format: { kind: "number", decimals: 0 } },
+    { key: "name", label: "Product" } as Column<Record<string, RowPrimitive>>,
+    { key: "category", label: "Category", format: { kind: "badge", colorMap: { Tools: "info", Electronics: "warning", Accessories: "neutral" } } } as Column<Record<string, RowPrimitive>>,
+    { key: "price", label: "Price", align: "right", format: { kind: "currency", currency: "USD", decimals: 2 } } as Column<Record<string, RowPrimitive>>,
+    { key: "stock", label: "In Stock", align: "right", format: { kind: "number", decimals: 0 } } as Column<Record<string, RowPrimitive>>,
   ],
   data: [
     { name: "Widget Pro", category: "Tools", price: 29.99, stock: 150 },
@@ -52,14 +52,14 @@ export const sampleProducts: DataTableConfig = {
 
 export const sampleBasic: DataTableConfig = {
   columns: [
-    { key: "id", label: "ID", align: "right" },
-    { key: "name", label: "Name" },
+    { key: "id", label: "ID", align: "right" } as Column<Record<string, RowPrimitive>>,
+    { key: "name", label: "Name" } as Column<Record<string, RowPrimitive>>,
     { key: "status", label: "Status", format: { kind: "status", statusMap: {
       Active: { tone: "success" },
       Pending: { tone: "warning" },
       Completed: { tone: "success" },
       Inactive: { tone: "neutral" },
-    } } },
+    } } } as Column<Record<string, RowPrimitive>>,
   ],
   data: [
     { id: 1, name: "Item One", status: "Active" },
@@ -80,11 +80,11 @@ export const sampleEmpty: DataTableConfig = {
 
 export const sampleLarge: DataTableConfig = {
   columns: [
-    { key: "id", label: "ID", align: "right" },
-    { key: "user", label: "User" },
-    { key: "email", label: "Email", format: { kind: "link" } },
-    { key: "role", label: "Role", format: { kind: "badge", colorMap: { Admin: "danger", Editor: "info", Viewer: "neutral" } } },
-    { key: "status", label: "Status", format: { kind: "status", statusMap: { Active: { tone: "success" }, Inactive: { tone: "neutral" } } } },
+    { key: "id", label: "ID", align: "right" } as Column<Record<string, RowPrimitive>>,
+    { key: "user", label: "User" } as Column<Record<string, RowPrimitive>>,
+    { key: "email", label: "Email", format: { kind: "link" } } as Column<Record<string, RowPrimitive>>,
+    { key: "role", label: "Role", format: { kind: "badge", colorMap: { Admin: "danger", Editor: "info", Viewer: "neutral" } } } as Column<Record<string, RowPrimitive>>,
+    { key: "status", label: "Status", format: { kind: "status", statusMap: { Active: { tone: "success" }, Inactive: { tone: "neutral" } } } } as Column<Record<string, RowPrimitive>>,
   ],
   data: Array.from({ length: 50 }, (_, i) => ({
     id: i + 1,

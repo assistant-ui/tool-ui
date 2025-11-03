@@ -5,12 +5,15 @@
 /**
  * Sort an array of objects by a key
  */
-export function sortData<
-  T extends Record<string, string | number | boolean | null | Date | string[]>,
->(data: T[], key: string, direction: "asc" | "desc"): T[] {
+export function sortData<T, K extends Extract<keyof T, string>>(
+  data: T[],
+  key: K,
+  direction: "asc" | "desc",
+): T[] {
+  const get = (obj: T, k: K): unknown => (obj as Record<string, unknown>)[k];
   return [...data].sort((a, b) => {
-    const aVal = a[key]
-    const bVal = b[key]
+    const aVal = get(a, key);
+    const bVal = get(b, key);
 
     // Handle nulls
     if (aVal == null && bVal == null) return 0

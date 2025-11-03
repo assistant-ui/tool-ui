@@ -59,7 +59,7 @@ export const GetStocksUI = makeAssistantToolUI<
       );
     }
 
-    const columns: Column[] = [
+    const columns: Column<Stock>[] = [
       {
         key: "symbol",
         label: "Symbol",
@@ -86,7 +86,12 @@ export const GetStocksUI = makeAssistantToolUI<
         sortable: true,
         align: "right",
         priority: "secondary",
-        format: { kind: "delta", decimals: 2, upIsPositive: true, showSign: true },
+        format: {
+          kind: "delta",
+          decimals: 2,
+          upIsPositive: true,
+          showSign: true,
+        },
       },
       {
         key: "changePercent",
@@ -138,7 +143,11 @@ export const GetStocksUI = makeAssistantToolUI<
         <div className="text-muted-foreground text-sm">
           Showing {count} {count === 1 ? "stock" : "stocks"}
         </div>
-        <DataTable columns={columns} data={stocks as any} rowIdKey="symbol" />
+        <DataTable<Stock>
+          columns={columns as Column<Stock>[]}
+          data={stocks}
+          rowIdKey="symbol"
+        />
       </div>
     );
   },

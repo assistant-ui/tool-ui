@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ChevronLeft, ChevronRight } from "lucide-react";
@@ -12,17 +12,31 @@ const STORAGE_KEY = "playground-nav-collapsed";
 
 export function ComponentNav() {
   const pathname = usePathname();
-  const [collapsed, setCollapsed] = useState(() => {
-    // Load collapsed state from localStorage on initial render
-    const stored = localStorage.getItem(STORAGE_KEY);
-    return stored ? stored === "true" : false;
-  });
+  const [collapsed, setCollapsed] = useState(false);
+
+  // Load collapsed state from localStorage after mount (client-only)
+  React.useEffect(() => {
+    try {
+      if (typeof window !== "undefined") {
+        const stored = window.localStorage.getItem(STORAGE_KEY);
+        if (stored != null) setCollapsed(stored === "true");
+      }
+    } catch {
+      // ignore read errors (e.g., storage disabled)
+    }
+  }, []);
 
   // Save collapsed state to localStorage
   const toggleCollapsed = () => {
     const newState = !collapsed;
     setCollapsed(newState);
-    localStorage.setItem(STORAGE_KEY, String(newState));
+    try {
+      if (typeof window !== "undefined") {
+        window.localStorage.setItem(STORAGE_KEY, String(newState));
+      }
+    } catch {
+      // ignore write errors
+    }
   };
 
   return (

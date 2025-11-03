@@ -3,10 +3,6 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
 
-// ============================================================================
-// Types
-// ============================================================================
-
 type Tone = "success" | "warning" | "danger" | "info" | "neutral";
 
 export type FormatConfig =
@@ -19,7 +15,12 @@ export type FormatConfig =
       showSign?: boolean;
     }
   | { kind: "currency"; currency: string; decimals?: number }
-  | { kind: "percent"; decimals?: number; showSign?: boolean; basis?: "fraction" | "unit" }
+  | {
+      kind: "percent";
+      decimals?: number;
+      showSign?: boolean;
+      basis?: "fraction" | "unit";
+    }
   | { kind: "date"; dateFormat?: "short" | "long" | "relative" }
   | {
       kind: "delta";
@@ -35,10 +36,6 @@ export type FormatConfig =
   | { kind: "link"; hrefKey?: string; external?: boolean }
   | { kind: "badge"; colorMap?: Record<string, Tone> }
   | { kind: "array"; maxVisible?: number };
-
-// ============================================================================
-// Formatter Components
-// ============================================================================
 
 interface DeltaValueProps {
   value: number;
@@ -141,7 +138,12 @@ function PercentValue({ value, options }: PercentValueProps) {
 
   const numeric = basis === "fraction" ? value * 100 : value;
   const absFormatted = Math.abs(numeric).toFixed(decimals);
-  const signed = numeric > 0 && showSign ? `+${absFormatted}` : numeric < 0 ? `-${absFormatted}` : absFormatted;
+  const signed =
+    numeric > 0 && showSign
+      ? `+${absFormatted}`
+      : numeric < 0
+        ? `-${absFormatted}`
+        : absFormatted;
 
   return <span className="tabular-nums">{signed}%</span>;
 }
@@ -252,7 +254,8 @@ interface LinkValueProps {
 }
 
 function LinkValue({ value, options, row }: LinkValueProps) {
-  const href = options?.hrefKey && row ? String(row[options.hrefKey] ?? "") : value;
+  const href =
+    options?.hrefKey && row ? String(row[options.hrefKey] ?? "") : value;
   const external = options?.external ?? false;
 
   if (!href) {
@@ -269,7 +272,10 @@ function LinkValue({ value, options, row }: LinkValueProps) {
     >
       {value}
       {external && (
-        <span className="ml-1 inline-block text-xs" aria-label="Opens in new tab">
+        <span
+          className="ml-1 inline-block text-xs"
+          aria-label="Opens in new tab"
+        >
           ↗
         </span>
       )}
@@ -375,64 +381,67 @@ function ArrayValue({ value, options }: ArrayValueProps) {
 
 export function renderFormattedValue(
   value: string | number | boolean | null | Date | string[],
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  column: { format?: any },
+  column: { format?: FormatConfig },
   row?: Record<string, string | number | boolean | null | Date | string[]>,
 ): React.ReactNode {
   if (value == null || value === "") {
     return "—";
   }
 
-  const kind = column.format?.kind ?? "text";
+  const fmt = column.format;
 
-  switch (kind) {
+  switch (fmt?.kind) {
     case "delta":
       return (
         <DeltaValue
           value={Number(value)}
-          options={column.format as Extract<FormatConfig, { kind: "delta" }>}
+          options={fmt}
         />
       );
     case "status":
       return (
         <StatusBadge
           value={String(value)}
-          options={column.format as Extract<FormatConfig, { kind: "status" }>}
+          options={fmt}
         />
       );
     case "currency":
       return (
         <CurrencyValue
           value={Number(value)}
-          options={column.format as Extract<FormatConfig, { kind: "currency" }>}
+          options={fmt}
         />
       );
     case "percent":
       return (
         <PercentValue
           value={Number(value)}
-          options={column.format as Extract<FormatConfig, { kind: "percent" }>}
+          options={fmt}
         />
       );
     case "date":
       return (
         <DateValue
-          value={value instanceof Date || typeof value === "string" ? value : String(value)}
-          options={column.format as Extract<FormatConfig, { kind: "date" }>}
+          value={
+            value instanceof Date || typeof value === "string"
+              ? value
+              : String(value)
+          }
+          options={fmt}
         />
       );
     case "boolean":
       return (
         <BooleanValue
           value={Boolean(value)}
-          options={column.format as Extract<FormatConfig, { kind: "boolean" }>}
+          options={fmt}
         />
       );
     case "link":
       return (
         <LinkValue
           value={String(value)}
-          options={column.format as Extract<FormatConfig, { kind: "link" }>}
+          options={fmt}
           row={row}
         />
       );
@@ -440,21 +449,21 @@ export function renderFormattedValue(
       return (
         <NumberValue
           value={Number(value)}
-          options={column.format as Extract<FormatConfig, { kind: "number" }>}
+          options={fmt}
         />
       );
     case "badge":
       return (
         <BadgeValue
           value={String(value)}
-          options={column.format as Extract<FormatConfig, { kind: "badge" }>}
+          options={fmt}
         />
       );
     case "array":
       return (
         <ArrayValue
           value={Array.isArray(value) ? value : String(value)}
-          options={column.format as Extract<FormatConfig, { kind: "array" }>}
+          options={fmt}
         />
       );
     case "text":

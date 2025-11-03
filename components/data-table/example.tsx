@@ -1,13 +1,23 @@
 "use client";
 
 import { useState } from "react";
-import { DataTable, type Column } from "./index";
+import { DataTable, type Column, type RowPrimitive } from "./index";
 
 // ============================================================================
 // Stock Example - Demonstrates: currency, delta, percent
 // ============================================================================
 
-const stockColumns: Column[] = [
+type StockRow = {
+  symbol: string;
+  name: string;
+  price: number;
+  change: number;
+  changePercent: number;
+  volume: number;
+  marketCap: string | number;
+};
+
+const stockColumns: Column<StockRow>[] = [
   { key: "symbol", label: "Symbol", priority: "primary" as const },
   { key: "name", label: "Company", priority: "primary" as const },
   {
@@ -108,7 +118,16 @@ const stockData = [
 // Task Example - Demonstrates: status, date, boolean
 // ============================================================================
 
-const taskColumns: Column[] = [
+type TaskRow = {
+  title: string;
+  status: string;
+  priority: string;
+  assignee: string;
+  dueDate: string | Date;
+  isUrgent: boolean;
+};
+
+const taskColumns: Column<TaskRow>[] = [
   { key: "title", label: "Task", priority: "primary" as const },
   {
     key: "status",
@@ -204,7 +223,15 @@ const taskData = [
 // Metrics Example - Demonstrates: number with units, inverted delta
 // ============================================================================
 
-const metricsColumns: Column[] = [
+type MetricsRow = {
+  endpoint: string;
+  p95: number;
+  latencyDelta: number;
+  errorRate: number;
+  throughput: number;
+};
+
+const metricsColumns: Column<MetricsRow>[] = [
   { key: "endpoint", label: "Endpoint", priority: "primary" as const },
   {
     key: "p95",
@@ -276,7 +303,15 @@ const metricsData = [
 // Link Example - Demonstrates: link, badge, array
 // ============================================================================
 
-const resourceColumns: Column[] = [
+type ResourceRow = {
+  name: string;
+  category: string;
+  url: string;
+  tags: string[];
+  updatedAt: string | Date;
+};
+
+const resourceColumns: Column<ResourceRow>[] = [
   { key: "name", label: "Resource", priority: "primary" as const },
   {
     key: "category",
@@ -349,7 +384,7 @@ const resourceData = [
 
 export function DataTableExample() {
   const [isLoading, setIsLoading] = useState(false);
-  const [sortBy, setSortBy] = useState<string | undefined>();
+  const [sortBy, setSortBy] = useState<keyof StockRow | undefined>();
   const [sortDirection, setSortDirection] = useState<"asc" | "desc" | undefined>();
 
   return (
