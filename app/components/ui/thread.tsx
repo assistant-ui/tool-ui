@@ -68,7 +68,7 @@ export const Thread: FC = () => {
         />
         <ThreadPrimitive.If running={false}>
           <ComposerPrimitive.Send className="bg-primary text-primary-foreground hover:bg-primary/90 shrink-0 rounded-full p-2 disabled:opacity-50">
-            <ArrowUp className="h-6 w-6" />
+            <ArrowUp className="size-6" />
           </ComposerPrimitive.Send>
         </ThreadPrimitive.If>
         <ThreadPrimitive.If running>
