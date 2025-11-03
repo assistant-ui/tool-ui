@@ -130,6 +130,7 @@ interface Column {
   sortable?: boolean                  // Default: true
   align?: 'left' | 'right' | 'center' // Default: 'left'
   width?: string                      // Optional CSS width (e.g., "150px")
+  truncate?: boolean                  // Opt-in truncate cell content (default: false)
 
   // Mobile Responsiveness (NEW in v0.2.0)
   priority?: 'primary' | 'secondary' | 'tertiary'  // Mobile display priority
@@ -378,6 +379,15 @@ Notes:
 // Array of tags
 { key: 'tags', label: 'Tags', format: { kind: 'array', maxVisible: 2 } }
 ```
+
+### Sorting Rules
+
+Sorting is single-column and follows these rules:
+- Numeric-like strings (e.g., `"1,200"`, `" 900 "`) sort numerically, not lexically.
+- ISO-like date strings (`YYYY-MM-DD...`) sort by date.
+- Otherwise values sort case-insensitively as strings.
+
+Null/undefined values sort last. Arrays sort by length.
 
 ## Serialization
 

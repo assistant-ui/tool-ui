@@ -31,6 +31,7 @@ export interface Column<
   sortable?: boolean;
   align?: "left" | "right" | "center";
   width?: string;
+  truncate?: boolean;
   priority?: "primary" | "secondary" | "tertiary";
   hideOnMobile?: boolean;
   format?: FormatFor<T[K]>;

@@ -28,6 +28,7 @@ export const serializableColumnSchema = z.object({
   sortable: z.boolean().optional(),
   align: alignEnum.optional(),
   width: z.string().optional(),
+  truncate: z.boolean().optional(),
   priority: priorityEnum.optional(),
   hideOnMobile: z.boolean().optional(),
   format: formatSchema.optional(),
@@ -66,4 +67,3 @@ export function parseSerializableDataTable(
     actions: actions as Action[] | undefined,
   };
 }
-
