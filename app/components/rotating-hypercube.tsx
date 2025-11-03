@@ -1973,6 +1973,10 @@ function RotatingCube({
 
     const rotationState = rotationStateRef.current;
 
+    // Cap delta to prevent large jumps when page returns from background
+    // Max 100ms (0.1s) per frame to prevent accumulated rotations
+    const cappedDelta = Math.min(delta, 0.1);
+
     // If locked, use manual rotation
     if (locked) {
       const manualRotationRadY = THREE.MathUtils.degToRad(manualRotationY);
@@ -1986,7 +1990,7 @@ function RotatingCube({
 
     // If we're paused, wait
     if (rotationState.pauseTimer > 0) {
-      rotationState.pauseTimer -= delta;
+      rotationState.pauseTimer -= cappedDelta;
       return;
     }
 
@@ -2081,9 +2085,9 @@ function RotatingCube({
     const target = rotationState.targetRotation;
     const speed = rotationSpeed;
 
-    current.x = THREE.MathUtils.lerp(current.x, target.x, delta * speed);
-    current.y = THREE.MathUtils.lerp(current.y, target.y, delta * speed);
-    current.z = THREE.MathUtils.lerp(current.z, target.z, delta * speed);
+    current.x = THREE.MathUtils.lerp(current.x, target.x, cappedDelta * speed);
+    current.y = THREE.MathUtils.lerp(current.y, target.y, cappedDelta * speed);
+    current.z = THREE.MathUtils.lerp(current.z, target.z, cappedDelta * speed);
 
     // Check if we've reached the target (within a small threshold)
     const threshold = 0.01;

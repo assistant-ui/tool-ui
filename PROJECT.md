@@ -1,8 +1,8 @@
-# tool-ui-2 Project Documentation
+# tool-ui-playground Project Documentation
 
 ## Project Overview
 
-**tool-ui-2** is an open-source component library for rendering tool call widgets in TypeScript/React chat applications. The primary focus is on creating beautiful, accessible, production-ready components that display the results of LLM tool calls in chat interfaces.
+**tool-ui-playground** is an open-source component library for rendering tool call widgets in TypeScript/React chat applications. The primary focus is on creating beautiful, accessible, production-ready components that display the results of LLM tool calls in chat interfaces.
 
 ### Key Principles
 
@@ -85,7 +85,7 @@
 ## Project Structure
 
 ```
-tool-ui-2/
+tool-ui-playground/
 ├── app/                          # Next.js App Router
 │   ├── globals.css              # Tailwind + CSS variables
 │   ├── layout.tsx               # Root layout

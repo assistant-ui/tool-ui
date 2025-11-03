@@ -1,10 +1,10 @@
-# tool-ui-2
+# tool-ui-playground
 
 Open source component library for rendering tool call widgets in TypeScript/React chat applications.
 
 ## Overview
 
-tool-ui-2 provides a collection of beautifully designed, accessible components for displaying tool call results in AI chat applications. Built with React, TypeScript, and Tailwind CSS, these components are designed to work seamlessly with [assistant-ui](https://www.assistant-ui.com) and other chat frameworks.
+tool-ui-playground provides a collection of beautifully designed, accessible components for displaying tool call results in AI chat applications. Built with React, TypeScript, and Tailwind CSS, these components are designed to work seamlessly with [assistant-ui](https://www.assistant-ui.com) and other chat frameworks.
 
 ## Features
 
@@ -26,8 +26,8 @@ tool-ui-2 provides a collection of beautifully designed, accessible components f
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/tool-ui-2.git
-cd tool-ui-2
+git clone https://github.com/yourusername/tool-ui-playground.git
+cd tool-ui-playground
 
 # Install dependencies
 pnpm install
@@ -51,7 +51,7 @@ The interactive playground is available at [http://localhost:3000/playground](ht
 ## Project Structure
 
 ```
-tool-ui-2/
+tool-ui-playground/
 ├── app/                      # Next.js app directory
 │   ├── playground/          # Interactive playground
 │   └── ...
