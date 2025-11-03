@@ -78,6 +78,7 @@ export const GetStocksUI = makeAssistantToolUI<
         sortable: true,
         align: "right",
         priority: "primary",
+        format: { kind: "currency", currency: "USD", decimals: 2 },
       },
       {
         key: "change",
@@ -85,6 +86,7 @@ export const GetStocksUI = makeAssistantToolUI<
         sortable: true,
         align: "right",
         priority: "secondary",
+        format: { kind: "delta", decimals: 2, upIsPositive: true, showSign: true },
       },
       {
         key: "changePercent",
@@ -93,6 +95,7 @@ export const GetStocksUI = makeAssistantToolUI<
         sortable: true,
         align: "right",
         priority: "secondary",
+        format: { kind: "percent", decimals: 2, showSign: true, basis: "unit" },
       },
       {
         key: "volume",
@@ -101,6 +104,7 @@ export const GetStocksUI = makeAssistantToolUI<
         sortable: true,
         align: "right",
         priority: "secondary",
+        format: { kind: "number", compact: true },
       },
       {
         key: "marketCap",
@@ -109,6 +113,7 @@ export const GetStocksUI = makeAssistantToolUI<
         sortable: true,
         align: "right",
         priority: "secondary",
+        format: { kind: "number", compact: true },
       },
       {
         key: "pe",
@@ -128,30 +133,12 @@ export const GetStocksUI = makeAssistantToolUI<
       },
     ];
 
-    const formattedRows = stocks.map((stock: Stock) => ({
-      symbol: stock.symbol,
-      name: stock.name,
-      price: `$${stock.price.toFixed(2)}`,
-      change:
-        stock.change >= 0
-          ? `+$${stock.change.toFixed(2)}`
-          : `-$${Math.abs(stock.change).toFixed(2)}`,
-      changePercent:
-        stock.changePercent >= 0
-          ? `+${stock.changePercent.toFixed(2)}%`
-          : `${stock.changePercent.toFixed(2)}%`,
-      volume: stock.volume.toLocaleString(),
-      marketCap: `$${(stock.marketCap / 1_000_000_000).toFixed(1)}B`,
-      pe: stock.pe?.toFixed(1) ?? "—",
-      eps: stock.eps ? `$${stock.eps.toFixed(2)}` : "—",
-    }));
-
     return (
       <div className="space-y-2">
         <div className="text-muted-foreground text-sm">
           Showing {count} {count === 1 ? "stock" : "stocks"}
         </div>
-        <DataTable columns={columns} data={formattedRows} />
+        <DataTable columns={columns} data={stocks as any} rowIdKey="symbol" />
       </div>
     );
   },

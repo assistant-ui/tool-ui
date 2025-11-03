@@ -1,30 +1,18 @@
-export interface Column {
-  key: string;
-  label: string;
-  sortable?: boolean;
-  align?: "left" | "right" | "center";
-  width?: string;
-}
-
-export interface Action {
-  id: string;
-  label: string;
-  variant?: "default" | "secondary" | "ghost" | "destructive";
-  requiresConfirmation?: boolean;
-}
+import type { Column, Action } from "@/components/data-table";
 
 export interface DataTableConfig {
   columns: Column[];
   data: Record<string, string | number | boolean | null>[];
   actions?: Action[];
+  rowIdKey?: string;
 }
 
 export const sampleStocks: DataTableConfig = {
   columns: [
     { key: "symbol", label: "Symbol" },
-    { key: "price", label: "Price", align: "right" },
-    { key: "change", label: "Change %", align: "right" },
-    { key: "volume", label: "Volume", align: "right" },
+    { key: "price", label: "Price", align: "right", format: { kind: "currency", currency: "USD", decimals: 2 } },
+    { key: "change", label: "Change %", align: "right", format: { kind: "percent", decimals: 2, showSign: true, basis: "unit" } },
+    { key: "volume", label: "Volume", align: "right", format: { kind: "number", compact: true } },
   ],
   data: [
     { symbol: "AAPL", price: 178.25, change: 2.3, volume: 52431200 },
@@ -38,14 +26,15 @@ export const sampleStocks: DataTableConfig = {
     { id: "buy", label: "Buy", variant: "secondary" },
     { id: "sell", label: "Sell", variant: "destructive" },
   ],
+  rowIdKey: "symbol",
 };
 
 export const sampleProducts: DataTableConfig = {
   columns: [
     { key: "name", label: "Product" },
-    { key: "category", label: "Category" },
-    { key: "price", label: "Price", align: "right" },
-    { key: "stock", label: "In Stock", align: "right" },
+    { key: "category", label: "Category", format: { kind: "badge", colorMap: { Tools: "info", Electronics: "warning", Accessories: "neutral" } } },
+    { key: "price", label: "Price", align: "right", format: { kind: "currency", currency: "USD", decimals: 2 } },
+    { key: "stock", label: "In Stock", align: "right", format: { kind: "number", decimals: 0 } },
   ],
   data: [
     { name: "Widget Pro", category: "Tools", price: 29.99, stock: 150 },
@@ -58,19 +47,26 @@ export const sampleProducts: DataTableConfig = {
     { id: "edit", label: "Edit" },
     { id: "delete", label: "Delete", variant: "destructive" },
   ],
+  rowIdKey: "name",
 };
 
 export const sampleBasic: DataTableConfig = {
   columns: [
-    { key: "id", label: "ID" },
+    { key: "id", label: "ID", align: "right" },
     { key: "name", label: "Name" },
-    { key: "status", label: "Status" },
+    { key: "status", label: "Status", format: { kind: "status", statusMap: {
+      Active: { tone: "success" },
+      Pending: { tone: "warning" },
+      Completed: { tone: "success" },
+      Inactive: { tone: "neutral" },
+    } } },
   ],
   data: [
     { id: 1, name: "Item One", status: "Active" },
     { id: 2, name: "Item Two", status: "Pending" },
     { id: 3, name: "Item Three", status: "Completed" },
   ],
+  rowIdKey: "id",
 };
 
 export const sampleEmpty: DataTableConfig = {
@@ -84,16 +80,16 @@ export const sampleEmpty: DataTableConfig = {
 
 export const sampleLarge: DataTableConfig = {
   columns: [
-    { key: "id", label: "ID" },
+    { key: "id", label: "ID", align: "right" },
     { key: "user", label: "User" },
-    { key: "email", label: "Email" },
-    { key: "role", label: "Role" },
-    { key: "status", label: "Status" },
+    { key: "email", label: "Email", format: { kind: "link" } },
+    { key: "role", label: "Role", format: { kind: "badge", colorMap: { Admin: "danger", Editor: "info", Viewer: "neutral" } } },
+    { key: "status", label: "Status", format: { kind: "status", statusMap: { Active: { tone: "success" }, Inactive: { tone: "neutral" } } } },
   ],
   data: Array.from({ length: 50 }, (_, i) => ({
     id: i + 1,
     user: `User ${i + 1}`,
-    email: `user${i + 1}@example.com`,
+    email: `https://example.com/users/${i + 1}`,
     role: ["Admin", "Editor", "Viewer"][i % 3],
     status: ["Active", "Inactive"][i % 2],
   })),
@@ -101,6 +97,7 @@ export const sampleLarge: DataTableConfig = {
     { id: "edit", label: "Edit" },
     { id: "disable", label: "Disable", variant: "destructive" },
   ],
+  rowIdKey: "id",
 };
 
 export type PresetName =

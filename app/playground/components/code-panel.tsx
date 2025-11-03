@@ -39,6 +39,10 @@ export function CodePanel({
       );
     }
 
+    if (config.rowIdKey) {
+      props.push(`  rowIdKey="${config.rowIdKey}"`);
+    }
+
     if (sortBy) {
       props.push(`  sortBy="${sortBy}"`);
     }
