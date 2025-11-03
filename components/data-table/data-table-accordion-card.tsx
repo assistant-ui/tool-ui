@@ -1,7 +1,3 @@
-// @assistant-ui/widgets v0.1.0 - data-table
-// Last updated: 2025-10-31
-// License: Apache-2.0
-
 "use client";
 
 import * as React from "react";
@@ -21,30 +17,20 @@ interface DataTableAccordionCardProps {
   index: number;
 }
 
-/**
- * Categorize columns based on priority
- * - primary: Always visible in collapsed state
- * - secondary: Visible in expanded accordion
- * - tertiary: Hidden on mobile
- */
 function categorizeColumns(columns: Column[]) {
   const primary: Column[] = [];
   const secondary: Column[] = [];
 
   columns.forEach((col, index) => {
-    // Skip if explicitly hidden on mobile
     if (col.hideOnMobile) return;
 
-    // Use explicit priority if set
     if (col.priority === "primary") {
       primary.push(col);
     } else if (col.priority === "secondary") {
       secondary.push(col);
     } else if (col.priority === "tertiary") {
-      // Skip tertiary on mobile
       return;
     } else {
-      // Auto-assign: first 2-3 columns are primary, rest secondary
       if (index < 2) {
         primary.push(col);
       } else {

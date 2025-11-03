@@ -15,7 +15,7 @@ export interface Action {
 
 export interface DataTableConfig {
   columns: Column[];
-  rows: Record<string, string | number | boolean | null>[];
+  data: Record<string, string | number | boolean | null>[];
   actions?: Action[];
 }
 
@@ -26,7 +26,7 @@ export const sampleStocks: DataTableConfig = {
     { key: "change", label: "Change %", align: "right" },
     { key: "volume", label: "Volume", align: "right" },
   ],
-  rows: [
+  data: [
     { symbol: "AAPL", price: 178.25, change: 2.3, volume: 52431200 },
     { symbol: "GOOGL", price: 142.5, change: -0.8, volume: 28392100 },
     { symbol: "MSFT", price: 380.0, change: 1.2, volume: 31284500 },
@@ -47,7 +47,7 @@ export const sampleProducts: DataTableConfig = {
     { key: "price", label: "Price", align: "right" },
     { key: "stock", label: "In Stock", align: "right" },
   ],
-  rows: [
+  data: [
     { name: "Widget Pro", category: "Tools", price: 29.99, stock: 150 },
     { name: "Gadget Plus", category: "Electronics", price: 149.99, stock: 42 },
     { name: "Doohickey", category: "Accessories", price: 9.99, stock: 320 },
@@ -66,7 +66,7 @@ export const sampleBasic: DataTableConfig = {
     { key: "name", label: "Name" },
     { key: "status", label: "Status" },
   ],
-  rows: [
+  data: [
     { id: 1, name: "Item One", status: "Active" },
     { id: 2, name: "Item Two", status: "Pending" },
     { id: 3, name: "Item Three", status: "Completed" },
@@ -79,7 +79,7 @@ export const sampleEmpty: DataTableConfig = {
     { key: "name", label: "Name" },
     { key: "value", label: "Value" },
   ],
-  rows: [],
+  data: [],
 };
 
 export const sampleLarge: DataTableConfig = {
@@ -90,7 +90,7 @@ export const sampleLarge: DataTableConfig = {
     { key: "role", label: "Role" },
     { key: "status", label: "Status" },
   ],
-  rows: Array.from({ length: 50 }, (_, i) => ({
+  data: Array.from({ length: 50 }, (_, i) => ({
     id: i + 1,
     user: `User ${i + 1}`,
     email: `user${i + 1}@example.com`,

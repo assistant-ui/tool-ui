@@ -1,7 +1,3 @@
-// @assistant-ui/widgets v0.1.0 - data-table
-// Last updated: 2025-10-31
-// License: Apache-2.0
-
 "use client";
 
 import * as React from "react";
@@ -12,12 +8,12 @@ import { useScrollShadow } from "./use-scroll-shadow";
 export interface Column {
   key: string;
   label: string;
-  abbr?: string; // Optional abbreviation for header display
+  abbr?: string;
   sortable?: boolean;
   align?: "left" | "right" | "center";
   width?: string;
-  priority?: "primary" | "secondary" | "tertiary"; // For mobile responsive display
-  hideOnMobile?: boolean; // Simple override to hide column on mobile
+  priority?: "primary" | "secondary" | "tertiary";
+  hideOnMobile?: boolean;
 }
 
 export interface Action {
@@ -28,26 +24,15 @@ export interface Action {
 }
 
 export interface DataTableProps {
-  // Column definitions
   columns: Column[];
-
-  // Row data
-  rows: Array<Record<string, string | number | boolean | null>>;
-
-  // Optional actions per row
+  data: Array<Record<string, string | number | boolean | null>>;
   actions?: Action[];
-
-  // Optional configuration
   sortBy?: string;
   sortDirection?: "asc" | "desc";
   emptyMessage?: string;
   isLoading?: boolean;
   maxHeight?: string;
-
-  // Assistant-UI integration (future)
   messageId?: string;
-
-  // Event handlers
   onAction?: (
     actionId: string,
     row: Record<string, string | number | boolean | null>,
@@ -57,14 +42,12 @@ export interface DataTableProps {
     },
   ) => void;
   onSort?: (columnKey: string, direction: "asc" | "desc") => void;
-
-  // Styling
   className?: string;
 }
 
 interface DataTableContextValue {
   columns: Column[];
-  rows: Array<Record<string, string | number | boolean | null>>;
+  data: Array<Record<string, string | number | boolean | null>>;
   actions?: Action[];
   sortBy?: string;
   sortDirection?: "asc" | "desc";
@@ -87,7 +70,7 @@ export function useDataTable() {
 
 export function DataTable({
   columns,
-  rows: rawRows,
+  data: rawData,
   actions,
   sortBy: controlledSortBy,
   sortDirection: controlledSortDirection,
@@ -99,7 +82,6 @@ export function DataTable({
   onSort,
   className,
 }: DataTableProps) {
-  // Internal sort state (uncontrolled)
   const [internalSortBy, setInternalSortBy] = React.useState<
     string | undefined
   >(controlledSortBy);
@@ -107,23 +89,19 @@ export function DataTable({
     "asc" | "desc" | undefined
   >(controlledSortDirection);
 
-  // Use controlled or uncontrolled sort
   const sortBy = controlledSortBy ?? internalSortBy;
   const sortDirection = controlledSortDirection ?? internalSortDirection;
 
-  // Sort data
-  const rows = React.useMemo(() => {
-    if (!sortBy || !sortDirection) return rawRows;
-    return sortData(rawRows, sortBy, sortDirection);
-  }, [rawRows, sortBy, sortDirection]);
+  const data = React.useMemo(() => {
+    if (!sortBy || !sortDirection) return rawData;
+    return sortData(rawData, sortBy, sortDirection);
+  }, [rawData, sortBy, sortDirection]);
 
-  // Handle sort
   const handleSort = React.useCallback(
     (key: string) => {
       let newDirection: "asc" | "desc" | undefined;
 
       if (sortBy === key) {
-        // Cycle: asc -> desc -> none
         if (sortDirection === "asc") {
           newDirection = "desc";
         } else if (sortDirection === "desc") {
@@ -132,7 +110,6 @@ export function DataTable({
           newDirection = "asc";
         }
       } else {
-        // New column, start with asc
         newDirection = "asc";
       }
 
@@ -146,13 +123,12 @@ export function DataTable({
     [sortBy, sortDirection, onSort],
   );
 
-  // Scroll shadow detection for desktop table
   const scrollContainerRef = React.useRef<HTMLDivElement>(null);
   const scrollShadow = useScrollShadow(scrollContainerRef);
 
   const contextValue: DataTableContextValue = {
     columns,
-    rows,
+    data,
     actions,
     sortBy,
     sortDirection,
@@ -164,14 +140,13 @@ export function DataTable({
   return (
     <DataTableContext.Provider value={contextValue}>
       <div className={cn("@container w-full", className)}>
-        {/* Desktop: Table layout */}
         <div className="hidden @md:block">
           <div className="relative">
             <div
               ref={scrollContainerRef}
               className={cn(
                 "relative w-full overflow-auto rounded-md border",
-                "touch-pan-x", // Enable momentum scrolling on mobile
+                "touch-pan-x",
                 maxHeight && "max-h-[--max-height]",
               )}
               style={
@@ -183,11 +158,10 @@ export function DataTable({
               <table className="w-full border-collapse">
                 {isLoading ? (
                   <DataTableSkeleton />
-                ) : rows.length === 0 ? (
+                ) : data.length === 0 ? (
                   <DataTableEmpty message={emptyMessage} />
                 ) : (
                   <>
-                    {/* Header and body will be rendered by compound components */}
                     {React.Children.toArray(
                       React.Children.map(
                         React.createElement(DataTableContent, null),
@@ -199,7 +173,6 @@ export function DataTable({
               </table>
             </div>
 
-            {/* Scroll shadow affordances */}
             {scrollShadow.canScrollLeft && (
               <div className="from-background pointer-events-none absolute top-0 bottom-0 left-0 z-10 w-8 bg-linear-to-r to-transparent" />
             )}
@@ -209,16 +182,15 @@ export function DataTable({
           </div>
         </div>
 
-        {/* Mobile: Accordion card layout */}
         <div className="space-y-3 @md:hidden">
           {isLoading ? (
             <DataTableSkeletonCards />
-          ) : rows.length === 0 ? (
+          ) : data.length === 0 ? (
             <div className="text-muted-foreground py-8 text-center">
               {emptyMessage}
             </div>
           ) : (
-            rows.map((row, i) => (
+            data.map((row, i) => (
               <DataTableAccordionCard key={i} row={row} index={i} />
             ))
           )}
@@ -228,7 +200,6 @@ export function DataTable({
   );
 }
 
-// Default table content when using simple API
 function DataTableContent() {
   return (
     <>
@@ -238,7 +209,6 @@ function DataTableContent() {
   );
 }
 
-// Empty state component
 function DataTableEmpty({ message }: { message: string }) {
   const { columns, actions } = useDataTable();
 
@@ -259,7 +229,6 @@ function DataTableEmpty({ message }: { message: string }) {
   );
 }
 
-// Loading skeleton for table
 function DataTableSkeleton() {
   const { columns, actions } = useDataTable();
 
@@ -286,7 +255,6 @@ function DataTableSkeleton() {
   );
 }
 
-// Loading skeleton for cards
 function DataTableSkeletonCards() {
   return (
     <>
@@ -301,7 +269,6 @@ function DataTableSkeletonCards() {
   );
 }
 
-// Import compound components (defined in separate files)
 import { DataTableHeader } from "./data-table-header";
 import { DataTableBody } from "./data-table-body";
 import { DataTableAccordionCard } from "./data-table-accordion-card";

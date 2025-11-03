@@ -74,7 +74,7 @@ function MyComponent() {
         { key: 'price', label: 'Price', align: 'right' },
         { key: 'stock', label: 'Stock', align: 'right' },
       ]}
-      rows={[
+      data={[
         { name: 'Widget', price: 29.99, stock: 150 },
         { name: 'Gadget', price: 49.99, stock: 89 },
         { name: 'Doohickey', price: 19.99, stock: 0 },
@@ -91,7 +91,7 @@ function MyComponent() {
 | Prop | Type | Default | Description |
 |------|------|---------|-------------|
 | `columns` | `Column[]` | Required | Column definitions |
-| `rows` | `Record<string, any>[]` | Required | Row data |
+| `data` | `Record<string, any>[]` | Required | Row data |
 | `actions` | `Action[]` | `undefined` | Row action buttons |
 | `sortBy` | `string` | `undefined` | Initial/controlled sort column |
 | `sortDirection` | `'asc' \| 'desc'` | `undefined` | Initial/controlled sort direction |
@@ -145,7 +145,7 @@ const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>()
 
 <DataTable
   columns={columns}
-  rows={rows}
+  data={rows}
   sortBy={sortBy}
   sortDirection={sortDirection}
   onSort={(key, direction) => {
@@ -160,7 +160,7 @@ const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>()
 ```tsx
 <DataTable
   columns={columns}
-  rows={rows}
+  data={rows}
   actions={[
     { id: 'view', label: 'View', variant: 'secondary' },
     { id: 'edit', label: 'Edit' },
@@ -183,7 +183,7 @@ const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>()
 ```tsx
 <DataTable
   columns={columns}
-  rows={[]}
+  data={[]}
   isLoading={true}
 />
 ```
@@ -193,7 +193,7 @@ const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>()
 ```tsx
 <DataTable
   columns={columns}
-  rows={[]}
+  data={[]}
   emptyMessage="No products found. Try adjusting your filters."
 />
 ```
@@ -203,7 +203,7 @@ const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>()
 ```tsx
 <DataTable
   columns={columns}
-  rows={manyRows}
+  data={manyRows}
   maxHeight="400px"
 />
 ```
@@ -222,7 +222,7 @@ The DataTable automatically adapts to mobile devices with an accordion card layo
     { key: 'category', label: 'Category' },          // Auto: secondary (collapsed)
     { key: 'stock', label: 'Stock', align: 'right' }, // Auto: secondary (collapsed)
   ]}
-  rows={products}
+  data={products}
 />
 ```
 
@@ -249,7 +249,7 @@ For tables with many columns, explicitly set priorities:
     { key: 'pe', label: 'P/E Ratio', priority: 'tertiary', align: 'right' },
     { key: 'eps', label: 'EPS', priority: 'tertiary', align: 'right' },
   ]}
-  rows={stocks}
+  data={stocks}
 />
 ```
 
@@ -267,7 +267,7 @@ For tables with many columns, explicitly set priorities:
     { key: 'price', label: 'Price', align: 'right' },
     { key: 'internalId', label: 'ID', hideOnMobile: true }, // Hidden on mobile
   ]}
-  rows={products}
+  data={products}
 />
 ```
 
@@ -278,7 +278,7 @@ Wide tables on desktop show gradient shadows when scrollable:
 ```tsx
 <DataTable
   columns={manyColumns} // 10+ columns
-  rows={data}
+  data={data}
 />
 ```
 
@@ -404,7 +404,7 @@ import {
 
 function CustomTable() {
   return (
-    <DataTable columns={columns} rows={rows}>
+    <DataTable columns={columns} data={rows}>
       <CustomHeader />
       <CustomBody />
     </DataTable>

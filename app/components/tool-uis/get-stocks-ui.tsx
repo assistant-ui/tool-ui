@@ -150,10 +150,7 @@ export const GetStocksUI = makeAssistantToolUI<
         <div className="text-sm text-muted-foreground">
           Showing {count} {count === 1 ? "stock" : "stocks"}
         </div>
-        <DataTable
-          columns={columns}
-          rows={formattedRows}
-        />
+        <DataTable columns={columns} data={formattedRows} />
       </div>
     );
   },

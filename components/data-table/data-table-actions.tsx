@@ -1,49 +1,43 @@
-// @assistant-ui/widgets v0.1.0 - data-table
-// Last updated: 2025-10-31
-// License: Apache-2.0
+"use client";
 
-'use client'
-
-import * as React from 'react'
-import { MoreHorizontal } from 'lucide-react'
-import { Button } from '@/components/ui/button'
+import * as React from "react";
+import { MoreHorizontal } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
-import { useDataTable } from './data-table'
+} from "@/components/ui/dropdown-menu";
+import { useDataTable } from "./data-table";
 
 interface DataTableActionsProps {
-  row: Record<string, string | number | boolean | null>
+  row: Record<string, string | number | boolean | null>;
 }
 
 export function DataTableActions({ row }: DataTableActionsProps) {
-  const { actions, onAction, messageId } = useDataTable()
+  const { actions, onAction, messageId } = useDataTable();
 
-  if (!actions || !onAction) return null
+  if (!actions || !onAction) return null;
 
-  // 1-2 actions: inline buttons
   if (actions.length <= 2) {
     return (
       <div className="flex gap-2">
         {actions.map((action) => (
           <Button
             key={action.id}
-            variant={action.variant || 'default'}
+            variant={action.variant || "default"}
             size="sm"
             onClick={() => onAction(action.id, row, { messageId })}
-            className="min-h-[44px] @md:min-h-[36px]" // 44px on mobile, 36px on desktop
+            className="min-h-[44px] @md:min-h-[36px]"
           >
             {action.label}
           </Button>
         ))}
       </div>
-    )
+    );
   }
 
-  // 3+ actions: dropdown menu
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>

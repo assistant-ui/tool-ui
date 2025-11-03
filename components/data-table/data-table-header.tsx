@@ -1,7 +1,3 @@
-// @assistant-ui/widgets v0.1.0 - data-table
-// Last updated: 2025-10-31
-// License: Apache-2.0
-
 "use client";
 
 import * as React from "react";
@@ -65,7 +61,6 @@ export function DataTableHead({ column }: DataTableHeadProps) {
     center: "text-center",
   }[column.align || "left"];
 
-  // Determine display text (abbreviation or full label)
   const displayText = column.abbr || column.label;
   const shouldShowTooltip = column.abbr || displayText.length > 15;
 
@@ -73,8 +68,8 @@ export function DataTableHead({ column }: DataTableHeadProps) {
     <th
       className={cn(
         "text-muted-foreground px-4 text-sm font-medium",
-        "py-3 @md:py-3", // Larger touch target on mobile
-        "max-w-[150px]", // Constrain width for truncation
+        "py-3 @md:py-3",
+        "max-w-[150px]",
         alignClass,
         isSortable &&
           "hover:text-foreground active:bg-muted/50 cursor-pointer select-none",
@@ -91,7 +86,7 @@ export function DataTableHead({ column }: DataTableHeadProps) {
     >
       <div
         className={cn(
-          "inline-flex min-w-0 items-center gap-1", // min-w-0 allows flex child to shrink
+          "inline-flex min-w-0 items-center gap-1",
           column.align === "right" && "flex-row-reverse",
           column.align === "center" && "justify-center",
         )}

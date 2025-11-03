@@ -189,7 +189,7 @@ interface DataTableProps {
   }>;
   
   // Row data - array of objects where keys match column keys
-  rows: Array<Record<string, string | number | boolean | null>>;
+  data: Array<Record<string, string | number | boolean | null>>;
   
   // Optional actions per row
   actions?: Array<{
@@ -718,7 +718,7 @@ import { DataTable } from '@/components/data-table'
     { key: 'name', label: 'Product' },
     { key: 'price', label: 'Price', align: 'right' },
   ]}
-  rows={[
+  data={[
     { name: 'Widget', price: 29.99 },
     { name: 'Gadget', price: 49.99 },
   ]}
@@ -801,7 +801,7 @@ function ChatMessage({ message }) {
 | Prop | Type | Default | Description |
 |------|------|---------|-------------|
 | `columns` | `Column[]` | Required | Column definitions |
-| `rows` | `Record<string, any>[]` | Required | Row data |
+| `data` | `Record<string, any>[]` | Required | Row data |
 | `actions` | `Action[]` | `undefined` | Row actions |
 | `sortBy` | `string` | `undefined` | Initial sort column |
 | `sortDirection` | `'asc' \| 'desc'` | `undefined` | Initial sort direction |
@@ -867,7 +867,7 @@ const label = getActionLabel('View', { name: 'Widget' })
 ```tsx
 <DataTable
   columns={columns}
-  rows={rows}
+  data={rows}
   actions={[
     { id: 'view', label: 'View' },
     { id: 'edit', label: 'Edit' },
@@ -881,7 +881,7 @@ const label = getActionLabel('View', { name: 'Widget' })
 ```tsx
 <DataTable
   columns={columns}
-  rows={[]}
+  data={[]}
   isLoading={true}
 />
 ```
@@ -890,7 +890,7 @@ const label = getActionLabel('View', { name: 'Widget' })
 ```tsx
 <DataTable
   columns={columns}
-  rows={rows}
+  data={rows}
   sortBy="price"
   sortDirection="desc"
   onSort={(key, dir) => console.log(`Sorted by ${key} ${dir}`)}
