@@ -426,15 +426,18 @@ function BarGraphScene({
     { height: 2.0, color: "#10B981", label: "E" },
   ];
 
-  // Initialize bar states
-  if (barStates.current.length === 0) {
-    barStates.current = bars.map(() => ({
-      current: 1,
-      target:
-        params.minHeightScale +
-        Math.random() * (params.maxHeightScale - params.minHeightScale),
-      speed: 0.3 + Math.random() * 0.4,
-    }));
+  // Initialize bar states - preserve existing state to prevent re-initialization hitch
+  if (barStates.current.length !== bars.length) {
+    barStates.current = bars.map(
+      (_, i) =>
+        barStates.current[i] || {
+          current: 1,
+          target:
+            params.minHeightScale +
+            Math.random() * (params.maxHeightScale - params.minHeightScale),
+          speed: 0.3 + Math.random() * 0.4,
+        },
+    );
   }
 
   const totalWidth = bars.length * params.barSpacing;
@@ -742,6 +745,95 @@ interface MasonryImage {
   hoverSpeed: number;
 }
 
+// Global texture cache to prevent regenerating gradients on remount
+const gradientTextureCache = new Map<string, THREE.CanvasTexture>();
+
+// Global geometry cache to reuse box geometries across cards
+const geometryCache = new Map<string, THREE.BoxGeometry>();
+
+function getBoxGeometry(
+  width: number,
+  height: number,
+  depth: number,
+): THREE.BoxGeometry {
+  const key = `${width}-${height}-${depth}`;
+  if (!geometryCache.has(key)) {
+    geometryCache.set(key, new THREE.BoxGeometry(width, height, depth));
+  }
+  return geometryCache.get(key)!;
+}
+
+function createGradientTexture(
+  gradientType: GradientType,
+  color1: string,
+  color2: string,
+  color3?: string,
+): THREE.CanvasTexture {
+  // Create cache key from parameters
+  const cacheKey = `${gradientType}-${color1}-${color2}-${color3 || "none"}`;
+
+  // Return cached texture if available
+  if (gradientTextureCache.has(cacheKey)) {
+    return gradientTextureCache.get(cacheKey)!;
+  }
+
+  // Generate new texture
+  const canvas = document.createElement("canvas");
+  canvas.width = 256;
+  canvas.height = 256;
+  const ctx = canvas.getContext("2d");
+
+  if (!ctx) {
+    // Fallback to a blank texture
+    const texture = new THREE.CanvasTexture(canvas);
+    gradientTextureCache.set(cacheKey, texture);
+    return texture;
+  }
+
+  let gradient: CanvasGradient;
+
+  switch (gradientType) {
+    case "linear-vertical":
+      gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+      break;
+    case "linear-horizontal":
+      gradient = ctx.createLinearGradient(0, 0, canvas.width, 0);
+      break;
+    case "linear-diagonal":
+      gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+      break;
+    case "radial":
+      gradient = ctx.createRadialGradient(
+        canvas.width / 2,
+        canvas.height / 2,
+        0,
+        canvas.width / 2,
+        canvas.height / 2,
+        canvas.width / 2,
+      );
+      break;
+  }
+
+  gradient.addColorStop(0, color1);
+  gradient.addColorStop(0.5, color2);
+  if (color3) {
+    gradient.addColorStop(1, color3);
+  } else {
+    gradient.addColorStop(1, color2);
+  }
+
+  ctx.fillStyle = gradient;
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.needsUpdate = true;
+
+  // Cache for future use
+  gradientTextureCache.set(cacheKey, texture);
+
+  return texture;
+}
+
 function MasonryGalleryScene({
   faceWidth,
   faceHeight,
@@ -817,11 +909,14 @@ function MasonryGalleryScene({
   });
   const scrollOffset = useRef(0);
 
-  // Initialize image states
-  if (imageStates.current.length === 0) {
-    imageStates.current = images.map(() => ({
-      current: 0,
-    }));
+  // Initialize image states - preserve existing state to prevent re-initialization hitch
+  if (imageStates.current.length !== images.length) {
+    imageStates.current = images.map(
+      (_, i) =>
+        imageStates.current[i] || {
+          current: 0,
+        },
+    );
   }
 
   useFrame((_, delta) => {
@@ -954,71 +1049,28 @@ function ImageCard({
 }) {
   const depth = 0.05;
 
-  // Create gradient texture
-  const gradientTexture = useMemo(() => {
-    const canvas = document.createElement("canvas");
-    canvas.width = 512;
-    canvas.height = 512;
-    const ctx = canvas.getContext("2d");
+  // Use cached gradient texture to prevent regeneration on remount
+  const gradientTexture = useMemo(
+    () => createGradientTexture(gradientType, color1, color2, color3),
+    [gradientType, color1, color2, color3],
+  );
 
-    if (!ctx) return null;
-
-    let gradient: CanvasGradient;
-
-    switch (gradientType) {
-      case "linear-vertical":
-        gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
-        break;
-      case "linear-horizontal":
-        gradient = ctx.createLinearGradient(0, 0, canvas.width, 0);
-        break;
-      case "linear-diagonal":
-        gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
-        break;
-      case "radial":
-        gradient = ctx.createRadialGradient(
-          canvas.width / 2,
-          canvas.height / 2,
-          0,
-          canvas.width / 2,
-          canvas.height / 2,
-          canvas.width / 2,
-        );
-        break;
-    }
-
-    gradient.addColorStop(0, color1);
-    gradient.addColorStop(0.5, color2);
-    if (color3) {
-      gradient.addColorStop(1, color3);
-    } else {
-      gradient.addColorStop(1, color2);
-    }
-
-    ctx.fillStyle = gradient;
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    const texture = new THREE.CanvasTexture(canvas);
-    texture.needsUpdate = true;
-    return texture;
-  }, [gradientType, color1, color2, color3]);
+  // Use cached geometry to prevent recreation on remount
+  const geometry = useMemo(
+    () => getBoxGeometry(width, height, depth),
+    [width, height, depth],
+  );
 
   return (
     <group>
-      {/* Base card with rounded corners and gradient */}
-      <RoundedBox
-        args={[width, height, depth]}
-        radius={cornerRadius}
-        smoothness={4}
-        castShadow
-        receiveShadow
-      >
+      {/* Base card - using simple box instead of RoundedBox for better performance */}
+      <mesh castShadow receiveShadow geometry={geometry}>
         <meshStandardMaterial
           map={gradientTexture}
           metalness={0.1}
           roughness={0.6}
         />
-      </RoundedBox>
+      </mesh>
 
       {/* Subtle border */}
       <mesh position={[0, 0, depth / 2 + 0.001]}>
@@ -1443,6 +1495,168 @@ export const App = ({ cubeWidth: propCubeWidth }: { cubeWidth?: number }) => {
     cubeHeight: { value: DEFAULT_CUBE_HEIGHT, min: 0.5, max: 5, step: 0.1 },
     cubeDepth: { value: DEFAULT_CUBE_DEPTH, min: 0.5, max: 5, step: 0.1 },
     roomDepth: { value: DEFAULT_ROOM_DEPTH, min: 1, max: 10, step: 0.1 },
+    edgeRadius: {
+      value: 0.3,
+      min: 0,
+      max: 0.5,
+      step: 0.01,
+      label: "Edge Radius",
+    },
+    edgeSmoothness: {
+      value: 10,
+      min: 1,
+      max: 10,
+      step: 1,
+      label: "Edge Smoothness",
+    },
+    edgeThreshold: {
+      value: 137,
+      min: 0,
+      max: 180,
+      step: 1,
+      label: "Edge Line Threshold",
+    },
+    borderThickness: {
+      value: 0.3,
+      min: 0,
+      max: 0.5,
+      step: 0.01,
+      label: "Border Thickness",
+    },
+    glassOpacity: {
+      value: 1.0,
+      min: 0,
+      max: 1,
+      step: 0.01,
+      label: "Glass Opacity",
+    },
+    glassTransmission: {
+      value: 1.0,
+      min: 0,
+      max: 1,
+      step: 0.01,
+      label: "Glass Transmission",
+    },
+  });
+
+  // Lighting Controls
+  const lightingControls = useControls("Lighting", {
+    keyLightX: {
+      value: 10.0,
+      min: -10,
+      max: 15,
+      step: 0.5,
+      label: "Key Light X",
+    },
+    keyLightY: {
+      value: 0.5,
+      min: -10,
+      max: 10,
+      step: 0.5,
+      label: "Key Light Y",
+    },
+    keyLightZ: {
+      value: 7.0,
+      min: -10,
+      max: 10,
+      step: 0.5,
+      label: "Key Light Z",
+    },
+    keyLightIntensity: {
+      value: 50.0,
+      min: 0,
+      max: 100,
+      step: 0.5,
+      label: "Key Light Intensity",
+    },
+    keyLightDistance: {
+      value: 13,
+      min: 0,
+      max: 50,
+      step: 1,
+      label: "Key Light Distance",
+    },
+    keyLightDecay: {
+      value: 0.0,
+      min: 0,
+      max: 3,
+      step: 0.1,
+      label: "Key Light Decay",
+    },
+    keyLightColor: { value: "#ffffff", label: "Key Light Color" },
+
+    rimLightX: {
+      value: -3.0,
+      min: -10,
+      max: 10,
+      step: 0.5,
+      label: "Rim Light X",
+    },
+    rimLightY: {
+      value: 2.0,
+      min: -10,
+      max: 10,
+      step: 0.5,
+      label: "Rim Light Y",
+    },
+    rimLightZ: {
+      value: -3.0,
+      min: -10,
+      max: 10,
+      step: 0.5,
+      label: "Rim Light Z",
+    },
+    rimLightIntensity: {
+      value: 8.0,
+      min: 0,
+      max: 50,
+      step: 0.5,
+      label: "Rim Light Intensity",
+    },
+    rimLightDistance: {
+      value: 20,
+      min: 0,
+      max: 50,
+      step: 1,
+      label: "Rim Light Distance",
+    },
+    rimLightDecay: {
+      value: 0.9,
+      min: 0,
+      max: 3,
+      step: 0.1,
+      label: "Rim Light Decay",
+    },
+    rimLightColor: { value: "#88ccff", label: "Rim Light Color" },
+
+    ambientIntensity: {
+      value: 0.5,
+      min: 0,
+      max: 2,
+      step: 0.1,
+      label: "Ambient Intensity",
+    },
+  });
+
+  // Glass Material Controls
+  const glassControls = useControls("Glass Material", {
+    ior: {
+      value: 1.82,
+      min: 1,
+      max: 2.5,
+      step: 0.01,
+      label: "Index of Refraction (IOR)",
+    },
+    thickness: { value: 0.4, min: 0, max: 3, step: 0.1, label: "Thickness" },
+    roughness: { value: 0, min: 0, max: 1, step: 0.01, label: "Roughness" },
+    clearcoat: { value: 1.0, min: 0, max: 1, step: 0.01, label: "Clearcoat" },
+    clearcoatRoughness: {
+      value: 0.69,
+      min: 0,
+      max: 1,
+      step: 0.01,
+      label: "Clearcoat Roughness",
+    },
   });
 
   // Advanced Controls
@@ -1473,6 +1687,8 @@ export const App = ({ cubeWidth: propCubeWidth }: { cubeWidth?: number }) => {
     ...rotationControls,
     ...cameraControls,
     ...cubeControls,
+    ...lightingControls,
+    ...glassControls,
     ...advancedControls,
     // Override cubeWidth with prop if provided
     ...(propCubeWidth !== undefined && { cubeWidth: propCubeWidth }),
@@ -1495,9 +1711,35 @@ export const App = ({ cubeWidth: propCubeWidth }: { cubeWidth?: number }) => {
         }}
         style={{ width: "200px", height: "200px" }}
       >
-        {/* Fixed camera looking at origin */}
-        <directionalLight position={[5, 5, 5]} intensity={1} />
-        <ambientLight intensity={0.5} />
+        {/* Controllable scene lighting for glass cube */}
+        <ambientLight intensity={controls.ambientIntensity} />
+
+        {/* Key light - main illumination with distance for diffuse spread */}
+        <pointLight
+          position={[
+            controls.keyLightX,
+            controls.keyLightY,
+            controls.keyLightZ,
+          ]}
+          intensity={controls.keyLightIntensity}
+          distance={controls.keyLightDistance}
+          decay={controls.keyLightDecay}
+          color={controls.keyLightColor}
+          castShadow
+        />
+
+        {/* Rim light - highlights edges and creates depth */}
+        <pointLight
+          position={[
+            controls.rimLightX,
+            controls.rimLightY,
+            controls.rimLightZ,
+          ]}
+          intensity={controls.rimLightIntensity}
+          distance={controls.rimLightDistance}
+          decay={controls.rimLightDecay}
+          color={controls.rimLightColor}
+        />
 
         <CameraController
           position={[controls.cameraX, controls.cameraY, controls.cameraZ]}
@@ -1518,6 +1760,17 @@ export const App = ({ cubeWidth: propCubeWidth }: { cubeWidth?: number }) => {
           selectedScene={controls.selectedScene}
           manualRotationY={controls.manualRotationY}
           showAllFaces={controls.showAllFaces}
+          edgeRadius={controls.edgeRadius}
+          edgeSmoothness={controls.edgeSmoothness}
+          edgeThreshold={controls.edgeThreshold}
+          borderThickness={controls.borderThickness}
+          glassOpacity={controls.glassOpacity}
+          glassTransmission={controls.glassTransmission}
+          glassIor={controls.ior}
+          glassThickness={controls.thickness}
+          glassRoughness={controls.roughness}
+          glassClearcoat={controls.clearcoat}
+          glassClearcoatRoughness={controls.clearcoatRoughness}
           sceneParams={sceneParams}
         />
       </Canvas>
@@ -1560,6 +1813,17 @@ function RotatingCube({
   selectedScene,
   manualRotationY,
   showAllFaces,
+  edgeRadius,
+  edgeSmoothness,
+  edgeThreshold,
+  borderThickness,
+  glassOpacity,
+  glassTransmission,
+  glassIor,
+  glassThickness,
+  glassRoughness,
+  glassClearcoat,
+  glassClearcoatRoughness,
   sceneParams,
 }: {
   worldUnits: boolean;
@@ -1576,6 +1840,17 @@ function RotatingCube({
   selectedScene: SceneType;
   manualRotationY: number;
   showAllFaces: boolean;
+  edgeRadius: number;
+  edgeSmoothness: number;
+  edgeThreshold: number;
+  borderThickness: number;
+  glassOpacity: number;
+  glassTransmission: number;
+  glassIor: number;
+  glassThickness: number;
+  glassRoughness: number;
+  glassClearcoat: number;
+  glassClearcoatRoughness: number;
   sceneParams: AllSceneParams;
 }) {
   const cubeGroupRef = useRef<THREE.Group>(null);
@@ -1761,26 +2036,28 @@ function RotatingCube({
         const isEvenRotation = rotationState.rotationCount % 2 === 0;
 
         if (isEvenRotation) {
-          // Update back face and all side faces with the next scene
-          // (all currently hidden or partially visible, will become fully visible after rotation)
+          // Update back face with the next scene (will be visible after 180° rotation)
+          // Only update the main face to reduce simultaneous scene mounting
           setFaceScenes((prev) => ({
             ...prev,
             back: nextScene,
-            left: nextScene,
-            right: nextScene,
-            top: nextScene,
-            bottom: nextScene,
+            // Keep sides on current scene to avoid creating 5 instances at once
+            // left: nextScene,
+            // right: nextScene,
+            // top: nextScene,
+            // bottom: nextScene,
           }));
         } else {
-          // Update front face and all side faces with the next scene
-          // (all currently hidden or partially visible, will become fully visible after rotation)
+          // Update front face with the next scene (will be visible after 180° rotation)
+          // Only update the main face to reduce simultaneous scene mounting
           setFaceScenes((prev) => ({
             ...prev,
             front: nextScene,
-            left: nextScene,
-            right: nextScene,
-            top: nextScene,
-            bottom: nextScene,
+            // Keep sides on current scene to avoid creating 5 instances at once
+            // left: nextScene,
+            // right: nextScene,
+            // top: nextScene,
+            // bottom: nextScene,
           }));
         }
 
@@ -1829,14 +2106,31 @@ function RotatingCube({
 
   return (
     <group ref={cubeGroupRef}>
-      {/* Wireframe edges for visual reference */}
-      <group renderOrder={-1}>
-        <mesh>
-          <boxGeometry args={[cubeWidth, cubeHeight, cubeDepth]} />
-          <meshBasicMaterial visible={false} />
-        </mesh>
-        <Edges />
-      </group>
+      {/* Rounded glass-like cube with beveled edges */}
+      <RoundedBox
+        args={[
+          cubeWidth + borderThickness,
+          cubeHeight + borderThickness,
+          cubeDepth + borderThickness,
+        ]}
+        radius={edgeRadius}
+        smoothness={edgeSmoothness}
+      >
+        <meshPhysicalMaterial
+          transparent
+          opacity={glassOpacity}
+          roughness={glassRoughness}
+          metalness={0.1}
+          clearcoat={glassClearcoat}
+          clearcoatRoughness={glassClearcoatRoughness}
+          transmission={glassTransmission}
+          thickness={glassThickness}
+          ior={glassIor}
+          envMapIntensity={1.5}
+          color="#ffffff"
+        />
+        <Edges threshold={edgeThreshold} color="#333333" />
+      </RoundedBox>
 
       {/* Each face is a separate plane mesh with its own portal */}
       {/* Front face (positive Z) */}
@@ -1962,7 +2256,7 @@ function Side({
   return (
     <mesh ref={mesh} position={position} rotation={rotation} renderOrder={0}>
       <planeGeometry args={[faceWidth * 1.001, faceHeight * 1.001]} />
-      <MeshPortalMaterial worldUnits={worldUnits} blur={0} resolution={512}>
+      <MeshPortalMaterial worldUnits={worldUnits} blur={0} resolution={256}>
         {/** Everything in here is inside the portal and isolated from the canvas */}
         {!isScenicScene && <ambientLight intensity={0.5} />}
         {!isScenicScene && <Environment preset="city" />}
