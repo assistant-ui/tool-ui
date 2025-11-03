@@ -26,7 +26,7 @@ tool-ui-playground provides a collection of beautifully designed, accessible com
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/tool-ui-playground.git
+git clone https://github.com/assistant-ui/tool-ui-playground.git
 cd tool-ui-playground
 
 # Install dependencies
@@ -67,7 +67,7 @@ tool-ui-playground/
 
 ## Components
 
-### DataTable (Coming in Phase 2)
+### DataTable
 
 A powerful, accessible data table component for displaying tabular tool call results.
 
@@ -75,7 +75,7 @@ A powerful, accessible data table component for displaying tabular tool call res
 - Column sorting (asc/desc/none)
 - Row actions (inline and dropdown)
 - Loading and empty states
-- Responsive mobile layout
+- Responsive mobile layout (accordion cards)
 - Full keyboard navigation
 - Screen reader support
 
@@ -109,13 +109,13 @@ A powerful, accessible data table component for displaying tabular tool call res
 - ✅ Theme toggle
 - ✅ Responsive preview
 
-### Phase 2: DataTable Component (Next)
-- [ ] Compound component architecture
-- [ ] Sorting functionality
-- [ ] Row actions
-- [ ] Responsive mobile layout
-- [ ] Accessibility features
-- [ ] Loading and empty states
+### Phase 2: DataTable Component ✅
+- ✅ Compound component architecture
+- ✅ Sorting functionality
+- ✅ Row actions
+- ✅ Responsive mobile layout (accordion cards)
+- ✅ Accessibility features
+- ✅ Loading and empty states
 
 ### Phase 3: Documentation & Registry (Future)
 - [ ] Fumadocs integration

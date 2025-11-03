@@ -2,7 +2,7 @@
 
 A flexible, accessible data table component for assistant-ui's widget registry. Built with Radix UI primitives and Tailwind CSS.
 
-**Version:** 0.2.0
+**Version:** 0.1.0
 **License:** Apache-2.0
 
 ## Features
@@ -531,45 +531,36 @@ Apache-2.0
 
 ## Changelog
 
-### 0.2.0 (2025-11-01)
-
-Major mobile responsiveness improvements:
-
-**New Features:**
-- ✨ Accordion card layout for mobile (expandable cards)
-- ✨ Column priority system (`primary`, `secondary`, `tertiary`)
-- ✨ Smart column priority defaults (auto-assigns first 2 as primary)
-- ✨ Horizontal scroll gradient shadows for desktop
-- ✨ Touch-optimized interactions (44px minimum touch targets)
-- ✨ `hideOnMobile` column option for simple hiding
-- ✨ New `useScrollShadow` hook for scroll detection
-- ✨ **Container queries** instead of media queries (works in simulators!)
-
-**New Components:**
-- `DataTableAccordionCard` - Mobile accordion card component
-- `useScrollShadow` - Hook for detecting scroll position
-
-**Breaking Changes:**
-- Mobile breakpoint changed from 640px to 768px
-- Mobile cards now use accordion layout instead of simple cards
-- Actions moved to expanded section on mobile (was always visible)
-- **Uses container queries (`@md:`)** instead of media queries (`md:`)
-  - Component now responds to container width, not viewport width
-  - Works correctly in viewport simulators and constrained layouts
-
-**Improvements:**
-- Enhanced accessibility with proper accordion ARIA
-- Better visual feedback for touch interactions
-- Reduced motion support for animations
-- Improved documentation with mobile examples
-- Works in component playgrounds and viewport simulators
-
 ### 0.1.0 (2025-10-31)
 
-Initial release with core functionality:
+Initial release with full features:
+
+**Core Features:**
 - Table rendering with compound components
-- Sorting (ascending/descending/none)
-- Actions (inline + dropdown)
-- Responsive design (table → cards)
+- Column sorting (ascending/descending/none)
+- Row actions (inline buttons and dropdown menu)
 - Loading and empty states
-- Basic accessibility
+- Full keyboard navigation
+- Accessible with WCAG 2.1 AA compliance
+
+**Mobile Responsiveness:**
+- Accordion card layout for mobile (expandable cards)
+- Column priority system (`primary`, `secondary`, `tertiary`)
+- Smart column priority defaults (auto-assigns first 2 as primary)
+- Touch-optimized interactions (44px minimum touch targets)
+- `hideOnMobile` column option for simple hiding
+- Container queries (`@md:`) for container-based responsiveness
+
+**Desktop Features:**
+- Horizontal scroll gradient shadows for wide tables
+- `useScrollShadow` hook for scroll detection
+- Mobile breakpoint at 768px
+
+**Components:**
+- `DataTable` - Main table component
+- `DataTableHeader` - Header row with sortable columns
+- `DataTableBody` - Body container
+- `DataTableRow` - Table row
+- `DataTableCell` - Table cell
+- `DataTableActions` - Actions dropdown/buttons
+- `DataTableAccordionCard` - Mobile accordion card component
