@@ -22,7 +22,8 @@ function categorizeColumns(columns: Column[]) {
   const primary: Column[] = [];
   const secondary: Column[] = [];
 
-  columns.forEach((col, index) => {
+  let seenVisible = 0;
+  columns.forEach((col) => {
     if (col.hideOnMobile) return;
 
     if (col.priority === "primary") {
@@ -32,11 +33,12 @@ function categorizeColumns(columns: Column[]) {
     } else if (col.priority === "tertiary") {
       return;
     } else {
-      if (index < 2) {
+      if (seenVisible < 2) {
         primary.push(col);
       } else {
         secondary.push(col);
       }
+      seenVisible++;
     }
   });
 

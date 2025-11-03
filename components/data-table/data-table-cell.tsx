@@ -6,7 +6,7 @@ import { renderFormattedValue } from "./formatters";
 import type { Column, DataTableRowData } from "./data-table";
 
 interface DataTableCellProps {
-  value: string | number | boolean | null | Date | string[];
+  value: string | number | boolean | null | string[];
   column: Column;
   row: DataTableRowData;
   className?: string;

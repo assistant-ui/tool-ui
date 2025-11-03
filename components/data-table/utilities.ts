@@ -117,14 +117,17 @@ export function formatCellValue(
  */
 export function getActionLabel(
   actionLabel: string,
-  row: Record<string, string | number | boolean | null | Date | string[]>,
+  row: Record<string, string | number | boolean | null | string[]>,
   identifierKey?: string,
 ): string {
-  const identifier = identifierKey
-    ? row[identifierKey]
-    : row.name || row.title || row.id || Object.values(row)[0]
+  const candidate =
+    (identifierKey ? row[identifierKey] : undefined) ??
+    (row as Record<string, unknown>).name ??
+    (row as Record<string, unknown>).title ??
+    (row as Record<string, unknown>).id;
 
-  return `${actionLabel} for ${identifier}`
+  const identifier = String(candidate ?? "");
+  return `${actionLabel} for ${identifier}`;
 }
 
 // Internal helpers

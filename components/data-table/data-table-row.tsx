@@ -8,7 +8,6 @@ import { DataTableActions } from "./data-table-actions";
 
 interface DataTableRowProps {
   row: DataTableRowData;
-  index: number;
   className?: string;
 }
 

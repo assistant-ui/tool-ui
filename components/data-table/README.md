@@ -31,9 +31,26 @@ A flexible, accessible data table component for assistant-ui's widget registry. 
 The component requires these dependencies:
 
 ```bash
-npm install @radix-ui/react-dropdown-menu @radix-ui/react-accordion lucide-react
+npm install @radix-ui/react-dropdown-menu @radix-ui/react-accordion @radix-ui/react-tooltip lucide-react
 # or
-pnpm add @radix-ui/react-dropdown-menu @radix-ui/react-accordion lucide-react
+pnpm add @radix-ui/react-dropdown-menu @radix-ui/react-accordion @radix-ui/react-tooltip lucide-react
+```
+
+### Tailwind Setup
+
+This component uses container queries. Ensure your Tailwind setup supports:
+
+- `@container` on a wrapping element
+- Container query variants like `@md:`
+
+If your project doesn’t already provide these, either replace `@md:` with breakpoint variants like `md:` or add container‑query support via a plugin. Example config:
+
+```js
+// tailwind.config.{js,ts}
+export default {
+  content: ["./app/**/*.{ts,tsx}", "./components/**/*.{ts,tsx}"],
+  plugins: [require("@tailwindcss/container-queries")],
+}
 ```
 
 Copy the following files to your project:
@@ -58,6 +75,7 @@ Also ensure you have these UI components:
 components/ui/
 ├── dropdown-menu.tsx
 ├── accordion.tsx  # NEW
+├── tooltip.tsx    # NEW
 └── button.tsx
 ```
 
@@ -360,6 +378,14 @@ Notes:
 // Array of tags
 { key: 'tags', label: 'Tags', format: { kind: 'array', maxVisible: 2 } }
 ```
+
+## Serialization
+
+All DataTable payloads (columns, rows, actions) are JSON‑serializable. Do not pass functions, Symbols, or class instances in row data. Dates must be provided as ISO strings (for example, `"2025-11-03T12:34:56Z"`).
+
+- Handler props like `onAction` and `onSort` are regular functions and are not serialized.
+- The built‑in `date` formatter accepts strings and parses them to `Date` internally.
+- Typing note: `useDataTable<T>()` provides best‑effort generics; at runtime the context is untyped, so inference inside compound children is approximate.
 
 ## Utility Functions
 

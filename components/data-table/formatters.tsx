@@ -149,13 +149,13 @@ function PercentValue({ value, options }: PercentValueProps) {
 }
 
 interface DateValueProps {
-  value: string | Date;
+  value: string;
   options?: Extract<FormatConfig, { kind: "date" }>;
 }
 
 function DateValue({ value, options }: DateValueProps) {
   const dateFormat = options?.dateFormat ?? "short";
-  const date = typeof value === "string" ? new Date(value) : value;
+  const date = new Date(value);
 
   if (isNaN(date.getTime())) {
     return <span>Invalid date</span>;
@@ -250,7 +250,7 @@ function BooleanValue({ value, options }: BooleanValueProps) {
 interface LinkValueProps {
   value: string;
   options?: Extract<FormatConfig, { kind: "link" }>;
-  row?: Record<string, string | number | boolean | null | Date | string[]>;
+  row?: Record<string, string | number | boolean | null | string[]>;
 }
 
 function LinkValue({ value, options, row }: LinkValueProps) {
@@ -380,9 +380,9 @@ function ArrayValue({ value, options }: ArrayValueProps) {
 // ============================================================================
 
 export function renderFormattedValue(
-  value: string | number | boolean | null | Date | string[],
+  value: string | number | boolean | null | string[],
   column: { format?: FormatConfig },
-  row?: Record<string, string | number | boolean | null | Date | string[]>,
+  row?: Record<string, string | number | boolean | null | string[]>,
 ): React.ReactNode {
   if (value == null || value === "") {
     return "—";
@@ -420,16 +420,7 @@ export function renderFormattedValue(
         />
       );
     case "date":
-      return (
-        <DateValue
-          value={
-            value instanceof Date || typeof value === "string"
-              ? value
-              : String(value)
-          }
-          options={fmt}
-        />
-      );
+      return <DateValue value={String(value)} options={fmt} />;
     case "boolean":
       return (
         <BooleanValue

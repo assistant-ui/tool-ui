@@ -78,6 +78,14 @@ export function DataTableHead({ column }: DataTableHeadProps) {
       )}
       style={column.width ? { width: column.width } : undefined}
       onClick={handleClick}
+      onKeyDown={(e) => {
+        if (isDisabled) return;
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          handleClick();
+        }
+      }}
+      tabIndex={isDisabled ? -1 : 0}
       aria-sort={
         isSorted
           ? direction === "asc"

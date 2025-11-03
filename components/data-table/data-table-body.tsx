@@ -12,7 +12,7 @@ export function DataTableBody() {
       {data.map((row, index) => {
         const keyVal = rowIdKey ? row[rowIdKey] : undefined;
         const rowKey = keyVal != null ? String(keyVal) : String(index);
-        return <DataTableRow key={rowKey} row={row} index={index} />
+        return <DataTableRow key={rowKey} row={row} />
       })}
     </tbody>
   );

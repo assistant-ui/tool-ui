@@ -6,7 +6,7 @@ import { sortData } from "./utilities";
 import { useScrollShadow } from "./use-scroll-shadow";
 import type { FormatConfig } from "./formatters";
 
-export type RowPrimitive = string | number | boolean | null | Date | string[];
+export type RowPrimitive = string | number | boolean | null | string[];
 export type DataTableRowData = Record<string, RowPrimitive>;
 export type RowData = Record<string, unknown>;
 export type ColumnKey<T extends object> = Extract<keyof T, string>;
@@ -15,13 +15,11 @@ type FormatFor<V> = V extends number
   ? Extract<FormatConfig, { kind: "number" | "currency" | "percent" | "delta" }>
   : V extends boolean
     ? Extract<FormatConfig, { kind: "boolean" | "status" | "badge" }>
-    : V extends Date
-      ? Extract<FormatConfig, { kind: "date" }>
-      : V extends string[]
-        ? Extract<FormatConfig, { kind: "array" }>
-        : V extends string
-          ? Extract<FormatConfig, { kind: "text" | "link" | "date" | "badge" | "status" }>
-          : Extract<FormatConfig, { kind: "text" }>;
+    : V extends string[]
+      ? Extract<FormatConfig, { kind: "array" }>
+      : V extends string
+        ? Extract<FormatConfig, { kind: "text" | "link" | "date" | "badge" | "status" }>
+        : Extract<FormatConfig, { kind: "text" }>;
 
 export interface Column<
   T extends object = RowData,
@@ -208,10 +206,10 @@ export function DataTable<T extends object = RowData>({
             </div>
 
             {scrollShadow.canScrollLeft && (
-              <div className="from-background pointer-events-none absolute top-0 bottom-0 left-0 z-10 w-8 bg-linear-to-r to-transparent" />
+              <div className="from-background pointer-events-none absolute top-0 bottom-0 left-0 z-10 w-8 bg-gradient-to-r to-transparent" />
             )}
             {scrollShadow.canScrollRight && (
-              <div className="from-background pointer-events-none absolute top-0 right-0 bottom-0 z-10 w-8 bg-linear-to-l to-transparent" />
+              <div className="from-background pointer-events-none absolute top-0 right-0 bottom-0 z-10 w-8 bg-gradient-to-l to-transparent" />
             )}
           </div>
         </div>
