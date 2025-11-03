@@ -4,6 +4,7 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 import { sortData } from "./utilities";
 import { useScrollShadow } from "./use-scroll-shadow";
+import type { FormatConfig } from "./formatters";
 
 export interface Column {
   key: string;
@@ -14,6 +15,7 @@ export interface Column {
   width?: string;
   priority?: "primary" | "secondary" | "tertiary";
   hideOnMobile?: boolean;
+  format?: FormatConfig;
 }
 
 export interface Action {
@@ -23,10 +25,16 @@ export interface Action {
   requiresConfirmation?: boolean;
 }
 
+export type DataTableRowData = Record<
+  string,
+  string | number | boolean | null | Date | string[]
+>;
+
 export interface DataTableProps {
   columns: Column[];
-  data: Array<Record<string, string | number | boolean | null>>;
+  data: DataTableRowData[];
   actions?: Action[];
+  rowIdKey?: string;
   sortBy?: string;
   sortDirection?: "asc" | "desc";
   emptyMessage?: string;
@@ -35,20 +43,21 @@ export interface DataTableProps {
   messageId?: string;
   onAction?: (
     actionId: string,
-    row: Record<string, string | number | boolean | null>,
+    row: DataTableRowData,
     context?: {
       messageId?: string;
       sendMessage?: (message: string) => void;
     },
   ) => void;
-  onSort?: (columnKey: string, direction: "asc" | "desc") => void;
+  onSort?: (columnKey?: string, direction?: "asc" | "desc") => void;
   className?: string;
 }
 
 interface DataTableContextValue {
   columns: Column[];
-  data: Array<Record<string, string | number | boolean | null>>;
+  data: DataTableRowData[];
   actions?: Action[];
+  rowIdKey?: string;
   sortBy?: string;
   sortDirection?: "asc" | "desc";
   onSort?: (key: string) => void;
@@ -72,6 +81,7 @@ export function DataTable({
   columns,
   data: rawData,
   actions,
+  rowIdKey,
   sortBy: controlledSortBy,
   sortDirection: controlledSortDirection,
   emptyMessage = "No data available",
@@ -113,8 +123,12 @@ export function DataTable({
         newDirection = "asc";
       }
 
-      if (onSort && newDirection) {
-        onSort(key, newDirection);
+      if (onSort) {
+        if (newDirection) {
+          onSort(key, newDirection);
+        } else {
+          onSort(undefined, undefined);
+        }
       } else {
         setInternalSortBy(newDirection ? key : undefined);
         setInternalSortDirection(newDirection);
@@ -130,6 +144,7 @@ export function DataTable({
     columns,
     data,
     actions,
+    rowIdKey,
     sortBy,
     sortDirection,
     onSort: handleSort,
@@ -190,9 +205,13 @@ export function DataTable({
               {emptyMessage}
             </div>
           ) : (
-            data.map((row, i) => (
-              <DataTableAccordionCard key={i} row={row} index={i} />
-            ))
+            data.map((row, i) => {
+              const keyVal = rowIdKey ? row[rowIdKey] : undefined;
+              const rowKey = keyVal != null ? String(keyVal) : String(i);
+              return (
+                <DataTableAccordionCard key={rowKey} row={row} index={i} />
+              );
+            })
           )}
         </div>
       </div>

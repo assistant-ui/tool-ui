@@ -5,11 +5,9 @@
 /**
  * Sort an array of objects by a key
  */
-export function sortData<T extends Record<string, string | number | boolean | null>>(
-  data: T[],
-  key: string,
-  direction: 'asc' | 'desc'
-): T[] {
+export function sortData<
+  T extends Record<string, string | number | boolean | null | Date | string[]>,
+>(data: T[], key: string, direction: "asc" | "desc"): T[] {
   return [...data].sort((a, b) => {
     const aVal = a[key]
     const bVal = b[key]
@@ -20,15 +18,46 @@ export function sortData<T extends Record<string, string | number | boolean | nu
     if (bVal == null) return -1
 
     // Type-specific comparison
+    // Numbers
     if (typeof aVal === 'number' && typeof bVal === 'number') {
       return direction === 'asc' ? aVal - bVal : bVal - aVal
     }
+    // Dates (Date instances)
+    if (aVal instanceof Date && bVal instanceof Date) {
+      const diff = aVal.getTime() - bVal.getTime()
+      return direction === 'asc' ? diff : -diff
+    }
+    // Booleans: false < true
+    if (typeof aVal === 'boolean' && typeof bVal === 'boolean') {
+      const diff = (aVal === bVal) ? 0 : (aVal ? 1 : -1)
+      return direction === 'asc' ? diff : -diff
+    }
+    // Arrays: compare length
+    if (Array.isArray(aVal) && Array.isArray(bVal)) {
+      const diff = aVal.length - bVal.length
+      return direction === 'asc' ? diff : -diff
+    }
+    // Strings that look like numbers -> numeric compare
+    if (typeof aVal === 'string' && typeof bVal === 'string') {
+      const numA = parseNumericLike(aVal)
+      const numB = parseNumericLike(bVal)
+      if (numA != null && numB != null) {
+        const diff = numA - numB
+        return direction === 'asc' ? diff : -diff
+      }
+      // ISO-like date strings
+      if (/^\d{4}-\d{2}-\d{2}/.test(aVal) && /^\d{4}-\d{2}-\d{2}/.test(bVal)) {
+        const da = new Date(aVal).getTime()
+        const db = new Date(bVal).getTime()
+        const diff = da - db
+        return direction === 'asc' ? diff : -diff
+      }
+    }
 
-    // String comparison (case-insensitive)
+    // Fallback: string compare (case-insensitive)
     const aStr = String(aVal).toLowerCase()
     const bStr = String(bVal).toLowerCase()
     const comparison = aStr.localeCompare(bStr)
-
     return direction === 'asc' ? comparison : -comparison
   })
 }
@@ -85,12 +114,23 @@ export function formatCellValue(
  */
 export function getActionLabel(
   actionLabel: string,
-  row: Record<string, string | number | boolean | null>,
-  identifierKey?: string
+  row: Record<string, string | number | boolean | null | Date | string[]>,
+  identifierKey?: string,
 ): string {
   const identifier = identifierKey
     ? row[identifierKey]
     : row.name || row.title || row.id || Object.values(row)[0]
 
   return `${actionLabel} for ${identifier}`
+}
+
+// Internal helpers
+function parseNumericLike(input: string): number | null {
+  // Remove common number formatting (commas, spaces)
+  const normalized = input.replace(/[,\s]/g, '')
+  if (/^[+-]?(?:\d+\.?\d*|\d*\.\d+)$/.test(normalized)) {
+    const n = Number(normalized)
+    return isNaN(n) ? null : n
+  }
+  return null
 }

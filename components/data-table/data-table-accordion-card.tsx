@@ -10,10 +10,11 @@ import {
 } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
 import { useDataTable } from "./data-table";
-import type { Column } from "./data-table";
+import type { Column, DataTableRowData } from "./data-table";
+import { renderFormattedValue } from "./formatters";
 
 interface DataTableAccordionCardProps {
-  row: Record<string, string | number | boolean | null>;
+  row: DataTableRowData;
   index: number;
 }
 
@@ -66,7 +67,11 @@ export function DataTableAccordionCard({
               {/* Primary field (title) */}
               {primaryColumn && (
                 <div className="truncate text-base font-medium">
-                  {row[primaryColumn.key] ?? "—"}
+                  {renderFormattedValue(
+                    row[primaryColumn.key],
+                    primaryColumn,
+                    row,
+                  )}
                 </div>
               )}
 
@@ -76,7 +81,9 @@ export function DataTableAccordionCard({
                   {secondaryPrimary.map((col) => (
                     <span key={col.key} className="truncate">
                       {col.label}:{" "}
-                      <span className="font-medium">{row[col.key] ?? "—"}</span>
+                      <span className="font-medium">
+                        {renderFormattedValue(row[col.key], col, row)}
+                      </span>
                     </span>
                   ))}
                 </div>
@@ -104,7 +111,7 @@ export function DataTableAccordionCard({
                       col.align === "center" && "text-center",
                     )}
                   >
-                    {row[col.key] ?? "—"}
+                    {renderFormattedValue(row[col.key], col, row)}
                   </dd>
                 </div>
               ))}
@@ -143,7 +150,7 @@ function SimpleCard({
   row,
   columns,
 }: {
-  row: Record<string, string | number | boolean | null>;
+  row: DataTableRowData;
   columns: Column[];
 }) {
   const { onAction, actions, messageId } = useDataTable();
@@ -155,7 +162,7 @@ function SimpleCard({
       {/* Primary field */}
       {primaryColumn && (
         <div className="text-base font-medium">
-          {row[primaryColumn.key] ?? "—"}
+          {renderFormattedValue(row[primaryColumn.key], primaryColumn, row)}
         </div>
       )}
 
@@ -170,7 +177,7 @@ function SimpleCard({
               col.align === "center" && "text-center",
             )}
           >
-            {row[col.key] ?? "—"}
+            {renderFormattedValue(row[col.key], col, row)}
           </span>
         </div>
       ))}

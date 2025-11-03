@@ -2,12 +2,12 @@
 
 import * as React from "react";
 import { cn } from "@/lib/utils";
-import { useDataTable } from "./data-table";
+import { useDataTable, type DataTableRowData } from "./data-table";
 import { DataTableCell } from "./data-table-cell";
 import { DataTableActions } from "./data-table-actions";
 
 interface DataTableRowProps {
-  row: Record<string, string | number | boolean | null>;
+  row: DataTableRowData;
   index: number;
   className?: string;
 }
@@ -21,7 +21,8 @@ export function DataTableRow({ row, className }: DataTableRowProps) {
         <DataTableCell
           key={column.key}
           value={row[column.key]}
-          align={column.align}
+          column={column}
+          row={row}
         />
       ))}
       {actions && actions.length > 0 && (

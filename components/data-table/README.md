@@ -93,6 +93,7 @@ function MyComponent() {
 | `columns` | `Column[]` | Required | Column definitions |
 | `data` | `Record<string, any>[]` | Required | Row data |
 | `actions` | `Action[]` | `undefined` | Row action buttons |
+| `rowIdKey` | `string` | `undefined` | Key in each row used for stable React keys |
 | `sortBy` | `string` | `undefined` | Initial/controlled sort column |
 | `sortDirection` | `'asc' \| 'desc'` | `undefined` | Initial/controlled sort direction |
 | `isLoading` | `boolean` | `false` | Show loading skeleton |
@@ -149,6 +150,7 @@ const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>()
   sortBy={sortBy}
   sortDirection={sortDirection}
   onSort={(key, direction) => {
+    // When user clears sort, both become undefined
     setSortBy(key)
     setSortDirection(direction)
   }}
@@ -296,6 +298,68 @@ All interactive elements are automatically optimized for touch:
 - **Accordion triggers**: Large touch target
 - **Active states**: Visual feedback on tap
 
+## Formatting
+
+The DataTable supports rich, declarative cell formatting via a JSON‑friendly `format` field on each `Column`. This enables plug‑and‑play semantics (currency, status pills, deltas, relative dates, links, arrays) without render functions.
+
+### Column.format
+
+```ts
+type Tone = 'success' | 'warning' | 'danger' | 'info' | 'neutral'
+
+type FormatConfig =
+  | { kind: 'text' }
+  | { kind: 'number'; decimals?: number; unit?: string; compact?: boolean; showSign?: boolean }
+  | { kind: 'currency'; currency: string; decimals?: number }
+  | { kind: 'percent'; decimals?: number; showSign?: boolean; basis?: 'fraction' | 'unit' }
+  | { kind: 'date'; dateFormat?: 'short' | 'long' | 'relative' }
+  | { kind: 'delta'; decimals?: number; upIsPositive?: boolean; showSign?: boolean }
+  | { kind: 'status'; statusMap: Record<string, { tone: Tone; label?: string }> }
+  | { kind: 'boolean'; labels?: { true: string; false: string } }
+  | { kind: 'link'; hrefKey?: string; external?: boolean }
+  | { kind: 'badge'; colorMap?: Record<string, Tone> }
+  | { kind: 'array'; maxVisible?: number }
+```
+
+Notes:
+- Percent `basis`: use `'fraction'` for values like `0.12` → `12%` (default), or `'unit'` for values like `12` → `12%`.
+- Delta `upIsPositive`: set to `false` for metrics where lower is better (e.g., latency).
+- Numbers auto right‑align if `align` is not specified.
+- Mobile cards reuse the same formatting for consistency.
+
+### Examples
+
+```tsx
+// Currency
+{ key: 'price', label: 'Price', align: 'right', format: { kind: 'currency', currency: 'USD', decimals: 2 } }
+
+// Percent from fraction (0.12 => 12%)
+{ key: 'errorRate', label: 'Error %', align: 'right', format: { kind: 'percent', decimals: 2 } }
+
+// Percent from unit (12 => 12%) with explicit plus sign
+{ key: 'changePct', label: 'Change %', align: 'right', format: { kind: 'percent', basis: 'unit', decimals: 2, showSign: true } }
+
+// Status pills
+{ key: 'status', label: 'Status', format: { kind: 'status', statusMap: {
+  todo: { tone: 'neutral', label: 'To Do' },
+  in_progress: { tone: 'info', label: 'In Progress' },
+  done: { tone: 'success' },
+  blocked: { tone: 'danger' },
+}}}
+
+// Delta with arrows/colors (lower is better)
+{ key: 'latencyDelta', label: 'Δ Latency', align: 'right', format: { kind: 'delta', decimals: 0, upIsPositive: false, showSign: true } }
+
+// Relative date
+{ key: 'updatedAt', label: 'Updated', format: { kind: 'date', dateFormat: 'relative' } }
+
+// Link (explicit href from another key)
+{ key: 'name', label: 'Resource', format: { kind: 'link', hrefKey: 'url', external: true } }
+
+// Array of tags
+{ key: 'tags', label: 'Tags', format: { kind: 'array', maxVisible: 2 } }
+```
+
 ## Utility Functions
 
 The component exports helpful utility functions:
@@ -312,31 +376,7 @@ const sorted = sortData(rows, 'price', 'desc')
 
 ### formatCellValue
 
-Format cell values for display:
-
-```tsx
-import { formatCellValue } from '@/components/data-table'
-
-// Currency
-formatCellValue(29.99, { currency: 'USD' })
-// => "$29.99"
-
-// Decimals
-formatCellValue(3.14159, { decimals: 2 })
-// => "3.14"
-
-// Dates
-formatCellValue('2025-10-31T10:00:00Z', { dateFormat: 'long' })
-// => "October 31, 2025"
-
-// Booleans
-formatCellValue(true)
-// => "Yes"
-
-// Nulls
-formatCellValue(null)
-// => "—"
-```
+A lightweight helper for simple formatting (currency, decimals, dates, booleans). For table rendering, prefer `Column.format` which is more expressive and consistent across desktop and mobile.
 
 ### getActionLabel
 

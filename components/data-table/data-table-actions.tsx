@@ -9,10 +9,11 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useDataTable } from "./data-table";
+import { useDataTable, type DataTableRowData } from "./data-table";
+import { getActionLabel } from "./utilities";
 
 interface DataTableActionsProps {
-  row: Record<string, string | number | boolean | null>;
+  row: DataTableRowData;
 }
 
 export function DataTableActions({ row }: DataTableActionsProps) {
@@ -28,6 +29,7 @@ export function DataTableActions({ row }: DataTableActionsProps) {
             key={action.id}
             variant={action.variant || "default"}
             size="sm"
+            aria-label={getActionLabel(action.label, row)}
             onClick={() => onAction(action.id, row, { messageId })}
             className="min-h-[44px] @md:min-h-[36px]"
           >
@@ -54,10 +56,11 @@ export function DataTableActions({ row }: DataTableActionsProps) {
         {actions.map((action) => (
           <DropdownMenuItem
             key={action.id}
+            aria-label={getActionLabel(action.label, row)}
             onClick={() => onAction(action.id, row, { messageId })}
             className={
               action.variant === 'destructive'
-                ? 'text-destructive focus:text-destructive'
+                ? 'text-destructive-foreground focus:text-destructive-foreground'
                 : undefined
             }
           >
