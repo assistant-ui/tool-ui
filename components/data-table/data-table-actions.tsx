@@ -9,44 +9,22 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
 import { useDataTable, type DataTableRowData, type Action } from "./data-table";
-import { getActionLabel, getConfirmDescription } from "./utilities";
+import { getActionLabel } from "./utilities";
 
 interface DataTableActionsProps {
   row: DataTableRowData;
 }
 
 export function DataTableActions({ row }: DataTableActionsProps) {
-  const { actions, onAction, messageId } = useDataTable();
-  const [confirmingAction, setConfirmingAction] = React.useState<Action | null>(
-    null,
-  );
+  const { actions, onAction, onBeforeAction, messageId } = useDataTable();
 
   if (!actions || !onAction) return null;
 
-  const handleAction = (action: Action) => {
-    if (action.requiresConfirmation) {
-      setConfirmingAction(action);
-    } else {
-      onAction(action.id, row, { messageId });
-    }
-  };
-
-  const handleConfirm = () => {
-    if (confirmingAction) {
-      onAction(confirmingAction.id, row, { messageId });
-      setConfirmingAction(null);
-    }
+  const handleAction = async (action: Action) => {
+    const proceed = (await onBeforeAction?.({ action, row, messageId })) ?? true;
+    if (!proceed) return;
+    onAction(action.id, row, { messageId });
   };
 
   if (actions.length <= 2) {
@@ -66,34 +44,6 @@ export function DataTableActions({ row }: DataTableActionsProps) {
             </Button>
           ))}
         </div>
-        <AlertDialog
-          open={!!confirmingAction}
-          onOpenChange={(open) => !open && setConfirmingAction(null)}
-        >
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>
-                {confirmingAction ? `Confirm ${confirmingAction.label}` : "Confirm"}
-              </AlertDialogTitle>
-              <AlertDialogDescription>
-                {getConfirmDescription(row, confirmingAction?.label)}
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel autoFocus>Cancel</AlertDialogCancel>
-              <AlertDialogAction
-                onClick={handleConfirm}
-                className={
-                  confirmingAction?.variant === "destructive"
-                    ? "bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                    : undefined
-                }
-              >
-                {confirmingAction?.label ?? "Confirm"}
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
       </>
     );
   }
@@ -128,34 +78,6 @@ export function DataTableActions({ row }: DataTableActionsProps) {
           ))}
         </DropdownMenuContent>
       </DropdownMenu>
-      <AlertDialog
-        open={!!confirmingAction}
-        onOpenChange={(open) => !open && setConfirmingAction(null)}
-      >
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>
-              {confirmingAction ? `Confirm ${confirmingAction.label}` : "Confirm"}
-            </AlertDialogTitle>
-            <AlertDialogDescription>
-              {getConfirmDescription(row, confirmingAction?.label)}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel autoFocus>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleConfirm}
-              className={
-                confirmingAction?.variant === "destructive"
-                  ? "bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                  : undefined
-              }
-            >
-              {confirmingAction?.label ?? "Confirm"}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </>
   );
 }

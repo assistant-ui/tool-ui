@@ -205,6 +205,18 @@ export interface DataTableClientProps<T extends object = RowData> {
   isLoading?: boolean;
   /** Additional CSS classes */
   className?: string;
+  /**
+   * Optional preflight hook to decide whether an action should proceed.
+   * Return false (or a Promise resolving to false) to cancel the action.
+   *
+   * Treats `requiresConfirmation` on the action as metadata only; the table
+   * does not enforce confirmation.
+   */
+  onBeforeAction?: (args: {
+    action: Action;
+    row: T | DataTableRowData;
+    messageId?: string;
+  }) => boolean | Promise<boolean>;
   /** Action button click handler (required if actions are provided) */
   onAction?: (
     actionId: string,
@@ -276,6 +288,7 @@ interface DataTableContextValue<T extends object = RowData> {
   sortBy?: ColumnKey<T>;
   sortDirection?: "asc" | "desc";
   toggleSort?: (key: ColumnKey<T>) => void;
+  onBeforeAction?: DataTableProps<T>["onBeforeAction"];
   onAction?: DataTableProps<T>["onAction"];
   messageId?: string;
   isLoading?: boolean;
@@ -308,6 +321,7 @@ export function DataTable<T extends object = RowData>({
   isLoading = false,
   maxHeight,
   messageId,
+  onBeforeAction,
   onAction,
   onSortChange,
   className,
@@ -393,6 +407,7 @@ export function DataTable<T extends object = RowData>({
     sortBy,
     sortDirection,
     toggleSort: handleSort,
+    onBeforeAction,
     onAction,
     messageId,
     isLoading,

@@ -104,7 +104,6 @@ export default function Example() {
    - UI dependencies used internally (shadcn‑style):
      - `@/components/ui/button`
      - `@/components/ui/dropdown-menu`
-     - `@/components/ui/alert-dialog`
      - `@/components/ui/accordion`
      - `@/components/ui/tooltip`
      - `@/components/ui/badge` (used for status/badge formats)
@@ -131,6 +130,7 @@ export default function Example() {
 | `data` | `T[]` | ✅ | — | Serializable rows. Values must be primitives or arrays of primitives. |
 | `rowIdKey` | `string` | — | — | Strongly recommended. Used to build stable React keys and mobile IDs (e.g., "id" or "symbol"). |
 | `actions` | `Action[]` | — | — | Row‑level actions. ≤2 renders inline buttons; >2 collapses into a menu. |
+| `onBeforeAction` | `({ action, row, messageId }) => boolean \| Promise<boolean>` | — | — | Preflight: return `false` to cancel. Lets you implement confirmation your way. |
 | `onAction` | `(actionId, row, ctx) => void` | — | — | Called when an action is triggered. `ctx = { messageId?: string }`. |
 | `isLoading` | `boolean` | — | `false` | Skeleton state. |
 | `emptyMessage` | `string` | — | `"No data available"` | Message when `data.length === 0`. |
@@ -177,14 +177,14 @@ export interface Action {
   id: string;
   label: string;
   variant?: "default" | "secondary" | "ghost" | "destructive";
-  requiresConfirmation?: boolean; // if true, uses an AlertDialog confirmation
+  requiresConfirmation?: boolean; // metadata; use onBeforeAction to confirm
 }
 ```
 
 Actions are rendered accessibly:
 - **≤2 actions**: inline buttons for easier hit targets.
 - **>2 actions**: single "…" menu with options.
-- **Confirmation flows** use shadcn AlertDialog.
+- No built‑in confirm dialog. Implement confirmation via `onBeforeAction`.
 
 ---
 
@@ -326,7 +326,7 @@ Do not put complex objects into cell values. Use a format config (e.g., `link`, 
 
 ## Actions
 
-Inline buttons or a menu, with optional confirmation. Works the same on mobile (actions move into the card).
+Inline buttons or a menu. No built‑in confirmation. Use `onBeforeAction` to implement your preferred pattern (native confirm, toast+undo, custom modal). Works the same on mobile (actions move into the card).
 
 ```tsx
 <DataTable
@@ -337,12 +337,48 @@ Inline buttons or a menu, with optional confirmation. Works the same on mobile (
     { id: "watch", label: "Add to Watchlist", variant: "secondary" },
     { id: "danger", label: "Nuke", variant: "destructive", requiresConfirmation: true },
   ]}
+  onBeforeAction={({ action, row }) => action.requiresConfirmation ? window.confirm(`Confirm ${action.label.toLowerCase()}?`) : true}
   onAction={(actionId, row, { messageId }) => {
     // Send an event, call an API, etc.
     console.log({ actionId, row, messageId });
   }}
   messageId="msg_123" // passed to onAction for analytics
 />
+
+### Optional: Radix confirm provider (recipe)
+
+If you use shadcn/Radix, you can centralize confirmation with a provider:
+
+```tsx
+import { ConfirmProvider, useConfirm } from "@/components/data-table/extras/radix-confirm";
+
+function TableWithConfirm() {
+  const confirm = useConfirm();
+  return (
+    <DataTable
+      actions={[{ id: 'delete', label: 'Delete', variant: 'destructive', requiresConfirmation: true }]}
+      onBeforeAction={({ action, row }) => {
+        if (!action.requiresConfirmation) return true;
+        return confirm({
+          title: `Confirm ${action.label}`,
+          description: `This will ${action.label.toLowerCase()} ${String((row as any).name ?? 'this item')}.`,
+          confirmText: action.label,
+          destructive: action.variant === 'destructive',
+        });
+      }}
+      onAction={(id, row) => {/* ... */}}
+    />
+  );
+}
+
+export default function Page() {
+  return (
+    <ConfirmProvider>
+      <TableWithConfirm />
+    </ConfirmProvider>
+  );
+}
+```
 ```
 
 ---

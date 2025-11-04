@@ -9,20 +9,10 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
 import { useDataTable } from "./data-table";
 import type { Column, DataTableRowData, Action } from "./data-table";
 import { renderFormattedValue } from "./formatters";
-import { getRowIdentifier, getConfirmDescription } from "./utilities";
+import { getRowIdentifier } from "./utilities";
 
 interface DataTableAccordionCardProps {
   row: DataTableRowData;
@@ -60,26 +50,14 @@ export function DataTableAccordionCard({
   row,
   index,
 }: DataTableAccordionCardProps) {
-  const { columns, actions, onAction, messageId, locale, rowIdKey } = useDataTable();
-  const [confirmingAction, setConfirmingAction] = React.useState<Action | null>(
-    null,
-  );
+  const { columns, actions, onAction, onBeforeAction, messageId, locale, rowIdKey } = useDataTable();
   const { primary, secondary } = categorizeColumns(columns);
 
-  const handleAction = (action: Action, e?: React.MouseEvent) => {
+  const handleAction = async (action: Action, e?: React.MouseEvent) => {
     e?.stopPropagation();
-    if (action.requiresConfirmation) {
-      setConfirmingAction(action);
-    } else {
-      onAction?.(action.id, row, { messageId });
-    }
-  };
-
-  const handleConfirm = () => {
-    if (confirmingAction) {
-      onAction?.(confirmingAction.id, row, { messageId });
-      setConfirmingAction(null);
-    }
+    const proceed = (await onBeforeAction?.({ action, row, messageId })) ?? true;
+    if (!proceed) return;
+    onAction?.(action.id, row, { messageId });
   };
 
   if (secondary.length === 0 && (!actions || actions.length === 0)) {
@@ -214,34 +192,6 @@ export function DataTableAccordionCard({
           )}
         </AccordionContent>
       </AccordionItem>
-      <AlertDialog
-        open={!!confirmingAction}
-        onOpenChange={(open) => !open && setConfirmingAction(null)}
-      >
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>
-              {confirmingAction ? `Confirm ${confirmingAction.label}` : "Confirm"}
-            </AlertDialogTitle>
-            <AlertDialogDescription>
-              {getConfirmDescription(row, confirmingAction?.label)}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel autoFocus>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleConfirm}
-              className={
-                confirmingAction?.variant === "destructive"
-                  ? "bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                  : undefined
-              }
-            >
-              {confirmingAction?.label ?? "Confirm"}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </Accordion>
   );
 }
@@ -258,26 +208,14 @@ function SimpleCard({
   columns: Column[];
   index: number;
 }) {
-  const { onAction, actions, messageId, locale, rowIdKey } = useDataTable();
-  const [confirmingAction, setConfirmingAction] = React.useState<Action | null>(
-    null,
-  );
+  const { onAction, onBeforeAction, actions, messageId, locale, rowIdKey } = useDataTable();
   const primaryColumn = columns[0];
   const otherColumns = columns.slice(1);
 
-  const handleAction = (action: Action) => {
-    if (action.requiresConfirmation) {
-      setConfirmingAction(action);
-    } else {
-      onAction?.(action.id, row, { messageId });
-    }
-  };
-
-  const handleConfirm = () => {
-    if (confirmingAction) {
-      onAction?.(confirmingAction.id, row, { messageId });
-      setConfirmingAction(null);
-    }
+  const handleAction = async (action: Action) => {
+    const proceed = (await onBeforeAction?.({ action, row, messageId })) ?? true;
+    if (!proceed) return;
+    onAction?.(action.id, row, { messageId });
   };
 
   const stableRowId =
@@ -353,34 +291,6 @@ function SimpleCard({
           </div>
         )}
       </div>
-      <AlertDialog
-        open={!!confirmingAction}
-        onOpenChange={(open) => !open && setConfirmingAction(null)}
-      >
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>
-              {confirmingAction ? `Confirm ${confirmingAction.label}` : "Confirm"}
-            </AlertDialogTitle>
-            <AlertDialogDescription>
-              {getConfirmDescription(row, confirmingAction?.label)}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel autoFocus>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleConfirm}
-              className={
-                confirmingAction?.variant === "destructive"
-                  ? "bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                  : undefined
-              }
-            >
-              {confirmingAction?.label ?? "Confirm"}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </>
   );
 }

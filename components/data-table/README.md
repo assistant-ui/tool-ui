@@ -77,7 +77,6 @@ components/ui/
 ├── dropdown-menu.tsx
 ├── accordion.tsx
 ├── tooltip.tsx
-├── alert-dialog.tsx  # For action confirmations
 └── button.tsx
 ```
 
@@ -151,6 +150,7 @@ function MyComponent() {
 | `isLoading` | `boolean` | `false` | Show loading skeleton |
 | `emptyMessage` | `string` | `"No data available"` | Empty state message |
 | `maxHeight` | `string` | `undefined` | Max height with vertical scroll |
+| `onBeforeAction` | `(args) => boolean \| Promise<boolean>` | `undefined` | Preflight hook to decide if an action proceeds. Return `false` to cancel. |
 | `onAction` | `function` | `undefined` | Action button click handler |
 | `locale` | `string` | `undefined` | Locale for formatting/sorting (e.g., `en-US`) |
 | `className` | `string` | `undefined` | Additional CSS classes |
@@ -214,8 +214,28 @@ interface Action {
   id: string                       // Action identifier
   label: string                    // Button text
   variant?: 'default' | 'secondary' | 'ghost' | 'destructive'
-  requiresConfirmation?: boolean   // Future: show confirm dialog
+  requiresConfirmation?: boolean   // Metadata only; use onBeforeAction to confirm
 }
+
+Confirmation is application policy, not table behavior. Use `onBeforeAction` to implement confirmation flows the way your app prefers.
+
+Examples:
+
+1) Native confirm (zero deps)
+
+```tsx
+<DataTable
+  actions={[{ id: 'delete', label: 'Delete', variant: 'destructive', requiresConfirmation: true }]}
+  onBeforeAction={({ action, row }) => action.requiresConfirmation ? window.confirm(`Delete ${String((row as any).name ?? 'item')}?`) : true}
+  onAction={(id, row) => performAction(id, row)}
+/>
+```
+
+2) Your modal system (Radix, Headless UI, custom)
+
+Create a `useConfirm()` hook that returns `confirm({ title, body }) => Promise<boolean>` and call it in `onBeforeAction`.
+
+An optional Radix recipe is provided at `components/data-table/extras/radix-confirm.tsx`.
 ```
 
 ## Examples
