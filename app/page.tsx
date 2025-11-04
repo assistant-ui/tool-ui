@@ -163,7 +163,7 @@ export default function HomePage() {
         <div className="flex flex-col gap-2">
           <h1 className="text-6xl font-bold tracking-tight">ToolUI</h1>
           <h2 className="text-2xl tracking-tight">
-            UI widgets for AI tool calls
+            Open source UI widgets for AI chat
           </h2>
         </div>
         <p className="text-muted-foreground text-lg">

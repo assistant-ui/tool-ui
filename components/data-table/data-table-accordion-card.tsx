@@ -157,15 +157,13 @@ function SimpleCard({
   const otherColumns = columns.slice(1);
 
   return (
-    <div className="space-y-2 rounded-lg border p-4">
-      {/* Primary field */}
+    <div className="flex flex-col gap-2 rounded-lg border p-4">
       {primaryColumn && (
         <div className="">
           {renderFormattedValue(row[primaryColumn.key], primaryColumn, row)}
         </div>
       )}
 
-      {/* Other columns */}
       {otherColumns.map((col) => (
         <div key={col.key} className="flex justify-between gap-4">
           <span className="text-muted-foreground">{col.label}:</span>

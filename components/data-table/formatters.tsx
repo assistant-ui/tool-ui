@@ -98,7 +98,7 @@ function StatusBadge({ value, options }: StatusBadgeProps) {
   return (
     <span
       className={cn(
-        "inline-flex items-center rounded-full px-2 py-1",
+        "inline-flex items-center rounded-full px-3 py-1 text-sm",
         toneClasses[config.tone],
       )}
     >
