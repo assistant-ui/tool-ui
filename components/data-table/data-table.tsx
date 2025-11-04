@@ -3,7 +3,6 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
 import { sortData } from "./utilities";
-import { useScrollShadow } from "./use-scroll-shadow";
 import type { FormatConfig } from "./formatters";
 
 /**
@@ -385,7 +384,6 @@ export function DataTable<T extends object = RowData>({
   );
 
   const scrollContainerRef = React.useRef<HTMLDivElement>(null);
-  const scrollShadow = useScrollShadow(scrollContainerRef);
 
   const contextValue: DataTableContextValue<T> = {
     columns,
@@ -453,13 +451,6 @@ export function DataTable<T extends object = RowData>({
                 </table>
               </DataTableErrorBoundary>
             </div>
-
-            {scrollShadow.canScrollLeft && (
-              <div className="from-background pointer-events-none absolute top-0 bottom-0 left-0 z-10 w-8 bg-linear-to-r to-transparent" />
-            )}
-            {scrollShadow.canScrollRight && (
-              <div className="from-background pointer-events-none absolute top-0 right-0 bottom-0 z-10 w-8 bg-linear-to-l to-transparent" />
-            )}
           </div>
           {/* Live region for sort announcements */}
           {(() => {

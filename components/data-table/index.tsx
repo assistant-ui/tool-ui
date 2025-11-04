@@ -25,4 +25,3 @@ export type {
 export type { FormatConfig } from "./formatters";
 
 export { sortData, parseNumericLike } from "./utilities";
-export { useScrollShadow } from "./use-scroll-shadow";

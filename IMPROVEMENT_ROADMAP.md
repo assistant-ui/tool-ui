@@ -567,7 +567,6 @@ Copy these files to your project:
 - `components/data-table/formatters.tsx`
 - `components/data-table/utilities.ts`
 - `components/data-table/schema.ts`
-- `components/data-table/use-scroll-shadow.ts`
 
 ### 2. Install Dependencies
 ```bash

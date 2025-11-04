@@ -64,7 +64,6 @@ components/data-table/
 ├── data-table-cell.tsx
 ├── data-table-actions.tsx
 ├── data-table-accordion-card.tsx  # Mobile card component
-├── use-scroll-shadow.ts           # Scroll detection hook
 ├── error-boundary.tsx             # Error boundary component
 ├── formatters.tsx                 # Value formatters
 ├── schema.ts                      # Zod validation schemas
@@ -1128,8 +1127,6 @@ Initial release with full features:
 - Container queries (`@md:`) for container-based responsiveness
 
 **Desktop Features:**
-- Horizontal scroll gradient shadows for wide tables
-- `useScrollShadow` hook for scroll detection
 - Mobile breakpoint at 768px
 
 **Components:**
