@@ -439,7 +439,7 @@ For tables with many columns, explicitly set priorities:
     { key: 'name', label: 'Company', priority: 'primary' },
     { key: 'price', label: 'Price', priority: 'primary', align: 'right' },
 
-    { key: 'change', label: 'Change %', priority: 'secondary', align: 'right' },
+    { key: 'change', label: 'Change', priority: 'secondary', align: 'right' },
     { key: 'volume', label: 'Volume', priority: 'secondary', align: 'right' },
     { key: 'marketCap', label: 'Market Cap', priority: 'secondary', align: 'right' },
 

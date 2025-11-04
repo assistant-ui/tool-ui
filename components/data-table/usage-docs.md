@@ -69,7 +69,7 @@ const columns: Column<Row>[] = [
 ];
 
 const rows: Row[] = [
-  { symbol: "AAPL", name: "Apple Inc.", price: 178.25, change: 4.12, changePercent: 2.36, volume: 52430000, marketCap: "2.8T" },
+  { symbol: "AAPL", name: "Apple Inc.", price: 178.25, change: 2.35, changePercent: 1.34, volume: 52430000, marketCap: "2.8T" },
   // ...
 ];
 

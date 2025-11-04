@@ -11,15 +11,15 @@ export const sampleStocks: DataTableConfig = {
   columns: [
     { key: "symbol", label: "Symbol" } as Column<Record<string, RowPrimitive>>, 
     { key: "price", label: "Price", align: "right", format: { kind: "currency", currency: "USD", decimals: 2 } } as Column<Record<string, RowPrimitive>>,
-    { key: "change", label: "Change %", align: "right", format: { kind: "percent", decimals: 2, showSign: true, basis: "unit" } } as Column<Record<string, RowPrimitive>>,
+    { key: "change", label: "Change", align: "right", format: { kind: "delta", decimals: 2, upIsPositive: true, showSign: true } } as Column<Record<string, RowPrimitive>>,
     { key: "volume", label: "Volume", align: "right", format: { kind: "number", compact: true } } as Column<Record<string, RowPrimitive>>,
   ],
   data: [
-    { symbol: "AAPL", price: 178.25, change: 2.3, volume: 52431200 },
-    { symbol: "GOOGL", price: 142.5, change: -0.8, volume: 28392100 },
-    { symbol: "MSFT", price: 380.0, change: 1.2, volume: 31284500 },
-    { symbol: "AMZN", price: 152.75, change: -1.5, volume: 48392100 },
-    { symbol: "TSLA", price: 242.8, change: 3.7, volume: 115382900 },
+    { symbol: "AAPL", price: 178.25, change: 2.35, volume: 52431200 },
+    { symbol: "GOOGL", price: 142.5, change: -0.87, volume: 28392100 },
+    { symbol: "MSFT", price: 380.0, change: 1.24, volume: 31284500 },
+    { symbol: "AMZN", price: 152.75, change: 3.12, volume: 48392100 },
+    { symbol: "TSLA", price: 242.8, change: -5.67, volume: 115382900 },
   ],
   actions: [
     { id: "view", label: "View Details", variant: "default" },
