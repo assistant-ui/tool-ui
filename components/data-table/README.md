@@ -802,18 +802,80 @@ See [Browser Support](#browser-support) for more details.
 
 ## Accessibility
 
-### Keyboard Navigation
+The DataTable component is designed with comprehensive accessibility support for both desktop and mobile layouts.
 
+### Desktop Table Accessibility
+
+**Semantic HTML Structure:**
+- Proper `<table>`, `<thead>`, `<tbody>`, `<tr>`, `<th>`, `<td>` elements
+- Column headers use `<th scope="col">` for proper associations
+- Sortable headers announce state via `aria-sort` attribute
+- Live region announces sort changes (`aria-live="polite"`)
+
+**Keyboard Navigation:**
 - `Tab` - Navigate between sortable headers and action buttons
 - `Enter` / `Space` - Activate sort or action button
 - `↓` / `↑` - Navigate dropdown menu (when 3+ actions)
 - `Esc` - Close dropdown menu
 
-### Screen Reader Support
+### Mobile Card Accessibility
 
-- Semantic HTML (`<table>`, `<thead>`, `<tbody>`, `<tr>`, `<th>`, `<td>`)
-- Sortable headers announce state via `aria-sort`
-- Action buttons include row context (future enhancement)
+**Critical:** When the table switches to accordion card layout on mobile, it maintains table semantics through ARIA roles to preserve the screen reader experience.
+
+**ARIA Table Semantics:**
+- Container has `role="table"` with descriptive label
+- Each card has `role="row"` with accessible row identifier
+- Data cells have `role="cell"` with proper labeling
+- Hidden description lists all column names for context
+
+**Heading Structure:**
+- Primary field in each card uses `role="heading" aria-level="3"`
+- Creates navigable landmark for screen reader users
+- Provides hierarchy: page → table → row → heading
+
+**Accessible Labels:**
+- Each row: `"Row N: [primary value]"` (e.g., "Row 1: AAPL")
+- Each data cell: `"[Column label]: [value]"` (e.g., "Price: $174.50")
+- Action buttons: `"[Action] [primary value]"` (e.g., "Delete AAPL")
+- Expandable sections: `"Row details"` region
+
+**ARIA Relationships:**
+- `aria-labelledby` links data values to their labels
+- `aria-describedby` connects expanded content to trigger
+- `role="group"` for summary information sections
+- `role="region"` for expandable detail areas
+
+**Example Screen Reader Experience:**
+```
+Desktop table mode:
+  → "Data table, 10 rows, 7 columns"
+  → "Symbol column header, sortable, sorted ascending"
+  → "AAPL, row 1"
+  → "Price: $174.50"
+
+Mobile card mode:
+  → "Data table, mobile card view. Table data shown as expandable cards."
+  → "Row 1: AAPL, button expanded"
+  → "Heading level 3: AAPL"
+  → "Price: $174.50"
+  → "Row details region"
+  → "Additional data list"
+```
+
+### Screen Reader Testing
+
+Tested with:
+- **NVDA** (Windows) with Chrome/Firefox
+- **JAWS** (Windows) with Chrome/Edge
+- **VoiceOver** (macOS/iOS) with Safari
+- **TalkBack** (Android) with Chrome
+
+All major screen readers correctly:
+- Announce table structure in both desktop and mobile modes
+- Navigate between rows and cells
+- Read column labels with data values
+- Announce sort state changes
+- Describe expandable content
 
 ## Advanced: Compound Components
 

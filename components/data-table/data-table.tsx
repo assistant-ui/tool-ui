@@ -372,12 +372,22 @@ export function DataTable<T extends object = RowData>({
           })()}
         </div>
 
+        {/* Mobile card view - preserves table semantics with ARIA */}
         <div
           className={cn(
             "space-y-3",
             supportsContainerQueries ? "@md:hidden" : "md:hidden",
           )}
+          role="table"
+          aria-label="Data table (mobile card view)"
+          aria-describedby="mobile-table-description"
         >
+          {/* Screen reader description */}
+          <div id="mobile-table-description" className="sr-only">
+            Table data shown as expandable cards. Each card represents one row.
+            {columns.length > 0 && ` Columns: ${columns.map((c) => c.label).join(", ")}.`}
+          </div>
+
           <DataTableErrorBoundary>
             {isLoading ? (
               <DataTableSkeletonCards />
