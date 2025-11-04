@@ -396,7 +396,7 @@ export function DataTableExample() {
         <p className="text-muted-foreground mb-4 text-sm">
           Demonstrates: currency, delta (gains/losses), percent, compact numbers
         </p>
-        <DataTable columns={stockColumns} data={stockData} />
+        <DataTable rowIdKey="symbol" columns={stockColumns} data={stockData} />
       </div>
 
       <div>
@@ -405,6 +405,7 @@ export function DataTableExample() {
           Demonstrates: status pills, priority badges, dates, boolean values
         </p>
         <DataTable
+          rowIdKey="title"
           columns={taskColumns}
           data={taskData}
           actions={[
@@ -424,7 +425,7 @@ export function DataTableExample() {
           Demonstrates: numbers with units, inverted delta (lower is better),
           percent
         </p>
-        <DataTable columns={metricsColumns} data={metricsData} />
+        <DataTable rowIdKey="endpoint" columns={metricsColumns} data={metricsData} />
       </div>
 
       <div>
@@ -432,12 +433,13 @@ export function DataTableExample() {
         <p className="text-muted-foreground mb-4 text-sm">
           Demonstrates: links, badges, tag arrays, relative dates
         </p>
-        <DataTable columns={resourceColumns} data={resourceData} />
+        <DataTable rowIdKey="name" columns={resourceColumns} data={resourceData} />
       </div>
 
       <div>
         <h2 className="mb-2 text-2xl">Empty State</h2>
         <DataTable
+          rowIdKey="symbol"
           columns={stockColumns}
           data={[]}
           emptyMessage="No data available. Try adjusting your filters."
@@ -454,6 +456,7 @@ export function DataTableExample() {
             Toggle Loading
           </button>
           <DataTable
+            rowIdKey="symbol"
             columns={stockColumns}
             data={stockData}
             isLoading={isLoading}
@@ -464,6 +467,7 @@ export function DataTableExample() {
       <div>
         <h2 className="mb-2 text-2xl">With Max Height (Scrollable)</h2>
         <DataTable
+          rowIdKey="symbol"
           columns={stockColumns}
           data={[...stockData, ...stockData, ...stockData]}
           maxHeight="300px"

@@ -4,6 +4,7 @@
   "private": true,
   "description": "Open source component library for tool call widgets",
   "license": "Apache-2.0",
+  "sideEffects": false,
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
