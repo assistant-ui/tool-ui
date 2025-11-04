@@ -325,6 +325,56 @@ Set an initial sort without managing state:
 />
 ```
 
+### Sorting Tri-State Cycle
+
+**Critical:** The DataTable uses a tri-state sorting cycle that allows users to return to the unsorted state.
+
+**Cycle behavior:**
+1. **Unsorted** (initial state) → Click header → **Ascending**
+2. **Ascending** → Click same header → **Descending**
+3. **Descending** → Click same header → **Unsorted** (returns to original order)
+4. Click **different column** → **Ascending** (on that column)
+
+**Why tri-state?**
+- Users may want to return to original insertion/chronological order
+- Common in data exploration workflows
+- Matches user expectations from spreadsheet software
+
+**Visual indicators:**
+- Unsorted: No icon
+- Ascending: ↑ icon (`aria-sort="ascending"`)
+- Descending: ↓ icon (`aria-sort="descending"`)
+
+**Example with controlled state:**
+```tsx
+const [sort, setSort] = useState<{ by?: string; direction?: 'asc' | 'desc' }>({
+  by: 'price',
+  direction: 'desc'
+})
+
+<DataTable
+  sort={sort}
+  onSortChange={(next) => {
+    // next.by and next.direction will be undefined when returning to unsorted
+    console.log('Sort state:', next)
+    setSort(next)
+  }}
+/>
+```
+
+**Handling unsorted state:**
+```tsx
+onSortChange={(next) => {
+  if (!next.by || !next.direction) {
+    console.log('User returned to unsorted state')
+    // Display data in original order
+  } else {
+    console.log(`Sorting by ${next.by} ${next.direction}`)
+  }
+  setSort(next)
+}}
+```
+
 ### With Actions
 
 ```tsx

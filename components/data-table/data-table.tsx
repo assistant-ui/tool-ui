@@ -127,9 +127,31 @@ export interface DataTableSerializableProps<T extends object = RowData> {
    * @example rowIdKey="id" or rowIdKey="uuid"
    */
   rowIdKey?: ColumnKey<T>;
-  /** Uncontrolled initial sort state */
+  /**
+   * Uncontrolled initial sort state (table manages its own sort state internally)
+   *
+   * **Sorting cycle:** Clicking column headers cycles through tri-state:
+   * 1. none (unsorted) → 2. asc → 3. desc → 4. none (back to unsorted)
+   *
+   * @example
+   * ```tsx
+   * // Start with descending price sort
+   * <DataTable defaultSort={{ by: "price", direction: "desc" }} />
+   * ```
+   */
   defaultSort?: { by?: ColumnKey<T>; direction?: "asc" | "desc" };
-  /** Controlled sort state (use with onSortChange from client props) */
+  /**
+   * Controlled sort state (use with onSortChange from client props)
+   *
+   * When provided, you must also provide `onSortChange` to handle sort updates.
+   * The table will cycle through: none → asc → desc → none.
+   *
+   * @example
+   * ```tsx
+   * const [sort, setSort] = useState({ by: "price", direction: "desc" })
+   * <DataTable sort={sort} onSortChange={setSort} />
+   * ```
+   */
   sort?: { by?: ColumnKey<T>; direction?: "asc" | "desc" };
   /** Empty state message */
   emptyMessage?: string;
@@ -171,7 +193,28 @@ export interface DataTableClientProps<T extends object = RowData> {
       sendMessage?: (message: string) => void;
     },
   ) => void;
-  /** Sort change handler for controlled mode (required if sort is provided) */
+  /**
+   * Sort change handler for controlled mode (required if sort is provided)
+   *
+   * **Tri-state cycle behavior:**
+   * - Click unsorted column: `{ by: "column", direction: "asc" }`
+   * - Click asc column: `{ by: "column", direction: "desc" }`
+   * - Click desc column: `{ by: undefined, direction: undefined }` (returns to unsorted)
+   * - Click different column: `{ by: "newColumn", direction: "asc" }`
+   *
+   * @example
+   * ```tsx
+   * const [sort, setSort] = useState<{ by?: string; direction?: "asc" | "desc" }>({})
+   *
+   * <DataTable
+   *   sort={sort}
+   *   onSortChange={(next) => {
+   *     console.log("Sort changed:", next)
+   *     setSort(next)
+   *   }}
+   * />
+   * ```
+   */
   onSortChange?: (next: { by?: ColumnKey<T>; direction?: "asc" | "desc" }) => void;
 }
 
@@ -269,19 +312,31 @@ export function DataTable<T extends object = RowData>({
     return sortData(rawData, sortBy, sortDirection, resolvedLocale);
   }, [rawData, sortBy, sortDirection, resolvedLocale]);
 
+  /**
+   * Tri-state sorting cycle implementation
+   *
+   * Cycle behavior:
+   * - none (unsorted) → asc → desc → none
+   * - Clicking different column resets to asc
+   *
+   * This allows users to return to original data order, which is important
+   * for exploring data by insertion/chronological order.
+   */
   const handleSort = React.useCallback(
     (key: ColumnKey<T>) => {
       let newDirection: "asc" | "desc" | undefined;
 
       if (sortBy === key) {
+        // Same column: cycle through asc → desc → none
         if (sortDirection === "asc") {
           newDirection = "desc";
         } else if (sortDirection === "desc") {
-          newDirection = undefined;
+          newDirection = undefined; // Return to unsorted
         } else {
           newDirection = "asc";
         }
       } else {
+        // Different column: start with ascending
         newDirection = "asc";
       }
 
