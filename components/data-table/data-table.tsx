@@ -80,9 +80,10 @@ interface DataTableContextValue<T extends object = RowData> {
   isLoading?: boolean;
 }
 
-const DataTableContext = React.createContext<DataTableContextValue | undefined>(
-  undefined,
-);
+const DataTableContext = React.createContext<
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  DataTableContextValue<any> | undefined
+>(undefined);
 
 export function useDataTable<T extends object = RowData>() {
   const context = React.useContext(DataTableContext) as
@@ -171,7 +172,7 @@ export function DataTable<T extends object = RowData>({
   };
 
   return (
-    <DataTableContext.Provider value={contextValue as unknown as DataTableContextValue}>
+    <DataTableContext.Provider value={contextValue}>
       <div className={cn("@container w-full", className)}>
         <div className="hidden @md:block">
           <div className="relative">
@@ -188,22 +189,24 @@ export function DataTable<T extends object = RowData>({
                   : undefined
               }
             >
-              <table className="w-full border-collapse">
-                {isLoading ? (
-                  <DataTableSkeleton />
-                ) : data.length === 0 ? (
-                  <DataTableEmpty message={emptyMessage} />
-                ) : (
-                  <>
-                    {React.Children.toArray(
-                      React.Children.map(
-                        React.createElement(DataTableContent, null),
-                        (child) => child,
-                      ),
-                    )}
-                  </>
-                )}
-              </table>
+              <DataTableErrorBoundary>
+                <table className="w-full border-collapse">
+                  {isLoading ? (
+                    <DataTableSkeleton />
+                  ) : data.length === 0 ? (
+                    <DataTableEmpty message={emptyMessage} />
+                  ) : (
+                    <>
+                      {React.Children.toArray(
+                        React.Children.map(
+                          React.createElement(DataTableContent, null),
+                          (child) => child,
+                        ),
+                      )}
+                    </>
+                  )}
+                </table>
+              </DataTableErrorBoundary>
             </div>
 
             {scrollShadow.canScrollLeft && (
@@ -216,21 +219,27 @@ export function DataTable<T extends object = RowData>({
         </div>
 
         <div className="space-y-3 @md:hidden">
-          {isLoading ? (
-            <DataTableSkeletonCards />
-          ) : data.length === 0 ? (
-            <div className="text-muted-foreground py-8 text-center">
-              {emptyMessage}
-            </div>
-          ) : (
-            data.map((row, i) => {
-              const keyVal = rowIdKey ? row[rowIdKey] : undefined;
-              const rowKey = keyVal != null ? String(keyVal) : String(i);
-              return (
-                <DataTableAccordionCard key={rowKey} row={row as unknown as DataTableRowData} index={i} />
-              );
-            })
-          )}
+          <DataTableErrorBoundary>
+            {isLoading ? (
+              <DataTableSkeletonCards />
+            ) : data.length === 0 ? (
+              <div className="text-muted-foreground py-8 text-center">
+                {emptyMessage}
+              </div>
+            ) : (
+              data.map((row, i) => {
+                const keyVal = rowIdKey ? row[rowIdKey] : undefined;
+                const rowKey = keyVal != null ? String(keyVal) : String(i);
+                return (
+                  <DataTableAccordionCard
+                    key={rowKey}
+                    row={row as unknown as DataTableRowData}
+                    index={i}
+                  />
+                );
+              })
+            )}
+          </DataTableErrorBoundary>
         </div>
       </div>
     </DataTableContext.Provider>
@@ -309,3 +318,4 @@ function DataTableSkeletonCards() {
 import { DataTableHeader } from "./data-table-header";
 import { DataTableBody } from "./data-table-body";
 import { DataTableAccordionCard } from "./data-table-accordion-card";
+import { DataTableErrorBoundary } from "./error-boundary";

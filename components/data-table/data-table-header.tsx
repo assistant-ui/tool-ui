@@ -22,7 +22,10 @@ export function DataTableHeader() {
             <DataTableHead key={column.key} column={column} />
           ))}
           {actions && actions.length > 0 && (
-            <th className="text-muted-foreground px-4 py-3 text-left font-normal">
+            <th
+              scope="col"
+              className="text-muted-foreground px-4 py-3 text-left font-normal"
+            >
               Actions
             </th>
           )}
@@ -67,26 +70,15 @@ export function DataTableHead({ column }: DataTableHeadProps) {
 
   return (
     <th
+      scope="col"
       className={cn(
         "font-normal",
         "text-muted-foreground px-4",
         "py-3 @md:py-3",
         "max-w-[150px]",
         alignClass,
-        !isDisabled &&
-          "hover:text-foreground active:bg-muted/50 cursor-pointer select-none",
-        isDisabled && "cursor-not-allowed opacity-60",
       )}
       style={column.width ? { width: column.width } : undefined}
-      onClick={handleClick}
-      onKeyDown={(e) => {
-        if (isDisabled) return;
-        if (e.key === "Enter" || e.key === " ") {
-          e.preventDefault();
-          handleClick();
-        }
-      }}
-      tabIndex={isDisabled ? -1 : 0}
       aria-sort={
         isSorted
           ? direction === "asc"
@@ -94,14 +86,30 @@ export function DataTableHead({ column }: DataTableHeadProps) {
             : "descending"
           : undefined
       }
-      aria-disabled={isDisabled || undefined}
     >
-      <div
+      <button
+        type="button"
+        onClick={handleClick}
+        onKeyDown={(e) => {
+          if (isDisabled) return;
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            handleClick();
+          }
+        }}
+        disabled={isDisabled}
         className={cn(
-          "inline-flex min-w-0 items-center gap-1",
+          "inline-flex w-full min-w-0 items-center gap-1",
+          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded",
+          alignClass,
+          !isDisabled &&
+            "hover:text-foreground active:bg-muted/50 cursor-pointer select-none",
+          isDisabled && "cursor-not-allowed opacity-60",
           column.align === "right" && "flex-row-reverse",
           column.align === "center" && "justify-center",
         )}
+        aria-label={`Sort by ${column.label}`}
+        aria-disabled={isDisabled || undefined}
       >
         {shouldShowTooltip ? (
           <Tooltip>
@@ -137,7 +145,7 @@ export function DataTableHead({ column }: DataTableHeadProps) {
             )}
           </span>
         )}
-      </div>
+      </button>
     </th>
   );
 }

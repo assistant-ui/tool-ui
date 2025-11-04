@@ -24,7 +24,8 @@ export function DataTableCell({
       k === "number" || k === "currency" || k === "percent" || k === "delta"
     );
   })();
-  const align = column.align ?? (isNumericKind ? "right" : "left");
+  const isNumericValue = typeof value === "number";
+  const align = column.align ?? (isNumericKind || isNumericValue ? "right" : "left");
   const alignClass = {
     left: "text-left",
     right: "text-right",

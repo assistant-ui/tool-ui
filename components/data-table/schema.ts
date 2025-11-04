@@ -5,21 +5,70 @@ const alignEnum = z.enum(["left", "right", "center"]);
 const priorityEnum = z.enum(["primary", "secondary", "tertiary"]);
 const variantEnum = z.enum(["default", "secondary", "ghost", "destructive"]);
 
-const formatKindEnum = z.enum([
-  "text",
-  "number",
-  "currency",
-  "percent",
-  "date",
-  "delta",
-  "status",
-  "boolean",
-  "link",
-  "badge",
-  "array",
+const formatSchema = z.discriminatedUnion("kind", [
+  z.object({ kind: z.literal("text") }),
+  z.object({
+    kind: z.literal("number"),
+    decimals: z.number().optional(),
+    unit: z.string().optional(),
+    compact: z.boolean().optional(),
+    showSign: z.boolean().optional(),
+  }),
+  z.object({
+    kind: z.literal("currency"),
+    currency: z.string(),
+    decimals: z.number().optional(),
+  }),
+  z.object({
+    kind: z.literal("percent"),
+    decimals: z.number().optional(),
+    showSign: z.boolean().optional(),
+    basis: z.enum(["fraction", "unit"]).optional(),
+  }),
+  z.object({
+    kind: z.literal("date"),
+    dateFormat: z.enum(["short", "long", "relative"]).optional(),
+  }),
+  z.object({
+    kind: z.literal("delta"),
+    decimals: z.number().optional(),
+    upIsPositive: z.boolean().optional(),
+    showSign: z.boolean().optional(),
+  }),
+  z.object({
+    kind: z.literal("status"),
+    statusMap: z.record(
+      z.object({
+        tone: z.enum(["success", "warning", "danger", "info", "neutral"]),
+        label: z.string().optional(),
+      }),
+    ),
+  }),
+  z.object({
+    kind: z.literal("boolean"),
+    labels: z
+      .object({
+        true: z.string(),
+        false: z.string(),
+      })
+      .optional(),
+  }),
+  z.object({
+    kind: z.literal("link"),
+    hrefKey: z.string().optional(),
+    external: z.boolean().optional(),
+  }),
+  z.object({
+    kind: z.literal("badge"),
+    colorMap: z
+      .record(z.enum(["success", "warning", "danger", "info", "neutral"]))
+      .optional(),
+  }),
+  z.object({
+    kind: z.literal("array"),
+    maxVisible: z.number().optional(),
+  }),
 ]);
-
-const formatSchema = z.object({ kind: formatKindEnum }).passthrough();
 
 export const serializableColumnSchema = z.object({
   key: z.string(),
