@@ -174,7 +174,7 @@ export default function HomePage() {
         <div className="flex justify-start gap-4">
           <Link
             href="/playground"
-            className="bg-primary text-primary-foreground rounded-md px-6 py-3 font-medium"
+            className="bg-primary text-primary-foreground rounded-md px-6 py-3"
           >
             Go to Playground
           </Link>

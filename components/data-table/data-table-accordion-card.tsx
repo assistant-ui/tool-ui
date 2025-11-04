@@ -68,7 +68,7 @@ export function DataTableAccordionCard({
             <div className="min-w-0 flex-1">
               {/* Primary field (title) */}
               {primaryColumn && (
-                <div className="truncate text-base font-medium">
+                <div className="truncate">
                   {renderFormattedValue(
                     row[primaryColumn.key],
                     primaryColumn,
@@ -79,11 +79,11 @@ export function DataTableAccordionCard({
 
               {/* Secondary primary fields (subtitle area) */}
               {secondaryPrimary.length > 0 && (
-                <div className="text-muted-foreground mt-1 flex flex-wrap gap-x-3 gap-y-1 text-sm">
+                <div className="text-muted-foreground mt-1 flex flex-wrap gap-x-3 gap-y-1">
                   {secondaryPrimary.map((col) => (
                     <span key={col.key} className="truncate">
                       {col.label}:{" "}
-                      <span className="font-medium">
+                      <span>
                         {renderFormattedValue(row[col.key], col, row)}
                       </span>
                     </span>
@@ -99,16 +99,13 @@ export function DataTableAccordionCard({
           {secondary.length > 0 && (
             <dl className="mb-4 space-y-2">
               {secondary.map((col) => (
-                <div
-                  key={col.key}
-                  className="flex justify-between gap-4 text-sm"
-                >
+                <div key={col.key} className="flex justify-between gap-4">
                   <dt className="text-muted-foreground shrink-0">
                     {col.label}
                   </dt>
                   <dd
                     className={cn(
-                      "text-foreground font-medium",
+                      "text-foreground",
                       col.align === "right" && "text-right",
                       col.align === "center" && "text-center",
                     )}
@@ -163,18 +160,17 @@ function SimpleCard({
     <div className="space-y-2 rounded-lg border p-4">
       {/* Primary field */}
       {primaryColumn && (
-        <div className="text-base font-medium">
+        <div className="">
           {renderFormattedValue(row[primaryColumn.key], primaryColumn, row)}
         </div>
       )}
 
       {/* Other columns */}
       {otherColumns.map((col) => (
-        <div key={col.key} className="flex justify-between gap-4 text-sm">
+        <div key={col.key} className="flex justify-between gap-4">
           <span className="text-muted-foreground">{col.label}:</span>
           <span
             className={cn(
-              "font-medium",
               col.align === "right" && "text-right",
               col.align === "center" && "text-center",
             )}

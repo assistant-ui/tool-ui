@@ -81,7 +81,6 @@ export const Thread: FC = () => {
   );
 };
 
-// User Message Component
 const UserMessage: FC = () => {
   return (
     <MessagePrimitive.Root className="mb-4 flex justify-end">
@@ -92,7 +91,6 @@ const UserMessage: FC = () => {
   );
 };
 
-// Assistant Message Component
 const AssistantMessage: FC = () => {
   return (
     <MessagePrimitive.Root className="mb-4 flex justify-start">

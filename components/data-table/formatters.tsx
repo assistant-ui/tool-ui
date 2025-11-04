@@ -68,7 +68,7 @@ function DeltaValue({ value, options }: DeltaValueProps) {
   const arrow = isPositive ? "↑" : isNegative ? "↓" : "";
 
   return (
-    <span className={cn("font-medium tabular-nums", colorClass)}>
+    <span className={cn("tabular-nums", colorClass)}>
       {display}
       {!isNeutral && <span className="ml-0.5">{arrow}</span>}
     </span>
@@ -98,7 +98,7 @@ function StatusBadge({ value, options }: StatusBadgeProps) {
   return (
     <span
       className={cn(
-        "inline-flex items-center rounded-full px-2 py-1 text-xs font-medium",
+        "inline-flex items-center rounded-full px-2 py-1",
         toneClasses[config.tone],
       )}
     >
@@ -238,7 +238,7 @@ function BooleanValue({ value, options }: BooleanValueProps) {
   return (
     <span
       className={cn(
-        "inline-flex items-center rounded-full px-2 py-1 text-xs font-medium",
+        "inline-flex items-center rounded-full px-2 py-1",
         toneClasses[tone],
       )}
     >
@@ -273,10 +273,7 @@ function LinkValue({ value, options, row }: LinkValueProps) {
     >
       {value}
       {external && (
-        <span
-          className="ml-1 inline-block text-xs"
-          aria-label="Opens in new tab"
-        >
+        <span className="ml-1 inline-block" aria-label="Opens in new tab">
           ↗
         </span>
       )}
@@ -330,7 +327,7 @@ function BadgeValue({ value, options }: BadgeValueProps) {
   return (
     <span
       className={cn(
-        "inline-flex items-center rounded-full px-2 py-1 text-xs font-medium",
+        "inline-flex items-center rounded-full px-2 py-1",
         toneClasses[tone],
       )}
     >
@@ -364,13 +361,13 @@ function ArrayValue({ value, options }: ArrayValueProps) {
       {visible.map((item, i) => (
         <span
           key={i}
-          className="bg-muted text-muted-foreground inline-flex items-center rounded-md px-2 py-0.5 text-xs font-medium"
+          className="bg-muted text-muted-foreground inline-flex items-center rounded-md px-2 py-0.5"
         >
           {item}
         </span>
       ))}
       {remaining > 0 && (
-        <span className="text-muted-foreground text-xs">+{remaining} more</span>
+        <span className="text-muted-foreground">+{remaining} more</span>
       )}
     </span>
   );

@@ -144,9 +144,9 @@ export const GetStocksUI = makeAssistantToolUI<
           Showing {count} {count === 1 ? "stock" : "stocks"}
         </div>
         <DataTable<Stock>
+          rowIdKey="symbol"
           columns={columns as Column<Stock>[]}
           data={stocks}
-          rowIdKey="symbol"
         />
       </div>
     );

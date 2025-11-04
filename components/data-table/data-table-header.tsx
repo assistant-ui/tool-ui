@@ -22,7 +22,7 @@ export function DataTableHeader() {
             <DataTableHead key={column.key} column={column} />
           ))}
           {actions && actions.length > 0 && (
-            <th className="text-muted-foreground px-4 py-3 text-left text-sm font-medium">
+            <th className="text-muted-foreground px-4 py-3 text-left font-normal">
               Actions
             </th>
           )}
@@ -68,13 +68,14 @@ export function DataTableHead({ column }: DataTableHeadProps) {
   return (
     <th
       className={cn(
-        "text-muted-foreground px-4 text-sm font-medium",
+        "font-normal",
+        "text-muted-foreground px-4",
         "py-3 @md:py-3",
         "max-w-[150px]",
         alignClass,
         !isDisabled &&
           "hover:text-foreground active:bg-muted/50 cursor-pointer select-none",
-        isDisabled && "opacity-60 cursor-not-allowed",
+        isDisabled && "cursor-not-allowed opacity-60",
       )}
       style={column.width ? { width: column.width } : undefined}
       onClick={handleClick}

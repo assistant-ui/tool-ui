@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { DataTable, type Column, type RowPrimitive } from "./index";
+import { DataTable, type Column } from "./index";
 
 // ============================================================================
 // Stock Example - Demonstrates: currency, delta, percent
@@ -385,12 +385,14 @@ const resourceData = [
 export function DataTableExample() {
   const [isLoading, setIsLoading] = useState(false);
   const [sortBy, setSortBy] = useState<keyof StockRow | undefined>();
-  const [sortDirection, setSortDirection] = useState<"asc" | "desc" | undefined>();
+  const [sortDirection, setSortDirection] = useState<
+    "asc" | "desc" | undefined
+  >();
 
   return (
     <div className="space-y-12 p-8">
       <div>
-        <h2 className="mb-2 text-2xl font-bold">Stock Prices</h2>
+        <h2 className="mb-2 text-2xl">Stock Prices</h2>
         <p className="text-muted-foreground mb-4 text-sm">
           Demonstrates: currency, delta (gains/losses), percent, compact numbers
         </p>
@@ -398,7 +400,7 @@ export function DataTableExample() {
       </div>
 
       <div>
-        <h2 className="mb-2 text-2xl font-bold">Task List</h2>
+        <h2 className="mb-2 text-2xl">Task List</h2>
         <p className="text-muted-foreground mb-4 text-sm">
           Demonstrates: status pills, priority badges, dates, boolean values
         </p>
@@ -417,7 +419,7 @@ export function DataTableExample() {
       </div>
 
       <div>
-        <h2 className="mb-2 text-2xl font-bold">API Metrics</h2>
+        <h2 className="mb-2 text-2xl">API Metrics</h2>
         <p className="text-muted-foreground mb-4 text-sm">
           Demonstrates: numbers with units, inverted delta (lower is better),
           percent
@@ -426,7 +428,7 @@ export function DataTableExample() {
       </div>
 
       <div>
-        <h2 className="mb-2 text-2xl font-bold">Learning Resources</h2>
+        <h2 className="mb-2 text-2xl">Learning Resources</h2>
         <p className="text-muted-foreground mb-4 text-sm">
           Demonstrates: links, badges, tag arrays, relative dates
         </p>
@@ -434,7 +436,7 @@ export function DataTableExample() {
       </div>
 
       <div>
-        <h2 className="mb-2 text-2xl font-bold">Empty State</h2>
+        <h2 className="mb-2 text-2xl">Empty State</h2>
         <DataTable
           columns={stockColumns}
           data={[]}
@@ -443,7 +445,7 @@ export function DataTableExample() {
       </div>
 
       <div>
-        <h2 className="mb-2 text-2xl font-bold">Loading State</h2>
+        <h2 className="mb-2 text-2xl">Loading State</h2>
         <div className="space-y-2">
           <button
             onClick={() => setIsLoading(!isLoading)}
@@ -460,7 +462,7 @@ export function DataTableExample() {
       </div>
 
       <div>
-        <h2 className="mb-2 text-2xl font-bold">With Max Height (Scrollable)</h2>
+        <h2 className="mb-2 text-2xl">With Max Height (Scrollable)</h2>
         <DataTable
           columns={stockColumns}
           data={[...stockData, ...stockData, ...stockData]}
@@ -469,7 +471,7 @@ export function DataTableExample() {
       </div>
 
       <div>
-        <h2 className="mb-2 text-2xl font-bold">Controlled Sorting + Clear</h2>
+        <h2 className="mb-2 text-2xl">Controlled Sorting + Clear</h2>
         <div className="mb-2 flex gap-2">
           <button
             onClick={() => {

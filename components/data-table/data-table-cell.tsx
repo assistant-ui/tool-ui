@@ -20,7 +20,9 @@ export function DataTableCell({
 }: DataTableCellProps) {
   const isNumericKind = (() => {
     const k = (column?.format as { kind?: string } | undefined)?.kind;
-    return k === "number" || k === "currency" || k === "percent" || k === "delta";
+    return (
+      k === "number" || k === "currency" || k === "percent" || k === "delta"
+    );
   })();
   const align = column.align ?? (isNumericKind ? "right" : "left");
   const alignClass = {
@@ -34,7 +36,7 @@ export function DataTableCell({
   return (
     <td
       className={cn(
-        "px-4 py-3 text-sm",
+        "px-4 py-3",
         alignClass,
         column.truncate && "max-w-[200px] truncate",
         className,
