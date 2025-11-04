@@ -721,7 +721,7 @@ Here's how to structure tool call payloads for the DataTable:
     { "key": "price", "label": "Price", "align": "right" },
     { "key": "stock", "label": "Stock", "align": "right" }
   ],
-  "rows": [
+  "data": [
     { "name": "Widget", "price": 29.99, "stock": 150 },
     { "name": "Gadget", "price": 49.99, "stock": 89 },
     { "name": "Doohickey", "price": 19.99, "stock": 0 }
@@ -762,7 +762,7 @@ Here's how to structure tool call payloads for the DataTable:
       }
     }
   ],
-  "rows": [
+  "data": [
     { "symbol": "AAPL", "price": 178.25, "change": 2.5, "status": "up" },
     { "symbol": "GOOGL", "price": 142.80, "change": -1.2, "status": "down" },
     { "symbol": "MSFT", "price": 420.55, "change": 0.1, "status": "stable" }
@@ -785,7 +785,7 @@ Here's how to structure tool call payloads for the DataTable:
     { "key": "scores", "label": "Scores", "format": { "kind": "array", "maxVisible": 2 } },
     { "key": "flags", "label": "Flags", "format": { "kind": "array" } }
   ],
-  "rows": [
+  "data": [
     {
       "feature": "Authentication",
       "tags": ["security", "oauth", "jwt"],
@@ -1060,7 +1060,7 @@ const tools = {
         key: z.string(),
         label: z.string(),
       })),
-      rows: z.array(
+      data: z.array(
         z.record(z.union([z.string(), z.number(), z.boolean(), z.null(), z.array(z.string())]))
       ),
     }),
@@ -1071,7 +1071,7 @@ const tools = {
           { key: 'symbol', label: 'Symbol' },
           { key: 'price', label: 'Price', align: 'right' },
         ],
-        rows: [
+        data: [
           { symbol: 'AAPL', price: 178.25 },
         ],
       }

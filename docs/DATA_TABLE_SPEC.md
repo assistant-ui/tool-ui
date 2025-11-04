@@ -34,7 +34,7 @@ You are building a data table component for **assistant-ui's open-source widget 
     { key: "price", label: "Price", align: "right" },
     { key: "change", label: "Change %", align: "right" }
   ],
-  rows: [
+  data: [
     { symbol: "AAPL", price: 178.25, change: 2.3 },
     { symbol: "GOOGL", price: 142.50, change: 1.8 }
   ]
@@ -735,10 +735,10 @@ const getStocksSchema = z.object({
     label: z.string(),
     align: z.enum(['left', 'right', 'center']).optional(),
   })),
-  rows: z.array(z.record(z.union([
-    z.string(), 
-    z.number(), 
-    z.boolean(), 
+  data: z.array(z.record(z.union([
+    z.string(),
+    z.number(),
+    z.boolean(),
     z.null()
   ]))),
 })
@@ -755,7 +755,7 @@ const tools = {
           { key: 'symbol', label: 'Symbol' },
           { key: 'price', label: 'Price', align: 'right' },
         ],
-        rows: [
+        data: [
           { symbol: 'AAPL', price: 178.25 },
         ]
       }
@@ -967,7 +967,7 @@ const stockTableSchema = z.object({
     label: z.string(),
     align: z.enum(['left', 'right', 'center']).optional(),
   })),
-  rows: z.array(z.record(z.any())),
+  data: z.array(z.record(z.any())),
 })
 
 // Register tool with assistant-ui
@@ -978,7 +978,7 @@ const tools = {
     execute: async ({ limit = 10 }) => {
       const response = await fetch(`/api/stocks?limit=${limit}`)
       const data = await response.json()
-      
+
       // Return data in DataTable format
       return {
         columns: [
@@ -987,7 +987,7 @@ const tools = {
           { key: 'change', label: 'Change %', align: 'right' },
           { key: 'volume', label: 'Volume', align: 'right' },
         ],
-        rows: data.stocks.map(s => ({
+        data: data.stocks.map(s => ({
           symbol: s.symbol,
           price: s.currentPrice,
           change: s.changePercent,

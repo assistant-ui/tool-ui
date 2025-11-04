@@ -399,7 +399,7 @@ export function DataTableActions({ row }: DataTableActionsProps) {
 // Serializable (can come from LLM)
 export interface SerializableDataTablePayload {
   columns: SerializableColumn[];
-  rows: SerializableRow[];
+  data: SerializableRow[];
   actions?: SerializableAction[];
   sortBy?: string;
   sortDirection?: "asc" | "desc";
@@ -409,7 +409,7 @@ export interface SerializableDataTablePayload {
 
 // React Component Props (includes callbacks)
 export interface DataTableProps<T extends object = RowData>
-  extends Omit<SerializableDataTablePayload, 'columns' | 'rows' | 'actions'> {
+  extends Omit<SerializableDataTablePayload, 'columns' | 'data' | 'actions'> {
   columns: Column<T>[];
   data: T[];
   actions?: Action[];

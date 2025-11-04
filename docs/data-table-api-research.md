@@ -167,7 +167,7 @@ interface Action {
 
 interface DataTableProps {
   columns: Column[]
-  rows: Array<Record<string, Primitive>>
+  data: Array<Record<string, Primitive>>
 
   actions?: Action[]
 

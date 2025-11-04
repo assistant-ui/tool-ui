@@ -131,7 +131,7 @@ export const serializableActionSchema = z.object({
  *
  * This schema validates the serializable parts of a DataTable:
  * - columns: Column definitions (keys, labels, formatting, etc.)
- * - rows: Data rows (primitives only - no functions or class instances)
+ * - data: Data rows (primitives only - no functions or class instances)
  * - actions: Action button definitions (ids, labels, variants)
  *
  * Non-serializable props like `onAction`, `onSortChange`, `className`, and `isLoading`
@@ -141,13 +141,13 @@ export const serializableActionSchema = z.object({
  * ```ts
  * const result = serializableDataTableSchema.safeParse(llmResponse)
  * if (result.success) {
- *   // result.data contains validated columns, rows, and actions
+ *   // result.data contains validated columns, data, and actions
  * }
  * ```
  */
 export const serializableDataTableSchema = z.object({
   columns: z.array(serializableColumnSchema),
-  rows: z.array(serializableRowSchema),
+  data: z.array(serializableRowSchema),
   actions: z.array(serializableActionSchema).optional(),
 });
 
@@ -170,7 +170,7 @@ export const serializableDataTableSchema = z.object({
  *     { key: "name", label: "Name" },
  *     { key: "price", label: "Price", format: { kind: "currency", currency: "USD" } }
  *   ],
- *   rows: [
+ *   data: [
  *     { name: "Widget", price: 29.99 }
  *   ]
  * }
@@ -214,10 +214,10 @@ export function parseSerializableDataTable(
   if (!res.success) {
     throw new Error(`Invalid DataTable payload: ${res.error.message}`);
   }
-  const { columns, rows, actions } = res.data;
+  const { columns, data, actions } = res.data;
   return {
     columns: columns as unknown as Column<RowData>[],
-    data: rows as RowData[],
+    data: data as RowData[],
     actions: actions as Action[] | undefined,
   };
 }

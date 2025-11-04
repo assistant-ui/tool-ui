@@ -72,7 +72,7 @@ Our DataTable will be rendered as the result of LLM tool calls in chat applicati
   columns: [
     { key: "name", label: "Name", sortable: true, align: "left" }
   ],
-  rows: [
+  data: [
     { name: "John", age: 30 }
   ]
 }
@@ -103,7 +103,7 @@ Our DataTable will be rendered as the result of LLM tool calls in chat applicati
 // ✅ Good - Clear structure
 {
   columns: [{ key: "price", label: "Price", align: "right" }],
-  rows: [{ price: 29.99 }]
+  data: [{ price: 29.99 }]
 }
 
 // ❌ Harder for LLM - nested config
@@ -904,7 +904,7 @@ Enhancement: Support `key: "user.name"` to map to `row.user.name`
     { key: "user.name", label: "User Name" },
     { key: "address.city", label: "City" }
   ],
-  rows: [
+  data: [
     { user: { name: "John" }, address: { city: "NYC" } }
   ]
 }
@@ -1111,7 +1111,7 @@ export interface DataTableProps<TData = any> {
   // ============================================
 
   columns: Column<TData>[];
-  rows: TData[];
+  data: TData[];
 
   // ============================================
   // OPTIONAL: ACTIONS
