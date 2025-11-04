@@ -75,13 +75,12 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
-   --dot-grid-color: oklch(0.6 0 0);
+   --dot-grid-color: oklch(0.8 0 0);
 }
 
 .dark {
-  --wash: oklch(0.15 0 0);
-
-  --background: oklch(0.145 0 0);
+  --wash: oklch(0.2 0 0);
+  --background: oklch(0.25 0 0);
   --foreground: oklch(0.985 0 0);
   --card: oklch(0.205 0 0);
   --card-foreground: oklch(0.985 0 0);
@@ -111,8 +110,19 @@
   --sidebar-accent: oklch(0.269 0 0);
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
-  --dot-grid-color: oklch(0.15 0 0);
+  --dot-grid-color: oklch(0.4 0 0);
   --sidebar-ring: oklch(0.556 0 0);
+}
+
+@layer utilities {
+  .bg-dot-grid {
+    background-image: radial-gradient(circle, var(--dot-grid-color) 1px, transparent 1px);
+    background-size: 20px 20px;
+  }
+
+  .bg-wash {
+    background-color: var(--wash);
+  }
 }
 
 @layer base {
