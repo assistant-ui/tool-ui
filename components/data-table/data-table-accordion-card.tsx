@@ -112,15 +112,15 @@ export function DataTableAccordionCard({
                   id={headingId}
                   role="heading"
                   aria-level={3}
-                  className="truncate font-medium"
+                  className="truncate"
                   aria-label={`${primaryColumn.label}: ${row[primaryColumn.key]}`}
                 >
-                  {renderFormattedValue(
-                    row[primaryColumn.key],
-                    primaryColumn,
+                  {renderFormattedValue({
+                    value: row[primaryColumn.key],
+                    column: primaryColumn,
                     row,
-                    { locale },
-                  )}
+                    locale,
+                  })}
                 </div>
               )}
 
@@ -141,7 +141,10 @@ export function DataTableAccordionCard({
                       <span className="sr-only">{col.label}: </span>
                       <span aria-hidden="true">{col.label}: </span>
                       <span>
-                        {renderFormattedValue(row[col.key], col, row, {
+                        {renderFormattedValue({
+                          value: row[col.key],
+                          column: col,
+                          row,
                           locale,
                         })}
                       </span>
@@ -186,7 +189,12 @@ export function DataTableAccordionCard({
                     role="cell"
                     aria-labelledby={`row-${stableRowId}-${String(col.key)}-label`}
                   >
-                    {renderFormattedValue(row[col.key], col, row, { locale })}
+                    {renderFormattedValue({
+                      value: row[col.key],
+                      column: col,
+                      row,
+                      locale,
+                    })}
                   </dd>
                 </div>
               ))}
@@ -263,10 +271,12 @@ function SimpleCard({
           <div
             role="heading"
             aria-level={3}
-            className="font-medium"
             aria-label={`${primaryColumn.label}: ${row[primaryColumn.key]}`}
           >
-            {renderFormattedValue(row[primaryColumn.key], primaryColumn, row, {
+            {renderFormattedValue({
+              value: row[primaryColumn.key],
+              column: primaryColumn,
+              row,
               locale,
             })}
           </div>
@@ -292,7 +302,12 @@ function SimpleCard({
               role="cell"
               aria-labelledby={`row-${stableRowId}-${String(col.key)}-label`}
             >
-              {renderFormattedValue(row[col.key], col, row, { locale })}
+              {renderFormattedValue({
+                value: row[col.key],
+                column: col,
+                row,
+                locale,
+              })}
             </span>
           </div>
         ))}

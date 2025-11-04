@@ -33,7 +33,7 @@ export function DataTableCell({
   const isNumericKind =
     k === "number" || k === "currency" || k === "percent" || k === "delta";
   const isNumericValue = typeof value === "number";
-  const displayValue = renderFormattedValue(value, column, row, { locale });
+  const displayValue = renderFormattedValue({ value, column, row, locale });
   const align =
     column.align ??
     (columnIndex === 0

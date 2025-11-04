@@ -316,7 +316,7 @@ function ArrayValue({ value, options }: ArrayValueProps) {
       : [];
 
   if (items.length === 0) {
-    return <span>—</span>;
+    return <span className="text-muted">—</span>;
   }
 
   const visible = items.slice(0, maxVisible);
@@ -339,26 +339,32 @@ function ArrayValue({ value, options }: ArrayValueProps) {
   );
 }
 
-export function renderFormattedValue(
+interface RenderFormattedValueParams {
   value:
     | string
     | number
     | boolean
     | null
-    | (string | number | boolean | null)[],
-  column: { format?: FormatConfig },
+    | (string | number | boolean | null)[];
+  column: { format?: FormatConfig };
   row?: Record<
     string,
     string | number | boolean | null | (string | number | boolean | null)[]
-  >,
-  options?: { locale?: string },
-): React.ReactNode {
+  >;
+  locale?: string;
+}
+
+export function renderFormattedValue({
+  value,
+  column,
+  row,
+  locale,
+}: RenderFormattedValueParams): React.ReactNode {
   if (value == null || value === "") {
-    return "—";
+    return <span className="text-muted">—</span>;
   }
 
   const fmt = column.format;
-  const locale = options?.locale;
 
   switch (fmt?.kind) {
     case "delta":
