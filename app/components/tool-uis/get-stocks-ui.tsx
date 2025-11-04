@@ -134,7 +134,7 @@ export const GetStocksUI = makeAssistantToolUI<
     ];
 
     return (
-      <div className="space-y-2">
+      <div className="flex flex-col gap-2">
         <div className="text-muted-foreground text-sm">
           Showing {count} {count === 1 ? "stock" : "stocks"}
         </div>

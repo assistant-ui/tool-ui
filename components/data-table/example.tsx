@@ -390,7 +390,7 @@ export function DataTableExample() {
   }>({});
 
   return (
-    <div className="space-y-12 p-8">
+    <div className="flex flex-col gap-12 p-8">
       <div>
         <h2 className="mb-2 text-2xl">Stock Prices</h2>
         <p className="text-muted-foreground mb-4 text-sm">
@@ -448,7 +448,7 @@ export function DataTableExample() {
 
       <div>
         <h2 className="mb-2 text-2xl">Loading State</h2>
-        <div className="space-y-2">
+        <div className="flex flex-col gap-2">
           <button
             onClick={() => setIsLoading(!isLoading)}
             className="bg-primary text-primary-foreground rounded px-4 py-2"

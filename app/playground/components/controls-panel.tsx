@@ -54,17 +54,17 @@ export function ControlsPanel({
           <TabsTrigger value="state">State</TabsTrigger>
         </TabsList>
 
-      <TabsContent value="presets" className="space-y-4">
+      <TabsContent value="presets" className="flex flex-col gap-4">
         <PresetSelector
           currentPreset={currentPreset}
           onSelectPreset={onSelectPreset}
         />
       </TabsContent>
 
-      <TabsContent value="config" className="space-y-4">
+      <TabsContent value="config" className="flex flex-col gap-4">
         <Card className="p-4">
-          <div className="space-y-4">
-            <div className="space-y-2">
+          <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-2">
               <Label htmlFor="empty-message">Empty Message</Label>
               <Input
                 id="empty-message"
@@ -80,9 +80,9 @@ export function ControlsPanel({
         </Card>
       </TabsContent>
 
-      <TabsContent value="state" className="space-y-4">
+      <TabsContent value="state" className="flex flex-col gap-4">
         <Card className="p-4">
-          <div className="space-y-4">
+          <div className="flex flex-col gap-4">
             <div className="flex items-center justify-between">
               <Label htmlFor="loading-state">Loading State</Label>
               <Switch
@@ -98,8 +98,8 @@ export function ControlsPanel({
         </Card>
 
         <Card className="p-4">
-          <div className="space-y-4">
-            <div className="space-y-2">
+          <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-2">
               <Label htmlFor="sort-by">Sort Column</Label>
               <Input
                 id="sort-by"
@@ -108,7 +108,7 @@ export function ControlsPanel({
                 placeholder="Column key (e.g., price)"
               />
             </div>
-            <div className="space-y-2">
+            <div className="flex flex-col gap-2">
               <Label htmlFor="sort-direction">Sort Direction</Label>
               <select
                 id="sort-direction"

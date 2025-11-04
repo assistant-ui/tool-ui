@@ -491,7 +491,7 @@ export function DataTable<T extends object = RowData>({
         {/* Mobile card view - uses list semantics for accessibility */}
         <div
           className={cn(
-            "space-y-3",
+            "flex flex-col gap-3",
             supportsContainerQueries ? "@md:hidden" : "md:hidden",
           )}
           role="list"
@@ -592,7 +592,7 @@ function DataTableSkeletonCards() {
   return (
     <>
       {Array.from({ length: 3 }).map((_, i) => (
-        <div key={i} className="space-y-2 rounded-lg border p-4">
+        <div key={i} className="flex flex-col gap-2 rounded-lg border p-4">
           <div className="bg-muted/50 h-5 w-1/2 animate-pulse rounded" />
           <div className="bg-muted/50 h-4 w-3/4 animate-pulse rounded" />
           <div className="bg-muted/50 h-4 w-2/3 animate-pulse rounded" />

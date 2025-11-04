@@ -67,7 +67,7 @@ export function ComponentNav() {
       </div>
 
       {/* Component List */}
-      <nav className="flex-1 space-y-1 p-2">
+      <nav className="flex flex-1 flex-col gap-1 p-2">
         {componentsRegistry.map((component) => {
           const Icon = component.icon;
           const isActive = pathname === component.path;

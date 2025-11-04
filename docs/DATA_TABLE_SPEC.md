@@ -312,7 +312,7 @@ const DataTableContext = React.createContext<{
 **Mobile card layout requirements:**
 ```tsx
 // Each row becomes a card
-<div className="border rounded-lg p-4 space-y-2">
+<div className="border rounded-lg p-4 flex flex-col gap-2">
   <div className="font-medium">{row[primaryColumn]}</div>
   {columns.map(col => (
     <div className="flex justify-between text-sm">

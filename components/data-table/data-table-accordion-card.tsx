@@ -171,7 +171,7 @@ export function DataTableAccordionCard({
         >
           {/* Secondary fields */}
           {secondary.length > 0 && (
-            <dl className="mb-4 space-y-2" role="list" aria-label="Additional data">
+            <dl className="mb-4 flex flex-col gap-2" role="list" aria-label="Additional data">
               {secondary.map((col) => (
                 <div
                   key={col.key}
