@@ -16,8 +16,7 @@ export const GetStocksUI = makeAssistantToolUI<
   {
     symbols?: string[];
     limit?: number;
-    sortBy?: "symbol" | "price" | "change" | "marketCap";
-    sortDirection?: "asc" | "desc";
+    sort?: { by?: "symbol" | "price" | "change" | "marketCap"; direction?: "asc" | "desc" };
   },
   GetStocksOutput
 >({

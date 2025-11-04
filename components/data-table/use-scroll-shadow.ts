@@ -1,7 +1,3 @@
-// @assistant-ui/widgets v0.1.0 - data-table
-// Last updated: 2025-10-31
-// License: Apache-2.0
-
 'use client'
 
 import { useEffect, useState, useCallback, RefObject } from 'react'

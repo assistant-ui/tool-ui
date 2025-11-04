@@ -102,7 +102,7 @@ export const serializableActionSchema = z.object({
  * - rows: Data rows (primitives only - no functions or class instances)
  * - actions: Action button definitions (ids, labels, variants)
  *
- * Non-serializable props like `onAction`, `onSort`, `className`, and `isLoading`
+ * Non-serializable props like `onAction`, `onSortChange`, `className`, and `isLoading`
  * must be provided separately in your React component.
  *
  * @example
@@ -128,7 +128,7 @@ export const serializableDataTableSchema = z.object({
  * - Action definitions (button labels and variants)
  *
  * Excluded from this type:
- * - Event handlers (`onAction`, `onSort`)
+ * - Event handlers (`onAction`, `onSortChange`)
  * - React-specific props (`className`, `isLoading`)
  *
  * @example

@@ -1,4 +1,3 @@
-// @assistant-ui/widgets v0.1.0 - data-table
 export { DataTable, useDataTable } from "./data-table";
 export { DataTableHeader, DataTableHead } from "./data-table-header";
 export { DataTableBody } from "./data-table-body";
@@ -7,7 +6,10 @@ export { DataTableCell } from "./data-table-cell";
 export { DataTableActions } from "./data-table-actions";
 export { DataTableAccordionCard } from "./data-table-accordion-card";
 export { renderFormattedValue } from "./formatters";
-export { parseSerializableDataTable, serializableDataTableSchema } from "./schema";
+export {
+  parseSerializableDataTable,
+  serializableDataTableSchema,
+} from "./schema";
 
 export type {
   DataTableProps,

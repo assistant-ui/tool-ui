@@ -103,8 +103,7 @@ Be concise and helpful in your responses.`,
               symbols:
                 mentionedSymbols.length > 0 ? mentionedSymbols : undefined,
               limit: isTechQuery ? 6 : undefined,
-              sortBy: "marketCap",
-              sortDirection: "desc",
+              sort: { by: "marketCap", direction: "desc" },
             });
 
             return {

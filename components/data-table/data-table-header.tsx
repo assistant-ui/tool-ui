@@ -47,15 +47,15 @@ interface DataTableHeadProps {
 }
 
 export function DataTableHead({ column }: DataTableHeadProps) {
-  const { sortBy, sortDirection, onSort, isLoading } = useDataTable();
+  const { sortBy, sortDirection, toggleSort, isLoading } = useDataTable();
   const isSortable = column.sortable !== false;
   const isSorted = sortBy === column.key;
   const direction = isSorted ? sortDirection : undefined;
   const isDisabled = isLoading || !isSortable;
 
   const handleClick = () => {
-    if (!isDisabled && onSort) {
-      onSort(column.key);
+    if (!isDisabled && toggleSort) {
+      toggleSort(column.key);
     }
   };
 
@@ -108,7 +108,10 @@ export function DataTableHead({ column }: DataTableHeadProps) {
           column.align === "right" && "flex-row-reverse",
           column.align === "center" && "justify-center",
         )}
-        aria-label={`Sort by ${column.label}`}
+        aria-label={
+          `Sort by ${column.label}` +
+          (isSorted && direction ? ` (${direction === "asc" ? "ascending" : "descending"})` : "")
+        }
         aria-disabled={isDisabled || undefined}
       >
         {shouldShowTooltip ? (

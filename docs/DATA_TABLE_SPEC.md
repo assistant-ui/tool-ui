@@ -78,9 +78,7 @@ interface DataTableProps {
   
   // Assistant-UI integration props
   messageId?: string;              // ID of the message containing this tool result
-  onFollowUp?: (message: string) => void;  // Trigger follow-up user message
-  
-  // Alternative to onAction - integrates with assistant-ui's message system
+  // Single integration surface for actions; context provides sendMessage
   onAction?: (actionId: string, row: Record<string, any>, context: {
     messageId?: string;
     sendMessage?: (message: string) => void;
@@ -803,14 +801,14 @@ function ChatMessage({ message }) {
 | `columns` | `Column[]` | Required | Column definitions |
 | `data` | `Record<string, any>[]` | Required | Row data |
 | `actions` | `Action[]` | `undefined` | Row actions |
-| `sortBy` | `string` | `undefined` | Initial sort column |
-| `sortDirection` | `'asc' \| 'desc'` | `undefined` | Initial sort direction |
+| `defaultSort` | `{ by?: string; direction?: 'asc'|'desc' }` | `undefined` | Initial sort state (uncontrolled) |
+| `sort` | `{ by?: string; direction?: 'asc'|'desc' }` | `undefined` | Controlled sort state |
+| `onSortChange` | `(next) => void` | `undefined` | Sort change handler (controlled) |
 | `isLoading` | `boolean` | `false` | Show loading skeleton |
 | `emptyMessage` | `string` | `"No data available"` | Empty state text |
 | `maxHeight` | `string` | `undefined` | Max height with scroll |
 | `messageId` | `string` | `undefined` | Assistant-UI message ID |
 | `onAction` | `function` | `undefined` | Action click handler |
-| `onSort` | `function` | `undefined` | Sort change handler |
 
 #### Compound Component Usage
 
@@ -1186,4 +1184,3 @@ export function StockChat() {
 - [ ] Accessibility testing notes (keyboard, screen reader)
 - [ ] Mobile responsive testing notes
 - [ ] Assistant-UI theme compatibility verified
-

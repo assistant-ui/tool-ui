@@ -13,19 +13,12 @@ export function ClientPreview({ componentId }: { componentId: string }) {
   const { viewport } = usePlayground();
   const [currentPreset, setCurrentPreset] = useState<PresetName>("stocks");
   const [isLoading, setIsLoading] = useState(false);
-  const [sortBy, setSortBy] = useState<string | undefined>(undefined);
-  const [sortDirection, setSortDirection] = useState<
-    "asc" | "desc" | undefined
-  >(undefined);
+  const [sort, setSort] = useState<{ by?: string; direction?: "asc" | "desc" }>({});
   const [emptyMessage, setEmptyMessage] = useState("No data available");
   const [controlsCollapsed, setControlsCollapsed] = useState(false);
 
-  const handleSortChange = (
-    newSortBy?: string,
-    newDirection?: "asc" | "desc",
-  ) => {
-    setSortBy(newSortBy);
-    setSortDirection(newDirection);
+  const handleSortChange = (next: { by?: string; direction?: "asc" | "desc" }) => {
+    setSort(next);
   };
 
   const currentConfig = presets[currentPreset];
@@ -51,8 +44,8 @@ export function ClientPreview({ componentId }: { componentId: string }) {
             {componentId === "data-table" && (
               <DataTable
                 {...currentConfig}
-                sortBy={sortBy}
-                sortDirection={sortDirection}
+                sort={sort}
+                onSortChange={setSort}
                 isLoading={isLoading}
                 emptyMessage={emptyMessage}
                 onAction={(actionId, row) => {
@@ -69,8 +62,7 @@ export function ClientPreview({ componentId }: { componentId: string }) {
         {/* Code Panel - Spans full width */}
         <CodePanel
           config={currentConfig}
-          sortBy={sortBy}
-          sortDirection={sortDirection}
+          sort={sort}
           isLoading={isLoading}
           emptyMessage={emptyMessage}
         />
@@ -84,8 +76,7 @@ export function ClientPreview({ componentId }: { componentId: string }) {
             onSelectPreset={setCurrentPreset}
             isLoading={isLoading}
             onLoadingChange={setIsLoading}
-            sortBy={sortBy}
-            sortDirection={sortDirection}
+            sort={sort}
             onSortChange={handleSortChange}
             emptyMessage={emptyMessage}
             onEmptyMessageChange={setEmptyMessage}
@@ -109,4 +100,3 @@ export function ClientPreview({ componentId }: { componentId: string }) {
     </div>
   );
 }
-

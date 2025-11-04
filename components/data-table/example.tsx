@@ -384,10 +384,10 @@ const resourceData = [
 
 export function DataTableExample() {
   const [isLoading, setIsLoading] = useState(false);
-  const [sortBy, setSortBy] = useState<keyof StockRow | undefined>();
-  const [sortDirection, setSortDirection] = useState<
-    "asc" | "desc" | undefined
-  >();
+  const [sort, setSort] = useState<{
+    by?: keyof StockRow;
+    direction?: "asc" | "desc";
+  }>({});
 
   return (
     <div className="space-y-12 p-8">
@@ -475,8 +475,7 @@ export function DataTableExample() {
         <div className="mb-2 flex gap-2">
           <button
             onClick={() => {
-              setSortBy(undefined);
-              setSortDirection(undefined);
+              setSort({});
             }}
             className="bg-secondary text-secondary-foreground rounded px-3 py-1.5"
           >
@@ -487,12 +486,8 @@ export function DataTableExample() {
           columns={stockColumns}
           data={stockData}
           rowIdKey="symbol"
-          sortBy={sortBy}
-          sortDirection={sortDirection}
-          onSort={(key, dir) => {
-            setSortBy(key);
-            setSortDirection(dir);
-          }}
+          sort={sort}
+          onSortChange={(next) => setSort(next)}
         />
       </div>
     </div>

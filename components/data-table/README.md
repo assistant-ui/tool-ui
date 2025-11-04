@@ -186,13 +186,14 @@ function MyComponent() {
 | `data` | `Record<string, any>[]` | Required | Row data |
 | `actions` | `Action[]` | `undefined` | Row action buttons |
 | `rowIdKey` | `string` | `undefined` | Key in each row used for stable React keys |
-| `sortBy` | `string` | `undefined` | Initial/controlled sort column |
-| `sortDirection` | `'asc' \| 'desc'` | `undefined` | Initial/controlled sort direction |
+| `defaultSort` | `{ by?: string; direction?: 'asc'|'desc' }` | `undefined` | Initial sort (uncontrolled) |
+| `sort` | `{ by?: string; direction?: 'asc'|'desc' }` | `undefined` | Controlled sort state |
+| `onSortChange` | `(next) => void` | `undefined` | Controlled sort change handler |
 | `isLoading` | `boolean` | `false` | Show loading skeleton |
 | `emptyMessage` | `string` | `"No data available"` | Empty state message |
 | `maxHeight` | `string` | `undefined` | Max height with vertical scroll |
 | `onAction` | `function` | `undefined` | Action button click handler |
-| `onSort` | `function` | `undefined` | Sort change handler (controlled mode) |
+| `locale` | `string` | `undefined` | Locale for formatting/sorting (e.g., `en-US`) |
 | `className` | `string` | `undefined` | Additional CSS classes |
 
 ### Column
@@ -243,8 +244,7 @@ The table manages its own sort state internally:
 <DataTable
   columns={columns}
   data={rows}
-  // No sortBy, sortDirection, or onSort needed
-  // Users can click headers to sort
+  // Users can click headers to sort (internally managed)
 />
 ```
 
@@ -253,23 +253,15 @@ The table manages its own sort state internally:
 You control the sort state from parent component:
 
 ```tsx
-const [sortBy, setSortBy] = useState<string>()
-const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>()
+const [sort, setSort] = useState<{ by?: string; direction?: 'asc' | 'desc' }>({})
 
 <DataTable
   columns={columns}
   data={rows}
-  sortBy={sortBy}
-  sortDirection={sortDirection}
-  onSort={(key, direction) => {
-    // When user clears sort, both become undefined
-    setSortBy(key)
-    setSortDirection(direction)
-  }}
+  sort={sort}
+  onSortChange={setSort}
 />
 ```
-
-**Important:** If you provide `sortBy` or `sortDirection`, you **must** also provide `onSort`. Otherwise, the table will show the initial sort but won't update when users click headers.
 
 #### Initial Sort (Uncontrolled with default)
 
@@ -279,13 +271,9 @@ Set an initial sort without managing state:
 <DataTable
   columns={columns}
   data={rows}
-  sortBy="price"
-  sortDirection="desc"
-  // No onSort - table takes over after initial render
+  defaultSort={{ by: 'price', direction: 'desc' }}
 />
 ```
-
-**Note:** This pattern will show a warning in development mode. For a one-time initial sort, it's better to pre-sort your data array.
 
 ### With Actions
 
@@ -419,6 +407,26 @@ Wide tables on desktop show gradient shadows when scrollable:
 - Gradient fade appears on right when more content available
 - Touch-optimized momentum scrolling
 
+#### Sticky Header + Scroll Structure
+
+Use this wrapper hierarchy to ensure sticky headers work with horizontal scroll:
+
+```
+<div className="relative">
+  <div className="relative w-full overflow-auto rounded-md border" style={{ WebkitOverflowScrolling: 'touch' }}>
+    <table className="w-full border-collapse">
+      <colgroup>
+        {/* one <col> per column, optional width */}
+      </colgroup>
+      <thead className="sticky top-0 border-b bg-muted/50">...</thead>
+      <tbody>...</tbody>
+    </table>
+  </div>
+</div>
+```
+
+The component renders this structure for you, including `<colgroup>` sizing. If you customize, keep vertical scroll on the inner wrapper, not the table.
+
 ### Touch Optimization
 
 All interactive elements are automatically optimized for touch:
@@ -496,7 +504,7 @@ Notes:
 Sorting is single-column and follows these rules:
 - Numeric-like strings (e.g., `"1,200"`, `" 900 "`) sort numerically, not lexically.
 - ISO-like date strings (`YYYY-MM-DD...`) sort by date.
-- Otherwise values sort case-insensitively as strings.
+- Otherwise values sort with locale-aware, numeric string collation.
 
 Null/undefined values sort last. Arrays sort by length.
 
@@ -510,8 +518,7 @@ The DataTable component is designed for use with LLM tool calls, where data must
 - `columns` - Column definitions
 - `data` / `rows` - Row data
 - `actions` - Action button definitions
-- `sortBy` - Initial sort column
-- `sortDirection` - Initial sort direction
+- `defaultSort` - Initial sort state (optional)
 - `emptyMessage` - Empty state text
 - `maxHeight` - Max height CSS value
 - `messageId` - Message identifier string
@@ -519,7 +526,7 @@ The DataTable component is designed for use with LLM tool calls, where data must
 
 **❌ React-Only Props** (must be provided by your React code):
 - `onAction` - Function handler for action button clicks
-- `onSort` - Function handler for sort changes
+- `onSortChange` - Function handler for sort changes (controlled mode)
 - `className` - CSS class names
 - `isLoading` - Loading state boolean
 
@@ -593,8 +600,6 @@ Here's how to structure tool call payloads for the DataTable:
     { "id": "buy", "label": "Buy", "variant": "default" },
     { "id": "sell", "label": "Sell", "variant": "destructive", "requiresConfirmation": true }
   ],
-  "sortBy": "price",
-  "sortDirection": "desc",
   "emptyMessage": "No stocks available"
 }
 ```
@@ -619,10 +624,9 @@ function StockTableToolUI({ result }: { result: unknown }) {
           context?.sendMessage?.(`Show details for ${row.symbol}`)
         }
       }}
-      onSort={(key, direction) => {
-        // Your React handler - not serializable
-        console.log('User sorted by', key, direction)
-      }}
+      // Controlled sorting (optional)
+      // sort={sort}
+      // onSortChange={setSort}
     />
   )
 }
@@ -776,7 +780,9 @@ const tools = {
         key: z.string(),
         label: z.string(),
       })),
-      rows: z.array(z.record(z.any())),
+      rows: z.array(
+        z.record(z.union([z.string(), z.number(), z.boolean(), z.null(), z.array(z.string())]))
+      ),
     }),
     execute: async () => {
       // Fetch and return data in DataTable format
@@ -818,6 +824,8 @@ Custom CSS variables (inherited from your theme):
 - `--primary`
 - `--destructive`
 
+The component targets the Shadcn token set (e.g., `--background`, `--foreground`, `--muted`). If your host uses different tokens (e.g., assistant-ui), map them at the app shell to these names to keep copy-paste friction low.
+
 ## Limitations
 
 This v0.2.0 release does not include:
@@ -828,7 +836,6 @@ This v0.2.0 release does not include:
 - Inline editing
 - Custom cell renderers
 - Export to CSV/Excel
-- Confirmation dialogs (requiresConfirmation flag is defined but not implemented)
 - Column visibility toggle UI (use priority system instead)
 
 For these features, consider [TanStack Table](https://tanstack.com/table) or [AG Grid](https://www.ag-grid.com/).
@@ -840,7 +847,7 @@ For these features, consider [TanStack Table](https://tanstack.com/table) or [AG
 - Check that action `id` matches your handler logic
 
 **Sort not working?**
-- If using controlled sort, ensure `onSort` updates parent state
+- If using controlled sort, ensure `onSortChange` updates parent state
 - Verify column has `sortable: true` (default)
 
 **Mobile accordion layout not showing?**

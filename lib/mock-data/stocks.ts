@@ -109,8 +109,7 @@ const mockStockData: Stock[] = [
 export interface GetStocksParams {
   symbols?: string[];
   limit?: number;
-  sortBy?: "symbol" | "price" | "change" | "marketCap";
-  sortDirection?: "asc" | "desc";
+  sort?: { by?: "symbol" | "price" | "change" | "marketCap"; direction?: "asc" | "desc" };
 }
 
 /**
@@ -123,12 +122,9 @@ export interface GetStocksParams {
  * - Add error handling for API failures
  */
 export async function getStocks(params: GetStocksParams = {}): Promise<Stock[]> {
-  const {
-    symbols,
-    limit,
-    sortBy = "symbol",
-    sortDirection = "asc",
-  } = params;
+  const { symbols, limit, sort } = params;
+  const sortBy = sort?.by ?? "symbol";
+  const sortDirection = sort?.direction ?? "asc";
 
   // Simulate API delay
   await new Promise((resolve) => setTimeout(resolve, 300));

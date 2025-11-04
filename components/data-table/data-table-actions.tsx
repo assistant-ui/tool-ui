@@ -20,7 +20,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { useDataTable, type DataTableRowData, type Action } from "./data-table";
-import { getActionLabel } from "./utilities";
+import { getActionLabel, getRowIdentifier } from "./utilities";
 
 interface DataTableActionsProps {
   row: DataTableRowData;
@@ -72,13 +72,20 @@ export function DataTableActions({ row }: DataTableActionsProps) {
         >
           <AlertDialogContent>
             <AlertDialogHeader>
-              <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+              <AlertDialogTitle>
+                {confirmingAction ? `Confirm ${confirmingAction.label}` : "Confirm"}
+              </AlertDialogTitle>
               <AlertDialogDescription>
-                This action cannot be undone. This will {confirmingAction?.label.toLowerCase()}.
+                {(() => {
+                  const id = getRowIdentifier(row);
+                  const actionText = confirmingAction?.label ?? 'this action';
+                  const base = id ? `${actionText} for ${id}` : actionText;
+                  return `This action cannot be undone. This will ${base.toLowerCase()}.`;
+                })()}
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogCancel autoFocus>Cancel</AlertDialogCancel>
               <AlertDialogAction
                 onClick={handleConfirm}
                 className={
@@ -87,7 +94,7 @@ export function DataTableActions({ row }: DataTableActionsProps) {
                     : undefined
                 }
               >
-                Continue
+                {confirmingAction?.label ?? "Confirm"}
               </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>
@@ -132,14 +139,20 @@ export function DataTableActions({ row }: DataTableActionsProps) {
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+            <AlertDialogTitle>
+              {confirmingAction ? `Confirm ${confirmingAction.label}` : "Confirm"}
+            </AlertDialogTitle>
             <AlertDialogDescription>
-              This action cannot be undone. This will{" "}
-              {confirmingAction?.label.toLowerCase()}.
+              {(() => {
+                const id = getRowIdentifier(row);
+                const actionText = confirmingAction?.label ?? 'this action';
+                const base = id ? `${actionText} for ${id}` : actionText;
+                return `This action cannot be undone. This will ${base.toLowerCase()}.`;
+              })()}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel autoFocus>Cancel</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleConfirm}
               className={
@@ -148,7 +161,7 @@ export function DataTableActions({ row }: DataTableActionsProps) {
                   : undefined
               }
             >
-              Continue
+              {confirmingAction?.label ?? "Confirm"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

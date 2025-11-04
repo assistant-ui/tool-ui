@@ -22,6 +22,7 @@ import {
 import { useDataTable } from "./data-table";
 import type { Column, DataTableRowData, Action } from "./data-table";
 import { renderFormattedValue } from "./formatters";
+import { getRowIdentifier } from "./utilities";
 
 interface DataTableAccordionCardProps {
   row: DataTableRowData;
@@ -59,7 +60,7 @@ export function DataTableAccordionCard({
   row,
   index,
 }: DataTableAccordionCardProps) {
-  const { columns, actions, onAction, messageId } = useDataTable();
+  const { columns, actions, onAction, messageId, locale } = useDataTable();
   const [confirmingAction, setConfirmingAction] = React.useState<Action | null>(
     null,
   );
@@ -102,6 +103,7 @@ export function DataTableAccordionCard({
                     row[primaryColumn.key],
                     primaryColumn,
                     row,
+                    { locale },
                   )}
                 </div>
               )}
@@ -113,7 +115,7 @@ export function DataTableAccordionCard({
                     <span key={col.key} className="truncate">
                       {col.label}:{" "}
                       <span>
-                        {renderFormattedValue(row[col.key], col, row)}
+                        {renderFormattedValue(row[col.key], col, row, { locale })}
                       </span>
                     </span>
                   ))}
@@ -139,7 +141,7 @@ export function DataTableAccordionCard({
                       col.align === "center" && "text-center",
                     )}
                   >
-                    {renderFormattedValue(row[col.key], col, row)}
+                    {renderFormattedValue(row[col.key], col, row, { locale })}
                   </dd>
                 </div>
               ))}
@@ -170,14 +172,20 @@ export function DataTableAccordionCard({
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+            <AlertDialogTitle>
+              {confirmingAction ? `Confirm ${confirmingAction.label}` : "Confirm"}
+            </AlertDialogTitle>
             <AlertDialogDescription>
-              This action cannot be undone. This will{" "}
-              {confirmingAction?.label.toLowerCase()}.
+              {(() => {
+                const id = getRowIdentifier(row);
+                const actionText = confirmingAction?.label ?? 'this action';
+                const base = id ? `${actionText} for ${id}` : actionText;
+                return `This action cannot be undone. This will ${base.toLowerCase()}.`;
+              })()}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel autoFocus>Cancel</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleConfirm}
               className={
@@ -186,7 +194,7 @@ export function DataTableAccordionCard({
                   : undefined
               }
             >
-              Continue
+              {confirmingAction?.label ?? "Confirm"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -205,7 +213,7 @@ function SimpleCard({
   row: DataTableRowData;
   columns: Column[];
 }) {
-  const { onAction, actions, messageId } = useDataTable();
+  const { onAction, actions, messageId, locale } = useDataTable();
   const [confirmingAction, setConfirmingAction] = React.useState<Action | null>(
     null,
   );
@@ -232,7 +240,7 @@ function SimpleCard({
       <div className="flex flex-col gap-2 rounded-lg border p-4">
         {primaryColumn && (
           <div className="">
-            {renderFormattedValue(row[primaryColumn.key], primaryColumn, row)}
+            {renderFormattedValue(row[primaryColumn.key], primaryColumn, row, { locale })}
           </div>
         )}
 
@@ -245,7 +253,7 @@ function SimpleCard({
                 col.align === "center" && "text-center",
               )}
             >
-              {renderFormattedValue(row[col.key], col, row)}
+              {renderFormattedValue(row[col.key], col, row, { locale })}
             </span>
           </div>
         ))}
@@ -273,14 +281,21 @@ function SimpleCard({
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+            <AlertDialogTitle>
+              {confirmingAction ? `Confirm ${confirmingAction.label}` : "Confirm"}
+            </AlertDialogTitle>
             <AlertDialogDescription>
-              This action cannot be undone. This will{" "}
-              {confirmingAction?.label.toLowerCase()}.
+              {(() => {
+                // SimpleCard lacks identifierKey; best-effort row identifier
+                const id = getRowIdentifier(row);
+                const actionText = confirmingAction?.label ?? 'this action';
+                const base = id ? `${actionText} for ${id}` : actionText;
+                return `This action cannot be undone. This will ${base.toLowerCase()}.`;
+              })()}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel autoFocus>Cancel</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleConfirm}
               className={
@@ -289,7 +304,7 @@ function SimpleCard({
                   : undefined
               }
             >
-              Continue
+              {confirmingAction?.label ?? "Confirm"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

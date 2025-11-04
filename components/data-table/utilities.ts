@@ -1,7 +1,3 @@
-// @assistant-ui/widgets v0.1.0 - data-table
-// Last updated: 2025-10-31
-// License: Apache-2.0
-
 /**
  * Sort an array of objects by a key
  */
@@ -9,8 +5,10 @@ export function sortData<T, K extends Extract<keyof T, string>>(
   data: T[],
   key: K,
   direction: "asc" | "desc",
+  locale?: string,
 ): T[] {
   const get = (obj: T, k: K): unknown => (obj as Record<string, unknown>)[k];
+  const collator = new Intl.Collator(locale, { numeric: true, sensitivity: 'base' });
   return [...data].sort((a, b) => {
     const aVal = get(a, key);
     const bVal = get(b, key);
@@ -57,10 +55,10 @@ export function sortData<T, K extends Extract<keyof T, string>>(
       }
     }
 
-    // Fallback: string compare (case-insensitive)
-    const aStr = String(aVal).toLowerCase()
-    const bStr = String(bVal).toLowerCase()
-    const comparison = aStr.localeCompare(bStr)
+    // Fallback: locale-aware string compare with numeric collation
+    const aStr = String(aVal)
+    const bStr = String(bVal)
+    const comparison = collator.compare(aStr, bStr)
     return direction === 'asc' ? comparison : -comparison
   })
 }
@@ -120,23 +118,57 @@ export function getActionLabel(
   row: Record<string, string | number | boolean | null | string[]>,
   identifierKey?: string,
 ): string {
+  const identifier = getRowIdentifier(row, identifierKey);
+  return identifier ? `${actionLabel} for ${identifier}` : `${actionLabel} row`;
+}
+
+/** Return a human-friendly identifier for a row using common keys */
+export function getRowIdentifier(
+  row: Record<string, string | number | boolean | null | string[]>,
+  identifierKey?: string,
+): string {
   const candidate =
     (identifierKey ? row[identifierKey] : undefined) ??
     (row as Record<string, unknown>).name ??
     (row as Record<string, unknown>).title ??
     (row as Record<string, unknown>).id;
-
-  const identifier = String(candidate ?? "");
-  return `${actionLabel} for ${identifier}`;
+  const value = candidate == null ? "" : String(candidate);
+  return value.trim();
 }
 
 // Internal helpers
 function parseNumericLike(input: string): number | null {
-  // Remove common number formatting (commas, spaces)
-  const normalized = input.replace(/[,\s]/g, '')
-  if (/^[+-]?(?:\d+\.?\d*|\d*\.\d+)$/.test(normalized)) {
-    const n = Number(normalized)
-    return isNaN(n) ? null : n
+  // Normalize whitespace (spaces, NBSPs, thin spaces)
+  let s = input.replace(/[\u00A0\u202F\s]/g, '').trim();
+  if (!s) return null;
+
+  // Accounting negatives: (1234) -> -1234
+  s = s.replace(/^\((.*)\)$/g, '-$1');
+
+  // Strip common currency and percent symbols
+  s = s.replace(/[\%$€£¥₩₹₽₺₪₫฿₦₴₡₲₵₸]/g, '');
+
+  const lastComma = s.lastIndexOf(',');
+  const lastDot = s.lastIndexOf('.');
+  if (lastComma !== -1 && lastDot !== -1) {
+    // Decide decimal by whichever occurs last
+    const decimalSep = lastComma > lastDot ? ',' : '.';
+    const thousandSep = decimalSep === ',' ? '.' : ',';
+    s = s.split(thousandSep).join('');
+    s = s.replace(decimalSep, '.');
+  } else if (lastComma !== -1) {
+    // Only comma present
+    const frac = s.length - lastComma - 1;
+    if (frac === 2 || frac === 3) s = s.replace(/,/g, '.');
+    else s = s.replace(/,/g, '');
+  } else if (lastDot !== -1) {
+    // Only dot present; if multiple dots, treat as thousands and strip
+    if ((s.match(/\./g) || []).length > 1) s = s.replace(/\./g, '');
   }
-  return null
+
+  if (/^[+-]?(?:\d+\.?\d*|\d*\.\d+)$/.test(s)) {
+    const n = Number(s);
+    return Number.isNaN(n) ? null : n;
+  }
+  return null;
 }

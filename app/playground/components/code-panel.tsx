@@ -7,19 +7,12 @@ import { DataTableConfig } from "@/lib/sample-data";
 
 interface CodePanelProps {
   config: DataTableConfig;
-  sortBy?: string;
-  sortDirection?: "asc" | "desc";
+  sort?: { by?: string; direction?: "asc" | "desc" };
   isLoading?: boolean;
   emptyMessage?: string;
 }
 
-export function CodePanel({
-  config,
-  sortBy,
-  sortDirection,
-  isLoading,
-  emptyMessage,
-}: CodePanelProps) {
+export function CodePanel({ config, sort, isLoading, emptyMessage }: CodePanelProps) {
   const [copied, setCopied] = useState(false);
 
   const generateCode = () => {
@@ -43,11 +36,8 @@ export function CodePanel({
       props.push(`  rowIdKey="${config.rowIdKey}"`);
     }
 
-    if (sortBy) {
-      props.push(`  sortBy="${sortBy}"`);
-    }
-    if (sortDirection) {
-      props.push(`  sortDirection="${sortDirection}"`);
+    if (sort?.by && sort?.direction) {
+      props.push(`  defaultSort={{ by: "${sort.by}", direction: "${sort.direction}" }}`);
     }
 
     if (isLoading) {

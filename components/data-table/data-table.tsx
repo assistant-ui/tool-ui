@@ -50,11 +50,11 @@ export interface Action {
  *
  * **Serializable props** (can come from LLM tool calls):
  * - `columns`, `data`, `actions` - Core table data
- * - `sortBy`, `sortDirection` - Initial sort state
+ * - `defaultSort` - Initial sort state
  * - `emptyMessage`, `maxHeight`, `messageId`, `rowIdKey` - Display/behavior config
  *
  * **React-only props** (must be provided by your React code):
- * - `onAction`, `onSort` - Event handlers (functions)
+ * - `onAction` - Event handler
  * - `className`, `isLoading` - Component state/styling
  *
  * @see {@link parseSerializableDataTable} for parsing LLM tool call results
@@ -70,7 +70,7 @@ export interface Action {
  *   data={data}
  *   actions={actions}
  *   onAction={(id, row) => handleAction(id, row)}
- *   onSort={(key, dir) => handleSort(key, dir)}
+ *   onSortChange={(next) => handleSort(next)}
  * />
  * ```
  */
@@ -83,10 +83,10 @@ export interface DataTableProps<T extends object = RowData> {
   actions?: Action[];
   /** Key in row data to use as unique identifier (serializable) */
   rowIdKey?: ColumnKey<T>;
-  /** Initial/controlled sort column (serializable) */
-  sortBy?: ColumnKey<T>;
-  /** Initial/controlled sort direction (serializable) */
-  sortDirection?: "asc" | "desc";
+  /** Uncontrolled initial sort */
+  defaultSort?: { by?: ColumnKey<T>; direction?: "asc" | "desc" };
+  /** Controlled sort state (provide with onSortChange) */
+  sort?: { by?: ColumnKey<T>; direction?: "asc" | "desc" };
   /** Empty state message (serializable) */
   emptyMessage?: string;
   /** Show loading skeleton (React-only) */
@@ -95,6 +95,8 @@ export interface DataTableProps<T extends object = RowData> {
   maxHeight?: string;
   /** Message identifier for context (serializable) */
   messageId?: string;
+  /** Optional BCP47 locale used for formatting and sorting (e.g., 'en-US') */
+  locale?: string;
   /** Action button click handler (React-only - function) */
   onAction?: (
     actionId: string,
@@ -104,8 +106,8 @@ export interface DataTableProps<T extends object = RowData> {
       sendMessage?: (message: string) => void;
     },
   ) => void;
-  /** Sort change handler (React-only - function) */
-  onSort?: (columnKey?: ColumnKey<T>, direction?: "asc" | "desc") => void;
+  /** Sort change handler for controlled mode */
+  onSortChange?: (next: { by?: ColumnKey<T>; direction?: "asc" | "desc" }) => void;
   /** Additional CSS classes (React-only) */
   className?: string;
 }
@@ -117,10 +119,11 @@ interface DataTableContextValue<T extends object = RowData> {
   rowIdKey?: ColumnKey<T>;
   sortBy?: ColumnKey<T>;
   sortDirection?: "asc" | "desc";
-  onSort?: (key: ColumnKey<T>) => void;
+  toggleSort?: (key: ColumnKey<T>) => void;
   onAction?: DataTableProps<T>["onAction"];
   messageId?: string;
   isLoading?: boolean;
+  locale?: string;
 }
 
 const DataTableContext = React.createContext<
@@ -143,56 +146,36 @@ export function DataTable<T extends object = RowData>({
   data: rawData,
   actions,
   rowIdKey,
-  sortBy: controlledSortBy,
-  sortDirection: controlledSortDirection,
+  defaultSort,
+  sort: controlledSort,
   emptyMessage = "No data available",
   isLoading = false,
   maxHeight,
   messageId,
   onAction,
-  onSort,
+  onSortChange,
   className,
+  locale,
 }: DataTableProps<T>) {
+  // Resolve locale: pass undefined to Intl to use environment default when not provided
+  const resolvedLocale = locale;
+
+  // Internal uncontrolled sort state (seed from defaultSort or legacy props)
   const [internalSortBy, setInternalSortBy] = React.useState<
     ColumnKey<T> | undefined
-  >(controlledSortBy);
+  >(defaultSort?.by);
   const [internalSortDirection, setInternalSortDirection] = React.useState<
     "asc" | "desc" | undefined
-  >(controlledSortDirection);
+  >(defaultSort?.direction);
 
-  // Sync internal state when controlled props change
-  React.useEffect(() => {
-    if (controlledSortBy !== undefined || controlledSortDirection !== undefined) {
-      // Parent is providing controlled values - sync internal state
-      setInternalSortBy(controlledSortBy);
-      setInternalSortDirection(controlledSortDirection);
-    }
-  }, [controlledSortBy, controlledSortDirection]);
-
-  // Warn in development if sortBy is set without onSort (likely a mistake)
-  React.useEffect(() => {
-    if (process.env.NODE_ENV === "development") {
-      if (
-        (controlledSortBy !== undefined || controlledSortDirection !== undefined) &&
-        !onSort
-      ) {
-        console.warn(
-          "DataTable: You provided `sortBy` or `sortDirection` without `onSort`. " +
-            "The table will use the initial sort but won't update when the user clicks headers. " +
-            "To enable controlled sorting, provide an `onSort` handler. " +
-            "To use uncontrolled sorting, omit both `sortBy` and `sortDirection`.",
-        );
-      }
-    }
-  }, [controlledSortBy, controlledSortDirection, onSort]);
-
-  const sortBy = controlledSortBy ?? internalSortBy;
-  const sortDirection = controlledSortDirection ?? internalSortDirection;
+  // Effective sort is controlled when `sort` is provided
+  const sortBy = controlledSort?.by ?? internalSortBy;
+  const sortDirection = controlledSort?.direction ?? internalSortDirection;
 
   const data = React.useMemo(() => {
     if (!sortBy || !sortDirection) return rawData;
-    return sortData(rawData, sortBy, sortDirection);
-  }, [rawData, sortBy, sortDirection]);
+    return sortData(rawData, sortBy, sortDirection, resolvedLocale);
+  }, [rawData, sortBy, sortDirection, resolvedLocale]);
 
   const handleSort = React.useCallback(
     (key: ColumnKey<T>) => {
@@ -210,18 +193,19 @@ export function DataTable<T extends object = RowData>({
         newDirection = "asc";
       }
 
-      if (onSort) {
-        if (newDirection) {
-          onSort(key, newDirection);
-        } else {
-          onSort(undefined, undefined);
-        }
+      const next = {
+        by: newDirection ? key : undefined,
+        direction: newDirection,
+      } as const;
+
+      if (controlledSort) {
+        onSortChange?.(next);
       } else {
-        setInternalSortBy(newDirection ? key : undefined);
-        setInternalSortDirection(newDirection);
+        setInternalSortBy(next.by);
+        setInternalSortDirection(next.direction);
       }
     },
-    [sortBy, sortDirection, onSort],
+    [sortBy, sortDirection, controlledSort, onSortChange],
   );
 
   const scrollContainerRef = React.useRef<HTMLDivElement>(null);
@@ -235,10 +219,11 @@ export function DataTable<T extends object = RowData>({
     rowIdKey,
     sortBy,
     sortDirection,
-    onSort: handleSort,
+    toggleSort: handleSort,
     onAction,
     messageId,
     isLoading,
+    locale: resolvedLocale,
   };
 
   return (
@@ -264,14 +249,29 @@ export function DataTable<T extends object = RowData>({
                 "touch-pan-x",
                 maxHeight && "max-h-[--max-height]",
               )}
-              style={
-                maxHeight
+              style={{
+                WebkitOverflowScrolling: "touch",
+                ...(maxHeight
                   ? ({ "--max-height": maxHeight } as React.CSSProperties)
-                  : undefined
-              }
+                  : {}),
+              }}
             >
               <DataTableErrorBoundary>
-                <table className="w-full border-collapse">
+                <table
+                  className="w-full border-collapse"
+                  aria-busy={isLoading || undefined}
+                >
+                  {columns.length > 0 && (
+                    <colgroup>
+                      {columns.map((col) => (
+                        <col
+                          key={String(col.key)}
+                          style={col.width ? { width: col.width } : undefined}
+                        />
+                      ))}
+                      {actions && actions.length > 0 && <col />}
+                    </colgroup>
+                  )}
                   {isLoading ? (
                     <DataTableSkeleton />
                   ) : data.length === 0 ? (
@@ -297,6 +297,18 @@ export function DataTable<T extends object = RowData>({
               <div className="from-background pointer-events-none absolute top-0 right-0 bottom-0 z-10 w-8 bg-linear-to-l to-transparent" />
             )}
           </div>
+          {/* Live region for sort announcements */}
+          {(() => {
+            const col = columns.find((c) => c.key === sortBy);
+            const label = col?.label ?? (typeof sortBy === "string" ? sortBy : "");
+            const msg =
+              sortBy && sortDirection
+                ? `Sorted by ${label}, ${sortDirection === "asc" ? "ascending" : "descending"}`
+                : "";
+            return (
+              <div className="sr-only" aria-live="polite">{msg}</div>
+            );
+          })()}
         </div>
 
         <div
@@ -352,6 +364,8 @@ function DataTableEmpty({ message }: { message: string }) {
           <td
             colSpan={columns.length + (actions ? 1 : 0)}
             className="text-muted-foreground px-4 py-8 text-center"
+            role="status"
+            aria-live="polite"
           >
             {message}
           </td>

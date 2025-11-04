@@ -13,9 +13,8 @@ interface ControlsPanelProps {
   onSelectPreset: (preset: PresetName) => void;
   isLoading: boolean;
   onLoadingChange: (loading: boolean) => void;
-  sortBy?: string;
-  sortDirection?: "asc" | "desc";
-  onSortChange: (sortBy?: string, direction?: "asc" | "desc") => void;
+  sort: { by?: string; direction?: "asc" | "desc" };
+  onSortChange: (next: { by?: string; direction?: "asc" | "desc" }) => void;
   emptyMessage: string;
   onEmptyMessageChange: (message: string) => void;
   onClose?: () => void;
@@ -26,8 +25,7 @@ export function ControlsPanel({
   onSelectPreset,
   isLoading,
   onLoadingChange,
-  sortBy,
-  sortDirection,
+  sort,
   onSortChange,
   emptyMessage,
   onEmptyMessageChange,
@@ -105,10 +103,8 @@ export function ControlsPanel({
               <Label htmlFor="sort-by">Sort Column</Label>
               <Input
                 id="sort-by"
-                value={sortBy || ""}
-                onChange={(e) =>
-                  onSortChange(e.target.value || undefined, sortDirection)
-                }
+                value={sort.by || ""}
+                onChange={(e) => onSortChange({ by: e.target.value || undefined, direction: sort.direction })}
                 placeholder="Column key (e.g., price)"
               />
             </div>
@@ -116,13 +112,8 @@ export function ControlsPanel({
               <Label htmlFor="sort-direction">Sort Direction</Label>
               <select
                 id="sort-direction"
-                value={sortDirection || ""}
-                onChange={(e) =>
-                  onSortChange(
-                    sortBy,
-                    (e.target.value as "asc" | "desc") || undefined,
-                  )
-                }
+                value={sort.direction || ""}
+                onChange={(e) => onSortChange({ by: sort.by, direction: (e.target.value as "asc" | "desc") || undefined })}
                 className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
               >
                 <option value="">None</option>

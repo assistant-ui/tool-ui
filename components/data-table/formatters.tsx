@@ -110,13 +110,14 @@ function StatusBadge({ value, options }: StatusBadgeProps) {
 interface CurrencyValueProps {
   value: number;
   options?: Extract<FormatConfig, { kind: "currency" }>;
+  locale?: string;
 }
 
-function CurrencyValue({ value, options }: CurrencyValueProps) {
+function CurrencyValue({ value, options, locale }: CurrencyValueProps) {
   const currency = options?.currency ?? "USD";
   const decimals = options?.decimals ?? 2;
 
-  const formatted = new Intl.NumberFormat("en-US", {
+  const formatted = new Intl.NumberFormat(locale, {
     style: "currency",
     currency,
     minimumFractionDigits: decimals,
@@ -151,9 +152,10 @@ function PercentValue({ value, options }: PercentValueProps) {
 interface DateValueProps {
   value: string;
   options?: Extract<FormatConfig, { kind: "date" }>;
+  locale?: string;
 }
 
-function DateValue({ value, options }: DateValueProps) {
+function DateValue({ value, options, locale }: DateValueProps) {
   const dateFormat = options?.dateFormat ?? "short";
   const date = new Date(value);
 
@@ -166,21 +168,21 @@ function DateValue({ value, options }: DateValueProps) {
   if (dateFormat === "relative") {
     formatted = getRelativeTime(date);
   } else if (dateFormat === "long") {
-    formatted = new Intl.DateTimeFormat("en-US", {
+    formatted = new Intl.DateTimeFormat(locale, {
       year: "numeric",
       month: "long",
       day: "numeric",
     }).format(date);
   } else {
     // short
-    formatted = new Intl.DateTimeFormat("en-US", {
+    formatted = new Intl.DateTimeFormat(locale, {
       year: "numeric",
       month: "short",
       day: "numeric",
     }).format(date);
   }
 
-  const title = new Intl.DateTimeFormat("en-US", {
+  const title = new Intl.DateTimeFormat(locale, {
     year: "numeric",
     month: "long",
     day: "numeric",
@@ -284,15 +286,16 @@ function LinkValue({ value, options, row }: LinkValueProps) {
 interface NumberValueProps {
   value: number;
   options?: Extract<FormatConfig, { kind: "number" }>;
+  locale?: string;
 }
 
-function NumberValue({ value, options }: NumberValueProps) {
+function NumberValue({ value, options, locale }: NumberValueProps) {
   const decimals = options?.decimals ?? 0;
   const unit = options?.unit ?? "";
   const compact = options?.compact ?? false;
   const showSign = options?.showSign ?? false;
 
-  const formatted = new Intl.NumberFormat("en-US", {
+  const formatted = new Intl.NumberFormat(locale, {
     minimumFractionDigits: decimals,
     maximumFractionDigits: decimals,
     notation: compact ? "compact" : "standard",
@@ -381,12 +384,14 @@ export function renderFormattedValue(
   value: string | number | boolean | null | string[],
   column: { format?: FormatConfig },
   row?: Record<string, string | number | boolean | null | string[]>,
+  options?: { locale?: string },
 ): React.ReactNode {
   if (value == null || value === "") {
     return "—";
   }
 
   const fmt = column.format;
+  const locale = options?.locale;
 
   switch (fmt?.kind) {
     case "delta":
@@ -394,17 +399,17 @@ export function renderFormattedValue(
     case "status":
       return <StatusBadge value={String(value)} options={fmt} />;
     case "currency":
-      return <CurrencyValue value={Number(value)} options={fmt} />;
+      return <CurrencyValue value={Number(value)} options={fmt} locale={locale} />;
     case "percent":
       return <PercentValue value={Number(value)} options={fmt} />;
     case "date":
-      return <DateValue value={String(value)} options={fmt} />;
+      return <DateValue value={String(value)} options={fmt} locale={locale} />;
     case "boolean":
       return <BooleanValue value={Boolean(value)} options={fmt} />;
     case "link":
       return <LinkValue value={String(value)} options={fmt} row={row} />;
     case "number":
-      return <NumberValue value={Number(value)} options={fmt} />;
+      return <NumberValue value={Number(value)} options={fmt} locale={locale} />;
     case "badge":
       return <BadgeValue value={String(value)} options={fmt} />;
     case "array":

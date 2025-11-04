@@ -4,6 +4,7 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 import { renderFormattedValue } from "./formatters";
 import type { Column, DataTableRowData } from "./data-table";
+import { useDataTable } from "./data-table";
 
 interface DataTableCellProps {
   value: string | number | boolean | null | string[];
@@ -18,6 +19,7 @@ export function DataTableCell({
   row,
   className,
 }: DataTableCellProps) {
+  const { locale } = useDataTable();
   const isNumericKind = (() => {
     const k = (column?.format as { kind?: string } | undefined)?.kind;
     return (
@@ -32,7 +34,7 @@ export function DataTableCell({
     center: "text-center",
   }[align];
 
-  const displayValue = renderFormattedValue(value, column, row);
+  const displayValue = renderFormattedValue(value, column, row, { locale });
 
   return (
     <td
