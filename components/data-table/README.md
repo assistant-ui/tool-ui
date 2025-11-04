@@ -865,10 +865,6 @@ import { sortData } from '@/components/data-table'
 const sorted = sortData(rows, 'price', 'desc')
 ```
 
-### formatCellValue
-
-A lightweight helper for simple formatting (currency, decimals, dates, booleans). For table rendering, prefer `Column.format` which is more expressive and consistent across desktop and mobile.
-
 ### getActionLabel
 
 Generate accessible labels for action buttons:

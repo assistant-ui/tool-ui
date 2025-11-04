@@ -8,6 +8,17 @@ import { useSupportsContainerQueries } from "./use-container-query";
 import type { FormatConfig } from "./formatters";
 
 /**
+ * Default locale for all Intl formatting operations.
+ *
+ * Used as fallback when no locale prop is provided. This ensures consistent
+ * behavior across server and client rendering, avoiding mismatches from
+ * Node.js default locale (often 'en-US') vs browser locale (varies by user).
+ *
+ * @see {@link DataTableSerializableProps.locale}
+ */
+export const DEFAULT_LOCALE = "en-US" as const;
+
+/**
  * JSON primitive type that can be serialized.
  */
 type JsonPrimitive = string | number | boolean | null;
@@ -159,7 +170,19 @@ export interface DataTableSerializableProps<T extends object = RowData> {
   maxHeight?: string;
   /** Message identifier for context (used with assistant-ui) */
   messageId?: string;
-  /** BCP47 locale for formatting and sorting (e.g., 'en-US') */
+  /**
+   * BCP47 locale for formatting and sorting (e.g., 'en-US', 'de-DE', 'ja-JP')
+   *
+   * Defaults to 'en-US' to ensure consistent server/client rendering.
+   * Pass explicit locale for internationalization.
+   *
+   * @example
+   * ```tsx
+   * <DataTable locale="de-DE" /> // German formatting
+   * <DataTable locale="ja-JP" /> // Japanese formatting
+   * <DataTable />               // Uses 'en-US' default
+   * ```
+   */
   locale?: string;
 }
 
@@ -292,8 +315,15 @@ export function DataTable<T extends object = RowData>({
   className,
   locale,
 }: DataTableProps<T>) {
-  // Resolve locale: pass undefined to Intl to use environment default when not provided
-  const resolvedLocale = locale;
+  /**
+   * Resolved locale with explicit default.
+   *
+   * We always use a defined locale (never undefined) to ensure consistent
+   * behavior across server and client rendering. Without this, SSR would use
+   * Node.js locale (often en-US) while client hydration uses browser locale,
+   * causing mismatches.
+   */
+  const resolvedLocale = locale ?? DEFAULT_LOCALE;
 
   // Internal uncontrolled sort state (seed from defaultSort or legacy props)
   const [internalSortBy, setInternalSortBy] = React.useState<

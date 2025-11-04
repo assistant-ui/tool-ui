@@ -489,53 +489,6 @@ export function sortData<T extends Record<string, any>>(
 }
 
 /**
- * Format cell values for display
- */
-export function formatCellValue(
-  value: string | number | boolean | null,
-  options?: {
-    currency?: string;
-    decimals?: number;
-    dateFormat?: 'short' | 'long';
-  }
-): string {
-  if (value == null) return '—'
-  if (typeof value === 'boolean') return value ? 'Yes' : 'No'
-  if (typeof value === 'number') {
-    if (options?.currency) {
-      return new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: options.currency,
-      }).format(value)
-    }
-    if (options?.decimals != null) {
-      return value.toFixed(options.decimals)
-    }
-    return value.toLocaleString()
-  }
-  
-  // ISO date detection and formatting
-  if (typeof value === 'string' && /^\d{4}-\d{2}-\d{2}/.test(value)) {
-    try {
-      const date = new Date(value)
-      if (!isNaN(date.getTime())) {
-        return options?.dateFormat === 'long'
-          ? date.toLocaleDateString('en-US', { 
-              year: 'numeric', 
-              month: 'long', 
-              day: 'numeric' 
-            })
-          : date.toLocaleDateString()
-      }
-    } catch {
-      // Fall through to return as-is
-    }
-  }
-  
-  return String(value)
-}
-
-/**
  * Generate accessible label for action button
  */
 export function getActionLabel(
@@ -845,14 +798,10 @@ import {
 #### Utility Functions
 
 ```tsx
-import { sortData, formatCellValue, getActionLabel } from '@/components/data-table'
+import { sortData, getActionLabel } from '@/components/data-table'
 
 // Sort data manually
 const sorted = sortData(rows, 'price', 'desc')
-
-// Format values
-const formatted = formatCellValue(29.99, { currency: 'USD' })
-// => "$29.99"
 
 // Generate accessible action labels
 const label = getActionLabel('View', { name: 'Widget' })

@@ -166,7 +166,7 @@ function DateValue({ value, options, locale }: DateValueProps) {
   let formatted: string;
 
   if (dateFormat === "relative") {
-    formatted = getRelativeTime(date);
+    formatted = getRelativeTime(date, locale);
   } else if (dateFormat === "long") {
     formatted = new Intl.DateTimeFormat(locale, {
       year: "numeric",
@@ -193,7 +193,7 @@ function DateValue({ value, options, locale }: DateValueProps) {
   return <span title={title}>{formatted}</span>;
 }
 
-function getRelativeTime(date: Date): string {
+function getRelativeTime(date: Date, locale?: string): string {
   const now = new Date();
   const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
 
@@ -212,7 +212,7 @@ function getRelativeTime(date: Date): string {
   }
 
   // For dates older than a week, show absolute date
-  return new Intl.DateTimeFormat("en-US", {
+  return new Intl.DateTimeFormat(locale, {
     year: "numeric",
     month: "short",
     day: "numeric",

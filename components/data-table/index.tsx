@@ -24,5 +24,5 @@ export type {
 } from "./data-table";
 export type { FormatConfig } from "./formatters";
 
-export * from "./utilities";
+export { sortData, parseNumericLike } from "./utilities";
 export { useScrollShadow } from "./use-scroll-shadow";
