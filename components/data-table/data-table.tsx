@@ -34,7 +34,7 @@ type JsonPrimitive = string | number | boolean | null;
  *
  * @example
  * ```ts
- * // ✅ Good: Use primitives and primitive arrays
+ * // 👍 Good: Use primitives and primitive arrays
  * const row = {
  *   name: "Widget",
  *   price: 29.99,
@@ -42,7 +42,7 @@ type JsonPrimitive = string | number | boolean | null;
  *   metrics: [1.2, 3.4, 5.6]
  * }
  *
- * // ❌ Bad: Don't put objects in row data
+ * // 💩 Bad: Don't put objects in row data
  * const row = {
  *   link: { href: "/path", label: "Click" }  // Use format: { kind: 'link' } instead
  * }
@@ -60,7 +60,10 @@ type FormatFor<V> = V extends number
     : V extends (string | number | boolean | null)[]
       ? Extract<FormatConfig, { kind: "array" }>
       : V extends string
-        ? Extract<FormatConfig, { kind: "text" | "link" | "date" | "badge" | "status" }>
+        ? Extract<
+            FormatConfig,
+            { kind: "text" | "link" | "date" | "badge" | "status" }
+          >
         : Extract<FormatConfig, { kind: "text" }>;
 
 /**
@@ -249,7 +252,10 @@ export interface DataTableClientProps<T extends object = RowData> {
    * />
    * ```
    */
-  onSortChange?: (next: { by?: ColumnKey<T>; direction?: "asc" | "desc" }) => void;
+  onSortChange?: (next: {
+    by?: ColumnKey<T>;
+    direction?: "asc" | "desc";
+  }) => void;
 }
 
 /**
@@ -398,8 +404,6 @@ export function DataTable<T extends object = RowData>({
     [sortBy, sortDirection, controlledSort, onSortChange],
   );
 
-  const scrollContainerRef = React.useRef<HTMLDivElement>(null);
-
   const contextValue: DataTableContextValue<T> = {
     columns,
     data,
@@ -425,22 +429,20 @@ export function DataTable<T extends object = RowData>({
 
   return (
     <DataTableContext.Provider value={contextValue}>
-      <div className={cn("w-full @container", className)}>
+      <div className={cn("@container w-full", className)}>
         <div className={cn("hidden @md:block")}>
           <div className="relative">
             <div
-              ref={scrollContainerRef}
               className={cn(
                 "relative w-full overflow-auto rounded-md border",
                 "touch-pan-x",
                 maxHeight && "max-h-[--max-height]",
               )}
-              style={{
-                WebkitOverflowScrolling: "touch",
-                ...(maxHeight
+              style={
+                maxHeight
                   ? ({ "--max-height": maxHeight } as React.CSSProperties)
-                  : {}),
-              }}
+                  : undefined
+              }
             >
               <DataTableErrorBoundary>
                 <Table aria-busy={isLoading || undefined}>
@@ -475,7 +477,9 @@ export function DataTable<T extends object = RowData>({
           </div>
           {/* Live region for sort announcements */}
           {sortAnnouncement && (
-            <div className="sr-only" aria-live="polite">{sortAnnouncement}</div>
+            <div className="sr-only" aria-live="polite">
+              {sortAnnouncement}
+            </div>
           )}
         </div>
 
@@ -489,7 +493,8 @@ export function DataTable<T extends object = RowData>({
           {/* Screen reader description */}
           <div id="mobile-table-description" className="sr-only">
             Table data shown as expandable cards. Each card represents one row.
-            {columns.length > 0 && ` Columns: ${columns.map((c) => c.label).join(", ")}.`}
+            {columns.length > 0 &&
+              ` Columns: ${columns.map((c) => c.label).join(", ")}.`}
           </div>
 
           <DataTableErrorBoundary>
