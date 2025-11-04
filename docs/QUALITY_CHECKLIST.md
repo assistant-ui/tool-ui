@@ -113,7 +113,7 @@ Data Table
 
 Radix + Tailwind
 	•	☐ Portals (menus/dialogs/tooltips) don’t trap focus; scroll lock documented.
-	•	☐ Container queries (@container, @md) degrade when unsupported (doc fallback).
+		•	☐ Container queries use Tailwind’s @container DSL (v4 native; v3 plugin documented). Base layout remains usable if @… is ignored.
 
 ⸻
 

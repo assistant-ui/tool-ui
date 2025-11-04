@@ -36,22 +36,21 @@ npm install @radix-ui/react-dropdown-menu @radix-ui/react-accordion @radix-ui/re
 pnpm add @radix-ui/react-dropdown-menu @radix-ui/react-accordion @radix-ui/react-tooltip lucide-react
 ```
 
-### Tailwind Setup
+### Tailwind Setup (Compat Note)
 
-This component uses container queries. Ensure your Tailwind setup supports:
+This component is authored using Tailwind’s shared `@container` DSL.
 
-- `@container` on a wrapping element
-- Container query variants like `@md:`
-
-If your project doesn’t already provide these, either replace `@md:` with breakpoint variants like `md:` or add container‑query support via a plugin. Example config:
+- Tailwind v4: works out of the box (container queries built-in)
+- Tailwind v3.2+: `npm i -D @tailwindcss/container-queries` and add the plugin:
 
 ```js
 // tailwind.config.{js,ts}
-export default {
-  content: ["./app/**/*.{ts,tsx}", "./components/**/*.{ts,tsx}"],
-  plugins: [require("@tailwindcss/container-queries")],
+module.exports = {
+  plugins: [require('@tailwindcss/container-queries')],
 }
 ```
+
+If you use a prefix, prefix both sides: `tw-@container` on the container and `@md:tw-flex` (etc.) on children.
 
 Copy the following files to your project:
 
@@ -66,7 +65,6 @@ components/data-table/
 ├── data-table-actions.tsx
 ├── data-table-accordion-card.tsx  # Mobile card component
 ├── use-scroll-shadow.ts           # Scroll detection hook
-├── use-container-query.ts         # Container query feature detection
 ├── error-boundary.tsx             # Error boundary component
 ├── formatters.tsx                 # Value formatters
 ├── schema.ts                      # Zod validation schemas
@@ -88,70 +86,28 @@ components/ui/
 
 ### Supported Browsers
 
-The DataTable component works in all modern browsers:
+This component targets modern browsers with native Container Queries support:
 
-| Browser | Minimum Version | Notes |
-|---------|----------------|-------|
-| Chrome / Edge | 105+ (Sept 2022) | Full support including container queries |
-| Safari | 16+ (Sept 2022) | Full support including container queries |
-| Firefox | 110+ (Feb 2023) | Full support including container queries |
-| Chrome / Edge | 88-104 | ⚠️ Fallback mode (uses viewport media queries instead of container queries) |
-| Safari | 14-15 | ⚠️ Fallback mode (uses viewport media queries instead of container queries) |
-| Firefox | 102-109 | ⚠️ Fallback mode (uses viewport media queries instead of container queries) |
+| Browser | Minimum Version |
+|---------|-----------------|
+| Safari | 16.4+ |
+| Chrome / Edge | 111+ |
+| Firefox | 128+ |
 
-### Feature Detection
-
-The component automatically detects browser support for CSS Container Queries and falls back to regular media queries in older browsers:
-
-- **Modern browsers** (Chrome 105+, Safari 16+, Firefox 110+): Uses container queries for optimal responsiveness
-- **Older browsers**: Automatically falls back to viewport-based media queries
-
-**What this means:**
-- ✅ Component works in all browsers
-- ✅ Modern browsers get container-based responsive behavior (better for component playgrounds, iframes, etc.)
-- ✅ Older browsers get viewport-based responsive behavior (still fully functional)
+Progressive enhancement: if a project lacks container-query support (e.g., Tailwind v3 without the plugin), the `@…` utilities are ignored and the base mobile-first layout still renders correctly.
 
 ### Tailwind CSS Container Queries
 
-The component uses Tailwind CSS container query utilities (`@container`, `@md:`). Ensure your Tailwind configuration includes container query support:
+This component uses Tailwind container-query utilities (`@container`, `@md:`). The markup is identical across Tailwind v4 and v3.2+ (with the plugin). Named containers are supported if you need them (e.g., `@container/main` and `@md/main:`).
 
-**Option 1: Add the plugin** (recommended)
-```bash
-npm install @tailwindcss/container-queries
-# or
-pnpm add @tailwindcss/container-queries
-```
+### Prefix Gotcha
 
-```js
-// tailwind.config.{js,ts}
-export default {
-  content: ["./app/**/*.{ts,tsx}", "./components/**/*.{ts,tsx}"],
-  plugins: [require("@tailwindcss/container-queries")],
-}
-```
-
-**Option 2: Use viewport breakpoints**
-
-If you can't use container queries in your project, the fallback system will automatically use standard Tailwind breakpoints (`md:`, `lg:`, etc.) instead. The component will still work, but will respond to viewport width instead of container width.
-
-### Testing Browser Support
-
-To verify browser support in your project:
-
-```tsx
-import { useSupportsContainerQueries } from '@/components/data-table/use-container-query'
-
-function BrowserCheck() {
-  const supported = useSupportsContainerQueries()
-  return <div>Container Queries: {supported ? '✅ Supported' : '⚠️ Fallback mode'}</div>
-}
-```
+If your Tailwind config uses a prefix (e.g., `prefix: 'tw-'`), prefix both the container and the inner utilities: `tw-@container` and `@md:tw-flex`.
 
 ### Known Limitations
 
 - **IE11**: Not supported (no ES6 support)
-- **Very old browsers** (<2020): Component may not render correctly
-- **SSR/SSG**: Feature detection runs client-side, so there may be a brief flash during hydration as the component switches between container and media queries
+- **Very old browsers** (<2020): May not render correctly
 
 ## Basic Usage
 

@@ -4,7 +4,6 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 import { sortData } from "./utilities";
 import { useScrollShadow } from "./use-scroll-shadow";
-import { useSupportsContainerQueries } from "./use-container-query";
 import type { FormatConfig } from "./formatters";
 
 /**
@@ -387,7 +386,6 @@ export function DataTable<T extends object = RowData>({
 
   const scrollContainerRef = React.useRef<HTMLDivElement>(null);
   const scrollShadow = useScrollShadow(scrollContainerRef);
-  const supportsContainerQueries = useSupportsContainerQueries();
 
   const contextValue: DataTableContextValue<T> = {
     columns,
@@ -405,19 +403,8 @@ export function DataTable<T extends object = RowData>({
 
   return (
     <DataTableContext.Provider value={contextValue}>
-      <div
-        className={cn(
-          "w-full",
-          supportsContainerQueries && "@container",
-          className,
-        )}
-      >
-        <div
-          className={cn(
-            "hidden",
-            supportsContainerQueries ? "@md:block" : "md:block",
-          )}
-        >
+      <div className={cn("w-full @container", className)}>
+        <div className={cn("hidden @md:block")}> 
           <div className="relative">
             <div
               ref={scrollContainerRef}
@@ -490,10 +477,7 @@ export function DataTable<T extends object = RowData>({
 
         {/* Mobile card view - uses list semantics for accessibility */}
         <div
-          className={cn(
-            "flex flex-col gap-3",
-            supportsContainerQueries ? "@md:hidden" : "md:hidden",
-          )}
+          className={cn("flex flex-col gap-3 @md:hidden")}
           role="list"
           aria-label="Data table (mobile card view)"
           aria-describedby="mobile-table-description"

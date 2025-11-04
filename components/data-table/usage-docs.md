@@ -14,6 +14,11 @@ Paths used below assume the component lives at:
 
 ---
 
+> Compat note
+> - Tailwind v4: works out of the box.
+> - Tailwind v3.2+: `npm i -D @tailwindcss/container-queries` and add the plugin. Markup stays identical.
+> - Using a prefix? Use `tw-@container` and `@md:tw-…`.
+
 ## Quick start
 
 ```tsx
@@ -107,8 +112,9 @@ export default function Example() {
    Adjust imports if your UI atom paths differ.
 
 2. **Tailwind**
-   - Works with Tailwind v4 (used here). Container query variants like `@md:` appear in classes.
-   - The table will enable container querying dynamically when supported; otherwise it falls back gracefully.
+   - Authored in Tailwind’s `@container` DSL. Tailwind v4 works out of the box.
+   - Tailwind v3.2+: `npm i -D @tailwindcss/container-queries` and add the plugin. Markup stays identical.
+   - Without container-query support, the `@…` utilities are ignored and the base mobile-first layout still works.
 
 3. **Radix**
    - The shadcn UI atoms above wrap Radix primitives. Ensure Radix peer deps are installed if you vend atoms.
