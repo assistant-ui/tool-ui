@@ -36,7 +36,19 @@ export function CodePanel({ config, sort, isLoading, emptyMessage }: CodePanelPr
       props.push(`  rowIdKey="${config.rowIdKey}"`);
     }
 
+    // Generate sorting code with explanation
+    const sortingComment: string[] = [];
     if (sort?.by && sort?.direction) {
+      sortingComment.push(
+        `  {/* Sorting: Choose controlled or uncontrolled pattern */}`,
+      );
+      sortingComment.push(
+        `  {/* Option 1 (Uncontrolled): defaultSort={{ by: "${sort.by}", direction: "${sort.direction}" }} */}`,
+      );
+      sortingComment.push(
+        `  {/* Option 2 (Controlled): sort={sort} onSortChange={setSort} */}`,
+      );
+      // For generated code, use uncontrolled as the simpler default
       props.push(`  defaultSort={{ by: "${sort.by}", direction: "${sort.direction}" }}`);
     }
 
@@ -48,7 +60,11 @@ export function CodePanel({ config, sort, isLoading, emptyMessage }: CodePanelPr
       props.push(`  emptyMessage="${emptyMessage}"`);
     }
 
-    return `<DataTable\n${props.join("\n")}\n/>`;
+    const sortingExplanation = sortingComment.length > 0
+      ? `\n${sortingComment.join("\n")}\n`
+      : "";
+
+    return `${sortingExplanation}<DataTable\n${props.join("\n")}\n/>`;
   };
 
   const code = generateCode();
