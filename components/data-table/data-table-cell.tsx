@@ -6,12 +6,19 @@ import { renderFormattedValue } from "./formatters";
 import type { Column, DataTableRowData } from "./data-table";
 import { useDataTable } from "./data-table";
 import { TableCell } from "./_ui";
+import { DATA_TABLE_CELL_PADDING } from "./data-table-styles";
 
 interface DataTableCellProps {
-  value: string | number | boolean | null | (string | number | boolean | null)[];
+  value:
+    | string
+    | number
+    | boolean
+    | null
+    | (string | number | boolean | null)[];
   column: Column;
   row: DataTableRowData;
   className?: string;
+  columnIndex?: number;
 }
 
 export function DataTableCell({
@@ -19,6 +26,7 @@ export function DataTableCell({
   column,
   row,
   className,
+  columnIndex = 0,
 }: DataTableCellProps) {
   const { locale } = useDataTable();
   const k = (column?.format as { kind?: string } | undefined)?.kind;
@@ -28,7 +36,11 @@ export function DataTableCell({
   const displayValue = renderFormattedValue(value, column, row, { locale });
   const align =
     column.align ??
-    (isNumericKind || isNumericValue ? "right" : "left");
+    (columnIndex === 0
+      ? "left"
+      : isNumericKind || isNumericValue
+        ? "right"
+        : "left");
   const alignClass =
     align === "right"
       ? "text-right"
@@ -37,7 +49,9 @@ export function DataTableCell({
         : undefined;
 
   return (
-    <TableCell className={cn(alignClass, className)}>
+    <TableCell
+      className={cn(DATA_TABLE_CELL_PADDING, alignClass, className)}
+    >
       {displayValue}
     </TableCell>
   );

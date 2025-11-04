@@ -72,7 +72,7 @@ export const Thread: FC = () => {
           </ComposerPrimitive.Send>
         </ThreadPrimitive.If>
         <ThreadPrimitive.If running>
-          <ComposerPrimitive.Cancel className="bg-destructive text-destructive-foreground hover:bg-destructive/90 shrink-0 rounded-full p-2">
+          <ComposerPrimitive.Cancel className="bg-destructive text-destructive hover:bg-destructive/90 shrink-0 rounded-full p-2">
             ⏹
           </ComposerPrimitive.Cancel>
         </ThreadPrimitive.If>

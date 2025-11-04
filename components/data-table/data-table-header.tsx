@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { cn } from "./_cn";
-import { useDataTable } from "./data-table";
+import { useDataTable, type Column } from "./data-table";
 import {
   Tooltip,
   TooltipContent,
@@ -17,7 +17,11 @@ import {
 function SortIcon({ state }: { state?: "asc" | "desc" }) {
   if (state === "asc") return <span aria-hidden>↑</span>;
   if (state === "desc") return <span aria-hidden>↓</span>;
-  return <span aria-hidden>↕</span>;
+  return (
+    <span aria-hidden className="opacity-20">
+      ⇅
+    </span>
+  );
 }
 
 export function DataTableHeader() {
@@ -27,11 +31,17 @@ export function DataTableHeader() {
     <TooltipProvider delayDuration={300}>
       <TableHeader>
         <TableRow>
-          {columns.map((column) => (
-            <DataTableHead key={column.key} column={column} />
+          {columns.map((column, columnIndex) => (
+            <DataTableHead
+              key={column.key}
+              column={column}
+              columnIndex={columnIndex}
+            />
           ))}
           {actions && actions.length > 0 && (
-            <TableHead scope="col">Actions</TableHead>
+            <TableHead scope="col" className="pr-6 text-right">
+              Actions
+            </TableHead>
           )}
         </TableRow>
       </TableHeader>
@@ -40,17 +50,11 @@ export function DataTableHeader() {
 }
 
 interface DataTableHeadProps {
-  column: {
-    key: string;
-    label: string;
-    abbr?: string;
-    sortable?: boolean;
-    align?: "left" | "right" | "center";
-    width?: string;
-  };
+  column: Column;
+  columnIndex?: number;
 }
 
-export function DataTableHead({ column }: DataTableHeadProps) {
+export function DataTableHead({ column, columnIndex = 0 }: DataTableHeadProps) {
   const { sortBy, sortDirection, toggleSort, isLoading } = useDataTable();
 
   const isSortable = column.sortable !== false;
@@ -67,18 +71,30 @@ export function DataTableHead({ column }: DataTableHeadProps) {
 
   const displayText = column.abbr || column.label;
   const shouldShowTooltip = column.abbr || displayText.length > 15;
+  const k = (column?.format as { kind?: string } | undefined)?.kind;
+  const isNumericKind =
+    k === "number" || k === "currency" || k === "percent" || k === "delta";
+  const align =
+    column.align ??
+    (columnIndex === 0 ? "left" : isNumericKind ? "right" : "left");
   const alignClass =
-    column.align === "right"
+    align === "right"
       ? "text-right"
-      : column.align === "center"
+      : align === "center"
         ? "text-center"
         : undefined;
   const buttonAlignClass = cn(
-    "w-full min-w-0 gap-1 font-normal",
-    column.align === "right" && "justify-end flex-row-reverse text-right",
-    column.align === "center" && "justify-center",
-    column.align !== "right" && "justify-start",
+    "min-w-0 gap-1 font-normal",
+    align === "right" && "text-right",
+    align === "center" && "text-center",
+    align === "left" && "text-left",
   );
+  const labelAlignClass =
+    align === "right"
+      ? "text-right"
+      : align === "center"
+        ? "text-center"
+        : "text-left";
 
   return (
     <TableHead
@@ -106,7 +122,7 @@ export function DataTableHead({ column }: DataTableHeadProps) {
         }}
         disabled={isDisabled}
         variant="ghost"
-        className={cn(buttonAlignClass, "gap-2")}
+        className={cn(buttonAlignClass, "w-fit min-w-10")}
         aria-label={
           `Sort by ${column.label}` +
           (isSorted && direction
@@ -118,16 +134,19 @@ export function DataTableHead({ column }: DataTableHeadProps) {
         {shouldShowTooltip ? (
           <Tooltip>
             <TooltipTrigger asChild>
-              <span className="truncate">
+              <span className={cn("truncate", labelAlignClass)}>
                 {column.abbr ? (
                   <abbr
                     title={column.label}
-                    className="cursor-help border-b border-dotted border-current no-underline"
+                    className={cn(
+                      "cursor-help border-b border-dotted border-current no-underline",
+                      labelAlignClass,
+                    )}
                   >
                     {column.abbr}
                   </abbr>
                 ) : (
-                  column.label
+                  <span className={labelAlignClass}>{column.label}</span>
                 )}
               </span>
             </TooltipTrigger>
@@ -136,10 +155,12 @@ export function DataTableHead({ column }: DataTableHeadProps) {
             </TooltipContent>
           </Tooltip>
         ) : (
-          <span className="truncate">{column.label}</span>
+          <span className={cn("truncate", labelAlignClass)}>
+            {column.label}
+          </span>
         )}
         {isSortable && (
-          <span className="shrink-0">
+          <span className="min-w-5 shrink-0">
             <SortIcon state={direction} />
           </span>
         )}

@@ -52,7 +52,7 @@ export const sampleProducts: DataTableConfig = {
 
 export const sampleBasic: DataTableConfig = {
   columns: [
-    { key: "id", label: "ID", align: "right" } as Column<Record<string, RowPrimitive>>,
+    { key: "id", label: "ID", align: "left" } as Column<Record<string, RowPrimitive>>,
     { key: "name", label: "Name" } as Column<Record<string, RowPrimitive>>,
     { key: "status", label: "Status", format: { kind: "status", statusMap: {
       Active: { tone: "success" },
@@ -80,7 +80,7 @@ export const sampleEmpty: DataTableConfig = {
 
 export const sampleLarge: DataTableConfig = {
   columns: [
-    { key: "id", label: "ID", align: "right" } as Column<Record<string, RowPrimitive>>,
+    { key: "id", label: "ID", align: "left" } as Column<Record<string, RowPrimitive>>,
     { key: "user", label: "User" } as Column<Record<string, RowPrimitive>>,
     { key: "email", label: "Email", format: { kind: "link" } } as Column<Record<string, RowPrimitive>>,
     { key: "role", label: "Role", format: { kind: "badge", colorMap: { Admin: "danger", Editor: "info", Viewer: "neutral" } } } as Column<Record<string, RowPrimitive>>,

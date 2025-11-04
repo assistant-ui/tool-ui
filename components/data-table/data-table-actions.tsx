@@ -29,27 +29,24 @@ export function DataTableActions({ row }: DataTableActionsProps) {
 
   if (actions.length <= 2) {
     return (
-      <>
-        <div className="flex gap-2">
-          {actions.map((action) => (
-            <Button
-              key={action.id}
-              variant={action.variant || "default"}
-              size="sm"
-              aria-label={getActionLabel(action.label, row)}
-              onClick={() => handleAction(action)}
-              className="min-h-[44px] @md:min-h-[36px]"
-            >
-              {action.label}
-            </Button>
-          ))}
-        </div>
-      </>
+      <div className="ml-auto flex w-full justify-end gap-2">
+        {actions.map((action) => (
+          <Button
+            key={action.id}
+            variant={action.variant || "default"}
+            size="sm"
+            aria-label={getActionLabel(action.label, row)}
+            onClick={() => handleAction(action)}
+          >
+            {action.label}
+          </Button>
+        ))}
+      </div>
     );
   }
 
   return (
-    <>
+    <div className="ml-auto flex w-full justify-end">
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button
@@ -71,7 +68,7 @@ export function DataTableActions({ row }: DataTableActionsProps) {
               onClick={() => handleAction(action)}
               className={
                 action.variant === "destructive"
-                  ? "text-destructive-foreground focus:text-destructive-foreground"
+                  ? "text-destructive focus:text-destructive"
                   : undefined
               }
             >
@@ -80,6 +77,6 @@ export function DataTableActions({ row }: DataTableActionsProps) {
           ))}
         </DropdownMenuContent>
       </DropdownMenu>
-    </>
+    </div>
   );
 }

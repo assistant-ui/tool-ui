@@ -396,6 +396,7 @@ export function DataTableExample() {
           actions={[
             { id: "edit", label: "Edit", variant: "secondary" },
             { id: "complete", label: "Complete", variant: "default" },
+            { id: "delete", label: "Delete", variant: "destructive" },
           ]}
           onAction={(actionId, row) => {
             console.log(`Action: ${actionId}`, row);

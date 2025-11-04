@@ -56,7 +56,7 @@ function DeltaValue({ value, options }: DeltaValueProps) {
   const isBad = upIsPositive ? isNegative : isPositive;
 
   const colorClass = isGood
-    ? "text-primary"
+    ? "text-green-700 dark:text-green-500"
     : isBad
       ? "text-destructive"
       : "text-muted-foreground";
@@ -222,7 +222,10 @@ function BooleanValue({ value, options }: BooleanValueProps) {
 interface LinkValueProps {
   value: string;
   options?: Extract<FormatConfig, { kind: "link" }>;
-  row?: Record<string, string | number | boolean | null | (string | number | boolean | null)[]>;
+  row?: Record<
+    string,
+    string | number | boolean | null | (string | number | boolean | null)[]
+  >;
 }
 
 function LinkValue({ value, options, row }: LinkValueProps) {
@@ -337,9 +340,17 @@ function ArrayValue({ value, options }: ArrayValueProps) {
 }
 
 export function renderFormattedValue(
-  value: string | number | boolean | null | (string | number | boolean | null)[],
+  value:
+    | string
+    | number
+    | boolean
+    | null
+    | (string | number | boolean | null)[],
   column: { format?: FormatConfig },
-  row?: Record<string, string | number | boolean | null | (string | number | boolean | null)[]>,
+  row?: Record<
+    string,
+    string | number | boolean | null | (string | number | boolean | null)[]
+  >,
   options?: { locale?: string },
 ): React.ReactNode {
   if (value == null || value === "") {
@@ -355,7 +366,9 @@ export function renderFormattedValue(
     case "status":
       return <StatusBadge value={String(value)} options={fmt} />;
     case "currency":
-      return <CurrencyValue value={Number(value)} options={fmt} locale={locale} />;
+      return (
+        <CurrencyValue value={Number(value)} options={fmt} locale={locale} />
+      );
     case "percent":
       return <PercentValue value={Number(value)} options={fmt} />;
     case "date":
@@ -365,7 +378,9 @@ export function renderFormattedValue(
     case "link":
       return <LinkValue value={String(value)} options={fmt} row={row} />;
     case "number":
-      return <NumberValue value={Number(value)} options={fmt} locale={locale} />;
+      return (
+        <NumberValue value={Number(value)} options={fmt} locale={locale} />
+      );
     case "badge":
       return <BadgeValue value={String(value)} options={fmt} />;
     case "array":

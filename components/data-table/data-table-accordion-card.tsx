@@ -50,12 +50,21 @@ export function DataTableAccordionCard({
   row,
   index,
 }: DataTableAccordionCardProps) {
-  const { columns, actions, onAction, onBeforeAction, messageId, locale, rowIdKey } = useDataTable();
+  const {
+    columns,
+    actions,
+    onAction,
+    onBeforeAction,
+    messageId,
+    locale,
+    rowIdKey,
+  } = useDataTable();
   const { primary, secondary } = categorizeColumns(columns);
 
   const handleAction = async (action: Action, e?: React.MouseEvent) => {
     e?.stopPropagation();
-    const proceed = (await onBeforeAction?.({ action, row, messageId })) ?? true;
+    const proceed =
+      (await onBeforeAction?.({ action, row, messageId })) ?? true;
     if (!proceed) return;
     onAction?.(action.id, row, { messageId });
   };
@@ -73,7 +82,9 @@ export function DataTableAccordionCard({
 
   const headingId = `row-${stableRowId}-heading`;
   const detailsId = `row-${stableRowId}-details`;
-  const secondaryDataIds = secondaryPrimary.map((col) => `row-${stableRowId}-${String(col.key)}`);
+  const secondaryDataIds = secondaryPrimary.map(
+    (col) => `row-${stableRowId}-${String(col.key)}`,
+  );
 
   const primaryValue = primaryColumn
     ? String(row[primaryColumn.key] ?? "")
@@ -81,12 +92,18 @@ export function DataTableAccordionCard({
   const rowLabel = `Row ${index + 1}: ${primaryValue}`;
 
   return (
-    <Accordion type="single" collapsible className="rounded-lg border" role="listitem" aria-label={rowLabel}>
+    <Accordion
+      type="single"
+      collapsible
+      className="overflow-clip rounded-lg border"
+      role="listitem"
+      aria-label={rowLabel}
+    >
       <AccordionItem value={`row-${stableRowId}`} className="border-0">
         <AccordionTrigger
-          className="hover:bg-muted/50 px-4 py-3 hover:no-underline"
+          className="hover:bg-muted/50 rounded-none px-4 py-3 hover:no-underline"
           aria-controls={detailsId}
-          aria-label={`${rowLabel}. ${secondary.length > 0 ? 'Expand for details' : ''}`}
+          aria-label={`${rowLabel}. ${secondary.length > 0 ? "Expand for details" : ""}`}
         >
           <div className="flex w-full items-start justify-between pr-2 text-left">
             <div className="min-w-0 flex-1">
@@ -124,7 +141,9 @@ export function DataTableAccordionCard({
                       <span className="sr-only">{col.label}: </span>
                       <span aria-hidden="true">{col.label}: </span>
                       <span>
-                        {renderFormattedValue(row[col.key], col, row, { locale })}
+                        {renderFormattedValue(row[col.key], col, row, {
+                          locale,
+                        })}
                       </span>
                     </span>
                   ))}
@@ -141,7 +160,11 @@ export function DataTableAccordionCard({
           aria-labelledby={headingId}
         >
           {secondary.length > 0 && (
-            <dl className="mb-4 flex flex-col gap-2" role="list" aria-label="Additional data">
+            <dl
+              className="flex flex-col gap-2 pt-4"
+              role="list"
+              aria-label="Additional data"
+            >
               {secondary.map((col) => (
                 <div
                   key={col.key}
@@ -208,12 +231,14 @@ function SimpleCard({
   columns: Column[];
   index: number;
 }) {
-  const { onAction, onBeforeAction, actions, messageId, locale, rowIdKey } = useDataTable();
+  const { onAction, onBeforeAction, actions, messageId, locale, rowIdKey } =
+    useDataTable();
   const primaryColumn = columns[0];
   const otherColumns = columns.slice(1);
 
   const handleAction = async (action: Action) => {
-    const proceed = (await onBeforeAction?.({ action, row, messageId })) ?? true;
+    const proceed =
+      (await onBeforeAction?.({ action, row, messageId })) ?? true;
     if (!proceed) return;
     onAction?.(action.id, row, { messageId });
   };
@@ -241,7 +266,9 @@ function SimpleCard({
             className="font-medium"
             aria-label={`${primaryColumn.label}: ${row[primaryColumn.key]}`}
           >
-            {renderFormattedValue(row[primaryColumn.key], primaryColumn, row, { locale })}
+            {renderFormattedValue(row[primaryColumn.key], primaryColumn, row, {
+              locale,
+            })}
           </div>
         )}
 

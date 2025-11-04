@@ -33,7 +33,9 @@ export function useConfirm(): ConfirmFn {
 export function ConfirmProvider({ children }: { children: React.ReactNode }) {
   const [open, setOpen] = React.useState(false);
   const [options, setOptions] = React.useState<ConfirmOptions>({});
-  const pendingResolve = React.useRef<((val: boolean) => void) | undefined>(undefined);
+  const pendingResolve = React.useRef<((val: boolean) => void) | undefined>(
+    undefined,
+  );
 
   const confirm = React.useCallback<ConfirmFn>((opts) => {
     // Resolve any in-flight confirm as cancelled before opening a new one
@@ -82,7 +84,9 @@ export function ConfirmProvider({ children }: { children: React.ReactNode }) {
           <AlertDialogHeader>
             <AlertDialogTitle>{options.title ?? "Confirm"}</AlertDialogTitle>
             {options.description && (
-              <AlertDialogDescription>{options.description}</AlertDialogDescription>
+              <AlertDialogDescription>
+                {options.description}
+              </AlertDialogDescription>
             )}
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -91,7 +95,11 @@ export function ConfirmProvider({ children }: { children: React.ReactNode }) {
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={handleConfirm}
-              className={options.destructive ? "bg-destructive text-destructive-foreground hover:bg-destructive/90" : undefined}
+              className={
+                options.destructive
+                  ? "bg-destructive text-destructive hover:bg-destructive/90"
+                  : undefined
+              }
             >
               {options.confirmText ?? "Confirm"}
             </AlertDialogAction>
