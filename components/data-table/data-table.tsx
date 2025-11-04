@@ -160,6 +160,32 @@ export function DataTable<T extends object = RowData>({
     "asc" | "desc" | undefined
   >(controlledSortDirection);
 
+  // Sync internal state when controlled props change
+  React.useEffect(() => {
+    if (controlledSortBy !== undefined || controlledSortDirection !== undefined) {
+      // Parent is providing controlled values - sync internal state
+      setInternalSortBy(controlledSortBy);
+      setInternalSortDirection(controlledSortDirection);
+    }
+  }, [controlledSortBy, controlledSortDirection]);
+
+  // Warn in development if sortBy is set without onSort (likely a mistake)
+  React.useEffect(() => {
+    if (process.env.NODE_ENV === "development") {
+      if (
+        (controlledSortBy !== undefined || controlledSortDirection !== undefined) &&
+        !onSort
+      ) {
+        console.warn(
+          "DataTable: You provided `sortBy` or `sortDirection` without `onSort`. " +
+            "The table will use the initial sort but won't update when the user clicks headers. " +
+            "To enable controlled sorting, provide an `onSort` handler. " +
+            "To use uncontrolled sorting, omit both `sortBy` and `sortDirection`.",
+        );
+      }
+    }
+  }, [controlledSortBy, controlledSortDirection, onSort]);
+
   const sortBy = controlledSortBy ?? internalSortBy;
   const sortDirection = controlledSortDirection ?? internalSortDirection;
 
@@ -265,10 +291,10 @@ export function DataTable<T extends object = RowData>({
             </div>
 
             {scrollShadow.canScrollLeft && (
-              <div className="from-background pointer-events-none absolute top-0 bottom-0 left-0 z-10 w-8 bg-gradient-to-r to-transparent" />
+              <div className="from-background pointer-events-none absolute top-0 bottom-0 left-0 z-10 w-8 bg-linear-to-r to-transparent" />
             )}
             {scrollShadow.canScrollRight && (
-              <div className="from-background pointer-events-none absolute top-0 right-0 bottom-0 z-10 w-8 bg-gradient-to-l to-transparent" />
+              <div className="from-background pointer-events-none absolute top-0 right-0 bottom-0 z-10 w-8 bg-linear-to-l to-transparent" />
             )}
           </div>
         </div>

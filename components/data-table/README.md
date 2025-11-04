@@ -231,7 +231,26 @@ interface Action {
 
 ## Examples
 
-### With Sorting (Controlled)
+### Sorting
+
+The DataTable supports both **controlled** and **uncontrolled** sorting:
+
+#### Uncontrolled Sorting (Recommended for simple cases)
+
+The table manages its own sort state internally:
+
+```tsx
+<DataTable
+  columns={columns}
+  data={rows}
+  // No sortBy, sortDirection, or onSort needed
+  // Users can click headers to sort
+/>
+```
+
+#### Controlled Sorting (For complex state management)
+
+You control the sort state from parent component:
 
 ```tsx
 const [sortBy, setSortBy] = useState<string>()
@@ -249,6 +268,24 @@ const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>()
   }}
 />
 ```
+
+**Important:** If you provide `sortBy` or `sortDirection`, you **must** also provide `onSort`. Otherwise, the table will show the initial sort but won't update when users click headers.
+
+#### Initial Sort (Uncontrolled with default)
+
+Set an initial sort without managing state:
+
+```tsx
+<DataTable
+  columns={columns}
+  data={rows}
+  sortBy="price"
+  sortDirection="desc"
+  // No onSort - table takes over after initial render
+/>
+```
+
+**Note:** This pattern will show a warning in development mode. For a one-time initial sort, it's better to pre-sort your data array.
 
 ### With Actions
 

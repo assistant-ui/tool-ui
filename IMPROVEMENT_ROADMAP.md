@@ -6,7 +6,7 @@ This document outlines actionable changes to improve the codebase quality, produ
 
 **Last Updated**: 2025-11-03
 
-### Completed Items (8)
+### Completed Items (9)
 - ✅ **#1**: Fix Sortable Header Accessibility (CRITICAL)
 - ✅ **#2**: Fix Type Safety Violations (CRITICAL)
 - ✅ **#3**: Implement Proper Zod Schema Validation (CRITICAL)
@@ -15,6 +15,7 @@ This document outlines actionable changes to improve the codebase quality, produ
 - ✅ **#6**: Fix Serialization Documentation (CRITICAL)
 - ✅ **#7**: Document Browser Support & Add Feature Detection (CRITICAL)
 - ✅ **#8**: Fix Numeric Auto-Alignment Bug (HIGH)
+- ✅ **#10**: Fix Sort State Management Pattern (HIGH)
 
 ### In Progress (0)
 
@@ -627,11 +628,10 @@ pnpm add @radix-ui/react-accordion @radix-ui/react-dropdown-menu lucide-react zo
 **Solution**: Add `useEffect` to sync controlled props to internal state.
 
 **Action Items**:
-- [ ] Remove internal sort state
-- [ ] Make sorting always controlled via props
-- [ ] Provide default `onSort` handler if none provided
-- [ ] Document controlled sorting pattern
-- [ ] Add warning in dev mode if `sortBy` is set without `onSort`
+- [x] Keep hybrid approach (supports both controlled and uncontrolled)
+- [x] Add useEffect to sync controlled props to internal state
+- [x] Document controlled vs uncontrolled sorting patterns with examples
+- [x] Add warning in dev mode if `sortBy` is set without `onSort`
 
 **Implementation**:
 ```typescript
