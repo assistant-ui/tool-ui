@@ -49,8 +49,6 @@ interface DataTableHeadProps {
 export function DataTableHead({ column }: DataTableHeadProps) {
   const { sortBy, sortDirection, toggleSort, isLoading } = useDataTable();
 
-  // Opt-out pattern: columns are sortable by default unless explicitly set to false
-  // This means: undefined → sortable, true → sortable, false → not sortable
   const isSortable = column.sortable !== false;
 
   const isSorted = sortBy === column.key;

@@ -3,9 +3,6 @@
 import { useState } from "react";
 import { DataTable, type Column } from "./index";
 
-// ============================================================================
-// Stock Example - Demonstrates: currency, delta, percent
-// ============================================================================
 
 type StockRow = {
   symbol: string;
@@ -114,9 +111,6 @@ const stockData = [
   },
 ];
 
-// ============================================================================
-// Task Example - Demonstrates: status, date, boolean
-// ============================================================================
 
 type TaskRow = {
   title: string;
@@ -219,9 +213,6 @@ const taskData = [
   },
 ];
 
-// ============================================================================
-// Metrics Example - Demonstrates: number with units, inverted delta
-// ============================================================================
 
 type MetricsRow = {
   endpoint: string;
@@ -248,7 +239,7 @@ const metricsColumns: Column<MetricsRow>[] = [
     format: {
       kind: "delta" as const,
       decimals: 0,
-      upIsPositive: false, // Lower latency is better
+      upIsPositive: false,
       showSign: true,
     },
   },
@@ -272,14 +263,14 @@ const metricsData = [
   {
     endpoint: "/api/users",
     p95: 145,
-    latencyDelta: -15, // Improved
+    latencyDelta: -15,
     errorRate: 0.12,
     throughput: 12500,
   },
   {
     endpoint: "/api/products",
     p95: 230,
-    latencyDelta: 25, // Got worse
+    latencyDelta: 25,
     errorRate: 0.05,
     throughput: 8200,
   },
@@ -299,9 +290,6 @@ const metricsData = [
   },
 ];
 
-// ============================================================================
-// Link Example - Demonstrates: link, badge, array
-// ============================================================================
 
 type ResourceRow = {
   name: string;
@@ -353,34 +341,31 @@ const resourceData = [
     category: "documentation",
     url: "https://react.dev",
     tags: ["react", "javascript", "frontend"],
-    updatedAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 2), // 2 days ago
+    updatedAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 2),
   },
   {
     name: "TypeScript Handbook",
     category: "reference",
     url: "https://www.typescriptlang.org/docs/handbook/intro.html",
     tags: ["typescript", "javascript"],
-    updatedAt: new Date(Date.now() - 1000 * 60 * 60 * 5), // 5 hours ago
+    updatedAt: new Date(Date.now() - 1000 * 60 * 60 * 5),
   },
   {
     name: "Next.js Tutorial",
     category: "tutorial",
     url: "https://nextjs.org/learn",
     tags: ["nextjs", "react", "fullstack"],
-    updatedAt: new Date(Date.now() - 1000 * 60 * 30), // 30 minutes ago
+    updatedAt: new Date(Date.now() - 1000 * 60 * 30),
   },
   {
     name: "Tailwind CSS",
     category: "tool",
     url: "https://tailwindcss.com",
     tags: ["css", "styling", "utility-first", "responsive"],
-    updatedAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 7), // 7 days ago
+    updatedAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 7),
   },
 ];
 
-// ============================================================================
-// Component
-// ============================================================================
 
 export function DataTableExample() {
   const [isLoading, setIsLoading] = useState(false);

@@ -7,7 +7,6 @@ import { DataTableRow } from "./data-table-row";
 export function DataTableBody() {
   const { data, rowIdKey } = useDataTable<DataTableRowData>();
 
-  // Dev-only warning: Strongly encourage rowIdKey for stable React reconciliation
   React.useEffect(() => {
     if (process.env.NODE_ENV !== "production" && !rowIdKey && data.length > 0) {
       console.warn(

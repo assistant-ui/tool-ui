@@ -82,7 +82,6 @@ export function DataTableAccordionCard({
     }
   };
 
-  // If no secondary columns, render as simple card (no accordion)
   if (secondary.length === 0 && (!actions || actions.length === 0)) {
     return <SimpleCard row={row} columns={primary} index={index} />;
   }
@@ -90,18 +89,14 @@ export function DataTableAccordionCard({
   const primaryColumn = primary[0];
   const secondaryPrimary = primary.slice(1);
 
-  // Generate stable ID for accordion state and ARIA relationships
-  // Use rowIdKey if available, otherwise fall back to composite key
   const stableRowId =
     getRowIdentifier(row, rowIdKey ? String(rowIdKey) : undefined) ||
     `${index}-${primaryColumn?.key ?? "row"}`;
 
-  // Generate IDs for ARIA relationships using stable identifier
   const headingId = `row-${stableRowId}-heading`;
   const detailsId = `row-${stableRowId}-details`;
   const secondaryDataIds = secondaryPrimary.map((col) => `row-${stableRowId}-${String(col.key)}`);
 
-  // Build accessible row label
   const primaryValue = primaryColumn
     ? String(row[primaryColumn.key] ?? "")
     : "";
@@ -117,7 +112,6 @@ export function DataTableAccordionCard({
         >
           <div className="flex w-full items-start justify-between pr-2 text-left">
             <div className="min-w-0 flex-1">
-              {/* Primary field (heading for the row) */}
               {primaryColumn && (
                 <div
                   id={headingId}
@@ -135,7 +129,6 @@ export function DataTableAccordionCard({
                 </div>
               )}
 
-              {/* Secondary primary fields (subtitle area) */}
               {secondaryPrimary.length > 0 && (
                 <div
                   className="text-muted-foreground mt-1 flex flex-wrap gap-x-3 gap-y-1"
@@ -169,7 +162,6 @@ export function DataTableAccordionCard({
           role="region"
           aria-labelledby={headingId}
         >
-          {/* Secondary fields */}
           {secondary.length > 0 && (
             <dl className="mb-4 flex flex-col gap-2" role="list" aria-label="Additional data">
               {secondary.map((col) => (
@@ -200,7 +192,6 @@ export function DataTableAccordionCard({
             </dl>
           )}
 
-          {/* Actions */}
           {actions && actions.length > 0 && onAction && (
             <div
               className="flex flex-wrap gap-2"
@@ -289,12 +280,10 @@ function SimpleCard({
     }
   };
 
-  // Generate stable ID for ARIA relationships
   const stableRowId =
     getRowIdentifier(row, rowIdKey ? String(rowIdKey) : undefined) ||
     `${index}-${primaryColumn?.key ?? "row"}`;
 
-  // Build accessible row label
   const primaryValue = primaryColumn
     ? String(row[primaryColumn.key] ?? "")
     : "";
@@ -343,7 +332,6 @@ function SimpleCard({
           </div>
         ))}
 
-        {/* Actions */}
         {actions && actions.length > 0 && onAction && (
           <div
             className="mt-3 flex flex-wrap gap-2 border-t pt-3"

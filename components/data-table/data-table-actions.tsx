@@ -105,7 +105,7 @@ export function DataTableActions({ row }: DataTableActionsProps) {
           <Button
             variant="ghost"
             size="sm"
-            className="h-10 w-10 p-0 @md:h-8 @md:w-8" // 40px on mobile, 32px on desktop
+            className="h-10 w-10 p-0 @md:h-8 @md:w-8"
           >
             <span className="sr-only">Open menu</span>
             <MoreHorizontal className="h-4 w-4" />

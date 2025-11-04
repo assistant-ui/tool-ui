@@ -52,11 +52,9 @@ function DeltaValue({ value, options }: DeltaValueProps) {
   const isNegative = value < 0;
   const isNeutral = value === 0;
 
-  // Determine color based on direction and upIsPositive
   const isGood = upIsPositive ? isPositive : isNegative;
   const isBad = upIsPositive ? isNegative : isPositive;
 
-  // Token-based coloring (shadcn-native tokens)
   const colorClass = isGood
     ? "text-primary"
     : isBad
@@ -88,14 +86,12 @@ function StatusBadge({ value, options }: StatusBadgeProps) {
   };
   const label = config.label ?? value;
 
-  // Map generic tones to shadcn Badge variants
   const variant =
     config.tone === "danger"
       ? "destructive"
       : config.tone === "neutral"
         ? "outline"
-        : // success, warning, info → secondary (neutral surface with themed fg)
-          "secondary";
+        : "secondary";
 
   return <Badge variant={variant}>{label}</Badge>;
 }
@@ -128,7 +124,7 @@ interface PercentValueProps {
 function PercentValue({ value, options }: PercentValueProps) {
   const decimals = options?.decimals ?? 2;
   const showSign = options?.showSign ?? false;
-  const basis = options?.basis ?? "fraction"; // 'fraction' expects 0.12 -> 12%
+  const basis = options?.basis ?? "fraction";
 
   const numeric = basis === "fraction" ? value * 100 : value;
   const absFormatted = Math.abs(numeric).toFixed(decimals);
@@ -167,7 +163,6 @@ function DateValue({ value, options, locale }: DateValueProps) {
       day: "numeric",
     }).format(date);
   } else {
-    // short
     formatted = new Intl.DateTimeFormat(locale, {
       year: "numeric",
       month: "short",
@@ -204,7 +199,6 @@ function getRelativeTime(date: Date, locale?: string): string {
     return `${days} ${days === 1 ? "day" : "days"} ago`;
   }
 
-  // For dates older than a week, show absolute date
   return new Intl.DateTimeFormat(locale, {
     year: "numeric",
     month: "short",
@@ -295,14 +289,12 @@ interface BadgeValueProps {
 function BadgeValue({ value, options }: BadgeValueProps) {
   const tone = options?.colorMap?.[value] ?? "neutral";
 
-  // Map generic tones to shadcn Badge variants
   const variant =
     tone === "danger"
       ? "destructive"
       : tone === "neutral"
         ? "outline"
-        : // success, warning, info → secondary
-          "secondary";
+        : "secondary";
 
   return <Badge variant={variant}>{value}</Badge>;
 }
@@ -343,10 +335,6 @@ function ArrayValue({ value, options }: ArrayValueProps) {
     </span>
   );
 }
-
-// ============================================================================
-// Main Renderer
-// ============================================================================
 
 export function renderFormattedValue(
   value: string | number | boolean | null | (string | number | boolean | null)[],
