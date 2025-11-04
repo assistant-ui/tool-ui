@@ -618,10 +618,46 @@ const clientProps: DataTableClientProps = {
 
 ### Rules for Serializable Data
 
-- **No functions, Symbols, or class instances** in row data
-- **Dates must be ISO strings** (e.g., `"2025-11-03T12:34:56Z"`)
-- **Column `format` configs are fully serializable** - no render functions needed
-- The built-in `date` formatter accepts strings and parses them to `Date` internally
+**Supported row value types:**
+- ✅ **Primitives:** `string`, `number`, `boolean`, `null`
+- ✅ **Arrays of primitives:** `string[]`, `number[]`, `boolean[]`, or mixed arrays
+  - Examples: `["tag1", "tag2"]`, `[1.2, 3.4, 5.6]`, `[true, false]`, `["label", 42, true]`
+
+**NOT supported in row data:**
+- ❌ **Functions** - Cannot be serialized
+- ❌ **Class instances** - `Date`, `Map`, `Set`, etc.
+  - For dates: Use ISO strings (`"2025-11-03T12:34:56Z"`) + `format: { kind: 'date' }`
+- ❌ **Plain objects** - `{ href: "/path", label: "Link" }`
+  - For links: Use string value + `format: { kind: 'link', hrefKey: 'urlColumn' }`
+  - For status: Use string value + `format: { kind: 'status', statusMap: {...} }`
+
+**Critical boundary:**
+> Complex data belongs in **column format configs**, not in row values.
+>
+> This keeps the data-vs-presentation boundary crisp and ensures LLM tool calls
+> can provide any visualization without needing to know UI implementation details.
+
+**Examples:**
+
+```ts
+// ✅ CORRECT: Primitives in data, formatting in columns
+const rows = [
+  { product: "Widget", url: "/widget", price: 29.99, tags: ["electronics", "sale"] }
+]
+const columns = [
+  { key: "product", label: "Product", format: { kind: "link", hrefKey: "url" } },
+  { key: "price", label: "Price", format: { kind: "currency", currency: "USD" } },
+  { key: "tags", label: "Tags", format: { kind: "array", maxVisible: 2 } }
+]
+
+// ❌ WRONG: Objects in row data
+const rows = [
+  {
+    product: { label: "Widget", href: "/widget" },  // Don't do this!
+    price: { value: 29.99, currency: "USD" }        // Don't do this!
+  }
+]
+```
 
 ### LLM Tool Call Examples
 
@@ -690,7 +726,33 @@ Here's how to structure tool call payloads for the DataTable:
 }
 ```
 
-**Example 3: Rendering the tool result**
+**Example 3: Arrays of primitives (strings, numbers, booleans)**
+```json
+{
+  "columns": [
+    { "key": "feature", "label": "Feature" },
+    { "key": "tags", "label": "Tags", "format": { "kind": "array", "maxVisible": 3 } },
+    { "key": "scores", "label": "Scores", "format": { "kind": "array", "maxVisible": 2 } },
+    { "key": "flags", "label": "Flags", "format": { "kind": "array" } }
+  ],
+  "rows": [
+    {
+      "feature": "Authentication",
+      "tags": ["security", "oauth", "jwt"],
+      "scores": [9.5, 8.7, 9.2],
+      "flags": [true, false, true]
+    },
+    {
+      "feature": "Analytics",
+      "tags": ["tracking", "metrics"],
+      "scores": [7.8, 8.1],
+      "flags": [true, true]
+    }
+  ]
+}
+```
+
+**Example 4: Rendering the tool result**
 ```tsx
 import { parseSerializableDataTable } from '@/components/data-table/schema'
 

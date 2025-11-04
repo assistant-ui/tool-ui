@@ -7,7 +7,38 @@ import { useScrollShadow } from "./use-scroll-shadow";
 import { useSupportsContainerQueries } from "./use-container-query";
 import type { FormatConfig } from "./formatters";
 
-export type RowPrimitive = string | number | boolean | null | string[];
+/**
+ * JSON primitive type that can be serialized.
+ */
+type JsonPrimitive = string | number | boolean | null;
+
+/**
+ * Valid row value types for serializable DataTable data.
+ *
+ * Supports:
+ * - Primitives: string, number, boolean, null
+ * - Arrays of primitives: string[], number[], boolean[], or mixed primitive arrays
+ *
+ * For complex data (objects with href/label, etc.), use column format configs
+ * instead of putting objects in row data.
+ *
+ * @example
+ * ```ts
+ * // ✅ Good: Use primitives and primitive arrays
+ * const row = {
+ *   name: "Widget",
+ *   price: 29.99,
+ *   tags: ["electronics", "featured"],
+ *   metrics: [1.2, 3.4, 5.6]
+ * }
+ *
+ * // ❌ Bad: Don't put objects in row data
+ * const row = {
+ *   link: { href: "/path", label: "Click" }  // Use format: { kind: 'link' } instead
+ * }
+ * ```
+ */
+export type RowPrimitive = JsonPrimitive | JsonPrimitive[];
 export type DataTableRowData = Record<string, RowPrimitive>;
 export type RowData = Record<string, unknown>;
 export type ColumnKey<T extends object> = Extract<keyof T, string>;
@@ -16,7 +47,7 @@ type FormatFor<V> = V extends number
   ? Extract<FormatConfig, { kind: "number" | "currency" | "percent" | "delta" }>
   : V extends boolean
     ? Extract<FormatConfig, { kind: "boolean" | "status" | "badge" }>
-    : V extends string[]
+    : V extends (string | number | boolean | null)[]
       ? Extract<FormatConfig, { kind: "array" }>
       : V extends string
         ? Extract<FormatConfig, { kind: "text" | "link" | "date" | "badge" | "status" }>

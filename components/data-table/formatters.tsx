@@ -252,7 +252,7 @@ function BooleanValue({ value, options }: BooleanValueProps) {
 interface LinkValueProps {
   value: string;
   options?: Extract<FormatConfig, { kind: "link" }>;
-  row?: Record<string, string | number | boolean | null | string[]>;
+  row?: Record<string, string | number | boolean | null | (string | number | boolean | null)[]>;
 }
 
 function LinkValue({ value, options, row }: LinkValueProps) {
@@ -340,13 +340,13 @@ function BadgeValue({ value, options }: BadgeValueProps) {
 }
 
 interface ArrayValueProps {
-  value: string[] | string;
+  value: (string | number | boolean | null)[] | string;
   options?: Extract<FormatConfig, { kind: "array" }>;
 }
 
 function ArrayValue({ value, options }: ArrayValueProps) {
   const maxVisible = options?.maxVisible ?? 3;
-  const items = Array.isArray(value)
+  const items: (string | number | boolean | null)[] = Array.isArray(value)
     ? value
     : typeof value === "string"
       ? value.split(",").map((s) => s.trim())
@@ -366,7 +366,7 @@ function ArrayValue({ value, options }: ArrayValueProps) {
           key={i}
           className="bg-muted text-muted-foreground inline-flex items-center rounded-md px-2 py-0.5"
         >
-          {item}
+          {item === null ? "null" : String(item)}
         </span>
       ))}
       {remaining > 0 && (
@@ -381,9 +381,9 @@ function ArrayValue({ value, options }: ArrayValueProps) {
 // ============================================================================
 
 export function renderFormattedValue(
-  value: string | number | boolean | null | string[],
+  value: string | number | boolean | null | (string | number | boolean | null)[],
   column: { format?: FormatConfig },
-  row?: Record<string, string | number | boolean | null | string[]>,
+  row?: Record<string, string | number | boolean | null | (string | number | boolean | null)[]>,
   options?: { locale?: string },
 ): React.ReactNode {
   if (value == null || value === "") {

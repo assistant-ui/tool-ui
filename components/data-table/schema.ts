@@ -83,8 +83,40 @@ export const serializableColumnSchema = z.object({
   format: formatSchema.optional(),
 });
 
+/**
+ * JSON primitive types that can be serialized.
+ * Includes strings, numbers, booleans, and null.
+ */
+const jsonPrimitive = z.union([z.string(), z.number(), z.boolean(), z.null()]);
+
+/**
+ * Schema for serializable row data.
+ *
+ * Supports:
+ * - Primitives: string, number, boolean, null
+ * - Arrays of primitives: string[], number[], boolean[], or mixed primitive arrays
+ *
+ * Does NOT support:
+ * - Functions
+ * - Class instances (Date, Map, Set, etc.)
+ * - Plain objects (use format configs instead)
+ *
+ * @example
+ * Valid row data:
+ * ```json
+ * {
+ *   "name": "Widget",
+ *   "price": 29.99,
+ *   "active": true,
+ *   "tags": ["electronics", "featured"],
+ *   "metrics": [1.2, 3.4, 5.6],
+ *   "flags": [true, false, true],
+ *   "mixed": ["label", 42, true]
+ * }
+ * ```
+ */
 export const serializableRowSchema = z.record(
-  z.union([z.string(), z.number(), z.boolean(), z.null(), z.array(z.string())])
+  z.union([jsonPrimitive, z.array(jsonPrimitive)])
 );
 
 export const serializableActionSchema = z.object({

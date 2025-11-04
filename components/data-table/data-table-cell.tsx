@@ -7,7 +7,7 @@ import type { Column, DataTableRowData } from "./data-table";
 import { useDataTable } from "./data-table";
 
 interface DataTableCellProps {
-  value: string | number | boolean | null | string[];
+  value: string | number | boolean | null | (string | number | boolean | null)[];
   column: Column;
   row: DataTableRowData;
   className?: string;

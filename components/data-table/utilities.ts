@@ -115,16 +115,21 @@ export function formatCellValue(
  */
 export function getActionLabel(
   actionLabel: string,
-  row: Record<string, string | number | boolean | null | string[]>,
+  row: Record<string, string | number | boolean | null | (string | number | boolean | null)[]>,
   identifierKey?: string,
 ): string {
   const identifier = getRowIdentifier(row, identifierKey);
   return identifier ? `${actionLabel} for ${identifier}` : `${actionLabel} row`;
 }
 
-/** Return a human-friendly identifier for a row using common keys */
+/**
+ * Return a human-friendly identifier for a row using common keys
+ *
+ * Accepts any JSON-serializable primitive or array of primitives.
+ * Arrays are converted to comma-separated strings.
+ */
 export function getRowIdentifier(
-  row: Record<string, string | number | boolean | null | string[]>,
+  row: Record<string, string | number | boolean | null | (string | number | boolean | null)[]>,
   identifierKey?: string,
 ): string {
   const candidate =
@@ -132,8 +137,17 @@ export function getRowIdentifier(
     (row as Record<string, unknown>).name ??
     (row as Record<string, unknown>).title ??
     (row as Record<string, unknown>).id;
-  const value = candidate == null ? "" : String(candidate);
-  return value.trim();
+
+  if (candidate == null) {
+    return "";
+  }
+
+  // Handle arrays by joining them
+  if (Array.isArray(candidate)) {
+    return candidate.map(v => v === null ? "null" : String(v)).join(", ");
+  }
+
+  return String(candidate).trim();
 }
 
 // Internal helpers
