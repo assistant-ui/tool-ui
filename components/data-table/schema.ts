@@ -94,14 +94,86 @@ export const serializableActionSchema = z.object({
   requiresConfirmation: z.boolean().optional(),
 });
 
+/**
+ * Zod schema for validating DataTable payloads from LLM tool calls.
+ *
+ * This schema validates the serializable parts of a DataTable:
+ * - columns: Column definitions (keys, labels, formatting, etc.)
+ * - rows: Data rows (primitives only - no functions or class instances)
+ * - actions: Action button definitions (ids, labels, variants)
+ *
+ * Non-serializable props like `onAction`, `onSort`, `className`, and `isLoading`
+ * must be provided separately in your React component.
+ *
+ * @example
+ * ```ts
+ * const result = serializableDataTableSchema.safeParse(llmResponse)
+ * if (result.success) {
+ *   // result.data contains validated columns, rows, and actions
+ * }
+ * ```
+ */
 export const serializableDataTableSchema = z.object({
   columns: z.array(serializableColumnSchema),
   rows: z.array(serializableRowSchema),
   actions: z.array(serializableActionSchema).optional(),
 });
 
+/**
+ * Type representing the serializable parts of a DataTable payload.
+ *
+ * This type includes only JSON-serializable data that can come from LLM tool calls:
+ * - Column definitions (format configs, alignment, labels, etc.)
+ * - Row data (primitives: strings, numbers, booleans, null, string arrays)
+ * - Action definitions (button labels and variants)
+ *
+ * Excluded from this type:
+ * - Event handlers (`onAction`, `onSort`)
+ * - React-specific props (`className`, `isLoading`)
+ *
+ * @example
+ * ```ts
+ * const payload: SerializableDataTable = {
+ *   columns: [
+ *     { key: "name", label: "Name" },
+ *     { key: "price", label: "Price", format: { kind: "currency", currency: "USD" } }
+ *   ],
+ *   rows: [
+ *     { name: "Widget", price: 29.99 }
+ *   ]
+ * }
+ * ```
+ */
 export type SerializableDataTable = z.infer<typeof serializableDataTableSchema>;
 
+/**
+ * Validates and parses a DataTable payload from unknown data (e.g., LLM tool call result).
+ *
+ * This function:
+ * 1. Validates the input against the `serializableDataTableSchema`
+ * 2. Throws a descriptive error if validation fails
+ * 3. Returns typed props ready to pass to the `<DataTable>` component
+ *
+ * @param input - Unknown data to validate (typically from an LLM tool call)
+ * @returns Validated and typed DataTable props (columns, data, actions)
+ * @throws Error with validation details if input is invalid
+ *
+ * @example
+ * ```tsx
+ * function MyToolUI({ result }: { result: unknown }) {
+ *   const { columns, data, actions } = parseSerializableDataTable(result)
+ *
+ *   return (
+ *     <DataTable
+ *       columns={columns}
+ *       data={data}
+ *       actions={actions}
+ *       onAction={(id, row) => console.log(id, row)}
+ *     />
+ *   )
+ * }
+ * ```
+ */
 export function parseSerializableDataTable(
   input: unknown,
 ): Pick<DataTableProps<RowData>, "columns" | "data" | "actions"> {

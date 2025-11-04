@@ -4,6 +4,7 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 import { sortData } from "./utilities";
 import { useScrollShadow } from "./use-scroll-shadow";
+import { useSupportsContainerQueries } from "./use-container-query";
 import type { FormatConfig } from "./formatters";
 
 export type RowPrimitive = string | number | boolean | null | string[];
@@ -44,17 +45,57 @@ export interface Action {
   requiresConfirmation?: boolean;
 }
 
+/**
+ * Props for the DataTable component.
+ *
+ * **Serializable props** (can come from LLM tool calls):
+ * - `columns`, `data`, `actions` - Core table data
+ * - `sortBy`, `sortDirection` - Initial sort state
+ * - `emptyMessage`, `maxHeight`, `messageId`, `rowIdKey` - Display/behavior config
+ *
+ * **React-only props** (must be provided by your React code):
+ * - `onAction`, `onSort` - Event handlers (functions)
+ * - `className`, `isLoading` - Component state/styling
+ *
+ * @see {@link parseSerializableDataTable} for parsing LLM tool call results
+ *
+ * @example
+ * ```tsx
+ * // From LLM tool call
+ * const { columns, data, actions } = parseSerializableDataTable(llmResult)
+ *
+ * // Add React-specific props
+ * <DataTable
+ *   columns={columns}
+ *   data={data}
+ *   actions={actions}
+ *   onAction={(id, row) => handleAction(id, row)}
+ *   onSort={(key, dir) => handleSort(key, dir)}
+ * />
+ * ```
+ */
 export interface DataTableProps<T extends object = RowData> {
+  /** Column definitions (serializable) */
   columns: Column<T>[];
+  /** Row data (serializable - primitives only) */
   data: T[];
+  /** Action button definitions (serializable) */
   actions?: Action[];
+  /** Key in row data to use as unique identifier (serializable) */
   rowIdKey?: ColumnKey<T>;
+  /** Initial/controlled sort column (serializable) */
   sortBy?: ColumnKey<T>;
+  /** Initial/controlled sort direction (serializable) */
   sortDirection?: "asc" | "desc";
+  /** Empty state message (serializable) */
   emptyMessage?: string;
+  /** Show loading skeleton (React-only) */
   isLoading?: boolean;
+  /** Max table height with vertical scroll (serializable) */
   maxHeight?: string;
+  /** Message identifier for context (serializable) */
   messageId?: string;
+  /** Action button click handler (React-only - function) */
   onAction?: (
     actionId: string,
     row: T,
@@ -63,7 +104,9 @@ export interface DataTableProps<T extends object = RowData> {
       sendMessage?: (message: string) => void;
     },
   ) => void;
+  /** Sort change handler (React-only - function) */
   onSort?: (columnKey?: ColumnKey<T>, direction?: "asc" | "desc") => void;
+  /** Additional CSS classes (React-only) */
   className?: string;
 }
 
@@ -157,6 +200,7 @@ export function DataTable<T extends object = RowData>({
 
   const scrollContainerRef = React.useRef<HTMLDivElement>(null);
   const scrollShadow = useScrollShadow(scrollContainerRef);
+  const supportsContainerQueries = useSupportsContainerQueries();
 
   const contextValue: DataTableContextValue<T> = {
     columns,
@@ -173,8 +217,19 @@ export function DataTable<T extends object = RowData>({
 
   return (
     <DataTableContext.Provider value={contextValue}>
-      <div className={cn("@container w-full", className)}>
-        <div className="hidden @md:block">
+      <div
+        className={cn(
+          "w-full",
+          supportsContainerQueries && "@container",
+          className,
+        )}
+      >
+        <div
+          className={cn(
+            "hidden",
+            supportsContainerQueries ? "@md:block" : "md:block",
+          )}
+        >
           <div className="relative">
             <div
               ref={scrollContainerRef}
@@ -218,7 +273,12 @@ export function DataTable<T extends object = RowData>({
           </div>
         </div>
 
-        <div className="space-y-3 @md:hidden">
+        <div
+          className={cn(
+            "space-y-3",
+            supportsContainerQueries ? "@md:hidden" : "md:hidden",
+          )}
+        >
           <DataTableErrorBoundary>
             {isLoading ? (
               <DataTableSkeletonCards />

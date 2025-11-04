@@ -64,9 +64,13 @@ components/data-table/
 ├── data-table-row.tsx
 ├── data-table-cell.tsx
 ├── data-table-actions.tsx
-├── data-table-accordion-card.tsx  # NEW - Mobile card component
-├── use-scroll-shadow.ts           # NEW - Scroll detection hook
-└── utilities.ts
+├── data-table-accordion-card.tsx  # Mobile card component
+├── use-scroll-shadow.ts           # Scroll detection hook
+├── use-container-query.ts         # Container query feature detection
+├── error-boundary.tsx             # Error boundary component
+├── formatters.tsx                 # Value formatters
+├── schema.ts                      # Zod validation schemas
+└── utilities.ts                   # Utility functions
 ```
 
 Also ensure you have these UI components:
@@ -74,10 +78,80 @@ Also ensure you have these UI components:
 ```
 components/ui/
 ├── dropdown-menu.tsx
-├── accordion.tsx  # NEW
-├── tooltip.tsx    # NEW
+├── accordion.tsx
+├── tooltip.tsx
+├── alert-dialog.tsx  # For action confirmations
 └── button.tsx
 ```
+
+## Browser Support
+
+### Supported Browsers
+
+The DataTable component works in all modern browsers:
+
+| Browser | Minimum Version | Notes |
+|---------|----------------|-------|
+| Chrome / Edge | 105+ (Sept 2022) | Full support including container queries |
+| Safari | 16+ (Sept 2022) | Full support including container queries |
+| Firefox | 110+ (Feb 2023) | Full support including container queries |
+| Chrome / Edge | 88-104 | ⚠️ Fallback mode (uses viewport media queries instead of container queries) |
+| Safari | 14-15 | ⚠️ Fallback mode (uses viewport media queries instead of container queries) |
+| Firefox | 102-109 | ⚠️ Fallback mode (uses viewport media queries instead of container queries) |
+
+### Feature Detection
+
+The component automatically detects browser support for CSS Container Queries and falls back to regular media queries in older browsers:
+
+- **Modern browsers** (Chrome 105+, Safari 16+, Firefox 110+): Uses container queries for optimal responsiveness
+- **Older browsers**: Automatically falls back to viewport-based media queries
+
+**What this means:**
+- ✅ Component works in all browsers
+- ✅ Modern browsers get container-based responsive behavior (better for component playgrounds, iframes, etc.)
+- ✅ Older browsers get viewport-based responsive behavior (still fully functional)
+
+### Tailwind CSS Container Queries
+
+The component uses Tailwind CSS container query utilities (`@container`, `@md:`). Ensure your Tailwind configuration includes container query support:
+
+**Option 1: Add the plugin** (recommended)
+```bash
+npm install @tailwindcss/container-queries
+# or
+pnpm add @tailwindcss/container-queries
+```
+
+```js
+// tailwind.config.{js,ts}
+export default {
+  content: ["./app/**/*.{ts,tsx}", "./components/**/*.{ts,tsx}"],
+  plugins: [require("@tailwindcss/container-queries")],
+}
+```
+
+**Option 2: Use viewport breakpoints**
+
+If you can't use container queries in your project, the fallback system will automatically use standard Tailwind breakpoints (`md:`, `lg:`, etc.) instead. The component will still work, but will respond to viewport width instead of container width.
+
+### Testing Browser Support
+
+To verify browser support in your project:
+
+```tsx
+import { useSupportsContainerQueries } from '@/components/data-table/use-container-query'
+
+function BrowserCheck() {
+  const supported = useSupportsContainerQueries()
+  return <div>Container Queries: {supported ? '✅ Supported' : '⚠️ Fallback mode'}</div>
+}
+```
+
+### Known Limitations
+
+- **IE11**: Not supported (no ES6 support)
+- **Very old browsers** (<2020): Component may not render correctly
+- **SSR/SSG**: Feature detection runs client-side, so there may be a brief flash during hydration as the component switches between container and media queries
 
 ## Basic Usage
 
@@ -391,11 +465,152 @@ Null/undefined values sort last. Arrays sort by length.
 
 ## Serialization
 
-All DataTable payloads (columns, rows, actions) are JSON‑serializable. Do not pass functions, Symbols, or class instances in row data. Dates must be provided as ISO strings (for example, `"2025-11-03T12:34:56Z"`).
+### Serializable vs React-Only Props
 
-- Handler props like `onAction` and `onSort` are regular functions and are not serialized.
-- The built‑in `date` formatter accepts strings and parses them to `Date` internally.
-- Typing note: `useDataTable<T>()` provides best‑effort generics; at runtime the context is untyped, so inference inside compound children is approximate.
+The DataTable component is designed for use with LLM tool calls, where data must be JSON-serializable. The component's props are split into two categories:
+
+**✅ Serializable Props** (can come from LLM tool calls):
+- `columns` - Column definitions
+- `data` / `rows` - Row data
+- `actions` - Action button definitions
+- `sortBy` - Initial sort column
+- `sortDirection` - Initial sort direction
+- `emptyMessage` - Empty state text
+- `maxHeight` - Max height CSS value
+- `messageId` - Message identifier string
+- `rowIdKey` - Row identifier key
+
+**❌ React-Only Props** (must be provided by your React code):
+- `onAction` - Function handler for action button clicks
+- `onSort` - Function handler for sort changes
+- `className` - CSS class names
+- `isLoading` - Loading state boolean
+
+### Rules for Serializable Data
+
+- **No functions, Symbols, or class instances** in row data
+- **Dates must be ISO strings** (e.g., `"2025-11-03T12:34:56Z"`)
+- **Column `format` configs are fully serializable** - no render functions needed
+- The built-in `date` formatter accepts strings and parses them to `Date` internally
+
+### LLM Tool Call Examples
+
+Here's how to structure tool call payloads for the DataTable:
+
+**Example 1: Simple table from LLM**
+```json
+{
+  "columns": [
+    { "key": "name", "label": "Product" },
+    { "key": "price", "label": "Price", "align": "right" },
+    { "key": "stock", "label": "Stock", "align": "right" }
+  ],
+  "rows": [
+    { "name": "Widget", "price": 29.99, "stock": 150 },
+    { "name": "Gadget", "price": 49.99, "stock": 89 },
+    { "name": "Doohickey", "price": 19.99, "stock": 0 }
+  ]
+}
+```
+
+**Example 2: With formatting and actions**
+```json
+{
+  "columns": [
+    { "key": "symbol", "label": "Stock", "priority": "primary" },
+    {
+      "key": "price",
+      "label": "Price",
+      "align": "right",
+      "priority": "primary",
+      "format": { "kind": "currency", "currency": "USD", "decimals": 2 }
+    },
+    {
+      "key": "change",
+      "label": "Change %",
+      "align": "right",
+      "priority": "secondary",
+      "format": { "kind": "percent", "basis": "unit", "decimals": 2, "showSign": true }
+    },
+    {
+      "key": "status",
+      "label": "Status",
+      "priority": "secondary",
+      "format": {
+        "kind": "status",
+        "statusMap": {
+          "up": { "tone": "success", "label": "Gaining" },
+          "down": { "tone": "danger", "label": "Falling" },
+          "stable": { "tone": "neutral", "label": "Stable" }
+        }
+      }
+    }
+  ],
+  "rows": [
+    { "symbol": "AAPL", "price": 178.25, "change": 2.5, "status": "up" },
+    { "symbol": "GOOGL", "price": 142.80, "change": -1.2, "status": "down" },
+    { "symbol": "MSFT", "price": 420.55, "change": 0.1, "status": "stable" }
+  ],
+  "actions": [
+    { "id": "view", "label": "View Details", "variant": "secondary" },
+    { "id": "buy", "label": "Buy", "variant": "default" },
+    { "id": "sell", "label": "Sell", "variant": "destructive", "requiresConfirmation": true }
+  ],
+  "sortBy": "price",
+  "sortDirection": "desc",
+  "emptyMessage": "No stocks available"
+}
+```
+
+**Example 3: Rendering the tool result**
+```tsx
+import { parseSerializableDataTable } from '@/components/data-table/schema'
+
+// In your tool UI component
+function StockTableToolUI({ result }: { result: unknown }) {
+  // Validate and parse the LLM's response
+  const { columns, data, actions } = parseSerializableDataTable(result)
+
+  return (
+    <DataTable
+      columns={columns}
+      data={data}
+      actions={actions}
+      onAction={(actionId, row, context) => {
+        // Your React handler - not serializable
+        if (actionId === 'view') {
+          context?.sendMessage?.(`Show details for ${row.symbol}`)
+        }
+      }}
+      onSort={(key, direction) => {
+        // Your React handler - not serializable
+        console.log('User sorted by', key, direction)
+      }}
+    />
+  )
+}
+```
+
+### Type Safety
+
+Use the provided schemas for validation:
+
+```tsx
+import {
+  serializableDataTableSchema,
+  parseSerializableDataTable,
+  type SerializableDataTable
+} from '@/components/data-table/schema'
+
+// Validate unknown data
+const result = serializableDataTableSchema.safeParse(unknownData)
+if (result.success) {
+  // result.data is SerializableDataTable
+}
+
+// Or use the parser (throws on error)
+const tableProps = parseSerializableDataTable(unknownData)
+```
 
 ## Utility Functions
 
@@ -433,12 +648,12 @@ getActionLabel('Delete', { id: 123, title: 'My Item' }, 'title')
 
 The DataTable automatically adapts to **container size** (not viewport size) using CSS container queries. This allows it to work correctly in viewport simulators and constrained layouts.
 
-- **Desktop (container ≥768px):**
+- **Desktop (≥768px):**
   - Full table layout with sortable columns
   - Horizontal scroll with gradient shadow affordances
   - Compact touch targets (36px)
 
-- **Mobile (container <768px):**
+- **Mobile (<768px):**
   - Accordion card layout (expandable)
   - Primary columns in card header (always visible)
   - Secondary columns in expanded section (tap to reveal)
@@ -446,9 +661,17 @@ The DataTable automatically adapts to **container size** (not viewport size) usi
   - Large touch targets (44px minimum)
   - Actions moved to expanded section
 
-**Container Breakpoint:** 768px (Tailwind `@md` container query)
+**Breakpoint:** 768px (Tailwind `@md`)
 
-> **Note:** The component uses container queries (`@md:`) instead of media queries (`md:`), so it responds to its parent container's width, not the viewport. This makes it work perfectly in viewport simulators, component playgrounds, and responsive layouts.
+### Container Queries vs Media Queries
+
+The component uses container queries on modern browsers and automatically falls back to viewport media queries on older browsers:
+
+- **Modern browsers (Chrome 105+, Safari 16+, Firefox 110+):** Uses container queries (`@md:`), responding to the container's width. Perfect for component playgrounds, iframes, and constrained layouts.
+
+- **Older browsers:** Uses viewport media queries (`md:`), responding to the viewport width. Still fully functional, just less flexible in nested layouts.
+
+See [Browser Support](#browser-support) for more details.
 
 ## Accessibility
 
