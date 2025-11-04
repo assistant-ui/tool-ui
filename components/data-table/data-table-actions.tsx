@@ -21,7 +21,8 @@ export function DataTableActions({ row }: DataTableActionsProps) {
   if (!actions || !onAction) return null;
 
   const handleAction = async (action: Action) => {
-    const proceed = (await onBeforeAction?.({ action, row, messageId })) ?? true;
+    const proceed =
+      (await onBeforeAction?.({ action, row, messageId })) ?? true;
     if (!proceed) return;
     onAction(action.id, row, { messageId });
   };

@@ -8,6 +8,10 @@ import {
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
+  TableHeader,
+  TableRow,
+  TableHead,
+  Button,
 } from "./_ui";
 
 function SortIcon({ state }: { state?: "asc" | "desc" }) {
@@ -21,21 +25,16 @@ export function DataTableHeader() {
 
   return (
     <TooltipProvider delayDuration={300}>
-      <thead className="bg-muted/50 sticky top-0 border-b">
-        <tr>
+      <TableHeader>
+        <TableRow>
           {columns.map((column) => (
             <DataTableHead key={column.key} column={column} />
           ))}
           {actions && actions.length > 0 && (
-            <th
-              scope="col"
-              className="text-muted-foreground px-4 py-3 text-left font-normal"
-            >
-              Actions
-            </th>
+            <TableHead scope="col">Actions</TableHead>
           )}
-        </tr>
-      </thead>
+        </TableRow>
+      </TableHeader>
     </TooltipProvider>
   );
 }
@@ -66,25 +65,25 @@ export function DataTableHead({ column }: DataTableHeadProps) {
     }
   };
 
-  const alignClass = {
-    left: "text-left",
-    right: "text-right",
-    center: "text-center",
-  }[column.align || "left"];
-
   const displayText = column.abbr || column.label;
   const shouldShowTooltip = column.abbr || displayText.length > 15;
+  const alignClass =
+    column.align === "right"
+      ? "text-right"
+      : column.align === "center"
+        ? "text-center"
+        : undefined;
+  const buttonAlignClass = cn(
+    "w-full min-w-0 gap-1 font-normal",
+    column.align === "right" && "justify-end flex-row-reverse text-right",
+    column.align === "center" && "justify-center",
+    column.align !== "right" && "justify-start",
+  );
 
   return (
-    <th
+    <TableHead
       scope="col"
-      className={cn(
-        "font-normal",
-        "text-muted-foreground px-4",
-        "py-3 @md:py-3",
-        "max-w-[150px]",
-        alignClass,
-      )}
+      className={alignClass}
       style={column.width ? { width: column.width } : undefined}
       aria-sort={
         isSorted
@@ -94,8 +93,9 @@ export function DataTableHead({ column }: DataTableHeadProps) {
           : undefined
       }
     >
-      <button
+      <Button
         type="button"
+        size="sm"
         onClick={handleClick}
         onKeyDown={(e) => {
           if (isDisabled) return;
@@ -105,19 +105,13 @@ export function DataTableHead({ column }: DataTableHeadProps) {
           }
         }}
         disabled={isDisabled}
-        className={cn(
-          "inline-flex w-full min-w-0 items-center gap-1",
-          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded",
-          alignClass,
-          !isDisabled &&
-            "hover:text-foreground active:bg-muted/50 cursor-pointer select-none",
-          isDisabled && "cursor-not-allowed opacity-60",
-          column.align === "right" && "flex-row-reverse",
-          column.align === "center" && "justify-center",
-        )}
+        variant="ghost"
+        className={cn(buttonAlignClass, "gap-2")}
         aria-label={
           `Sort by ${column.label}` +
-          (isSorted && direction ? ` (${direction === "asc" ? "ascending" : "descending"})` : "")
+          (isSorted && direction
+            ? ` (${direction === "asc" ? "ascending" : "descending"})`
+            : "")
         }
         aria-disabled={isDisabled || undefined}
       >
@@ -149,7 +143,7 @@ export function DataTableHead({ column }: DataTableHeadProps) {
             <SortIcon state={direction} />
           </span>
         )}
-      </button>
-    </th>
+      </Button>
+    </TableHead>
   );
 }

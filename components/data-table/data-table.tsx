@@ -4,6 +4,7 @@ import * as React from "react";
 import { cn } from "./_cn";
 import { sortData } from "./utilities";
 import type { FormatConfig } from "./formatters";
+import { Table, TableBody, TableRow, TableCell } from "./_ui";
 
 /**
  * Default locale for all Intl formatting operations.
@@ -442,10 +443,7 @@ export function DataTable<T extends object = RowData>({
               }}
             >
               <DataTableErrorBoundary>
-                <table
-                  className="w-full border-collapse"
-                  aria-busy={isLoading || undefined}
-                >
+                <Table aria-busy={isLoading || undefined}>
                   {columns.length > 0 && (
                     <colgroup>
                       {columns.map((col) => (
@@ -471,7 +469,7 @@ export function DataTable<T extends object = RowData>({
                       )}
                     </>
                   )}
-                </table>
+                </Table>
               </DataTableErrorBoundary>
             </div>
           </div>
@@ -536,18 +534,17 @@ function DataTableEmpty({ message }: { message: string }) {
   return (
     <>
       <DataTableHeader />
-      <tbody>
-        <tr>
-          <td
+      <TableBody>
+        <TableRow>
+          <TableCell
             colSpan={columns.length + (actions ? 1 : 0)}
-            className="text-muted-foreground px-4 py-8 text-center"
             role="status"
             aria-live="polite"
           >
             {message}
-          </td>
-        </tr>
-      </tbody>
+          </TableCell>
+        </TableRow>
+      </TableBody>
     </>
   );
 }
@@ -558,22 +555,22 @@ function DataTableSkeleton() {
   return (
     <>
       <DataTableHeader />
-      <tbody>
+      <TableBody>
         {Array.from({ length: 5 }).map((_, i) => (
-          <tr key={i} className="border-b">
+          <TableRow key={i}>
             {columns.map((_, j) => (
-              <td key={j} className="px-4 py-3">
+              <TableCell key={j}>
                 <div className="bg-muted/50 h-4 animate-pulse rounded" />
-              </td>
+              </TableCell>
             ))}
             {actions && (
-              <td className="px-4 py-3">
+              <TableCell>
                 <div className="bg-muted/50 h-8 w-20 animate-pulse rounded" />
-              </td>
+              </TableCell>
             )}
-          </tr>
+          </TableRow>
         ))}
-      </tbody>
+      </TableBody>
     </>
   );
 }

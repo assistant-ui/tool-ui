@@ -1,10 +1,10 @@
 "use client";
 
 import * as React from "react";
-import { cn } from "./_cn";
 import { useDataTable, type DataTableRowData } from "./data-table";
 import { DataTableCell } from "./data-table-cell";
 import { DataTableActions } from "./data-table-actions";
+import { TableRow, TableCell } from "./_ui";
 
 interface DataTableRowProps {
   row: DataTableRowData;
@@ -15,7 +15,7 @@ export function DataTableRow({ row, className }: DataTableRowProps) {
   const { columns, actions } = useDataTable();
 
   return (
-    <tr className={cn("hover:bg-muted/50 border-b", className)}>
+    <TableRow className={className}>
       {columns.map((column) => (
         <DataTableCell
           key={column.key}
@@ -25,10 +25,10 @@ export function DataTableRow({ row, className }: DataTableRowProps) {
         />
       ))}
       {actions && actions.length > 0 && (
-        <td className="px-4 py-3">
+        <TableCell>
           <DataTableActions row={row} />
-        </td>
+        </TableCell>
       )}
-    </tr>
+    </TableRow>
   );
 }

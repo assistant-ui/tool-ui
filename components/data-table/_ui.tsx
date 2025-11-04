@@ -20,3 +20,13 @@ export {
   TooltipTrigger,
 } from "../ui/tooltip";
 export { Badge } from "../ui/badge";
+export {
+  Table,
+  TableHeader,
+  TableBody,
+  TableFooter,
+  TableHead,
+  TableRow,
+  TableCell,
+  TableCaption,
+} from "../ui/table";

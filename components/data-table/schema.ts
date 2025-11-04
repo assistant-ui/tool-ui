@@ -3,7 +3,7 @@ import type { Action, Column, DataTableProps, RowData } from "./data-table";
 
 const alignEnum = z.enum(["left", "right", "center"]);
 const priorityEnum = z.enum(["primary", "secondary", "tertiary"]);
-const variantEnum = z.enum(["default", "secondary", "ghost", "destructive"]);
+const actionVariantEnum = z.enum(["default", "secondary", "ghost", "destructive"]);
 
 const formatSchema = z.discriminatedUnion("kind", [
   z.object({ kind: z.literal("text") }),
@@ -83,10 +83,6 @@ export const serializableColumnSchema = z.object({
   format: formatSchema.optional(),
 });
 
-/**
- * JSON primitive types that can be serialized.
- * Includes strings, numbers, booleans, and null.
- */
 const jsonPrimitive = z.union([z.string(), z.number(), z.boolean(), z.null()]);
 
 /**
@@ -115,14 +111,14 @@ const jsonPrimitive = z.union([z.string(), z.number(), z.boolean(), z.null()]);
  * }
  * ```
  */
-export const serializableRowSchema = z.record(
+export const serializableDataSchema = z.record(
   z.union([jsonPrimitive, z.array(jsonPrimitive)])
 );
 
 export const serializableActionSchema = z.object({
   id: z.string(),
   label: z.string(),
-  variant: variantEnum.optional(),
+  variant: actionVariantEnum.optional(),
   requiresConfirmation: z.boolean().optional(),
 });
 
@@ -147,7 +143,7 @@ export const serializableActionSchema = z.object({
  */
 export const serializableDataTableSchema = z.object({
   columns: z.array(serializableColumnSchema),
-  data: z.array(serializableRowSchema),
+  data: z.array(serializableDataSchema),
   actions: z.array(serializableActionSchema).optional(),
 });
 

@@ -3,6 +3,7 @@
 import * as React from "react";
 import { useDataTable, type DataTableRowData } from "./data-table";
 import { DataTableRow } from "./data-table-row";
+import { TableBody } from "./_ui";
 
 export function DataTableBody() {
   const { data, rowIdKey } = useDataTable<DataTableRowData>();
@@ -18,12 +19,12 @@ export function DataTableBody() {
   }, [rowIdKey, data.length]);
 
   return (
-    <tbody>
+    <TableBody>
       {data.map((row, index) => {
         const keyVal = rowIdKey ? row[rowIdKey] : undefined;
         const rowKey = keyVal != null ? String(keyVal) : String(index);
         return <DataTableRow key={rowKey} row={row} />
       })}
-    </tbody>
+    </TableBody>
   );
 }
