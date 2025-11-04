@@ -7,13 +7,14 @@ interface PresetSelectorProps {
 }
 
 const presetNames: PresetName[] = [
-  "basic",
   "stocks",
-  "products",
-  "empty",
+  "tasks",
+  "metrics",
+  "resources",
+  "layout",
+  "localized",
   "large",
-  "with-actions",
-  "sorted",
+  "empty",
 ];
 
 export function PresetSelector({

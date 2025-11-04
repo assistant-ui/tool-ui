@@ -157,7 +157,7 @@ export function DataTableAccordionCard({
         </AccordionTrigger>
 
         <AccordionContent
-          className="px-4 pb-4"
+          className="flex flex-col gap-4 px-4 pb-4"
           id={detailsId}
           role="region"
           aria-labelledby={headingId}

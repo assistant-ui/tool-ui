@@ -36,20 +36,10 @@ export function CodePanel({ config, sort, isLoading, emptyMessage }: CodePanelPr
       props.push(`  rowIdKey="${config.rowIdKey}"`);
     }
 
-    // Generate sorting code with explanation
-    const sortingComment: string[] = [];
-    if (sort?.by && sort?.direction) {
-      sortingComment.push(
-        `  {/* Sorting: Choose controlled or uncontrolled pattern */}`,
+    if (config.defaultSort) {
+      props.push(
+        `  defaultSort={${JSON.stringify(config.defaultSort, null, 4).replace(/\n/g, "\n  ")}}`,
       );
-      sortingComment.push(
-        `  {/* Option 1 (Uncontrolled): defaultSort={{ by: "${sort.by}", direction: "${sort.direction}" }} */}`,
-      );
-      sortingComment.push(
-        `  {/* Option 2 (Controlled): sort={sort} onSortChange={setSort} */}`,
-      );
-      // For generated code, use uncontrolled as the simpler default
-      props.push(`  defaultSort={{ by: "${sort.by}", direction: "${sort.direction}" }}`);
     }
 
     if (isLoading) {
@@ -60,11 +50,40 @@ export function CodePanel({ config, sort, isLoading, emptyMessage }: CodePanelPr
       props.push(`  emptyMessage="${emptyMessage}"`);
     }
 
-    const sortingExplanation = sortingComment.length > 0
-      ? `\n${sortingComment.join("\n")}\n`
+    if (config.maxHeight) {
+      props.push(`  maxHeight="${config.maxHeight}"`);
+    }
+
+    if (config.locale) {
+      props.push(`  locale="${config.locale}"`);
+    }
+
+    // Generate sorting guidance only when relying on controlled state
+    const sortingComment: string[] = [];
+    if (!config.defaultSort && sort?.by && sort?.direction) {
+      sortingComment.push(
+        `  {/* Sorting: Choose controlled or uncontrolled pattern */}`,
+      );
+      sortingComment.push(
+        `  {/* Option 1 (Uncontrolled): defaultSort={{ by: "${sort.by}", direction: "${sort.direction}" }} */}`,
+      );
+      sortingComment.push(
+        `  {/* Option 2 (Controlled): sort={sort} onSortChange={setSort} */}`,
+      );
+    }
+
+    const sortingExplanation =
+      sortingComment.length > 0 ? `\n${sortingComment.join("\n")}\n` : "";
+
+    const requiresConfirmation = config.actions?.some(
+      (action) => action.requiresConfirmation,
+    );
+
+    const confirmationHint = requiresConfirmation
+      ? `\n// Tip: pair actions that set requiresConfirmation with onBeforeAction to trigger confirms.\n`
       : "";
 
-    return `${sortingExplanation}<DataTable\n${props.join("\n")}\n/>`;
+    return `${sortingExplanation}<DataTable\n${props.join("\n")}\n/>${confirmationHint}`;
   };
 
   const code = generateCode();

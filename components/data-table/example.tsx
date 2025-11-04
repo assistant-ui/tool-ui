@@ -341,28 +341,103 @@ const resourceData = [
     category: "documentation",
     url: "https://react.dev",
     tags: ["react", "javascript", "frontend"],
-    updatedAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 2),
+    updatedAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 2).toISOString(),
   },
   {
     name: "TypeScript Handbook",
     category: "reference",
     url: "https://www.typescriptlang.org/docs/handbook/intro.html",
     tags: ["typescript", "javascript"],
-    updatedAt: new Date(Date.now() - 1000 * 60 * 60 * 5),
+    updatedAt: new Date(Date.now() - 1000 * 60 * 60 * 5).toISOString(),
   },
   {
     name: "Next.js Tutorial",
     category: "tutorial",
     url: "https://nextjs.org/learn",
     tags: ["nextjs", "react", "fullstack"],
-    updatedAt: new Date(Date.now() - 1000 * 60 * 30),
+    updatedAt: new Date(Date.now() - 1000 * 60 * 30).toISOString(),
   },
   {
     name: "Tailwind CSS",
     category: "tool",
     url: "https://tailwindcss.com",
     tags: ["css", "styling", "utility-first", "responsive"],
-    updatedAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 7),
+    updatedAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 7).toISOString(),
+  },
+];
+
+
+type LayoutRow = {
+  id: string;
+  description: string;
+  owner: string;
+  desktopOnlyNotes: string;
+  status: "planned" | "in_progress" | "done";
+};
+
+const layoutColumns: Column<LayoutRow>[] = [
+  {
+    key: "id",
+    label: "ID",
+    priority: "primary" as const,
+    width: "80px",
+    sortable: false,
+  },
+  {
+    key: "description",
+    label: "Description",
+    priority: "primary" as const,
+    truncate: true,
+  },
+  {
+    key: "owner",
+    label: "Owner",
+    abbr: "Own.",
+    priority: "secondary" as const,
+  },
+  {
+    key: "desktopOnlyNotes",
+    label: "Desktop Notes",
+    priority: "tertiary" as const,
+    hideOnMobile: true,
+    sortable: false,
+  },
+  {
+    key: "status",
+    label: "Status",
+    priority: "secondary" as const,
+    format: {
+      kind: "status" as const,
+      statusMap: {
+        planned: { tone: "neutral" as const, label: "Planned" },
+        in_progress: { tone: "info" as const, label: "In Progress" },
+        done: { tone: "success" as const, label: "Done" },
+      },
+    },
+  },
+];
+
+const layoutData: LayoutRow[] = [
+  {
+    id: "PL-204",
+    description: "Ship billing settings redesign with usage caps and alerts",
+    owner: "Marla",
+    desktopOnlyNotes: "Contains hover-only tooltips for plan badges",
+    status: "in_progress",
+  },
+  {
+    id: "PL-198",
+    description: "Migrate export flow to async jobs for large CSV payloads",
+    owner: "Jon",
+    desktopOnlyNotes: "Keep legacy download button until Q2",
+    status: "planned",
+  },
+  {
+    id: "PL-176",
+    description: "Improve incident timeline readability with grouping",
+    owner: "Priya",
+    desktopOnlyNotes: "Desktop table hides avatar column on narrow widths",
+    status: "done",
   },
 ];
 
@@ -396,8 +471,20 @@ export function DataTableExample() {
           actions={[
             { id: "edit", label: "Edit", variant: "secondary" },
             { id: "complete", label: "Complete", variant: "default" },
-            { id: "delete", label: "Delete", variant: "destructive" },
+            {
+              id: "delete",
+              label: "Delete",
+              variant: "destructive",
+              requiresConfirmation: true,
+            },
           ]}
+          onBeforeAction={({ action, row }) => {
+            if (action.requiresConfirmation) {
+              return window.confirm(`Delete task: ${row.title}?`);
+            }
+
+            return true;
+          }}
           onAction={(actionId, row) => {
             console.log(`Action: ${actionId}`, row);
             alert(`${actionId} task: ${row.title}`);
@@ -411,7 +498,12 @@ export function DataTableExample() {
           Demonstrates: numbers with units, inverted delta (lower is better),
           percent
         </p>
-        <DataTable rowIdKey="endpoint" columns={metricsColumns} data={metricsData} />
+        <DataTable
+          rowIdKey="endpoint"
+          columns={metricsColumns}
+          data={metricsData}
+          defaultSort={{ by: "p95", direction: "desc" }}
+        />
       </div>
 
       <div>
@@ -478,6 +570,34 @@ export function DataTableExample() {
           rowIdKey="symbol"
           sort={sort}
           onSortChange={(next) => setSort(next)}
+        />
+      </div>
+
+      <div>
+        <h2 className="mb-2 text-2xl">Column Layout Controls</h2>
+        <p className="text-muted-foreground mb-4 text-sm">
+          Demonstrates: fixed widths, truncated text, abbreviated headers, hide
+          on mobile, non-sortable columns
+        </p>
+        <DataTable
+          rowIdKey="id"
+          columns={layoutColumns}
+          data={layoutData}
+          maxHeight="240px"
+        />
+      </div>
+
+      <div>
+        <h2 className="mb-2 text-2xl">Localized Formatting</h2>
+        <p className="text-muted-foreground mb-4 text-sm">
+          Demonstrates: German locale formatting for currency, numbers, and
+          percents
+        </p>
+        <DataTable
+          rowIdKey="symbol"
+          columns={stockColumns}
+          data={stockData}
+          locale="de-DE"
         />
       </div>
     </div>
