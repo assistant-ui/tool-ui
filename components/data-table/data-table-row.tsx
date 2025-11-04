@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { cn } from "@/lib/utils";
+import { cn } from "./_cn";
 import { useDataTable, type DataTableRowData } from "./data-table";
 import { DataTableCell } from "./data-table-cell";
 import { DataTableActions } from "./data-table-actions";

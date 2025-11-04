@@ -1,14 +1,14 @@
 "use client";
 
 import * as React from "react";
-import { cn } from "@/lib/utils";
+import { cn } from "./_cn";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "@/components/ui/accordion";
-import { Button } from "@/components/ui/button";
+  Button,
+} from "./_ui";
 import { useDataTable } from "./data-table";
 import type { Column, DataTableRowData, Action } from "./data-table";
 import { renderFormattedValue } from "./formatters";

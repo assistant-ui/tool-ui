@@ -1,15 +1,20 @@
 "use client";
 
 import * as React from "react";
-import { ChevronUp, ChevronDown, ChevronsUpDown } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn } from "./_cn";
 import { useDataTable } from "./data-table";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@/components/ui/tooltip";
+} from "./_ui";
+
+function SortIcon({ state }: { state?: "asc" | "desc" }) {
+  if (state === "asc") return <span aria-hidden>↑</span>;
+  if (state === "desc") return <span aria-hidden>↓</span>;
+  return <span aria-hidden>↕</span>;
+}
 
 export function DataTableHeader() {
   const { columns, actions } = useDataTable();
@@ -141,13 +146,7 @@ export function DataTableHead({ column }: DataTableHeadProps) {
         )}
         {isSortable && (
           <span className="shrink-0">
-            {!isSorted && <ChevronsUpDown className="h-4 w-4 opacity-50" />}
-            {isSorted && direction === "asc" && (
-              <ChevronUp className="h-4 w-4" />
-            )}
-            {isSorted && direction === "desc" && (
-              <ChevronDown className="h-4 w-4" />
-            )}
+            <SortIcon state={direction} />
           </span>
         )}
       </button>

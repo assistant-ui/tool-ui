@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { cn } from "@/lib/utils";
+import { cn } from "./_cn";
 import { renderFormattedValue } from "./formatters";
 import type { Column, DataTableRowData } from "./data-table";
 import { useDataTable } from "./data-table";

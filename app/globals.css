@@ -92,6 +92,9 @@
   .bg-primary {
     background-color: var(--primary);
   }
+  .text-primary {
+    color: var(--primary);
+  }
   .text-primary-foreground {
     color: var(--primary-foreground);
   }
@@ -127,6 +130,9 @@
   }
   .bg-destructive {
     background-color: var(--destructive);
+  }
+  .text-destructive {
+    color: var(--destructive);
   }
   .text-destructive-foreground {
     color: var(--destructive-foreground);

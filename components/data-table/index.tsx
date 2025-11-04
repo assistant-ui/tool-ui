@@ -6,10 +6,7 @@ export { DataTableCell } from "./data-table-cell";
 export { DataTableActions } from "./data-table-actions";
 export { DataTableAccordionCard } from "./data-table-accordion-card";
 export { renderFormattedValue } from "./formatters";
-export {
-  parseSerializableDataTable,
-  serializableDataTableSchema,
-} from "./schema";
+export { parseSerializableDataTable } from "./schema";
 
 export type {
   DataTableProps,

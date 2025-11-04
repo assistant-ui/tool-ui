@@ -1,14 +1,13 @@
 "use client";
 
 import * as React from "react";
-import { MoreHorizontal } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import {
+  Button,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from "./_ui";
 import { useDataTable, type DataTableRowData, type Action } from "./data-table";
 import { getActionLabel } from "./utilities";
 
@@ -58,7 +57,9 @@ export function DataTableActions({ row }: DataTableActionsProps) {
             className="h-10 w-10 p-0 @md:h-8 @md:w-8"
           >
             <span className="sr-only">Open menu</span>
-            <MoreHorizontal className="h-4 w-4" />
+            <span aria-hidden className="inline-block text-base leading-none">
+              ⋯
+            </span>
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">

@@ -31,9 +31,9 @@ A flexible, accessible data table component for assistant-ui's widget registry. 
 The component requires these dependencies:
 
 ```bash
-npm install @radix-ui/react-dropdown-menu @radix-ui/react-accordion @radix-ui/react-tooltip lucide-react
+npm install @radix-ui/react-dropdown-menu @radix-ui/react-accordion @radix-ui/react-tooltip
 # or
-pnpm add @radix-ui/react-dropdown-menu @radix-ui/react-accordion @radix-ui/react-tooltip lucide-react
+pnpm add @radix-ui/react-dropdown-menu @radix-ui/react-accordion @radix-ui/react-tooltip
 ```
 
 ### Tailwind Setup (Compat Note)
@@ -56,6 +56,8 @@ Copy the following files to your project:
 
 ```
 components/data-table/
+├── _cn.ts                    # Local className helper
+├── _ui.tsx                   # Adapter for your UI atoms
 ├── index.tsx
 ├── data-table.tsx
 ├── data-table-header.tsx
