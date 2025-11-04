@@ -560,25 +560,61 @@ Null/undefined values sort last. Arrays sort by length.
 
 ## Serialization
 
-### Serializable vs React-Only Props
+### Type-Safe Prop Separation
 
-The DataTable component is designed for use with LLM tool calls, where data must be JSON-serializable. The component's props are split into two categories:
+The DataTable component has **strict type separation** between serializable and React-only props to prevent accidental serialization of non-serializable values:
 
-**✅ Serializable Props** (can come from LLM tool calls):
-- `columns` - Column definitions
-- `data` / `rows` - Row data
-- `actions` - Action button definitions
-- `defaultSort` - Initial sort state (optional)
-- `emptyMessage` - Empty state text
-- `maxHeight` - Max height CSS value
-- `messageId` - Message identifier string
-- `rowIdKey` - Row identifier key
+```typescript
+// ✅ Serializable props - can come from LLM tool calls
+interface DataTableSerializableProps<T> {
+  columns: Column<T>[];
+  data: T[];
+  actions?: Action[];
+  rowIdKey?: string;
+  defaultSort?: { by?: string; direction?: 'asc' | 'desc' };
+  sort?: { by?: string; direction?: 'asc' | 'desc' };
+  emptyMessage?: string;
+  maxHeight?: string;
+  messageId?: string;
+  locale?: string;
+}
 
-**❌ React-Only Props** (must be provided by your React code):
-- `onAction` - Function handler for action button clicks
-- `onSortChange` - Function handler for sort changes (controlled mode)
-- `className` - CSS class names
-- `isLoading` - Loading state boolean
+// ❌ React-only props - must be provided by your React code
+interface DataTableClientProps<T> {
+  isLoading?: boolean;
+  className?: string;
+  onAction?: (actionId: string, row: T) => void;
+  onSortChange?: (next: { by?: string; direction?: 'asc' | 'desc' }) => void;
+}
+
+// Combined interface
+interface DataTableProps<T> extends
+  DataTableSerializableProps<T>,
+  DataTableClientProps<T> {}
+```
+
+**Benefits of this separation:**
+- **Type safety**: TypeScript prevents accidental serialization of functions
+- **Clear boundary**: Explicit distinction between LLM data and React code
+- **Better DX**: IDE autocomplete separates concerns
+- **Runtime safety**: parseSerializableDataTable only returns serializable props
+
+**Usage pattern:**
+```tsx
+import type { DataTableSerializableProps, DataTableClientProps } from '@/components/data-table'
+
+// From LLM tool call - only serializable props
+const serializableProps: DataTableSerializableProps = parseSerializableDataTable(llmResult)
+
+// Combine with React-specific props
+const clientProps: DataTableClientProps = {
+  isLoading: false,
+  onAction: (id, row) => handleAction(id, row),
+  onSortChange: setSort
+}
+
+<DataTable {...serializableProps} {...clientProps} />
+```
 
 ### Rules for Serializable Data
 

@@ -152,22 +152,23 @@ export type SerializableDataTable = z.infer<typeof serializableDataTableSchema>;
  * This function:
  * 1. Validates the input against the `serializableDataTableSchema`
  * 2. Throws a descriptive error if validation fails
- * 3. Returns typed props ready to pass to the `<DataTable>` component
+ * 3. Returns typed serializable props ready to pass to the `<DataTable>` component
+ *
+ * The returned props are **serializable only** - you must provide client-side props
+ * separately (onAction, onSortChange, isLoading, className).
  *
  * @param input - Unknown data to validate (typically from an LLM tool call)
- * @returns Validated and typed DataTable props (columns, data, actions)
+ * @returns Validated and typed DataTable serializable props (columns, data, actions)
  * @throws Error with validation details if input is invalid
  *
  * @example
  * ```tsx
  * function MyToolUI({ result }: { result: unknown }) {
- *   const { columns, data, actions } = parseSerializableDataTable(result)
+ *   const serializableProps = parseSerializableDataTable(result)
  *
  *   return (
  *     <DataTable
- *       columns={columns}
- *       data={data}
- *       actions={actions}
+ *       {...serializableProps}
  *       onAction={(id, row) => console.log(id, row)}
  *     />
  *   )

@@ -13,6 +13,8 @@ export {
 
 export type {
   DataTableProps,
+  DataTableSerializableProps,
+  DataTableClientProps,
   Column,
   Action,
   DataTableRowData,

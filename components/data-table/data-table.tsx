@@ -63,43 +63,31 @@ export interface Action {
 }
 
 /**
- * Props for the DataTable component.
+ * Serializable props that can come from LLM tool calls or be JSON-serialized.
  *
- * **Serializable props** (can come from LLM tool calls):
- * - `columns`, `data`, `actions` - Core table data
- * - `defaultSort` - Initial sort state
- * - `emptyMessage`, `maxHeight`, `messageId`, `rowIdKey` - Display/behavior config
- *
- * **React-only props** (must be provided by your React code):
- * - `onAction` - Event handler
- * - `className`, `isLoading` - Component state/styling
- *
- * @see {@link parseSerializableDataTable} for parsing LLM tool call results
+ * These props contain only primitive values, arrays, and plain objects -
+ * no functions, class instances, or other non-serializable values.
  *
  * @example
  * ```tsx
- * // From LLM tool call
- * const { columns, data, actions } = parseSerializableDataTable(llmResult)
- *
- * // Add React-specific props
- * <DataTable
- *   columns={columns}
- *   data={data}
- *   actions={actions}
- *   onAction={(id, row) => handleAction(id, row)}
- *   onSortChange={(next) => handleSort(next)}
- * />
+ * const serializableProps: DataTableSerializableProps = {
+ *   columns: [...],
+ *   data: [...],
+ *   actions: [...],
+ *   rowIdKey: "id",
+ *   defaultSort: { by: "price", direction: "desc" }
+ * }
  * ```
  */
-export interface DataTableProps<T extends object = RowData> {
-  /** Column definitions (serializable) */
+export interface DataTableSerializableProps<T extends object = RowData> {
+  /** Column definitions */
   columns: Column<T>[];
-  /** Row data (serializable - primitives only) */
+  /** Row data (primitives only - no functions or class instances) */
   data: T[];
-  /** Action button definitions (serializable) */
+  /** Action button definitions */
   actions?: Action[];
   /**
-   * Key in row data to use as unique identifier for React keys (serializable)
+   * Key in row data to use as unique identifier for React keys
    *
    * **Strongly recommended:** Always provide this for dynamic data to prevent
    * reconciliation issues (focus traps, animation glitches, incorrect state preservation)
@@ -108,21 +96,42 @@ export interface DataTableProps<T extends object = RowData> {
    * @example rowIdKey="id" or rowIdKey="uuid"
    */
   rowIdKey?: ColumnKey<T>;
-  /** Uncontrolled initial sort */
+  /** Uncontrolled initial sort state */
   defaultSort?: { by?: ColumnKey<T>; direction?: "asc" | "desc" };
-  /** Controlled sort state (provide with onSortChange) */
+  /** Controlled sort state (use with onSortChange from client props) */
   sort?: { by?: ColumnKey<T>; direction?: "asc" | "desc" };
-  /** Empty state message (serializable) */
+  /** Empty state message */
   emptyMessage?: string;
-  /** Show loading skeleton (React-only) */
-  isLoading?: boolean;
-  /** Max table height with vertical scroll (serializable) */
+  /** Max table height with vertical scroll (CSS value) */
   maxHeight?: string;
-  /** Message identifier for context (serializable) */
+  /** Message identifier for context (used with assistant-ui) */
   messageId?: string;
-  /** Optional BCP47 locale used for formatting and sorting (e.g., 'en-US') */
+  /** BCP47 locale for formatting and sorting (e.g., 'en-US') */
   locale?: string;
-  /** Action button click handler (React-only - function) */
+}
+
+/**
+ * Client-side React-only props that cannot be serialized.
+ *
+ * These props contain functions, component state, or other React-specific values
+ * that must be provided by your React code (not from LLM tool calls).
+ *
+ * @example
+ * ```tsx
+ * const clientProps: DataTableClientProps = {
+ *   isLoading: false,
+ *   className: "my-table",
+ *   onAction: (id, row) => console.log(id, row),
+ *   onSortChange: (next) => setSort(next)
+ * }
+ * ```
+ */
+export interface DataTableClientProps<T extends object = RowData> {
+  /** Show loading skeleton */
+  isLoading?: boolean;
+  /** Additional CSS classes */
+  className?: string;
+  /** Action button click handler (required if actions are provided) */
   onAction?: (
     actionId: string,
     row: T,
@@ -131,11 +140,38 @@ export interface DataTableProps<T extends object = RowData> {
       sendMessage?: (message: string) => void;
     },
   ) => void;
-  /** Sort change handler for controlled mode */
+  /** Sort change handler for controlled mode (required if sort is provided) */
   onSortChange?: (next: { by?: ColumnKey<T>; direction?: "asc" | "desc" }) => void;
-  /** Additional CSS classes (React-only) */
-  className?: string;
 }
+
+/**
+ * Complete props for the DataTable component.
+ *
+ * Combines serializable props (can come from LLM tool calls) with client-side
+ * React-only props. This separation makes the boundary explicit and prevents
+ * accidental serialization of non-serializable values.
+ *
+ * @see {@link DataTableSerializableProps} for props that can be JSON-serialized
+ * @see {@link DataTableClientProps} for React-only props
+ * @see {@link parseSerializableDataTable} for parsing LLM tool call results
+ *
+ * @example
+ * ```tsx
+ * // From LLM tool call
+ * const serializableProps = parseSerializableDataTable(llmResult)
+ *
+ * // Combine with React-specific props
+ * <DataTable
+ *   {...serializableProps}
+ *   onAction={(id, row) => handleAction(id, row)}
+ *   onSortChange={setSort}
+ *   isLoading={loading}
+ * />
+ * ```
+ */
+export interface DataTableProps<T extends object = RowData>
+  extends DataTableSerializableProps<T>,
+    DataTableClientProps<T> {}
 
 interface DataTableContextValue<T extends object = RowData> {
   columns: Column<T>[];
