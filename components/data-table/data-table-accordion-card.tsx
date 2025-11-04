@@ -60,7 +60,7 @@ export function DataTableAccordionCard({
   row,
   index,
 }: DataTableAccordionCardProps) {
-  const { columns, actions, onAction, messageId, locale } = useDataTable();
+  const { columns, actions, onAction, messageId, locale, rowIdKey } = useDataTable();
   const [confirmingAction, setConfirmingAction] = React.useState<Action | null>(
     null,
   );
@@ -90,10 +90,16 @@ export function DataTableAccordionCard({
   const primaryColumn = primary[0];
   const secondaryPrimary = primary.slice(1);
 
-  // Generate IDs for ARIA relationships
-  const headingId = `row-${index}-heading`;
-  const detailsId = `row-${index}-details`;
-  const secondaryDataIds = secondaryPrimary.map((col) => `row-${index}-${String(col.key)}`);
+  // Generate stable ID for accordion state and ARIA relationships
+  // Use rowIdKey if available, otherwise fall back to composite key
+  const stableRowId =
+    getRowIdentifier(row, rowIdKey ? String(rowIdKey) : undefined) ||
+    `${index}-${primaryColumn?.key ?? "row"}`;
+
+  // Generate IDs for ARIA relationships using stable identifier
+  const headingId = `row-${stableRowId}-heading`;
+  const detailsId = `row-${stableRowId}-details`;
+  const secondaryDataIds = secondaryPrimary.map((col) => `row-${stableRowId}-${String(col.key)}`);
 
   // Build accessible row label
   const primaryValue = primaryColumn
@@ -103,7 +109,7 @@ export function DataTableAccordionCard({
 
   return (
     <Accordion type="single" collapsible className="rounded-lg border" role="row" aria-label={rowLabel}>
-      <AccordionItem value={`row-${index}`} className="border-0">
+      <AccordionItem value={`row-${stableRowId}`} className="border-0">
         <AccordionTrigger
           className="hover:bg-muted/50 px-4 py-3 hover:no-underline"
           aria-label={`${rowLabel}. ${secondary.length > 0 ? 'Expand for details' : ''}`}
@@ -173,7 +179,7 @@ export function DataTableAccordionCard({
                 >
                   <dt
                     className="text-muted-foreground shrink-0"
-                    id={`row-${index}-${String(col.key)}-label`}
+                    id={`row-${stableRowId}-${String(col.key)}-label`}
                   >
                     {col.label}
                   </dt>
@@ -184,7 +190,7 @@ export function DataTableAccordionCard({
                       col.align === "center" && "text-center",
                     )}
                     role="cell"
-                    aria-labelledby={`row-${index}-${String(col.key)}-label`}
+                    aria-labelledby={`row-${stableRowId}-${String(col.key)}-label`}
                   >
                     {renderFormattedValue(row[col.key], col, row, { locale })}
                   </dd>
@@ -265,7 +271,7 @@ function SimpleCard({
   columns: Column[];
   index: number;
 }) {
-  const { onAction, actions, messageId, locale } = useDataTable();
+  const { onAction, actions, messageId, locale, rowIdKey } = useDataTable();
   const [confirmingAction, setConfirmingAction] = React.useState<Action | null>(
     null,
   );
@@ -286,6 +292,11 @@ function SimpleCard({
       setConfirmingAction(null);
     }
   };
+
+  // Generate stable ID for ARIA relationships
+  const stableRowId =
+    getRowIdentifier(row, rowIdKey ? String(rowIdKey) : undefined) ||
+    `${index}-${primaryColumn?.key ?? "row"}`;
 
   // Build accessible row label
   const primaryValue = primaryColumn
@@ -319,7 +330,7 @@ function SimpleCard({
           >
             <span
               className="text-muted-foreground"
-              id={`row-${index}-${String(col.key)}-label`}
+              id={`row-${stableRowId}-${String(col.key)}-label`}
             >
               {col.label}:
             </span>
@@ -329,7 +340,7 @@ function SimpleCard({
                 col.align === "center" && "text-center",
               )}
               role="cell"
-              aria-labelledby={`row-${index}-${String(col.key)}-label`}
+              aria-labelledby={`row-${stableRowId}-${String(col.key)}-label`}
             >
               {renderFormattedValue(row[col.key], col, row, { locale })}
             </span>

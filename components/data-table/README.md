@@ -787,8 +787,28 @@ The DataTable automatically adapts to **container size** (not viewport size) usi
   - Tertiary columns hidden
   - Large touch targets (44px minimum)
   - Actions moved to expanded section
+  - **Stable IDs:** Accordion state persists across sorting/filtering using `rowIdKey`
 
 **Breakpoint:** 768px (Tailwind `@md`)
+
+### Accordion State Persistence
+
+**Critical:** Mobile accordion expanded/collapsed state survives data reorders (sorting, filtering) when you provide `rowIdKey`.
+
+```tsx
+// ❌ Without rowIdKey: expanded state lost on sort
+<DataTable columns={columns} data={stocks} />
+
+// ✅ With rowIdKey: expanded state persists across sorts
+<DataTable columns={columns} data={stocks} rowIdKey="symbol" />
+```
+
+**How it works:**
+- Each accordion uses `rowIdKey` value as its stable identifier (e.g., `"row-AAPL"`)
+- When data reorders, the accordion finds the same row by ID and preserves its state
+- Falls back to composite key (`index-columnKey`) if no `rowIdKey` provided
+
+**Example:** User expands "AAPL" row, then sorts by price. With `rowIdKey`, "AAPL" stays expanded at its new position.
 
 ### Container Queries vs Media Queries
 
