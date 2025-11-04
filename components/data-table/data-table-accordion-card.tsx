@@ -108,10 +108,11 @@ export function DataTableAccordionCard({
   const rowLabel = `Row ${index + 1}: ${primaryValue}`;
 
   return (
-    <Accordion type="single" collapsible className="rounded-lg border" role="row" aria-label={rowLabel}>
+    <Accordion type="single" collapsible className="rounded-lg border" role="listitem" aria-label={rowLabel}>
       <AccordionItem value={`row-${stableRowId}`} className="border-0">
         <AccordionTrigger
           className="hover:bg-muted/50 px-4 py-3 hover:no-underline"
+          aria-controls={detailsId}
           aria-label={`${rowLabel}. ${secondary.length > 0 ? 'Expand for details' : ''}`}
         >
           <div className="flex w-full items-start justify-between pr-2 text-left">
@@ -166,7 +167,7 @@ export function DataTableAccordionCard({
           className="px-4 pb-4"
           id={detailsId}
           role="region"
-          aria-label="Row details"
+          aria-labelledby={headingId}
         >
           {/* Secondary fields */}
           {secondary.length > 0 && (
@@ -308,7 +309,7 @@ function SimpleCard({
     <>
       <div
         className="flex flex-col gap-2 rounded-lg border p-4"
-        role="row"
+        role="listitem"
         aria-label={rowLabel}
       >
         {primaryColumn && (

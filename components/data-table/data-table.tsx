@@ -488,13 +488,13 @@ export function DataTable<T extends object = RowData>({
           })()}
         </div>
 
-        {/* Mobile card view - preserves table semantics with ARIA */}
+        {/* Mobile card view - uses list semantics for accessibility */}
         <div
           className={cn(
             "space-y-3",
             supportsContainerQueries ? "@md:hidden" : "md:hidden",
           )}
-          role="table"
+          role="list"
           aria-label="Data table (mobile card view)"
           aria-describedby="mobile-table-description"
         >
