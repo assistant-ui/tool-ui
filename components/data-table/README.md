@@ -235,7 +235,7 @@ Examples:
 
 Create a `useConfirm()` hook that returns `confirm({ title, body }) => Promise<boolean>` and call it in `onBeforeAction`.
 
-An optional Radix recipe is provided at `components/data-table/extras/radix-confirm.tsx`.
+An optional Radix recipe is provided at `components/ui/confirm.tsx`.
 ```
 
 ## Examples

@@ -36,6 +36,11 @@ export function ConfirmProvider({ children }: { children: React.ReactNode }) {
   const pendingResolve = React.useRef<((val: boolean) => void) | undefined>(undefined);
 
   const confirm = React.useCallback<ConfirmFn>((opts) => {
+    // Resolve any in-flight confirm as cancelled before opening a new one
+    if (pendingResolve.current) {
+      pendingResolve.current(false);
+      pendingResolve.current = undefined;
+    }
     setOptions(opts ?? {});
     setOpen(true);
     return new Promise<boolean>((resolve) => {
@@ -45,18 +50,34 @@ export function ConfirmProvider({ children }: { children: React.ReactNode }) {
 
   const handleCancel = () => {
     setOpen(false);
-    pendingResolve.current?.(false);
+    if (pendingResolve.current) {
+      pendingResolve.current(false);
+      pendingResolve.current = undefined;
+    }
   };
 
   const handleConfirm = () => {
     setOpen(false);
-    pendingResolve.current?.(true);
+    if (pendingResolve.current) {
+      pendingResolve.current(true);
+      pendingResolve.current = undefined;
+    }
   };
 
   return (
     <ConfirmContext.Provider value={confirm}>
       {children}
-      <AlertDialog open={open} onOpenChange={setOpen}>
+      <AlertDialog
+        open={open}
+        onOpenChange={(next) => {
+          setOpen(next);
+          if (!next && pendingResolve.current) {
+            // Closed via overlay/Escape: treat as cancel
+            pendingResolve.current(false);
+            pendingResolve.current = undefined;
+          }
+        }}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>{options.title ?? "Confirm"}</AlertDialogTitle>
@@ -80,19 +101,3 @@ export function ConfirmProvider({ children }: { children: React.ReactNode }) {
     </ConfirmContext.Provider>
   );
 }
-
-// Example usage with DataTable onBeforeAction
-//
-// const confirm = useConfirm();
-// <DataTable
-//   actions={[{ id: 'delete', label: 'Delete', variant: 'destructive', requiresConfirmation: true }]}
-//   onBeforeAction={({ action, row }) => {
-//     if (!action.requiresConfirmation) return true;
-//     return confirm({
-//       title: `Confirm ${action.label}`,
-//       description: `This will ${action.label.toLowerCase()} ${String((row as any).name ?? 'this item')}.`,
-//       confirmText: action.label,
-//       destructive: action.variant === 'destructive',
-//     });
-//   }}
-// />

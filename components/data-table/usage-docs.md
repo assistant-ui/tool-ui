@@ -350,7 +350,7 @@ Inline buttons or a menu. No built‑in confirmation. Use `onBeforeAction` to im
 If you use shadcn/Radix, you can centralize confirmation with a provider:
 
 ```tsx
-import { ConfirmProvider, useConfirm } from "@/components/data-table/extras/radix-confirm";
+import { ConfirmProvider, useConfirm } from "@/components/ui/confirm";
 
 function TableWithConfirm() {
   const confirm = useConfirm();
