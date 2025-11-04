@@ -2,7 +2,7 @@
 
 import { makeAssistantToolUI } from "@assistant-ui/react";
 import { DataTable, type Column } from "@/components/data-table";
-import type { GetStocksOutput } from "@/app/tools/get-stocks";
+import type { GetStocksInput, GetStocksOutput } from "@/app/tools/get-stocks";
 import type { Stock } from "@/lib/mock-data/stocks";
 
 /**
@@ -13,11 +13,7 @@ import type { Stock } from "@/lib/mock-data/stocks";
  * - Mobile: Accordion cards with column prioritization
  */
 export const GetStocksUI = makeAssistantToolUI<
-  {
-    symbols?: string[];
-    limit?: number;
-    sort?: { by?: "symbol" | "price" | "change" | "marketCap"; direction?: "asc" | "desc" };
-  },
+  GetStocksInput,
   GetStocksOutput
 >({
   toolName: "get_stocks",
