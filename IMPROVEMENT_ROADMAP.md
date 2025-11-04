@@ -6,19 +6,19 @@ This document outlines actionable changes to improve the codebase quality, produ
 
 **Last Updated**: 2025-11-03
 
-### Completed Items (6)
+### Completed Items (8)
 - ✅ **#1**: Fix Sortable Header Accessibility (CRITICAL)
 - ✅ **#2**: Fix Type Safety Violations (CRITICAL)
 - ✅ **#3**: Implement Proper Zod Schema Validation (CRITICAL)
 - ✅ **#4**: Add Error Boundaries (CRITICAL)
 - ✅ **#5**: Implement Action Confirmation Dialogs (CRITICAL)
+- ✅ **#6**: Fix Serialization Documentation (CRITICAL)
+- ✅ **#7**: Document Browser Support & Add Feature Detection (CRITICAL)
 - ✅ **#8**: Fix Numeric Auto-Alignment Bug (HIGH)
 
 ### In Progress (0)
 
-### Remaining Critical (2)
-- ⏳ **#6**: Fix Serialization Documentation
-- ⏳ **#7**: Document Browser Support & Add Feature Detection
+### Remaining Critical (0)
 
 ## Priority Levels
 
@@ -388,10 +388,10 @@ export function DataTableActions({ row }: DataTableActionsProps) {
 **Solution**: Clarify what's serializable vs. what's React-only.
 
 **Action Items**:
-- [ ] Separate "Serializable" types from "Component Props" types
-- [ ] Update schema to only include serializable parts
-- [ ] Document which props are for LLM tool calls vs. which are React-only
-- [ ] Create clear examples of tool call payloads
+- [x] Separate "Serializable" types from "Component Props" types
+- [x] Update schema to only include serializable parts (added comprehensive JSDoc)
+- [x] Document which props are for LLM tool calls vs. which are React-only
+- [x] Create clear examples of tool call payloads (3 examples in README)
 
 **Implementation**:
 ```typescript
@@ -438,11 +438,11 @@ export interface DataTableProps<T extends object = RowData>
 **Solution**: Add feature detection and fallback.
 
 **Action Items**:
-- [ ] Document browser support requirements in README
-- [ ] Add CSS feature detection
-- [ ] Implement fallback to regular media queries
-- [ ] Test in older browsers
-- [ ] Consider using `@container` polyfill or PostCSS plugin
+- [x] Document browser support requirements in README
+- [x] Add CSS feature detection (`use-container-query.ts` hook)
+- [x] Implement fallback to regular media queries
+- [ ] Test in older browsers (manual testing by users)
+- [x] Consider using `@container` polyfill or PostCSS plugin (documented as option)
 
 **Implementation**:
 ```typescript
