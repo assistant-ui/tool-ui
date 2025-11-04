@@ -22,7 +22,7 @@ import {
 import { useDataTable } from "./data-table";
 import type { Column, DataTableRowData, Action } from "./data-table";
 import { renderFormattedValue } from "./formatters";
-import { getRowIdentifier } from "./utilities";
+import { getRowIdentifier, getConfirmDescription } from "./utilities";
 
 interface DataTableAccordionCardProps {
   row: DataTableRowData;
@@ -233,12 +233,7 @@ export function DataTableAccordionCard({
               {confirmingAction ? `Confirm ${confirmingAction.label}` : "Confirm"}
             </AlertDialogTitle>
             <AlertDialogDescription>
-              {(() => {
-                const id = getRowIdentifier(row);
-                const actionText = confirmingAction?.label ?? 'this action';
-                const base = id ? `${actionText} for ${id}` : actionText;
-                return `This action cannot be undone. This will ${base.toLowerCase()}.`;
-              })()}
+              {getConfirmDescription(row, confirmingAction?.label)}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -380,13 +375,7 @@ function SimpleCard({
               {confirmingAction ? `Confirm ${confirmingAction.label}` : "Confirm"}
             </AlertDialogTitle>
             <AlertDialogDescription>
-              {(() => {
-                // SimpleCard lacks identifierKey; best-effort row identifier
-                const id = getRowIdentifier(row);
-                const actionText = confirmingAction?.label ?? 'this action';
-                const base = id ? `${actionText} for ${id}` : actionText;
-                return `This action cannot be undone. This will ${base.toLowerCase()}.`;
-              })()}
+              {getConfirmDescription(row, confirmingAction?.label)}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

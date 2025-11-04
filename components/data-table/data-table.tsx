@@ -399,10 +399,18 @@ export function DataTable<T extends object = RowData>({
     locale: resolvedLocale,
   };
 
+  const sortAnnouncement = React.useMemo(() => {
+    const col = columns.find((c) => c.key === sortBy);
+    const label = col?.label ?? (typeof sortBy === "string" ? sortBy : "");
+    return sortBy && sortDirection
+      ? `Sorted by ${label}, ${sortDirection === "asc" ? "ascending" : "descending"}`
+      : "";
+  }, [columns, sortBy, sortDirection]);
+
   return (
     <DataTableContext.Provider value={contextValue}>
       <div className={cn("w-full @container", className)}>
-        <div className={cn("hidden @md:block")}> 
+        <div className={cn("hidden @md:block")}>
           <div className="relative">
             <div
               ref={scrollContainerRef}
@@ -453,17 +461,9 @@ export function DataTable<T extends object = RowData>({
             </div>
           </div>
           {/* Live region for sort announcements */}
-          {(() => {
-            const col = columns.find((c) => c.key === sortBy);
-            const label = col?.label ?? (typeof sortBy === "string" ? sortBy : "");
-            const msg =
-              sortBy && sortDirection
-                ? `Sorted by ${label}, ${sortDirection === "asc" ? "ascending" : "descending"}`
-                : "";
-            return (
-              <div className="sr-only" aria-live="polite">{msg}</div>
-            );
-          })()}
+          {sortAnnouncement && (
+            <div className="sr-only" aria-live="polite">{sortAnnouncement}</div>
+          )}
         </div>
 
         {/* Mobile card view - uses list semantics for accessibility */}

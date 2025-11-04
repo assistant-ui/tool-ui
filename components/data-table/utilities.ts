@@ -104,6 +104,21 @@ export function getRowIdentifier(
 }
 
 /**
+ * Build a standard confirmation description string for destructive/confirm dialogs.
+ * Reuses the row identifier when available.
+ */
+export function getConfirmDescription(
+  row: Record<string, string | number | boolean | null | (string | number | boolean | null)[]>,
+  actionLabel?: string,
+  identifierKey?: string,
+): string {
+  const id = getRowIdentifier(row, identifierKey);
+  const actionText = actionLabel ?? "this action";
+  const base = id ? `${actionText} for ${id}` : actionText;
+  return `This action cannot be undone. This will ${base.toLowerCase()}.`;
+}
+
+/**
  * Parse a string that represents a numeric value, handling various formats:
  * - Currency symbols: $, €, £, ¥, etc.
  * - Percent symbols: %

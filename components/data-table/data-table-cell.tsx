@@ -20,12 +20,9 @@ export function DataTableCell({
   className,
 }: DataTableCellProps) {
   const { locale } = useDataTable();
-  const isNumericKind = (() => {
-    const k = (column?.format as { kind?: string } | undefined)?.kind;
-    return (
-      k === "number" || k === "currency" || k === "percent" || k === "delta"
-    );
-  })();
+  const k = (column?.format as { kind?: string } | undefined)?.kind;
+  const isNumericKind =
+    k === "number" || k === "currency" || k === "percent" || k === "delta";
   const isNumericValue = typeof value === "number";
   const align = column.align ?? (isNumericKind || isNumericValue ? "right" : "left");
   const alignClass = {

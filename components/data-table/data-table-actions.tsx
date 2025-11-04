@@ -20,7 +20,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { useDataTable, type DataTableRowData, type Action } from "./data-table";
-import { getActionLabel, getRowIdentifier } from "./utilities";
+import { getActionLabel, getConfirmDescription } from "./utilities";
 
 interface DataTableActionsProps {
   row: DataTableRowData;
@@ -76,12 +76,7 @@ export function DataTableActions({ row }: DataTableActionsProps) {
                 {confirmingAction ? `Confirm ${confirmingAction.label}` : "Confirm"}
               </AlertDialogTitle>
               <AlertDialogDescription>
-                {(() => {
-                  const id = getRowIdentifier(row);
-                  const actionText = confirmingAction?.label ?? 'this action';
-                  const base = id ? `${actionText} for ${id}` : actionText;
-                  return `This action cannot be undone. This will ${base.toLowerCase()}.`;
-                })()}
+                {getConfirmDescription(row, confirmingAction?.label)}
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
@@ -143,12 +138,7 @@ export function DataTableActions({ row }: DataTableActionsProps) {
               {confirmingAction ? `Confirm ${confirmingAction.label}` : "Confirm"}
             </AlertDialogTitle>
             <AlertDialogDescription>
-              {(() => {
-                const id = getRowIdentifier(row);
-                const actionText = confirmingAction?.label ?? 'this action';
-                const base = id ? `${actionText} for ${id}` : actionText;
-                return `This action cannot be undone. This will ${base.toLowerCase()}.`;
-              })()}
+              {getConfirmDescription(row, confirmingAction?.label)}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
