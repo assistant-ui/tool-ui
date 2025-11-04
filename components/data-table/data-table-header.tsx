@@ -15,11 +15,22 @@ import {
 } from "./_ui";
 
 function SortIcon({ state }: { state?: "asc" | "desc" }) {
-  if (state === "asc") return <span aria-hidden>↑</span>;
-  if (state === "desc") return <span aria-hidden>↓</span>;
+  let char = "⇅";
+  let className = "opacity-20";
+
+  if (state === "asc") {
+    char = "↑";
+    className = "";
+  }
+
+  if (state === "desc") {
+    char = "↓";
+    className = "";
+  }
+
   return (
-    <span aria-hidden className="opacity-20">
-      ⇅
+    <span aria-hidden className={cn("min-w-4 shrink-0 text-center", className)}>
+      {char}
     </span>
   );
 }
@@ -159,11 +170,7 @@ export function DataTableHead({ column, columnIndex = 0 }: DataTableHeadProps) {
             {column.label}
           </span>
         )}
-        {isSortable && (
-          <span className="min-w-5 shrink-0">
-            <SortIcon state={direction} />
-          </span>
-        )}
+        {isSortable && <SortIcon state={direction} />}
       </Button>
     </TableHead>
   );
