@@ -202,7 +202,7 @@ function MyComponent() {
 interface Column {
   key: string                         // Unique identifier, maps to row data
   label: string                       // Display header text
-  sortable?: boolean                  // Default: true
+  sortable?: boolean                  // Default: true (OPT-OUT: set to false to disable)
   align?: 'left' | 'right' | 'center' // Default: 'left'
   width?: string                      // Optional CSS width (e.g., "150px")
   truncate?: boolean                  // Opt-in truncate cell content (default: false)
@@ -212,6 +212,15 @@ interface Column {
   hideOnMobile?: boolean              // Simple override to hide on mobile
 }
 ```
+
+> **⚠️ Note on Sortable Default**
+>
+> Columns are **sortable by default** (opt-out pattern). This means:
+> - Omitting `sortable` → Column IS sortable
+> - `sortable: true` → Column IS sortable (explicit)
+> - `sortable: false` → Column is NOT sortable (opt-out)
+>
+> In data-heavy tables with many columns, you may want to explicitly set `sortable: false` for columns that shouldn't be sorted (e.g., action columns, complex formatted data).
 
 **Mobile Priority System:**
 - `primary`: Always visible in mobile card header (recommended: 2-3 columns)
@@ -236,6 +245,10 @@ interface Action {
 
 The DataTable supports both **controlled** and **uncontrolled** sorting:
 
+> **⚠️ Important: Columns are sortable by default**
+>
+> All columns are sortable unless you explicitly set `sortable: false`. This is an **opt-out pattern**. For data-heavy tables, consider which columns actually need sorting and disable it for others.
+
 #### Uncontrolled Sorting (Recommended for simple cases)
 
 The table manages its own sort state internally:
@@ -246,6 +259,19 @@ The table manages its own sort state internally:
   data={rows}
   // Users can click headers to sort (internally managed)
 />
+```
+
+#### Disabling Sorting on Specific Columns
+
+To disable sorting for columns that shouldn't be sortable:
+
+```tsx
+const columns = [
+  { key: 'id', label: 'ID', sortable: false },        // IDs often don't need sorting
+  { key: 'name', label: 'Name' },                     // Sortable (default)
+  { key: 'price', label: 'Price' },                   // Sortable (default)
+  { key: 'actions', label: 'Actions', sortable: false }, // Action columns shouldn't sort
+]
 ```
 
 #### Controlled Sorting (For complex state management)

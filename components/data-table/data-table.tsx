@@ -22,19 +22,36 @@ type FormatFor<V> = V extends number
         ? Extract<FormatConfig, { kind: "text" | "link" | "date" | "badge" | "status" }>
         : Extract<FormatConfig, { kind: "text" }>;
 
+/**
+ * Column definition for DataTable
+ *
+ * @remarks
+ * **Important:** Columns are sortable by default (opt-out pattern).
+ * Set `sortable: false` explicitly to disable sorting for specific columns.
+ */
 export interface Column<
   T extends object = RowData,
   K extends ColumnKey<T> = ColumnKey<T>,
 > {
+  /** Unique identifier that maps to a key in the row data */
   key: K;
+  /** Display text for the column header */
   label: string;
+  /** Abbreviated label for narrow viewports */
   abbr?: string;
+  /** Whether column is sortable. Default: true (opt-out pattern) */
   sortable?: boolean;
+  /** Text alignment for column cells */
   align?: "left" | "right" | "center";
+  /** Optional fixed width (CSS value) */
   width?: string;
+  /** Enable text truncation with ellipsis */
   truncate?: boolean;
+  /** Mobile display priority (primary = always visible, secondary = expandable, tertiary = hidden) */
   priority?: "primary" | "secondary" | "tertiary";
+  /** Completely hide column on mobile viewports */
   hideOnMobile?: boolean;
+  /** Formatting configuration for cell values */
   format?: FormatFor<T[K]>;
 }
 
