@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { cn } from "@/lib/utils";
+import { Badge } from "@/components/ui/badge";
 
 type Tone = "success" | "warning" | "danger" | "info" | "neutral";
 
@@ -55,11 +56,11 @@ function DeltaValue({ value, options }: DeltaValueProps) {
   const isGood = upIsPositive ? isPositive : isNegative;
   const isBad = upIsPositive ? isNegative : isPositive;
 
-  // Token-based coloring (shadcn tokens)
+  // Token-based coloring (shadcn-native tokens)
   const colorClass = isGood
-    ? "text-success-foreground"
+    ? "text-primary"
     : isBad
-      ? "text-destructive-foreground"
+      ? "text-destructive"
       : "text-muted-foreground";
 
   const formatted = value.toFixed(decimals);
@@ -87,24 +88,16 @@ function StatusBadge({ value, options }: StatusBadgeProps) {
   };
   const label = config.label ?? value;
 
-  const toneClasses: Record<Tone, string> = {
-    success: "bg-accent text-accent-foreground",
-    warning: "bg-secondary text-secondary-foreground",
-    danger: "bg-destructive text-destructive-foreground",
-    info: "bg-accent/50 text-accent-foreground",
-    neutral: "bg-muted text-foreground",
-  };
+  // Map generic tones to shadcn Badge variants
+  const variant =
+    config.tone === "danger"
+      ? "destructive"
+      : config.tone === "neutral"
+        ? "outline"
+        : // success, warning, info → secondary (neutral surface with themed fg)
+          "secondary";
 
-  return (
-    <span
-      className={cn(
-        "inline-flex items-center rounded-full px-3 py-1 text-sm",
-        toneClasses[config.tone],
-      )}
-    >
-      {label}
-    </span>
-  );
+  return <Badge variant={variant}>{label}</Badge>;
 }
 
 interface CurrencyValueProps {
@@ -227,26 +220,9 @@ interface BooleanValueProps {
 function BooleanValue({ value, options }: BooleanValueProps) {
   const labels = options?.labels ?? { true: "Yes", false: "No" };
   const label = value ? labels.true : labels.false;
-  const tone = value ? "success" : "neutral";
+  const variant = value ? "secondary" : "outline";
 
-  const toneClasses: Record<Tone, string> = {
-    success: "bg-accent text-accent-foreground",
-    warning: "bg-secondary text-secondary-foreground",
-    danger: "bg-destructive text-destructive-foreground",
-    info: "bg-accent/50 text-accent-foreground",
-    neutral: "bg-muted text-foreground",
-  };
-
-  return (
-    <span
-      className={cn(
-        "inline-flex items-center rounded-full px-2 py-1",
-        toneClasses[tone],
-      )}
-    >
-      {label}
-    </span>
-  );
+  return <Badge variant={variant}>{label}</Badge>;
 }
 
 interface LinkValueProps {
@@ -319,24 +295,16 @@ interface BadgeValueProps {
 function BadgeValue({ value, options }: BadgeValueProps) {
   const tone = options?.colorMap?.[value] ?? "neutral";
 
-  const toneClasses: Record<Tone, string> = {
-    success: "bg-accent text-accent-foreground",
-    warning: "bg-secondary text-secondary-foreground",
-    danger: "bg-destructive text-destructive-foreground",
-    info: "bg-accent/50 text-accent-foreground",
-    neutral: "bg-muted text-foreground",
-  };
+  // Map generic tones to shadcn Badge variants
+  const variant =
+    tone === "danger"
+      ? "destructive"
+      : tone === "neutral"
+        ? "outline"
+        : // success, warning, info → secondary
+          "secondary";
 
-  return (
-    <span
-      className={cn(
-        "inline-flex items-center rounded-full px-2 py-1",
-        toneClasses[tone],
-      )}
-    >
-      {value}
-    </span>
-  );
+  return <Badge variant={variant}>{value}</Badge>;
 }
 
 interface ArrayValueProps {
