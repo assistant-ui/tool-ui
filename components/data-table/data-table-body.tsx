@@ -7,6 +7,17 @@ import { DataTableRow } from "./data-table-row";
 export function DataTableBody() {
   const { data, rowIdKey } = useDataTable<DataTableRowData>();
 
+  // Dev-only warning: Strongly encourage rowIdKey for stable React reconciliation
+  React.useEffect(() => {
+    if (process.env.NODE_ENV !== "production" && !rowIdKey && data.length > 0) {
+      console.warn(
+        "[DataTable] Missing `rowIdKey` prop. Using array index as React key can cause reconciliation issues when data reorders (focus traps, animation glitches, incorrect state preservation). " +
+        "Strongly recommended: Pass a `rowIdKey` prop that points to a unique identifier in your row data (e.g., 'id', 'uuid', 'symbol').\n" +
+        "Example: <DataTable rowIdKey=\"id\" columns={...} data={...} />"
+      );
+    }
+  }, [rowIdKey, data.length]);
+
   return (
     <tbody>
       {data.map((row, index) => {

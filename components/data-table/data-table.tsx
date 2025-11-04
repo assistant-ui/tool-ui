@@ -98,7 +98,15 @@ export interface DataTableProps<T extends object = RowData> {
   data: T[];
   /** Action button definitions (serializable) */
   actions?: Action[];
-  /** Key in row data to use as unique identifier (serializable) */
+  /**
+   * Key in row data to use as unique identifier for React keys (serializable)
+   *
+   * **Strongly recommended:** Always provide this for dynamic data to prevent
+   * reconciliation issues (focus traps, animation glitches, incorrect state preservation)
+   * when data reorders. Falls back to array index if omitted (only acceptable for static mock data).
+   *
+   * @example rowIdKey="id" or rowIdKey="uuid"
+   */
   rowIdKey?: ColumnKey<T>;
   /** Uncontrolled initial sort */
   defaultSort?: { by?: ColumnKey<T>; direction?: "asc" | "desc" };

@@ -162,19 +162,23 @@ function MyComponent() {
   return (
     <DataTable
       columns={[
+        { key: 'id', label: 'ID', sortable: false },
         { key: 'name', label: 'Product' },
         { key: 'price', label: 'Price', align: 'right' },
         { key: 'stock', label: 'Stock', align: 'right' },
       ]}
       data={[
-        { name: 'Widget', price: 29.99, stock: 150 },
-        { name: 'Gadget', price: 49.99, stock: 89 },
-        { name: 'Doohickey', price: 19.99, stock: 0 },
+        { id: '1', name: 'Widget', price: 29.99, stock: 150 },
+        { id: '2', name: 'Gadget', price: 49.99, stock: 89 },
+        { id: '3', name: 'Doohickey', price: 19.99, stock: 0 },
       ]}
+      rowIdKey="id"  // ⚠️ Strongly recommended for stable React reconciliation
     />
   )
 }
 ```
+
+> **💡 Tip:** Always include a unique `id` field in your data and pass `rowIdKey="id"`. This prevents React reconciliation issues when data reorders. See the [Props API section](#datatableprops) for details.
 
 ## Props API
 
@@ -185,7 +189,7 @@ function MyComponent() {
 | `columns` | `Column[]` | Required | Column definitions |
 | `data` | `Record<string, any>[]` | Required | Row data |
 | `actions` | `Action[]` | `undefined` | Row action buttons |
-| `rowIdKey` | `string` | `undefined` | Key in each row used for stable React keys |
+| `rowIdKey` | `string` | `undefined` | **⚠️ Strongly Recommended:** Key in each row used for stable React keys (see warning below) |
 | `defaultSort` | `{ by?: string; direction?: 'asc'|'desc' }` | `undefined` | Initial sort (uncontrolled) |
 | `sort` | `{ by?: string; direction?: 'asc'|'desc' }` | `undefined` | Controlled sort state |
 | `onSortChange` | `(next) => void` | `undefined` | Controlled sort change handler |
@@ -195,6 +199,26 @@ function MyComponent() {
 | `onAction` | `function` | `undefined` | Action button click handler |
 | `locale` | `string` | `undefined` | Locale for formatting/sorting (e.g., `en-US`) |
 | `className` | `string` | `undefined` | Additional CSS classes |
+
+> **⚠️ Critical: Always provide `rowIdKey` for dynamic data**
+>
+> Without `rowIdKey`, the table falls back to using array indexes as React keys. This is **acceptable for static mock data** but **dangerous for dynamic data** because:
+>
+> - **Reorder bugs**: When data reorders (e.g., after sorting), React reuses DOM elements incorrectly
+> - **Focus traps**: Input focus can jump to wrong rows or get lost entirely
+> - **Animation glitches**: Row transitions and animations behave incorrectly
+> - **State preservation bugs**: Component state (expanded rows, selections) can attach to wrong items
+>
+> **Always provide a unique, stable identifier:**
+> ```tsx
+> // ✅ Good: Stable unique identifier
+> <DataTable rowIdKey="id" data={users} columns={columns} />
+>
+> // ❌ Bad: No rowIdKey with dynamic data that can reorder
+> <DataTable data={users} columns={columns} />
+> ```
+>
+> In development mode, the table will warn if `rowIdKey` is missing.
 
 ### Column
 
