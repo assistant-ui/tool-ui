@@ -150,8 +150,28 @@ export function getRowIdentifier(
   return String(candidate).trim();
 }
 
-// Internal helpers
-function parseNumericLike(input: string): number | null {
+/**
+ * Parse a string that represents a numeric value, handling various formats:
+ * - Currency symbols: $, €, £, ¥, etc.
+ * - Percent symbols: %
+ * - Accounting negatives: (1234) → -1234
+ * - Thousands/decimal separators: 1,234.56 or 1.234,56
+ * - Compact notation: 2.8T (trillion), 1.5M (million), 500K (thousand)
+ * - Byte suffixes: 768B (bytes), 1.5KB, 2GB, 1TB
+ *
+ * Note: Single "B" is disambiguated - integers < 1024 are bytes, otherwise billions.
+ *
+ * @param input - String to parse
+ * @returns Parsed number or null if unparseable
+ *
+ * @example
+ * parseNumericLike("$1,234.56") // 1234.56
+ * parseNumericLike("2.8T") // 2800000000000
+ * parseNumericLike("768B") // 768
+ * parseNumericLike("50%") // 50
+ * parseNumericLike("(1234)") // -1234
+ */
+export function parseNumericLike(input: string): number | null {
   // Normalize whitespace (spaces, NBSPs, thin spaces)
   let s = input.replace(/[\u00A0\u202F\s]/g, '').trim();
   if (!s) return null;
@@ -178,6 +198,32 @@ function parseNumericLike(input: string): number | null {
   } else if (lastDot !== -1) {
     // Only dot present; if multiple dots, treat as thousands and strip
     if ((s.match(/\./g) || []).length > 1) s = s.replace(/\./g, '');
+  }
+
+  // Handle compact notation (K, M, B, T, P, G) and byte suffixes (KB, MB, GB, TB, PB)
+  const compactMatch = s.match(/^([+-]?\d+\.?\d*|\d*\.\d+)([KMBTPG]B?|B)$/i);
+  if (compactMatch) {
+    const baseNum = Number(compactMatch[1]);
+    if (Number.isNaN(baseNum)) return null;
+
+    const suffix = compactMatch[2].toUpperCase();
+
+    // Disambiguate single "B" (bytes vs billions)
+    // If whole number < 1024, treat as bytes. Otherwise, billions.
+    if (suffix === 'B') {
+      const isLikelyBytes = Number.isInteger(baseNum) && baseNum < 1024;
+      return isLikelyBytes ? baseNum : baseNum * 1e9;
+    }
+
+    const multipliers: Record<string, number> = {
+      'K': 1e3, 'KB': 1024,               // Kilo: metric vs binary
+      'M': 1e6, 'MB': 1024 ** 2,          // Mega
+      'G': 1e9, 'GB': 1024 ** 3,          // Giga
+      'T': 1e12, 'TB': 1024 ** 4,         // Tera
+      'P': 1e15, 'PB': 1024 ** 5,         // Peta
+    };
+
+    return baseNum * (multipliers[suffix] ?? 1);
   }
 
   if (/^[+-]?(?:\d+\.?\d*|\d*\.\d+)$/.test(s)) {
