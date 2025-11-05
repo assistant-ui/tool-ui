@@ -60,7 +60,7 @@ export function PresetSelector({
             <span
               aria-hidden="true"
               data-selected={currentPreset === preset}
-              className="bg-foreground absolute top-2.5 -left-4.5 h-0 w-1 -translate-y-1/2 transform-gpu rounded-full opacity-0 transition-[height,opacity,transform] duration-100 ease-in-out data-[selected=true]:h-5 data-[selected=true]:opacity-100"
+              className="bg-foreground absolute top-2.5 -left-4.5 h-0 w-1 -translate-y-1/2 transform-gpu rounded-full opacity-0 transition-[height,opacity,transform] delay-100 duration-200 ease-in-out data-[selected=true]:h-5 data-[selected=true]:opacity-100"
             />
           </ItemContent>
         </Item>
