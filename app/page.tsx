@@ -8,6 +8,8 @@ import {
   useState,
 } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
+import { Leva } from "leva";
 import { DemoChat } from "@/app/components/demo-chat";
 import { App as HypercubeCanvas } from "@/app/components/rotating-hypercube";
 import { Button } from "@/components/ui/button";
@@ -32,6 +34,8 @@ const CHAT_LAYOUTS: Record<ViewportSize, [number, number, number]> = {
 };
 
 export default function HomePage() {
+  const searchParams = useSearchParams();
+  const showLogoDebug = searchParams.get("logoDebug") === "true";
   const [viewport, setViewport] = useState<ViewportSize>("desktop");
   const [chatPanelSize, setChatPanelSize] = useState<number>(
     CHAT_LAYOUTS.desktop[1],
@@ -188,6 +192,8 @@ export default function HomePage() {
           defaultLayout={defaultLayout}
         />
       </div>
+
+      <Leva hidden={!showLogoDebug} collapsed={!showLogoDebug} />
     </main>
   );
 }
