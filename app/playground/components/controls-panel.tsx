@@ -46,12 +46,12 @@ export function ControlsPanel({
           <div className="relative">
             <LinearBlur
               side="top"
-              tint="hsl(var(--background))"
-              className="absolute inset-0 h-[120%]"
+              tint="hsl(var(--background) / 0.6)"
+              className="absolute inset-0 h-[150%]"
               strength={100}
               steps={6}
             />
-            <div className="relative flex items-center justify-center py-2">
+            <div className="relative flex items-center justify-center pt-2 pb-4">
               <TabsList className="bg-transparentflex gap-2 rounded-lg text-sm font-light">
                 <TabsTrigger
                   value="presets"
@@ -76,14 +76,17 @@ export function ControlsPanel({
           </div>
         </div>
 
-        <TabsContent value="presets" className="flex flex-col gap-4 px-2">
+        <TabsContent value="presets" className="flex flex-col gap-4 px-2 pb-24">
           <PresetSelector
             currentPreset={currentPreset}
             onSelectPreset={onSelectPreset}
           />
         </TabsContent>
 
-        <TabsContent value="config" className="m-0 flex flex-col gap-3">
+        <TabsContent
+          value="config"
+          className="m-0 flex flex-col gap-3 px-2 pb-24"
+        >
           <ItemGroup>
             <Item variant="outline">
               <ItemContent>
@@ -107,19 +110,15 @@ export function ControlsPanel({
           </ItemGroup>
         </TabsContent>
 
-        <TabsContent value="state" className="m-0 flex flex-col gap-3">
-          <ItemGroup>
+        <TabsContent
+          value="state"
+          className="m-0 flex flex-col gap-3 px-2 pb-24"
+        >
+          <ItemGroup className="gap-3">
             <Item variant="outline">
               <ItemContent>
-                <ItemTitle>Loading state</ItemTitle>
-                <ItemDescription>
-                  Toggle the skeleton rows to simulate pending data.
-                </ItemDescription>
-                <div className="mt-3 flex items-center justify-between gap-4">
-                  <Label
-                    htmlFor="loading-state"
-                    className="text-sm font-medium"
-                  >
+                <div className="flex items-center justify-between gap-4">
+                  <Label htmlFor="loading-state" className="text-sm">
                     Show loading
                   </Label>
                   <Switch
@@ -130,8 +129,6 @@ export function ControlsPanel({
                 </div>
               </ItemContent>
             </Item>
-
-            <ItemSeparator />
 
             <Item variant="outline">
               <ItemContent>

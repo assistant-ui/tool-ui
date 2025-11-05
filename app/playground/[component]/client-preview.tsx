@@ -70,7 +70,7 @@ export function ClientPreview({ componentId }: { componentId: string }) {
 
   return (
     <div className="mr-2 flex h-full min-h-0 w-full flex-1 gap-2 pr-2 pb-2">
-      <aside className="bg-background flex h-full w-80 shrink-0 flex-col overflow-auto rounded-lg">
+      <aside className="bg-background/40 flex h-full w-80 shrink-0 flex-col overflow-auto rounded-lg shadow-xs">
         <ControlsPanel
           currentPreset={currentPreset}
           onSelectPreset={handleSelectPreset}
@@ -82,8 +82,8 @@ export function ClientPreview({ componentId }: { componentId: string }) {
           onEmptyMessageChange={setEmptyMessage}
         />
       </aside>
-      <div className="flex flex-1 flex-col gap-2 overflow-hidden">
-        <div className="bg-background flex-1 overflow-auto rounded-lg p-6">
+      <div className="flex flex-1 flex-col gap-2 overflow-clip">
+        <div className="bg-background flex-1 overflow-auto rounded-lg p-6 shadow-xs">
           <div
             className="mx-auto transition-[width]"
             style={{
@@ -110,7 +110,7 @@ export function ClientPreview({ componentId }: { componentId: string }) {
           </div>
         </div>
 
-        <div className="bg-background hover:bg-muted flex-none overflow-clip rounded-lg">
+        <div className="bg-background hover:bg-muted flex-none overflow-hidden rounded-lg shadow-xs">
           <CodePanel
             config={currentConfig}
             sort={sort}

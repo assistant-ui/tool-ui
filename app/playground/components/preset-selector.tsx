@@ -41,7 +41,7 @@ export function PresetSelector({
           }
           onClick={() => onSelectPreset(preset)}
         >
-          <ItemContent>
+          <ItemContent className="transform-gpu transition-transform duration-150 ease-out will-change-transform active:scale-[0.98]">
             <div className="flex items-start justify-between">
               <div className="flex flex-1 flex-col gap-1">
                 <ItemTitle className="capitalize">
