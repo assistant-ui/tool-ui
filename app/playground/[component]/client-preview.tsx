@@ -69,8 +69,8 @@ export function ClientPreview({ componentId }: { componentId: string }) {
   } as const;
 
   return (
-    <div className="flex h-full min-h-0 w-full flex-1 gap-4">
-      <div className="flex flex-1 flex-col gap-4 overflow-hidden">
+    <div className="flex h-full min-h-0 w-full flex-1 gap-2">
+      <div className="flex flex-1 flex-col gap-2 overflow-hidden">
         <div className="bg-background flex-1 overflow-auto rounded-lg p-6">
           <div
             className="mx-auto transition-[width]"

@@ -18,7 +18,7 @@ function PlaygroundHeader({
 }) {
   return (
     <header className="bg-wash flex shrink-0 items-center justify-between px-4 py-2">
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-2">
         <h1 className="text-lg">ToolUI / Playground</h1>
       </div>
       <div className="flex items-center gap-2">

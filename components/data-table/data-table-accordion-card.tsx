@@ -90,6 +90,7 @@ export function DataTableAccordionCard({
     ? String(row[primaryColumn.key] ?? "")
     : "";
   const rowLabel = `Row ${index + 1}: ${primaryValue}`;
+  const itemValue = `row-${stableRowId}`;
 
   return (
     <Accordion
@@ -99,13 +100,13 @@ export function DataTableAccordionCard({
       role="listitem"
       aria-label={rowLabel}
     >
-      <AccordionItem value={`row-${stableRowId}`} className="border-0">
+      <AccordionItem value={itemValue} className="group border-0">
         <AccordionTrigger
-          className="hover:bg-muted w-full rounded-none px-4 py-3 hover:no-underline"
+          className="hover:bg-muted group-data-[state=open]:bg-muted w-full rounded-none px-4 py-3 hover:no-underline"
           aria-controls={detailsId}
           aria-label={`${rowLabel}. ${secondary.length > 0 ? "Expand for details" : ""}`}
         >
-          <div className="flex w-full items-start justify-between border border-green-500">
+          <div className="flex w-full items-start justify-between">
             <div className="min-w-0 flex-1">
               {primaryColumn && (
                 <div
@@ -126,7 +127,7 @@ export function DataTableAccordionCard({
 
               {secondaryPrimary.length > 0 && (
                 <div
-                  className="text-muted-foreground flex w-full flex-wrap gap-x-3 gap-y-1 border border-blue-500"
+                  className="text-muted-foreground flex w-full flex-wrap gap-x-3 gap-y-1"
                   role="group"
                   aria-label="Summary information"
                 >
@@ -157,14 +158,17 @@ export function DataTableAccordionCard({
         </AccordionTrigger>
 
         <AccordionContent
-          className="flex flex-col gap-4 px-4 pb-4"
+          className={cn("flex flex-col gap-4", "px-4 pb-4")}
           id={detailsId}
           role="region"
           aria-labelledby={headingId}
         >
           {secondary.length > 0 && (
             <dl
-              className="flex flex-col gap-2 pt-4"
+              className={cn(
+                "flex flex-col gap-2 pt-4",
+                "group-data-[state=open]:animate-in group-data-[state=closed]:animate-out group-data-[state=closed]:fade-out-0 group-data-[state=open]:fade-in-0 duration-200",
+              )}
               role="list"
               aria-label="Additional data"
             >
@@ -213,7 +217,7 @@ export function DataTableAccordionCard({
                   variant={action.variant || "default"}
                   size="sm"
                   onClick={(e) => handleAction(action, e)}
-                  className="min-h-[44px]"
+                  className="min-h-[44px] sm:min-h-auto"
                   aria-label={`${action.label} ${primaryValue}`}
                 >
                   {action.label}
