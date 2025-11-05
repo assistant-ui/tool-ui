@@ -33,7 +33,7 @@ export function Media() {
     const ar = aspectToNumber(item.aspectHint ?? cfg.layout.defaultAspect);
     return (
       <div
-        className="mt-3 w-full overflow-hidden rounded-lg bg-black"
+        className="relative mt-3 w-full overflow-hidden rounded-lg bg-black"
         style={ar ? ({ aspectRatio: String(ar) } as CSSProperties) : undefined}
         onClick={(event) => event.stopPropagation()}
       >
@@ -41,6 +41,8 @@ export function Media() {
           src={item.url}
           poster={item.thumbUrl}
           controls
+          playsInline
+          preload="metadata"
           className="h-full w-full object-contain"
           onPlay={() => handlers.onMediaEvent?.("play")}
           onPause={() => handlers.onMediaEvent?.("pause")}
@@ -66,12 +68,22 @@ export function Media() {
             }}
           >
             {item.kind === "image" ? (
-              <img src={item.url} alt={item.alt ?? ""} className="h-full w-full object-cover" />
+              <img
+                src={item.url}
+                alt={item.alt ?? ""}
+                loading="lazy"
+                decoding="async"
+                className="h-full w-full object-cover"
+              />
             ) : (
               <video
                 src={item.url}
                 poster={item.thumbUrl}
+                playsInline
+                preload="metadata"
                 className="h-full w-full object-cover"
+                onPlay={() => handlers.onMediaEvent?.("play")}
+                onPause={() => handlers.onMediaEvent?.("pause")}
               />
             )}
           </button>
@@ -94,13 +106,23 @@ export function Media() {
       }}
     >
       {item.kind === "image" ? (
-        <img src={item.url} alt={item.alt ?? ""} className="h-full w-full object-cover" />
+        <img
+          src={item.url}
+          alt={item.alt ?? ""}
+          loading="lazy"
+          decoding="async"
+          className="h-full w-full object-cover"
+        />
       ) : (
         <video
           src={item.url}
           poster={item.thumbUrl}
           controls
+          playsInline
+          preload="metadata"
           className="h-full w-full object-contain"
+          onPlay={() => handlers.onMediaEvent?.("play")}
+          onPause={() => handlers.onMediaEvent?.("pause")}
         />
       )}
     </button>

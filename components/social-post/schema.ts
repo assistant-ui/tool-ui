@@ -15,13 +15,22 @@ export const authorSchema = z.object({
   subtitle: z.string().optional(),
 });
 
-export const mediaItemSchema = z.object({
-  kind: z.enum(["image", "video"]),
-  url: z.string().url(),
-  thumbUrl: z.string().url().optional(),
-  alt: z.string().optional(),
-  aspectHint: aspectEnum,
-});
+export const mediaItemSchema = z
+  .object({
+    kind: z.enum(["image", "video"]),
+    url: z.string().url(),
+    thumbUrl: z.string().url().optional(),
+    alt: z.string().optional(),
+    aspectHint: aspectEnum,
+  })
+  .superRefine((item, ctx) => {
+    if (item.kind === "image" && !(item.alt && item.alt.trim())) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Images require alt text for accessibility.",
+      });
+    }
+  });
 
 export const linkPreviewSchema = z.object({
   url: z.string().url(),

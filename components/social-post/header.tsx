@@ -1,6 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 
+import * as React from "react";
 import { cn } from "./_cn";
 import {
   Button,
@@ -11,15 +12,22 @@ import {
 } from "./_ui";
 import { useSocialPost } from "./context";
 import { formatRelativeTime } from "./formatters";
+import { safeHref } from "./utils";
 import { BadgeCheck, MoreHorizontal } from "lucide-react";
 
 export function Header() {
-  const { post, cfg, locale, state, setState } = useSocialPost();
+  const { post, cfg, locale, state, setState, handlers, allowExternalNavigation } = useSocialPost();
   const handle = post.author.handle
     ? cfg.layout.showHandleWithAt
       ? `@${post.author.handle.replace(/^@/, "")}`
       : post.author.handle
     : undefined;
+  const relativeTime = React.useMemo(() => {
+    if (!post.createdAtISO) return undefined;
+    return formatRelativeTime(post.createdAtISO, locale);
+  }, [post.createdAtISO, locale]);
+  const [menuOpen, setMenuOpen] = React.useState(false);
+  const viewSourceHref = safeHref(post.sourceUrl);
 
   return (
     <header className={cn("flex items-start", cfg.tokens.spacing.gap)}>
@@ -68,16 +76,28 @@ export function Header() {
             <span className={cn("truncate", cfg.tokens.typography.handle)}>{post.author.subtitle}</span>
           ) : null}
         </div>
-        {post.createdAtISO && cfg.name !== "x" ? (
+        {post.createdAtISO && cfg.name !== "x" && relativeTime ? (
           <div className={cn("flex flex-wrap items-center gap-1", cfg.tokens.typography.handle)}>
-            <span aria-label="Timestamp">{formatRelativeTime(post.createdAtISO, locale)}</span>
-            {post.sourceUrl ? (
+            <span aria-hidden="true">·</span>
+            <time
+              dateTime={post.createdAtISO}
+              className="sr-only"
+            >
+              {new Date(post.createdAtISO).toISOString()}
+            </time>
+            <span aria-label="Timestamp">{relativeTime}</span>
+            {viewSourceHref ? (
               <>
                 <span>·</span>
                 <a
-                  href={post.sourceUrl}
+                  href={viewSourceHref}
+                  target={allowExternalNavigation ? "_blank" : undefined}
+                  rel={allowExternalNavigation ? "noopener noreferrer" : undefined}
                   className="underline underline-offset-2"
-                  onClick={(event) => event.stopPropagation()}
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    handlers.onNavigate?.(viewSourceHref, post);
+                  }}
                 >
                   View source
                 </a>
@@ -88,13 +108,15 @@ export function Header() {
       </div>
 
       {cfg.name !== "x" ? (
-        <DropdownMenu>
+        <DropdownMenu onOpenChange={setMenuOpen}>
           <DropdownMenuTrigger asChild>
             <Button
               variant="ghost"
               size="sm"
               className="h-8 w-8 p-0"
               aria-label="Post menu"
+              aria-haspopup="menu"
+              aria-expanded={menuOpen}
             >
               <MoreHorizontal className="h-4 w-4" />
             </Button>

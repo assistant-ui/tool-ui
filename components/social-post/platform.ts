@@ -199,7 +199,7 @@ export const PLATFORM: Record<Platform, PlatformConfig> = {
       muted: "text-muted-foreground",
       actionHover: "hover:opacity-80",
       avatarShape: "circle",
-      actionLayout: "row",
+      actionLayout: "right-rail",
       typography: {
         name: "text-[16px] font-bold",
         handle: "text-[14px] text-muted-foreground",

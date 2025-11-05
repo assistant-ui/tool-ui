@@ -37,6 +37,8 @@ export function SocialPost(props: SocialPostProps) {
     onEntityClick,
     onMediaEvent,
     onNavigate,
+    allowExternalNavigation = true,
+    actionOverrides = [],
     locale: explicitLocale,
     ...serializable
   } = props;
@@ -47,14 +49,17 @@ export function SocialPost(props: SocialPostProps) {
   if (process.env.NODE_ENV !== "production") {
     serializable.media?.forEach((item, index) => {
       if (item.kind === "image" && (item.alt ?? "").trim() === "") {
-        console.warn(`[SocialPost] Missing alt text on media[${index}] for post ${serializable.id}`);
+        console.warn(
+          `[SocialPost] Missing alt text on media[${index}] for post ${serializable.id}`,
+        );
       }
     });
   }
 
-  const [uncontrolledState, setUncontrolledState] = React.useState<SocialPostState>(
-    serializable.initialState ?? defaultState ?? {},
-  );
+  const [uncontrolledState, setUncontrolledState] =
+    React.useState<SocialPostState>(
+      serializable.initialState ?? defaultState ?? {},
+    );
 
   const effectiveState = controlledState ?? uncontrolledState;
 
@@ -74,15 +79,27 @@ export function SocialPost(props: SocialPostProps) {
     [controlledState, onStateChange],
   );
 
-  const postPayload = { ...serializable, platform, locale } as SerializableSocialPost;
+  const postPayload = {
+    ...serializable,
+    platform,
+    locale,
+  } as SerializableSocialPost;
 
   const value: SocialPostContextValue = {
     post: postPayload,
     cfg,
     locale,
     state: effectiveState,
+    allowExternalNavigation,
+    actionOverrides,
     setState: updateState,
-    handlers: { onBeforeAction, onAction, onEntityClick, onMediaEvent, onNavigate },
+    handlers: {
+      onBeforeAction,
+      onAction,
+      onEntityClick,
+      onMediaEvent,
+      onNavigate,
+    },
   };
 
   const Renderer = RENDERERS[platform];
@@ -90,7 +107,7 @@ export function SocialPost(props: SocialPostProps) {
   return (
     <article
       className={cn(
-        "@container text-card-foreground",
+        "text-card-foreground @container",
         cfg.tokens.radius,
         cfg.tokens.spacing.container,
         cfg.tokens.borders.container,
@@ -104,9 +121,26 @@ export function SocialPost(props: SocialPostProps) {
       style={maxWidth ? { maxWidth } : undefined}
       role="article"
       aria-labelledby={`post-${serializable.id}-author`}
+      lang={serializable.language}
+      dir={
+        serializable.language?.startsWith("ar") ||
+        serializable.language?.startsWith("he")
+          ? "rtl"
+          : undefined
+      }
     >
       <SocialPostProvider value={value}>
-        {isLoading ? <div className="h-24 w-full animate-pulse rounded-md bg-muted" /> : <Renderer />}
+        {isLoading ? (
+          <div className="animate-pulse">
+            <div className="flex items-center gap-3">
+              <div className="h-10 w-10 rounded-full bg-muted" />
+              <div className="h-4 w-32 rounded bg-muted" />
+            </div>
+            <div className="mt-3 h-48 w-full rounded bg-muted" />
+          </div>
+        ) : (
+          <Renderer />
+        )}
       </SocialPostProvider>
     </article>
   );

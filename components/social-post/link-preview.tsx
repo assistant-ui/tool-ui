@@ -3,6 +3,7 @@
 
 import { useSocialPost } from "./context";
 import { cn } from "./_cn";
+import { safeHref } from "./utils";
 
 function getDomain(url: string) {
   try {
@@ -13,19 +14,32 @@ function getDomain(url: string) {
 }
 
 export function LinkPreview() {
-  const { post, cfg } = useSocialPost();
+  const { post, cfg, handlers, allowExternalNavigation } = useSocialPost();
   const preview = post.linkPreview;
   if (!preview || !cfg.layout.showLinkPreview) return null;
-  const domain = preview.domain ?? (preview.url ? getDomain(preview.url) : undefined);
+  const href = safeHref(preview.url);
+  if (!href) return null;
+  const domain = preview.domain ?? getDomain(href);
 
   return (
     <a
-      href={preview.url}
+      href={href}
+      target={allowExternalNavigation ? "_blank" : undefined}
+      rel={allowExternalNavigation ? "noopener noreferrer" : undefined}
       className="mt-3 block overflow-hidden rounded-lg border hover:bg-muted"
-      onClick={(event) => event.stopPropagation()}
+      onClick={(event) => {
+        event.stopPropagation();
+        handlers.onNavigate?.(href, post);
+      }}
     >
       {preview.imageUrl ? (
-        <img src={preview.imageUrl} alt="" className="h-48 w-full object-cover" />
+        <img
+          src={preview.imageUrl}
+          alt=""
+          loading="lazy"
+          decoding="async"
+          className="h-48 w-full object-cover"
+        />
       ) : null}
       <div className="p-3">
         {domain ? <div className={cn("text-xs", cfg.tokens.muted)}>{domain}</div> : null}

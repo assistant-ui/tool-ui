@@ -20,11 +20,20 @@ export function Stats() {
 
   return (
     <div className={cn("mt-2 flex flex-wrap gap-4", cfg.tokens.typography.stats)}>
-      {items.map(({ label, value }) => (
-        <div key={label}>
-          <span className="font-medium text-foreground">{formatCount(value, locale)}</span> {label}
-        </div>
-      ))}
+      {items.map(({ label, value }) => {
+        const formatted = formatCount(value, locale);
+        const narratable =
+          formatted ??
+          (typeof value === "number"
+            ? new Intl.NumberFormat(locale).format(value)
+            : "0");
+        return (
+          <div key={label} aria-label={`${narratable} ${label}`}>
+            <span className="font-medium text-foreground">{formatted ?? narratable}</span>{" "}
+            <span aria-hidden="true">{label}</span>
+          </div>
+        );
+      })}
     </div>
   );
 }
