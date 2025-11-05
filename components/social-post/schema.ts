@@ -65,27 +65,49 @@ export const actionSchema = z.object({
   variant: z.enum(["default", "secondary", "ghost", "destructive"]).optional(),
 });
 
-export const serializableSocialPostSchema = z.object({
-  id: z.string(),
-  platform: platformEnum,
-  author: authorSchema,
-  text: z.string().optional(),
-  entities: entitiesSchema,
-  media: z.array(mediaItemSchema).optional(),
-  linkPreview: linkPreviewSchema.optional(),
-  stats: statsSchema.optional(),
-  initialState: initialStateSchema,
-  actions: z.array(actionSchema).optional(),
-  createdAtISO: z.string().datetime().optional(),
-  sourceUrl: z.string().url().optional(),
-  visibility: z.enum(["public", "unlisted"]).optional(),
-  language: z.string().optional(),
-  locale: z.string().optional(),
-  compact: z.boolean().optional(),
-  messageId: z.string().optional(),
-});
+export const serializableSocialPostSchema: z.ZodType<SerializableSocialPost> = z.lazy(() =>
+  z.object({
+    id: z.string(),
+    platform: platformEnum,
+    author: authorSchema,
+    text: z.string().optional(),
+    entities: entitiesSchema,
+    media: z.array(mediaItemSchema).optional(),
+    linkPreview: linkPreviewSchema.optional(),
+    quotedPost: serializableSocialPostSchema.optional(),
+    stats: statsSchema.optional(),
+    initialState: initialStateSchema,
+    actions: z.array(actionSchema).optional(),
+    createdAtISO: z.string().datetime().optional(),
+    sourceUrl: z.string().url().optional(),
+    visibility: z.enum(["public", "unlisted"]).optional(),
+    language: z.string().optional(),
+    locale: z.string().optional(),
+    compact: z.boolean().optional(),
+    messageId: z.string().optional(),
+  })
+);
 
-export type SerializableSocialPost = z.infer<typeof serializableSocialPostSchema>;
+export interface SerializableSocialPost {
+  id: string;
+  platform: Platform;
+  author: z.infer<typeof authorSchema>;
+  text?: string;
+  entities?: z.infer<typeof entitiesSchema>;
+  media?: z.infer<typeof mediaItemSchema>[];
+  linkPreview?: z.infer<typeof linkPreviewSchema>;
+  quotedPost?: SerializableSocialPost;
+  stats?: z.infer<typeof statsSchema>;
+  initialState?: z.infer<typeof initialStateSchema>;
+  actions?: z.infer<typeof actionSchema>[];
+  createdAtISO?: string;
+  sourceUrl?: string;
+  visibility?: "public" | "unlisted";
+  language?: string;
+  locale?: string;
+  compact?: boolean;
+  messageId?: string;
+}
 
 export function parseSerializableSocialPost(input: unknown): SerializableSocialPost {
   const res = serializableSocialPostSchema.safeParse(input);

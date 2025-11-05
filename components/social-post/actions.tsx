@@ -15,7 +15,12 @@ const TOGGLE_MAP: Record<string, ToggleKey> = {
 export function Actions() {
   const { post, cfg, state, setState, handlers } = useSocialPost();
 
-  const defaults = Object.keys(cfg.actions);
+  // Derive default actions from platform, trimming extras for X embeds
+  let defaults = Object.keys(cfg.actions);
+  if (cfg.name === "x") {
+    // Only show Like and Copy link for X embeds per design
+    defaults = defaults.filter((id) => id === "like" || id === "share");
+  }
   const overrides = post.actions ?? [];
   const actions = overrides.length
     ? overrides.map((action) => ({
@@ -37,6 +42,28 @@ export function Actions() {
     }
   }
 
+  // Map action IDs to stat counts
+  const getActionCount = (actionId: string): number | undefined => {
+    const stats = post.stats;
+    if (!stats) return undefined;
+
+    switch (actionId) {
+      case "reply":
+        return stats.comments;
+      case "repost":
+        return stats.reposts;
+      case "like":
+        return stats.likes;
+      case "share":
+        return stats.shares;
+      case "bookmark":
+      case "save":
+        return stats.bookmarks;
+      default:
+        return undefined;
+    }
+  };
+
   return (
     <TooltipProvider delayDuration={300}>
       <div className={cn("mt-3 flex flex-wrap items-center", cfg.tokens.spacing.actionGap)}>
@@ -45,6 +72,11 @@ export function Actions() {
           const actionConfig = cfg.actionConfigs?.find((ac) => ac.id === action.id);
           const Icon = actionConfig?.icon;
           const isActive = toggleKey ? state[toggleKey] ?? false : false;
+          let count = getActionCount(action.id);
+          // X embeds only show count for likes
+          if (cfg.name === "x" && action.id !== "like") {
+            count = undefined;
+          }
 
           return (
             <Tooltip key={action.id}>
@@ -57,7 +89,7 @@ export function Actions() {
                     void run(action.id);
                   }}
                   className={cn(
-                    "min-h-[44px] gap-2",
+                    "min-h-[44px] gap-1.5 px-2",
                     actionConfig?.hoverColor,
                     isActive && action.id === "like" && "text-red-500",
                     isActive && action.id === "repost" && "text-green-500",
@@ -68,7 +100,13 @@ export function Actions() {
                   }
                 >
                   {Icon ? <Icon className="h-4 w-4" /> : null}
-                  <span className="sr-only sm:not-sr-only">{action.label}</span>
+                  {count !== undefined && count > 0 ? (
+                    <span className="text-sm">{count}</span>
+                  ) : null}
+                  {cfg.name === "x" && action.id === "share" ? (
+                    <span className="ml-1 text-sm">Copy link</span>
+                  ) : null}
+                  <span className="sr-only">{action.label}</span>
                 </Button>
               </TooltipTrigger>
               <TooltipContent>{action.label}</TooltipContent>

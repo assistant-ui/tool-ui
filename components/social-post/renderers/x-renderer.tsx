@@ -3,9 +3,9 @@
 import { Header } from "../header";
 import { Body } from "../body";
 import { Media } from "../media";
-import { LinkPreview } from "../link-preview";
+import { QuotedPost } from "../quoted-post";
 import { Actions } from "../actions";
-import { Stats } from "../stats";
+import { LinkPreview } from "../link-preview";
 
 export function XRenderer() {
   return (
@@ -13,9 +13,9 @@ export function XRenderer() {
       <Header />
       <Body />
       <Media />
+      <QuotedPost />
       <LinkPreview />
       <Actions />
-      <Stats />
     </>
   );
 }

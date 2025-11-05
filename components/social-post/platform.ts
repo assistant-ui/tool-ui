@@ -94,14 +94,14 @@ export const PLATFORM: Record<Platform, PlatformConfig> = {
         actionGap: "gap-12",
       },
       borders: {
-        container: "border border-transparent",
-        containerHover: "hover:border-border",
+        container: "border border-border",
+        containerHover: "",
         media: "rounded-2xl overflow-hidden",
-        shadow: "hover:shadow-sm",
+        shadow: "shadow-xs",
       },
       background: {
         container: "bg-card",
-        containerHover: "hover:bg-muted/50 transition-colors",
+        containerHover: "",
         actionHover: "hover:bg-blue-500/10",
       },
     },
@@ -155,10 +155,10 @@ export const PLATFORM: Record<Platform, PlatformConfig> = {
         actionGap: "gap-4",
       },
       borders: {
-        container: "border-0",
+        container: "border border-border",
         containerHover: "",
         media: "rounded-none",
-        shadow: "",
+        shadow: "shadow-xs",
       },
       background: {
         container: "bg-card",
@@ -214,10 +214,10 @@ export const PLATFORM: Record<Platform, PlatformConfig> = {
         actionGap: "gap-3",
       },
       borders: {
-        container: "border-0",
+        container: "border border-border",
         containerHover: "",
         media: "rounded-lg",
-        shadow: "shadow-lg",
+        shadow: "shadow-xs",
       },
       background: {
         container: "bg-card",
@@ -266,10 +266,10 @@ export const PLATFORM: Record<Platform, PlatformConfig> = {
         actionGap: "gap-2",
       },
       borders: {
-        container: "border border-border/50",
+        container: "border border-border",
         containerHover: "",
         media: "rounded-lg overflow-hidden",
-        shadow: "shadow-sm",
+        shadow: "shadow-xs",
       },
       background: {
         container: "bg-card",

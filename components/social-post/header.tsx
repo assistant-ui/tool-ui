@@ -11,9 +11,10 @@ import {
 } from "./_ui";
 import { useSocialPost } from "./context";
 import { formatRelativeTime } from "./formatters";
+import { BadgeCheck, MoreHorizontal } from "lucide-react";
 
 export function Header() {
-  const { post, cfg, locale } = useSocialPost();
+  const { post, cfg, locale, state, setState } = useSocialPost();
   const handle = post.author.handle
     ? cfg.layout.showHandleWithAt
       ? `@${post.author.handle.replace(/^@/, "")}`
@@ -36,56 +37,78 @@ export function Header() {
         height={40}
       />
       <div className="min-w-0 flex-1">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1">
           <span id={`post-${post.id}-author`} className={cn("truncate", cfg.tokens.typography.name)}>
             {post.author.name}
           </span>
           {post.author.verified ? (
-            <span aria-label="Verified" className={cn("text-sm", cfg.tokens.verified)}>
-              ✔
-            </span>
+            <BadgeCheck aria-label="Verified" className={cn("h-4 w-4 shrink-0", cfg.tokens.verified)} />
+          ) : null}
+          {handle ? (
+            <span className={cn("truncate", cfg.tokens.typography.handle)}>·</span>
+          ) : null}
+          {handle ? <span className={cn("truncate", cfg.tokens.typography.handle)}>{handle}</span> : null}
+          {cfg.layout.showFollowInHeader && !state.following ? (
+            <>
+              <span className={cn("truncate", cfg.tokens.typography.handle)}>·</span>
+              <Button
+                variant="ghost"
+                size="sm"
+                className={cn("h-auto p-0 font-semibold", cfg.tokens.accent)}
+                onClick={(event) => {
+                  event.stopPropagation();
+                  setState({ following: true });
+                }}
+              >
+                Follow
+              </Button>
+            </>
           ) : null}
           {post.author.subtitle && cfg.name === "linkedin" ? (
             <span className={cn("truncate", cfg.tokens.typography.handle)}>{post.author.subtitle}</span>
           ) : null}
         </div>
-        <div className={cn("flex flex-wrap items-center gap-2", cfg.tokens.typography.handle)}>
-          {handle ? <span className="truncate">{handle}</span> : null}
-          {post.createdAtISO ? (
-            <span aria-label="Timestamp">· {formatRelativeTime(post.createdAtISO, locale)}</span>
-          ) : null}
-          {post.sourceUrl ? (
-            <a
-              href={post.sourceUrl}
-              className="underline underline-offset-2"
-              onClick={(event) => event.stopPropagation()}
-            >
-              View source
-            </a>
-          ) : null}
-        </div>
+        {post.createdAtISO && cfg.name !== "x" ? (
+          <div className={cn("flex flex-wrap items-center gap-1", cfg.tokens.typography.handle)}>
+            <span aria-label="Timestamp">{formatRelativeTime(post.createdAtISO, locale)}</span>
+            {post.sourceUrl ? (
+              <>
+                <span>·</span>
+                <a
+                  href={post.sourceUrl}
+                  className="underline underline-offset-2"
+                  onClick={(event) => event.stopPropagation()}
+                >
+                  View source
+                </a>
+              </>
+            ) : null}
+          </div>
+        ) : null}
       </div>
 
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button
-            variant="ghost"
-            size="sm"
-            className="h-8 w-8 p-0"
-            aria-label="Post menu"
-          >
-            ...
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
-          <DropdownMenuItem onClick={(event) => event.stopPropagation()}>
-            Copy link
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={(event) => event.stopPropagation()}>
-            Report
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+      {cfg.name !== "x" ? (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-8 w-8 p-0"
+              aria-label="Post menu"
+            >
+              <MoreHorizontal className="h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem onClick={(event) => event.stopPropagation()}>
+              Copy link
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={(event) => event.stopPropagation()}>
+              Report
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      ) : null}
     </header>
   );
 }
