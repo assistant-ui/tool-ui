@@ -68,7 +68,7 @@ export default function PlaygroundLayout({
     <PlaygroundProvider value={{ viewport }}>
       <div className="flex h-screen min-h-0 flex-col">
         <PlaygroundHeader viewport={viewport} onViewportChange={setViewport} />
-        <div className="flex overflow-hidden">
+        <div className="flex flex-1 overflow-hidden">
           <ComponentNav />
           <div className="flex flex-1 flex-col">{children}</div>
         </div>

@@ -1,9 +1,17 @@
-import { Card } from "@/components/ui/card";
+import {
+  Item,
+  ItemContent,
+  ItemDescription,
+  ItemGroup,
+  ItemSeparator,
+  ItemTitle,
+} from "@/components/ui/item";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { LinearBlur } from "@/components/ui/linear-blur";
 import { X } from "lucide-react";
 import { PresetSelector } from "./preset-selector";
 import { PresetName } from "@/lib/sample-data";
@@ -33,98 +41,148 @@ export function ControlsPanel({
 }: ControlsPanelProps) {
   return (
     <div className="flex h-full flex-col">
-      {onClose && (
-        <div className="mb-4 flex items-center justify-between">
-          <h3 className="font-semibold">Controls</h3>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={onClose}
-            className="h-8 w-8"
-            title="Close controls"
-          >
-            <X className="h-4 w-4" />
-          </Button>
+      <Tabs defaultValue="presets" className="flex min-h-0 flex-1 flex-col">
+        <div className="sticky top-0 z-20">
+          <div className="relative">
+            <LinearBlur
+              side="top"
+              tint="hsl(var(--background))"
+              className="absolute inset-0 h-[120%]"
+              strength={100}
+              steps={6}
+            />
+            <div className="relative flex items-center justify-center py-2">
+              <TabsList className="bg-transparentflex gap-2 rounded-lg text-sm font-light">
+                <TabsTrigger
+                  value="presets"
+                  className="data-[state=active]:bg-background data-[state=active]:text-foreground"
+                >
+                  Presets
+                </TabsTrigger>
+                <TabsTrigger
+                  value="config"
+                  className="data-[state=active]:bg-background data-[state=active]:text-foreground"
+                >
+                  Config
+                </TabsTrigger>
+                <TabsTrigger
+                  value="state"
+                  className="data-[state=active]:bg-background data-[state=active]:text-foreground"
+                >
+                  State
+                </TabsTrigger>
+              </TabsList>
+            </div>
+          </div>
         </div>
-      )}
-      <Tabs defaultValue="presets" className="flex-1">
-        <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="presets">Presets</TabsTrigger>
-          <TabsTrigger value="config">Config</TabsTrigger>
-          <TabsTrigger value="state">State</TabsTrigger>
-        </TabsList>
 
-      <TabsContent value="presets" className="flex flex-col gap-4">
-        <PresetSelector
-          currentPreset={currentPreset}
-          onSelectPreset={onSelectPreset}
-        />
-      </TabsContent>
+        <TabsContent value="presets" className="flex flex-col gap-4 px-2">
+          <PresetSelector
+            currentPreset={currentPreset}
+            onSelectPreset={onSelectPreset}
+          />
+        </TabsContent>
 
-      <TabsContent value="config" className="flex flex-col gap-4">
-        <Card className="p-4">
-          <div className="flex flex-col gap-4">
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="empty-message">Empty Message</Label>
-              <Input
-                id="empty-message"
-                value={emptyMessage}
-                onChange={(e) => onEmptyMessageChange(e.target.value)}
-                placeholder="No data available"
-              />
-              <p className="text-xs text-muted-foreground">
-                Message displayed when table has no rows
-              </p>
-            </div>
-          </div>
-        </Card>
-      </TabsContent>
+        <TabsContent value="config" className="m-0 flex flex-col gap-3">
+          <ItemGroup>
+            <Item variant="outline">
+              <ItemContent>
+                <ItemTitle>Empty state</ItemTitle>
+                <ItemDescription>
+                  Message displayed when the table has no rows.
+                </ItemDescription>
+                <div className="mt-3 flex flex-col gap-2">
+                  <Label htmlFor="empty-message" className="text-xs">
+                    Empty message
+                  </Label>
+                  <Input
+                    id="empty-message"
+                    value={emptyMessage}
+                    onChange={(e) => onEmptyMessageChange(e.target.value)}
+                    placeholder="No data available"
+                  />
+                </div>
+              </ItemContent>
+            </Item>
+          </ItemGroup>
+        </TabsContent>
 
-      <TabsContent value="state" className="flex flex-col gap-4">
-        <Card className="p-4">
-          <div className="flex flex-col gap-4">
-            <div className="flex items-center justify-between">
-              <Label htmlFor="loading-state">Loading State</Label>
-              <Switch
-                id="loading-state"
-                checked={isLoading}
-                onCheckedChange={onLoadingChange}
-              />
-            </div>
-            <p className="text-xs text-muted-foreground">
-              Toggle skeleton loading state
-            </p>
-          </div>
-        </Card>
+        <TabsContent value="state" className="m-0 flex flex-col gap-3">
+          <ItemGroup>
+            <Item variant="outline">
+              <ItemContent>
+                <ItemTitle>Loading state</ItemTitle>
+                <ItemDescription>
+                  Toggle the skeleton rows to simulate pending data.
+                </ItemDescription>
+                <div className="mt-3 flex items-center justify-between gap-4">
+                  <Label
+                    htmlFor="loading-state"
+                    className="text-sm font-medium"
+                  >
+                    Show loading
+                  </Label>
+                  <Switch
+                    id="loading-state"
+                    checked={isLoading}
+                    onCheckedChange={onLoadingChange}
+                  />
+                </div>
+              </ItemContent>
+            </Item>
 
-        <Card className="p-4">
-          <div className="flex flex-col gap-4">
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="sort-by">Sort Column</Label>
-              <Input
-                id="sort-by"
-                value={sort.by || ""}
-                onChange={(e) => onSortChange({ by: e.target.value || undefined, direction: sort.direction })}
-                placeholder="Column key (e.g., price)"
-              />
-            </div>
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="sort-direction">Sort Direction</Label>
-              <select
-                id="sort-direction"
-                value={sort.direction || ""}
-                onChange={(e) => onSortChange({ by: sort.by, direction: (e.target.value as "asc" | "desc") || undefined })}
-                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-              >
-                <option value="">None</option>
-                <option value="asc">Ascending</option>
-                <option value="desc">Descending</option>
-              </select>
-            </div>
-          </div>
-        </Card>
-      </TabsContent>
-    </Tabs>
+            <ItemSeparator />
+
+            <Item variant="outline">
+              <ItemContent>
+                <ItemTitle>Sort options</ItemTitle>
+                <ItemDescription>
+                  Control the initial sorting applied to the table.
+                </ItemDescription>
+                <div className="mt-3 grid gap-3">
+                  <div className="grid gap-1.5">
+                    <Label htmlFor="sort-by" className="text-xs">
+                      Sort column
+                    </Label>
+                    <Input
+                      id="sort-by"
+                      value={sort.by || ""}
+                      onChange={(e) =>
+                        onSortChange({
+                          by: e.target.value || undefined,
+                          direction: sort.direction,
+                        })
+                      }
+                      placeholder="Column key (e.g., price)"
+                    />
+                  </div>
+                  <div className="grid gap-1.5">
+                    <Label htmlFor="sort-direction" className="text-xs">
+                      Sort direction
+                    </Label>
+                    <select
+                      id="sort-direction"
+                      value={sort.direction || ""}
+                      onChange={(e) =>
+                        onSortChange({
+                          by: sort.by,
+                          direction:
+                            (e.target.value as "asc" | "desc") || undefined,
+                        })
+                      }
+                      className="border-input bg-background focus-visible:ring-ring focus-visible:ring-offset-background flex h-9 w-full items-center rounded-md border px-3 text-sm shadow-sm transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+                    >
+                      <option value="">None</option>
+                      <option value="asc">Ascending</option>
+                      <option value="desc">Descending</option>
+                    </select>
+                  </div>
+                </div>
+              </ItemContent>
+            </Item>
+          </ItemGroup>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }

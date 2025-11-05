@@ -69,7 +69,19 @@ export function ClientPreview({ componentId }: { componentId: string }) {
   } as const;
 
   return (
-    <div className="flex h-full min-h-0 w-full flex-1 gap-2">
+    <div className="mr-2 flex h-full min-h-0 w-full flex-1 gap-2 pr-2 pb-2">
+      <aside className="bg-background flex h-full w-80 shrink-0 flex-col overflow-auto rounded-lg">
+        <ControlsPanel
+          currentPreset={currentPreset}
+          onSelectPreset={handleSelectPreset}
+          isLoading={isLoading}
+          onLoadingChange={setIsLoading}
+          sort={sort}
+          onSortChange={handleSortChange}
+          emptyMessage={emptyMessage}
+          onEmptyMessageChange={setEmptyMessage}
+        />
+      </aside>
       <div className="flex flex-1 flex-col gap-2 overflow-hidden">
         <div className="bg-background flex-1 overflow-auto rounded-lg p-6">
           <div
@@ -98,7 +110,7 @@ export function ClientPreview({ componentId }: { componentId: string }) {
           </div>
         </div>
 
-        <div className="bg-background hover:bg-muted mb-4 flex-none overflow-clip rounded-lg">
+        <div className="bg-background hover:bg-muted flex-none overflow-clip rounded-lg">
           <CodePanel
             config={currentConfig}
             sort={sort}
@@ -107,21 +119,6 @@ export function ClientPreview({ componentId }: { componentId: string }) {
           />
         </div>
       </div>
-
-      <aside className="bg-background flex h-full w-80 shrink-0 flex-col overflow-hidden rounded-lg">
-        <div className="min-h-0 flex-1 overflow-auto p-6">
-          <ControlsPanel
-            currentPreset={currentPreset}
-            onSelectPreset={handleSelectPreset}
-            isLoading={isLoading}
-            onLoadingChange={setIsLoading}
-            sort={sort}
-            onSortChange={handleSortChange}
-            emptyMessage={emptyMessage}
-            onEmptyMessageChange={setEmptyMessage}
-          />
-        </div>
-      </aside>
     </div>
   );
 }

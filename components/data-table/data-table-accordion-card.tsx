@@ -1,5 +1,3 @@
-"use client";
-
 import * as React from "react";
 import { cn } from "./_cn";
 import {
@@ -59,6 +57,7 @@ export function DataTableAccordionCard({
     locale,
     rowIdKey,
   } = useDataTable();
+
   const { primary, secondary } = categorizeColumns(columns);
 
   const handleAction = async (action: Action, e?: React.MouseEvent) => {
@@ -167,7 +166,9 @@ export function DataTableAccordionCard({
             <dl
               className={cn(
                 "flex flex-col gap-2 pt-4",
-                "group-data-[state=open]:animate-in group-data-[state=closed]:animate-out group-data-[state=closed]:fade-out-0 group-data-[state=open]:fade-in-0 duration-200",
+                "group-data-[state=open]:animate-in group-data-[state=open]:fade-in-0",
+                "group-data-[state=closed]:animate-out group-data-[state=closed]:fade-out-0",
+                "duration-150",
               )}
               role="list"
               aria-label="Additional data"

@@ -1,4 +1,10 @@
-import { Card, CardContent, CardDescription } from "@/components/ui/card";
+import {
+  Item,
+  ItemContent,
+  ItemDescription,
+  ItemGroup,
+  ItemTitle,
+} from "@/components/ui/item";
 import { PresetName, presetDescriptions } from "@/lib/sample-data";
 
 interface PresetSelectorProps {
@@ -22,32 +28,33 @@ export function PresetSelector({
   onSelectPreset,
 }: PresetSelectorProps) {
   return (
-    <div className="flex flex-col gap-2">
+    <ItemGroup className="gap-1">
       {presetNames.map((preset) => (
-        <Card
+        <Item
           key={preset}
+          variant="default"
+          size="sm"
           className={
-            currentPreset === preset ? "border-primary" : "cursor-pointer"
+            currentPreset === preset
+              ? "bg-muted cursor-pointer"
+              : "hover:border-border cursor-pointer"
           }
           onClick={() => onSelectPreset(preset)}
         >
-          <CardContent className="p-3">
+          <ItemContent>
             <div className="flex items-start justify-between">
-              <div className="flex-1">
-                <div className="font-medium capitalize">
+              <div className="flex flex-1 flex-col gap-1">
+                <ItemTitle className="capitalize">
                   {preset.replace("-", " ")}
-                </div>
-                <CardDescription className="text-xs">
+                </ItemTitle>
+                <ItemDescription className="text-sm font-light">
                   {presetDescriptions[preset]}
-                </CardDescription>
+                </ItemDescription>
               </div>
-              {currentPreset === preset && (
-                <div className="ml-2 h-2 w-2 rounded-full bg-primary" />
-              )}
             </div>
-          </CardContent>
-        </Card>
+          </ItemContent>
+        </Item>
       ))}
-    </div>
+    </ItemGroup>
   );
 }

@@ -4,6 +4,8 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Copy, Check, Code } from "lucide-react";
 import { DataTableConfig } from "@/lib/sample-data";
+import { ShikiHighlighter } from "react-shiki";
+import "react-shiki/css";
 
 interface CodePanelProps {
   config: DataTableConfig;
@@ -103,42 +105,58 @@ export function CodePanel({
 
   return (
     <div className={className}>
-      <div className="px-6 py-3">
-        <details>
-          <summary className="flex cursor-pointer items-center justify-between text-sm">
-            <div className="flex items-center gap-4">
-              <Code className="h-4 w-4" />
-              <span>Generated Code</span>
-            </div>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={(e) => {
-                e.preventDefault();
-                copyCode();
-              }}
-              className="h-8"
-            >
-              {copied ? (
-                <>
-                  <Check className="mr-2 h-3 w-3" />
-                  Copied
-                </>
-              ) : (
-                <>
-                  <Copy className="mr-2 h-3 w-3" />
-                  Copy
-                </>
-              )}
-            </Button>
-          </summary>
-          <div className="mt-3 max-h-64 overflow-auto p-4">
-            <pre className="text-xs">
-              <code>{code}</code>
-            </pre>
+      <details className="group">
+        <summary className="hover:bg-muted flex cursor-pointer list-none items-center justify-between px-4 py-3 transition-colors [&::-webkit-details-marker]:hidden">
+          <div className="flex items-center gap-3">
+            <Code className="text-muted-foreground h-4 w-4" />
+            <span className="text-sm font-medium">View Code</span>
           </div>
-        </details>
-      </div>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={(e) => {
+              e.preventDefault();
+              copyCode();
+            }}
+            className="h-8"
+          >
+            {copied ? (
+              <>
+                <Check className="mr-2 h-3.5 w-3.5" />
+                Copied
+              </>
+            ) : (
+              <>
+                <Copy className="mr-2 h-3.5 w-3.5" />
+                Copy
+              </>
+            )}
+          </Button>
+        </summary>
+        <div className="max-h-50dvh overflow-auto">
+          <ShikiHighlighter
+            language="tsx"
+            theme={{ dark: "github-dark-high-contrast", light: "github-light" }}
+            defaultColor="light-dark()"
+            startingLineNumber={1}
+            className="text-sm"
+            style={
+              {
+                padding: "1rem",
+                margin: 0,
+                background: "transparent",
+                overflow: "auto",
+                "--line-numbers-foreground":
+                  "hsl(var(--muted-foreground) / 0.4)",
+                "--line-numbers-width": "2.5ch",
+                "--line-numbers-padding-right": "1.5ch",
+              } as React.CSSProperties
+            }
+          >
+            {code}
+          </ShikiHighlighter>
+        </div>
+      </details>
     </div>
   );
 }
