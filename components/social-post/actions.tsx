@@ -39,9 +39,13 @@ export function Actions() {
 
   return (
     <TooltipProvider delayDuration={300}>
-      <div className="mt-3 flex flex-wrap items-center gap-2">
+      <div className={cn("mt-3 flex flex-wrap items-center", cfg.tokens.spacing.actionGap)}>
         {actions.map((action) => {
           const toggleKey = TOGGLE_MAP[action.id];
+          const actionConfig = cfg.actionConfigs?.find((ac) => ac.id === action.id);
+          const Icon = actionConfig?.icon;
+          const isActive = toggleKey ? state[toggleKey] ?? false : false;
+
           return (
             <Tooltip key={action.id}>
               <TooltipTrigger asChild>
@@ -52,13 +56,19 @@ export function Actions() {
                     event.stopPropagation();
                     void run(action.id);
                   }}
-                  className={cn("min-h-[44px]")}
+                  className={cn(
+                    "min-h-[44px] gap-2",
+                    actionConfig?.hoverColor,
+                    isActive && action.id === "like" && "text-red-500",
+                    isActive && action.id === "repost" && "text-green-500",
+                  )}
                   aria-label={action.label}
                   aria-pressed={
-                    toggleKey ? state[toggleKey] ?? false : undefined
+                    toggleKey ? isActive : undefined
                   }
                 >
-                  {action.label}
+                  {Icon ? <Icon className="h-4 w-4" /> : null}
+                  <span className="sr-only sm:not-sr-only">{action.label}</span>
                 </Button>
               </TooltipTrigger>
               <TooltipContent>{action.label}</TooltipContent>

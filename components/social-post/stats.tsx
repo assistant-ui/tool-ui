@@ -19,7 +19,7 @@ export function Stats() {
   if (items.length === 0) return null;
 
   return (
-    <div className={cn("mt-2 flex flex-wrap gap-4 text-sm", cfg.tokens.muted)}>
+    <div className={cn("mt-2 flex flex-wrap gap-4", cfg.tokens.typography.stats)}>
       {items.map(({ label, value }) => (
         <div key={label}>
           <span className="font-medium text-foreground">{formatCount(value, locale)}</span> {label}

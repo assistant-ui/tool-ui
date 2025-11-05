@@ -21,12 +21,13 @@ export function Header() {
     : undefined;
 
   return (
-    <header className="flex items-start gap-3">
+    <header className={cn("flex items-start", cfg.tokens.spacing.gap)}>
       <img
         src={post.author.avatarUrl}
         alt={`${post.author.name} avatar`}
         className={cn(
-          "h-10 w-10 shrink-0 object-cover",
+          "shrink-0 object-cover",
+          cfg.tokens.spacing.avatarSize,
           cfg.tokens.avatarShape === "circle" && "rounded-full",
           cfg.tokens.avatarShape === "rounded" && "rounded-md",
           cfg.tokens.avatarShape === "square" && "rounded-none",
@@ -36,7 +37,7 @@ export function Header() {
       />
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-2">
-          <span id={`post-${post.id}-author`} className="truncate font-medium">
+          <span id={`post-${post.id}-author`} className={cn("truncate", cfg.tokens.typography.name)}>
             {post.author.name}
           </span>
           {post.author.verified ? (
@@ -45,10 +46,10 @@ export function Header() {
             </span>
           ) : null}
           {post.author.subtitle && cfg.name === "linkedin" ? (
-            <span className={cn("truncate text-xs", cfg.tokens.muted)}>{post.author.subtitle}</span>
+            <span className={cn("truncate", cfg.tokens.typography.handle)}>{post.author.subtitle}</span>
           ) : null}
         </div>
-        <div className={cn("flex flex-wrap items-center gap-2 text-xs", cfg.tokens.muted)}>
+        <div className={cn("flex flex-wrap items-center gap-2", cfg.tokens.typography.handle)}>
           {handle ? <span className="truncate">{handle}</span> : null}
           {post.createdAtISO ? (
             <span aria-label="Timestamp">· {formatRelativeTime(post.createdAtISO, locale)}</span>

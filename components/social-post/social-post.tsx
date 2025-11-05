@@ -90,9 +90,15 @@ export function SocialPost(props: SocialPostProps) {
   return (
     <article
       className={cn(
-        "@container border bg-card p-4 text-card-foreground",
+        "@container text-card-foreground",
         cfg.tokens.radius,
-        variant === "inline" ? "rounded-none border-0 p-0" : "rounded-lg",
+        cfg.tokens.spacing.container,
+        cfg.tokens.borders.container,
+        cfg.tokens.borders.containerHover,
+        cfg.tokens.borders.shadow,
+        cfg.tokens.background.container,
+        cfg.tokens.background.containerHover,
+        variant === "inline" ? "rounded-none border-0 p-0" : "",
         className,
       )}
       style={maxWidth ? { maxWidth } : undefined}

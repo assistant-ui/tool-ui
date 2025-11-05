@@ -9,11 +9,15 @@ import { Stats } from "../stats";
 export function InstagramRenderer() {
   return (
     <>
-      <Header />
+      <div className="px-3 py-3">
+        <Header />
+      </div>
       <Media />
-      <Actions />
-      <Body />
-      <Stats />
+      <div className="px-3">
+        <Actions />
+        <Body />
+        <Stats />
+      </div>
     </>
   );
 }

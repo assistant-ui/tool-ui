@@ -8,16 +8,22 @@ import { splitText } from "./formatters";
 export function Body() {
   const { post, cfg, handlers, state, setState } = useSocialPost();
   const parts = splitText(post.text);
-  const maxLines = post.compact ? cfg.layout.contentMaxLines ?? 6 : undefined;
+  const maxLines = post.compact ? (cfg.layout.contentMaxLines ?? 6) : undefined;
   const isClamped = typeof maxLines === "number" && !state.expanded;
 
   return (
     <div
       className={cn(
-        "mt-3 whitespace-pre-wrap break-words",
+        "mt-3 break-words whitespace-pre-wrap",
+        cfg.tokens.typography.body,
+        cfg.tokens.typography.bodyLineHeight,
         isClamped && "line-clamp-[var(--social-post-clamp)]",
       )}
-      style={isClamped ? ({ "--social-post-clamp": String(maxLines) } as CSSProperties) : undefined}
+      style={
+        isClamped
+          ? ({ "--social-post-clamp": String(maxLines) } as CSSProperties)
+          : undefined
+      }
     >
       {parts.map((part, index) => {
         if (part.type === "url") {

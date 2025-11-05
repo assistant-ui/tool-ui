@@ -14,7 +14,6 @@ export function ComponentNav() {
   const pathname = usePathname();
   const [collapsed, setCollapsed] = useState(false);
 
-  // Load collapsed state from localStorage after mount (client-only)
   React.useEffect(() => {
     try {
       if (typeof window !== "undefined") {
@@ -31,9 +30,7 @@ export function ComponentNav() {
       if (typeof window !== "undefined") {
         window.localStorage.setItem(STORAGE_KEY, String(newState));
       }
-    } catch {
-      // ignore write errors
-    }
+    } catch {}
   };
 
   return (
@@ -60,7 +57,6 @@ export function ComponentNav() {
         </Button>
       </div>
 
-      {/* Component List */}
       <nav className="flex flex-1 flex-col gap-1 p-2">
         {componentsRegistry.map((component) => {
           const Icon = component.icon;
@@ -85,11 +81,6 @@ export function ComponentNav() {
                   <span className="truncate font-medium">
                     {component.label}
                   </span>
-                  {!isActive && (
-                    <span className="text-muted-foreground truncate text-xs">
-                      {component.description}
-                    </span>
-                  )}
                 </div>
               )}
             </Link>
