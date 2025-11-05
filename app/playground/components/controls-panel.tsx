@@ -3,16 +3,15 @@ import {
   ItemContent,
   ItemDescription,
   ItemGroup,
-  ItemSeparator,
   ItemTitle,
 } from "@/components/ui/item";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
-import { Button } from "@/components/ui/button";
+
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { LinearBlur } from "@/components/ui/linear-blur";
-import { X } from "lucide-react";
+
 import { PresetSelector } from "./preset-selector";
 import { PresetName } from "@/lib/sample-data";
 
@@ -25,7 +24,6 @@ interface ControlsPanelProps {
   onSortChange: (next: { by?: string; direction?: "asc" | "desc" }) => void;
   emptyMessage: string;
   onEmptyMessageChange: (message: string) => void;
-  onClose?: () => void;
 }
 
 export function ControlsPanel({
@@ -37,7 +35,6 @@ export function ControlsPanel({
   onSortChange,
   emptyMessage,
   onEmptyMessageChange,
-  onClose,
 }: ControlsPanelProps) {
   return (
     <div className="flex h-full flex-col">
@@ -76,7 +73,7 @@ export function ControlsPanel({
           </div>
         </div>
 
-        <TabsContent value="presets" className="flex flex-col gap-4 px-2 pb-24">
+        <TabsContent value="presets" className="flex flex-col gap-4 px-3 pb-24">
           <PresetSelector
             currentPreset={currentPreset}
             onSelectPreset={onSelectPreset}

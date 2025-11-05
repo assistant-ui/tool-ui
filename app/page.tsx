@@ -168,8 +168,7 @@ export default function HomePage() {
         </div>
         <p className="text-muted-foreground text-lg">
           Responsive, accessible, themeable, data-driven. <br />
-          Built with React, TypeScript, and Tailwind. <br />
-          Animated with Motion.
+          Built with React, TypeScript, and Shadcn. <br />
         </p>
         <div className="flex justify-start gap-4">
           <Link

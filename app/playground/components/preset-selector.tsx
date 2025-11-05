@@ -6,6 +6,7 @@ import {
   ItemTitle,
 } from "@/components/ui/item";
 import { PresetName, presetDescriptions } from "@/lib/sample-data";
+import { cn } from "@/lib/utils";
 
 interface PresetSelectorProps {
   currentPreset: PresetName;
@@ -34,14 +35,16 @@ export function PresetSelector({
           key={preset}
           variant="default"
           size="sm"
-          className={
+          data-selected={currentPreset === preset}
+          className={cn(
+            "group/item relative",
             currentPreset === preset
-              ? "bg-background dark:bg-muted cursor-pointer"
-              : "hover:border-border cursor-pointer"
-          }
+              ? "bg-background dark:bg-muted cursor-pointer border-transparent shadow-xs"
+              : "hover:border-border hover:bg-background/20 active:bg-background/40 cursor-pointer transition-[colors,shadow,border,background] duration-150 ease-out",
+          )}
           onClick={() => onSelectPreset(preset)}
         >
-          <ItemContent className="transform-gpu transition-transform duration-150 ease-out will-change-transform active:scale-[0.98]">
+          <ItemContent className="transform-gpu transition-transform duration-300 ease-[cubic-bezier(0.68,-0.55,0.27,1.55)] will-change-transform group-active/item:scale-[0.98] group-active/item:duration-150 group-active/item:ease-out">
             <div className="relative flex items-start justify-between">
               <div className="flex flex-1 flex-col gap-1">
                 <ItemTitle className="flex w-full items-center justify-between capitalize">
@@ -53,10 +56,12 @@ export function PresetSelector({
                   {presetDescriptions[preset]}
                 </ItemDescription>
               </div>
-              {currentPreset === preset ? (
-                <span className="text-muted-foreground dark:text-foreground bg-foreground absolute top-0 -left-4 h-5 w-1 rounded-full"></span>
-              ) : null}
             </div>
+            <span
+              aria-hidden="true"
+              data-selected={currentPreset === preset}
+              className="bg-foreground absolute top-2.5 -left-4.5 h-0 w-1 -translate-y-1/2 transform-gpu rounded-full opacity-0 transition-[height,opacity,transform] duration-100 ease-in-out data-[selected=true]:h-5 data-[selected=true]:opacity-100"
+            />
           </ItemContent>
         </Item>
       ))}
