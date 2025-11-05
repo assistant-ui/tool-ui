@@ -3,17 +3,12 @@
 
 import * as React from "react";
 import { cn } from "./_cn";
-import {
-  Button,
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "./_ui";
+import { Button } from "./_ui";
 import { useSocialPost } from "./context";
 import { formatRelativeTime } from "./formatters";
 import { safeHref } from "./utils";
-import { BadgeCheck, MoreHorizontal } from "lucide-react";
+import { PlatformLogo } from "./platform-brand";
+import { BadgeCheck } from "lucide-react";
 
 export function Header() {
   const { post, cfg, locale, state, setState, handlers, allowExternalNavigation } = useSocialPost();
@@ -26,11 +21,10 @@ export function Header() {
     if (!post.createdAtISO) return undefined;
     return formatRelativeTime(post.createdAtISO, locale);
   }, [post.createdAtISO, locale]);
-  const [menuOpen, setMenuOpen] = React.useState(false);
   const viewSourceHref = safeHref(post.sourceUrl);
 
   return (
-    <header className={cn("flex items-start", cfg.tokens.spacing.gap)}>
+    <header className={cn("flex items-center", cfg.tokens.spacing.gap)}>
       <img
         src={post.author.avatarUrl}
         alt={`${post.author.name} avatar`}
@@ -106,31 +100,11 @@ export function Header() {
           </div>
         ) : null}
       </div>
-
-      {cfg.name !== "x" ? (
-        <DropdownMenu onOpenChange={setMenuOpen}>
-          <DropdownMenuTrigger asChild>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-8 w-8 p-0"
-              aria-label="Post menu"
-              aria-haspopup="menu"
-              aria-expanded={menuOpen}
-            >
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem onClick={(event) => event.stopPropagation()}>
-              Copy link
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={(event) => event.stopPropagation()}>
-              Report
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      ) : null}
+      <PlatformLogo
+        platform={cfg.name}
+        color={cfg.tokens.brandColor}
+        className="h-8 w-8 rounded-full bg-muted/10"
+      />
     </header>
   );
 }

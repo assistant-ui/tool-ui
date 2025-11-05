@@ -36,6 +36,7 @@ export interface PlatformTokens {
   radius: string;
   muted: string;
   actionHover: string;
+  brandColor: string;
   avatarShape?: "circle" | "rounded" | "square";
   actionLayout?: "row" | "right-rail";
   typography: PlatformTypography;
@@ -78,6 +79,7 @@ export const PLATFORM: Record<Platform, PlatformConfig> = {
       radius: "rounded-xl",
       muted: "text-muted-foreground",
       actionHover: "hover:bg-muted",
+      brandColor: "#0F1419",
       avatarShape: "circle",
       actionLayout: "row",
       typography: {
@@ -139,6 +141,7 @@ export const PLATFORM: Record<Platform, PlatformConfig> = {
       radius: "rounded-lg",
       muted: "text-muted-foreground",
       actionHover: "hover:opacity-80",
+      brandColor: "#C13584",
       avatarShape: "circle",
       actionLayout: "row",
       typography: {
@@ -198,6 +201,7 @@ export const PLATFORM: Record<Platform, PlatformConfig> = {
       radius: "rounded-none",
       muted: "text-muted-foreground",
       actionHover: "hover:opacity-80",
+      brandColor: "#EE1D52",
       avatarShape: "circle",
       actionLayout: "right-rail",
       typography: {
@@ -250,6 +254,7 @@ export const PLATFORM: Record<Platform, PlatformConfig> = {
       radius: "rounded-lg",
       muted: "text-muted-foreground",
       actionHover: "hover:bg-muted",
+      brandColor: "#0A66C2",
       avatarShape: "rounded",
       actionLayout: "row",
       typography: {
