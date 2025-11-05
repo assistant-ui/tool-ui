@@ -21,39 +21,41 @@ export function QuotedPost() {
   return (
     <div
       className={cn(
-        "mt-3 cursor-pointer rounded-xl border border-border p-3 transition-colors hover:bg-muted/30",
+        "border-border hover:bg-muted/30 mt-3 cursor-pointer rounded-xl border p-3 transition-colors",
       )}
       onClick={(event) => {
         event.stopPropagation();
         // Could navigate to quoted post
       }}
     >
-      {/* Quoted post header */}
       <div className="flex items-start gap-2">
         <img
           src={quotedPost.author.avatarUrl}
           alt={`${quotedPost.author.name} avatar`}
-          className="h-5 w-5 shrink-0 rounded-full object-cover"
+          className="size-5 shrink-0 rounded-full object-cover"
           width={20}
           height={20}
         />
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-1">
-            <span className={cn("truncate text-[15px] font-semibold")}>
+            <span className={cn("truncate text-lg font-semibold")}>
               {quotedPost.author.name}
             </span>
             {quotedPost.author.verified ? (
-              <BadgeCheck aria-label="Verified" className={cn("h-4 w-4 shrink-0", cfg.tokens.verified)} />
+              <BadgeCheck
+                aria-label="Verified"
+                className={cn("h-4 w-4 shrink-0", cfg.tokens.verified)}
+              />
             ) : null}
             {handle ? (
-              <span className={cn("truncate text-[15px] text-muted-foreground")}>
+              <span className={cn("text-muted-foreground truncate text-lg")}>
                 {handle}
               </span>
             ) : null}
             {quotedPost.createdAtISO ? (
               <>
                 <span className="text-muted-foreground">·</span>
-                <span className={cn("text-[15px] text-muted-foreground")}>
+                <span className={cn("text-muted-foreground text-lg")}>
                   {formatRelativeTime(quotedPost.createdAtISO, locale)}
                 </span>
               </>
@@ -62,14 +64,10 @@ export function QuotedPost() {
         </div>
       </div>
 
-      {/* Quoted post body - simplified, no state management */}
       {quotedPost.text ? (
-        <div className="mt-2 text-[15px] leading-snug">
-          {quotedPost.text}
-        </div>
+        <div className="mt-2 text-lg leading-snug">{quotedPost.text}</div>
       ) : null}
 
-      {/* Quoted post media */}
       {quotedPost.media && quotedPost.media.length > 0 ? (
         <div className="mt-2">
           <div className={cn("overflow-hidden", cfg.tokens.borders.media)}>
@@ -82,10 +80,9 @@ export function QuotedPost() {
         </div>
       ) : null}
 
-      {/* Quoted post link preview */}
       {quotedPost.linkPreview && cfg.layout.showLinkPreview ? (
         <div className="mt-2">
-          <div className="overflow-hidden rounded-xl border border-border">
+          <div className="border-border overflow-hidden rounded-xl border">
             {quotedPost.linkPreview.imageUrl ? (
               <img
                 src={quotedPost.linkPreview.imageUrl}
@@ -95,17 +92,17 @@ export function QuotedPost() {
             ) : null}
             <div className="p-3">
               {quotedPost.linkPreview.domain ? (
-                <div className="text-sm text-muted-foreground">
+                <div className="text-muted-foreground text-sm">
                   {quotedPost.linkPreview.domain}
                 </div>
               ) : null}
               {quotedPost.linkPreview.title ? (
-                <div className="mt-1 font-medium line-clamp-1">
+                <div className="mt-1 line-clamp-1 font-medium">
                   {quotedPost.linkPreview.title}
                 </div>
               ) : null}
               {quotedPost.linkPreview.description ? (
-                <div className="mt-1 text-sm text-muted-foreground line-clamp-2">
+                <div className="text-muted-foreground mt-1 line-clamp-2 text-sm">
                   {quotedPost.linkPreview.description}
                 </div>
               ) : null}

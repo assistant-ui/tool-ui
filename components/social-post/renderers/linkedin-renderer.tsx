@@ -5,7 +5,6 @@ import { Body } from "../body";
 import { Media } from "../media";
 import { LinkPreview } from "../link-preview";
 import { Actions } from "../actions";
-import { Stats } from "../stats";
 
 export function LinkedInRenderer() {
   return (
@@ -15,7 +14,6 @@ export function LinkedInRenderer() {
       <Media />
       <LinkPreview />
       <Actions />
-      <Stats />
     </>
   );
 }

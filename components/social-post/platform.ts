@@ -293,10 +293,21 @@ export const PLATFORM: Record<Platform, PlatformConfig> = {
     },
     actions: {
       like: "Like",
-      comment: "Comment",
-      repost: "Repost",
-      send: "Send",
-      menu: "More",
+      share: "Share",
     },
+    actionConfigs: [
+      {
+        id: "like",
+        label: "Like",
+        icon: Heart,
+        hoverColor: "hover:bg-blue-500/10 hover:text-blue-600",
+      },
+      {
+        id: "share",
+        label: "Share",
+        icon: Share,
+        hoverColor: "hover:bg-blue-500/10 hover:text-blue-600",
+      },
+    ],
   },
 };

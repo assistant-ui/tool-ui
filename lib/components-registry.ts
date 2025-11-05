@@ -11,14 +11,14 @@ export interface ComponentMetadata {
 export const componentsRegistry: ComponentMetadata[] = [
   {
     id: "data-table",
-    label: "DataTable",
+    label: "Data Table",
     description: "Display tabular data with sorting and actions",
     icon: Table,
     path: "/playground/data-table",
   },
   {
     id: "social-post",
-    label: "SocialPost",
+    label: "Social Post",
     description: "Render social media posts from multiple platforms",
     icon: MessageSquare,
     path: "/playground/social-post",

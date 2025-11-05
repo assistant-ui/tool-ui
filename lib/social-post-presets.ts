@@ -168,15 +168,11 @@ export const sampleLinkedIn: SocialPostConfig = {
     },
     stats: {
       likes: 847,
-      comments: 56,
-      reposts: 123,
     },
     createdAtISO: "2025-11-05T09:15:00.000Z",
     actions: [
       { id: "like", label: "Like", variant: "ghost" },
-      { id: "comment", label: "Comment", variant: "ghost" },
-      { id: "repost", label: "Repost", variant: "ghost" },
-      { id: "send", label: "Send", variant: "ghost" },
+      { id: "share", label: "Share", variant: "ghost" },
     ],
   },
 };

@@ -43,7 +43,10 @@ export function ControlsPanel({
   const isSocialPost = componentId === "social-post";
   return (
     <div className="flex h-full flex-col">
-      <Tabs defaultValue="presets" className="flex min-h-0 flex-1 flex-col">
+      <Tabs
+        defaultValue="presets"
+        className="bred flex min-h-0 flex-1 flex-col"
+      >
         <div className="sticky top-0 z-20">
           <div className="relative">
             <LinearBlur
@@ -53,6 +56,7 @@ export function ControlsPanel({
               strength={100}
               steps={6}
             />
+
             <div className="relative flex items-center justify-center pt-2 pb-4">
               <TabsList className="bg-transparentflex gap-2 rounded-lg text-sm font-light">
                 <TabsTrigger
@@ -197,6 +201,13 @@ export function ControlsPanel({
             )}
           </ItemGroup>
         </TabsContent>
+        <LinearBlur
+          side="bottom"
+          tint="hsl(var(--background) / 0.6)"
+          className="absolute bottom-0 h-20 w-full"
+          strength={100}
+          steps={6}
+        />
       </Tabs>
     </div>
   );
