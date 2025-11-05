@@ -3,12 +3,12 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { LucideArrowLeftToLine, LucideArrowRightToLine } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { componentsRegistry } from "@/lib/components-registry";
 import { cn } from "@/lib/utils";
 
-const STORAGE_KEY = "playground-nav-collapsed";
+const STORAGE_KEY = "tool-ui-playground-nav-collapsed";
 
 export function ComponentNav() {
   const pathname = usePathname();
@@ -21,12 +21,9 @@ export function ComponentNav() {
         const stored = window.localStorage.getItem(STORAGE_KEY);
         if (stored != null) setCollapsed(stored === "true");
       }
-    } catch {
-      // ignore read errors (e.g., storage disabled)
-    }
+    } catch {}
   }, []);
 
-  // Save collapsed state to localStorage
   const toggleCollapsed = () => {
     const newState = !collapsed;
     setCollapsed(newState);
@@ -42,15 +39,12 @@ export function ComponentNav() {
   return (
     <aside
       className={cn(
-        "bg-muted/30 flex shrink-0 flex-col border-r transition-all duration-300",
+        "bg-wash flex shrink-0 flex-col transition-all duration-300",
         collapsed ? "w-16" : "w-60",
       )}
     >
-      {/* Header */}
-      <div className="flex h-16 items-center justify-between border-b px-4">
-        {!collapsed && (
-          <span className="text-sm font-semibold">Components</span>
-        )}
+      <div className="flex h-16 items-center justify-between px-4">
+        {!collapsed && <span className="text-sm font-medium">Components</span>}
         <Button
           variant="ghost"
           size="icon"
@@ -59,9 +53,9 @@ export function ComponentNav() {
           title={collapsed ? "Expand navigation" : "Collapse navigation"}
         >
           {collapsed ? (
-            <ChevronRight className="h-4 w-4" />
+            <LucideArrowRightToLine className="h-4 w-4" />
           ) : (
-            <ChevronLeft className="h-4 w-4" />
+            <LucideArrowLeftToLine className="h-4 w-4" />
           )}
         </Button>
       </div>

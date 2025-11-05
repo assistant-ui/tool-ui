@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Copy, Check } from "lucide-react";
+import { Copy, Check, Code } from "lucide-react";
 import { DataTableConfig } from "@/lib/sample-data";
 
 interface CodePanelProps {
@@ -10,9 +10,16 @@ interface CodePanelProps {
   sort?: { by?: string; direction?: "asc" | "desc" };
   isLoading?: boolean;
   emptyMessage?: string;
+  className?: string;
 }
 
-export function CodePanel({ config, sort, isLoading, emptyMessage }: CodePanelProps) {
+export function CodePanel({
+  config,
+  sort,
+  isLoading,
+  emptyMessage,
+  className,
+}: CodePanelProps) {
   const [copied, setCopied] = useState(false);
 
   const generateCode = () => {
@@ -95,11 +102,14 @@ export function CodePanel({ config, sort, isLoading, emptyMessage }: CodePanelPr
   };
 
   return (
-    <div className="shrink-0 border-t bg-muted/50">
+    <div className={className}>
       <div className="px-6 py-3">
         <details>
-          <summary className="flex cursor-pointer items-center justify-between text-sm font-medium">
-            <span>Generated Code</span>
+          <summary className="flex cursor-pointer items-center justify-between text-sm">
+            <div className="flex items-center gap-4">
+              <Code className="h-4 w-4" />
+              <span>Generated Code</span>
+            </div>
             <Button
               variant="ghost"
               size="sm"
@@ -122,7 +132,7 @@ export function CodePanel({ config, sort, isLoading, emptyMessage }: CodePanelPr
               )}
             </Button>
           </summary>
-          <div className="mt-3 max-h-64 overflow-auto rounded-md bg-background p-4">
+          <div className="mt-3 max-h-64 overflow-auto p-4">
             <pre className="text-xs">
               <code>{code}</code>
             </pre>

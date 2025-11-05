@@ -16,14 +16,6 @@ export const componentsRegistry: ComponentMetadata[] = [
     icon: Table,
     path: "/playground/data-table",
   },
-  // Future components will be added here:
-  // {
-  //   id: "form",
-  //   label: "Form",
-  //   description: "Dynamic form generation from schema",
-  //   icon: FileText,
-  //   path: "/playground/form",
-  // },
 ];
 
 export function getComponentById(id: string): ComponentMetadata | undefined {

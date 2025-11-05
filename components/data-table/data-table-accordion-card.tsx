@@ -101,11 +101,11 @@ export function DataTableAccordionCard({
     >
       <AccordionItem value={`row-${stableRowId}`} className="border-0">
         <AccordionTrigger
-          className="hover:bg-muted/50 rounded-none px-4 py-3 hover:no-underline"
+          className="hover:bg-muted w-full rounded-none px-4 py-3 hover:no-underline"
           aria-controls={detailsId}
           aria-label={`${rowLabel}. ${secondary.length > 0 ? "Expand for details" : ""}`}
         >
-          <div className="flex w-full items-start justify-between pr-2 text-left">
+          <div className="flex w-full items-start justify-between border border-green-500">
             <div className="min-w-0 flex-1">
               {primaryColumn && (
                 <div
@@ -126,7 +126,7 @@ export function DataTableAccordionCard({
 
               {secondaryPrimary.length > 0 && (
                 <div
-                  className="text-muted-foreground mt-1 flex flex-wrap gap-x-3 gap-y-1"
+                  className="text-muted-foreground flex w-full flex-wrap gap-x-3 gap-y-1 border border-blue-500"
                   role="group"
                   aria-label="Summary information"
                 >
@@ -134,13 +134,13 @@ export function DataTableAccordionCard({
                     <span
                       key={col.key}
                       id={secondaryDataIds[idx]}
-                      className="truncate"
+                      className="flex min-w-0 gap-2"
                       role="cell"
                       aria-label={`${col.label}: ${row[col.key]}`}
                     >
                       <span className="sr-only">{col.label}: </span>
                       <span aria-hidden="true">{col.label}: </span>
-                      <span>
+                      <span className="truncate">
                         {renderFormattedValue({
                           value: row[col.key],
                           column: col,

@@ -1,8 +1,6 @@
 "use client";
 
 import { useCallback, useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Monitor } from "lucide-react";
 import { ControlsPanel } from "../components/controls-panel";
 import { CodePanel } from "../components/code-panel";
 import { DataTable } from "@/components/registry/data-table";
@@ -15,15 +13,15 @@ export function ClientPreview({ componentId }: { componentId: string }) {
   const { viewport } = usePlayground();
   const [currentPreset, setCurrentPreset] = useState<PresetName>("stocks");
   const [isLoading, setIsLoading] = useState(false);
-  const [sort, setSort] = useState<SortState>(
-    presets.stocks.defaultSort ?? {},
-  );
+  const [sort, setSort] = useState<SortState>(presets.stocks.defaultSort ?? {});
   const [emptyMessage, setEmptyMessage] = useState(
     presets.stocks.emptyMessage ?? "No data available",
   );
-  const [controlsCollapsed, setControlsCollapsed] = useState(false);
 
-  const handleSortChange = (next: { by?: string; direction?: "asc" | "desc" }) => {
+  const handleSortChange = (next: {
+    by?: string;
+    direction?: "asc" | "desc";
+  }) => {
     setSort(next);
   };
 
@@ -71,12 +69,11 @@ export function ClientPreview({ componentId }: { componentId: string }) {
   } as const;
 
   return (
-    <div className="flex flex-1 overflow-clip">
-      {/* Preview Panel */}
-      <div className="flex flex-1 flex-col">
-        <div className="bg-background flex-1 overflow-y-auto p-6">
+    <div className="flex h-full min-h-0 w-full flex-1 gap-4">
+      <div className="flex flex-1 flex-col gap-4 overflow-hidden">
+        <div className="bg-background flex-1 overflow-auto rounded-lg p-6">
           <div
-            className="mx-auto transition-all"
+            className="mx-auto transition-[width]"
             style={{
               width: viewportWidths[viewport],
               maxWidth: "100%",
@@ -101,18 +98,18 @@ export function ClientPreview({ componentId }: { componentId: string }) {
           </div>
         </div>
 
-        {/* Code Panel - Spans full width */}
-        <CodePanel
-          config={currentConfig}
-          sort={sort}
-          isLoading={isLoading}
-          emptyMessage={emptyMessage}
-        />
+        <div className="bg-background hover:bg-muted mb-4 flex-none overflow-clip rounded-lg">
+          <CodePanel
+            config={currentConfig}
+            sort={sort}
+            isLoading={isLoading}
+            emptyMessage={emptyMessage}
+          />
+        </div>
       </div>
 
-      {/* Right Panel - Controls (Collapsible) */}
-      {!controlsCollapsed && (
-        <aside className="bg-muted/30 w-80 shrink-0 overflow-y-auto border-l p-6">
+      <aside className="bg-background flex h-full w-80 shrink-0 flex-col overflow-hidden rounded-lg">
+        <div className="min-h-0 flex-1 overflow-auto p-6">
           <ControlsPanel
             currentPreset={currentPreset}
             onSelectPreset={handleSelectPreset}
@@ -122,23 +119,9 @@ export function ClientPreview({ componentId }: { componentId: string }) {
             onSortChange={handleSortChange}
             emptyMessage={emptyMessage}
             onEmptyMessageChange={setEmptyMessage}
-            onClose={() => setControlsCollapsed(true)}
           />
-        </aside>
-      )}
-
-      {/* Floating Controls Button (when collapsed) */}
-      {controlsCollapsed && (
-        <Button
-          variant="outline"
-          size="icon"
-          className="fixed right-6 bottom-6 h-12 w-12 rounded-full shadow-lg"
-          onClick={() => setControlsCollapsed(false)}
-          title="Show controls"
-        >
-          <Monitor className="h-5 w-5" />
-        </Button>
-      )}
+        </div>
+      </aside>
     </div>
   );
 }
