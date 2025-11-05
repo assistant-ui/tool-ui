@@ -22,9 +22,38 @@ export function Header() {
     return formatRelativeTime(post.createdAtISO, locale);
   }, [post.createdAtISO, locale]);
   const viewSourceHref = safeHref(post.sourceUrl);
+  const showTime = Boolean(post.createdAtISO && cfg.name !== "x" && relativeTime);
+
+  const timeBlock =
+    !showTime || cfg.name === "linkedin" ? null : (
+      <div className={cn("flex flex-wrap items-center gap-1", cfg.tokens.typography.handle)}>
+        <span aria-hidden="true">·</span>
+        <time dateTime={post.createdAtISO} className="sr-only">
+          {new Date(post.createdAtISO).toISOString()}
+        </time>
+        <span aria-label="Timestamp">{relativeTime}</span>
+        {viewSourceHref ? (
+          <>
+            <span>·</span>
+            <a
+              href={viewSourceHref}
+              target={allowExternalNavigation ? "_blank" : undefined}
+              rel={allowExternalNavigation ? "noopener noreferrer" : undefined}
+              className="underline underline-offset-2"
+              onClick={(event) => {
+                event.stopPropagation();
+                handlers.onNavigate?.(viewSourceHref, post);
+              }}
+            >
+              View source
+            </a>
+          </>
+        ) : null}
+      </div>
+    );
 
   return (
-    <header className={cn("flex items-center", cfg.tokens.spacing.gap)}>
+    <header className={cn("flex items-start", cfg.tokens.spacing.gap)}>
       <img
         src={post.author.avatarUrl}
         alt={`${post.author.name} avatar`}
@@ -39,71 +68,83 @@ export function Header() {
         height={40}
       />
       <div className="min-w-0 flex-1">
-        <div className="flex items-center gap-1">
-          <span id={`post-${post.id}-author`} className={cn("truncate", cfg.tokens.typography.name)}>
-            {post.author.name}
-          </span>
-          {post.author.verified ? (
-            <BadgeCheck aria-label="Verified" className={cn("h-4 w-4 shrink-0", cfg.tokens.verified)} />
-          ) : null}
-          {handle ? (
-            <span className={cn("truncate", cfg.tokens.typography.handle)}>·</span>
-          ) : null}
-          {handle ? <span className={cn("truncate", cfg.tokens.typography.handle)}>{handle}</span> : null}
-          {cfg.layout.showFollowInHeader && !state.following ? (
-            <>
-              <span className={cn("truncate", cfg.tokens.typography.handle)}>·</span>
-              <Button
-                variant="ghost"
-                size="sm"
-                className={cn("h-auto p-0 font-semibold", cfg.tokens.accent)}
-                onClick={(event) => {
-                  event.stopPropagation();
-                  setState({ following: true });
-                }}
-              >
-                Follow
-              </Button>
-            </>
-          ) : null}
-          {post.author.subtitle && cfg.name === "linkedin" ? (
-            <span className={cn("truncate", cfg.tokens.typography.handle)}>{post.author.subtitle}</span>
-          ) : null}
-        </div>
-        {post.createdAtISO && cfg.name !== "x" && relativeTime ? (
-          <div className={cn("flex flex-wrap items-center gap-1", cfg.tokens.typography.handle)}>
-            <span aria-hidden="true">·</span>
-            <time
-              dateTime={post.createdAtISO}
-              className="sr-only"
-            >
-              {new Date(post.createdAtISO).toISOString()}
-            </time>
-            <span aria-label="Timestamp">{relativeTime}</span>
-            {viewSourceHref ? (
-              <>
-                <span>·</span>
-                <a
-                  href={viewSourceHref}
-                  target={allowExternalNavigation ? "_blank" : undefined}
-                  rel={allowExternalNavigation ? "noopener noreferrer" : undefined}
-                  className="underline underline-offset-2"
-                  onClick={(event) => {
-                    event.stopPropagation();
-                    handlers.onNavigate?.(viewSourceHref, post);
-                  }}
-                >
-                  View source
-                </a>
-              </>
+        {cfg.name === "linkedin" ? (
+          <div className="flex min-w-0 flex-col gap-1">
+            <div className="flex items-center gap-1">
+              <span id={`post-${post.id}-author`} className={cn("truncate", cfg.tokens.typography.name)}>
+                {post.author.name}
+              </span>
+              {post.author.verified ? (
+                <BadgeCheck aria-label="Verified" className={cn("h-4 w-4 shrink-0", cfg.tokens.verified)} />
+              ) : null}
+            </div>
+            {post.author.subtitle ? (
+              <div className={cn("truncate", cfg.tokens.typography.handle)}>{post.author.subtitle}</div>
+            ) : null}
+            {showTime ? (
+              <div className={cn("flex flex-wrap items-center gap-1", cfg.tokens.typography.handle)}>
+                <time dateTime={post.createdAtISO} className="sr-only">
+                  {new Date(post.createdAtISO).toISOString()}
+                </time>
+                <span aria-label="Timestamp">{relativeTime}</span>
+                {viewSourceHref ? (
+                  <>
+                    <span aria-hidden="true">·</span>
+                    <a
+                      href={viewSourceHref}
+                      target={allowExternalNavigation ? "_blank" : undefined}
+                      rel={allowExternalNavigation ? "noopener noreferrer" : undefined}
+                      className="underline underline-offset-2"
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        handlers.onNavigate?.(viewSourceHref, post);
+                      }}
+                    >
+                      View source
+                    </a>
+                  </>
+                ) : null}
+              </div>
             ) : null}
           </div>
-        ) : null}
+        ) : (
+          <>
+            <div className="flex items-center gap-1">
+              <span id={`post-${post.id}-author`} className={cn("truncate", cfg.tokens.typography.name)}>
+                {post.author.name}
+              </span>
+              {post.author.verified ? (
+                <BadgeCheck aria-label="Verified" className={cn("h-4 w-4 shrink-0", cfg.tokens.verified)} />
+              ) : null}
+              {handle ? (
+                <span className={cn("truncate", cfg.tokens.typography.handle)}>·</span>
+              ) : null}
+              {handle ? <span className={cn("truncate", cfg.tokens.typography.handle)}>{handle}</span> : null}
+              {cfg.layout.showFollowInHeader && !state.following ? (
+                <>
+                  <span className={cn("truncate", cfg.tokens.typography.handle)}>·</span>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className={cn("h-auto p-0 font-semibold", cfg.tokens.accent)}
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      setState({ following: true });
+                    }}
+                  >
+                    Follow
+                  </Button>
+                </>
+              ) : null}
+            </div>
+            {timeBlock}
+          </>
+        )}
       </div>
       <PlatformLogo
         platform={cfg.name}
         color={cfg.tokens.brandColor}
-        className="h-8 w-8 rounded-full bg-muted/10"
+        className={cn("h-8 w-8 rounded-full bg-muted/10 self-start")}
       />
     </header>
   );

@@ -83,10 +83,10 @@ export const PLATFORM: Record<Platform, PlatformConfig> = {
       avatarShape: "circle",
       actionLayout: "row",
       typography: {
-        name: "text-[15px] font-semibold",
-        handle: "text-[15px] text-muted-foreground",
-        body: "text-[15px] leading-snug",
-        stats: "text-[13px] text-muted-foreground",
+        name: "text-base font-semibold",
+        handle: "text-sm text-muted-foreground",
+        body: "text-base leading-snug",
+        stats: "text-xs text-muted-foreground",
         bodyLineHeight: "leading-snug",
       },
       spacing: {
@@ -145,10 +145,10 @@ export const PLATFORM: Record<Platform, PlatformConfig> = {
       avatarShape: "circle",
       actionLayout: "row",
       typography: {
-        name: "text-[14px] font-semibold",
-        handle: "text-[14px] text-muted-foreground",
-        body: "text-[14px] leading-relaxed",
-        stats: "text-[14px] font-semibold",
+        name: "text-sm font-semibold",
+        handle: "text-sm text-muted-foreground",
+        body: "text-sm leading-relaxed",
+        stats: "text-sm font-semibold",
         bodyLineHeight: "leading-relaxed",
       },
       spacing: {
@@ -205,10 +205,10 @@ export const PLATFORM: Record<Platform, PlatformConfig> = {
       avatarShape: "circle",
       actionLayout: "right-rail",
       typography: {
-        name: "text-[16px] font-bold",
-        handle: "text-[14px] text-muted-foreground",
-        body: "text-[16px] leading-snug font-medium",
-        stats: "text-[12px] font-semibold",
+        name: "text-lg font-bold",
+        handle: "text-base text-muted-foreground",
+        body: "text-lg leading-snug font-medium",
+        stats: "text-xs font-semibold",
         bodyLineHeight: "leading-snug",
       },
       spacing: {
@@ -258,10 +258,10 @@ export const PLATFORM: Record<Platform, PlatformConfig> = {
       avatarShape: "rounded",
       actionLayout: "row",
       typography: {
-        name: "text-[14px] font-semibold",
-        handle: "text-[12px] text-muted-foreground",
-        body: "text-[14px] leading-relaxed",
-        stats: "text-[12px] text-muted-foreground",
+        name: "text-sm font-semibold",
+        handle: "text-xs text-muted-foreground",
+        body: "text-sm leading-relaxed",
+        stats: "text-xs text-muted-foreground",
         bodyLineHeight: "leading-relaxed",
       },
       spacing: {

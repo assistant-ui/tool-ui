@@ -178,7 +178,7 @@ export function Actions() {
                     void run(action.id);
                   }}
                   className={cn(
-                    "min-h-[44px] gap-1.5 px-2",
+                    "min-h-11 gap-1.5 px-2",
                     action.hoverColor,
                     isActive && action.id === "like" && "text-red-500",
                     isActive && action.id === "repost" && "text-green-500",
@@ -207,7 +207,7 @@ export function Actions() {
                 <div className="flex items-center gap-2">
                   <span>{action.label}</span>
                   {action.hotkey ? (
-                    <kbd className="bg-muted text-muted-foreground rounded px-1 text-[10px] font-medium tracking-wide uppercase">
+                    <kbd className="bg-muted text-muted-foreground rounded px-1 text-xs font-medium tracking-wide uppercase">
                       {action.hotkey}
                     </kbd>
                   ) : null}
