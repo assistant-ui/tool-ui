@@ -6,14 +6,16 @@ import {
   ItemTitle,
 } from "@/components/ui/item";
 import { PresetName, presetDescriptions } from "@/lib/sample-data";
+import { SocialPostPresetName, socialPostPresetDescriptions } from "@/lib/social-post-presets";
 import { cn } from "@/lib/utils";
 
 interface PresetSelectorProps {
-  currentPreset: PresetName;
-  onSelectPreset: (preset: PresetName) => void;
+  componentId: string;
+  currentPreset: PresetName | SocialPostPresetName;
+  onSelectPreset: (preset: PresetName | SocialPostPresetName) => void;
 }
 
-const presetNames: PresetName[] = [
+const dataTablePresetNames: PresetName[] = [
   "stocks",
   "tasks",
   "metrics",
@@ -24,10 +26,21 @@ const presetNames: PresetName[] = [
   "empty",
 ];
 
+const socialPostPresetNames: SocialPostPresetName[] = [
+  "x",
+  "instagram",
+  "tiktok",
+  "linkedin",
+];
+
 export function PresetSelector({
+  componentId,
   currentPreset,
   onSelectPreset,
 }: PresetSelectorProps) {
+  const presetNames = componentId === "data-table" ? dataTablePresetNames : socialPostPresetNames;
+  const descriptions = componentId === "data-table" ? presetDescriptions : socialPostPresetDescriptions;
+
   return (
     <ItemGroup className="gap-1">
       {presetNames.map((preset) => (
@@ -49,11 +62,11 @@ export function PresetSelector({
               <div className="flex flex-1 flex-col gap-1">
                 <ItemTitle className="flex w-full items-center justify-between capitalize">
                   <span className="text-foreground">
-                    {preset.replace("-", " ")}
+                    {preset.replace("-", " ").replace("_", " ")}
                   </span>
                 </ItemTitle>
                 <ItemDescription className="text-sm font-light">
-                  {presetDescriptions[preset]}
+                  {descriptions[preset as keyof typeof descriptions]}
                 </ItemDescription>
               </div>
             </div>

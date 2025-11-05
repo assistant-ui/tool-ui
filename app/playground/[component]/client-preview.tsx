@@ -7,11 +7,15 @@ import { DataTable } from "@/components/registry/data-table";
 import type { Action } from "@/components/registry/data-table";
 import type { DataTableRowData, RowData } from "@/components/data-table";
 import { PresetName, presets, SortState } from "@/lib/sample-data";
+import { SocialPost } from "@/components/registry/social-post";
+import { SocialPostPresetName, socialPostPresets } from "@/lib/social-post-presets";
 import { usePlayground } from "../playground-context";
 
 export function ClientPreview({ componentId }: { componentId: string }) {
   const { viewport } = usePlayground();
-  const [currentPreset, setCurrentPreset] = useState<PresetName>("stocks");
+  const [currentPreset, setCurrentPreset] = useState<PresetName | SocialPostPresetName>(
+    componentId === "social-post" ? "x" : "stocks"
+  );
   const [isLoading, setIsLoading] = useState(false);
   const [sort, setSort] = useState<SortState>(presets.stocks.defaultSort ?? {});
   const [emptyMessage, setEmptyMessage] = useState(
@@ -25,15 +29,25 @@ export function ClientPreview({ componentId }: { componentId: string }) {
     setSort(next);
   };
 
-  const currentConfig = presets[currentPreset];
+  const currentConfig = componentId === "data-table"
+    ? presets[currentPreset as PresetName]
+    : undefined;
+  const currentSocialPostConfig = componentId === "social-post"
+    ? socialPostPresets[currentPreset as SocialPostPresetName]
+    : undefined;
 
-  const handleSelectPreset = useCallback((preset: PresetName) => {
-    const nextConfig = presets[preset];
-    setCurrentPreset(preset);
-    setSort(nextConfig.defaultSort ?? {});
-    setEmptyMessage(nextConfig.emptyMessage ?? "No data available");
-    setIsLoading(false);
-  }, []);
+  const handleSelectPreset = useCallback((preset: PresetName | SocialPostPresetName) => {
+    if (componentId === "data-table") {
+      const nextConfig = presets[preset as PresetName];
+      setCurrentPreset(preset);
+      setSort(nextConfig.defaultSort ?? {});
+      setEmptyMessage(nextConfig.emptyMessage ?? "No data available");
+      setIsLoading(false);
+    } else if (componentId === "social-post") {
+      setCurrentPreset(preset);
+      setIsLoading(false);
+    }
+  }, [componentId]);
 
   const handleBeforeAction = useCallback(
     async ({
@@ -44,7 +58,7 @@ export function ClientPreview({ componentId }: { componentId: string }) {
       row: DataTableRowData | RowData;
     }) => {
       if (action.requiresConfirmation) {
-        const candidateKeys = [currentConfig.rowIdKey, "title", "name"]
+        const candidateKeys = [currentConfig?.rowIdKey, "title", "name"]
           .filter(Boolean)
           .map(String);
         const labelCandidate = candidateKeys
@@ -59,7 +73,7 @@ export function ClientPreview({ componentId }: { componentId: string }) {
 
       return true;
     },
-    [currentConfig.rowIdKey],
+    [currentConfig?.rowIdKey],
   );
 
   const viewportWidths = {
@@ -72,6 +86,7 @@ export function ClientPreview({ componentId }: { componentId: string }) {
     <div className="mr-2 flex h-full min-h-0 w-full flex-1 gap-2 pr-2 pb-2">
       <aside className="bg-background/40 flex h-full w-80 shrink-0 flex-col overflow-auto rounded-lg shadow-xs">
         <ControlsPanel
+          componentId={componentId}
           currentPreset={currentPreset}
           onSelectPreset={handleSelectPreset}
           isLoading={isLoading}
@@ -91,7 +106,7 @@ export function ClientPreview({ componentId }: { componentId: string }) {
               maxWidth: "100%",
             }}
           >
-            {componentId === "data-table" && (
+            {componentId === "data-table" && currentConfig && (
               <DataTable
                 {...currentConfig}
                 sort={sort}
@@ -107,12 +122,25 @@ export function ClientPreview({ componentId }: { componentId: string }) {
                 }}
               />
             )}
+            {componentId === "social-post" && currentSocialPostConfig && (
+              <SocialPost
+                {...currentSocialPostConfig.post}
+                isLoading={isLoading}
+                maxWidth="600px"
+                onAction={(actionId) => {
+                  console.log("Action:", actionId);
+                  alert(`Action: ${actionId}`);
+                }}
+              />
+            )}
           </div>
         </div>
 
         <div className="bg-background hover:bg-muted flex-none overflow-hidden rounded-lg shadow-xs">
           <CodePanel
+            componentId={componentId}
             config={currentConfig}
+            socialPostConfig={currentSocialPostConfig}
             sort={sort}
             isLoading={isLoading}
             emptyMessage={emptyMessage}

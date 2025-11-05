@@ -4,11 +4,14 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Copy, Check, Code } from "lucide-react";
 import { DataTableConfig } from "@/lib/sample-data";
+import { SocialPostConfig } from "@/lib/social-post-presets";
 import { ShikiHighlighter } from "react-shiki";
 import "react-shiki/css";
 
 interface CodePanelProps {
-  config: DataTableConfig;
+  componentId: string;
+  config?: DataTableConfig;
+  socialPostConfig?: SocialPostConfig;
   sort?: { by?: string; direction?: "asc" | "desc" };
   isLoading?: boolean;
   emptyMessage?: string;
@@ -16,7 +19,9 @@ interface CodePanelProps {
 }
 
 export function CodePanel({
+  componentId,
   config,
+  socialPostConfig,
   sort,
   isLoading,
   emptyMessage,
@@ -24,7 +29,9 @@ export function CodePanel({
 }: CodePanelProps) {
   const [copied, setCopied] = useState(false);
 
-  const generateCode = () => {
+  const generateDataTableCode = () => {
+    if (!config) return "";
+
     const props: string[] = [];
 
     props.push(
@@ -93,6 +100,73 @@ export function CodePanel({
       : "";
 
     return `${sortingExplanation}<DataTable\n${props.join("\n")}\n/>${confirmationHint}`;
+  };
+
+  const generateSocialPostCode = () => {
+    if (!socialPostConfig) return "";
+
+    const post = socialPostConfig.post;
+    const props: string[] = [];
+
+    // Add the serializable props
+    props.push(`  id="${post.id}"`);
+    props.push(`  platform="${post.platform}"`);
+    props.push(
+      `  author={${JSON.stringify(post.author, null, 4).replace(/\n/g, "\n  ")}}`,
+    );
+
+    if (post.text) {
+      props.push(`  text="${post.text.replace(/"/g, '\\"')}"`);
+    }
+
+    if (post.entities) {
+      props.push(
+        `  entities={${JSON.stringify(post.entities, null, 4).replace(/\n/g, "\n  ")}}`,
+      );
+    }
+
+    if (post.media && post.media.length > 0) {
+      props.push(
+        `  media={${JSON.stringify(post.media, null, 4).replace(/\n/g, "\n  ")}}`,
+      );
+    }
+
+    if (post.linkPreview) {
+      props.push(
+        `  linkPreview={${JSON.stringify(post.linkPreview, null, 4).replace(/\n/g, "\n  ")}}`,
+      );
+    }
+
+    if (post.stats) {
+      props.push(
+        `  stats={${JSON.stringify(post.stats, null, 4).replace(/\n/g, "\n  ")}}`,
+      );
+    }
+
+    if (post.actions && post.actions.length > 0) {
+      props.push(
+        `  actions={${JSON.stringify(post.actions, null, 4).replace(/\n/g, "\n  ")}}`,
+      );
+    }
+
+    if (post.createdAtISO) {
+      props.push(`  createdAtISO="${post.createdAtISO}"`);
+    }
+
+    if (isLoading) {
+      props.push(`  isLoading={true}`);
+    }
+
+    return `<SocialPost\n${props.join("\n")}\n/>`;
+  };
+
+  const generateCode = () => {
+    if (componentId === "data-table") {
+      return generateDataTableCode();
+    } else if (componentId === "social-post") {
+      return generateSocialPostCode();
+    }
+    return "";
   };
 
   const code = generateCode();

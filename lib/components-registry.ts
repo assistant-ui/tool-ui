@@ -1,4 +1,4 @@
-import { LucideIcon, Table } from "lucide-react";
+import { LucideIcon, Table, MessageSquare } from "lucide-react";
 
 export interface ComponentMetadata {
   id: string;
@@ -15,6 +15,13 @@ export const componentsRegistry: ComponentMetadata[] = [
     description: "Display tabular data with sorting and actions",
     icon: Table,
     path: "/playground/data-table",
+  },
+  {
+    id: "social-post",
+    label: "SocialPost",
+    description: "Render social media posts from multiple platforms",
+    icon: MessageSquare,
+    path: "/playground/social-post",
   },
 ];
 
