@@ -11,6 +11,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { componentsRegistry } from "@/lib/components-registry";
 import { cn } from "@/lib/utils";
+import { Separator } from "@/components/ui/separator";
 
 const STORAGE_KEY = "tool-ui-components-nav-collapsed";
 
@@ -51,15 +52,10 @@ export function ComponentNav() {
     <aside
       className={cn(
         "bg-wash flex shrink-0 flex-col transition-all duration-300",
-        collapsed ? "w-16" : "w-60",
+        collapsed ? "w-16" : "w-54",
       )}
     >
-      <div className="flex items-center justify-between px-4">
-        {!collapsed && (
-          <span className="text-muted-foreground text-sm tracking-wide">
-            Components
-          </span>
-        )}
+      <div className="absolute bottom-4 left-0 flex items-center justify-between px-4">
         <Button
           variant="ghost"
           size="icon"
@@ -75,49 +71,54 @@ export function ComponentNav() {
         </Button>
       </div>
 
-      <nav className="flex flex-1 flex-col gap-1 p-2">
-        <Link
-          href={galleryPath}
-          className={buildLinkClasses(isGalleryActive)}
-          title={collapsed ? "Gallery" : undefined}
-        >
-          <LayoutGrid
-            className={cn("text-muted-foreground size-4 shrink-0", {
-              "text-primary-foreground": isGalleryActive,
-            })}
-          />
-          {!collapsed && (
-            <div className="flex flex-col overflow-hidden">
-              <span className="truncate font-medium">Gallery</span>
-            </div>
-          )}
-        </Link>
-        {componentsRegistry.map((component) => {
-          const Icon = component.icon;
-          const isActive = pathname === component.path;
+      <nav className="flex flex-1 flex-col gap-4 p-2">
+        <div className="flex flex-col gap-2">
+          <Link
+            href={galleryPath}
+            className={buildLinkClasses(isGalleryActive)}
+            title={collapsed ? "Gallery" : undefined}
+          >
+            <LayoutGrid
+              className={cn("text-muted-foreground size-4 shrink-0", {
+                "text-primary-foreground": isGalleryActive,
+              })}
+            />
+            {!collapsed && (
+              <div className="flex flex-col overflow-hidden">
+                <span className="truncate font-medium">Gallery</span>
+              </div>
+            )}
+          </Link>
+        </div>
+        <div className="flex flex-col gap-2">
+          <Separator />
+          {componentsRegistry.map((component) => {
+            const Icon = component.icon;
+            const isActive = pathname === component.path;
 
-          return (
-            <Link
-              key={component.id}
-              href={component.path}
-              className={buildLinkClasses(isActive)}
-              title={collapsed ? component.label : undefined}
-            >
-              <Icon
-                className={cn("text-muted-foreground size-4 shrink-0", {
-                  "text-primary-foreground": isActive,
-                })}
-              />
-              {!collapsed && (
-                <div className="flex flex-col overflow-hidden">
-                  <span className="truncate font-medium">
-                    {component.label}
-                  </span>
-                </div>
-              )}
-            </Link>
-          );
-        })}
+            return (
+              <Link
+                key={component.id}
+                href={component.path}
+                className={buildLinkClasses(isActive)}
+                title={collapsed ? component.label : undefined}
+              >
+                <Icon
+                  className={cn("text-muted-foreground size-4 shrink-0", {
+                    "text-primary-foreground": isActive,
+                  })}
+                />
+                {!collapsed && (
+                  <div className="flex flex-col overflow-hidden">
+                    <span className="truncate font-medium">
+                      {component.label}
+                    </span>
+                  </div>
+                )}
+              </Link>
+            );
+          })}
+        </div>
       </nav>
     </aside>
   );

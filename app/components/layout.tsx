@@ -1,14 +1,10 @@
 "use client";
 
 import { ReactNode, useState } from "react";
-import { Button } from "@/components/ui/button";
 import {
   Hammer,
   Home,
-  Monitor,
   Shapes,
-  Smartphone,
-  Tablet,
 } from "lucide-react";
 import {
   Select,
@@ -19,20 +15,12 @@ import {
 } from "@/components/ui/select";
 import { ComponentNav } from "./components/component-nav";
 import { ComponentsProvider } from "./components-context";
-import { ThemeToggle } from "@/components/theme-toggle";
+import { ViewportControls, ViewportSize } from "@/components/viewport-controls";
 import Link from "next/link";
 
-type ViewportSize = "mobile" | "tablet" | "desktop";
-
-function ComponentsHeader({
-  viewport,
-  onViewportChange,
-}: {
-  viewport: ViewportSize;
-  onViewportChange: (viewport: ViewportSize) => void;
-}) {
+function ComponentsHeader() {
   return (
-    <header className="bg-wash flex shrink-0 items-center justify-between px-4 py-2">
+    <header className="bg-wash flex shrink-0 items-center px-4 py-2">
       <div className="flex items-center gap-4">
         <Link href="/">
           <h1 className="text-xl font-semibold tracking-wide">ToolUI</h1>
@@ -60,39 +48,6 @@ function ComponentsHeader({
           </SelectContent>
         </Select>
       </div>
-
-      <div className="flex items-center gap-2">
-        {/* Viewport Controls */}
-        <div className="flex gap-1 rounded-md border p-1">
-          <Button
-            variant={viewport === "mobile" ? "secondary" : "ghost"}
-            size="icon"
-            onClick={() => onViewportChange("mobile")}
-            title="Mobile view"
-          >
-            <Smartphone className="h-4 w-4" />
-          </Button>
-          <Button
-            variant={viewport === "tablet" ? "secondary" : "ghost"}
-            size="icon"
-            onClick={() => onViewportChange("tablet")}
-            title="Tablet view"
-          >
-            <Tablet className="h-4 w-4" />
-          </Button>
-          <Button
-            variant={viewport === "desktop" ? "secondary" : "ghost"}
-            size="icon"
-            onClick={() => onViewportChange("desktop")}
-            title="Desktop view"
-          >
-            <Monitor className="h-4 w-4" />
-          </Button>
-        </div>
-
-        {/* Theme Toggle */}
-        <ThemeToggle />
-      </div>
     </header>
   );
 }
@@ -107,11 +62,12 @@ export default function ComponentsLayout({
   return (
     <ComponentsProvider value={{ viewport }}>
       <div className="flex h-screen min-h-0 flex-col">
-        <ComponentsHeader viewport={viewport} onViewportChange={setViewport} />
+        <ComponentsHeader />
         <div className="flex flex-1 overflow-hidden">
           <ComponentNav />
           <div className="flex flex-1 flex-col">{children}</div>
         </div>
+        <ViewportControls viewport={viewport} onViewportChange={setViewport} />
       </div>
     </ComponentsProvider>
   );
