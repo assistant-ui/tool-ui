@@ -21,64 +21,64 @@ export default function ComponentsGalleryPage() {
     <div className="flex min-h-0 flex-1">
       <div className="bg-background shadow-crisp-edge scrollbar-subtle flex min-h-0 flex-1 items-start justify-center overflow-auto rounded-lg p-12">
         <div className="mx-auto w-full max-w-6xl">
-          <div className="columns-1 gap-6 [column-fill:_balance] md:columns-2 lg:columns-3">
-            <div className="mb-6 [column-span:all]">
+          <div className="columns-1 gap-6 [column-fill:_balance] md:columns-2 lg:columns-3 lg:gap-10">
+            <div className="mb-6 [column-span:all] lg:mb-10">
               <DataTable {...sampleStocks} />
             </div>
 
-            <div className="mb-6 break-inside-avoid">
+            <div className="mb-6 break-inside-avoid lg:mb-10">
               <SocialPost {...sampleX.post} maxWidth="100%" />
             </div>
 
-            <div className="mb-6 break-inside-avoid">
+            <div className="mb-6 break-inside-avoid lg:mb-10">
               <MediaCard {...mediaCardPresets.image.card} maxWidth="100%" />
             </div>
 
-            <div className="mb-6 break-inside-avoid">
+            <div className="mb-6 break-inside-avoid lg:mb-10">
               <div className="w-full">
                 <DataTable {...sampleTasks} />
               </div>
             </div>
 
-            <div className="mb-6 break-inside-avoid">
+            <div className="mb-6 break-inside-avoid lg:mb-10">
               <DecisionPrompt {...decisionPromptPresets.binary.prompt} />
             </div>
 
-            <div className="mb-6 break-inside-avoid">
+            <div className="mb-6 break-inside-avoid lg:mb-10">
               <MediaCard {...mediaCardPresets.video.card} maxWidth="100%" />
             </div>
 
-            <div className="mb-6 break-inside-avoid">
+            <div className="mb-6 break-inside-avoid lg:mb-10">
               <SocialPost {...sampleLinkedIn.post} maxWidth="100%" />
             </div>
 
-            <div className="mb-6 break-inside-avoid">
+            <div className="mb-6 break-inside-avoid lg:mb-10">
               <div className="w-full">
                 <DataTable {...sampleMetrics} />
               </div>
             </div>
 
-            <div className="mb-6 break-inside-avoid">
+            <div className="mb-6 break-inside-avoid lg:mb-10">
               <MediaCard {...mediaCardPresets.link.card} maxWidth="100%" />
             </div>
 
-            <div className="mb-6 break-inside-avoid">
+            <div className="mb-6 break-inside-avoid lg:mb-10">
               <DecisionPrompt {...decisionPromptPresets.destructive.prompt} />
             </div>
 
-            <div className="mb-6 break-inside-avoid">
+            <div className="mb-6 break-inside-avoid lg:mb-10">
               <DataTable {...sampleResources} />
             </div>
 
-            <div className="mb-6 break-inside-avoid">
+            <div className="mb-6 break-inside-avoid lg:mb-10">
               <MediaCard {...mediaCardPresets.audio.card} maxWidth="100%" />
             </div>
 
-            <div className="mb-6 break-inside-avoid">
+            <div className="mb-6 break-inside-avoid lg:mb-10">
               <SocialPost {...sampleInstagram.post} maxWidth="100%" />
             </div>
 
-            <div className="mb-6 break-inside-avoid">
+            <div className="mb-6 break-inside-avoid lg:mb-10">
               <DecisionPrompt
                 {...decisionPromptPresets["multi-choice"].prompt}
               />

@@ -53,13 +53,13 @@ const destructivePreset: DecisionPromptConfig = {
     actions: [
       { id: "cancel", label: "Cancel", variant: "ghost" },
       {
-        id: "format",
-        label: "Format",
-        confirmLabel: "Confirm format",
+        id: "delete",
+        label: "Delete",
+        confirmLabel: "Confirm delete",
         variant: "destructive",
       },
     ],
-    align: "right",
+    align: "center",
     confirmTimeout: 3000,
   },
 };
