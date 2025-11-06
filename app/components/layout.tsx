@@ -1,11 +1,7 @@
 "use client";
 
 import { ReactNode, useState } from "react";
-import {
-  Hammer,
-  Home,
-  Shapes,
-} from "lucide-react";
+import { Hammer, Home, Shapes } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -20,7 +16,7 @@ import Link from "next/link";
 
 function ComponentsHeader() {
   return (
-    <header className="bg-wash flex shrink-0 items-center px-4 py-2">
+    <header className="bg-wash flex shrink-0 items-center px-4 py-4">
       <div className="flex items-center gap-4">
         <Link href="/">
           <h1 className="text-xl font-semibold tracking-wide">ToolUI</h1>
