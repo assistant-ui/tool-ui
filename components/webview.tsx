@@ -12,17 +12,13 @@ export interface WebViewHandle {
   refresh: () => void;
 }
 
-export interface WebViewProps {
-  repo: string;
-  baseId: string;
-  appId: string;
-  domain?: string;
-}
-
-export default forwardRef<WebViewHandle, WebViewProps>(function WebView(
-  props,
-  ref,
-) {
+export default forwardRef<
+  WebViewHandle,
+  {
+    repo: string;
+  }
+>(function WebView(props, ref) {
+  console.log("WebView", props);
   function requestDevServer({ repoId }: { repoId: string }) {
     return requestDevServerInner({ repoId });
   }

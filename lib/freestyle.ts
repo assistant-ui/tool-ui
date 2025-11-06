@@ -14,10 +14,11 @@ const freestyle = new FreestyleSandboxes({
 
 export async function createChat() {
   const { repoId } = await freestyle.createGitRepository({
-    name: `Tool UI Builder - ${new Date().toISOString()}`,
+    name: `Tool UI Builder`,
     public: true,
     source: {
-      url: "https://github.com/freestyle-sh/freestyle-next",
+      type: "git",
+      url: "https://github.com/assistant-ui/tool-ui-sandbox-template",
     },
     devServers: {
       preset: "nextJs",
@@ -36,5 +37,14 @@ export async function createChat() {
 }
 
 export async function requestDevServer({ repoId }: { repoId: string }) {
-  return await freestyle.requestDevServer({ repoId });
+  const devServer = await freestyle.requestDevServer({ repoId });
+
+  // Only return serializable data needed by the client
+  return {
+    ephemeralUrl: devServer.ephemeralUrl,
+    mcpEphemeralUrl: devServer.mcpEphemeralUrl,
+    codeServerUrl: devServer.codeServerUrl,
+    devCommandRunning: devServer.devCommandRunning,
+    installCommandRunning: devServer.installCommandRunning,
+  };
 }

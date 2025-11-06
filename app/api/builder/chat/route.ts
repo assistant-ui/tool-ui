@@ -5,6 +5,7 @@ import { checkRateLimit } from "@/lib/rate-limit";
 import { experimental_createMCPClient as createMCPClient } from "@ai-sdk/mcp";
 import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/streamableHttp.js";
 import { requestDevServer } from "@/lib/freestyle";
+import { SYSTEM_MESSAGE } from "@/lib/system";
 
 export const maxDuration = 300;
 
@@ -87,32 +88,10 @@ export async function POST(req: Request) {
       }
     }
 
-    const systemPrompt = repoId
-      ? `You are an AI App Builder. The existing app is in the /template directory. Please edit the app how the user wants and commit the changes incrementally.
-
-When building apps:
-- Make incremental changes and commit them
-- Test your changes before committing
-- Write clean, maintainable code
-- Use TypeScript for type safety
-- Follow React and Next.js best practices
-- Be thoughtful about component structure and organization
-
-Be concise, helpful, and focused on creating great applications.`
-      : `You are a helpful UI component builder assistant. You help users design and build user interface components.
-
-Your role is to:
-- Understand user requirements for UI components
-- Suggest appropriate component designs and layouts
-- Provide guidance on component structure and styling
-- Help users iterate on their component designs
-
-Be concise, helpful, and focused on creating great user experiences.`;
-
     const result = streamText({
       model,
       messages: modelMessages,
-      system: systemPrompt,
+      system: SYSTEM_MESSAGE,
       tools,
       stopWhen: stepCountIs(100),
       temperature: 0.7,
