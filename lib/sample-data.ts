@@ -363,79 +363,6 @@ export const sampleResources: DataTableConfig = {
   rowIdKey: "name",
 };
 
-const layoutColumns: Column<GenericRow>[] = [
-  {
-    key: "id",
-    label: "ID",
-    priority: "primary",
-    width: "80px",
-    sortable: false,
-  },
-  {
-    key: "description",
-    label: "Description",
-    priority: "primary",
-    truncate: true,
-  },
-  {
-    key: "owner",
-    label: "Owner",
-    abbr: "Own.",
-    priority: "secondary",
-  },
-  {
-    key: "desktopOnlyNotes",
-    label: "Desktop Notes",
-    priority: "tertiary",
-    hideOnMobile: true,
-    sortable: false,
-  },
-  {
-    key: "status",
-    label: "Status",
-    priority: "secondary",
-    format: {
-      kind: "status",
-      statusMap: {
-        planned: { tone: "neutral", label: "Planned" },
-        in_progress: { tone: "info", label: "In Progress" },
-        done: { tone: "success", label: "Done" },
-      },
-    },
-  },
-];
-
-const layoutData: GenericRow[] = [
-  {
-    id: "PL-204",
-    description: "Ship billing settings redesign with usage caps and alerts",
-    owner: "Marla",
-    desktopOnlyNotes: "Contains hover-only tooltips for plan badges",
-    status: "in_progress",
-  },
-  {
-    id: "PL-198",
-    description: "Migrate export flow to async jobs for large CSV payloads",
-    owner: "Jon",
-    desktopOnlyNotes: "Keep legacy download button until Q2",
-    status: "planned",
-  },
-  {
-    id: "PL-176",
-    description: "Improve incident timeline readability with grouping",
-    owner: "Priya",
-    desktopOnlyNotes: "Desktop table hides avatar column on narrow widths",
-    status: "done",
-  },
-];
-
-export const sampleLayout: DataTableConfig = {
-  columns: layoutColumns,
-  data: layoutData,
-  rowIdKey: "id",
-  maxHeight: "240px",
-};
-
 export const sampleLocalized: DataTableConfig = {
   columns: stockColumns,
   data: stockData,
@@ -453,64 +380,12 @@ export const sampleEmpty: DataTableConfig = {
   emptyMessage: "No rows yet. Connect a data source.",
 };
 
-const largeColumns: Column<GenericRow>[] = [
-  { key: "id", label: "ID", priority: "primary" },
-  { key: "user", label: "User", priority: "primary" },
-  {
-    key: "email",
-    label: "Profile",
-    priority: "secondary",
-    format: { kind: "link", external: false },
-  },
-  {
-    key: "role",
-    label: "Role",
-    priority: "secondary",
-    format: {
-      kind: "badge",
-      colorMap: { Admin: "danger", Editor: "info", Viewer: "neutral" },
-    },
-  },
-  {
-    key: "status",
-    label: "Status",
-    priority: "secondary",
-    format: {
-      kind: "status",
-      statusMap: {
-        Active: { tone: "success" },
-        Inactive: { tone: "neutral" },
-      },
-    },
-  },
-];
-
-const largeData: GenericRow[] = Array.from({ length: 50 }, (_, index) => {
-  const i = index + 1;
-  return {
-    id: i,
-    user: `User ${i}`,
-    email: `https://example.com/users/${i}`,
-    role: ["Admin", "Editor", "Viewer"][index % 3],
-    status: ["Active", "Inactive"][index % 2],
-  };
-});
-
-export const sampleLarge: DataTableConfig = {
-  columns: largeColumns,
-  data: largeData,
-  rowIdKey: "id",
-  maxHeight: "320px",
-};
-
 export type PresetName =
   | "stocks"
   | "tasks"
   | "metrics"
   | "resources"
-  | "layout"
   | "localized"
-  | "large"
   | "empty";
 
 export const presets: Record<PresetName, DataTableConfig> = {
@@ -518,9 +393,7 @@ export const presets: Record<PresetName, DataTableConfig> = {
   tasks: sampleTasks,
   metrics: sampleMetrics,
   resources: sampleResources,
-  layout: sampleLayout,
   localized: sampleLocalized,
-  large: sampleLarge,
   empty: sampleEmpty,
 };
 
@@ -529,8 +402,6 @@ export const presetDescriptions: Record<PresetName, string> = {
   tasks: "Status pills, boolean badges, and confirmation-required actions",
   metrics: "Numbers with units, inverted deltas, and default sorting",
   resources: "Links, tag arrays, and relative dates",
-  layout: "Fixed widths, truncation, abbreviations, and mobile-only controls",
   localized: "German locale formatting for numbers and currency",
-  large: "50-row dataset with badges, links, and max-height scroll",
   empty: "Empty state messaging with configurable text",
 };

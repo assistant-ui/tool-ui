@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 import { componentsRegistry } from "@/lib/components-registry";
 import { cn } from "@/lib/utils";
 
-const STORAGE_KEY = "tool-ui-playground-nav-collapsed";
+const STORAGE_KEY = "tool-ui-components-nav-collapsed";
 
 export function ComponentNav() {
   const pathname = usePathname();
@@ -44,7 +44,7 @@ export function ComponentNav() {
       collapsed && "justify-center px-0",
     );
 
-  const galleryPath = "/playground/gallery";
+  const galleryPath = "/components/gallery";
   const isGalleryActive = pathname.startsWith(galleryPath);
 
   return (
@@ -54,8 +54,12 @@ export function ComponentNav() {
         collapsed ? "w-16" : "w-60",
       )}
     >
-      <div className="flex h-16 items-center justify-between px-4">
-        {!collapsed && <span className="text-sm font-medium">Components</span>}
+      <div className="flex items-center justify-between px-4">
+        {!collapsed && (
+          <span className="text-muted-foreground text-sm tracking-wide">
+            Components
+          </span>
+        )}
         <Button
           variant="ghost"
           size="icon"
@@ -64,9 +68,9 @@ export function ComponentNav() {
           title={collapsed ? "Expand navigation" : "Collapse navigation"}
         >
           {collapsed ? (
-            <LucideArrowRightToLine className="h-4 w-4" />
+            <LucideArrowRightToLine className="size-4" />
           ) : (
-            <LucideArrowLeftToLine className="h-4 w-4" />
+            <LucideArrowLeftToLine className="size-4" />
           )}
         </Button>
       </div>
@@ -77,7 +81,11 @@ export function ComponentNav() {
           className={buildLinkClasses(isGalleryActive)}
           title={collapsed ? "Gallery" : undefined}
         >
-          <LayoutGrid className="h-5 w-5 shrink-0" />
+          <LayoutGrid
+            className={cn("text-muted-foreground size-4 shrink-0", {
+              "text-primary-foreground": isGalleryActive,
+            })}
+          />
           {!collapsed && (
             <div className="flex flex-col overflow-hidden">
               <span className="truncate font-medium">Gallery</span>
@@ -95,7 +103,11 @@ export function ComponentNav() {
               className={buildLinkClasses(isActive)}
               title={collapsed ? component.label : undefined}
             >
-              <Icon className={cn("h-5 w-5 shrink-0")} />
+              <Icon
+                className={cn("text-muted-foreground size-4 shrink-0", {
+                  "text-primary-foreground": isActive,
+                })}
+              />
               {!collapsed && (
                 <div className="flex flex-col overflow-hidden">
                   <span className="truncate font-medium">

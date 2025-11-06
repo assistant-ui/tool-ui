@@ -176,7 +176,7 @@ export function DataTableAccordionCard({
               {secondary.map((col) => (
                 <div
                   key={col.key}
-                  className="flex justify-between gap-4"
+                  className="flex items-start justify-between gap-4"
                   role="listitem"
                 >
                   <dt
@@ -187,7 +187,7 @@ export function DataTableAccordionCard({
                   </dt>
                   <dd
                     className={cn(
-                      "text-foreground",
+                      "text-foreground min-w-0 break-words",
                       col.align === "right" && "text-right",
                       col.align === "center" && "text-center",
                     )}
@@ -290,7 +290,7 @@ function SimpleCard({
         {otherColumns.map((col) => (
           <div
             key={col.key}
-            className="flex justify-between gap-4"
+            className="flex items-start justify-between gap-4"
             role="group"
           >
             <span
@@ -301,6 +301,7 @@ function SimpleCard({
             </span>
             <span
               className={cn(
+                "min-w-0 break-words",
                 col.align === "right" && "text-right",
                 col.align === "center" && "text-center",
               )}

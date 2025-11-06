@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ControlsPanel } from "../components/controls-panel";
 import { CodePanel } from "../components/code-panel";
 import { DataTable } from "@/components/registry/data-table";
@@ -17,17 +17,17 @@ import {
   MediaCardPresetName,
   mediaCardPresets,
 } from "@/lib/media-card-presets";
-import { usePlayground } from "../playground-context";
+import { useComponents } from "../components-context";
 
-type PlaygroundPreset = PresetName | SocialPostPresetName | MediaCardPresetName;
+type ComponentPreset = PresetName | SocialPostPresetName | MediaCardPresetName;
 
 export function ClientPreview({ componentId }: { componentId: string }) {
-  const { viewport } = usePlayground();
-  const [currentPreset, setCurrentPreset] = useState<PlaygroundPreset>(
+  const { viewport } = useComponents();
+  const [currentPreset, setCurrentPreset] = useState<ComponentPreset>(
     componentId === "social-post"
       ? "x"
       : componentId === "media-card"
-        ? "image"
+        ? "link"
         : "stocks",
   );
   const [isLoading, setIsLoading] = useState(false);
@@ -36,6 +36,36 @@ export function ClientPreview({ componentId }: { componentId: string }) {
     presets.stocks.emptyMessage ?? "No data available",
   );
   const [mediaCardMaxWidth, setMediaCardMaxWidth] = useState<string>("420px");
+  const previewContainerRef = useRef<HTMLDivElement | null>(null);
+  const previewContentRef = useRef<HTMLDivElement | null>(null);
+  const [isPreviewOverflowing, setIsPreviewOverflowing] = useState(false);
+
+  useEffect(() => {
+    const container = previewContainerRef.current;
+    const content = previewContentRef.current;
+    if (!container || !content || typeof ResizeObserver === "undefined") {
+      return;
+    }
+
+    const updateOverflowState = () => {
+      const verticalOverflow = content.scrollHeight > container.clientHeight + 1;
+      const horizontalOverflow = content.scrollWidth > container.clientWidth + 1;
+      setIsPreviewOverflowing(verticalOverflow || horizontalOverflow);
+    };
+
+    updateOverflowState();
+
+    const observer = new ResizeObserver(() => {
+      updateOverflowState();
+    });
+
+    observer.observe(container);
+    observer.observe(content);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [viewport, componentId, currentPreset, isLoading, sort, emptyMessage, mediaCardMaxWidth]);
 
   const handleSortChange = (next: {
     by?: string;
@@ -69,7 +99,7 @@ export function ClientPreview({ componentId }: { componentId: string }) {
   );
 
   const handleSelectPreset = useCallback(
-    (preset: PlaygroundPreset) => {
+    (preset: ComponentPreset) => {
       if (componentId === "data-table") {
         const nextConfig = presets[preset as PresetName];
         setCurrentPreset(preset);
@@ -122,7 +152,7 @@ export function ClientPreview({ componentId }: { componentId: string }) {
 
   return (
     <div className="mr-2 flex h-full min-h-0 w-full flex-1 gap-2 pr-2 pb-2">
-      <aside className="bg-background/40 shadow-crisp-edge flex h-full w-80 shrink-0 flex-col overflow-x-hidden overflow-y-auto rounded-lg">
+      <aside className="bg-background/40 shadow-crisp-edge scrollbar-subtle flex h-full w-80 shrink-0 flex-col overflow-x-hidden overflow-y-auto rounded-lg">
         <ControlsPanel
           componentId={componentId}
           currentPreset={currentPreset}
@@ -138,9 +168,13 @@ export function ClientPreview({ componentId }: { componentId: string }) {
         />
       </aside>
       <div className="flex flex-1 flex-col gap-2">
-        <div className="bg-background shadow-crisp-edge flex-1 overflow-auto rounded-lg p-6">
+        <div
+          ref={previewContainerRef}
+          className={`bg-background shadow-crisp-edge scrollbar-subtle flex min-h-0 flex-1 justify-center overflow-auto rounded-lg p-6 ${isPreviewOverflowing ? "items-start" : "items-center"}`}
+        >
           <div
-            className="mx-auto transition-[width]"
+            ref={previewContentRef}
+            className="mx-auto min-w-0 transition-[width]"
             style={{
               width: viewportWidths[viewport],
               maxWidth: "100%",

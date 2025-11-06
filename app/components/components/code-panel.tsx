@@ -305,13 +305,13 @@ export function CodePanel({
             )}
           </Button>
         </summary>
-        <div className="max-h-50dvh overflow-auto">
+        <div className="scrollbar-subtle max-h-50dvh overflow-auto">
           <ShikiHighlighter
             language="tsx"
             theme={{ dark: "github-dark-high-contrast", light: "github-light" }}
             defaultColor="light-dark()"
             startingLineNumber={1}
-            className="text-sm"
+            className="scrollbar-subtle text-sm"
             style={
               {
                 padding: "1rem",

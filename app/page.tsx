@@ -11,10 +11,10 @@ import {
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Leva } from "leva";
-import { DemoChat } from "@/app/components/demo-chat";
-import { App as HypercubeCanvas } from "@/app/components/rotating-hypercube";
+import { DemoChat } from "@/components/demo-chat";
+import { App as HypercubeCanvas } from "@/components/rotating-hypercube";
 import { Button } from "@/components/ui/button";
-import { Monitor, Smartphone, Tablet } from "lucide-react";
+import { ArrowRight, Monitor, Smartphone, Tablet } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
 import {
   Panel,
@@ -175,10 +175,11 @@ function HomePageContent({ showLogoDebug }: { showLogoDebug: boolean }) {
         </p>
         <div className="flex justify-start gap-4">
           <Link
-            href="/playground"
-            className="bg-primary text-primary-foreground rounded-md px-6 py-3"
+            href="/components"
+            className="bg-primary text-primary-foreground rounded-md px-6 py-3 font-medium"
           >
-            Go to Playground
+            See the Components
+            <ArrowRight className="size-4 shrink-0" />
           </Link>
         </div>
       </div>

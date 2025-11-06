@@ -5,8 +5,8 @@ import {
   useChatRuntime,
   AssistantChatTransport,
 } from "@assistant-ui/react-ai-sdk";
-import { Thread } from "@/app/components/ui/thread";
-import { GetStocksUI } from "@/app/components/tool-uis/get-stocks-ui";
+import { Thread } from "@/components/ui-thread/thread";
+import { GetStocksUI } from "@/components/tool-uis/get-stocks-ui";
 
 /**
  * Demo Chat Component

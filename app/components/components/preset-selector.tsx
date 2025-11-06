@@ -16,12 +16,12 @@ import {
 } from "@/lib/media-card-presets";
 import { cn } from "@/lib/utils";
 
-type PlaygroundPreset = PresetName | SocialPostPresetName | MediaCardPresetName;
+type ComponentPreset = PresetName | SocialPostPresetName | MediaCardPresetName;
 
 interface PresetSelectorProps {
   componentId: string;
-  currentPreset: PlaygroundPreset;
-  onSelectPreset: (preset: PlaygroundPreset) => void;
+  currentPreset: ComponentPreset;
+  onSelectPreset: (preset: ComponentPreset) => void;
 }
 
 const dataTablePresetNames: PresetName[] = [
@@ -29,9 +29,7 @@ const dataTablePresetNames: PresetName[] = [
   "tasks",
   "metrics",
   "resources",
-  "layout",
   "localized",
-  "large",
   "empty",
 ];
 
@@ -43,10 +41,10 @@ const socialPostPresetNames: SocialPostPresetName[] = [
 ];
 
 const mediaCardPresetNames: MediaCardPresetName[] = [
+  "link",
   "image",
   "video",
   "audio",
-  "link",
 ];
 
 export function PresetSelector({

@@ -61,6 +61,7 @@ export function MediaFrame() {
 
   if (card.kind === "image") {
     if (!card.src) return null;
+    const title = card.title ?? card.og?.title;
     const sourceLabel = card.source?.label ?? card.domain;
     const sourceUrl =
       resolvedSourceUrl ?? card.source?.url ?? card.href ?? card.src;
@@ -76,32 +77,11 @@ export function MediaFrame() {
         window.open(sourceUrl, "_blank", "noopener,noreferrer");
       }
     };
-    const SourceContent = hasSource ? (
-      <div className="flex items-center gap-2">
-        {card.source?.iconUrl ? (
-          <img
-            src={card.source.iconUrl}
-            alt=""
-            aria-hidden="true"
-            className="h-7 w-7 rounded-full object-cover"
-            loading="lazy"
-            decoding="async"
-          />
-        ) : fallbackInitial ? (
-          <div className="bg-background/70 text-foreground flex h-7 w-7 items-center justify-center rounded-full font-semibold uppercase">
-            {fallbackInitial}
-          </div>
-        ) : null}
-        {sourceLabel ? (
-          <span className="text-foreground font-medium">{sourceLabel}</span>
-        ) : null}
-      </div>
-    ) : null;
 
     return (
       <div
         className={cn(
-          "bg-muted relative w-full overflow-hidden rounded-lg",
+          "bg-muted group relative w-full overflow-hidden rounded-lg",
           ratio !== "auto" ? RATIO_CLASS_MAP[ratio] : "min-h-[160px]",
         )}
       >
@@ -116,22 +96,73 @@ export function MediaFrame() {
             "transition-transform duration-300 group-hover:scale-[1.01]",
           )}
         />
-        {SourceContent ? (
-          sourceUrl ? (
-            <button
-              type="button"
-              onClick={handleSourceClick}
-              className="border-border/60 bg-background/80 text-foreground focus-visible:ring-ring absolute bottom-4 left-4 z-30 inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-left text-xs shadow-sm backdrop-blur focus-visible:ring-2 focus-visible:outline-none"
-            >
-              {SourceContent}
-            </button>
-          ) : (
-            <div className="border-border/60 bg-background/80 text-foreground absolute bottom-4 left-4 z-30 inline-flex items-center gap-2 rounded-full border px-3 py-1.5 shadow-sm backdrop-blur">
-              {SourceContent}
+        {title || hasSource ? (
+          <>
+            <div className="pointer-events-none absolute inset-x-0 top-0 z-20 h-32 bg-gradient-to-b from-black/70 via-black/20 to-transparent opacity-0 transition-opacity duration-200 group-hover:opacity-100" />
+            <div className="absolute inset-x-0 top-0 z-30 flex items-start justify-between gap-3 px-5 pt-4 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+              <div className="flex min-w-0 flex-1 flex-col gap-2">
+                {title ? (
+                  <div className="line-clamp-2 font-semibold text-white drop-shadow-sm">
+                    {title}
+                  </div>
+                ) : null}
+                {hasSource ? (
+                  sourceUrl ? (
+                    <button
+                      type="button"
+                      onClick={handleSourceClick}
+                      className="inline-flex w-fit items-center gap-2 text-left focus-visible:ring-2 focus-visible:ring-white focus-visible:outline-none"
+                    >
+                      <div className="flex items-center gap-2">
+                        {card.source?.iconUrl ? (
+                          <img
+                            src={card.source.iconUrl}
+                            alt=""
+                            aria-hidden="true"
+                            className="h-6 w-6 rounded-full object-cover"
+                            loading="lazy"
+                            decoding="async"
+                          />
+                        ) : fallbackInitial ? (
+                          <div className="flex h-6 w-6 items-center justify-center rounded-full bg-white/20 text-xs font-semibold uppercase text-white">
+                            {fallbackInitial}
+                          </div>
+                        ) : null}
+                        {sourceLabel ? (
+                          <span className="text-sm font-medium text-white/90 drop-shadow-sm">
+                            {sourceLabel}
+                          </span>
+                        ) : null}
+                      </div>
+                    </button>
+                  ) : (
+                    <div className="inline-flex w-fit items-center gap-2">
+                      {card.source?.iconUrl ? (
+                        <img
+                          src={card.source.iconUrl}
+                          alt=""
+                          aria-hidden="true"
+                          className="h-6 w-6 rounded-full object-cover"
+                          loading="lazy"
+                          decoding="async"
+                        />
+                      ) : fallbackInitial ? (
+                        <div className="flex h-6 w-6 items-center justify-center rounded-full bg-white/20 text-xs font-semibold uppercase text-white">
+                          {fallbackInitial}
+                        </div>
+                      ) : null}
+                      {sourceLabel ? (
+                        <span className="text-sm font-medium text-white/90 drop-shadow-sm">
+                          {sourceLabel}
+                        </span>
+                      ) : null}
+                    </div>
+                  )
+                ) : null}
+              </div>
             </div>
-          )
+          </>
         ) : null}
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-black/35 to-transparent" />
       </div>
     );
   }

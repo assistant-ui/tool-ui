@@ -162,6 +162,40 @@
         inset 0px 1px 0px oklch(1 0 0 / 0.05);
     }
   }
+
+  .scrollbar-subtle {
+    scrollbar-width: thin;
+    scrollbar-color: oklch(0 0 0 / 0.2) transparent;
+  }
+
+  .scrollbar-subtle::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  .scrollbar-subtle::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .scrollbar-subtle::-webkit-scrollbar-thumb {
+    background-color: oklch(0 0 0 / 0.2);
+    border-radius: 9999px;
+  }
+
+  .scrollbar-subtle:hover::-webkit-scrollbar-thumb {
+    background-color: oklch(0 0 0 / 0.3);
+  }
+
+  .dark .scrollbar-subtle {
+    scrollbar-color: oklch(0 0 0 / 0.45) transparent;
+  }
+
+  .dark .scrollbar-subtle::-webkit-scrollbar-thumb {
+    background-color: oklch(0 0 0 / 0.45);
+  }
+
+  .dark .scrollbar-subtle:hover::-webkit-scrollbar-thumb {
+    background-color: oklch(0 0 0 / 0.55);
+  }
 }
 
 @layer base {

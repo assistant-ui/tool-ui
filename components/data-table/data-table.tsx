@@ -429,12 +429,14 @@ export function DataTable<T extends object = RowData>({
 
   return (
     <DataTableContext.Provider value={contextValue}>
-      <div className={cn("@container w-full", className)}>
+      <div
+        className={cn("bg-background @container w-full rounded-md", className)}
+      >
         <div className={cn("hidden @md:block")}>
           <div className="relative">
             <div
               className={cn(
-                "relative w-full overflow-auto rounded-md border",
+                "relative w-full overflow-clip overflow-y-auto rounded-md border",
                 "touch-pan-x",
                 maxHeight && "max-h-[--max-height]",
               )}

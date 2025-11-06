@@ -18,13 +18,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { ComponentNav } from "./components/component-nav";
-import { PlaygroundProvider } from "./playground-context";
+import { ComponentsProvider } from "./components-context";
 import { ThemeToggle } from "@/components/theme-toggle";
 import Link from "next/link";
 
 type ViewportSize = "mobile" | "tablet" | "desktop";
 
-function PlaygroundHeader({
+function ComponentsHeader({
   viewport,
   onViewportChange,
 }: {
@@ -33,27 +33,27 @@ function PlaygroundHeader({
 }) {
   return (
     <header className="bg-wash flex shrink-0 items-center justify-between px-4 py-2">
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-4">
         <Link href="/">
           <h1 className="text-xl font-semibold tracking-wide">ToolUI</h1>
         </Link>
-        <Select defaultValue="playground">
+        <Select defaultValue="components">
           <SelectTrigger
             size="sm"
-            className="text-foreground bg-background data-[state=open]:bg-background/50 border-0 px-2 py-0 text-base font-medium select-none focus-visible:border-transparent focus-visible:ring-0 focus-visible:ring-offset-0"
+            className="text-foreground bg-background data-[state=open]:bg-background/50 shadow-crisp-edge border-0 px-2 py-0 text-sm font-medium select-none focus-visible:border-transparent focus-visible:ring-0 focus-visible:ring-offset-0"
           >
-            <SelectValue aria-label="Playground" />
+            <SelectValue aria-label="Components" />
           </SelectTrigger>
           <SelectContent className="min-w-44" align="start">
-            <SelectItem value="playground" className="px-4 py-2 text-base">
+            <SelectItem value="components" className="px-4 py-2">
               <Shapes className="text-amber-600 dark:text-amber-500" />
-              <span>Playground</span>
+              <span>Components</span>
             </SelectItem>
-            <SelectItem value="builder" className="px-4 py-2 text-base">
+            <SelectItem value="builder" className="px-4 py-2">
               <Hammer className="text-green-600 dark:text-green-500" />
               <span>Builder</span>
             </SelectItem>
-            <SelectItem value="home" className="px-4 py-2 text-base">
+            <SelectItem value="home" className="px-4 py-2">
               <Home className="text-blue-600 dark:text-blue-500" />
               <span>Home</span>
             </SelectItem>
@@ -97,7 +97,7 @@ function PlaygroundHeader({
   );
 }
 
-export default function PlaygroundLayout({
+export default function ComponentsLayout({
   children,
 }: {
   children: ReactNode;
@@ -105,14 +105,14 @@ export default function PlaygroundLayout({
   const [viewport, setViewport] = useState<ViewportSize>("desktop");
 
   return (
-    <PlaygroundProvider value={{ viewport }}>
+    <ComponentsProvider value={{ viewport }}>
       <div className="flex h-screen min-h-0 flex-col">
-        <PlaygroundHeader viewport={viewport} onViewportChange={setViewport} />
+        <ComponentsHeader viewport={viewport} onViewportChange={setViewport} />
         <div className="flex flex-1 overflow-hidden">
           <ComponentNav />
           <div className="flex flex-1 flex-col">{children}</div>
         </div>
       </div>
-    </PlaygroundProvider>
+    </ComponentsProvider>
   );
 }

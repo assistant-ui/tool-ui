@@ -242,7 +242,7 @@ function LinkValue({ value, options, row }: LinkValueProps) {
       href={href}
       target={external ? "_blank" : undefined}
       rel={external ? "noopener noreferrer" : undefined}
-      className="text-accent-foreground underline underline-offset-2 hover:opacity-90"
+      className="text-accent-foreground inline-block max-w-full break-words underline underline-offset-2 hover:opacity-90"
       aria-label={external ? `${value} (opens in a new tab)` : undefined}
       onClick={(e) => e.stopPropagation()}
     >

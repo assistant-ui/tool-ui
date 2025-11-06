@@ -14,21 +14,21 @@ export const componentsRegistry: ComponentMetadata[] = [
     label: "Data Table",
     description: "Display tabular data with sorting and actions",
     icon: Table,
-    path: "/playground/data-table",
+    path: "/components/data-table",
   },
   {
     id: "social-post",
     label: "Social Post",
     description: "Render social media posts from multiple platforms",
     icon: MessageSquare,
-    path: "/playground/social-post",
+    path: "/components/social-post",
   },
   {
     id: "media-card",
     label: "Media Card",
     description: "Preview images, links, videos, and audio safely",
     icon: Image,
-    path: "/playground/media-card",
+    path: "/components/media-card",
   },
 ];
 
