@@ -96,8 +96,8 @@ export const decisionPromptPresets: Record<
   DecisionPromptPresetName,
   DecisionPromptConfig
 > = {
-  binary: binaryPreset,
   "multi-choice": multiChoicePreset,
+  binary: binaryPreset,
   destructive: destructivePreset,
   async: asyncPreset,
   workflow: workflowPreset,

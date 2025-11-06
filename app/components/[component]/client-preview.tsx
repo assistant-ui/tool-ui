@@ -48,7 +48,7 @@ export function ClientPreview({ componentId }: { componentId: string }) {
       : componentId === "media-card"
         ? "link"
         : componentId === "decision-prompt"
-          ? "binary"
+          ? "multi-choice"
           : "stocks",
   );
   const [isLoading, setIsLoading] = useState(false);

@@ -79,7 +79,7 @@ const linkPreset: MediaCardConfig = {
     ratio: "16:9",
     domain: "wikipedia.org",
     thumb:
-      "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&q=80&w=2046",
+      "https://images.unsplash.com/photo-1562408590-e32931084e23?auto=format&fit=crop&q=80&w=2046",
     createdAtISO: "2025-02-05T09:45:00.000Z",
     source: {
       label: "History compendium",

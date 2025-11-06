@@ -164,7 +164,7 @@ export function DemoChat() {
                 ratio: "16:9",
                 domain: "assistant-ui.com",
                 thumb:
-                  "https://images.unsplash.com/photo-1504389273929-44baec1307d2?auto=format&fit=crop&q=80&w=1200",
+                  "https://images.unsplash.com/photo-1626846116799-ad61f874f99d?auto=format&fit=crop&q=80&w=1200",
                 createdAtISO: "2025-02-05T09:45:00.000Z",
                 source: {
                   label: "Docs generator",
@@ -173,7 +173,7 @@ export function DemoChat() {
                 },
                 og: {
                   imageUrl:
-                    "https://images.unsplash.com/photo-1504389273929-44baec1307d2?auto=format&fit=crop&q=80&w=1200",
+                    "https://images.unsplash.com/photo-1626846116799-ad61f874f99d?auto=format&fit=crop&q=80&w=1200",
                   description: "Guidance for building resilient tool surfaces.",
                   title: "Designing tool-friendly media cards",
                 },
@@ -229,7 +229,7 @@ export function DemoChat() {
                   description:
                     "How to structure robust previews for images, video, audio, and streaming tool output.",
                   imageUrl:
-                    "https://images.unsplash.com/photo-1504389273929-44baec1307d2?auto=format&fit=crop&q=80&w=1200",
+                    "https://images.unsplash.com/photo-1626846116799-ad61f874f99d?auto=format&fit=crop&q=80&w=1200",
                   domain: "assistant-ui.com",
                 },
                 stats: {
