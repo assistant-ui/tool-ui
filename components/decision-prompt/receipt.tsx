@@ -31,12 +31,12 @@ export function DecisionPromptReceipt({
   }[align];
 
   return (
-    <div className={cn("flex items-center gap-2", alignClass, className)} data-slot="receipt">
+    <div className={cn("flex items-center gap-2.5", alignClass, className)} data-slot="receipt">
       <Badge
         variant="secondary"
-        className="gap-1.5 text-muted-foreground"
+        className="gap-2 px-3 py-1.5 text-sm font-medium text-muted-foreground"
       >
-        <CheckCircle2 className="h-3.5 w-3.5" />
+        <CheckCircle2 className="h-4 w-4" />
         {action.icon && <span>{action.icon}</span>}
         {action.label}
       </Badge>

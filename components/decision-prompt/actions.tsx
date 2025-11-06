@@ -107,7 +107,7 @@ export function DecisionPromptActions({
   }[align];
 
   return (
-    <div className={cn("flex items-center gap-2", alignClass, className)}>
+    <div className={cn("flex items-center gap-2.5", alignClass, className)}>
       {actions.map((action) => {
         const isConfirming = confirmingActionId === action.id;
         const isExecuting = executingActionId === action.id;
@@ -132,7 +132,7 @@ export function DecisionPromptActions({
             onClick={() => handleActionClick(action)}
             disabled={isDisabled}
             className={cn(
-              "transition-all",
+              "min-w-24 px-4 py-2 text-sm font-medium transition-all",
               isConfirming &&
                 "ring-destructive animate-pulse ring-2 ring-offset-2",
             )}
@@ -167,7 +167,7 @@ export function DecisionPromptActions({
             )}
             {label}
             {action.shortcut && !isLoading && (
-              <kbd className="border-border bg-muted ml-2 hidden rounded border px-1.5 py-0.5 font-mono text-xs sm:inline-block">
+              <kbd className="border-border bg-muted ml-2.5 hidden rounded border px-2 py-0.5 font-mono text-xs font-medium sm:inline-block">
                 {action.shortcut}
               </kbd>
             )}

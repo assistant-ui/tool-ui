@@ -481,7 +481,7 @@ export function DataTable<T extends object = RowData>({
         </div>
 
         <div
-          className={cn("flex flex-col gap-3 @md:hidden")}
+          className={cn("flex flex-col gap-2 @md:hidden")}
           role="list"
           aria-label="Data table (mobile card view)"
           aria-describedby="mobile-table-description"
