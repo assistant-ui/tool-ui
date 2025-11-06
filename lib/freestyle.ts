@@ -17,7 +17,6 @@ export async function createChat() {
     name: `Tool UI Builder`,
     public: true,
     source: {
-      type: "git",
       url: "https://github.com/assistant-ui/tool-ui-sandbox-template",
     },
     devServers: {
