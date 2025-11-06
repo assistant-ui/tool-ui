@@ -13,11 +13,12 @@ import { RenderSocialPostUI } from "@/components/tool-uis/render-social-post-ui"
 /**
  * Demo Chat Component
  *
- * Provides a single-threaded chat interface with:
- * - OpenAI GPT-4o integration
- * - get_stocks tool for fetching stock data
- * - DataTable visualization of results
- * - Rate limiting (10 requests per 10 minutes)
+ * Demonstrates a content creator preparing their weekly tech newsletter
+ * about the AI industry. Shows how the assistant makes research efficient
+ * and delightful by leveraging rich tool UIs:
+ * - DataTable for stock market data
+ * - MediaCard for article previews
+ * - SocialPost for trending industry insights
  */
 export function DemoChat() {
   // Create chat runtime with API endpoint
@@ -25,7 +26,7 @@ export function DemoChat() {
     transport: new AssistantChatTransport({
       api: "/api/chat",
     }),
-    // Seeded mock conversation using parts (AI SDK v5 shape)
+    // Seeded mock conversation: Content creator preparing a tech newsletter
     messages: [
       {
         id: "user_1",
@@ -33,7 +34,7 @@ export function DemoChat() {
         parts: [
           {
             type: "text",
-            text: "Show me the top tech stocks in a table (AAPL, MSFT, GOOGL).",
+            text: "I'm writing my weekly tech newsletter and want to cover the AI industry boom. Can you show me the latest performance data for the major AI players?",
           },
         ],
       },
@@ -43,7 +44,7 @@ export function DemoChat() {
         parts: [
           {
             type: "text",
-            text: "Got it — fetching the latest prices and changes for those symbols…",
+            text: "I'll pull up the current market data for the leading AI-focused tech companies.",
           },
         ],
       },
@@ -56,27 +57,27 @@ export function DemoChat() {
             type: "tool-get_stocks",
             toolCallId: "tc_get_stocks_1",
             state: "output-available",
-            input: { query: "AAPL, MSFT, GOOGL" },
+            input: { query: "NVDA, MSFT, GOOGL, META, AMZN" },
             output: {
-              count: 3,
+              count: 5,
               stocks: [
                 {
-                  symbol: "AAPL",
-                  name: "Apple Inc.",
-                  price: 178.25,
-                  change: 2.35,
-                  changePercent: 1.34,
-                  volume: 48532100,
-                  marketCap: 2780000000000,
-                  pe: 29.5,
-                  eps: 6.05,
+                  symbol: "NVDA",
+                  name: "NVIDIA Corporation",
+                  price: 875.45,
+                  change: 12.8,
+                  changePercent: 1.48,
+                  volume: 52341200,
+                  marketCap: 2160000000000,
+                  pe: 68.4,
+                  eps: 12.8,
                 },
                 {
                   symbol: "MSFT",
                   name: "Microsoft Corporation",
                   price: 378.91,
-                  change: -1.24,
-                  changePercent: -0.33,
+                  change: 4.25,
+                  changePercent: 1.13,
                   volume: 22451800,
                   marketCap: 2810000000000,
                   pe: 35.2,
@@ -86,12 +87,34 @@ export function DemoChat() {
                   symbol: "GOOGL",
                   name: "Alphabet Inc.",
                   price: 139.67,
-                  change: 0.89,
-                  changePercent: 0.64,
+                  change: 2.15,
+                  changePercent: 1.56,
                   volume: 19234500,
                   marketCap: 1750000000000,
                   pe: 26.8,
                   eps: 5.21,
+                },
+                {
+                  symbol: "META",
+                  name: "Meta Platforms Inc.",
+                  price: 485.32,
+                  change: 8.92,
+                  changePercent: 1.87,
+                  volume: 18923400,
+                  marketCap: 1230000000000,
+                  pe: 28.6,
+                  eps: 16.97,
+                },
+                {
+                  symbol: "AMZN",
+                  name: "Amazon.com Inc.",
+                  price: 178.25,
+                  change: 1.34,
+                  changePercent: 0.76,
+                  volume: 35672800,
+                  marketCap: 1850000000000,
+                  pe: 52.3,
+                  eps: 3.41,
                 },
               ],
             },
@@ -104,7 +127,7 @@ export function DemoChat() {
         parts: [
           {
             type: "text",
-            text: "Also give me a rich link preview for this article: https://assistant-ui.com/blog/tool-ui-patterns",
+            text: "Perfect! I want to reference this article about modern AI UX design patterns. Can you show me a preview? https://assistant-ui.com/blog/tool-ui-patterns",
           },
         ],
       },
@@ -114,7 +137,7 @@ export function DemoChat() {
         parts: [
           {
             type: "text",
-            text: "Here’s a link preview of that article.",
+            text: "Great resource for your newsletter. Here's a rich preview of that article.",
           },
         ],
       },
@@ -164,7 +187,7 @@ export function DemoChat() {
         parts: [
           {
             type: "text",
-            text: "Summarize this LinkedIn post and show engagement stats.",
+            text: "Perfect! Now draft an X post to promote this newsletter issue. Include the article link and make it engaging.",
           },
         ],
       },
@@ -174,7 +197,7 @@ export function DemoChat() {
         parts: [
           {
             type: "text",
-            text: "Here’s a social post-style preview with engagement details.",
+            text: "Here's a draft post for X that highlights the key insights and includes the article preview.",
           },
         ],
       },
@@ -187,33 +210,32 @@ export function DemoChat() {
             type: "tool-render_social_post",
             toolCallId: "tc_social_post_1",
             state: "output-available",
-            input: { platform: "linkedin" },
+            input: { platform: "x" },
             output: {
               post: {
-                id: "linkedin-post-1",
-                platform: "linkedin",
+                id: "x-draft-1",
+                platform: "x",
                 author: {
-                  name: "Dr. Michael Thompson",
-                  handle: "michaelthompson",
+                  name: "You",
+                  handle: "yournewsletter",
                   avatarUrl:
-                    "https://api.dicebear.com/7.x/avataaars/svg?seed=Michael",
+                    "https://api.dicebear.com/7.x/avataaars/svg?seed=User",
                 },
-                text: "Excited to share a quick update on our cloud migration project—key lessons in scalability, resilience, and automation.",
+                text: "The AI boom is reshaping tech markets. NVDA up 68% P/E, META leading with 1.87% gains. This week's newsletter breaks down what it means for the industry 👇",
                 linkPreview: {
-                  url: "https://example.com/blog/cloud-migration-case-study",
-                  title:
-                    "Cloud Migration Case Study: Lessons from the Trenches",
+                  url: "https://assistant-ui.com/blog/tool-ui-patterns",
+                  title: "Designing tool-friendly media cards",
                   description:
-                    "A comprehensive guide to our successful cloud migration journey.",
+                    "How to structure robust previews for images, video, audio, and streaming tool output.",
                   imageUrl:
-                    "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=800&fit=crop",
-                  domain: "example.com",
+                    "https://images.unsplash.com/photo-1504389273929-44baec1307d2?auto=format&fit=crop&q=80&w=1200",
+                  domain: "assistant-ui.com",
                 },
-                stats: { likes: 847, shares: 24 },
+                stats: { likes: 0, shares: 0 },
                 createdAtISO: "2025-11-05T09:15:00.000Z",
                 actions: [
-                  { id: "like", label: "Like", variant: "ghost" },
-                  { id: "share", label: "Share", variant: "ghost" },
+                  { id: "edit", label: "Edit", variant: "ghost" },
+                  { id: "post", label: "Post", variant: "default" },
                 ],
               },
             },
