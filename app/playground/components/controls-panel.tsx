@@ -62,7 +62,7 @@ export function ControlsPanel({
             />
 
             <div className="relative flex items-center justify-center pt-2 pb-4">
-              <TabsList className="bg-transparent flex gap-2 rounded-lg text-sm font-light">
+              <TabsList className="flex gap-2 rounded-lg bg-transparent text-sm font-light">
                 <TabsTrigger
                   value="presets"
                   className="data-[state=active]:bg-background data-[state=active]:text-foreground"
@@ -113,7 +113,9 @@ export function ControlsPanel({
                     <Input
                       id="empty-message"
                       value={emptyMessage}
-                      onChange={(event) => onEmptyMessageChange(event.target.value)}
+                      onChange={(event) =>
+                        onEmptyMessageChange(event.target.value)
+                      }
                       placeholder="No data available"
                     />
                   </div>
@@ -168,8 +170,14 @@ export function ControlsPanel({
           <ItemGroup className="gap-3">
             <Item variant="outline">
               <ItemContent>
-                <div className="flex items-center justify-between gap-4">
-                  <Label htmlFor="loading-state" className="text-sm">
+                <div
+                  className="flex cursor-pointer items-center justify-between gap-4"
+                  onClick={() => onLoadingChange(!isLoading)}
+                >
+                  <Label
+                    htmlFor="loading-state"
+                    className="cursor-pointer text-sm"
+                  >
                     Show loading
                   </Label>
                   <Switch
@@ -216,7 +224,8 @@ export function ControlsPanel({
                           onSortChange({
                             by: sort.by,
                             direction:
-                              (event.target.value as "asc" | "desc") || undefined,
+                              (event.target.value as "asc" | "desc") ||
+                              undefined,
                           })
                         }
                         className="border-input bg-background focus-visible:ring-ring focus-visible:ring-offset-background flex h-9 w-full items-center rounded-md border px-3 text-sm shadow-sm transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"

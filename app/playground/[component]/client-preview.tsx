@@ -122,7 +122,7 @@ export function ClientPreview({ componentId }: { componentId: string }) {
 
   return (
     <div className="mr-2 flex h-full min-h-0 w-full flex-1 gap-2 pr-2 pb-2">
-      <aside className="bg-background/40 flex h-full w-80 shrink-0 flex-col overflow-x-hidden overflow-y-auto rounded-lg shadow-xs">
+      <aside className="bg-background/40 shadow-crisp-edge flex h-full w-80 shrink-0 flex-col overflow-x-hidden overflow-y-auto rounded-lg">
         <ControlsPanel
           componentId={componentId}
           currentPreset={currentPreset}
@@ -137,8 +137,8 @@ export function ClientPreview({ componentId }: { componentId: string }) {
           onMediaCardMaxWidthChange={setMediaCardMaxWidth}
         />
       </aside>
-      <div className="flex flex-1 flex-col gap-2 overflow-clip">
-        <div className="bg-background shadow-input-field flex-1 overflow-auto rounded-lg p-6">
+      <div className="flex flex-1 flex-col gap-2">
+        <div className="bg-background shadow-crisp-edge flex-1 overflow-auto rounded-lg p-6">
           <div
             className="mx-auto transition-[width]"
             style={{
@@ -195,7 +195,7 @@ export function ClientPreview({ componentId }: { componentId: string }) {
           </div>
         </div>
 
-        <div className="bg-background hover:bg-muted flex-none overflow-hidden rounded-lg shadow-xs">
+        <div className="bg-background shadow-crisp-edge hover:bg-muted flex-none overflow-clip rounded-lg">
           <CodePanel
             componentId={componentId}
             config={currentConfig}
