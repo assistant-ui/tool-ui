@@ -70,11 +70,11 @@ const DemoToolUI = makeAssistantToolUI<
   {} // result type
 >({
   toolName: "demo_tool",
-  render: ({ args, result }) => {
+  render: function DemoToolUI({ args, result }) {
     // ONLY modify code inside this render function
     return (
       <div className="flex justify-center items-center min-h-[60vh]">
-        <Card className="w-[380px] shadow-xl">
+        <Card className="w-[380px]">
           {/* Your widget UI here */}
         </Card>
       </div>
@@ -141,19 +141,21 @@ Example interactive pattern:
 
 **Good Widget (Compact, Focused):**
 \`\`\`tsx
-render: ({ args }) => (
-  <div className="flex justify-center items-center min-h-[60vh]">
-    <Card className="w-[400px]">
-      <CardHeader>
-        <CardTitle>Weather for {args.city}</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="text-4xl font-bold">{args.temp}°C</div>
-        <p className="text-muted-foreground">{args.condition}</p>
-      </CardContent>
-    </Card>
-  </div>
-)
+render: WidgetUI({ args }) {
+  return (
+    <div className="flex justify-center items-center min-h-[60vh]">
+      <Card className="w-[400px]">
+        <CardHeader>
+          <CardTitle>Weather for {args.city}</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="text-4xl font-bold">{args.temp}°C</div>
+          <p className="text-muted-foreground">{args.condition}</p>
+        </CardContent>
+      </Card>
+    </div>
+  )
+}
 \`\`\`
 
 **Avoid (Too Complex):**
