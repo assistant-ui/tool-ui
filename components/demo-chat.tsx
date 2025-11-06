@@ -9,6 +9,7 @@ import { Thread } from "@/components/ui-thread/thread";
 import { GetStocksUI } from "@/components/tool-uis/get-stocks-ui";
 import { RenderMediaCardUI } from "@/components/tool-uis/render-media-card-ui";
 import { RenderSocialPostUI } from "@/components/tool-uis/render-social-post-ui";
+import { RenderDecisionPromptUI } from "@/components/tool-uis/render-decision-prompt-ui";
 
 /**
  * Demo Chat Component
@@ -233,10 +234,29 @@ export function DemoChat() {
                 },
                 stats: { likes: 0, shares: 0 },
                 createdAtISO: "2025-11-05T09:15:00.000Z",
+              },
+            },
+          },
+        ],
+      },
+      {
+        id: "assistant_7",
+        role: "assistant",
+        parts: [
+          // Tool UI: render_decision_prompt → renders DecisionPrompt
+          {
+            type: "tool-render_decision_prompt",
+            toolCallId: "tc_decision_prompt_1",
+            state: "output-available",
+            input: {},
+            output: {
+              decision: {
+                prompt: "What would you like to do with this post?",
                 actions: [
                   { id: "edit", label: "Edit", variant: "ghost" },
-                  { id: "post", label: "Post", variant: "default" },
+                  { id: "send", label: "Send", variant: "default" },
                 ],
+                align: "left",
               },
             },
           },
@@ -251,6 +271,7 @@ export function DemoChat() {
       <GetStocksUI />
       <RenderMediaCardUI />
       <RenderSocialPostUI />
+      <RenderDecisionPromptUI />
     </AssistantRuntimeProvider>
   );
 }

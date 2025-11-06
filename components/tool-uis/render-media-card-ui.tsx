@@ -28,7 +28,7 @@ export const RenderMediaCardUI = makeAssistantToolUI<
     if (!result) return null;
 
     return (
-      <div className="w-full min-w-0 flex justify-center">
+      <div className="w-full min-w-0 flex justify-start">
         <MediaCard {...result.card} maxWidth="420px" />
       </div>
     );
