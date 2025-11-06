@@ -20,8 +20,8 @@ export default function BuilderLayout({ children }: { children: ReactNode }) {
   return (
     <div className="bg-background flex h-screen flex-col">
       {/* Header with logo and tabs */}
-      <div className="bg-background flex border-b">
-        <div className="flex w-[240px] shrink-0 items-center justify-center border-r px-6 py-3">
+      <div className="bg-background flex">
+        <div className="flex w-[240px] shrink-0 items-center justify-start px-6 py-3">
           <Link href="/">
             <h1 className="text-xl font-semibold tracking-wide">tool-ui.com</h1>
           </Link>

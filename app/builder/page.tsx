@@ -621,109 +621,109 @@ export default function BuilderPage() {
       <AssistantRuntimeProvider runtime={runtime}>
         <PreviewRefreshSetter />
         <div className="flex h-full">
-        <div className="bg-background w-[240px] shrink-0 overflow-y-auto border-r p-4">
-          <ThreadList />
-        </div>
-        <div
-          className="overflow-hidden"
-          style={{ width: repoId ? `${100 - webviewWidth}%` : "100%" }}
-        >
-          <Thread />
-        </div>
-        {repoId && (
-          <>
-            <div
-              className="bg-border hover:bg-primary w-1 cursor-col-resize transition-colors"
-              onMouseDown={handleMouseDown}
-            />
-            <div
-              className="flex flex-col"
-              style={{ width: `${webviewWidth}%` }}
-            >
-              {/* Header with view toggle and copy/refresh button */}
-              <div className="bg-background flex h-12 shrink-0 items-center justify-between border-b px-4">
-                <div className="flex items-center gap-2">
-                  <Button
-                    variant={viewMode === "rendered" ? "secondary" : "ghost"}
-                    size="sm"
-                    onClick={() => setViewMode("rendered")}
-                    className="gap-2"
-                  >
-                    <Eye className="h-4 w-4" />
-                    Preview
-                  </Button>
-                  <Button
-                    variant={viewMode === "code" ? "secondary" : "ghost"}
-                    size="sm"
-                    onClick={() => setViewMode("code")}
-                    className="gap-2"
-                  >
-                    <Code className="h-4 w-4" />
-                    Code
-                  </Button>
+          <div className="bg-background w-[240px] shrink-0 overflow-y-auto p-4">
+            <ThreadList />
+          </div>
+          <div
+            className="overflow-hidden rounded-tl-lg border-t border-l"
+            style={{ width: repoId ? `${100 - webviewWidth}%` : "100%" }}
+          >
+            <Thread />
+          </div>
+          {repoId && (
+            <>
+              <div
+                className="bg-border hover:bg-primary w-1 cursor-col-resize transition-colors"
+                onMouseDown={handleMouseDown}
+              />
+              <div
+                className="flex flex-col"
+                style={{ width: `${webviewWidth}%` }}
+              >
+                {/* Header with view toggle and copy/refresh button */}
+                <div className="bg-background flex h-12 shrink-0 items-center justify-between border-b px-4">
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant={viewMode === "rendered" ? "secondary" : "ghost"}
+                      size="sm"
+                      onClick={() => setViewMode("rendered")}
+                      className="gap-2"
+                    >
+                      <Eye className="h-4 w-4" />
+                      Preview
+                    </Button>
+                    <Button
+                      variant={viewMode === "code" ? "secondary" : "ghost"}
+                      size="sm"
+                      onClick={() => setViewMode("code")}
+                      className="gap-2"
+                    >
+                      <Code className="h-4 w-4" />
+                      Code
+                    </Button>
+                  </div>
+                  {viewMode === "rendered" ? (
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => setRefreshKey((prev) => prev + 1)}
+                      title="Refresh preview"
+                    >
+                      <RefreshCw className="h-4 w-4" />
+                    </Button>
+                  ) : (
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={handleCopy}
+                      disabled={!codeContent || isCodeLoading}
+                    >
+                      {copied ? (
+                        <Check className="h-4 w-4" />
+                      ) : (
+                        <Copy className="h-4 w-4" />
+                      )}
+                    </Button>
+                  )}
                 </div>
-                {viewMode === "rendered" ? (
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => setRefreshKey((prev) => prev + 1)}
-                    title="Refresh preview"
-                  >
-                    <RefreshCw className="h-4 w-4" />
-                  </Button>
-                ) : (
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={handleCopy}
-                    disabled={!codeContent || isCodeLoading}
-                  >
-                    {copied ? (
-                      <Check className="h-4 w-4" />
-                    ) : (
-                      <Copy className="h-4 w-4" />
-                    )}
-                  </Button>
-                )}
-              </div>
 
-              {/* Content area */}
-              <div className="flex-1 overflow-hidden">
-                {viewMode === "rendered" ? (
-                  <WebView key={refreshKey} repo={repoId} />
-                ) : (
-                  <div className="h-full overflow-auto p-4">
-                    {isCodeLoading ? (
-                      <div className="flex h-full items-center justify-center">
-                        <div className="text-center">
-                          <Loader2 className="mx-auto h-8 w-8 animate-spin" />
-                          <p className="text-muted-foreground mt-4 text-sm">
-                            Loading code...
+                {/* Content area */}
+                <div className="flex-1 overflow-hidden">
+                  {viewMode === "rendered" ? (
+                    <WebView key={refreshKey} repo={repoId} />
+                  ) : (
+                    <div className="h-full overflow-auto p-4">
+                      {isCodeLoading ? (
+                        <div className="flex h-full items-center justify-center">
+                          <div className="text-center">
+                            <Loader2 className="mx-auto h-8 w-8 animate-spin" />
+                            <p className="text-muted-foreground mt-4 text-sm">
+                              Loading code...
+                            </p>
+                          </div>
+                        </div>
+                      ) : codeContent ? (
+                        <CodeBlock>
+                          <CodeBlockCode code={codeContent} language="tsx" />
+                        </CodeBlock>
+                      ) : (
+                        <div className="flex h-full items-center justify-center">
+                          <p className="text-muted-foreground text-sm">
+                            Failed to load code
                           </p>
                         </div>
-                      </div>
-                    ) : codeContent ? (
-                      <CodeBlock>
-                        <CodeBlockCode code={codeContent} language="tsx" />
-                      </CodeBlock>
-                    ) : (
-                      <div className="flex h-full items-center justify-center">
-                        <p className="text-muted-foreground text-sm">
-                          Failed to load code
-                        </p>
-                      </div>
-                    )}
-                  </div>
-                )}
+                      )}
+                    </div>
+                  )}
+                </div>
               </div>
-            </div>
-          </>
-        )}
-      </div>
-      <EditFileToolUI />
-      <WriteFileToolUI />
-      <ReadFileToolUI />
-    </AssistantRuntimeProvider>
+            </>
+          )}
+        </div>
+        <EditFileToolUI />
+        <WriteFileToolUI />
+        <ReadFileToolUI />
+      </AssistantRuntimeProvider>
     </PreviewRefreshContext.Provider>
   );
 }

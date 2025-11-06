@@ -1,4 +1,3 @@
-import { LinearBlur } from "@/components/ui/linear-blur";
 import { PresetSelector } from "./preset-selector";
 import { PresetName } from "@/lib/sample-data";
 import { SocialPostPresetName } from "@/lib/social-post-presets";
@@ -36,20 +35,7 @@ export function ControlsPanel({
 }: ControlsPanelProps) {
   return (
     <div className="flex h-full flex-col">
-      <div className="sticky top-0 z-20">
-        <div className="relative">
-          <LinearBlur
-            side="top"
-            tint="hsl(var(--background) / 0.6)"
-            className="absolute inset-0 h-5"
-            strength={100}
-            steps={6}
-          />
-          <div className="relative pt-2 pb-2" />
-        </div>
-      </div>
-
-      <div className="flex min-h-0 flex-1 flex-col gap-4 px-3 pb-24">
+      <div className="flex min-h-0 flex-1 flex-col gap-4 px-4 pt-4 pb-24">
         <PresetSelector
           componentId={componentId}
           currentPreset={currentPreset}

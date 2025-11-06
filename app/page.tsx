@@ -151,14 +151,14 @@ function HomePageContent({ showLogoDebug }: { showLogoDebug: boolean }) {
   return (
     <div className="bg-background grid h-screen grid-cols-[minmax(200px,240px)_1fr] grid-rows-[auto_1fr]">
       {/* A1: Logo - centered */}
-      <div className="bg-background flex items-center justify-center border-r border-b px-6 py-3">
+      <div className="bg-background flex items-center justify-start px-6 py-3">
         <Link href="/">
           <h1 className="text-xl font-semibold tracking-wide">tool-ui.com</h1>
         </Link>
       </div>
 
       {/* B1: Tabs */}
-      <div className="bg-background flex items-center justify-between border-b px-6 py-3">
+      <div className="bg-background flex items-center justify-between px-6 py-3">
         <nav className="flex items-center gap-1">
           <Link
             href="/"
