@@ -49,6 +49,8 @@ export function ClientPreview({ componentId }: { componentId: string }) {
   const [mediaCardMaxWidth, setMediaCardMaxWidth] = useState<string>("420px");
   const [decisionPromptSelectedAction, setDecisionPromptSelectedAction] =
     useState<string | undefined>();
+  const [decisionPromptSelectedActions, setDecisionPromptSelectedActions] =
+    useState<string[]>([]);
   const previewContainerRef = useRef<HTMLDivElement | null>(null);
   const previewContentRef = useRef<HTMLDivElement | null>(null);
   const [isPreviewOverflowing, setIsPreviewOverflowing] = useState(false);
@@ -61,8 +63,10 @@ export function ClientPreview({ componentId }: { componentId: string }) {
     }
 
     const updateOverflowState = () => {
-      const verticalOverflow = content.scrollHeight > container.clientHeight + 1;
-      const horizontalOverflow = content.scrollWidth > container.clientWidth + 1;
+      const verticalOverflow =
+        content.scrollHeight > container.clientHeight + 1;
+      const horizontalOverflow =
+        content.scrollWidth > container.clientWidth + 1;
       setIsPreviewOverflowing(verticalOverflow || horizontalOverflow);
     };
 
@@ -78,7 +82,15 @@ export function ClientPreview({ componentId }: { componentId: string }) {
     return () => {
       observer.disconnect();
     };
-  }, [viewport, componentId, currentPreset, isLoading, sort, emptyMessage, mediaCardMaxWidth]);
+  }, [
+    viewport,
+    componentId,
+    currentPreset,
+    isLoading,
+    sort,
+    emptyMessage,
+    mediaCardMaxWidth,
+  ]);
 
   const handleSortChange = (next: {
     by?: string;
@@ -136,6 +148,7 @@ export function ClientPreview({ componentId }: { componentId: string }) {
       } else if (componentId === "decision-prompt") {
         setCurrentPreset(preset);
         setDecisionPromptSelectedAction(undefined);
+        setDecisionPromptSelectedActions([]);
         setIsLoading(false);
       }
     },
@@ -250,26 +263,39 @@ export function ClientPreview({ componentId }: { componentId: string }) {
                 />
               </div>
             )}
-            {componentId === "decision-prompt" && currentDecisionPromptConfig && (
-              <div className="flex justify-center">
-                <div className="w-full max-w-md">
-                  <DecisionPrompt
-                    {...currentDecisionPromptConfig.prompt}
-                    selectedAction={decisionPromptSelectedAction}
-                    onAction={async (actionId) => {
-                      console.log("Decision prompt action:", actionId);
+            {componentId === "decision-prompt" &&
+              currentDecisionPromptConfig && (
+                <div className="flex justify-center">
+                  <div className="w-full max-w-md">
+                    <DecisionPrompt
+                      {...currentDecisionPromptConfig.prompt}
+                      selectedAction={decisionPromptSelectedAction}
+                      selectedActions={decisionPromptSelectedActions}
+                      onAction={async (actionId) => {
+                        console.log("Decision prompt action:", actionId);
 
-                      // Simulate async for "install" or "send" actions
-                      if (actionId === "install" || actionId === "send") {
-                        await new Promise((resolve) => setTimeout(resolve, 1500));
-                      }
+                        // Simulate async for "install" or "send" actions
+                        if (actionId === "install" || actionId === "send") {
+                          await new Promise((resolve) =>
+                            setTimeout(resolve, 1500),
+                          );
+                        }
 
-                      setDecisionPromptSelectedAction(actionId);
-                    }}
-                  />
+                        setDecisionPromptSelectedAction(actionId);
+                      }}
+                      onMultiAction={async (actionIds) => {
+                        console.log("Decision prompt multi-action:", actionIds);
+
+                        await new Promise((resolve) =>
+                          setTimeout(resolve, 1500),
+                        );
+
+                        setDecisionPromptSelectedActions(actionIds);
+                      }}
+                    />
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
           </div>
         </div>
 
@@ -281,6 +307,7 @@ export function ClientPreview({ componentId }: { componentId: string }) {
             mediaCardConfig={currentMediaCardConfig}
             decisionPromptConfig={currentDecisionPromptConfig}
             decisionPromptSelectedAction={decisionPromptSelectedAction}
+            decisionPromptSelectedActions={decisionPromptSelectedActions}
             mediaCardMaxWidth={mediaCardMaxWidth}
             sort={sort}
             isLoading={isLoading}

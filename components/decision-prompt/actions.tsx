@@ -11,6 +11,7 @@ interface DecisionPromptActionsProps {
   onBeforeAction?: (actionId: string) => boolean | Promise<boolean>;
   confirmTimeout?: number;
   align?: "left" | "center" | "right";
+  layout?: "inline" | "stack";
   className?: string;
 }
 
@@ -20,6 +21,7 @@ export function DecisionPromptActions({
   onBeforeAction,
   confirmTimeout = 3000,
   align = "right",
+  layout = "inline",
   className,
 }: DecisionPromptActionsProps) {
   const [confirmingActionId, setConfirmingActionId] = useState<string | null>(
@@ -106,8 +108,17 @@ export function DecisionPromptActions({
     right: "justify-end",
   }[align];
 
+  const isStacked = layout === "stack";
+
   return (
-    <div className={cn("flex items-center gap-2.5", alignClass, className)}>
+    <div
+      className={cn(
+        "flex gap-2.5",
+        isStacked ? "flex-col items-stretch" : "flex-wrap items-center",
+        !isStacked && alignClass,
+        className,
+      )}
+    >
       {actions.map((action) => {
         const isConfirming = confirmingActionId === action.id;
         const isExecuting = executingActionId === action.id;
@@ -132,7 +143,8 @@ export function DecisionPromptActions({
             onClick={() => handleActionClick(action)}
             disabled={isDisabled}
             className={cn(
-              "min-w-24 px-4 py-2 text-sm font-medium transition-all",
+              "px-4 py-2 text-sm font-medium transition-all",
+              isStacked ? "w-full justify-start" : "min-w-24",
               isConfirming &&
                 "ring-destructive animate-pulse ring-2 ring-offset-2",
             )}

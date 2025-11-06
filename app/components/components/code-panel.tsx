@@ -17,6 +17,7 @@ interface CodePanelProps {
   mediaCardConfig?: MediaCardConfig;
   decisionPromptConfig?: DecisionPromptConfig;
   decisionPromptSelectedAction?: string;
+  decisionPromptSelectedActions?: string[];
   mediaCardMaxWidth?: string;
   sort?: { by?: string; direction?: "asc" | "desc" };
   isLoading?: boolean;
@@ -31,6 +32,7 @@ export function CodePanel({
   mediaCardConfig,
   decisionPromptConfig,
   decisionPromptSelectedAction,
+  decisionPromptSelectedActions,
   mediaCardMaxWidth,
   sort,
   isLoading,
@@ -276,21 +278,63 @@ export function CodePanel({
       `  actions={${JSON.stringify(prompt.actions, null, 4).replace(/\n/g, "\n  ")}}`,
     );
 
-    if (decisionPromptSelectedAction) {
-      props.push(`  selectedAction="${decisionPromptSelectedAction}"`);
-    }
+    // Multi-select mode
+    if (prompt.multiSelect) {
+      if (decisionPromptSelectedActions && decisionPromptSelectedActions.length > 0) {
+        props.push(`  selectedActions={${JSON.stringify(decisionPromptSelectedActions)}}`);
+      }
 
-    if (prompt.align && prompt.align !== "right") {
-      props.push(`  align="${prompt.align}"`);
-    }
+      if (prompt.align && prompt.align !== "right") {
+        props.push(`  align="${prompt.align}"`);
+      }
 
-    if (prompt.confirmTimeout && prompt.confirmTimeout !== 3000) {
-      props.push(`  confirmTimeout={${prompt.confirmTimeout}}`);
-    }
+      if (prompt.layout && prompt.layout !== "inline") {
+        props.push(`  layout="${prompt.layout}"`);
+      }
 
-    props.push(
-      `  onAction={(actionId) => {\n    console.log("Action:", actionId);\n    // Handle action here\n  }}`,
-    );
+      props.push(`  multiSelect={true}`);
+
+      if (prompt.minSelections && prompt.minSelections !== 1) {
+        props.push(`  minSelections={${prompt.minSelections}}`);
+      }
+
+      if (prompt.maxSelections) {
+        props.push(`  maxSelections={${prompt.maxSelections}}`);
+      }
+
+      if (prompt.confirmLabel && prompt.confirmLabel !== "Confirm") {
+        props.push(`  confirmLabel="${prompt.confirmLabel}"`);
+      }
+
+      if (prompt.cancelLabel && prompt.cancelLabel !== "Cancel") {
+        props.push(`  cancelLabel="${prompt.cancelLabel}"`);
+      }
+
+      props.push(
+        `  onMultiAction={(actionIds) => {\n    console.log("Selected actions:", actionIds);\n    // Handle multi-action here\n  }}`,
+      );
+    } else {
+      // Single-select mode
+      if (decisionPromptSelectedAction) {
+        props.push(`  selectedAction="${decisionPromptSelectedAction}"`);
+      }
+
+      if (prompt.align && prompt.align !== "right") {
+        props.push(`  align="${prompt.align}"`);
+      }
+
+      if (prompt.layout && prompt.layout !== "inline") {
+        props.push(`  layout="${prompt.layout}"`);
+      }
+
+      if (prompt.confirmTimeout && prompt.confirmTimeout !== 3000) {
+        props.push(`  confirmTimeout={${prompt.confirmTimeout}}`);
+      }
+
+      props.push(
+        `  onAction={(actionId) => {\n    console.log("Action:", actionId);\n    // Handle action here\n  }}`,
+      );
+    }
 
     return `<DecisionPrompt\n${props.join("\n")}\n/>`;
   };

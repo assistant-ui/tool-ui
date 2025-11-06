@@ -28,16 +28,21 @@ const binaryPreset: DecisionPromptConfig = {
 
 const multiChoicePreset: DecisionPromptConfig = {
   prompt: {
-    prompt: "Choose your storage medium:",
-    description: "From cards to cloud — pick your era.",
+    prompt: "Choose export formats:",
+    description: "Select one or more formats to export your data.",
     actions: [
-      { id: "cards", label: "Punch cards", variant: "secondary" },
-      { id: "floppy", label: "3.5\" floppy", variant: "secondary" },
-      { id: "zip", label: "Zip disk", variant: "secondary" },
-      { id: "cloud", label: "Cloud", variant: "secondary" },
+      { id: "csv", label: "CSV", variant: "secondary" },
+      { id: "json", label: "JSON", variant: "secondary" },
+      { id: "excel", label: "Excel", variant: "secondary" },
+      { id: "pdf", label: "PDF", variant: "secondary" },
     ],
     align: "center",
     layout: "stack",
+    multiSelect: true,
+    minSelections: 1,
+    maxSelections: 4,
+    confirmLabel: "Export",
+    cancelLabel: "Clear",
   },
 };
 
@@ -104,7 +109,7 @@ export const decisionPromptPresetDescriptions: Record<
   string
 > = {
   binary: "Simple yes/no with tape-mount nostalgia",
-  "multi-choice": "Storage media, from cards to cloud",
+  "multi-choice": "Multi-select with checkboxes and confirmation",
   destructive: "Two-stage confirmation for destructive formats",
   async: "Action with loading state (install)",
   workflow: "Deployment eras from batch to blue/green",
