@@ -3,7 +3,9 @@ import { z } from "zod";
 export const mediaKind = z.enum(["image", "video", "audio", "link"]);
 export type MediaCardKind = z.infer<typeof mediaKind>;
 
-export const aspect = z.enum(["auto", "1:1", "4:3", "16:9", "9:16"]).default("auto");
+export const aspect = z
+  .enum(["auto", "1:1", "4:3", "16:9", "9:16"])
+  .default("auto");
 export type Aspect = z.infer<typeof aspect>;
 
 export const fit = z.enum(["cover", "contain"]).default("cover");
@@ -49,7 +51,9 @@ export const serializableMediaCardSchema = z
       });
     }
     if (
-      (value.kind === "image" || value.kind === "video" || value.kind === "audio") &&
+      (value.kind === "image" ||
+        value.kind === "video" ||
+        value.kind === "audio") &&
       !value.src
     ) {
       ctx.addIssue({

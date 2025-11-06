@@ -12,7 +12,9 @@ import { PlatformLogo } from "../platform-brand";
 
 export function XRenderer() {
   const { post, cfg } = useSocialPost();
-  const handle = post.author.handle ? `@${post.author.handle.replace(/^@/, "")}` : undefined;
+  const handle = post.author.handle
+    ? `@${post.author.handle.replace(/^@/, "")}`
+    : undefined;
 
   return (
     <div className="flex gap-2">
@@ -21,7 +23,10 @@ export function XRenderer() {
       <img
         src={post.author.avatarUrl}
         alt={`${post.author.name} avatar`}
-        className={cn("shrink-0 object-cover rounded-full", cfg.tokens.spacing.avatarSize)}
+        className={cn(
+          "shrink-0 rounded-full object-cover",
+          cfg.tokens.spacing.avatarSize,
+        )}
         width={40}
         height={40}
       />
@@ -30,7 +35,7 @@ export function XRenderer() {
       <div className="min-w-0 flex-1">
         {/* Header (name, handle, logo) */}
         <header className="flex items-start gap-1">
-          <div className="flex items-center gap-1 flex-1 min-w-0">
+          <div className="flex min-w-0 flex-1 items-center gap-1">
             <span
               id={`post-${post.id}-author`}
               className={cn("truncate", cfg.tokens.typography.name)}
@@ -44,13 +49,15 @@ export function XRenderer() {
               />
             ) : null}
             {handle ? (
-              <span className={cn("truncate", cfg.tokens.typography.handle)}>{handle}</span>
+              <span className={cn("truncate", cfg.tokens.typography.handle)}>
+                {handle}
+              </span>
             ) : null}
           </div>
           <PlatformLogo
             platform={cfg.name}
             color={cfg.tokens.brandColor}
-            className={cn("bg-muted/10 h-5 w-5 rounded-full shrink-0")}
+            className={cn("bg-muted/10 h-5 w-5 shrink-0 rounded-full")}
           />
         </header>
 

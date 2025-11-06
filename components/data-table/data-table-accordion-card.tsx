@@ -180,7 +180,7 @@ export function DataTableAccordionCard({
                   role="listitem"
                 >
                   <dt
-                    className="text-muted-foreground shrink-0 bg-wash px-2 py-1 rounded"
+                    className="text-muted-foreground bg-wash shrink-0 rounded px-2 py-1"
                     id={`row-${stableRowId}-${String(col.key)}-label`}
                   >
                     {col.label}

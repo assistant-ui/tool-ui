@@ -88,11 +88,7 @@ export function ViewportControls({
   );
 
   if (fixed) {
-    return (
-      <div className="fixed top-4 right-4 z-20">
-        {controlsContent}
-      </div>
-    );
+    return <div className="fixed top-4 right-4 z-20">{controlsContent}</div>;
   }
 
   return controlsContent;

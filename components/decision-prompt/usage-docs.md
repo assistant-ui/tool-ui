@@ -39,6 +39,7 @@ function MyComponent() {
 ## Props
 
 ### `prompt` (required)
+
 The question or prompt to display to the user.
 
 ```tsx
@@ -46,6 +47,7 @@ The question or prompt to display to the user.
 ```
 
 ### `actions` (required)
+
 Array of actions the user can choose from. Each action has:
 
 - `id` (required): Unique identifier
@@ -70,6 +72,7 @@ actions={[
 ```
 
 ### `selectedAction` (optional)
+
 The ID of the action that was selected. When set, the component displays the receipt state instead of action buttons.
 
 ```tsx
@@ -81,6 +84,7 @@ The ID of the action that was selected. When set, the component displays the rec
 ```
 
 ### `description` (optional)
+
 Additional context or description below the prompt.
 
 ```tsx
@@ -92,6 +96,7 @@ Additional context or description below the prompt.
 ```
 
 ### `onAction` (optional)
+
 Callback fired when user selects an action. For two-stage actions, this fires only after confirmation.
 
 ```tsx
@@ -104,6 +109,7 @@ onAction={async (actionId) => {
 ```
 
 ### `onBeforeAction` (optional)
+
 Callback fired before action executes. Return `false` or `Promise<false>` to prevent the action.
 
 ```tsx
@@ -120,6 +126,7 @@ onBeforeAction={async (actionId) => {
 ```
 
 ### `confirmTimeout` (optional)
+
 Timeout in milliseconds for two-stage confirmations to auto-reset. Default: `3000` (3 seconds).
 
 ```tsx
@@ -130,6 +137,7 @@ Timeout in milliseconds for two-stage confirmations to auto-reset. Default: `300
 ```
 
 ### `align` (optional)
+
 Alignment of action buttons: `"left" | "center" | "right"`. Default: `"right"`.
 
 ```tsx
@@ -137,11 +145,13 @@ Alignment of action buttons: `"left" | "center" | "right"`. Default: `"right"`.
 ```
 
 ### `className` (optional)
+
 Additional CSS classes for the container.
 
 ## Use Cases
 
 ### Binary Decision
+
 Simple yes/no or confirm/cancel choices.
 
 ```tsx
@@ -161,6 +171,7 @@ Simple yes/no or confirm/cancel choices.
 ```
 
 ### Multi-Choice Selection
+
 Choose from 3+ options.
 
 ```tsx
@@ -179,6 +190,7 @@ Choose from 3+ options.
 ```
 
 ### Destructive Action (Two-Stage)
+
 Automatic confirmation pattern for dangerous operations.
 
 ```tsx
@@ -190,7 +202,7 @@ Automatic confirmation pattern for dangerous operations.
     {
       id: "delete",
       label: "Delete",
-      confirmLabel: "Confirm delete",  // Triggers two-stage pattern
+      confirmLabel: "Confirm delete", // Triggers two-stage pattern
       variant: "destructive",
     },
   ]}
@@ -199,17 +211,19 @@ Automatic confirmation pattern for dangerous operations.
       deleteFiles();
     }
   }}
-  confirmTimeout={5000}  // 5 second timeout before reset
+  confirmTimeout={5000} // 5 second timeout before reset
 />
 ```
 
 **Two-stage flow:**
+
 1. User clicks "Delete" → button changes to "Confirm delete" (red, pulsing)
 2. User clicks "Confirm delete" → `onAction` fires
 3. If user doesn't click within timeout → resets to "Delete"
 4. User presses Escape → resets to "Delete"
 
 ### Async with Loading
+
 Show loading state during async operations.
 
 ```tsx
@@ -222,13 +236,14 @@ Show loading state during async operations.
   ]}
   onAction={async (actionId) => {
     if (actionId === "install") {
-      await installPackages();  // Shows loading spinner automatically
+      await installPackages(); // Shows loading spinner automatically
     }
   }}
 />
 ```
 
 ### With Validation
+
 Prevent actions based on runtime conditions.
 
 ```tsx
@@ -243,7 +258,7 @@ Prevent actions based on runtime conditions.
       const canDeploy = await checkDeploymentPermission();
       if (!canDeploy) {
         alert("You don't have permission to deploy");
-        return false;  // Prevents action
+        return false; // Prevents action
       }
     }
     return true;
@@ -266,7 +281,7 @@ interface Message {
   data: {
     prompt: string;
     actions: DecisionPromptAction[];
-    selectedAction?: string;  // Set when user makes choice
+    selectedAction?: string; // Set when user makes choice
   };
 }
 
@@ -285,8 +300,8 @@ function MessageRenderer({ message }: { message: Message }) {
           prev.map((msg) =>
             msg.id === message.id
               ? { ...msg, data: { ...msg.data, selectedAction: actionId } }
-              : msg
-          )
+              : msg,
+          ),
         );
       }}
     />
@@ -316,7 +331,10 @@ The component uses Tailwind CSS and follows the existing design system:
 Full TypeScript support with Zod validation:
 
 ```tsx
-import type { DecisionPromptAction, DecisionPromptProps } from "@/components/decision-prompt";
+import type {
+  DecisionPromptAction,
+  DecisionPromptProps,
+} from "@/components/decision-prompt";
 
 // For message persistence (without functions)
 import type { SerializableDecisionPrompt } from "@/components/decision-prompt";

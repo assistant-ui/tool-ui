@@ -15,6 +15,7 @@ Paths used below assume the component lives at:
 ---
 
 > Compat note
+>
 > - Tailwind v4: works out of the box.
 > - Tailwind v3.2+: `npm i -D @tailwindcss/container-queries` and add the plugin. Markup stays identical.
 > - Using a prefix? Use `tw-@container` and `@md:tw-…`.
@@ -65,11 +66,24 @@ const columns: Column<Row>[] = [
     priority: "secondary",
     format: { kind: "number", compact: true },
   },
-  { key: "marketCap", label: "Market Cap", align: "right", priority: "tertiary" },
+  {
+    key: "marketCap",
+    label: "Market Cap",
+    align: "right",
+    priority: "tertiary",
+  },
 ];
 
 const rows: Row[] = [
-  { symbol: "AAPL", name: "Apple Inc.", price: 178.25, change: 2.35, changePercent: 1.34, volume: 52430000, marketCap: "2.8T" },
+  {
+    symbol: "AAPL",
+    name: "Apple Inc.",
+    price: 178.25,
+    change: 2.35,
+    changePercent: 1.34,
+    volume: 52430000,
+    marketCap: "2.8T",
+  },
   // ...
 ];
 
@@ -124,21 +138,21 @@ export default function Example() {
 
 ### `<DataTable />` props
 
-| Prop | Type | Required | Default | Notes |
-|------|------|----------|---------|-------|
-| `columns` | `Column<T>[]` | ✅ | — | Column definitions (see below). |
-| `data` | `T[]` | ✅ | — | Serializable rows. Values must be primitives or arrays of primitives. |
-| `rowIdKey` | `string` | — | — | Strongly recommended. Used to build stable React keys and mobile IDs (e.g., "id" or "symbol"). |
-| `actions` | `Action[]` | — | — | Row‑level actions. ≤2 renders inline buttons; >2 collapses into a menu. |
-| `onBeforeAction` | `({ action, row, messageId }) => boolean \| Promise<boolean>` | — | — | Preflight: return `false` to cancel. Lets you implement confirmation your way. |
-| `onAction` | `(actionId, row, ctx) => void` | — | — | Called when an action is triggered. `ctx = { messageId?: string }`. |
-| `isLoading` | `boolean` | — | `false` | Skeleton state. |
-| `emptyMessage` | `string` | — | `"No data available"` | Message when `data.length === 0`. |
-| `defaultSort` | `{ by: string; direction: "asc" \| "desc" }` | — | — | Uncontrolled sort (component manages state). |
-| `sort` | `{ by?: string; direction?: "asc" \| "desc" }` | — | — | Controlled sort (you manage state). |
-| `onSortChange` | `(next) => void` | — | — | With `sort`, handle updates. |
-| `locale` | `string` | — | `"en-US"` | Used for `Intl.NumberFormat`/`Intl.Collator` and date formatting. |
-| `messageId` | `string` | — | — | Optional analytics/context tag passed to `onAction` calls. |
+| Prop             | Type                                                          | Required | Default               | Notes                                                                                          |
+| ---------------- | ------------------------------------------------------------- | -------- | --------------------- | ---------------------------------------------------------------------------------------------- |
+| `columns`        | `Column<T>[]`                                                 | ✅       | —                     | Column definitions (see below).                                                                |
+| `data`           | `T[]`                                                         | ✅       | —                     | Serializable rows. Values must be primitives or arrays of primitives.                          |
+| `rowIdKey`       | `string`                                                      | —        | —                     | Strongly recommended. Used to build stable React keys and mobile IDs (e.g., "id" or "symbol"). |
+| `actions`        | `Action[]`                                                    | —        | —                     | Row‑level actions. ≤2 renders inline buttons; >2 collapses into a menu.                        |
+| `onBeforeAction` | `({ action, row, messageId }) => boolean \| Promise<boolean>` | —        | —                     | Preflight: return `false` to cancel. Lets you implement confirmation your way.                 |
+| `onAction`       | `(actionId, row, ctx) => void`                                | —        | —                     | Called when an action is triggered. `ctx = { messageId?: string }`.                            |
+| `isLoading`      | `boolean`                                                     | —        | `false`               | Skeleton state.                                                                                |
+| `emptyMessage`   | `string`                                                      | —        | `"No data available"` | Message when `data.length === 0`.                                                              |
+| `defaultSort`    | `{ by: string; direction: "asc" \| "desc" }`                  | —        | —                     | Uncontrolled sort (component manages state).                                                   |
+| `sort`           | `{ by?: string; direction?: "asc" \| "desc" }`                | —        | —                     | Controlled sort (you manage state).                                                            |
+| `onSortChange`   | `(next) => void`                                              | —        | —                     | With `sort`, handle updates.                                                                   |
+| `locale`         | `string`                                                      | —        | `"en-US"`             | Used for `Intl.NumberFormat`/`Intl.Collator` and date formatting.                              |
+| `messageId`      | `string`                                                      | —        | —                     | Optional analytics/context tag passed to `onAction` calls.                                     |
 
 **SSR note**: The table defaults `locale` to `"en-US"` to avoid server/client mismatches; pass an explicit locale if you need one.
 
@@ -147,21 +161,25 @@ export default function Example() {
 ### `Column<T>` (declarative columns)
 
 ```tsx
-export interface Column<T extends object, K extends Extract<keyof T, string> = Extract<keyof T, string>> {
-  key: K;                              // maps to a key in row data
-  label: string;                       // header text
-  abbr?: string;                       // short header for narrow viewports (tooltip shows full)
-  sortable?: boolean;                  // default: true (opt-out)
+export interface Column<
+  T extends object,
+  K extends Extract<keyof T, string> = Extract<keyof T, string>,
+> {
+  key: K; // maps to a key in row data
+  label: string; // header text
+  abbr?: string; // short header for narrow viewports (tooltip shows full)
+  sortable?: boolean; // default: true (opt-out)
   align?: "left" | "right" | "center"; // defaults based on value/format
-  width?: string;                      // CSS width (e.g., "120px", "10rem")
-  truncate?: boolean;                  // ellipsis
+  width?: string; // CSS width (e.g., "120px", "10rem")
+  truncate?: boolean; // ellipsis
   priority?: "primary" | "secondary" | "tertiary"; // mobile display priority
-  hideOnMobile?: boolean;              // force-hide on mobile
-  format?: FormatConfig;               // see below
+  hideOnMobile?: boolean; // force-hide on mobile
+  format?: FormatConfig; // see below
 }
 ```
 
 **Mobile priorities:**
+
 - **`primary`**: always visible in the row heading.
 - **`secondary`**: hidden behind the disclosure, shown when the card expands.
 - **`tertiary`**: hidden on mobile.
@@ -182,6 +200,7 @@ export interface Action {
 ```
 
 Actions are rendered accessibly:
+
 - **≤2 actions**: inline buttons for easier hit targets.
 - **>2 actions**: single "…" menu with options.
 - No built‑in confirm dialog. Implement confirmation via `onBeforeAction`.
@@ -198,9 +217,9 @@ export type FormatConfig =
   | {
       kind: "number";
       decimals?: number;
-      unit?: string;        // appended (e.g. "ms")
-      compact?: boolean;    // 1,200 -> 1.2K
-      showSign?: boolean;   // +/-
+      unit?: string; // appended (e.g. "ms")
+      compact?: boolean; // 1,200 -> 1.2K
+      showSign?: boolean; // +/-
     }
   | { kind: "currency"; currency: string; decimals?: number }
   | {
@@ -227,10 +246,12 @@ export type FormatConfig =
 ```
 
 **Link format:**
+
 - If `hrefKey` is provided, the link uses `row[hrefKey]` as the URL and the cell value as the label.
 - If `hrefKey` is omitted, the cell value is used as the URL (and label).
 
 **Status vs Badge:**
+
 - **`status`** maps raw values to tones and optional labels using your `statusMap`.
 - **`badge`** is a simpler "tag" display; use `colorMap` when you don't need a label remap.
 
@@ -269,12 +290,7 @@ const [sort, setSort] = useState<{ by?: string; direction?: "asc" | "desc" }>({
   direction: "asc",
 });
 
-<DataTable
-  columns={columns}
-  data={rows}
-  sort={sort}
-  onSortChange={setSort}
-/>
+<DataTable columns={columns} data={rows} sort={sort} onSortChange={setSort} />;
 ```
 
 ---
@@ -307,10 +323,18 @@ Everything needed to render can be produced by a tool call—no functions in pay
 {
   "columns": [
     { "key": "name", "label": "Product", "priority": "primary" },
-    { "key": "price", "label": "Price", "align": "right",
-      "format": { "kind": "currency", "currency": "USD" } },
-    { "key": "tags", "label": "Tags", "priority": "secondary",
-      "format": { "kind": "array", "maxVisible": 3 } }
+    {
+      "key": "price",
+      "label": "Price",
+      "align": "right",
+      "format": { "kind": "currency", "currency": "USD" }
+    },
+    {
+      "key": "tags",
+      "label": "Tags",
+      "priority": "secondary",
+      "format": { "kind": "array", "maxVisible": 3 }
+    }
   ],
   "data": [
     { "name": "Lamp", "price": 39.99, "tags": ["home", "lighting", "desk"] }
@@ -328,7 +352,7 @@ Do not put complex objects into cell values. Use a format config (e.g., `link`, 
 
 Inline buttons or a menu. No built‑in confirmation. Use `onBeforeAction` to implement your preferred pattern (native confirm, toast+undo, custom modal). Works the same on mobile (actions move into the card).
 
-```tsx
+````tsx
 <DataTable
   columns={columns}
   data={rows}
@@ -378,8 +402,9 @@ export default function Page() {
     </ConfirmProvider>
   );
 }
-```
-```
+````
+
+````
 
 ---
 
@@ -418,7 +443,7 @@ export const ProductsUI = makeAssistantToolUI<{ query: string }, Output>({
     );
   },
 });
-```
+````
 
 ---
 
@@ -444,19 +469,23 @@ type Row = { a: unknown };
 
 test("numeric-like strings sort numerically", () => {
   const rows: Row[] = [{ a: "1,200" }, { a: "900" }, { a: " 12 " }];
-  const asc = sortData(rows, "a" as any, "asc").map(r => r.a);
+  const asc = sortData(rows, "a" as any, "asc").map((r) => r.a);
   expect(asc).toEqual([" 12 ", "900", "1,200"]);
 });
 
 test("ISO-like dates sort chronologically", () => {
-  const rows: Row[] = [{ a: "2024-05-01" }, { a: "2023-12-31" }, { a: "2025-01-01" }];
-  const desc = sortData(rows, "a" as any, "desc").map(r => r.a);
+  const rows: Row[] = [
+    { a: "2024-05-01" },
+    { a: "2023-12-31" },
+    { a: "2025-01-01" },
+  ];
+  const desc = sortData(rows, "a" as any, "desc").map((r) => r.a);
   expect(desc).toEqual(["2025-01-01", "2024-05-01", "2023-12-31"]);
 });
 
 test("nulls sort last", () => {
   const rows: Row[] = [{ a: "b" }, { a: null }, { a: "a" }];
-  const asc = sortData(rows, "a" as any, "asc").map(r => r.a);
+  const asc = sortData(rows, "a" as any, "asc").map((r) => r.a);
   expect(asc).toEqual(["a", "b", null]);
 });
 ```
@@ -485,7 +514,7 @@ test("aria-sort cycles via keyboard", async () => {
   render(<DataTable<Row> columns={cols} data={rows} />);
   const nameHeader = screen.getByRole("columnheader", { name: /name/i });
 
-  expect(nameHeader).not.toHaveAttribute("aria-sort");  // undefined
+  expect(nameHeader).not.toHaveAttribute("aria-sort"); // undefined
   await userEvent.click(nameHeader);
   expect(nameHeader).toHaveAttribute("aria-sort", "ascending");
   await userEvent.click(nameHeader);
@@ -512,8 +541,14 @@ Subcomponents are exported if you need to take over rendering:
 
 ```tsx
 export {
-  DataTable, DataTableHeader, DataTableBody, DataTableRow, DataTableCell,
-  DataTableActions, DataTableAccordionCard, useDataTable
+  DataTable,
+  DataTableHeader,
+  DataTableBody,
+  DataTableRow,
+  DataTableCell,
+  DataTableActions,
+  DataTableAccordionCard,
+  useDataTable,
 } from "@/components/data-table";
 ```
 

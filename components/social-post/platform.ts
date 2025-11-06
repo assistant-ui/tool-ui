@@ -1,6 +1,15 @@
 import type { Platform } from "./schema";
 import type { LucideIcon } from "lucide-react";
-import { MessageCircle, Repeat2, Heart, Share, Bookmark, MoreHorizontal, Send, BarChart3 } from "lucide-react";
+import {
+  MessageCircle,
+  Repeat2,
+  Heart,
+  Share,
+  Bookmark,
+  MoreHorizontal,
+  Send,
+  BarChart3,
+} from "lucide-react";
 
 export interface PlatformTypography {
   name: string;
@@ -126,13 +135,48 @@ export const PLATFORM: Record<Platform, PlatformConfig> = {
       menu: "More",
     },
     actionConfigs: [
-      { id: "reply", label: "Reply", icon: MessageCircle, hoverColor: "hover:bg-blue-500/10 hover:text-blue-500" },
-      { id: "repost", label: "Repost", icon: Repeat2, hoverColor: "hover:bg-green-500/10 hover:text-green-500" },
-      { id: "like", label: "Like", icon: Heart, hoverColor: "hover:bg-red-500/10 hover:text-red-500" },
-      { id: "views", label: "Views", icon: BarChart3, hoverColor: "hover:bg-blue-500/10 hover:text-blue-500" },
-      { id: "bookmark", label: "Bookmark", icon: Bookmark, hoverColor: "hover:bg-blue-500/10 hover:text-blue-500" },
-      { id: "share", label: "Share", icon: Share, hoverColor: "hover:bg-blue-500/10 hover:text-blue-500" },
-      { id: "menu", label: "More", icon: MoreHorizontal, hoverColor: "hover:bg-blue-500/10 hover:text-blue-500" },
+      {
+        id: "reply",
+        label: "Reply",
+        icon: MessageCircle,
+        hoverColor: "hover:bg-blue-500/10 hover:text-blue-500",
+      },
+      {
+        id: "repost",
+        label: "Repost",
+        icon: Repeat2,
+        hoverColor: "hover:bg-green-500/10 hover:text-green-500",
+      },
+      {
+        id: "like",
+        label: "Like",
+        icon: Heart,
+        hoverColor: "hover:bg-red-500/10 hover:text-red-500",
+      },
+      {
+        id: "views",
+        label: "Views",
+        icon: BarChart3,
+        hoverColor: "hover:bg-blue-500/10 hover:text-blue-500",
+      },
+      {
+        id: "bookmark",
+        label: "Bookmark",
+        icon: Bookmark,
+        hoverColor: "hover:bg-blue-500/10 hover:text-blue-500",
+      },
+      {
+        id: "share",
+        label: "Share",
+        icon: Share,
+        hoverColor: "hover:bg-blue-500/10 hover:text-blue-500",
+      },
+      {
+        id: "menu",
+        label: "More",
+        icon: MoreHorizontal,
+        hoverColor: "hover:bg-blue-500/10 hover:text-blue-500",
+      },
     ],
   },
   instagram: {
@@ -188,11 +232,36 @@ export const PLATFORM: Record<Platform, PlatformConfig> = {
       menu: "More",
     },
     actionConfigs: [
-      { id: "like", label: "Like", icon: Heart, hoverColor: "hover:opacity-60" },
-      { id: "comment", label: "Comment", icon: MessageCircle, hoverColor: "hover:opacity-60" },
-      { id: "share", label: "Share", icon: Send, hoverColor: "hover:opacity-60" },
-      { id: "save", label: "Save", icon: Bookmark, hoverColor: "hover:opacity-60" },
-      { id: "menu", label: "More", icon: MoreHorizontal, hoverColor: "hover:opacity-60" },
+      {
+        id: "like",
+        label: "Like",
+        icon: Heart,
+        hoverColor: "hover:opacity-60",
+      },
+      {
+        id: "comment",
+        label: "Comment",
+        icon: MessageCircle,
+        hoverColor: "hover:opacity-60",
+      },
+      {
+        id: "share",
+        label: "Share",
+        icon: Send,
+        hoverColor: "hover:opacity-60",
+      },
+      {
+        id: "save",
+        label: "Save",
+        icon: Bookmark,
+        hoverColor: "hover:opacity-60",
+      },
+      {
+        id: "menu",
+        label: "More",
+        icon: MoreHorizontal,
+        hoverColor: "hover:opacity-60",
+      },
     ],
   },
   tiktok: {

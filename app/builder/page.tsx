@@ -37,7 +37,7 @@ const UserMessage: FC = () => {
   return (
     <MessagePrimitive.Root className="mx-auto grid w-full max-w-2xl auto-rows-auto grid-cols-[minmax(72px,1fr)_auto] gap-y-2 px-2 py-4 [&:where(>*)]:col-start-2">
       <div className="relative col-start-2 min-w-0">
-        <div className="rounded-3xl bg-muted px-5 py-2.5 break-words text-foreground">
+        <div className="bg-muted text-foreground rounded-3xl px-5 py-2.5 break-words">
           <MessagePrimitive.Content />
         </div>
       </div>
@@ -48,7 +48,7 @@ const UserMessage: FC = () => {
 const AssistantMessage: FC = () => {
   return (
     <MessagePrimitive.Root className="relative mx-auto w-full max-w-2xl py-4">
-      <div className="mx-2 leading-7 break-words text-foreground">
+      <div className="text-foreground mx-2 leading-7 break-words">
         <MessagePrimitive.Content
           components={{
             Text: ({ text }) => <div className="mb-3 text-base">{text}</div>,
@@ -69,10 +69,10 @@ interface MCPTool {
   };
 }
 
-const MCPModal: FC<{ open: boolean; onOpenChange: (open: boolean) => void }> = ({
-  open,
-  onOpenChange,
-}) => {
+const MCPModal: FC<{
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+}> = ({ open, onOpenChange }) => {
   const [mcpUrl, setMcpUrl] = useState("");
   const [transportType, setTransportType] = useState<"http" | "sse">("http");
   const [tools, setTools] = useState<MCPTool[]>([]);
@@ -126,12 +126,12 @@ const MCPModal: FC<{ open: boolean; onOpenChange: (open: boolean) => void }> = (
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[80vh] flex flex-col">
+      <DialogContent className="flex max-h-[80vh] max-w-2xl flex-col">
         <DialogHeader>
           <DialogTitle>Import MCP Tool</DialogTitle>
         </DialogHeader>
 
-        <div className="flex gap-2 mb-4">
+        <div className="mb-4 flex gap-2">
           <InputGroup className="flex-1">
             <InputGroupInput
               placeholder="Enter MCP server URL..."
@@ -144,8 +144,13 @@ const MCPModal: FC<{ open: boolean; onOpenChange: (open: boolean) => void }> = (
               }}
             />
             <InputGroupAddon align="inline-end" className="pr-1">
-              <Select value={transportType} onValueChange={(value: "http" | "sse") => setTransportType(value)}>
-                <SelectTrigger className="h-6 w-auto border-0 text-xs px-2 gap-1 shadow-none focus:ring-0 bg-transparent hover:bg-transparent data-[state=open]:bg-transparent dark:bg-transparent dark:hover:bg-transparent">
+              <Select
+                value={transportType}
+                onValueChange={(value: "http" | "sse") =>
+                  setTransportType(value)
+                }
+              >
+                <SelectTrigger className="h-6 w-auto gap-1 border-0 bg-transparent px-2 text-xs shadow-none hover:bg-transparent focus:ring-0 data-[state=open]:bg-transparent dark:bg-transparent dark:hover:bg-transparent">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -158,7 +163,7 @@ const MCPModal: FC<{ open: boolean; onOpenChange: (open: boolean) => void }> = (
           <Button onClick={loadTools} disabled={loading || !mcpUrl.trim()}>
             {loading ? (
               <>
-                <Loader2 className="size-4 animate-spin mr-2" />
+                <Loader2 className="mr-2 size-4 animate-spin" />
                 Loading
               </>
             ) : (
@@ -168,14 +173,14 @@ const MCPModal: FC<{ open: boolean; onOpenChange: (open: boolean) => void }> = (
         </div>
 
         {error && (
-          <div className="text-sm text-destructive bg-destructive/10 rounded-md p-3 mb-4">
+          <div className="text-destructive bg-destructive/10 mb-4 rounded-md p-3 text-sm">
             {error}
           </div>
         )}
 
-        <div className="flex-1 overflow-y-auto border rounded-md">
+        <div className="flex-1 overflow-y-auto rounded-md border">
           {tools.length === 0 ? (
-            <div className="flex items-center justify-center h-32 text-muted-foreground text-sm">
+            <div className="text-muted-foreground flex h-32 items-center justify-center text-sm">
               {loading ? "Loading tools..." : "No tools loaded"}
             </div>
           ) : (
@@ -183,12 +188,12 @@ const MCPModal: FC<{ open: boolean; onOpenChange: (open: boolean) => void }> = (
               {tools.map((tool) => (
                 <div
                   key={tool.name}
-                  className="flex items-center justify-between p-4 hover:bg-muted/50 transition-colors"
+                  className="hover:bg-muted/50 flex items-center justify-between p-4 transition-colors"
                 >
-                  <div className="flex-1 min-w-0 mr-4">
-                    <div className="font-medium text-sm">{tool.name}</div>
+                  <div className="mr-4 min-w-0 flex-1">
+                    <div className="text-sm font-medium">{tool.name}</div>
                     {tool.description && (
-                      <div className="text-xs text-muted-foreground mt-1 truncate">
+                      <div className="text-muted-foreground mt-1 truncate text-xs">
                         {tool.description}
                       </div>
                     )}
@@ -216,11 +221,11 @@ const Composer: FC = () => {
   return (
     <>
       <MCPModal open={mcpModalOpen} onOpenChange={setMcpModalOpen} />
-      <div className="sticky bottom-0 mx-auto flex w-full max-w-2xl flex-col gap-4 overflow-visible rounded-t-3xl bg-background pb-4 md:pb-6">
-        <ComposerPrimitive.Root className="group/input-group relative flex w-full flex-col rounded-3xl border border-input bg-background px-1 pt-2 shadow-xs transition-[color,box-shadow] outline-none has-[textarea:focus-visible]:border-ring has-[textarea:focus-visible]:ring-[3px] has-[textarea:focus-visible]:ring-ring/50">
+      <div className="bg-background sticky bottom-0 mx-auto flex w-full max-w-2xl flex-col gap-4 overflow-visible rounded-t-3xl pb-4 md:pb-6">
+        <ComposerPrimitive.Root className="group/input-group border-input bg-background has-[textarea:focus-visible]:border-ring has-[textarea:focus-visible]:ring-ring/50 relative flex w-full flex-col rounded-3xl border px-1 pt-2 shadow-xs transition-[color,box-shadow] outline-none has-[textarea:focus-visible]:ring-[3px]">
           <ComposerPrimitive.Input
             placeholder="Describe the component you want to build..."
-            className="mb-1 max-h-32 min-h-16 w-full resize-none bg-transparent px-3.5 pt-1.5 pb-3 text-base outline-none placeholder:text-muted-foreground focus-visible:ring-0"
+            className="placeholder:text-muted-foreground mb-1 max-h-32 min-h-16 w-full resize-none bg-transparent px-3.5 pt-1.5 pb-3 text-base outline-none focus-visible:ring-0"
             rows={1}
             autoFocus
           />
@@ -229,7 +234,7 @@ const Composer: FC = () => {
               type="button"
               variant="ghost"
               size="sm"
-              className="h-[34px] rounded-full gap-1.5 text-xs text-muted-foreground hover:text-foreground"
+              className="text-muted-foreground hover:text-foreground h-[34px] gap-1.5 rounded-full text-xs"
               onClick={() => setMcpModalOpen(true)}
             >
               <Wrench className="size-3.5" />
@@ -255,7 +260,7 @@ const Composer: FC = () => {
                     type="button"
                     variant="default"
                     size="icon"
-                    className="size-[34px] rounded-full border border-muted-foreground/60 hover:bg-primary/75 dark:border-muted-foreground/90"
+                    className="border-muted-foreground/60 hover:bg-primary/75 dark:border-muted-foreground/90 size-[34px] rounded-full border"
                   >
                     <Square className="size-3.5 fill-white dark:fill-black" />
                   </Button>
@@ -271,7 +276,7 @@ const Composer: FC = () => {
 
 const Thread: FC = () => {
   return (
-    <ThreadPrimitive.Root className="flex h-full w-full flex-col bg-background">
+    <ThreadPrimitive.Root className="bg-background flex h-full w-full flex-col">
       <ThreadPrimitive.Viewport className="relative flex flex-1 flex-col overflow-y-auto px-4">
         <ThreadPrimitive.If empty>
           <div className="flex flex-1 items-center justify-center">
@@ -296,14 +301,14 @@ const Thread: FC = () => {
 export default function BuilderPage() {
   const runtime = useChatRuntime({
     transport: new AssistantChatTransport({
-      api: "/api/chat",
+      api: "/api/builder/chat",
     }),
   });
 
   return (
     <AssistantRuntimeProvider runtime={runtime}>
       <div className="grid h-full grid-cols-[240px_1fr]">
-        <div className="border-r bg-background p-4 overflow-y-auto">
+        <div className="bg-background overflow-y-auto border-r p-4">
           <ThreadList />
         </div>
         <div className="overflow-hidden">

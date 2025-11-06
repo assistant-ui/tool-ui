@@ -177,7 +177,6 @@ function TransitioningShape({
       outgoingUniforms.maskDirection.value.copy(axisDirection);
     }
     if (outgoingUniforms.maskExtent) {
-       
       outgoingUniforms.maskExtent.value = extent;
     }
     if (outgoingUniforms.maskSoftness) {
@@ -191,7 +190,6 @@ function TransitioningShape({
       incomingUniforms.maskDirection.value.copy(axisDirection);
     }
     if (incomingUniforms.maskExtent) {
-       
       incomingUniforms.maskExtent.value = extent;
     }
     if (incomingUniforms.maskSoftness) {

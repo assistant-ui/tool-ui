@@ -3,7 +3,12 @@ import type { Action, Column, DataTableProps, RowData } from "./data-table";
 
 const alignEnum = z.enum(["left", "right", "center"]);
 const priorityEnum = z.enum(["primary", "secondary", "tertiary"]);
-const actionVariantEnum = z.enum(["default", "secondary", "ghost", "destructive"]);
+const actionVariantEnum = z.enum([
+  "default",
+  "secondary",
+  "ghost",
+  "destructive",
+]);
 
 const formatSchema = z.discriminatedUnion("kind", [
   z.object({ kind: z.literal("text") }),
@@ -62,7 +67,10 @@ const formatSchema = z.discriminatedUnion("kind", [
   z.object({
     kind: z.literal("badge"),
     colorMap: z
-      .record(z.string(), z.enum(["success", "warning", "danger", "info", "neutral"]))
+      .record(
+        z.string(),
+        z.enum(["success", "warning", "danger", "info", "neutral"]),
+      )
       .optional(),
   }),
   z.object({
@@ -114,7 +122,7 @@ const jsonPrimitive = z.union([z.string(), z.number(), z.boolean(), z.null()]);
  */
 export const serializableDataSchema = z.record(
   z.string(),
-  z.union([jsonPrimitive, z.array(jsonPrimitive)])
+  z.union([jsonPrimitive, z.array(jsonPrimitive)]),
 );
 
 export const serializableActionSchema = z.object({

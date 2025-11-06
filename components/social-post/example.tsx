@@ -7,8 +7,15 @@ export function SocialPostExample() {
       <SocialPost
         id="x-1"
         platform="x"
-        author={{ name: "Ada Lovelace", handle: "ada", avatarUrl: "/avatars/ada.png", verified: true }}
-        text={"We just shipped a kernel patch. #systems @bob https://example.com"}
+        author={{
+          name: "Ada Lovelace",
+          handle: "ada",
+          avatarUrl: "/avatars/ada.png",
+          verified: true,
+        }}
+        text={
+          "We just shipped a kernel patch. #systems @bob https://example.com"
+        }
         linkPreview={{
           url: "https://example.com",
           title: "Example",
@@ -25,11 +32,26 @@ export function SocialPostExample() {
       <SocialPost
         id="ig-1"
         platform="instagram"
-        author={{ name: "Ada", handle: "ada.codes", avatarUrl: "/avatars/ada.png", verified: true }}
+        author={{
+          name: "Ada",
+          handle: "ada.codes",
+          avatarUrl: "/avatars/ada.png",
+          verified: true,
+        }}
         text="Weekend build"
         media={[
-          { kind: "image", url: "/photos/1.jpg", alt: "Ada working at a desk", aspectHint: "1:1" },
-          { kind: "image", url: "/photos/2.jpg", alt: "Close-up of code on a laptop screen", aspectHint: "1:1" },
+          {
+            kind: "image",
+            url: "/photos/1.jpg",
+            alt: "Ada working at a desk",
+            aspectHint: "1:1",
+          },
+          {
+            kind: "image",
+            url: "/photos/2.jpg",
+            alt: "Close-up of code on a laptop screen",
+            aspectHint: "1:1",
+          },
         ]}
         stats={{ likes: 5400, comments: 122, bookmarks: 43 }}
       />

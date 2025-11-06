@@ -24,11 +24,11 @@ export const Thread: FC = () => {
         <div className="min-h-8 grow" />
 
         {/* Composer */}
-        <div className="sticky bottom-0 mx-auto flex w-full max-w-2xl flex-col gap-4 overflow-visible rounded-t-3xl bg-background pb-4">
-          <ComposerPrimitive.Root className="group/input-group relative flex w-full flex-col rounded-3xl border border-input bg-background px-1 pt-2 shadow-xs transition-[color,box-shadow] outline-none has-[textarea:focus-visible]:border-ring has-[textarea:focus-visible]:ring-[3px] has-[textarea:focus-visible]:ring-ring/50">
+        <div className="bg-background sticky bottom-0 mx-auto flex w-full max-w-2xl flex-col gap-4 overflow-visible rounded-t-3xl pb-4">
+          <ComposerPrimitive.Root className="group/input-group border-input bg-background has-[textarea:focus-visible]:border-ring has-[textarea:focus-visible]:ring-ring/50 relative flex w-full flex-col rounded-3xl border px-1 pt-2 shadow-xs transition-[color,box-shadow] outline-none has-[textarea:focus-visible]:ring-[3px]">
             <ComposerPrimitive.Input
               placeholder="Ask about stocks..."
-              className="mb-1 max-h-32 min-h-16 w-full resize-none bg-transparent px-3.5 pt-1.5 pb-3 text-base outline-none placeholder:text-muted-foreground focus-visible:ring-0"
+              className="placeholder:text-muted-foreground mb-1 max-h-32 min-h-16 w-full resize-none bg-transparent px-3.5 pt-1.5 pb-3 text-base outline-none focus-visible:ring-0"
               rows={1}
               autoFocus
             />
@@ -52,7 +52,7 @@ export const Thread: FC = () => {
                     type="button"
                     variant="default"
                     size="icon"
-                    className="size-[34px] rounded-full border border-muted-foreground/60 hover:bg-primary/75 dark:border-muted-foreground/90"
+                    className="border-muted-foreground/60 hover:bg-primary/75 dark:border-muted-foreground/90 size-[34px] rounded-full border"
                   >
                     <Square className="size-3.5 fill-white dark:fill-black" />
                   </Button>
@@ -70,7 +70,7 @@ const UserMessage: FC = () => {
   return (
     <MessagePrimitive.Root className="mx-auto grid w-full max-w-2xl auto-rows-auto grid-cols-[minmax(72px,1fr)_auto] gap-y-2 px-2 py-4 [&:where(>*)]:col-start-2">
       <div className="relative col-start-2 min-w-0">
-        <div className="rounded-3xl bg-muted px-5 py-2.5 break-words text-foreground">
+        <div className="bg-muted text-foreground rounded-3xl px-5 py-2.5 break-words">
           <MessagePrimitive.Content />
         </div>
       </div>
@@ -81,7 +81,7 @@ const UserMessage: FC = () => {
 const AssistantMessage: FC = () => {
   return (
     <MessagePrimitive.Root className="relative mx-auto w-full max-w-2xl py-4">
-      <div className="mx-2 leading-7 break-words text-foreground">
+      <div className="text-foreground mx-2 leading-7 break-words">
         <MessagePrimitive.Content
           components={{
             Text: ({ text }) => <div className="mb-3 text-base">{text}</div>,

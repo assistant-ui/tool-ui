@@ -28,7 +28,7 @@ export async function checkRateLimit(identifier: string) {
   if (!ratelimit) {
     // Rate limiting not configured, allow all requests
     console.warn(
-      "Rate limiting is not configured. Set UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN to enable."
+      "Rate limiting is not configured. Set UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN to enable.",
     );
     return { success: true, limit: 0, remaining: 0, reset: 0 };
   }

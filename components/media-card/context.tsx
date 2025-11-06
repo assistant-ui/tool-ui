@@ -18,8 +18,14 @@ export interface MediaCardClientProps {
   onStateChange?: (state: MediaCardUIState) => void;
   onNavigate?: (href: string, card: SerializableMediaCard) => void;
   onAction?: (actionId: string, card: SerializableMediaCard) => void;
-  onBeforeAction?: (args: { action: string; card: SerializableMediaCard }) => boolean | Promise<boolean>;
-  onMediaEvent?: (type: "play" | "pause" | "mute" | "unmute", payload?: unknown) => void;
+  onBeforeAction?: (args: {
+    action: string;
+    card: SerializableMediaCard;
+  }) => boolean | Promise<boolean>;
+  onMediaEvent?: (
+    type: "play" | "pause" | "mute" | "unmute",
+    payload?: unknown,
+  ) => void;
 }
 
 export interface MediaCardContextValue {
@@ -29,12 +35,17 @@ export interface MediaCardContextValue {
   resolvedSourceUrl?: string;
   state: MediaCardUIState;
   setState: (patch: Partial<MediaCardUIState>) => void;
-  handlers: Pick<MediaCardClientProps, "onNavigate" | "onAction" | "onBeforeAction" | "onMediaEvent">;
+  handlers: Pick<
+    MediaCardClientProps,
+    "onNavigate" | "onAction" | "onBeforeAction" | "onMediaEvent"
+  >;
   mediaElement: HTMLMediaElement | null;
   setMediaElement: (node: HTMLMediaElement | null) => void;
 }
 
-const MediaCardContext = React.createContext<MediaCardContextValue | null>(null);
+const MediaCardContext = React.createContext<MediaCardContextValue | null>(
+  null,
+);
 
 export function useMediaCard() {
   const ctx = React.useContext(MediaCardContext);
@@ -51,5 +62,9 @@ export function MediaCardProvider({
   value: MediaCardContextValue;
   children: React.ReactNode;
 }) {
-  return <MediaCardContext.Provider value={value}>{children}</MediaCardContext.Provider>;
+  return (
+    <MediaCardContext.Provider value={value}>
+      {children}
+    </MediaCardContext.Provider>
+  );
 }

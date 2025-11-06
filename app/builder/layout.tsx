@@ -6,11 +6,7 @@ import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { ViewportControls, ViewportSize } from "@/components/viewport-controls";
 
-export default function BuilderLayout({
-  children,
-}: {
-  children: ReactNode;
-}) {
+export default function BuilderLayout({ children }: { children: ReactNode }) {
   const [viewport, setViewport] = useState<ViewportSize>("desktop");
   const pathname = usePathname();
 
@@ -19,23 +15,23 @@ export default function BuilderLayout({
   const isBuilder = pathname.startsWith("/builder");
 
   return (
-    <div className="flex h-screen flex-col bg-background">
+    <div className="bg-background flex h-screen flex-col">
       {/* Header with logo and tabs */}
-      <div className="flex border-b bg-background">
-        <div className="border-r flex items-center justify-center px-6 py-3 w-[240px] shrink-0">
+      <div className="bg-background flex border-b">
+        <div className="flex w-[240px] shrink-0 items-center justify-center border-r px-6 py-3">
           <Link href="/">
             <h1 className="text-xl font-semibold tracking-wide">tool-ui.com</h1>
           </Link>
         </div>
-        <div className="flex items-center justify-between px-6 py-3 flex-1">
+        <div className="flex flex-1 items-center justify-between px-6 py-3">
           <nav className="flex items-center gap-1">
             <Link
               href="/"
               className={cn(
-                "px-4 py-2 rounded-lg text-sm font-medium transition-colors",
+                "rounded-lg px-4 py-2 text-sm font-medium transition-colors",
                 isHome
                   ? "bg-muted text-foreground"
-                  : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                  : "text-muted-foreground hover:text-foreground hover:bg-muted/50",
               )}
             >
               Home
@@ -43,10 +39,10 @@ export default function BuilderLayout({
             <Link
               href="/components"
               className={cn(
-                "px-4 py-2 rounded-lg text-sm font-medium transition-colors",
+                "rounded-lg px-4 py-2 text-sm font-medium transition-colors",
                 isComponents
                   ? "bg-muted text-foreground"
-                  : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                  : "text-muted-foreground hover:text-foreground hover:bg-muted/50",
               )}
             >
               Components
@@ -54,23 +50,26 @@ export default function BuilderLayout({
             <Link
               href="/builder"
               className={cn(
-                "px-4 py-2 rounded-lg text-sm font-medium transition-colors",
+                "rounded-lg px-4 py-2 text-sm font-medium transition-colors",
                 isBuilder
                   ? "bg-muted text-foreground"
-                  : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                  : "text-muted-foreground hover:text-foreground hover:bg-muted/50",
               )}
             >
               Builder
             </Link>
           </nav>
-          <ViewportControls viewport={viewport} onViewportChange={setViewport} showThemeToggle showViewportButtons={false} />
+          <ViewportControls
+            viewport={viewport}
+            onViewportChange={setViewport}
+            showThemeToggle
+            showViewportButtons={false}
+          />
         </div>
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 overflow-hidden bg-background">
-        {children}
-      </div>
+      <div className="bg-background flex-1 overflow-hidden">{children}</div>
     </div>
   );
 }

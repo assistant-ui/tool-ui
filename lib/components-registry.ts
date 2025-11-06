@@ -1,4 +1,10 @@
-import { LucideIcon, Table, MessageSquare, Image, CheckCircle2 } from "lucide-react";
+import {
+  LucideIcon,
+  Table,
+  MessageSquare,
+  Image,
+  CheckCircle2,
+} from "lucide-react";
 
 export interface ComponentMetadata {
   id: string;

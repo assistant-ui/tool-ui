@@ -144,130 +144,130 @@ export function Actions() {
           cfg.tokens.spacing.actionGap,
         )}
       >
-        <div className="flex items-center justify-between flex-1">
+        <div className="flex flex-1 items-center justify-between">
           {resolvedActions.slice(0, 4).map((action) => {
-          const toggleKey = TOGGLE_MAP[action.id];
-          const isActive = toggleKey ? (state[toggleKey] ?? false) : false;
-          const count = getActionCount(action.id);
-          const FallbackIcon = action.fallbackIcon;
-          const iconNode = action.icon ? (
-            <span
-              aria-hidden
-              className="flex h-4 w-4 items-center justify-center"
-            >
-              {action.icon}
-            </span>
-          ) : FallbackIcon ? (
-            <FallbackIcon className="h-4 w-4" aria-hidden="true" />
-          ) : null;
-          const showLabel = !iconNode;
+            const toggleKey = TOGGLE_MAP[action.id];
+            const isActive = toggleKey ? (state[toggleKey] ?? false) : false;
+            const count = getActionCount(action.id);
+            const FallbackIcon = action.fallbackIcon;
+            const iconNode = action.icon ? (
+              <span
+                aria-hidden
+                className="flex h-4 w-4 items-center justify-center"
+              >
+                {action.icon}
+              </span>
+            ) : FallbackIcon ? (
+              <FallbackIcon className="h-4 w-4" aria-hidden="true" />
+            ) : null;
+            const showLabel = !iconNode;
 
-          return (
-            <Tooltip key={action.id}>
-              <TooltipTrigger asChild>
-                <Button
-                  variant={action.variant}
-                  size="sm"
-                  onClick={(event) => {
-                    event.stopPropagation();
-                    void run(action.id);
-                  }}
-                  className={cn(
-                    "h-auto gap-1.5 px-1 py-1",
-                    action.hoverColor,
-                    isActive && action.id === "like" && "text-red-500",
-                    isActive && action.id === "repost" && "text-green-500",
-                  )}
-                  aria-label={action.srLabel ?? action.label}
-                  aria-keyshortcuts={action.hotkey}
-                  aria-pressed={toggleKey ? isActive : undefined}
-                >
-                  {iconNode}
-                  {count !== undefined ? (
-                    <span className="text-sm">{count}</span>
-                  ) : null}
-                  {showLabel ? (
-                    <span className="text-sm">{action.label}</span>
-                  ) : null}
-                  <span className="sr-only">
-                    {action.srLabel ?? action.label}
-                  </span>
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <div className="flex items-center gap-2">
-                  <span>{action.label}</span>
-                  {action.hotkey ? (
-                    <kbd className="bg-muted text-muted-foreground rounded px-1 text-xs font-medium tracking-wide uppercase">
-                      {action.hotkey}
-                    </kbd>
-                  ) : null}
-                </div>
-              </TooltipContent>
-            </Tooltip>
-          );
-        })}
+            return (
+              <Tooltip key={action.id}>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant={action.variant}
+                    size="sm"
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      void run(action.id);
+                    }}
+                    className={cn(
+                      "h-auto gap-1.5 px-1 py-1",
+                      action.hoverColor,
+                      isActive && action.id === "like" && "text-red-500",
+                      isActive && action.id === "repost" && "text-green-500",
+                    )}
+                    aria-label={action.srLabel ?? action.label}
+                    aria-keyshortcuts={action.hotkey}
+                    aria-pressed={toggleKey ? isActive : undefined}
+                  >
+                    {iconNode}
+                    {count !== undefined ? (
+                      <span className="text-sm">{count}</span>
+                    ) : null}
+                    {showLabel ? (
+                      <span className="text-sm">{action.label}</span>
+                    ) : null}
+                    <span className="sr-only">
+                      {action.srLabel ?? action.label}
+                    </span>
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <div className="flex items-center gap-2">
+                    <span>{action.label}</span>
+                    {action.hotkey ? (
+                      <kbd className="bg-muted text-muted-foreground rounded px-1 text-xs font-medium tracking-wide uppercase">
+                        {action.hotkey}
+                      </kbd>
+                    ) : null}
+                  </div>
+                </TooltipContent>
+              </Tooltip>
+            );
+          })}
         </div>
         <div className="flex items-center">
           {resolvedActions.slice(4).map((action, index) => {
-          const toggleKey = TOGGLE_MAP[action.id];
-          const isActive = toggleKey ? (state[toggleKey] ?? false) : false;
-          const FallbackIcon = action.fallbackIcon;
-          const iconNode = action.icon ? (
-            <span
-              aria-hidden
-              className="flex h-4 w-4 items-center justify-center"
-            >
-              {action.icon}
-            </span>
-          ) : FallbackIcon ? (
-            <FallbackIcon className="h-4 w-4" aria-hidden="true" />
-          ) : null;
-          const showLabel = !iconNode;
+            const toggleKey = TOGGLE_MAP[action.id];
+            const isActive = toggleKey ? (state[toggleKey] ?? false) : false;
+            const FallbackIcon = action.fallbackIcon;
+            const iconNode = action.icon ? (
+              <span
+                aria-hidden
+                className="flex h-4 w-4 items-center justify-center"
+              >
+                {action.icon}
+              </span>
+            ) : FallbackIcon ? (
+              <FallbackIcon className="h-4 w-4" aria-hidden="true" />
+            ) : null;
+            const showLabel = !iconNode;
 
-          return (
-            <Tooltip key={action.id}>
-              <TooltipTrigger asChild>
-                <Button
-                  variant={action.variant}
-                  size="sm"
-                  onClick={(event) => {
-                    event.stopPropagation();
-                    void run(action.id);
-                  }}
-                  className={cn(
-                    "h-auto gap-1.5 px-1 py-1",
-                    action.hoverColor,
-                    isActive && action.id === "like" && "text-red-500",
-                    isActive && action.id === "repost" && "text-green-500",
-                    index > 0 && "-ml-2",
-                  )}
-                  aria-label={action.srLabel ?? action.label}
-                  aria-keyshortcuts={action.hotkey}
-                  aria-pressed={toggleKey ? isActive : undefined}
-                >
-                  {iconNode}
-                  {showLabel ? (
-                    <span className="text-sm">{action.label}</span>
-                  ) : null}
-                  <span className="sr-only">
-                    {action.srLabel ?? action.label}
-                  </span>
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <div className="flex items-center gap-2">
-                  <span>{action.label}</span>
-                  {action.hotkey ? (
-                    <kbd className="bg-muted text-muted-foreground rounded px-1 text-xs font-medium tracking-wide uppercase">
-                      {action.hotkey}
-                    </kbd>
-                  ) : null}
-                </div>
-              </TooltipContent>
-            </Tooltip>
-          );
-        })}
+            return (
+              <Tooltip key={action.id}>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant={action.variant}
+                    size="sm"
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      void run(action.id);
+                    }}
+                    className={cn(
+                      "h-auto gap-1.5 px-1 py-1",
+                      action.hoverColor,
+                      isActive && action.id === "like" && "text-red-500",
+                      isActive && action.id === "repost" && "text-green-500",
+                      index > 0 && "-ml-2",
+                    )}
+                    aria-label={action.srLabel ?? action.label}
+                    aria-keyshortcuts={action.hotkey}
+                    aria-pressed={toggleKey ? isActive : undefined}
+                  >
+                    {iconNode}
+                    {showLabel ? (
+                      <span className="text-sm">{action.label}</span>
+                    ) : null}
+                    <span className="sr-only">
+                      {action.srLabel ?? action.label}
+                    </span>
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <div className="flex items-center gap-2">
+                    <span>{action.label}</span>
+                    {action.hotkey ? (
+                      <kbd className="bg-muted text-muted-foreground rounded px-1 text-xs font-medium tracking-wide uppercase">
+                        {action.hotkey}
+                      </kbd>
+                    ) : null}
+                  </div>
+                </TooltipContent>
+              </Tooltip>
+            );
+          })}
         </div>
       </div>
     </TooltipProvider>

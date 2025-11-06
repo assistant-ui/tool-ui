@@ -503,11 +503,14 @@ function Cube() {
     return increments;
   }, [animation.use90Degrees, animation.use180Degrees]);
 
-  const ROTATION_PATTERNS = useMemo(() => [
-    { axis: "y" as const, label: "horizontal" },
-    { axis: "x" as const, label: "vertical" },
-    { axis: "z" as const, label: "roll" },
-  ], []);
+  const ROTATION_PATTERNS = useMemo(
+    () => [
+      { axis: "y" as const, label: "horizontal" },
+      { axis: "x" as const, label: "vertical" },
+      { axis: "z" as const, label: "roll" },
+    ],
+    [],
+  );
 
   // Update initial rotation
   useEffect(() => {

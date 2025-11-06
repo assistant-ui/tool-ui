@@ -11,10 +11,21 @@ import {
   VolumeX,
 } from "lucide-react";
 import { cn } from "./_cn";
-import { Button, Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./_ui";
+import {
+  Button,
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "./_ui";
 import { useMediaCard } from "./context";
 
-type MediaActionId = "open" | "copyLink" | "download" | "playPause" | "muteToggle";
+type MediaActionId =
+  | "open"
+  | "copyLink"
+  | "download"
+  | "playPause"
+  | "muteToggle";
 
 const DEFAULT_ACTIONS: Record<string, MediaActionId[]> = {
   image: ["open", "copyLink", "download"],
@@ -32,10 +43,13 @@ const ACTION_LABELS: Record<MediaActionId, string> = {
 };
 
 export function Actions() {
-  const { card, state, setState, handlers, mediaElement, resolvedHref } = useMediaCard();
+  const { card, state, setState, handlers, mediaElement, resolvedHref } =
+    useMediaCard();
   const supportsClipboard = useClipboardSupport();
 
-  const [copyStatus, setCopyStatus] = React.useState<"idle" | "copied" | "error">("idle");
+  const [copyStatus, setCopyStatus] = React.useState<
+    "idle" | "copied" | "error"
+  >("idle");
 
   React.useEffect(() => {
     if (copyStatus === "idle") return;
@@ -62,7 +76,14 @@ export function Actions() {
           return true;
       }
     });
-  }, [availableHref, card.href, card.kind, card.src, resolvedHref, supportsClipboard]);
+  }, [
+    availableHref,
+    card.href,
+    card.kind,
+    card.src,
+    resolvedHref,
+    supportsClipboard,
+  ]);
 
   if (card.kind === "link") {
     return null;
@@ -94,7 +115,10 @@ export function Actions() {
         const target = resolvedHref ?? card.href ?? card.src;
         if (!target || !supportsClipboard) break;
         try {
-          if (typeof navigator !== "undefined" && navigator.clipboard?.writeText) {
+          if (
+            typeof navigator !== "undefined" &&
+            navigator.clipboard?.writeText
+          ) {
             await navigator.clipboard.writeText(target);
           } else {
             throw new Error("Clipboard API unavailable");
@@ -149,7 +173,8 @@ export function Actions() {
     handlers.onAction?.(actionId, card);
   }
 
-  const playing = state.playing ?? (mediaElement ? !mediaElement.paused : false);
+  const playing =
+    state.playing ?? (mediaElement ? !mediaElement.paused : false);
   const muted = state.muted ?? (mediaElement ? mediaElement.muted : false);
 
   return (
@@ -170,7 +195,11 @@ export function Actions() {
                   : ACTION_LABELS[actionId];
 
           const pressed =
-            actionId === "playPause" ? playing : actionId === "muteToggle" ? muted : undefined;
+            actionId === "playPause"
+              ? playing
+              : actionId === "muteToggle"
+                ? muted
+                : undefined;
 
           const Icon = (() => {
             switch (actionId) {
@@ -203,7 +232,7 @@ export function Actions() {
                   variant="ghost"
                   size="icon-sm"
                   className={cn(
-                    "relative z-20 rounded-full bg-background/60 backdrop-blur supports-[backdrop-filter]:bg-background/40",
+                    "bg-background/60 supports-[backdrop-filter]:bg-background/40 relative z-20 rounded-full backdrop-blur",
                     actionId === "open" && "shadow-sm",
                   )}
                   onClick={(event) => {
@@ -212,7 +241,9 @@ export function Actions() {
                     void run(actionId);
                   }}
                   aria-label={label}
-                  aria-pressed={typeof pressed === "boolean" ? pressed : undefined}
+                  aria-pressed={
+                    typeof pressed === "boolean" ? pressed : undefined
+                  }
                 >
                   <Icon className="h-4 w-4" aria-hidden="true" />
                   <span className="sr-only">{label}</span>
@@ -232,7 +263,8 @@ function useClipboardSupport() {
 
   React.useEffect(() => {
     setSupported(
-      typeof navigator !== "undefined" && typeof navigator.clipboard?.writeText === "function",
+      typeof navigator !== "undefined" &&
+        typeof navigator.clipboard?.writeText === "function",
     );
   }, []);
 

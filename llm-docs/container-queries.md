@@ -21,7 +21,7 @@ We author components using Tailwind’s shared `@container` DSL and let the Tail
 ```js
 // tailwind.config.{js,ts}
 module.exports = {
-  plugins: [require('@tailwindcss/container-queries')],
+  plugins: [require("@tailwindcss/container-queries")],
 };
 ```
 

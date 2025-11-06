@@ -26,11 +26,7 @@ import {
   decisionPromptPresets,
 } from "@/lib/decision-prompt-presets";
 import { useComponents } from "../components-context";
-import {
-  Panel,
-  PanelGroup,
-  PanelResizeHandle,
-} from "react-resizable-panels";
+import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import { Button } from "@/components/ui/button";
 import { ButtonGroup } from "@/components/ui/button-group";
 import { Code, Eye } from "lucide-react";
@@ -65,7 +61,9 @@ export function ClientPreview({ componentId }: { componentId: string }) {
     useState<string | undefined>();
   const [decisionPromptSelectedActions, setDecisionPromptSelectedActions] =
     useState<string[]>([]);
-  const horizontalPanelGroupRef = useRef<import("react-resizable-panels").ImperativePanelGroupHandle | null>(null);
+  const horizontalPanelGroupRef = useRef<
+    import("react-resizable-panels").ImperativePanelGroupHandle | null
+  >(null);
   const isSyncingHorizontalLayout = useRef(false);
 
   const handleSortChange = (next: {
@@ -97,7 +95,11 @@ export function ClientPreview({ componentId }: { componentId: string }) {
 
     if (!isSymmetric) {
       isSyncingHorizontalLayout.current = true;
-      horizontalPanelGroupRef.current.setLayout([spacing, clampedCenter, spacing]);
+      horizontalPanelGroupRef.current.setLayout([
+        spacing,
+        clampedCenter,
+        spacing,
+      ]);
     }
   }, []);
 
@@ -221,7 +223,7 @@ export function ClientPreview({ componentId }: { componentId: string }) {
       </aside>
       <div className="flex min-h-0 min-w-0 flex-1 flex-col">
         {/* Header with status and tabs */}
-        <div className="flex items-center justify-between border-b py-3 px-6">
+        <div className="flex items-center justify-between border-b px-6 py-3">
           <div className="flex items-center gap-2">
             <Label htmlFor="preview-loading" className="text-sm">
               Loading
@@ -253,12 +255,12 @@ export function ClientPreview({ componentId }: { componentId: string }) {
         </div>
 
         {/* Resizable preview area */}
-        <div className="relative flex-1 overflow-auto scrollbar-subtle flex items-center justify-center p-6">
+        <div className="scrollbar-subtle relative flex flex-1 items-center justify-center overflow-auto p-6">
           <div
             className="bg-dot-grid pointer-events-none absolute inset-0 opacity-60 dark:opacity-40"
             aria-hidden="true"
           />
-          <div className="relative w-full h-fit">
+          <div className="relative h-fit w-full">
             <PanelGroup
               ref={horizontalPanelGroupRef}
               direction="horizontal"
@@ -271,71 +273,83 @@ export function ClientPreview({ componentId }: { componentId: string }) {
                 <div className="absolute top-1/2 left-1/2 h-12 w-1 -translate-x-1/2 -translate-y-1/2 rounded-full bg-gray-300 opacity-40 transition-all group-hover:bg-gray-400 group-hover:opacity-100 group-data-resize-handle-active:bg-gray-500 group-data-resize-handle-active:opacity-100 dark:bg-gray-600 dark:group-hover:bg-gray-500 dark:group-data-resize-handle-active:bg-gray-400" />
               </PanelResizeHandle>
 
-              <Panel defaultSize={85} minSize={PREVIEW_MIN_SIZE} maxSize={PREVIEW_MAX_SIZE}>
-                <div className="bg-background border-2 border-dashed border-border overflow-hidden transition-all">
-                <Tabs value={activeTab} className="flex w-full flex-col"
-                      onValueChange={setActiveTab}>
-                  <TabsContent
-                    value="ui"
-                    className="scrollbar-subtle relative flex flex-col p-6 m-0 data-[state=inactive]:hidden"
+              <Panel
+                defaultSize={85}
+                minSize={PREVIEW_MIN_SIZE}
+                maxSize={PREVIEW_MAX_SIZE}
+              >
+                <div className="bg-background border-border overflow-hidden border-2 border-dashed transition-all">
+                  <Tabs
+                    value={activeTab}
+                    className="flex w-full flex-col"
+                    onValueChange={setActiveTab}
                   >
-                    <div className="w-full">
-                      {componentId === "data-table" && currentConfig && (
-                        <DataTable
-                          {...currentConfig}
-                          sort={sort}
-                          onSortChange={setSort}
-                          isLoading={isLoading}
-                          emptyMessage={emptyMessage}
-                          onBeforeAction={handleBeforeAction}
-                          onAction={(actionId, row) => {
-                            console.log("Action:", actionId, "Row:", row);
-                            alert(
-                              `Action: ${actionId}\nRow: ${JSON.stringify(row, null, 2)}`,
-                            );
-                          }}
-                        />
-                      )}
-                      {componentId === "social-post" && currentSocialPostConfig && (
-                        <SocialPost
-                          {...currentSocialPostConfig.post}
-                          isLoading={isLoading}
-                          maxWidth="600px"
-                          onAction={(actionId) => {
-                            console.log("Action:", actionId);
-                            alert(`Action: ${actionId}`);
-                          }}
-                        />
-                      )}
-                      {componentId === "media-card" && currentMediaCardConfig && (
-                        <div className="flex justify-center">
-                          <MediaCard
-                            {...currentMediaCardConfig.card}
+                    <TabsContent
+                      value="ui"
+                      className="scrollbar-subtle relative m-0 flex flex-col p-6 data-[state=inactive]:hidden"
+                    >
+                      <div className="w-full">
+                        {componentId === "data-table" && currentConfig && (
+                          <DataTable
+                            {...currentConfig}
+                            sort={sort}
+                            onSortChange={setSort}
                             isLoading={isLoading}
-                            maxWidth={
-                              mediaCardMaxWidth &&
-                              mediaCardMaxWidth.trim().length > 0
-                                ? mediaCardMaxWidth
-                                : undefined
-                            }
-                            onAction={(actionId) => {
-                              console.log("MediaCard action:", actionId);
-                            }}
-                            onNavigate={(href) => {
-                              console.log("MediaCard navigate:", href);
+                            emptyMessage={emptyMessage}
+                            onBeforeAction={handleBeforeAction}
+                            onAction={(actionId, row) => {
+                              console.log("Action:", actionId, "Row:", row);
+                              alert(
+                                `Action: ${actionId}\nRow: ${JSON.stringify(row, null, 2)}`,
+                              );
                             }}
                           />
-                        </div>
-                      )}
-                      {componentId === "decision-prompt" &&
-                        currentDecisionPromptConfig && (
-                          <div className="w-full max-w-md">
-                            <DecisionPrompt
+                        )}
+                        {componentId === "social-post" &&
+                          currentSocialPostConfig && (
+                            <SocialPost
+                              {...currentSocialPostConfig.post}
+                              isLoading={isLoading}
+                              maxWidth="600px"
+                              onAction={(actionId) => {
+                                console.log("Action:", actionId);
+                                alert(`Action: ${actionId}`);
+                              }}
+                            />
+                          )}
+                        {componentId === "media-card" &&
+                          currentMediaCardConfig && (
+                            <div className="flex justify-center">
+                              <MediaCard
+                                {...currentMediaCardConfig.card}
+                                isLoading={isLoading}
+                                maxWidth={
+                                  mediaCardMaxWidth &&
+                                  mediaCardMaxWidth.trim().length > 0
+                                    ? mediaCardMaxWidth
+                                    : undefined
+                                }
+                                onAction={(actionId) => {
+                                  console.log("MediaCard action:", actionId);
+                                }}
+                                onNavigate={(href) => {
+                                  console.log("MediaCard navigate:", href);
+                                }}
+                              />
+                            </div>
+                          )}
+                        {componentId === "decision-prompt" &&
+                          currentDecisionPromptConfig && (
+                            <div className="w-full max-w-md">
+                              <DecisionPrompt
                                 {...currentDecisionPromptConfig.prompt}
                                 selectedAction={decisionPromptSelectedAction}
                                 selectedActions={decisionPromptSelectedActions}
                                 onAction={async (actionId) => {
-                                  console.log("Decision prompt action:", actionId);
+                                  console.log(
+                                    "Decision prompt action:",
+                                    actionId,
+                                  );
 
                                   // Simulate async for "install" or "send" actions
                                   if (
@@ -362,30 +376,34 @@ export function ClientPreview({ componentId }: { componentId: string }) {
                                   setDecisionPromptSelectedActions(actionIds);
                                 }}
                               />
-                          </div>
-                        )}
-                    </div>
-                  </TabsContent>
+                            </div>
+                          )}
+                      </div>
+                    </TabsContent>
 
-                  <TabsContent
-                    value="code"
-                    className="m-0 data-[state=inactive]:hidden"
-                  >
-                    <CodePanel
-                      className="w-full"
-                      componentId={componentId}
-                      config={currentConfig}
-                      socialPostConfig={currentSocialPostConfig}
-                      mediaCardConfig={currentMediaCardConfig}
-                      decisionPromptConfig={currentDecisionPromptConfig}
-                      decisionPromptSelectedAction={decisionPromptSelectedAction}
-                      decisionPromptSelectedActions={decisionPromptSelectedActions}
-                      mediaCardMaxWidth={mediaCardMaxWidth}
-                      sort={sort}
-                      isLoading={isLoading}
-                      emptyMessage={emptyMessage}
-                      mode="plain"
-                    />
+                    <TabsContent
+                      value="code"
+                      className="m-0 data-[state=inactive]:hidden"
+                    >
+                      <CodePanel
+                        className="w-full"
+                        componentId={componentId}
+                        config={currentConfig}
+                        socialPostConfig={currentSocialPostConfig}
+                        mediaCardConfig={currentMediaCardConfig}
+                        decisionPromptConfig={currentDecisionPromptConfig}
+                        decisionPromptSelectedAction={
+                          decisionPromptSelectedAction
+                        }
+                        decisionPromptSelectedActions={
+                          decisionPromptSelectedActions
+                        }
+                        mediaCardMaxWidth={mediaCardMaxWidth}
+                        sort={sort}
+                        isLoading={isLoading}
+                        emptyMessage={emptyMessage}
+                        mode="plain"
+                      />
                     </TabsContent>
                   </Tabs>
                 </div>

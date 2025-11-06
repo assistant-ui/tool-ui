@@ -133,10 +133,10 @@ export function SocialPost(props: SocialPostProps) {
         {isLoading ? (
           <div className="animate-pulse">
             <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-full bg-muted" />
-              <div className="h-4 w-32 rounded bg-muted" />
+              <div className="bg-muted h-10 w-10 rounded-full" />
+              <div className="bg-muted h-4 w-32 rounded" />
             </div>
-            <div className="mt-3 h-48 w-full rounded bg-muted" />
+            <div className="bg-muted mt-3 h-48 w-full rounded" />
           </div>
         ) : (
           <Renderer />

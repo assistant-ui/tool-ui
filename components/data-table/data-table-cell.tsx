@@ -49,9 +49,7 @@ export function DataTableCell({
         : undefined;
 
   return (
-    <TableCell
-      className={cn(DATA_TABLE_CELL_PADDING, alignClass, className)}
-    >
+    <TableCell className={cn(DATA_TABLE_CELL_PADDING, alignClass, className)}>
       {displayValue}
     </TableCell>
   );

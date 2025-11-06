@@ -101,37 +101,34 @@ function HomePageContent({ showLogoDebug }: { showLogoDebug: boolean }) {
     [updateViewportFromChatSize],
   );
 
-  const handleVerticalLayout = useCallback(
-    (sizes: number[]) => {
-      if (!verticalPanelGroupRef.current) {
-        return;
-      }
+  const handleVerticalLayout = useCallback((sizes: number[]) => {
+    if (!verticalPanelGroupRef.current) {
+      return;
+    }
 
-      if (isSyncingVerticalLayout.current) {
-        isSyncingVerticalLayout.current = false;
-        return;
-      }
+    if (isSyncingVerticalLayout.current) {
+      isSyncingVerticalLayout.current = false;
+      return;
+    }
 
-      const [top, chat, bottom] = sizes;
-      const clampedChat = Math.min(
-        CHAT_VERTICAL_MAX_SIZE,
-        Math.max(CHAT_VERTICAL_MIN_SIZE, chat),
-      );
-      const spacing = Math.max(0, (100 - clampedChat) / 2);
-      const epsilon = 0.5;
+    const [top, chat, bottom] = sizes;
+    const clampedChat = Math.min(
+      CHAT_VERTICAL_MAX_SIZE,
+      Math.max(CHAT_VERTICAL_MIN_SIZE, chat),
+    );
+    const spacing = Math.max(0, (100 - clampedChat) / 2);
+    const epsilon = 0.5;
 
-      const isSymmetric =
-        Math.abs(top - spacing) < epsilon &&
-        Math.abs(bottom - spacing) < epsilon &&
-        Math.abs(chat - clampedChat) < epsilon;
+    const isSymmetric =
+      Math.abs(top - spacing) < epsilon &&
+      Math.abs(bottom - spacing) < epsilon &&
+      Math.abs(chat - clampedChat) < epsilon;
 
-      if (!isSymmetric) {
-        isSyncingVerticalLayout.current = true;
-        verticalPanelGroupRef.current.setLayout([spacing, clampedChat, spacing]);
-      }
-    },
-    [],
-  );
+    if (!isSymmetric) {
+      isSyncingVerticalLayout.current = true;
+      verticalPanelGroupRef.current.setLayout([spacing, clampedChat, spacing]);
+    }
+  }, []);
 
   const changeViewport = (nextViewport: ViewportSize) => {
     setViewport(nextViewport);
@@ -150,24 +147,24 @@ function HomePageContent({ showLogoDebug }: { showLogoDebug: boolean }) {
     ((chatPanelSize - CHAT_MIN_SIZE) / (CHAT_MAX_SIZE - CHAT_MIN_SIZE)) * 2.0;
 
   return (
-    <div className="grid h-screen grid-cols-[minmax(200px,240px)_1fr] grid-rows-[auto_1fr] bg-background">
+    <div className="bg-background grid h-screen grid-cols-[minmax(200px,240px)_1fr] grid-rows-[auto_1fr]">
       {/* A1: Logo - centered */}
-      <div className="bg-background border-b border-r flex items-center justify-center px-6 py-3">
+      <div className="bg-background flex items-center justify-center border-r border-b px-6 py-3">
         <Link href="/">
           <h1 className="text-xl font-semibold tracking-wide">tool-ui.com</h1>
         </Link>
       </div>
 
       {/* B1: Tabs */}
-      <div className="bg-background border-b flex items-center justify-between px-6 py-3">
+      <div className="bg-background flex items-center justify-between border-b px-6 py-3">
         <nav className="flex items-center gap-1">
           <Link
             href="/"
             className={cn(
-              "px-4 py-2 rounded-lg text-sm font-medium transition-colors",
+              "rounded-lg px-4 py-2 text-sm font-medium transition-colors",
               isHome
                 ? "bg-muted text-foreground"
-                : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                : "text-muted-foreground hover:text-foreground hover:bg-muted/50",
             )}
           >
             Home
@@ -175,10 +172,10 @@ function HomePageContent({ showLogoDebug }: { showLogoDebug: boolean }) {
           <Link
             href="/components"
             className={cn(
-              "px-4 py-2 rounded-lg text-sm font-medium transition-colors",
+              "rounded-lg px-4 py-2 text-sm font-medium transition-colors",
               isComponents
                 ? "bg-muted text-foreground"
-                : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                : "text-muted-foreground hover:text-foreground hover:bg-muted/50",
             )}
           >
             Components
@@ -186,20 +183,25 @@ function HomePageContent({ showLogoDebug }: { showLogoDebug: boolean }) {
           <Link
             href="/builder"
             className={cn(
-              "px-4 py-2 rounded-lg text-sm font-medium transition-colors",
+              "rounded-lg px-4 py-2 text-sm font-medium transition-colors",
               isBuilder
                 ? "bg-muted text-foreground"
-                : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                : "text-muted-foreground hover:text-foreground hover:bg-muted/50",
             )}
           >
             Builder
           </Link>
         </nav>
-        <ViewportControls viewport={viewport} onViewportChange={changeViewport} showThemeToggle showViewportButtons />
+        <ViewportControls
+          viewport={viewport}
+          onViewportChange={changeViewport}
+          showThemeToggle
+          showViewportButtons
+        />
       </div>
 
       {/* A2 & B2: Main content spanning both columns for home */}
-      <main className="relative col-span-2 flex flex-row items-end justify-center overflow-hidden bg-background">
+      <main className="bg-background relative col-span-2 flex flex-row items-end justify-center overflow-hidden">
         <div
           className="bg-dot-grid pointer-events-none absolute inset-0 opacity-60 dark:opacity-40"
           aria-hidden="true"
@@ -283,7 +285,7 @@ const ResizableChat = memo(function ResizableChat({
         <PanelGroup
           ref={verticalPanelGroupRef}
           direction="vertical"
-          className="w-full h-full"
+          className="h-full w-full"
           style={{ overflow: "visible" }}
           onLayout={handleVerticalLayout}
           autoSaveId="homepage-chat-vertical-layout"
@@ -292,14 +294,18 @@ const ResizableChat = memo(function ResizableChat({
 
           <PanelResizeHandle className="h-0" />
 
-          <Panel defaultSize={100} minSize={CHAT_VERTICAL_MIN_SIZE} maxSize={CHAT_VERTICAL_MAX_SIZE}>
-            <div className="bg-background pointer-events-auto flex h-full w-full overflow-hidden border-2 border-dashed border-border transition-all">
+          <Panel
+            defaultSize={100}
+            minSize={CHAT_VERTICAL_MIN_SIZE}
+            maxSize={CHAT_VERTICAL_MAX_SIZE}
+          >
+            <div className="bg-background border-border pointer-events-auto flex h-full w-full overflow-hidden border-2 border-dashed transition-all">
               <DemoChat />
             </div>
           </Panel>
 
           <PanelResizeHandle className="group relative h-4">
-            <div className="absolute top-1/2 left-1/2 w-12 h-1 -translate-x-1/2 -translate-y-1/2 rounded-full bg-gray-300 opacity-40 transition-all group-hover:bg-gray-400 group-hover:opacity-100 group-data-resize-handle-active:bg-gray-500 group-data-resize-handle-active:opacity-100 dark:bg-gray-600 dark:group-hover:bg-gray-500 dark:group-data-resize-handle-active:bg-gray-400" />
+            <div className="absolute top-1/2 left-1/2 h-1 w-12 -translate-x-1/2 -translate-y-1/2 rounded-full bg-gray-300 opacity-40 transition-all group-hover:bg-gray-400 group-hover:opacity-100 group-data-resize-handle-active:bg-gray-500 group-data-resize-handle-active:opacity-100 dark:bg-gray-600 dark:group-hover:bg-gray-500 dark:group-data-resize-handle-active:bg-gray-400" />
           </PanelResizeHandle>
 
           <Panel defaultSize={0} minSize={0} />

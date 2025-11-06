@@ -8,59 +8,62 @@ export function sortData<T, K extends Extract<keyof T, string>>(
   locale?: string,
 ): T[] {
   const get = (obj: T, k: K): unknown => (obj as Record<string, unknown>)[k];
-  const collator = new Intl.Collator(locale, { numeric: true, sensitivity: 'base' });
+  const collator = new Intl.Collator(locale, {
+    numeric: true,
+    sensitivity: "base",
+  });
   return [...data].sort((a, b) => {
     const aVal = get(a, key);
     const bVal = get(b, key);
 
     // Handle nulls
-    if (aVal == null && bVal == null) return 0
-    if (aVal == null) return 1
-    if (bVal == null) return -1
+    if (aVal == null && bVal == null) return 0;
+    if (aVal == null) return 1;
+    if (bVal == null) return -1;
 
     // Type-specific comparison
     // Numbers
-    if (typeof aVal === 'number' && typeof bVal === 'number') {
-      return direction === 'asc' ? aVal - bVal : bVal - aVal
+    if (typeof aVal === "number" && typeof bVal === "number") {
+      return direction === "asc" ? aVal - bVal : bVal - aVal;
     }
     // Dates (Date instances)
     if (aVal instanceof Date && bVal instanceof Date) {
-      const diff = aVal.getTime() - bVal.getTime()
-      return direction === 'asc' ? diff : -diff
+      const diff = aVal.getTime() - bVal.getTime();
+      return direction === "asc" ? diff : -diff;
     }
     // Booleans: false < true
-    if (typeof aVal === 'boolean' && typeof bVal === 'boolean') {
-      const diff = (aVal === bVal) ? 0 : (aVal ? 1 : -1)
-      return direction === 'asc' ? diff : -diff
+    if (typeof aVal === "boolean" && typeof bVal === "boolean") {
+      const diff = aVal === bVal ? 0 : aVal ? 1 : -1;
+      return direction === "asc" ? diff : -diff;
     }
     // Arrays: compare length
     if (Array.isArray(aVal) && Array.isArray(bVal)) {
-      const diff = aVal.length - bVal.length
-      return direction === 'asc' ? diff : -diff
+      const diff = aVal.length - bVal.length;
+      return direction === "asc" ? diff : -diff;
     }
     // Strings that look like numbers -> numeric compare
-    if (typeof aVal === 'string' && typeof bVal === 'string') {
-      const numA = parseNumericLike(aVal)
-      const numB = parseNumericLike(bVal)
+    if (typeof aVal === "string" && typeof bVal === "string") {
+      const numA = parseNumericLike(aVal);
+      const numB = parseNumericLike(bVal);
       if (numA != null && numB != null) {
-        const diff = numA - numB
-        return direction === 'asc' ? diff : -diff
+        const diff = numA - numB;
+        return direction === "asc" ? diff : -diff;
       }
       // ISO-like date strings
       if (/^\d{4}-\d{2}-\d{2}/.test(aVal) && /^\d{4}-\d{2}-\d{2}/.test(bVal)) {
-        const da = new Date(aVal).getTime()
-        const db = new Date(bVal).getTime()
-        const diff = da - db
-        return direction === 'asc' ? diff : -diff
+        const da = new Date(aVal).getTime();
+        const db = new Date(bVal).getTime();
+        const diff = da - db;
+        return direction === "asc" ? diff : -diff;
       }
     }
 
     // Fallback: locale-aware string compare with numeric collation
-    const aStr = String(aVal)
-    const bStr = String(bVal)
-    const comparison = collator.compare(aStr, bStr)
-    return direction === 'asc' ? comparison : -comparison
-  })
+    const aStr = String(aVal);
+    const bStr = String(bVal);
+    const comparison = collator.compare(aStr, bStr);
+    return direction === "asc" ? comparison : -comparison;
+  });
 }
 
 /**
@@ -68,7 +71,10 @@ export function sortData<T, K extends Extract<keyof T, string>>(
  */
 export function getActionLabel(
   actionLabel: string,
-  row: Record<string, string | number | boolean | null | (string | number | boolean | null)[]>,
+  row: Record<
+    string,
+    string | number | boolean | null | (string | number | boolean | null)[]
+  >,
   identifierKey?: string,
 ): string {
   const identifier = getRowIdentifier(row, identifierKey);
@@ -82,7 +88,10 @@ export function getActionLabel(
  * Arrays are converted to comma-separated strings.
  */
 export function getRowIdentifier(
-  row: Record<string, string | number | boolean | null | (string | number | boolean | null)[]>,
+  row: Record<
+    string,
+    string | number | boolean | null | (string | number | boolean | null)[]
+  >,
   identifierKey?: string,
 ): string {
   const candidate =
@@ -97,7 +106,7 @@ export function getRowIdentifier(
 
   // Handle arrays by joining them
   if (Array.isArray(candidate)) {
-    return candidate.map(v => v === null ? "null" : String(v)).join(", ");
+    return candidate.map((v) => (v === null ? "null" : String(v))).join(", ");
   }
 
   return String(candidate).trim();
@@ -108,7 +117,10 @@ export function getRowIdentifier(
  * Reuses the row identifier when available.
  */
 export function getConfirmDescription(
-  row: Record<string, string | number | boolean | null | (string | number | boolean | null)[]>,
+  row: Record<
+    string,
+    string | number | boolean | null | (string | number | boolean | null)[]
+  >,
   actionLabel?: string,
   identifierKey?: string,
 ): string {
@@ -141,31 +153,31 @@ export function getConfirmDescription(
  */
 export function parseNumericLike(input: string): number | null {
   // Normalize whitespace (spaces, NBSPs, thin spaces)
-  let s = input.replace(/[\u00A0\u202F\s]/g, '').trim();
+  let s = input.replace(/[\u00A0\u202F\s]/g, "").trim();
   if (!s) return null;
 
   // Accounting negatives: (1234) -> -1234
-  s = s.replace(/^\((.*)\)$/g, '-$1');
+  s = s.replace(/^\((.*)\)$/g, "-$1");
 
   // Strip common currency and percent symbols
-  s = s.replace(/[\%$€£¥₩₹₽₺₪₫฿₦₴₡₲₵₸]/g, '');
+  s = s.replace(/[\%$€£¥₩₹₽₺₪₫฿₦₴₡₲₵₸]/g, "");
 
-  const lastComma = s.lastIndexOf(',');
-  const lastDot = s.lastIndexOf('.');
+  const lastComma = s.lastIndexOf(",");
+  const lastDot = s.lastIndexOf(".");
   if (lastComma !== -1 && lastDot !== -1) {
     // Decide decimal by whichever occurs last
-    const decimalSep = lastComma > lastDot ? ',' : '.';
-    const thousandSep = decimalSep === ',' ? '.' : ',';
-    s = s.split(thousandSep).join('');
-    s = s.replace(decimalSep, '.');
+    const decimalSep = lastComma > lastDot ? "," : ".";
+    const thousandSep = decimalSep === "," ? "." : ",";
+    s = s.split(thousandSep).join("");
+    s = s.replace(decimalSep, ".");
   } else if (lastComma !== -1) {
     // Only comma present
     const frac = s.length - lastComma - 1;
-    if (frac === 2 || frac === 3) s = s.replace(/,/g, '.');
-    else s = s.replace(/,/g, '');
+    if (frac === 2 || frac === 3) s = s.replace(/,/g, ".");
+    else s = s.replace(/,/g, "");
   } else if (lastDot !== -1) {
     // Only dot present; if multiple dots, treat as thousands and strip
-    if ((s.match(/\./g) || []).length > 1) s = s.replace(/\./g, '');
+    if ((s.match(/\./g) || []).length > 1) s = s.replace(/\./g, "");
   }
 
   // Handle compact notation (K, M, B, T, P, G) and byte suffixes (KB, MB, GB, TB, PB)
@@ -178,17 +190,22 @@ export function parseNumericLike(input: string): number | null {
 
     // Disambiguate single "B" (bytes vs billions)
     // If whole number < 1024, treat as bytes. Otherwise, billions.
-    if (suffix === 'B') {
+    if (suffix === "B") {
       const isLikelyBytes = Number.isInteger(baseNum) && baseNum < 1024;
       return isLikelyBytes ? baseNum : baseNum * 1e9;
     }
 
     const multipliers: Record<string, number> = {
-      'K': 1e3, 'KB': 1024,               // Kilo: metric vs binary
-      'M': 1e6, 'MB': 1024 ** 2,          // Mega
-      'G': 1e9, 'GB': 1024 ** 3,          // Giga
-      'T': 1e12, 'TB': 1024 ** 4,         // Tera
-      'P': 1e15, 'PB': 1024 ** 5,         // Peta
+      K: 1e3,
+      KB: 1024, // Kilo: metric vs binary
+      M: 1e6,
+      MB: 1024 ** 2, // Mega
+      G: 1e9,
+      GB: 1024 ** 3, // Giga
+      T: 1e12,
+      TB: 1024 ** 4, // Tera
+      P: 1e15,
+      PB: 1024 ** 5, // Peta
     };
 
     return baseNum * (multipliers[suffix] ?? 1);

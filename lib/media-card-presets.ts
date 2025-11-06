@@ -54,7 +54,8 @@ const audioPreset: MediaCardConfig = {
     src: "https://samplelib.com/lib/preview/mp3/sample-6s.mp3",
     title: "Bell Labs hallway recording",
     description: "Ambient sounds where UNIX, C, and more took shape.",
-    thumb: "https://images.unsplash.com/photo-1454165205744-3b78555e5572?w=400&auto=format&fit=crop",
+    thumb:
+      "https://images.unsplash.com/photo-1454165205744-3b78555e5572?w=400&auto=format&fit=crop",
     fileSizeBytes: 215040,
     durationMs: 30000,
     domain: "samplelib.com",
@@ -77,7 +78,8 @@ const linkPreset: MediaCardConfig = {
       "Mechanical calculators, vacuum tubes, transistors, microprocessors — and what came next.",
     ratio: "16:9",
     domain: "wikipedia.org",
-    thumb: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&q=80&w=2046",
+    thumb:
+      "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&q=80&w=2046",
     createdAtISO: "2025-02-05T09:45:00.000Z",
     source: {
       label: "History compendium",
@@ -100,9 +102,10 @@ export const mediaCardPresets: Record<MediaCardPresetName, MediaCardConfig> = {
   link: linkPreset,
 };
 
-export const mediaCardPresetDescriptions: Record<MediaCardPresetName, string> = {
-  image: "Image attachment with title, description, and tool attribution",
-  video: "Video preview with metadata, duration, and media controls",
-  audio: "Audio clip with optional poster artwork and duration metadata",
-  link: "Rich link preview using OpenGraph data and full-card navigation",
-};
+export const mediaCardPresetDescriptions: Record<MediaCardPresetName, string> =
+  {
+    image: "Image attachment with title, description, and tool attribution",
+    video: "Video preview with metadata, duration, and media controls",
+    audio: "Audio clip with optional poster artwork and duration metadata",
+    link: "Rich link preview using OpenGraph data and full-card navigation",
+  };

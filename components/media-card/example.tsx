@@ -47,7 +47,11 @@ export function MediaCardExample() {
         description="Composable building blocks for tool responses."
         domain="assistant-ui.com"
         thumb="https://images.unsplash.com/photo-1504389273929-44baec1307d2?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=2046"
-        source={{ label: "Tooling", iconUrl: "/og.png", url: "https://assistant-ui.com" }}
+        source={{
+          label: "Tooling",
+          iconUrl: "/og.png",
+          url: "https://assistant-ui.com",
+        }}
         onNavigate={(href) => console.log("navigate to", href)}
       />
     </div>

@@ -17,7 +17,7 @@ export function MediaCardHeader() {
   const showDomain = domain && (!source || source.label !== domain);
 
   return (
-    <div className="flex w-full items-start justify-between gap-3 text-xs text-muted-foreground">
+    <div className="text-muted-foreground flex w-full items-start justify-between gap-3 text-xs">
       <div className="flex items-center gap-2">
         {source?.iconUrl ? (
           <img
@@ -26,16 +26,16 @@ export function MediaCardHeader() {
             aria-hidden="true"
             loading="lazy"
             decoding="async"
-            className="relative z-20 h-6 w-6 rounded-full border border-border/60 object-cover"
+            className="border-border/60 relative z-20 h-6 w-6 rounded-full border object-cover"
           />
         ) : domain ? (
-          <div className="relative z-20 flex h-6 w-6 items-center justify-center rounded-full border border-border/60 bg-muted">
+          <div className="border-border/60 bg-muted relative z-20 flex h-6 w-6 items-center justify-center rounded-full border">
             <Globe className="h-3.5 w-3.5" aria-hidden="true" />
           </div>
         ) : null}
         <div className="flex flex-col">
           {source?.label ? (
-            <div className="flex items-center gap-2 text-xs font-medium text-foreground">
+            <div className="text-foreground flex items-center gap-2 text-xs font-medium">
               <Badge
                 variant="secondary"
                 className="bg-muted text-foreground hover:bg-muted data-[state=open]:bg-muted"
@@ -80,7 +80,7 @@ export function MediaCardHeader() {
               window.open(resolvedSourceUrl, "_blank", "noopener,noreferrer");
             }
           }}
-          className="relative z-20 text-[11px] font-medium text-primary underline-offset-2 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          className="text-primary focus-visible:ring-ring relative z-20 text-[11px] font-medium underline-offset-2 hover:underline focus-visible:ring-2 focus-visible:outline-none"
         >
           View source
         </button>

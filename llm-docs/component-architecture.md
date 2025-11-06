@@ -7,35 +7,35 @@
 
 ## Core Principles
 
-1. **Shadcn-first**  
-   - Components are composed from **shadcn/ui** primitives (`Card`, `Button`, `DropdownMenu`, `Tooltip`, etc.).  
-   - All styling uses our Tailwind tokens and shadcn defaults—**no bespoke CSS** unless strictly necessary.  
+1. **Shadcn-first**
+   - Components are composed from **shadcn/ui** primitives (`Card`, `Button`, `DropdownMenu`, `Tooltip`, etc.).
+   - All styling uses our Tailwind tokens and shadcn defaults—**no bespoke CSS** unless strictly necessary.
    - Re-export primitives via a local `_ui.tsx` adapter so downstream components stay stable if our UI library changes.
 
-2. **Serializable-first API**  
+2. **Serializable-first API**
    - Public props split into:
      - **Serializable props**: pure JSON (safe to produce from tools/LLMs, safe to persist).
      - **Client props**: event handlers, className, and UI state controls.
    - Validate serializable props using **Zod** schemas (guardrails against untrusted tool data).
 
-3. **Responsiveness via Container Queries**  
-   - Root containers opt‑in with `@container`.  
+3. **Responsiveness via Container Queries**
+   - Root containers opt‑in with `@container`.
    - Prefer container queries for layout changes (not viewport breakpoints) to keep components adaptive wherever they live (card, feed, sidebar, etc.).
 
-4. **Accessibility is Non‑negotiable**  
-   - Semantic structure (`article`, `header`, `footer`, `<time>`, `lang`), **keyboard** affordances, and descriptive labels.  
-   - Toggle buttons expose `aria-pressed`; menus use `aria-haspopup="menu"` and meaningful triggers.  
+4. **Accessibility is Non‑negotiable**
+   - Semantic structure (`article`, `header`, `footer`, `<time>`, `lang`), **keyboard** affordances, and descriptive labels.
+   - Toggle buttons expose `aria-pressed`; menus use `aria-haspopup="menu"` and meaningful triggers.
    - **Images require `alt`** (enforced in dev or schema).
 
-5. **Predictable Interaction Model**  
+5. **Predictable Interaction Model**
    - Normalized action IDs (e.g., `open`, `copyLink`, `playPause`) + event hooks:
      - `onBeforeAction` (can cancel)
      - `onAction`
-     - Nested hooks for navigation/media (`onNavigate`, `onMediaEvent`)  
+     - Nested hooks for navigation/media (`onNavigate`, `onMediaEvent`)
    - Controlled/uncontrolled **state pattern**: `state`/`onStateChange` (controlled) or `defaultState` (uncontrolled).
 
-6. **Security & Safety**  
-   - **Sanitize links** (http/https only), avoid `dangerouslySetInnerHTML`, never nest anchors (use **LinkOverlay** pattern).  
+6. **Security & Safety**
+   - **Sanitize links** (http/https only), avoid `dangerouslySetInnerHTML`, never nest anchors (use **LinkOverlay** pattern).
    - All external links: `rel="noopener noreferrer"`.
 
 ---
@@ -43,15 +43,15 @@
 ## Repository Layout (by convention)
 
 components//
-├── _cn.ts                    # cn helper re-export (from data-table/_cn)
-├── _ui.tsx                   # shadcn/ui re-exports (Button, Card, etc.)
-├── index.tsx                 # public exports
-├── schema.ts                 # zod schemas + parseSerializable…
-├── context.tsx               # provider + use()
-├── .tsx           # root; serializable vs client props join here
-├── [subparts].tsx            # slots (header/body/media/actions/meta/etc.)
-├── error-boundary.tsx        # standard boundary (opt-in usage)
-└── example.tsx               # local usage examples
+├── \_cn.ts # cn helper re-export (from data-table/\_cn)
+├── \_ui.tsx # shadcn/ui re-exports (Button, Card, etc.)
+├── index.tsx # public exports
+├── schema.ts # zod schemas + parseSerializable…
+├── context.tsx # provider + use()
+├── .tsx # root; serializable vs client props join here
+├── [subparts].tsx # slots (header/body/media/actions/meta/etc.)
+├── error-boundary.tsx # standard boundary (opt-in usage)
+└── example.tsx # local usage examples
 
 > **Why this matters:** the layout matches `DataTable`/`SocialPost`/`MediaCard`. An LLM or dev can open any folder and instantly understand where to add logic.
 
@@ -59,8 +59,8 @@ components//
 
 ## Shadcn Integration
 
-- **Always** build on top of `shadcn/ui` primitives:  
-  - `Card` for surfaces, `Button` for actions, `DropdownMenu` for overflow, `Tooltip` for icon-only affordances.  
+- **Always** build on top of `shadcn/ui` primitives:
+  - `Card` for surfaces, `Button` for actions, `DropdownMenu` for overflow, `Tooltip` for icon-only affordances.
 - Provide a **stable adapter** for primitives:
 
 ```tsx
@@ -338,3 +338,4 @@ Final Notes
 	•	Favor small, composable parts over monoliths; let renderers (if any) only manage ordering/layout, never duplicate logic.
 	•	Keep the copy/paste path frictionless: shadcn primitives, Tailwind classes, and familiar slot anatomy ensure anyone can drop a new component into the app and it will “just work.”
 
+```

@@ -74,28 +74,29 @@ export const actionSchema = z.object({
   variant: z.enum(["default", "secondary", "ghost", "destructive"]).optional(),
 });
 
-export const serializableSocialPostSchema: z.ZodType<SerializableSocialPost> = z.lazy(() =>
-  z.object({
-    id: z.string(),
-    platform: platformEnum,
-    author: authorSchema,
-    text: z.string().optional(),
-    entities: entitiesSchema,
-    media: z.array(mediaItemSchema).optional(),
-    linkPreview: linkPreviewSchema.optional(),
-    quotedPost: serializableSocialPostSchema.optional(),
-    stats: statsSchema.optional(),
-    initialState: initialStateSchema,
-    actions: z.array(actionSchema).optional(),
-    createdAtISO: z.string().datetime().optional(),
-    sourceUrl: z.string().url().optional(),
-    visibility: z.enum(["public", "unlisted"]).optional(),
-    language: z.string().optional(),
-    locale: z.string().optional(),
-    compact: z.boolean().optional(),
-    messageId: z.string().optional(),
-  })
-);
+export const serializableSocialPostSchema: z.ZodType<SerializableSocialPost> =
+  z.lazy(() =>
+    z.object({
+      id: z.string(),
+      platform: platformEnum,
+      author: authorSchema,
+      text: z.string().optional(),
+      entities: entitiesSchema,
+      media: z.array(mediaItemSchema).optional(),
+      linkPreview: linkPreviewSchema.optional(),
+      quotedPost: serializableSocialPostSchema.optional(),
+      stats: statsSchema.optional(),
+      initialState: initialStateSchema,
+      actions: z.array(actionSchema).optional(),
+      createdAtISO: z.string().datetime().optional(),
+      sourceUrl: z.string().url().optional(),
+      visibility: z.enum(["public", "unlisted"]).optional(),
+      language: z.string().optional(),
+      locale: z.string().optional(),
+      compact: z.boolean().optional(),
+      messageId: z.string().optional(),
+    }),
+  );
 
 export interface SerializableSocialPost {
   id: string;
@@ -118,7 +119,9 @@ export interface SerializableSocialPost {
   messageId?: string;
 }
 
-export function parseSerializableSocialPost(input: unknown): SerializableSocialPost {
+export function parseSerializableSocialPost(
+  input: unknown,
+): SerializableSocialPost {
   const res = serializableSocialPostSchema.safeParse(input);
   if (!res.success) {
     throw new Error(`Invalid SocialPost payload: ${res.error.message}`);

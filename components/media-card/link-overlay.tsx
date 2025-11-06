@@ -16,7 +16,8 @@ export function LinkOverlay({ className, label }: LinkOverlayProps) {
     return null;
   }
 
-  const ariaLabel = label ?? card.title ?? card.description ?? card.domain ?? resolvedHref;
+  const ariaLabel =
+    label ?? card.title ?? card.description ?? card.domain ?? resolvedHref;
 
   return (
     <a

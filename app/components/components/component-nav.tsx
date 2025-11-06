@@ -3,9 +3,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import {
-  LayoutGrid,
-} from "lucide-react";
+import { LayoutGrid } from "lucide-react";
 import { componentsRegistry } from "@/lib/components-registry";
 import { cn } from "@/lib/utils";
 import { Separator } from "@/components/ui/separator";
@@ -25,7 +23,6 @@ export function ComponentNav() {
     } catch {}
   }, []);
 
-
   const buildLinkClasses = (isActive: boolean) =>
     cn(
       "flex items-center gap-3 rounded-md px-3 py-2 text-sm",
@@ -39,12 +36,12 @@ export function ComponentNav() {
   return (
     <aside
       className={cn(
-        "bg-background flex shrink-0 flex-col transition-all duration-300 h-full",
+        "bg-background flex h-full shrink-0 flex-col transition-all duration-300",
         collapsed ? "w-16" : "w-full",
       )}
     >
       <nav className="flex flex-1 flex-col py-4">
-        <div className="flex flex-col gap-2 px-4 mb-4">
+        <div className="mb-4 flex flex-col gap-2 px-4">
           <Link
             href={galleryPath}
             className={buildLinkClasses(isGalleryActive)}
@@ -63,7 +60,7 @@ export function ComponentNav() {
           </Link>
         </div>
         <Separator />
-        <div className="flex flex-col gap-1 px-4 mt-4">
+        <div className="mt-4 flex flex-col gap-1 px-4">
           {componentsRegistry.map((component) => {
             const isActive = pathname === component.path;
 

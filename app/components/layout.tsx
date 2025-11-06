@@ -19,28 +19,29 @@ export default function ComponentsLayout({
   const isHome = pathname === "/";
   const isComponents = pathname.startsWith("/components");
   const isBuilder = pathname.startsWith("/builder");
-  const isGallery = pathname === "/components/gallery" || pathname === "/components";
+  const isGallery =
+    pathname === "/components/gallery" || pathname === "/components";
 
   return (
     <ComponentsProvider value={{ viewport }}>
-      <div className="grid h-screen grid-cols-[minmax(200px,240px)_1fr] grid-rows-[auto_1fr] bg-background">
+      <div className="bg-background grid h-screen grid-cols-[minmax(200px,240px)_1fr] grid-rows-[auto_1fr]">
         {/* A1: Logo - centered */}
-        <div className="bg-background border-b border-r flex items-center justify-center px-6 py-3">
+        <div className="bg-background flex items-center justify-center border-r border-b px-6 py-3">
           <Link href="/">
             <h1 className="text-xl font-semibold tracking-wide">tool-ui.com</h1>
           </Link>
         </div>
 
         {/* B1: Tabs */}
-        <div className="bg-background border-b flex items-center justify-between px-6 py-3">
+        <div className="bg-background flex items-center justify-between border-b px-6 py-3">
           <nav className="flex items-center gap-1">
             <Link
               href="/"
               className={cn(
-                "px-4 py-2 rounded-lg text-sm font-medium transition-colors",
+                "rounded-lg px-4 py-2 text-sm font-medium transition-colors",
                 isHome
                   ? "bg-muted text-foreground"
-                  : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                  : "text-muted-foreground hover:text-foreground hover:bg-muted/50",
               )}
             >
               Home
@@ -48,10 +49,10 @@ export default function ComponentsLayout({
             <Link
               href="/components"
               className={cn(
-                "px-4 py-2 rounded-lg text-sm font-medium transition-colors",
+                "rounded-lg px-4 py-2 text-sm font-medium transition-colors",
                 isComponents
                   ? "bg-muted text-foreground"
-                  : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                  : "text-muted-foreground hover:text-foreground hover:bg-muted/50",
               )}
             >
               Components
@@ -59,27 +60,30 @@ export default function ComponentsLayout({
             <Link
               href="/builder"
               className={cn(
-                "px-4 py-2 rounded-lg text-sm font-medium transition-colors",
+                "rounded-lg px-4 py-2 text-sm font-medium transition-colors",
                 isBuilder
                   ? "bg-muted text-foreground"
-                  : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                  : "text-muted-foreground hover:text-foreground hover:bg-muted/50",
               )}
             >
               Builder
             </Link>
           </nav>
-          <ViewportControls viewport={viewport} onViewportChange={setViewport} showThemeToggle showViewportButtons={!isGallery} />
+          <ViewportControls
+            viewport={viewport}
+            onViewportChange={setViewport}
+            showThemeToggle
+            showViewportButtons={!isGallery}
+          />
         </div>
 
         {/* A2: Sidebar Navigation */}
-        <div className="border-r overflow-hidden bg-background">
+        <div className="bg-background overflow-hidden border-r">
           <ComponentNav />
         </div>
 
         {/* B2: Main Content */}
-        <div className="overflow-auto bg-background">
-          {children}
-        </div>
+        <div className="bg-background overflow-auto">{children}</div>
       </div>
     </ComponentsProvider>
   );

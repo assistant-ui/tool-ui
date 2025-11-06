@@ -5,7 +5,9 @@ export const DecisionPromptActionSchema = z.object({
   id: z.string().min(1),
   label: z.string().min(1),
   confirmLabel: z.string().optional(),
-  variant: z.enum(["default", "destructive", "secondary", "ghost", "outline"]).optional(),
+  variant: z
+    .enum(["default", "destructive", "secondary", "ghost", "outline"])
+    .optional(),
   icon: z.custom<ReactNode>().optional(),
   loading: z.boolean().optional(),
   disabled: z.boolean().optional(),
@@ -21,8 +23,12 @@ export const DecisionPromptPropsSchema = z.object({
   selectedActions: z.array(z.string()).optional(),
   description: z.string().optional(),
   onAction: z.custom<(actionId: string) => void | Promise<void>>().optional(),
-  onMultiAction: z.custom<(actionIds: string[]) => void | Promise<void>>().optional(),
-  onBeforeAction: z.custom<(actionId: string) => boolean | Promise<boolean>>().optional(),
+  onMultiAction: z
+    .custom<(actionIds: string[]) => void | Promise<void>>()
+    .optional(),
+  onBeforeAction: z
+    .custom<(actionId: string) => boolean | Promise<boolean>>()
+    .optional(),
   confirmTimeout: z.number().positive().optional(),
   className: z.string().optional(),
   align: z.enum(["left", "center", "right"]).optional(),
@@ -34,7 +40,10 @@ export const DecisionPromptPropsSchema = z.object({
   maxSelections: z.number().min(1).optional(),
 });
 
-export type DecisionPromptProps = Omit<z.infer<typeof DecisionPromptPropsSchema>, "onAction" | "onBeforeAction" | "onMultiAction"> & {
+export type DecisionPromptProps = Omit<
+  z.infer<typeof DecisionPromptPropsSchema>,
+  "onAction" | "onBeforeAction" | "onMultiAction"
+> & {
   onAction?: (actionId: string) => void | Promise<void>;
   onMultiAction?: (actionIds: string[]) => void | Promise<void>;
   onBeforeAction?: (actionId: string) => boolean | Promise<boolean>;
@@ -48,4 +57,6 @@ export const SerializableDecisionPromptSchema = DecisionPromptPropsSchema.omit({
   actions: z.array(DecisionPromptActionSchema.omit({ icon: true })),
 });
 
-export type SerializableDecisionPrompt = z.infer<typeof SerializableDecisionPromptSchema>;
+export type SerializableDecisionPrompt = z.infer<
+  typeof SerializableDecisionPromptSchema
+>;

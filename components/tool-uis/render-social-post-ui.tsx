@@ -31,7 +31,7 @@ export const RenderSocialPostUI = makeAssistantToolUI<
     if (!result) return null;
 
     return (
-      <div className="w-full min-w-0 flex justify-start">
+      <div className="flex w-full min-w-0 justify-start">
         <div className="w-full max-w-[600px] min-w-0">
           <SocialPost {...result.post} className="w-full" maxWidth="100%" />
         </div>

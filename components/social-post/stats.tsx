@@ -10,16 +10,23 @@ export function Stats() {
   const items: Array<{ label: string; value?: number }> = [];
 
   if (stats.likes != null) items.push({ label: "Likes", value: stats.likes });
-  if (stats.comments != null) items.push({ label: "Comments", value: stats.comments });
-  if (stats.reposts != null) items.push({ label: "Reposts", value: stats.reposts });
-  if (stats.shares != null) items.push({ label: "Shares", value: stats.shares });
-  if (stats.bookmarks != null) items.push({ label: "Saves", value: stats.bookmarks });
-  if (cfg.layout.showViews && stats.views != null) items.push({ label: "Views", value: stats.views });
+  if (stats.comments != null)
+    items.push({ label: "Comments", value: stats.comments });
+  if (stats.reposts != null)
+    items.push({ label: "Reposts", value: stats.reposts });
+  if (stats.shares != null)
+    items.push({ label: "Shares", value: stats.shares });
+  if (stats.bookmarks != null)
+    items.push({ label: "Saves", value: stats.bookmarks });
+  if (cfg.layout.showViews && stats.views != null)
+    items.push({ label: "Views", value: stats.views });
 
   if (items.length === 0) return null;
 
   return (
-    <div className={cn("mt-2 flex flex-wrap gap-4", cfg.tokens.typography.stats)}>
+    <div
+      className={cn("mt-2 flex flex-wrap gap-4", cfg.tokens.typography.stats)}
+    >
       {items.map(({ label, value }) => {
         const formatted = formatCount(value, locale);
         const narratable =
@@ -29,7 +36,9 @@ export function Stats() {
             : "0");
         return (
           <div key={label} aria-label={`${narratable} ${label}`}>
-            <span className="font-medium text-foreground">{formatted ?? narratable}</span>{" "}
+            <span className="text-foreground font-medium">
+              {formatted ?? narratable}
+            </span>{" "}
             <span aria-hidden="true">{label}</span>
           </div>
         );

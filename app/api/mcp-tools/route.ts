@@ -42,7 +42,9 @@ export async function POST(req: Request) {
     }
 
     // Use Vercel AI SDK's MCP client
-    console.log(`[MCP] Creating MCP client for ${serverUrl} with transport: ${transportType}`);
+    console.log(
+      `[MCP] Creating MCP client for ${serverUrl} with transport: ${transportType}`,
+    );
 
     try {
       const mcpClient = await createMCPClient({

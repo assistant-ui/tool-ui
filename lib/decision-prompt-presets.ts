@@ -49,8 +49,7 @@ const multiChoicePreset: DecisionPromptConfig = {
 const destructivePreset: DecisionPromptConfig = {
   prompt: {
     prompt: "Format the floppy disk?",
-    description:
-      "This action cannot be undone. All sectors will be erased.",
+    description: "This action cannot be undone. All sectors will be erased.",
     actions: [
       { id: "cancel", label: "Cancel", variant: "ghost" },
       {
@@ -114,4 +113,3 @@ export const decisionPromptPresetDescriptions: Record<
   async: "Action with loading state (install)",
   workflow: "Deployment eras from batch to blue/green",
 };
-

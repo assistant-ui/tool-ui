@@ -38,7 +38,11 @@ export interface SocialPostClientProps {
     post: SerializableSocialPost;
     messageId?: string;
   }) => boolean | Promise<boolean>;
-  onAction?: (action: string, post: SerializableSocialPost, ctx?: { messageId?: string }) => void;
+  onAction?: (
+    action: string,
+    post: SerializableSocialPost,
+    ctx?: { messageId?: string },
+  ) => void;
   onEntityClick?: (type: "mention" | "hashtag" | "url", value: string) => void;
   onMediaEvent?: (type: "open" | "play" | "pause", payload?: unknown) => void;
   onNavigate?: (href: string, post: SerializableSocialPost) => void;
@@ -54,7 +58,11 @@ export interface SocialPostContextValue {
   setState: (patch: Partial<SocialPostState>) => void;
   handlers: Pick<
     SocialPostClientProps,
-    "onBeforeAction" | "onAction" | "onEntityClick" | "onMediaEvent" | "onNavigate"
+    | "onBeforeAction"
+    | "onAction"
+    | "onEntityClick"
+    | "onMediaEvent"
+    | "onNavigate"
   >;
 }
 

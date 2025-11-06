@@ -11,7 +11,8 @@ export const sampleX: SocialPostConfig = {
     author: {
       name: "Nick Pattison",
       handle: "thenickpattison",
-      avatarUrl: "https://images.unsplash.com/photo-1753288695169-e51f5a3ff24f?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=774",
+      avatarUrl:
+        "https://images.unsplash.com/photo-1753288695169-e51f5a3ff24f?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=774",
       verified: true,
     },
     text: "Wild to think: in the 1940s we literally rewired programs by hand. Today, we ship apps worldwide with a single command. From ENIAC to edge — what a ride.",
@@ -69,7 +70,8 @@ export const sampleInstagram: SocialPostConfig = {
     author: {
       name: "Alex Rivera",
       handle: "alexrivera",
-      avatarUrl: "https://images.unsplash.com/photo-1695840358933-16dd7baa6dfb?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=822",
+      avatarUrl:
+        "https://images.unsplash.com/photo-1695840358933-16dd7baa6dfb?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=822",
       verified: true,
     },
     text: "Swipe through: a 1970s terminal, a 1980s home computer, and a 1990s laptop. In a few decades, ‘computer rooms’ fit into backpacks.",
@@ -112,7 +114,8 @@ export const sampleTikTok: SocialPostConfig = {
     author: {
       name: "Jamie Park",
       handle: "@jamiepark",
-      avatarUrl: "https://images.unsplash.com/photo-1751612428149-b7cfb7fe20af?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1044",
+      avatarUrl:
+        "https://images.unsplash.com/photo-1751612428149-b7cfb7fe20af?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1044",
       verified: false,
     },
     text: "POV: You boot a 1984 Macintosh. That startup chime still slaps. #retro #vintage #computingHistory",
@@ -124,7 +127,8 @@ export const sampleTikTok: SocialPostConfig = {
       {
         kind: "video",
         url: "https://sample-videos.com/video321/mp4/720/big_buck_bunny_720p_1mb.mp4",
-        thumbUrl: "https://images.unsplash.com/photo-1587614203976-365c74645e83?w=400&h=700&fit=crop",
+        thumbUrl:
+          "https://images.unsplash.com/photo-1587614203976-365c74645e83?w=400&h=700&fit=crop",
         alt: "Vintage Macintosh on a desk",
         aspectHint: "9:16",
       },
@@ -151,7 +155,8 @@ export const sampleLinkedIn: SocialPostConfig = {
     author: {
       name: "Dr. Michael Thompson",
       handle: "michaelthompson",
-      avatarUrl: "https://images.unsplash.com/photo-1753288695169-e51f5a3ff24f?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=774",
+      avatarUrl:
+        "https://images.unsplash.com/photo-1753288695169-e51f5a3ff24f?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=774",
       verified: false,
       subtitle: "VP of Engineering | Systems & Cloud",
     },
@@ -164,7 +169,8 @@ export const sampleLinkedIn: SocialPostConfig = {
       url: "https://queue.acm.org/detail.cfm?id=3454124",
       title: "Small, Sharp Tools: Then and Now",
       description: "Why the UNIX way still matters in distributed systems.",
-      imageUrl: "https://images.unsplash.com/photo-1488229297570-58520851e868?w=600&h=315&fit=crop",
+      imageUrl:
+        "https://images.unsplash.com/photo-1488229297570-58520851e868?w=600&h=315&fit=crop",
       domain: "acm.org",
     },
     stats: {
@@ -180,14 +186,18 @@ export const sampleLinkedIn: SocialPostConfig = {
 
 export type SocialPostPresetName = "x" | "instagram" | "tiktok" | "linkedin";
 
-export const socialPostPresets: Record<SocialPostPresetName, SocialPostConfig> = {
-  x: sampleX,
-  instagram: sampleInstagram,
-  tiktok: sampleTikTok,
-  linkedin: sampleLinkedIn,
-};
+export const socialPostPresets: Record<SocialPostPresetName, SocialPostConfig> =
+  {
+    x: sampleX,
+    instagram: sampleInstagram,
+    tiktok: sampleTikTok,
+    linkedin: sampleLinkedIn,
+  };
 
-export const socialPostPresetDescriptions: Record<SocialPostPresetName, string> = {
+export const socialPostPresetDescriptions: Record<
+  SocialPostPresetName,
+  string
+> = {
   x: "Twitter/X post with engagement stats and verified badge",
   instagram: "Instagram carousel post with multiple images",
   tiktok: "TikTok video post with hashtags and high view count",

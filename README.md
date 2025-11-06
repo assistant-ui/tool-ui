@@ -72,6 +72,7 @@ tool-ui/
 A powerful, accessible data table component for displaying tabular tool call results.
 
 **Features:**
+
 - Column sorting (asc/desc/none)
 - Row actions (inline and dropdown)
 - Loading and empty states
@@ -102,6 +103,7 @@ A powerful, accessible data table component for displaying tabular tool call res
 ## Roadmap
 
 ### Phase 1: Foundation & Playground ✅
+
 - ✅ Next.js setup
 - ✅ Tailwind CSS configuration
 - ✅ Base UI components
@@ -110,6 +112,7 @@ A powerful, accessible data table component for displaying tabular tool call res
 - ✅ Responsive preview
 
 ### Phase 2: DataTable Component ✅
+
 - ✅ Compound component architecture
 - ✅ Sorting functionality
 - ✅ Row actions
@@ -118,12 +121,14 @@ A powerful, accessible data table component for displaying tabular tool call res
 - ✅ Loading and empty states
 
 ### Phase 3: Documentation & Registry (Future)
+
 - [ ] Fumadocs integration
 - [ ] API documentation
 - [ ] Integration guides
 - [ ] Component registry
 
 ### Phase 4: Additional Components (Future)
+
 - [ ] Form widget
 - [ ] Chart widget
 - [ ] File browser widget

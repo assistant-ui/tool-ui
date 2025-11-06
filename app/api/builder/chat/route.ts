@@ -1,8 +1,6 @@
 import { openai } from "@ai-sdk/openai";
 import { streamText, convertToModelMessages } from "ai";
-import { z } from "zod";
 import { checkRateLimit } from "@/lib/rate-limit";
-import { getStocks } from "@/lib/mock-data/stocks";
 
 export const runtime = "edge";
 
@@ -63,63 +61,21 @@ export async function POST(req: Request) {
     const result = streamText({
       model: openai("gpt-4o"),
       messages: modelMessages,
-      system: `You are a helpful assistant that can provide stock market data and visualize it using tables.
+      system: `You are a helpful UI component builder assistant. You help users design and build user interface components.
 
-When asked about stocks or market data, use the get_stocks tool to retrieve information. The tool will display data in a responsive table that works on both desktop and mobile devices.
+Your role is to:
+- Understand user requirements for UI components
+- Suggest appropriate component designs and layouts
+- Provide guidance on component structure and styling
+- Help users iterate on their component designs
 
-Be concise and helpful in your responses.`,
-      tools: {
-        get_stocks: {
-          description:
-            "Get stock market data for one or more companies. Returns current prices, changes, volume, and market cap information. Can filter by specific stock symbols and sort results.",
-          inputSchema: z.object({
-            query: z
-              .string()
-              .describe(
-                "Natural language query about stocks. Examples: 'top tech stocks', 'AAPL price', 'MSFT GOOGL AMZN data'",
-              ),
-          }),
-          execute: async ({ query }) => {
-            const upperQuery = query.toUpperCase();
-            const commonSymbols = [
-              "AAPL",
-              "MSFT",
-              "GOOGL",
-              "AMZN",
-              "TSLA",
-              "NVDA",
-              "META",
-              "BRK.B",
-            ];
-            const mentionedSymbols = commonSymbols.filter((symbol) =>
-              upperQuery.includes(symbol),
-            );
-
-            const isTechQuery =
-              upperQuery.includes("TECH") ||
-              upperQuery.includes("TECHNOLOGY") ||
-              upperQuery.includes("SOFTWARE");
-
-            const stocks = await getStocks({
-              symbols:
-                mentionedSymbols.length > 0 ? mentionedSymbols : undefined,
-              limit: isTechQuery ? 6 : undefined,
-              sort: { by: "marketCap", direction: "desc" },
-            });
-
-            return {
-              stocks,
-              count: stocks.length,
-            };
-          },
-        },
-      },
+Be concise, helpful, and focused on creating great user experiences.`,
       temperature: 0.7,
     });
 
     return result.toUIMessageStreamResponse();
   } catch (error) {
-    console.error("Error in chat API route:", error);
+    console.error("Error in builder chat API route:", error);
     return new Response(
       JSON.stringify({
         error: "An error occurred while processing your request.",

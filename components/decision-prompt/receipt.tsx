@@ -36,14 +36,18 @@ export function DecisionPromptReceipt({
 
     return (
       <div
-        className={cn("flex flex-wrap items-center gap-2", alignClass, className)}
+        className={cn(
+          "flex flex-wrap items-center gap-2",
+          alignClass,
+          className,
+        )}
         data-slot="receipt"
       >
         {selectedActionObjs.map((action) => (
           <Badge
             key={action.id}
             variant="secondary"
-            className="gap-2 px-3 py-1.5 text-sm font-medium text-muted-foreground"
+            className="text-muted-foreground gap-2 px-3 py-1.5 text-sm font-medium"
           >
             <CheckCircle2 className="h-4 w-4" />
             {action.icon && <span>{action.icon}</span>}
@@ -62,10 +66,13 @@ export function DecisionPromptReceipt({
   }
 
   return (
-    <div className={cn("flex items-center gap-2.5", alignClass, className)} data-slot="receipt">
+    <div
+      className={cn("flex items-center gap-2.5", alignClass, className)}
+      data-slot="receipt"
+    >
       <Badge
         variant="secondary"
-        className="gap-2 px-3 py-1.5 text-sm font-medium text-muted-foreground"
+        className="text-muted-foreground gap-2 px-3 py-1.5 text-sm font-medium"
       >
         <CheckCircle2 className="h-4 w-4" />
         {action.icon && <span>{action.icon}</span>}

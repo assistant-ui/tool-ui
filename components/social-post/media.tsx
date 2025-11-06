@@ -59,8 +59,10 @@ export function Media() {
           <button
             key={index}
             type="button"
-            className="relative block w-full bg-muted"
-            style={ar ? ({ aspectRatio: String(ar) } as CSSProperties) : undefined}
+            className="bg-muted relative block w-full"
+            style={
+              ar ? ({ aspectRatio: String(ar) } as CSSProperties) : undefined
+            }
             aria-label={item.alt || "Open media"}
             onClick={(event) => {
               event.stopPropagation();
@@ -97,7 +99,7 @@ export function Media() {
   return (
     <button
       type="button"
-      className="mt-3 w-full overflow-hidden rounded-lg bg-muted"
+      className="bg-muted mt-3 w-full overflow-hidden rounded-lg"
       style={ar ? ({ aspectRatio: String(ar) } as CSSProperties) : undefined}
       aria-label={item.alt || "Open media"}
       onClick={(event) => {

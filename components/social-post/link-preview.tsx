@@ -26,7 +26,7 @@ export function LinkPreview() {
       href={href}
       target={allowExternalNavigation ? "_blank" : undefined}
       rel={allowExternalNavigation ? "noopener noreferrer" : undefined}
-      className="mt-3 block overflow-hidden rounded-lg border hover:bg-muted"
+      className="hover:bg-muted mt-3 block overflow-hidden rounded-lg border"
       onClick={(event) => {
         event.stopPropagation();
         handlers.onNavigate?.(href, post);
@@ -42,10 +42,16 @@ export function LinkPreview() {
         />
       ) : null}
       <div className="p-3">
-        {domain ? <div className={cn("text-xs", cfg.tokens.muted)}>{domain}</div> : null}
-        {preview.title ? <div className="font-medium">{preview.title}</div> : null}
+        {domain ? (
+          <div className={cn("text-xs", cfg.tokens.muted)}>{domain}</div>
+        ) : null}
+        {preview.title ? (
+          <div className="font-medium">{preview.title}</div>
+        ) : null}
         {preview.description ? (
-          <div className={cn("text-sm line-clamp-2", cfg.tokens.muted)}>{preview.description}</div>
+          <div className={cn("line-clamp-2 text-sm", cfg.tokens.muted)}>
+            {preview.description}
+          </div>
         ) : null}
       </div>
     </a>

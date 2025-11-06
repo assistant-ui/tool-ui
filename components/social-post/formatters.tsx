@@ -36,7 +36,10 @@ export function formatRelativeTime(iso?: string, _locale = "en-US") {
   return `${years}y`;
 }
 
-export type TextPart = { type: "text" | "url" | "mention" | "hashtag"; value: string };
+export type TextPart = {
+  type: "text" | "url" | "mention" | "hashtag";
+  value: string;
+};
 const urlRe = /\bhttps?:\/\/[^\s]+/gi;
 const mentionRe = /(^|[\s])@([a-zA-Z0-9_.]+)/g;
 const hashRe = /(^|[\s])#([a-zA-Z0-9_]+)/g;
@@ -66,8 +69,14 @@ export function splitText(text?: string): TextPart[] {
     }
 
     let segment = part.value;
-    segment = segment.replace(mentionRe, (full, ws, handle) => `${ws}\u0001${handle}\u0001`);
-    segment = segment.replace(hashRe, (full, ws, topic) => `${ws}\u0002${topic}\u0002`);
+    segment = segment.replace(
+      mentionRe,
+      (full, ws, handle) => `${ws}\u0001${handle}\u0001`,
+    );
+    segment = segment.replace(
+      hashRe,
+      (full, ws, topic) => `${ws}\u0002${topic}\u0002`,
+    );
 
     const tokens = segment.split(/(\u0001|\u0002)/);
     let mode: "mention" | "hashtag" | null = null;
@@ -81,7 +90,9 @@ export function splitText(text?: string): TextPart[] {
         mode = mode ? null : "hashtag";
         continue;
       }
-      out.push(mode ? { type: mode, value: token } : { type: "text", value: token });
+      out.push(
+        mode ? { type: mode, value: token } : { type: "text", value: token },
+      );
     }
   }
 
