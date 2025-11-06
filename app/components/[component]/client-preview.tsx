@@ -3,10 +3,9 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ControlsPanel } from "../components/controls-panel";
 import { CodePanel } from "../components/code-panel";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import { LinearBlur } from "@/components/ui/linear-blur";
 import { DataTable } from "@/components/registry/data-table";
 import type { Action } from "@/components/registry/data-table";
 import type { DataTableRowData, RowData } from "@/components/data-table";
@@ -27,12 +26,23 @@ import {
   decisionPromptPresets,
 } from "@/lib/decision-prompt-presets";
 import { useComponents } from "../components-context";
+import {
+  Panel,
+  PanelGroup,
+  PanelResizeHandle,
+} from "react-resizable-panels";
+import { Button } from "@/components/ui/button";
+import { ButtonGroup } from "@/components/ui/button-group";
+import { Code, Eye } from "lucide-react";
 
 type ComponentPreset =
   | PresetName
   | SocialPostPresetName
   | MediaCardPresetName
   | DecisionPromptPresetName;
+
+const PREVIEW_MIN_SIZE = 30;
+const PREVIEW_MAX_SIZE = 85;
 
 export function ClientPreview({ componentId }: { componentId: string }) {
   const { viewport } = useComponents();
@@ -55,46 +65,8 @@ export function ClientPreview({ componentId }: { componentId: string }) {
     useState<string | undefined>();
   const [decisionPromptSelectedActions, setDecisionPromptSelectedActions] =
     useState<string[]>([]);
-  const previewContainerRef = useRef<HTMLDivElement | null>(null);
-  const previewContentRef = useRef<HTMLDivElement | null>(null);
-  const [isPreviewOverflowing, setIsPreviewOverflowing] = useState(false);
-
-  useEffect(() => {
-    const container = previewContainerRef.current;
-    const content = previewContentRef.current;
-    if (!container || !content || typeof ResizeObserver === "undefined") {
-      return;
-    }
-
-    const updateOverflowState = () => {
-      const verticalOverflow =
-        content.scrollHeight > container.clientHeight + 1;
-      const horizontalOverflow =
-        content.scrollWidth > container.clientWidth + 1;
-      setIsPreviewOverflowing(verticalOverflow || horizontalOverflow);
-    };
-
-    updateOverflowState();
-
-    const observer = new ResizeObserver(() => {
-      updateOverflowState();
-    });
-
-    observer.observe(container);
-    observer.observe(content);
-
-    return () => {
-      observer.disconnect();
-    };
-  }, [
-    viewport,
-    componentId,
-    currentPreset,
-    isLoading,
-    sort,
-    emptyMessage,
-    mediaCardMaxWidth,
-  ]);
+  const horizontalPanelGroupRef = useRef<import("react-resizable-panels").ImperativePanelGroupHandle | null>(null);
+  const isSyncingHorizontalLayout = useRef(false);
 
   const handleSortChange = (next: {
     by?: string;
@@ -102,6 +74,48 @@ export function ClientPreview({ componentId }: { componentId: string }) {
   }) => {
     setSort(next);
   };
+
+  const handleHorizontalLayout = useCallback((sizes: number[]) => {
+    if (!horizontalPanelGroupRef.current) return;
+    if (isSyncingHorizontalLayout.current) {
+      isSyncingHorizontalLayout.current = false;
+      return;
+    }
+
+    const [left, center, right] = sizes;
+    const clampedCenter = Math.min(
+      PREVIEW_MAX_SIZE,
+      Math.max(PREVIEW_MIN_SIZE, center),
+    );
+    const spacing = Math.max(0, (100 - clampedCenter) / 2);
+    const epsilon = 0.5;
+
+    const isSymmetric =
+      Math.abs(left - spacing) < epsilon &&
+      Math.abs(right - spacing) < epsilon &&
+      Math.abs(center - clampedCenter) < epsilon;
+
+    if (!isSymmetric) {
+      isSyncingHorizontalLayout.current = true;
+      horizontalPanelGroupRef.current.setLayout([spacing, clampedCenter, spacing]);
+    }
+  }, []);
+
+  // Update panel layout when viewport changes
+  useEffect(() => {
+    if (!horizontalPanelGroupRef.current) return;
+
+    const viewportSizes = {
+      mobile: 50, // 50% for mobile (375px equivalent)
+      desktop: 85, // 85% for desktop (full width)
+    };
+
+    const targetSize = viewportSizes[viewport];
+    const spacing = Math.max(0, (100 - targetSize) / 2);
+
+    isSyncingHorizontalLayout.current = true;
+    horizontalPanelGroupRef.current.setLayout([spacing, targetSize, spacing]);
+  }, [viewport]);
 
   const currentConfig = useMemo(
     () =>
@@ -186,14 +200,11 @@ export function ClientPreview({ componentId }: { componentId: string }) {
     [currentConfig?.rowIdKey],
   );
 
-  const viewportWidths = {
-    mobile: "375px",
-    desktop: "100%",
-  } as const;
+  const [activeTab, setActiveTab] = useState("ui");
 
   return (
-    <div className="mr-2 flex h-full min-h-0 w-full flex-1 gap-2 pr-2 pb-2">
-      <aside className="bg-background/40 shadow-crisp-edge scrollbar-subtle flex h-full w-72 shrink-0 flex-col overflow-x-hidden overflow-y-auto rounded-lg">
+    <div className="flex h-full min-h-0 w-full flex-1">
+      <aside className="bg-background scrollbar-subtle flex h-full w-72 shrink-0 flex-col overflow-x-hidden overflow-y-auto border-r">
         <ControlsPanel
           componentId={componentId}
           currentPreset={currentPreset}
@@ -208,178 +219,181 @@ export function ClientPreview({ componentId }: { componentId: string }) {
           onMediaCardMaxWidthChange={setMediaCardMaxWidth}
         />
       </aside>
-      <div className="flex min-h-0 flex-1 flex-col gap-2">
-        <div
-          ref={previewContainerRef}
-          className="bg-background shadow-crisp-edge scrollbar-subtle flex min-h-0 flex-1 overflow-hidden rounded-lg"
-        >
-          <Tabs
-            defaultValue="ui"
-            className="flex min-h-0 w-full flex-1 flex-col overflow-auto"
-          >
-            <div className="sticky top-0 z-20">
-              <LinearBlur
-                side="top"
-                tint="var(--background)"
-                className="pointer-events-none absolute top-0 right-0 left-0 z-0 h-28"
-                strength={30}
-                steps={6}
-              />
-              <div className="relative mx-auto">
-                <div className="flex items-center justify-center px-2 pt-6">
-                  <TabsList className="bg-primary/5 z-10 gap-2 rounded-lg p-1 backdrop-blur-3xl">
-                    <TabsTrigger
-                      value="ui"
-                      className="data-[state=active]:bg-background data-[state=active]:text-foreground"
-                    >
-                      User Interface
-                    </TabsTrigger>
-                    <TabsTrigger
-                      value="code"
-                      className="data-[state=active]:bg-background data-[state=active]:text-foreground"
-                    >
-                      Code
-                    </TabsTrigger>
-                  </TabsList>
-                </div>
-              </div>
-            </div>
-
-            <TabsContent
-              value="ui"
-              className="scrollbar-subtle relative flex min-h-0 flex-1 flex-col p-6"
+      <div className="flex min-h-0 min-w-0 flex-1 flex-col">
+        {/* Header with status and tabs */}
+        <div className="flex items-center justify-between border-b py-3 px-6">
+          <div className="flex items-center gap-2">
+            <Label htmlFor="preview-loading" className="text-sm">
+              Loading
+            </Label>
+            <Switch
+              id="preview-loading"
+              checked={isLoading}
+              onCheckedChange={setIsLoading}
+            />
+          </div>
+          <ButtonGroup>
+            <Button
+              variant={activeTab === "ui" ? "secondary" : "outline"}
+              size="icon-sm"
+              onClick={() => setActiveTab("ui")}
+              title="UI view"
             >
-              <div className="sticky top-2 z-10 flex w-full justify-end pr-2">
-                <div className="bg-background/80 shadow-crisp-edge flex items-center gap-2 rounded-md border px-2 py-1">
-                  <Label htmlFor="preview-loading" className="text-xs">
-                    Loading
-                  </Label>
-                  <Switch
-                    id="preview-loading"
-                    checked={isLoading}
-                    onCheckedChange={setIsLoading}
-                  />
-                </div>
-              </div>
-              <div
-                className={`relative flex flex-1 ${isPreviewOverflowing ? "items-start justify-center" : "justify-center"}`}
-              >
-                <div
-                  ref={previewContentRef}
-                  className="mx-auto min-w-0 transition-[width]"
-                  style={{
-                    width: viewportWidths[viewport],
-                    maxWidth: "100%",
-                  }}
-                >
-                  {componentId === "data-table" && currentConfig && (
-                    <DataTable
-                      {...currentConfig}
-                      sort={sort}
-                      onSortChange={setSort}
-                      isLoading={isLoading}
-                      emptyMessage={emptyMessage}
-                      onBeforeAction={handleBeforeAction}
-                      onAction={(actionId, row) => {
-                        console.log("Action:", actionId, "Row:", row);
-                        alert(
-                          `Action: ${actionId}\nRow: ${JSON.stringify(row, null, 2)}`,
-                        );
-                      }}
-                    />
-                  )}
-                  {componentId === "social-post" && currentSocialPostConfig && (
-                    <SocialPost
-                      {...currentSocialPostConfig.post}
-                      isLoading={isLoading}
-                      maxWidth="600px"
-                      onAction={(actionId) => {
-                        console.log("Action:", actionId);
-                        alert(`Action: ${actionId}`);
-                      }}
-                    />
-                  )}
-                  {componentId === "media-card" && currentMediaCardConfig && (
-                    <div className="flex justify-center">
-                      <MediaCard
-                        {...currentMediaCardConfig.card}
-                        isLoading={isLoading}
-                        maxWidth={
-                          mediaCardMaxWidth &&
-                          mediaCardMaxWidth.trim().length > 0
-                            ? mediaCardMaxWidth
-                            : undefined
-                        }
-                        onAction={(actionId) => {
-                          console.log("MediaCard action:", actionId);
-                        }}
-                        onNavigate={(href) => {
-                          console.log("MediaCard navigate:", href);
-                        }}
-                      />
-                    </div>
-                  )}
-                  {componentId === "decision-prompt" &&
-                    currentDecisionPromptConfig && (
-                      <div className="flex justify-center">
-                        <div className="w-full max-w-md">
-                          <DecisionPrompt
-                            {...currentDecisionPromptConfig.prompt}
-                            selectedAction={decisionPromptSelectedAction}
-                            selectedActions={decisionPromptSelectedActions}
-                            onAction={async (actionId) => {
-                              console.log("Decision prompt action:", actionId);
+              <Eye className="h-4 w-4" />
+            </Button>
+            <Button
+              variant={activeTab === "code" ? "secondary" : "outline"}
+              size="icon-sm"
+              onClick={() => setActiveTab("code")}
+              title="Code view"
+            >
+              <Code className="h-4 w-4" />
+            </Button>
+          </ButtonGroup>
+        </div>
 
-                              // Simulate async for "install" or "send" actions
-                              if (
-                                actionId === "install" ||
-                                actionId === "send"
-                              ) {
-                                await new Promise((resolve) =>
-                                  setTimeout(resolve, 1500),
-                                );
-                              }
+        {/* Resizable preview area */}
+        <div className="flex-1 overflow-auto scrollbar-subtle flex items-center justify-center p-6">
+          <div className="w-full">
+            <PanelGroup
+              ref={horizontalPanelGroupRef}
+              direction="horizontal"
+              autoSaveId={`component-preview-h-${componentId}`}
+              onLayout={handleHorizontalLayout}
+            >
+              <Panel defaultSize={7.5} minSize={0} />
 
-                              setDecisionPromptSelectedAction(actionId);
+              <PanelResizeHandle className="group relative w-4">
+                <div className="absolute top-1/2 left-1/2 h-12 w-1 -translate-x-1/2 -translate-y-1/2 rounded-full bg-gray-300 opacity-40 transition-all group-hover:bg-gray-400 group-hover:opacity-100 group-data-resize-handle-active:bg-gray-500 group-data-resize-handle-active:opacity-100 dark:bg-gray-600 dark:group-hover:bg-gray-500 dark:group-data-resize-handle-active:bg-gray-400" />
+              </PanelResizeHandle>
+
+              <Panel defaultSize={85} minSize={PREVIEW_MIN_SIZE} maxSize={PREVIEW_MAX_SIZE}>
+                <div className="border-2 border-dashed border-border overflow-hidden transition-all">
+                <Tabs value={activeTab} className="flex w-full flex-col"
+                      onValueChange={setActiveTab}>
+                  <TabsContent
+                    value="ui"
+                    className="scrollbar-subtle relative flex flex-col p-6 m-0 data-[state=inactive]:hidden"
+                  >
+                    <div className="w-full">
+                      {componentId === "data-table" && currentConfig && (
+                        <DataTable
+                          {...currentConfig}
+                          sort={sort}
+                          onSortChange={setSort}
+                          isLoading={isLoading}
+                          emptyMessage={emptyMessage}
+                          onBeforeAction={handleBeforeAction}
+                          onAction={(actionId, row) => {
+                            console.log("Action:", actionId, "Row:", row);
+                            alert(
+                              `Action: ${actionId}\nRow: ${JSON.stringify(row, null, 2)}`,
+                            );
+                          }}
+                        />
+                      )}
+                      {componentId === "social-post" && currentSocialPostConfig && (
+                        <SocialPost
+                          {...currentSocialPostConfig.post}
+                          isLoading={isLoading}
+                          maxWidth="600px"
+                          onAction={(actionId) => {
+                            console.log("Action:", actionId);
+                            alert(`Action: ${actionId}`);
+                          }}
+                        />
+                      )}
+                      {componentId === "media-card" && currentMediaCardConfig && (
+                        <div className="flex justify-center">
+                          <MediaCard
+                            {...currentMediaCardConfig.card}
+                            isLoading={isLoading}
+                            maxWidth={
+                              mediaCardMaxWidth &&
+                              mediaCardMaxWidth.trim().length > 0
+                                ? mediaCardMaxWidth
+                                : undefined
+                            }
+                            onAction={(actionId) => {
+                              console.log("MediaCard action:", actionId);
                             }}
-                            onMultiAction={async (actionIds) => {
-                              console.log(
-                                "Decision prompt multi-action:",
-                                actionIds,
-                              );
-
-                              await new Promise((resolve) =>
-                                setTimeout(resolve, 1500),
-                              );
-
-                              setDecisionPromptSelectedActions(actionIds);
+                            onNavigate={(href) => {
+                              console.log("MediaCard navigate:", href);
                             }}
                           />
                         </div>
-                      </div>
-                    )}
-                </div>
-              </div>
-            </TabsContent>
+                      )}
+                      {componentId === "decision-prompt" &&
+                        currentDecisionPromptConfig && (
+                          <div className="w-full max-w-md">
+                            <DecisionPrompt
+                                {...currentDecisionPromptConfig.prompt}
+                                selectedAction={decisionPromptSelectedAction}
+                                selectedActions={decisionPromptSelectedActions}
+                                onAction={async (actionId) => {
+                                  console.log("Decision prompt action:", actionId);
 
-            <TabsContent value="code">
-              <CodePanel
-                className="w-full"
-                componentId={componentId}
-                config={currentConfig}
-                socialPostConfig={currentSocialPostConfig}
-                mediaCardConfig={currentMediaCardConfig}
-                decisionPromptConfig={currentDecisionPromptConfig}
-                decisionPromptSelectedAction={decisionPromptSelectedAction}
-                decisionPromptSelectedActions={decisionPromptSelectedActions}
-                mediaCardMaxWidth={mediaCardMaxWidth}
-                sort={sort}
-                isLoading={isLoading}
-                emptyMessage={emptyMessage}
-                mode="plain"
-              />
-            </TabsContent>
-          </Tabs>
+                                  // Simulate async for "install" or "send" actions
+                                  if (
+                                    actionId === "install" ||
+                                    actionId === "send"
+                                  ) {
+                                    await new Promise((resolve) =>
+                                      setTimeout(resolve, 1500),
+                                    );
+                                  }
+
+                                  setDecisionPromptSelectedAction(actionId);
+                                }}
+                                onMultiAction={async (actionIds) => {
+                                  console.log(
+                                    "Decision prompt multi-action:",
+                                    actionIds,
+                                  );
+
+                                  await new Promise((resolve) =>
+                                    setTimeout(resolve, 1500),
+                                  );
+
+                                  setDecisionPromptSelectedActions(actionIds);
+                                }}
+                              />
+                          </div>
+                        )}
+                    </div>
+                  </TabsContent>
+
+                  <TabsContent
+                    value="code"
+                    className="m-0 data-[state=inactive]:hidden"
+                  >
+                    <CodePanel
+                      className="w-full"
+                      componentId={componentId}
+                      config={currentConfig}
+                      socialPostConfig={currentSocialPostConfig}
+                      mediaCardConfig={currentMediaCardConfig}
+                      decisionPromptConfig={currentDecisionPromptConfig}
+                      decisionPromptSelectedAction={decisionPromptSelectedAction}
+                      decisionPromptSelectedActions={decisionPromptSelectedActions}
+                      mediaCardMaxWidth={mediaCardMaxWidth}
+                      sort={sort}
+                      isLoading={isLoading}
+                      emptyMessage={emptyMessage}
+                      mode="plain"
+                    />
+                    </TabsContent>
+                  </Tabs>
+                </div>
+              </Panel>
+
+              <PanelResizeHandle className="group relative w-4">
+                <div className="absolute top-1/2 left-1/2 h-12 w-1 -translate-x-1/2 -translate-y-1/2 rounded-full bg-gray-300 opacity-40 transition-all group-hover:bg-gray-400 group-hover:opacity-100 group-data-resize-handle-active:bg-gray-500 group-data-resize-handle-active:opacity-100 dark:bg-gray-600 dark:group-hover:bg-gray-500 dark:group-data-resize-handle-active:bg-gray-400" />
+              </PanelResizeHandle>
+
+              <Panel defaultSize={7.5} minSize={0} />
+            </PanelGroup>
+          </div>
         </div>
       </div>
     </div>

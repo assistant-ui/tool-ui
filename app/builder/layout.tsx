@@ -64,7 +64,7 @@ export default function BuilderLayout({
             Builder
           </Link>
         </nav>
-        <ViewportControls viewport={viewport} onViewportChange={setViewport} showThemeToggle />
+        <ViewportControls viewport={viewport} onViewportChange={setViewport} showThemeToggle showViewportButtons={false} />
       </div>
 
       {/* A2: Empty sidebar for builder */}

@@ -97,7 +97,7 @@ export function PresetSelector({
           className={cn(
             "group/item relative",
             currentPreset === preset
-              ? "bg-background dark:bg-muted cursor-pointer border-transparent shadow-xs"
+              ? "bg-background bg-muted cursor-pointer border-transparent shadow-xs"
               : "hover:bg-primary/5 active:bg-primary/10 cursor-pointer transition-[colors,shadow,border,background] duration-150 ease-out",
           )}
           onClick={() => onSelectPreset(preset)}

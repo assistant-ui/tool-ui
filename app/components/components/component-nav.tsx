@@ -41,7 +41,7 @@ export function ComponentNav() {
   const buildLinkClasses = (isActive: boolean) =>
     cn(
       "flex items-center gap-3 rounded-md px-3 py-2 text-sm",
-      isActive ? "bg-muted text-primary" : "hover:bg-muted",
+      isActive ? "bg-muted text-foreground font-medium" : "hover:bg-muted/50",
       collapsed && "justify-center px-0",
     );
 
@@ -51,7 +51,7 @@ export function ComponentNav() {
   return (
     <aside
       className={cn(
-        "bg-wash flex shrink-0 flex-col transition-all duration-300 h-full",
+        "bg-background flex shrink-0 flex-col transition-all duration-300 h-full",
         collapsed ? "w-16" : "w-full",
       )}
     >

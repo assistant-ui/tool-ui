@@ -159,7 +159,7 @@ function HomePageContent({ showLogoDebug }: { showLogoDebug: boolean }) {
       </div>
 
       {/* B1: Tabs */}
-      <div className="bg-background border-b flex items-center px-6 py-3">
+      <div className="bg-background border-b flex items-center justify-between px-6 py-3">
         <nav className="flex items-center gap-1">
           <Link
             href="/"
@@ -195,15 +195,15 @@ function HomePageContent({ showLogoDebug }: { showLogoDebug: boolean }) {
             Builder
           </Link>
         </nav>
+        <ViewportControls viewport={viewport} onViewportChange={changeViewport} showThemeToggle showViewportButtons />
       </div>
 
       {/* A2 & B2: Main content spanning both columns for home */}
       <main className="relative col-span-2 flex flex-row items-end justify-center overflow-hidden bg-background">
         <div
           className="bg-dot-grid pointer-events-none absolute inset-0 opacity-60 dark:opacity-40"
-          aria-hidden
+          aria-hidden="true"
         />
-        <ViewportControls viewport={viewport} onViewportChange={changeViewport} />
 
         <div className="relative z-10 flex max-w-2xl flex-col gap-5 p-8 pb-21 text-left">
           <div className="-mb-4 -ml-4 flex items-end justify-start">

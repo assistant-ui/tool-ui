@@ -19,6 +19,7 @@ export default function ComponentsLayout({
   const isHome = pathname === "/";
   const isComponents = pathname.startsWith("/components");
   const isBuilder = pathname.startsWith("/builder");
+  const isGallery = pathname === "/components/gallery" || pathname === "/components";
 
   return (
     <ComponentsProvider value={{ viewport }}>
@@ -67,7 +68,7 @@ export default function ComponentsLayout({
               Builder
             </Link>
           </nav>
-          <ViewportControls viewport={viewport} onViewportChange={setViewport} showThemeToggle />
+          <ViewportControls viewport={viewport} onViewportChange={setViewport} showThemeToggle showViewportButtons={!isGallery} />
         </div>
 
         {/* A2: Sidebar Navigation */}
