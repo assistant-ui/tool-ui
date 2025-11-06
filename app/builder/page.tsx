@@ -5,12 +5,14 @@ import {
   ThreadPrimitive,
   ComposerPrimitive,
   MessagePrimitive,
+  useAssistantApi,
 } from "@assistant-ui/react";
 import {
   useChatRuntime,
   AssistantChatTransport,
 } from "@assistant-ui/react-ai-sdk";
 import { ThreadList } from "@/components/assistant-ui/thread-list";
+import { MarkdownText } from "@/components/assistant-ui/markdown-text";
 import { ArrowUpIcon, Square, Wrench, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -49,11 +51,7 @@ const AssistantMessage: FC = () => {
   return (
     <MessagePrimitive.Root className="relative mx-auto w-full max-w-2xl py-4">
       <div className="text-foreground mx-2 leading-7 break-words">
-        <MessagePrimitive.Content
-          components={{
-            Text: ({ text }) => <div className="mb-3 text-base">{text}</div>,
-          }}
-        />
+        <MessagePrimitive.Content components={{ Text: MarkdownText }} />
       </div>
     </MessagePrimitive.Root>
   );
@@ -73,6 +71,7 @@ const MCPModal: FC<{
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }> = ({ open, onOpenChange }) => {
+  const api = useAssistantApi();
   const [mcpUrl, setMcpUrl] = useState("");
   const [transportType, setTransportType] = useState<"http" | "sse">("http");
   const [tools, setTools] = useState<MCPTool[]>([]);
@@ -120,8 +119,32 @@ const MCPModal: FC<{
   };
 
   const handleGenerateUI = (tool: MCPTool) => {
-    // TODO: Implement UI generation
-    console.log("Generate UI for tool:", tool);
+    // Create a formatted prompt with tool information
+    const prompt = `Please create a Tool UI component for the following MCP tool:
+
+**Tool Name:** ${tool.name}
+
+**Description:** ${tool.description || "No description provided"}
+
+**Full Schema:**
+\`\`\`json
+${JSON.stringify(tool.inputSchema, null, 2)}
+\`\`\`
+
+Please design an intuitive and user-friendly Tool UI component that:
+1. Provides clear input fields for all required parameters
+2. Includes helpful labels and placeholders
+3. Handles validation appropriately
+4. Follows the existing UI patterns in this codebase`;
+
+    // Send the message to the current thread
+    api.thread().append({
+      role: "user",
+      content: [{ type: "text", text: prompt }],
+    });
+
+    // Close the modal
+    onOpenChange(false);
   };
 
   return (

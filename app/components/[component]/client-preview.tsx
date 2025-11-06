@@ -260,34 +260,27 @@ export function ClientPreview({ componentId }: { componentId: string }) {
             className="bg-dot-grid pointer-events-none absolute inset-0 opacity-60 dark:opacity-40"
             aria-hidden="true"
           />
-          <div className="relative h-fit w-full">
-            <PanelGroup
-              ref={horizontalPanelGroupRef}
-              direction="horizontal"
-              autoSaveId={`component-preview-h-${componentId}`}
-              onLayout={handleHorizontalLayout}
-            >
-              <Panel defaultSize={7.5} minSize={0} />
-
-              <PanelResizeHandle className="group relative w-4">
-                <div className="absolute top-1/2 left-1/2 h-12 w-1 -translate-x-1/2 -translate-y-1/2 rounded-full bg-gray-300 opacity-40 transition-all group-hover:bg-gray-400 group-hover:opacity-100 group-data-resize-handle-active:bg-gray-500 group-data-resize-handle-active:opacity-100 dark:bg-gray-600 dark:group-hover:bg-gray-500 dark:group-data-resize-handle-active:bg-gray-400" />
-              </PanelResizeHandle>
-
-              <Panel
-                defaultSize={85}
-                minSize={PREVIEW_MIN_SIZE}
-                maxSize={PREVIEW_MAX_SIZE}
+          {activeTab === "ui" ? (
+            <div className="relative h-fit w-full">
+              <PanelGroup
+                ref={horizontalPanelGroupRef}
+                direction="horizontal"
+                autoSaveId={`component-preview-h-${componentId}`}
+                onLayout={handleHorizontalLayout}
               >
-                <div className="bg-background border-border overflow-hidden border-2 border-dashed transition-all">
-                  <Tabs
-                    value={activeTab}
-                    className="flex w-full flex-col"
-                    onValueChange={setActiveTab}
-                  >
-                    <TabsContent
-                      value="ui"
-                      className="scrollbar-subtle relative m-0 flex flex-col p-6 data-[state=inactive]:hidden"
-                    >
+                <Panel defaultSize={7.5} minSize={0} />
+
+                <PanelResizeHandle className="group relative w-4">
+                  <div className="absolute top-1/2 left-1/2 h-12 w-1 -translate-x-1/2 -translate-y-1/2 rounded-full bg-gray-300 opacity-40 transition-all group-hover:bg-gray-400 group-hover:opacity-100 group-data-resize-handle-active:bg-gray-500 group-data-resize-handle-active:opacity-100 dark:bg-gray-600 dark:group-hover:bg-gray-500 dark:group-data-resize-handle-active:bg-gray-400" />
+                </PanelResizeHandle>
+
+                <Panel
+                  defaultSize={85}
+                  minSize={PREVIEW_MIN_SIZE}
+                  maxSize={PREVIEW_MAX_SIZE}
+                >
+                  <div className="bg-background border-border scrollbar-subtle relative overflow-hidden border-2 border-dashed transition-all">
+                    <div className="relative m-0 flex flex-col p-6">
                       <div className="w-full">
                         {componentId === "data-table" && currentConfig && (
                           <DataTable
@@ -379,43 +372,36 @@ export function ClientPreview({ componentId }: { componentId: string }) {
                             </div>
                           )}
                       </div>
-                    </TabsContent>
+                    </div>
+                  </div>
+                </Panel>
 
-                    <TabsContent
-                      value="code"
-                      className="m-0 data-[state=inactive]:hidden"
-                    >
-                      <CodePanel
-                        className="w-full"
-                        componentId={componentId}
-                        config={currentConfig}
-                        socialPostConfig={currentSocialPostConfig}
-                        mediaCardConfig={currentMediaCardConfig}
-                        decisionPromptConfig={currentDecisionPromptConfig}
-                        decisionPromptSelectedAction={
-                          decisionPromptSelectedAction
-                        }
-                        decisionPromptSelectedActions={
-                          decisionPromptSelectedActions
-                        }
-                        mediaCardMaxWidth={mediaCardMaxWidth}
-                        sort={sort}
-                        isLoading={isLoading}
-                        emptyMessage={emptyMessage}
-                        mode="plain"
-                      />
-                    </TabsContent>
-                  </Tabs>
-                </div>
-              </Panel>
+                <PanelResizeHandle className="group relative w-4">
+                  <div className="absolute top-1/2 left-1/2 h-12 w-1 -translate-x-1/2 -translate-y-1/2 rounded-full bg-gray-300 opacity-40 transition-all group-hover:bg-gray-400 group-hover:opacity-100 group-data-resize-handle-active:bg-gray-500 group-data-resize-handle-active:opacity-100 dark:bg-gray-600 dark:group-hover:bg-gray-500 dark:group-data-resize-handle-active:bg-gray-400" />
+                </PanelResizeHandle>
 
-              <PanelResizeHandle className="group relative w-4">
-                <div className="absolute top-1/2 left-1/2 h-12 w-1 -translate-x-1/2 -translate-y-1/2 rounded-full bg-gray-300 opacity-40 transition-all group-hover:bg-gray-400 group-hover:opacity-100 group-data-resize-handle-active:bg-gray-500 group-data-resize-handle-active:opacity-100 dark:bg-gray-600 dark:group-hover:bg-gray-500 dark:group-data-resize-handle-active:bg-gray-400" />
-              </PanelResizeHandle>
-
-              <Panel defaultSize={7.5} minSize={0} />
-            </PanelGroup>
-          </div>
+                <Panel defaultSize={7.5} minSize={0} />
+              </PanelGroup>
+            </div>
+          ) : (
+            <div className="relative h-full w-full">
+              <CodePanel
+                className="h-full w-full"
+                componentId={componentId}
+                config={currentConfig}
+                socialPostConfig={currentSocialPostConfig}
+                mediaCardConfig={currentMediaCardConfig}
+                decisionPromptConfig={currentDecisionPromptConfig}
+                decisionPromptSelectedAction={decisionPromptSelectedAction}
+                decisionPromptSelectedActions={decisionPromptSelectedActions}
+                mediaCardMaxWidth={mediaCardMaxWidth}
+                sort={sort}
+                isLoading={isLoading}
+                emptyMessage={emptyMessage}
+                mode="plain"
+              />
+            </div>
+          )}
         </div>
       </div>
     </div>
