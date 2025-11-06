@@ -5,6 +5,9 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { ViewportControls, ViewportSize } from "@/components/viewport-controls";
+import { Button } from "@/components/ui/button";
+import { FaGithub } from "react-icons/fa";
+import { FaXTwitter } from "react-icons/fa6";
 
 export default function BuilderLayout({ children }: { children: ReactNode }) {
   const [viewport, setViewport] = useState<ViewportSize>("desktop");
@@ -59,12 +62,36 @@ export default function BuilderLayout({ children }: { children: ReactNode }) {
               Builder
             </Link>
           </nav>
-          <ViewportControls
-            viewport={viewport}
-            onViewportChange={setViewport}
-            showThemeToggle
-            showViewportButtons={false}
-          />
+          <div className="flex items-center gap-4">
+            <ViewportControls
+              viewport={viewport}
+              onViewportChange={setViewport}
+              showThemeToggle
+              showViewportButtons={false}
+            />
+            <div className="flex items-center">
+              <Button variant="ghost" size="icon" asChild>
+                <Link
+                  href="https://github.com/assistant-ui/tool-ui"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <FaGithub className="size-5" />
+                  <span className="sr-only">GitHub Repository</span>
+                </Link>
+              </Button>
+              <Button variant="ghost" size="icon" asChild>
+                <Link
+                  href="https://x.com/assistantui"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <FaXTwitter className="size-5" />
+                  <span className="sr-only">X (Twitter)</span>
+                </Link>
+              </Button>
+            </div>
+          </div>
         </div>
       </div>
 

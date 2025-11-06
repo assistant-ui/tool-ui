@@ -7,6 +7,9 @@ import { cn } from "@/lib/utils";
 import { ComponentNav } from "./components/component-nav";
 import { ComponentsProvider } from "./components-context";
 import { ViewportControls, ViewportSize } from "@/components/viewport-controls";
+import { Button } from "@/components/ui/button";
+import { FaGithub } from "react-icons/fa";
+import { FaXTwitter } from "react-icons/fa6";
 
 export default function ComponentsLayout({
   children,
@@ -69,12 +72,36 @@ export default function ComponentsLayout({
               Builder
             </Link>
           </nav>
-          <ViewportControls
-            viewport={viewport}
-            onViewportChange={setViewport}
-            showThemeToggle
-            showViewportButtons={!isGallery}
-          />
+          <div className="flex items-center gap-4">
+            <ViewportControls
+              viewport={viewport}
+              onViewportChange={setViewport}
+              showThemeToggle
+              showViewportButtons={!isGallery}
+            />
+            <div className="flex items-center">
+              <Button variant="ghost" size="icon" asChild>
+                <Link
+                  href="https://github.com/assistant-ui/tool-ui"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <FaGithub className="size-5" />
+                  <span className="sr-only">GitHub Repository</span>
+                </Link>
+              </Button>
+              <Button variant="ghost" size="icon" asChild>
+                <Link
+                  href="https://x.com/assistantui"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <FaXTwitter className="size-5" />
+                  <span className="sr-only">X (Twitter)</span>
+                </Link>
+              </Button>
+            </div>
+          </div>
         </div>
 
         {/* A2: Sidebar Navigation */}
