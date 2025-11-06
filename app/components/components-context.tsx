@@ -2,7 +2,7 @@
 
 import { createContext, useContext, ReactNode } from "react";
 
-type ViewportSize = "mobile" | "tablet" | "desktop";
+type ViewportSize = "mobile" | "desktop";
 
 interface ComponentsContextType {
   viewport: ViewportSize;

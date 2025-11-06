@@ -146,7 +146,6 @@ export function ClientPreview({ componentId }: { componentId: string }) {
 
   const viewportWidths = {
     mobile: "375px",
-    tablet: "768px",
     desktop: "100%",
   } as const;
 

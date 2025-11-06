@@ -31,7 +31,6 @@ const CHAT_MAX_SIZE = 100;
 
 const CHAT_LAYOUTS: Record<ViewportSize, [number, number, number]> = {
   mobile: [25, CHAT_MIN_SIZE, 25],
-  tablet: [15, 70, 15],
   desktop: [0, CHAT_MAX_SIZE, 0],
 };
 
@@ -45,20 +44,10 @@ function HomePageContent({ showLogoDebug }: { showLogoDebug: boolean }) {
   const defaultLayout = CHAT_LAYOUTS.desktop;
 
   const updateViewportFromChatSize = useCallback((chatSize: number) => {
-    const mobileThreshold =
-      (CHAT_LAYOUTS.mobile[1] + CHAT_LAYOUTS.tablet[1]) / 2;
-    const desktopThreshold =
-      (CHAT_LAYOUTS.tablet[1] + CHAT_LAYOUTS.desktop[1]) / 2;
+    const threshold = (CHAT_LAYOUTS.mobile[1] + CHAT_LAYOUTS.desktop[1]) / 2;
 
-    let nextViewport: ViewportSize;
-
-    if (chatSize <= mobileThreshold) {
-      nextViewport = "mobile";
-    } else if (chatSize < desktopThreshold) {
-      nextViewport = "tablet";
-    } else {
-      nextViewport = "desktop";
-    }
+    const nextViewport: ViewportSize =
+      chatSize <= threshold ? "mobile" : "desktop";
 
     setViewport((current) =>
       current === nextViewport ? current : nextViewport,
@@ -192,7 +181,7 @@ const ResizableChat = memo(function ResizableChat({
         style={{ overflow: "visible" }}
         className="relative flex justify-center"
       >
-        <div className="bg-background shadow-crisp-edge pointer-events-auto flex h-[calc(100vh-8rem)] w-full self-end rounded-4xl border shadow-md transition-all">
+        <div className="bg-background shadow-crisp-edge pointer-events-auto flex h-full w-full self-end overflow-hidden rounded-4xl border shadow-md transition-all">
           <DemoChat />
         </div>
       </Panel>

@@ -2,11 +2,11 @@
 
 import * as React from "react";
 import { Button } from "@/components/ui/button";
-import { Monitor, Moon, Smartphone, Sun, Tablet } from "lucide-react";
+import { Monitor, Moon, Smartphone, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
 import { cn } from "@/lib/utils";
 
-export type ViewportSize = "mobile" | "tablet" | "desktop";
+export type ViewportSize = "mobile" | "desktop";
 
 type ViewportControlsProps = {
   viewport: ViewportSize;
@@ -40,14 +40,6 @@ export function ViewportControls({
           title="Mobile view"
         >
           <Smartphone className="h-4 w-4" />
-        </Button>
-        <Button
-          variant={viewport === "tablet" ? "secondary" : "ghost"}
-          size="icon"
-          onClick={() => onViewportChange("tablet")}
-          title="Tablet view"
-        >
-          <Tablet className="h-4 w-4" />
         </Button>
         <Button
           variant={viewport === "desktop" ? "secondary" : "ghost"}
