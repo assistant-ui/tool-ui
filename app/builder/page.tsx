@@ -635,7 +635,7 @@ export default function BuilderPage() {
                 style={{ width: `${webviewWidth}%` }}
               >
                 {/* Header with view toggle and copy/refresh button */}
-                <div className="bg-background flex h-12 shrink-0 items-center justify-between border-b px-4">
+                <div className="bg-background flex h-12 shrink-0 items-center justify-between border-t border-b px-4">
                   <div className="flex items-center gap-2">
                     <Button
                       variant={viewMode === "rendered" ? "secondary" : "ghost"}
