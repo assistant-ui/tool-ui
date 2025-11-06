@@ -232,7 +232,7 @@ const ResizableChat = memo(function ResizableChat({
         style={{ overflow: "visible" }}
         className="relative flex justify-center"
       >
-        <div className="bg-background pointer-events-auto flex h-full w-full rounded-4xl border shadow-lg transition-all">
+        <div className="bg-background shadow-crisp-edge pointer-events-auto flex h-full w-full rounded-4xl border shadow-md transition-all">
           <DemoChat />
         </div>
       </Panel>

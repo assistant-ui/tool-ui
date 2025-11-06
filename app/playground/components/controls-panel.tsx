@@ -8,24 +8,27 @@ import {
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
-
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { LinearBlur } from "@/components/ui/linear-blur";
-
 import { PresetSelector } from "./preset-selector";
 import { PresetName } from "@/lib/sample-data";
 import { SocialPostPresetName } from "@/lib/social-post-presets";
+import { MediaCardPresetName } from "@/lib/media-card-presets";
 
 interface ControlsPanelProps {
   componentId: string;
-  currentPreset: PresetName | SocialPostPresetName;
-  onSelectPreset: (preset: PresetName | SocialPostPresetName) => void;
+  currentPreset: PresetName | SocialPostPresetName | MediaCardPresetName;
+  onSelectPreset: (
+    preset: PresetName | SocialPostPresetName | MediaCardPresetName,
+  ) => void;
   isLoading: boolean;
   onLoadingChange: (loading: boolean) => void;
   sort: { by?: string; direction?: "asc" | "desc" };
   onSortChange: (next: { by?: string; direction?: "asc" | "desc" }) => void;
   emptyMessage: string;
   onEmptyMessageChange: (message: string) => void;
+  mediaCardMaxWidth?: string;
+  onMediaCardMaxWidthChange?: (value: string) => void;
 }
 
 export function ControlsPanel({
@@ -38,15 +41,16 @@ export function ControlsPanel({
   onSortChange,
   emptyMessage,
   onEmptyMessageChange,
+  mediaCardMaxWidth,
+  onMediaCardMaxWidthChange,
 }: ControlsPanelProps) {
   const isDataTable = componentId === "data-table";
   const isSocialPost = componentId === "social-post";
+  const isMediaCard = componentId === "media-card";
+
   return (
     <div className="flex h-full flex-col">
-      <Tabs
-        defaultValue="presets"
-        className="bred flex min-h-0 flex-1 flex-col"
-      >
+      <Tabs defaultValue="presets" className="flex min-h-0 flex-1 flex-col">
         <div className="sticky top-0 z-20">
           <div className="relative">
             <LinearBlur
@@ -58,7 +62,7 @@ export function ControlsPanel({
             />
 
             <div className="relative flex items-center justify-center pt-2 pb-4">
-              <TabsList className="bg-transparentflex gap-2 rounded-lg text-sm font-light">
+              <TabsList className="bg-transparent flex gap-2 rounded-lg text-sm font-light">
                 <TabsTrigger
                   value="presets"
                   className="data-[state=active]:bg-background data-[state=active]:text-foreground"
@@ -109,7 +113,7 @@ export function ControlsPanel({
                     <Input
                       id="empty-message"
                       value={emptyMessage}
-                      onChange={(e) => onEmptyMessageChange(e.target.value)}
+                      onChange={(event) => onEmptyMessageChange(event.target.value)}
                       placeholder="No data available"
                     />
                   </div>
@@ -117,6 +121,7 @@ export function ControlsPanel({
               </Item>
             </ItemGroup>
           )}
+
           {isSocialPost && (
             <ItemGroup>
               <Item variant="outline">
@@ -124,6 +129,32 @@ export function ControlsPanel({
                   <ItemDescription className="text-muted-foreground text-sm">
                     No additional configuration options for social posts.
                   </ItemDescription>
+                </ItemContent>
+              </Item>
+            </ItemGroup>
+          )}
+
+          {isMediaCard && (
+            <ItemGroup>
+              <Item variant="outline">
+                <ItemContent>
+                  <ItemTitle>Layout</ItemTitle>
+                  <ItemDescription>
+                    Optionally clamp the card width to suit chat bubbles.
+                  </ItemDescription>
+                  <div className="mt-3 grid gap-1.5">
+                    <Label htmlFor="media-card-max-width" className="text-xs">
+                      Max width
+                    </Label>
+                    <Input
+                      id="media-card-max-width"
+                      value={mediaCardMaxWidth ?? ""}
+                      onChange={(event) =>
+                        onMediaCardMaxWidthChange?.(event.target.value)
+                      }
+                      placeholder="e.g. 420px (leave empty for auto)"
+                    />
+                  </div>
                 </ItemContent>
               </Item>
             </ItemGroup>
@@ -165,9 +196,9 @@ export function ControlsPanel({
                       <Input
                         id="sort-by"
                         value={sort.by || ""}
-                        onChange={(e) =>
+                        onChange={(event) =>
                           onSortChange({
-                            by: e.target.value || undefined,
+                            by: event.target.value || undefined,
                             direction: sort.direction,
                           })
                         }
@@ -181,11 +212,11 @@ export function ControlsPanel({
                       <select
                         id="sort-direction"
                         value={sort.direction || ""}
-                        onChange={(e) =>
+                        onChange={(event) =>
                           onSortChange({
                             by: sort.by,
                             direction:
-                              (e.target.value as "asc" | "desc") || undefined,
+                              (event.target.value as "asc" | "desc") || undefined,
                           })
                         }
                         className="border-input bg-background focus-visible:ring-ring focus-visible:ring-offset-background flex h-9 w-full items-center rounded-md border px-3 text-sm shadow-sm transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"

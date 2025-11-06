@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Copy, Check, Code } from "lucide-react";
 import { DataTableConfig } from "@/lib/sample-data";
 import { SocialPostConfig } from "@/lib/social-post-presets";
+import { MediaCardConfig } from "@/lib/media-card-presets";
 import { ShikiHighlighter } from "react-shiki";
 import "react-shiki/css";
 
@@ -12,6 +13,8 @@ interface CodePanelProps {
   componentId: string;
   config?: DataTableConfig;
   socialPostConfig?: SocialPostConfig;
+  mediaCardConfig?: MediaCardConfig;
+  mediaCardMaxWidth?: string;
   sort?: { by?: string; direction?: "asc" | "desc" };
   isLoading?: boolean;
   emptyMessage?: string;
@@ -22,6 +25,8 @@ export function CodePanel({
   componentId,
   config,
   socialPostConfig,
+  mediaCardConfig,
+  mediaCardMaxWidth,
   sort,
   isLoading,
   emptyMessage,
@@ -160,11 +165,104 @@ export function CodePanel({
     return `<SocialPost\n${props.join("\n")}\n/>`;
   };
 
+  const escape = (value: string) =>
+    value.replace(/\\/g, "\\\\").replace(/"/g, '\\"');
+
+  const formatObject = (value: Record<string, unknown>) =>
+    JSON.stringify(value, null, 2).replace(/\n/g, "\n  ");
+
+  const generateMediaCardCode = () => {
+    if (!mediaCardConfig) return "";
+    const card = mediaCardConfig.card;
+    const props: string[] = [];
+
+    props.push(`  id="${card.id}"`);
+    props.push(`  kind="${card.kind}"`);
+
+    if (card.src) {
+      props.push(`  src="${card.src}"`);
+    }
+
+    if (card.href) {
+      props.push(`  href="${card.href}"`);
+    }
+
+    if (card.thumb) {
+      props.push(`  thumb="${card.thumb}"`);
+    }
+
+    if (card.alt) {
+      props.push(`  alt="${escape(card.alt)}"`);
+    }
+
+    if (card.title || card.og?.title) {
+      props.push(`  title="${escape(card.title ?? card.og?.title ?? "")}"`);
+    }
+
+    if (card.description || card.og?.description) {
+      props.push(
+        `  description="${escape(
+          card.description ?? card.og?.description ?? "",
+        )}"`,
+      );
+    }
+
+    if (card.domain) {
+      props.push(`  domain="${card.domain}"`);
+    }
+
+    if (card.ratio) {
+      props.push(`  ratio="${card.ratio}"`);
+    }
+
+    if (card.fit) {
+      props.push(`  fit="${card.fit}"`);
+    }
+
+    if (card.durationMs) {
+      props.push(`  durationMs={${card.durationMs}}`);
+    }
+
+    if (card.fileSizeBytes) {
+      props.push(`  fileSizeBytes={${card.fileSizeBytes}}`);
+    }
+
+    if (card.createdAtISO) {
+      props.push(`  createdAtISO="${card.createdAtISO}"`);
+    }
+
+    if (card.locale) {
+      props.push(`  locale="${card.locale}"`);
+    }
+
+    if (card.source) {
+      props.push(
+        `  source={${formatObject(card.source as Record<string, unknown>)}}`,
+      );
+    }
+
+    if (card.og) {
+      props.push(`  og={${formatObject(card.og as Record<string, unknown>)}}`);
+    }
+
+    if (mediaCardMaxWidth && mediaCardMaxWidth.trim().length > 0) {
+      props.push(`  maxWidth="${mediaCardMaxWidth.trim()}"`);
+    }
+
+    if (isLoading) {
+      props.push(`  isLoading={true}`);
+    }
+
+    return `<MediaCard\n${props.join("\n")}\n/>`;
+  };
+
   const generateCode = () => {
     if (componentId === "data-table") {
       return generateDataTableCode();
     } else if (componentId === "social-post") {
       return generateSocialPostCode();
+    } else if (componentId === "media-card") {
+      return generateMediaCardCode();
     }
     return "";
   };

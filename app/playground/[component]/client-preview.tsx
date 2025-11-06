@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { ControlsPanel } from "../components/controls-panel";
 import { CodePanel } from "../components/code-panel";
 import { DataTable } from "@/components/registry/data-table";
@@ -12,18 +12,30 @@ import {
   SocialPostPresetName,
   socialPostPresets,
 } from "@/lib/social-post-presets";
+import { MediaCard } from "@/components/registry/media-card";
+import {
+  MediaCardPresetName,
+  mediaCardPresets,
+} from "@/lib/media-card-presets";
 import { usePlayground } from "../playground-context";
+
+type PlaygroundPreset = PresetName | SocialPostPresetName | MediaCardPresetName;
 
 export function ClientPreview({ componentId }: { componentId: string }) {
   const { viewport } = usePlayground();
-  const [currentPreset, setCurrentPreset] = useState<
-    PresetName | SocialPostPresetName
-  >(componentId === "social-post" ? "x" : "stocks");
+  const [currentPreset, setCurrentPreset] = useState<PlaygroundPreset>(
+    componentId === "social-post"
+      ? "x"
+      : componentId === "media-card"
+        ? "image"
+        : "stocks",
+  );
   const [isLoading, setIsLoading] = useState(false);
   const [sort, setSort] = useState<SortState>(presets.stocks.defaultSort ?? {});
   const [emptyMessage, setEmptyMessage] = useState(
     presets.stocks.emptyMessage ?? "No data available",
   );
+  const [mediaCardMaxWidth, setMediaCardMaxWidth] = useState<string>("420px");
 
   const handleSortChange = (next: {
     by?: string;
@@ -32,17 +44,32 @@ export function ClientPreview({ componentId }: { componentId: string }) {
     setSort(next);
   };
 
-  const currentConfig =
-    componentId === "data-table"
-      ? presets[currentPreset as PresetName]
-      : undefined;
-  const currentSocialPostConfig =
-    componentId === "social-post"
-      ? socialPostPresets[currentPreset as SocialPostPresetName]
-      : undefined;
+  const currentConfig = useMemo(
+    () =>
+      componentId === "data-table"
+        ? presets[currentPreset as PresetName]
+        : undefined,
+    [componentId, currentPreset],
+  );
+
+  const currentSocialPostConfig = useMemo(
+    () =>
+      componentId === "social-post"
+        ? socialPostPresets[currentPreset as SocialPostPresetName]
+        : undefined,
+    [componentId, currentPreset],
+  );
+
+  const currentMediaCardConfig = useMemo(
+    () =>
+      componentId === "media-card"
+        ? mediaCardPresets[currentPreset as MediaCardPresetName]
+        : undefined,
+    [componentId, currentPreset],
+  );
 
   const handleSelectPreset = useCallback(
-    (preset: PresetName | SocialPostPresetName) => {
+    (preset: PlaygroundPreset) => {
       if (componentId === "data-table") {
         const nextConfig = presets[preset as PresetName];
         setCurrentPreset(preset);
@@ -50,6 +77,9 @@ export function ClientPreview({ componentId }: { componentId: string }) {
         setEmptyMessage(nextConfig.emptyMessage ?? "No data available");
         setIsLoading(false);
       } else if (componentId === "social-post") {
+        setCurrentPreset(preset);
+        setIsLoading(false);
+      } else if (componentId === "media-card") {
         setCurrentPreset(preset);
         setIsLoading(false);
       }
@@ -103,10 +133,12 @@ export function ClientPreview({ componentId }: { componentId: string }) {
           onSortChange={handleSortChange}
           emptyMessage={emptyMessage}
           onEmptyMessageChange={setEmptyMessage}
+          mediaCardMaxWidth={mediaCardMaxWidth}
+          onMediaCardMaxWidthChange={setMediaCardMaxWidth}
         />
       </aside>
       <div className="flex flex-1 flex-col gap-2 overflow-clip">
-        <div className="bg-background flex-1 overflow-auto rounded-lg p-6 shadow-xs">
+        <div className="bg-background shadow-input-field flex-1 overflow-auto rounded-lg p-6">
           <div
             className="mx-auto transition-[width]"
             style={{
@@ -141,6 +173,25 @@ export function ClientPreview({ componentId }: { componentId: string }) {
                 }}
               />
             )}
+            {componentId === "media-card" && currentMediaCardConfig && (
+              <div className="flex justify-center">
+                <MediaCard
+                  {...currentMediaCardConfig.card}
+                  isLoading={isLoading}
+                  maxWidth={
+                    mediaCardMaxWidth && mediaCardMaxWidth.trim().length > 0
+                      ? mediaCardMaxWidth
+                      : undefined
+                  }
+                  onAction={(actionId) => {
+                    console.log("MediaCard action:", actionId);
+                  }}
+                  onNavigate={(href) => {
+                    console.log("MediaCard navigate:", href);
+                  }}
+                />
+              </div>
+            )}
           </div>
         </div>
 
@@ -149,6 +200,8 @@ export function ClientPreview({ componentId }: { componentId: string }) {
             componentId={componentId}
             config={currentConfig}
             socialPostConfig={currentSocialPostConfig}
+            mediaCardConfig={currentMediaCardConfig}
+            mediaCardMaxWidth={mediaCardMaxWidth}
             sort={sort}
             isLoading={isLoading}
             emptyMessage={emptyMessage}

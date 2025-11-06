@@ -13,5 +13,5 @@ export default async function ComponentPage({
     notFound();
   }
 
-  return <ClientPreview componentId={component} />;
+  return <ClientPreview key={component} componentId={component} />;
 }

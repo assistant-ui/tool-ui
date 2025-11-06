@@ -39,6 +39,8 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
+  --shadow-border: 0px 1px 0px -1px var(--tw-shadow-color), 0px 1px 1px -1px var(--tw-shadow-color), 0px 1px 2px -1px var(--tw-shadow-color), 0px 2px 4px -2px var(--tw-shadow-color), 0px 3px 6px -3px var(--tw-shadow-color);
+  --shadow-highlight: inset 0px 0px 0px 1px var(--tw-shadow-color), inset 0px 1px 0px var(--tw-shadow-color);
 }
 
 :root {
@@ -122,6 +124,43 @@
 
   .bg-wash {
     background-color: var(--wash);
+  }
+
+  .shadow-crisp-edge {
+    position: relative;
+    box-sizing: padding-box;
+    box-shadow:
+      0px 1px 0px -1px oklch(0 0 0 / 0.3),
+      0px 1px 1px -1px oklch(0 0 0 / 0.3),
+      0px 1px 2px -1px oklch(0 0 0 / 0.3),
+      0px 2px 4px -2px oklch(0 0 0 / 0.3),
+      0px 3px 6px -3px oklch(0 0 0 / 0.3);
+
+    &::after {
+      content: '';
+      pointer-events: none;
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      box-shadow:
+        inset 0px 0px 0px 1px oklch(1 0 0 / 1),
+        inset 0px 1px 0px oklch(1 0 0 / 1);
+    }
+  }
+
+  .dark .shadow-crisp-edge {
+    box-shadow:
+      0px 1px 0px -1px oklch(0 0 0 / 0.1),
+      0px 1px 1px -1px oklch(0 0 0 / 0.1),
+      0px 1px 2px -1px oklch(0 0 0 / 0.1),
+      0px 2px 4px -2px oklch(0 0 0 / 0.1),
+      0px 3px 6px -3px oklch(0 0 0 / 0.1);
+
+    &::after {
+      box-shadow:
+        inset 0px 0px 0px 1px oklch(1 0 0 / 0.05),
+        inset 0px 1px 0px oklch(1 0 0 / 0.05);
+    }
   }
 }
 
