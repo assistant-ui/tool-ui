@@ -11,6 +11,7 @@ import {
   ActionBarPrimitive,
   BranchPickerPrimitive,
   ErrorPrimitive,
+  makeAssistantTool,
 } from "@assistant-ui/react";
 import {
   useChatRuntime,
@@ -66,9 +67,33 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useState, useEffect, type FC } from "react";
+import { useState, useEffect, type FC, createContext, useContext } from "react";
 import { ToolFallback } from "@/components/assistant-ui/tool-fallback";
+import { TooltipIconButton } from "@/components/assistant-ui/tooltip-icon-button";
 import React from "react";
+import { cn } from "@/lib/utils";
+
+// Context for refreshing the preview pane
+const PreviewRefreshContext = createContext<(() => void) | null>(null);
+
+const usePreviewRefresh = () => {
+  const refresh = useContext(PreviewRefreshContext);
+  return refresh;
+};
+
+// Module-level holder for the refresh function (accessible from streamCall)
+let globalRefreshPreview: (() => void) | null = null;
+
+const PreviewRefreshSetter: FC = () => {
+  const refresh = usePreviewRefresh();
+  useEffect(() => {
+    globalRefreshPreview = refresh;
+    return () => {
+      globalRefreshPreview = null;
+    };
+  }, [refresh]);
+  return null;
+};
 
 const UserMessage: FC = () => {
   return (
@@ -77,7 +102,11 @@ const UserMessage: FC = () => {
         <div className="bg-muted text-foreground rounded-3xl px-5 py-2.5 break-words">
           <MessagePrimitive.Content components={{ Text: MarkdownText }} />
         </div>
+        <div className="absolute top-1/2 left-0 -translate-x-full -translate-y-1/2 pr-2">
+          <UserActionBar />
+        </div>
       </div>
+      <BranchPicker className="col-span-full col-start-1 row-start-3 -mr-1 justify-end" />
     </MessagePrimitive.Root>
   );
 };
@@ -89,8 +118,122 @@ const AssistantMessage: FC = () => {
         <MessagePrimitive.Content
           components={{ Text: MarkdownText, tools: { Fallback: ToolFallback } }}
         />
+        <MessageError />
+      </div>
+      <div className="mt-2 ml-2 flex">
+        <BranchPicker />
+        <AssistantActionBar />
       </div>
     </MessagePrimitive.Root>
+  );
+};
+
+const MessageError: FC = () => {
+  return (
+    <MessagePrimitive.Error>
+      <ErrorPrimitive.Root className="border-destructive bg-destructive/10 text-destructive dark:bg-destructive/5 mt-2 rounded-md border p-3 text-sm dark:text-red-200">
+        <ErrorPrimitive.Message className="line-clamp-2" />
+      </ErrorPrimitive.Root>
+    </MessagePrimitive.Error>
+  );
+};
+
+const UserActionBar: FC = () => {
+  return (
+    <ActionBarPrimitive.Root
+      hideWhenRunning
+      autohide="not-last"
+      className="flex flex-col items-end"
+    >
+      <ActionBarPrimitive.Edit asChild>
+        <TooltipIconButton tooltip="Edit" className="p-4">
+          <PencilIcon />
+        </TooltipIconButton>
+      </ActionBarPrimitive.Edit>
+    </ActionBarPrimitive.Root>
+  );
+};
+
+const AssistantActionBar: FC = () => {
+  return (
+    <ActionBarPrimitive.Root
+      hideWhenRunning
+      autohide="not-last"
+      autohideFloat="single-branch"
+      className="text-muted-foreground data-floating:bg-background col-start-3 row-start-2 -ml-1 flex gap-1 data-floating:absolute data-floating:rounded-md data-floating:border data-floating:p-1 data-floating:shadow-sm"
+    >
+      <ActionBarPrimitive.Copy asChild>
+        <TooltipIconButton tooltip="Copy">
+          <MessagePrimitive.If copied>
+            <CheckIcon />
+          </MessagePrimitive.If>
+          <MessagePrimitive.If copied={false}>
+            <CopyIcon />
+          </MessagePrimitive.If>
+        </TooltipIconButton>
+      </ActionBarPrimitive.Copy>
+      <ActionBarPrimitive.Reload asChild>
+        <TooltipIconButton tooltip="Refresh">
+          <RefreshCwIcon />
+        </TooltipIconButton>
+      </ActionBarPrimitive.Reload>
+    </ActionBarPrimitive.Root>
+  );
+};
+
+const BranchPicker: FC<BranchPickerPrimitive.Root.Props> = ({
+  className,
+  ...rest
+}) => {
+  return (
+    <BranchPickerPrimitive.Root
+      hideWhenSingleBranch
+      className={cn(
+        "text-muted-foreground mr-2 -ml-2 inline-flex items-center text-xs",
+        className,
+      )}
+      {...rest}
+    >
+      <BranchPickerPrimitive.Previous asChild>
+        <TooltipIconButton tooltip="Previous">
+          <ChevronLeftIcon />
+        </TooltipIconButton>
+      </BranchPickerPrimitive.Previous>
+      <span className="font-medium">
+        <BranchPickerPrimitive.Number /> / <BranchPickerPrimitive.Count />
+      </span>
+      <BranchPickerPrimitive.Next asChild>
+        <TooltipIconButton tooltip="Next">
+          <ChevronRightIcon />
+        </TooltipIconButton>
+      </BranchPickerPrimitive.Next>
+    </BranchPickerPrimitive.Root>
+  );
+};
+
+const EditComposer: FC = () => {
+  return (
+    <div className="mx-auto flex w-full max-w-2xl flex-col gap-4 px-2 first:mt-4">
+      <ComposerPrimitive.Root className="bg-muted ml-auto flex w-full max-w-7/8 flex-col rounded-xl">
+        <ComposerPrimitive.Input
+          className="text-foreground flex min-h-[60px] w-full resize-none bg-transparent p-4 outline-none"
+          autoFocus
+        />
+
+        <div className="mx-3 mb-3 flex items-center justify-center gap-2 self-end">
+          <ComposerPrimitive.Cancel asChild>
+            <Button variant="ghost" size="sm" aria-label="Cancel edit">
+              Cancel
+            </Button>
+          </ComposerPrimitive.Cancel>
+          <ComposerPrimitive.Send asChild>
+            <Button size="sm" aria-label="Update message">
+              Update
+            </Button>
+          </ComposerPrimitive.Send>
+        </div>
+      </ComposerPrimitive.Root>
+    </div>
   );
 };
 
@@ -354,6 +497,7 @@ const Thread: FC = () => {
           <ThreadPrimitive.Messages
             components={{
               UserMessage,
+              EditComposer,
               AssistantMessage,
             }}
           />
@@ -468,9 +612,15 @@ export default function BuilderPage() {
     document.addEventListener("mouseup", handleMouseUp);
   };
 
+  const handleRefreshPreview = () => {
+    setRefreshKey((prev) => prev + 1);
+  };
+
   return (
-    <AssistantRuntimeProvider runtime={runtime}>
-      <div className="flex h-full">
+    <PreviewRefreshContext.Provider value={handleRefreshPreview}>
+      <AssistantRuntimeProvider runtime={runtime}>
+        <PreviewRefreshSetter />
+        <div className="flex h-full">
         <div className="bg-background w-[240px] shrink-0 overflow-y-auto border-r p-4">
           <ThreadList />
         </div>
@@ -574,10 +724,11 @@ export default function BuilderPage() {
       <WriteFileToolUI />
       <ReadFileToolUI />
     </AssistantRuntimeProvider>
+    </PreviewRefreshContext.Provider>
   );
 }
 
-const EditFileToolUI = makeAssistantToolUI<
+const EditFileToolUI = makeAssistantTool<
   {
     path?: string;
     edits?: Array<{
@@ -588,7 +739,16 @@ const EditFileToolUI = makeAssistantToolUI<
   // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   {}
 >({
+  type: "backend",
   toolName: "edit_file",
+  streamCall: async (reader) => {
+    await reader.response.get();
+
+    // Refresh the preview pane after edit completes
+    if (globalRefreshPreview) {
+      globalRefreshPreview();
+    }
+  },
   render: ({ args }) => {
     console.log("EditFileToolUI", args);
     const path = args?.path;
@@ -602,11 +762,11 @@ const EditFileToolUI = makeAssistantToolUI<
       <Card className="mb-4 w-full">
         <CardHeader>
           <div className="flex items-center gap-2">
-            <PencilIcon className="w-4 h-4 text-primary" />
+            <PencilIcon className="text-primary h-4 w-4" />
             <CardTitle className="text-base">Editing File</CardTitle>
           </div>
           {path && (
-            <CardDescription className="font-mono text-xs mt-1">
+            <CardDescription className="mt-1 font-mono text-xs">
               {path}
             </CardDescription>
           )}
@@ -619,17 +779,20 @@ const EditFileToolUI = makeAssistantToolUI<
                   (edit.oldText || edit.newText) && (
                     <CodeBlock
                       key={index}
-                      className="overflow-scroll py-2 grid"
+                      className="grid overflow-scroll py-2"
                     >
                       {edit.oldText && (
                         <>
                           <CodeBlockCode
-                            code={edit.oldText.split("\n").slice(0, 5).join("\n")}
+                            code={edit.oldText
+                              .split("\n")
+                              .slice(0, 5)
+                              .join("\n")}
                             language="tsx"
-                            className="col-start-1 col-end-1 row-start-1 row-end-1 overflow-visible [&>pre]:py-0 [&_code]:bg-red-200 bg-red-200"
+                            className="col-start-1 col-end-1 row-start-1 row-end-1 overflow-visible bg-red-200 [&_code]:bg-red-200 [&>pre]:py-0"
                           />
                           {edit.oldText.split("\n").length > 5 && (
-                            <div className="text-red-700 px-4 text-xs font-mono">
+                            <div className="px-4 font-mono text-xs text-red-700">
                               +{edit.oldText.split("\n").length - 5} more
                             </div>
                           )}
@@ -644,17 +807,17 @@ const EditFileToolUI = makeAssistantToolUI<
                               .slice(0, 5)
                               .join("\n")}
                             language="tsx"
-                            className="col-start-1 col-end-1 row-start-1 row-end-1 overflow-visible [&>pre]:py-0 [&_code]:bg-green-200 bg-green-200"
+                            className="col-start-1 col-end-1 row-start-1 row-end-1 overflow-visible bg-green-200 [&_code]:bg-green-200 [&>pre]:py-0"
                           />
                           {edit.newText.split("\n").length > 5 && (
-                            <div className="text-green-700 px-4 text-xs font-mono">
+                            <div className="px-4 font-mono text-xs text-green-700">
                               +{edit.newText.split("\n").length - 5} more
                             </div>
                           )}
                         </>
                       )}
                     </CodeBlock>
-                  )
+                  ),
               )}
             </div>
           </CardContent>
@@ -664,7 +827,7 @@ const EditFileToolUI = makeAssistantToolUI<
   },
 });
 
-const WriteFileToolUI = makeAssistantToolUI<
+const WriteFileToolUI = makeAssistantTool<
   {
     path?: string;
     content?: string;
@@ -672,7 +835,16 @@ const WriteFileToolUI = makeAssistantToolUI<
   // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   {}
 >({
+  type: "backend",
   toolName: "write_file",
+  streamCall: async (reader) => {
+    await reader.response.get();
+
+    // Refresh the preview pane after write completes
+    if (globalRefreshPreview) {
+      globalRefreshPreview();
+    }
+  },
   render: ({ args }) => {
     const path = args?.path;
 
@@ -684,10 +856,10 @@ const WriteFileToolUI = makeAssistantToolUI<
       <Card className="mb-4 w-full">
         <CardHeader>
           <div className="flex items-center gap-2">
-            <FileEdit className="w-4 h-4 text-primary" />
+            <FileEdit className="text-primary h-4 w-4" />
             <CardTitle className="text-base">Writing File</CardTitle>
           </div>
-          <CardDescription className="font-mono text-xs mt-1">
+          <CardDescription className="mt-1 font-mono text-xs">
             {path}
           </CardDescription>
         </CardHeader>
@@ -715,10 +887,10 @@ const ReadFileToolUI = makeAssistantToolUI<
       <Card className="mb-4 w-full">
         <CardHeader>
           <div className="flex items-center gap-2">
-            <FileText className="w-4 h-4 text-primary" />
+            <FileText className="text-primary h-4 w-4" />
             <CardTitle className="text-base">Reading File</CardTitle>
           </div>
-          <CardDescription className="font-mono text-xs mt-1">
+          <CardDescription className="mt-1 font-mono text-xs">
             {path}
           </CardDescription>
         </CardHeader>

@@ -84,10 +84,15 @@ const DemoToolUI = makeAssistantToolUI<
 export default DemoToolUI;
 \`\`\`
 
+**You SHOULD update:**
+- The variable name (\`DemoToolUI\`) to match the tool you're building (e.g., \`WeatherToolUI\`)
+- The \`toolName\` property to match the actual tool name (e.g., \`"get_weather"\`)
+- The export statement to match the new variable name
+
 **DO NOT** modify:
-- The \`makeAssistantToolUI\` wrapper
-- Type parameters
-- Any code outside the render function
+- The \`makeAssistantToolUI\` wrapper function itself
+- Type parameters (leave as \`Record<string, any>\` and \`{}\`)
+- The structure of code outside the render function
 
 # Available Components
 
