@@ -25,6 +25,8 @@ import {
   PanelResizeHandle,
   type ImperativePanelGroupHandle,
 } from "react-resizable-panels";
+import { usePathname } from "next/navigation";
+import { cn } from "@/lib/utils";
 
 const CHAT_MIN_SIZE = 50;
 const CHAT_MAX_SIZE = 100;
@@ -42,6 +44,11 @@ function HomePageContent({ showLogoDebug }: { showLogoDebug: boolean }) {
   const panelGroupRef = useRef<ImperativePanelGroupHandle | null>(null);
   const isSyncingLayout = useRef(false);
   const defaultLayout = CHAT_LAYOUTS.desktop;
+  const pathname = usePathname();
+
+  const isHome = pathname === "/";
+  const isComponents = pathname.startsWith("/components");
+  const isBuilder = pathname.startsWith("/builder");
 
   const updateViewportFromChatSize = useCallback((chatSize: number) => {
     const threshold = (CHAT_LAYOUTS.mobile[1] + CHAT_LAYOUTS.desktop[1]) / 2;
@@ -106,46 +113,95 @@ function HomePageContent({ showLogoDebug }: { showLogoDebug: boolean }) {
     ((chatPanelSize - CHAT_MIN_SIZE) / (CHAT_MAX_SIZE - CHAT_MIN_SIZE)) * 2.0;
 
   return (
-    <main className="relative flex min-h-screen flex-row items-end justify-center">
-      <div
-        className="bg-dot-grid pointer-events-none absolute inset-0 opacity-60 dark:opacity-40"
-        aria-hidden
-      />
-      <ViewportControls viewport={viewport} onViewportChange={changeViewport} />
+    <div className="grid h-screen grid-cols-[minmax(200px,240px)_1fr] grid-rows-[auto_1fr]">
+      {/* A1: Logo - centered */}
+      <div className="bg-wash border-b border-r flex items-center justify-center px-6 py-3">
+        <Link href="/">
+          <h1 className="text-xl font-semibold tracking-wide">tool-ui.com</h1>
+        </Link>
+      </div>
 
-      <div className="relative z-10 flex max-w-2xl flex-col gap-5 p-8 pb-21 text-left">
-        <div className="-mb-4 -ml-4 flex items-end justify-start">
-          <HypercubeCanvas cubeWidth={cubeWidth} />
-        </div>
-        <div className="flex flex-col gap-1">
-          <h1 className="text-6xl font-bold tracking-tight">tool-ui.com</h1>
-          <h2 className="text-2xl tracking-tight">
-            Beautiful UI components for AI tool calls
-          </h2>
-        </div>
-        <p className="text-muted-foreground mb-2 text-lg">
-          Responsive, accessible, typed, copy-pasteable. <br />
-          Built on Radix, shadcn/ui, and Tailwind. Open Source.
-          <br />
-        </p>
-        <Button asChild className="group w-fit px-6 py-3" size="lg">
-          <Link href="/components">
-            See the Components
-            <ArrowRight className="size-4 shrink-0 transition-transform group-hover:translate-x-1" />
+      {/* B1: Tabs */}
+      <div className="bg-wash border-b flex items-center px-6 py-3">
+        <nav className="flex items-center gap-1">
+          <Link
+            href="/"
+            className={cn(
+              "px-4 py-2 rounded-lg text-sm font-medium transition-colors",
+              isHome
+                ? "bg-background text-foreground shadow-sm"
+                : "text-muted-foreground hover:text-foreground hover:bg-background/50"
+            )}
+          >
+            Home
           </Link>
-        </Button>
+          <Link
+            href="/components"
+            className={cn(
+              "px-4 py-2 rounded-lg text-sm font-medium transition-colors",
+              isComponents
+                ? "bg-background text-foreground shadow-sm"
+                : "text-muted-foreground hover:text-foreground hover:bg-background/50"
+            )}
+          >
+            Components
+          </Link>
+          <Link
+            href="/builder"
+            className={cn(
+              "px-4 py-2 rounded-lg text-sm font-medium transition-colors",
+              isBuilder
+                ? "bg-background text-foreground shadow-sm"
+                : "text-muted-foreground hover:text-foreground hover:bg-background/50"
+            )}
+          >
+            Builder
+          </Link>
+        </nav>
       </div>
 
-      <div className="relative z-10 flex h-screen flex-1 p-8">
-        <ResizableChat
-          panelGroupRef={panelGroupRef}
-          handleLayout={handleLayout}
-          defaultLayout={defaultLayout}
+      {/* A2 & B2: Main content spanning both columns for home */}
+      <main className="relative col-span-2 flex flex-row items-end justify-center overflow-hidden">
+        <div
+          className="bg-dot-grid pointer-events-none absolute inset-0 opacity-60 dark:opacity-40"
+          aria-hidden
         />
-      </div>
+        <ViewportControls viewport={viewport} onViewportChange={changeViewport} />
 
-      <Leva hidden={!showLogoDebug} collapsed={!showLogoDebug} />
-    </main>
+        <div className="relative z-10 flex max-w-2xl flex-col gap-5 p-8 pb-21 text-left">
+          <div className="-mb-4 -ml-4 flex items-end justify-start">
+            <HypercubeCanvas cubeWidth={cubeWidth} />
+          </div>
+          <div className="flex flex-col gap-1">
+            <h1 className="text-6xl font-bold tracking-tight">tool-ui.com</h1>
+            <h2 className="text-2xl tracking-tight">
+              Beautiful UI components for AI tool calls
+            </h2>
+          </div>
+          <p className="text-muted-foreground mb-2 text-lg">
+            Responsive, accessible, typed, copy-pasteable. <br />
+            Built on Radix, shadcn/ui, and Tailwind. Open Source.
+            <br />
+          </p>
+          <Button asChild className="group w-fit px-6 py-3" size="lg">
+            <Link href="/components">
+              See the Components
+              <ArrowRight className="size-4 shrink-0 transition-transform group-hover:translate-x-1" />
+            </Link>
+          </Button>
+        </div>
+
+        <div className="relative z-10 flex h-full flex-1 p-8">
+          <ResizableChat
+            panelGroupRef={panelGroupRef}
+            handleLayout={handleLayout}
+            defaultLayout={defaultLayout}
+          />
+        </div>
+
+        <Leva hidden={!showLogoDebug} collapsed={!showLogoDebug} />
+      </main>
+    </div>
   );
 }
 

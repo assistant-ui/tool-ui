@@ -1,10 +1,12 @@
 "use client";
 
 import { ReactNode, useState } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { cn } from "@/lib/utils";
 import { ComponentNav } from "./components/component-nav";
 import { ComponentsProvider } from "./components-context";
 import { ViewportControls, ViewportSize } from "@/components/viewport-controls";
-import { SharedHeader } from "./shared-header";
 
 export default function ComponentsLayout({
   children,
@@ -12,15 +14,71 @@ export default function ComponentsLayout({
   children: ReactNode;
 }) {
   const [viewport, setViewport] = useState<ViewportSize>("desktop");
+  const pathname = usePathname();
+
+  const isHome = pathname === "/";
+  const isComponents = pathname.startsWith("/components");
+  const isBuilder = pathname.startsWith("/builder");
 
   return (
     <ComponentsProvider value={{ viewport }}>
-      <div className="flex h-screen min-h-0 flex-col">
-        <SharedHeader />
-        <div className="flex flex-1 overflow-hidden">
-          <ComponentNav />
-          <div className="flex flex-1 flex-col">{children}</div>
+      <div className="grid h-screen grid-cols-[minmax(200px,240px)_1fr] grid-rows-[auto_1fr]">
+        {/* A1: Logo - centered */}
+        <div className="bg-wash border-b border-r flex items-center justify-center px-6 py-3">
+          <Link href="/">
+            <h1 className="text-xl font-semibold tracking-wide">tool-ui.com</h1>
+          </Link>
         </div>
+
+        {/* B1: Tabs */}
+        <div className="bg-wash border-b flex items-center px-6 py-3">
+          <nav className="flex items-center gap-1">
+            <Link
+              href="/"
+              className={cn(
+                "px-4 py-2 rounded-lg text-sm font-medium transition-colors",
+                isHome
+                  ? "bg-background text-foreground shadow-sm"
+                  : "text-muted-foreground hover:text-foreground hover:bg-background/50"
+              )}
+            >
+              Home
+            </Link>
+            <Link
+              href="/components"
+              className={cn(
+                "px-4 py-2 rounded-lg text-sm font-medium transition-colors",
+                isComponents
+                  ? "bg-background text-foreground shadow-sm"
+                  : "text-muted-foreground hover:text-foreground hover:bg-background/50"
+              )}
+            >
+              Components
+            </Link>
+            <Link
+              href="/builder"
+              className={cn(
+                "px-4 py-2 rounded-lg text-sm font-medium transition-colors",
+                isBuilder
+                  ? "bg-background text-foreground shadow-sm"
+                  : "text-muted-foreground hover:text-foreground hover:bg-background/50"
+              )}
+            >
+              Builder
+            </Link>
+          </nav>
+        </div>
+
+        {/* A2: Sidebar Navigation */}
+        <div className="border-r overflow-hidden">
+          <ComponentNav />
+        </div>
+
+        {/* B2: Main Content */}
+        <div className="overflow-hidden">
+          {children}
+        </div>
+
         <ViewportControls viewport={viewport} onViewportChange={setViewport} />
       </div>
     </ComponentsProvider>
