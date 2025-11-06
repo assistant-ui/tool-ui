@@ -9,12 +9,14 @@ import { Stats } from "../stats";
 export function InstagramRenderer() {
   return (
     <>
-      <div className="px-3 py-3">
+      <div className="px-3 pt-3">
         <Header />
       </div>
-      <Media />
       <div className="px-3">
-        <Actions />
+        <Media />
+      </div>
+
+      <div className="px-3 pt-3 pb-3">
         <Body />
         <Stats />
       </div>

@@ -82,13 +82,19 @@ export const sampleInstagram: SocialPostConfig = {
     media: [
       {
         kind: "image",
-        url: "https://images.unsplash.com/photo-1518779578993-ec3579fee39f?w=800&h=800&fit=crop",
+        url: "https://images.unsplash.com/photo-1729944950511-e9c71556cfd4?w=800&h=800&fit=crop",
         alt: "Retro CRT terminal",
         aspectHint: "1:1",
       },
       {
         kind: "image",
-        url: "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=800&h=800&fit=crop",
+        url: "https://images.unsplash.com/photo-1677022725616-91e41d36db21?w=800&h=800&fit=crop",
+        alt: "Vintage home computer",
+        aspectHint: "1:1",
+      },
+      {
+        kind: "image",
+        url: "https://images.unsplash.com/photo-1594202304180-f25d9c992442?w=800&h=800&fit=crop",
         alt: "Vintage home computer",
         aspectHint: "1:1",
       },
