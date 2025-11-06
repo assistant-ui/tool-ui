@@ -118,9 +118,9 @@ function HomePageContent({ showLogoDebug }: { showLogoDebug: boolean }) {
           <HypercubeCanvas cubeWidth={cubeWidth} />
         </div>
         <div className="flex flex-col gap-1">
-          <h1 className="text-6xl font-bold tracking-tight">ToolUI</h1>
+          <h1 className="text-6xl font-bold tracking-tight">tool-ui.com</h1>
           <h2 className="text-2xl tracking-tight">
-            On-demand UI components for LLMs
+            Beautiful UI components for AI tool calls
           </h2>
         </div>
         <p className="text-muted-foreground mb-2 text-lg">

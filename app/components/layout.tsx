@@ -13,15 +13,32 @@ import { ComponentNav } from "./components/component-nav";
 import { ComponentsProvider } from "./components-context";
 import { ViewportControls, ViewportSize } from "@/components/viewport-controls";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
-function ComponentsHeader() {
+function ComponentsHeader({
+  currentPage,
+  onPageChange,
+  onNavigateHome
+}: {
+  currentPage: string;
+  onPageChange: (page: string) => void;
+  onNavigateHome: () => void;
+}) {
+  const handleValueChange = (value: string) => {
+    if (value === "home") {
+      onNavigateHome();
+    } else {
+      onPageChange(value);
+    }
+  };
+
   return (
     <header className="bg-wash flex shrink-0 items-center px-4 py-4">
       <div className="flex items-center gap-4">
         <Link href="/">
-          <h1 className="text-xl font-semibold tracking-wide">ToolUI</h1>
+          <h1 className="text-xl font-semibold tracking-wide">tool-ui.com</h1>
         </Link>
-        <Select defaultValue="components">
+        <Select value={currentPage} onValueChange={handleValueChange}>
           <SelectTrigger
             size="sm"
             className="text-foreground bg-background data-[state=open]:bg-background/50 shadow-crisp-edge border-0 px-2 py-0 text-sm font-medium select-none focus-visible:border-transparent focus-visible:ring-0 focus-visible:ring-offset-0"
@@ -53,15 +70,37 @@ export default function ComponentsLayout({
 }: {
   children: ReactNode;
 }) {
+  const router = useRouter();
   const [viewport, setViewport] = useState<ViewportSize>("desktop");
+  const [currentPage, setCurrentPage] = useState<string>("components");
+
+  const handleNavigateHome = () => {
+    router.push("/");
+  };
 
   return (
     <ComponentsProvider value={{ viewport }}>
       <div className="flex h-screen min-h-0 flex-col">
-        <ComponentsHeader />
+        <ComponentsHeader
+          currentPage={currentPage}
+          onPageChange={setCurrentPage}
+          onNavigateHome={handleNavigateHome}
+        />
         <div className="flex flex-1 overflow-hidden">
-          <ComponentNav />
-          <div className="flex flex-1 flex-col">{children}</div>
+          {currentPage === "components" ? (
+            <>
+              <ComponentNav />
+              <div className="flex flex-1 flex-col">{children}</div>
+            </>
+          ) : (
+            <div className="flex flex-1 items-center justify-center">
+              <div className="text-center">
+                <Hammer className="mx-auto h-16 w-16 text-green-600 dark:text-green-500 mb-4" />
+                <h2 className="text-2xl font-semibold mb-2">Builder</h2>
+                <p className="text-muted-foreground">Component builder coming soon...</p>
+              </div>
+            </div>
+          )}
         </div>
         <ViewportControls viewport={viewport} onViewportChange={setViewport} />
       </div>
