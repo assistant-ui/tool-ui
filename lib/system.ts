@@ -163,243 +163,155 @@ render: ({ args }) => (
 
 **Remember:** You're building a chat widget, not a full application. Keep it simple, purposeful, and glanceable.
 
-## Example X Post Card
+## Example X Post Card + Propose Tweet Tool UI
+
+Hint: You may be asked to simply reproduce this exact example for a demo.
 
 "use client";
 
-import { cn } from "@/lib/utils";
-import { Heart, Share } from "lucide-react";
-import * as React from "react";
-import { z } from "zod";
+import { makeAssistantToolUI } from "@assistant-ui/react";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { MessageCircle, Repeat2, Heart, BarChart3 } from "lucide-react";
+import { useState, useEffect } from "react";
 
-function cn(...classes: (string | boolean | undefined)[]) {
-  return classes.filter(Boolean).join(" ");
-}
+const socialIcons = [MessageCircle, Repeat2, Heart, BarChart3];
 
-function formatRelativeTime(isoString: string): string {
-  const now = new Date();
-  const date = new Date(isoString);
-  const seconds = Math.floor((now.getTime() - date.getTime()) / 1000);
+const ProposeTweetToolUI = makeAssistantToolUI<
+  { body: string },
+  { status: "approved" | "rejected"; approvedTweet: string }
+>({
+  toolName: "proposeTweet",
+  render: ({ args, result, addResult }) => {
+    const [editedText, setEditedText] = useState(args?.body || "");
+    const [isEditing, setIsEditing] = useState(false);
+    const [hasEdited, setHasEdited] = useState(false);
+    const isApproved = result?.status === "approved";
 
-  if (seconds < 60) return "now";
-  if (seconds < 3600) return \`\${Math.floor(seconds / 60)}m\`;
-  if (seconds < 86400) return \`\${Math.floor(seconds / 3600)}h\`;
-  if (seconds < 604800) return \`\${Math.floor(seconds / 86400)}d\`;
+    useEffect(() => {
+      if (!hasEdited && args?.body) {
+        setEditedText(args.body);
+      }
+    }, [args?.body, hasEdited]);
 
-  return new Intl.DateTimeFormat("en-US", {
-    month: "short",
-    day: "numeric",
-  }).format(date);
-}
+    const handleSave = () => {
+      setIsEditing(false);
+      setHasEdited(true);
+    };
 
-// ============================================================================
-// SCHEMA
-// ============================================================================
+    const handleCancel = () => {
+      setEditedText(args?.body || "");
+      setIsEditing(false);
+    };
 
-const xPostSchema = z.object({
-  id: z.string(),
-  author: z.object({
-    name: z.string(),
-    handle: z.string(),
-    avatarUrl: z.string().url(),
-    verified: z.boolean().optional(),
-  }),
-  text: z.string(),
-  stats: z.object({
-    likes: z.number().optional(),
-  }).optional(),
-  createdAtISO: z.string().datetime(),
+    const handleApprove = () => {
+      addResult({ status: "approved", approvedTweet: editedText });
+    };
+
+    return (
+      <div className="mx-2 mb-4 space-y-3">
+        <div className="text-base">
+          Here's a draft post for X. Review and approve it before posting.
+        </div>
+
+        <div className="max-w-[600px]">
+          <article
+            className={\`rounded-xl border bg-card p-3 \$\{
+              isApproved ? "border-green-500" : "border-border"
+            }\`}
+          >
+            <div className="flex gap-3">
+              <img
+                alt="Simon Farshid"
+                className="h-10 w-10 shrink-0 rounded-full"
+                src="https://api.dicebear.com/7.x/initials/svg?seed=Simon%20Farshid&backgroundColor=1e293b"
+              />
+
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center gap-1">
+                  <span className="font-semibold">Simon Farshid</span>
+                  <span className="text-muted-foreground">@simonfarshid</span>
+                </div>
+
+                {isEditing ? (
+                  <Textarea
+                    value={editedText}
+                    onChange={(e) => setEditedText(e.target.value)}
+                    className="mt-2 min-h-[80px]"
+                    placeholder="What's happening?"
+                  />
+                ) : (
+                  <>
+                    <div className="mt-1 whitespace-pre-wrap">{editedText}</div>
+                    <div className="mt-3 -ml-2 flex gap-8">
+                      {socialIcons.map((Icon, i) => (
+                        <Button
+                          key={i}
+                          variant="ghost"
+                          size="sm"
+                          className="h-auto gap-1.5 px-1 py-1"
+                        >
+                          <Icon className="h-4 w-4" />
+                          <span className="text-sm">0</span>
+                        </Button>
+                      ))}
+                    </div>
+                  </>
+                )}
+              </div>
+            </div>
+          </article>
+        </div>
+
+        {!isApproved && (
+          <div className="flex gap-2">
+            {isEditing ? (
+              <>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="rounded-full"
+                  onClick={handleCancel}
+                >
+                  Cancel
+                </Button>
+                <Button size="sm" className="rounded-full" onClick={handleSave}>
+                  Save Changes
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="rounded-full"
+                  onClick={handleCancel}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="rounded-full"
+                  onClick={() => setIsEditing(true)}
+                >
+                  Edit Post
+                </Button>
+                <Button
+                  size="sm"
+                  className="rounded-full"
+                  onClick={handleApprove}
+                >
+                  Accept and Post
+                </Button>
+              </>
+            )}
+          </div>
+        )}
+      </div>
+    );
+  },
 });
 
-type XPost = z.infer<typeof xPostSchema>;
-
-// ============================================================================
-// DESIGN TOKENS
-// ============================================================================
-
-const tokens = {
-  typography: {
-    name: "text-base font-semibold",
-    handle: "text-sm text-muted-foreground",
-    body: "text-base leading-snug",
-  },
-  spacing: {
-    container: "p-3",
-    gap: "gap-2",
-    avatarSize: "w-10 h-10",
-    actionGap: "gap-12",
-  },
-  borders: {
-    container: "border border-border",
-    shadow: "shadow-xs",
-  },
-};
-
-// ============================================================================
-// COMPONENTS
-// ============================================================================
-
-function VerifiedBadge() {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      className="h-4 w-4 shrink-0 fill-blue-500"
-      aria-label="Verified"
-    >
-      <path d="M22.25 12c0-1.43-.88-2.67-2.19-3.34.46-1.39.2-2.9-.81-3.91s-2.52-1.27-3.91-.81c-.66-1.31-1.91-2.19-3.34-2.19s-2.67.88-3.33 2.19c-1.4-.46-2.91-.2-3.92.81s-1.26 2.52-.8 3.91c-1.31.67-2.2 1.91-2.2 3.34s.89 2.67 2.2 3.34c-.46 1.39-.21 2.9.8 3.91s2.52 1.26 3.91.81c.67 1.31 1.91 2.19 3.34 2.19s2.68-.88 3.34-2.19c1.39.45 2.9.2 3.91-.81s1.27-2.52.81-3.91c1.31-.67 2.19-1.91 2.19-3.34zm-11.71 4.2L6.8 12.46l1.41-1.42 2.26 2.26 4.8-5.23 1.47 1.36-6.2 6.77z" />
-    </svg>
-  );
-}
-
-function XLogo({ className }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 24 24" className={cn("fill-current", className)} aria-hidden="true">
-      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-    </svg>
-  );
-}
-
-interface XPostCardProps {
-  post: XPost;
-  className?: string;
-  onAction?: (action: string, post: XPost) => void;
-}
-
-export function XPostCard({ post, className, onAction }: XPostCardProps) {
-  const [liked, setLiked] = React.useState(false);
-
-  const handleAction = React.useCallback((action: string) => {
-    if (action === "like") {
-      setLiked((prev) => !prev);
-    }
-    onAction?.(action, post);
-  }, [onAction, post]);
-
-  const relativeTime = React.useMemo(() => {
-    return formatRelativeTime(post.createdAtISO);
-  }, [post.createdAtISO]);
-
-  return (
-    <article
-      className={cn(
-        "text-card-foreground rounded-xl bg-card",
-        tokens.spacing.container,
-        tokens.borders.container,
-        tokens.borders.shadow,
-        className,
-      )}
-      role="article"
-      aria-labelledby={\`post-\${post.id}-author\`}
-    >
-      {/* Header */}
-      <header className={cn("flex items-start", tokens.spacing.gap)}>
-        <img
-          src={post.author.avatarUrl}
-          alt={\`\${post.author.name} avatar\`}
-          className={cn("shrink-0 object-cover rounded-full", tokens.spacing.avatarSize)}
-          width={40}
-          height={40}
-        />
-        <div className="min-w-0 flex-1">
-          <div className="flex items-center gap-1">
-            <span
-              id={\`post-\${post.id}-author\`}
-              className={cn("truncate", tokens.typography.name)}
-            >
-              {post.author.name}
-            </span>
-            {post.author.verified && <VerifiedBadge />}
-            <span className={cn("truncate", tokens.typography.handle)}>·</span>
-            <span className={cn("truncate", tokens.typography.handle)}>
-              @{post.author.handle}
-            </span>
-            <span className={cn("truncate", tokens.typography.handle)}>·</span>
-            <span className={cn("truncate", tokens.typography.handle)}>
-              {relativeTime}
-            </span>
-          </div>
-        </div>
-        <XLogo className="h-5 w-5 opacity-50" />
-      </header>
-
-      {/* Body */}
-      <div className={cn("mt-3 break-words whitespace-pre-wrap", tokens.typography.body)}>
-        {post.text}
-      </div>
-
-      {/* Actions */}
-      <div className={cn("mt-3 flex items-center", tokens.spacing.actionGap)}>
-        <button
-          type="button"
-          onClick={(e) => {
-            e.stopPropagation();
-            handleAction("like");
-          }}
-          className={cn(
-            "group flex items-center gap-1.5 px-2 py-1.5 rounded-full transition-colors",
-            "hover:bg-red-500/10 hover:text-red-500",
-            liked && "text-red-500"
-          )}
-          aria-label="Like"
-        >
-          <Heart
-            className={cn("h-4 w-4 transition-all", liked && "fill-current")}
-            aria-hidden="true"
-          />
-          {post.stats?.likes !== undefined && post.stats.likes > 0 && (
-            <span className="text-sm">{post.stats.likes}</span>
-          )}
-        </button>
-
-        <button
-          type="button"
-          onClick={(e) => {
-            e.stopPropagation();
-            handleAction("share");
-          }}
-          className={cn(
-            "group flex items-center gap-1.5 px-2 py-1.5 rounded-full transition-colors",
-            "hover:bg-blue-500/10 hover:text-blue-500"
-          )}
-          aria-label="Share"
-        >
-          <Share className="h-4 w-4" aria-hidden="true" />
-          <span className="text-sm">Copy link</span>
-        </button>
-      </div>
-    </article>
-  );
-}
-
-// ============================================================================
-// EXAMPLE USAGE
-// ============================================================================
-
-const SAMPLE_POST: XPost = {
-  id: "x-post-1",
-  author: {
-    name: "Nick Pattison",
-    handle: "thenickpattison",
-    avatarUrl: "https://api.dicebear.com/7.x/avataaars/svg?seed=Nick",
-    verified: true,
-  },
-  text: "I don't say this lightly: this is the best political branding work of all time.\n\nHats off to my man Ashwinn and team.",
-  stats: {
-    likes: 5,
-  },
-  createdAtISO: "2025-11-05T14:01:00.000Z",
-};
-
-export default function Example() {
-  return (
-    <div className="max-w-xl mx-auto p-4">
-      <XPostCard
-        post={SAMPLE_POST}
-        onAction={(action, post) => {
-          console.log(\`Action \${action} on post \${post.id}\`);
-        }}
-      />
-    </div>
-  );
-}
+export default ProposeTweetToolUI;
 `;
