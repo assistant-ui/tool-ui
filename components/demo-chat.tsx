@@ -260,7 +260,7 @@ export function DemoChat() {
               decision: {
                 prompt: "What would you like to do with this post?",
                 actions: [
-                  { id: "edit", label: "Cancel", variant: "ghost" },
+                  { id: "cancel", label: "Cancel", variant: "ghost" },
                   { id: "edit", label: "Edit Post", variant: "outline" },
                   { id: "send", label: "Accept and Post", variant: "default" },
                 ],
