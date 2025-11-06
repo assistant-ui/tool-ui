@@ -41,7 +41,7 @@ export function ComponentNav() {
   const buildLinkClasses = (isActive: boolean) =>
     cn(
       "flex items-center gap-3 rounded-md px-3 py-2 text-sm",
-      isActive ? "bg-primary text-primary-foreground" : "hover:bg-muted",
+      isActive ? "bg-muted text-primary" : "hover:bg-muted",
       collapsed && "justify-center px-0",
     );
 
@@ -55,12 +55,12 @@ export function ComponentNav() {
         collapsed ? "w-16" : "w-54",
       )}
     >
-      <div className="absolute bottom-4 left-0 flex items-center justify-between px-4">
+      <div className="absolute bottom-4 left-2 flex items-center justify-between">
         <Button
           variant="ghost"
           size="icon"
           onClick={toggleCollapsed}
-          className={cn("h-8 w-8 shrink-0", collapsed && "mx-auto")}
+          className={cn("size-8 shrink-0", collapsed && "mx-auto")}
           title={collapsed ? "Expand navigation" : "Collapse navigation"}
         >
           {collapsed ? (
@@ -71,7 +71,7 @@ export function ComponentNav() {
         </Button>
       </div>
 
-      <nav className="flex flex-1 flex-col gap-4 p-2">
+      <nav className="flex flex-1 flex-col gap-4 px-2 py-4">
         <div className="flex flex-col gap-2">
           <Link
             href={galleryPath}
@@ -80,7 +80,7 @@ export function ComponentNav() {
           >
             <LayoutGrid
               className={cn("text-muted-foreground size-4 shrink-0", {
-                "text-primary-foreground": isGalleryActive,
+                "text-primary": isGalleryActive,
               })}
             />
             {!collapsed && (
@@ -90,10 +90,9 @@ export function ComponentNav() {
             )}
           </Link>
         </div>
-        <div className="flex flex-col gap-2">
-          <Separator />
+        <Separator />
+        <div className="flex flex-col gap-1">
           {componentsRegistry.map((component) => {
-            const Icon = component.icon;
             const isActive = pathname === component.path;
 
             return (
@@ -103,16 +102,9 @@ export function ComponentNav() {
                 className={buildLinkClasses(isActive)}
                 title={collapsed ? component.label : undefined}
               >
-                <Icon
-                  className={cn("text-muted-foreground size-4 shrink-0", {
-                    "text-primary-foreground": isActive,
-                  })}
-                />
                 {!collapsed && (
                   <div className="flex flex-col overflow-hidden">
-                    <span className="truncate font-medium">
-                      {component.label}
-                    </span>
+                    <span className="truncate">{component.label}</span>
                   </div>
                 )}
               </Link>

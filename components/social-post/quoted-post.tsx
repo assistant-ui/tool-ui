@@ -48,14 +48,14 @@ export function QuotedPost() {
               />
             ) : null}
             {handle ? (
-              <span className={cn("text-muted-foreground truncate text-lg")}>
+              <span className={cn("text-muted-foreground truncate")}>
                 {handle}
               </span>
             ) : null}
             {quotedPost.createdAtISO ? (
               <>
                 <span className="text-muted-foreground">·</span>
-                <span className={cn("text-muted-foreground text-lg")}>
+                <span className={cn("text-muted-foreground text-sm")}>
                   {formatRelativeTime(quotedPost.createdAtISO, locale)}
                 </span>
               </>
@@ -64,9 +64,7 @@ export function QuotedPost() {
         </div>
       </div>
 
-      {quotedPost.text ? (
-        <div className="mt-2 text-lg leading-snug">{quotedPost.text}</div>
-      ) : null}
+      {quotedPost.text ? <div>{quotedPost.text}</div> : null}
 
       {quotedPost.media && quotedPost.media.length > 0 ? (
         <div className="mt-2">
