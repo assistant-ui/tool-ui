@@ -1,6 +1,6 @@
 import type { Platform } from "./schema";
 import type { LucideIcon } from "lucide-react";
-import { MessageCircle, Repeat2, Heart, Share, Bookmark, MoreHorizontal, Send } from "lucide-react";
+import { MessageCircle, Repeat2, Heart, Share, Bookmark, MoreHorizontal, Send, BarChart3 } from "lucide-react";
 
 export interface PlatformTypography {
   name: string;
@@ -84,7 +84,7 @@ export const PLATFORM: Record<Platform, PlatformConfig> = {
       actionLayout: "row",
       typography: {
         name: "text-base font-semibold",
-        handle: "text-sm text-muted-foreground",
+        handle: "text-base text-muted-foreground",
         body: "text-base leading-snug",
         stats: "text-xs text-muted-foreground",
         bodyLineHeight: "leading-snug",
@@ -120,16 +120,18 @@ export const PLATFORM: Record<Platform, PlatformConfig> = {
       reply: "Reply",
       repost: "Repost",
       like: "Like",
-      share: "Share",
+      views: "Views",
       bookmark: "Bookmark",
+      share: "Share",
       menu: "More",
     },
     actionConfigs: [
       { id: "reply", label: "Reply", icon: MessageCircle, hoverColor: "hover:bg-blue-500/10 hover:text-blue-500" },
       { id: "repost", label: "Repost", icon: Repeat2, hoverColor: "hover:bg-green-500/10 hover:text-green-500" },
       { id: "like", label: "Like", icon: Heart, hoverColor: "hover:bg-red-500/10 hover:text-red-500" },
-      { id: "share", label: "Share", icon: Share, hoverColor: "hover:bg-blue-500/10 hover:text-blue-500" },
+      { id: "views", label: "Views", icon: BarChart3, hoverColor: "hover:bg-blue-500/10 hover:text-blue-500" },
       { id: "bookmark", label: "Bookmark", icon: Bookmark, hoverColor: "hover:bg-blue-500/10 hover:text-blue-500" },
+      { id: "share", label: "Share", icon: Share, hoverColor: "hover:bg-blue-500/10 hover:text-blue-500" },
       { id: "menu", label: "More", icon: MoreHorizontal, hoverColor: "hover:bg-blue-500/10 hover:text-blue-500" },
     ],
   },

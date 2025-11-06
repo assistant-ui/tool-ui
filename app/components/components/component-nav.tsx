@@ -51,12 +51,12 @@ export function ComponentNav() {
   return (
     <aside
       className={cn(
-        "bg-wash flex shrink-0 flex-col transition-all duration-300",
-        collapsed ? "w-16" : "w-54",
+        "bg-wash flex shrink-0 flex-col transition-all duration-300 h-full",
+        collapsed ? "w-16" : "w-full",
       )}
     >
-      <nav className="flex flex-1 flex-col gap-4 px-4 py-4">
-        <div className="flex flex-col gap-2">
+      <nav className="flex flex-1 flex-col py-4">
+        <div className="flex flex-col gap-2 px-4 mb-4">
           <Link
             href={galleryPath}
             className={buildLinkClasses(isGalleryActive)}
@@ -75,7 +75,7 @@ export function ComponentNav() {
           </Link>
         </div>
         <Separator />
-        <div className="flex flex-col gap-1">
+        <div className="flex flex-col gap-1 px-4 mt-4">
           {componentsRegistry.map((component) => {
             const isActive = pathname === component.path;
 

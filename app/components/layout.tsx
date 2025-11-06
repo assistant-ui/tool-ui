@@ -31,7 +31,7 @@ export default function ComponentsLayout({
         </div>
 
         {/* B1: Tabs */}
-        <div className="bg-background border-b flex items-center px-6 py-3">
+        <div className="bg-background border-b flex items-center justify-between px-6 py-3">
           <nav className="flex items-center gap-1">
             <Link
               href="/"
@@ -67,6 +67,7 @@ export default function ComponentsLayout({
               Builder
             </Link>
           </nav>
+          <ViewportControls viewport={viewport} onViewportChange={setViewport} showThemeToggle />
         </div>
 
         {/* A2: Sidebar Navigation */}
@@ -75,11 +76,9 @@ export default function ComponentsLayout({
         </div>
 
         {/* B2: Main Content */}
-        <div className="overflow-hidden bg-background">
+        <div className="overflow-auto bg-background">
           {children}
         </div>
-
-        <ViewportControls viewport={viewport} onViewportChange={setViewport} />
       </div>
     </ComponentsProvider>
   );

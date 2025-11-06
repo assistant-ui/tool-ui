@@ -25,10 +25,7 @@ export function Actions() {
   const { post, cfg, state, setState, handlers, actionOverrides } =
     useSocialPost();
 
-  let defaults = Object.keys(cfg.actions);
-  if (cfg.name === "x") {
-    defaults = defaults.filter((id) => id === "like" || id === "share");
-  }
+  let defaults = Object.keys(cfg.actions).filter((id) => id !== "menu");
   const serverActions = post.actions ?? [];
   const runtimeOverrides = actionOverrides;
   const runtimeMap = React.useMemo(
@@ -123,6 +120,8 @@ export function Actions() {
         return stats.reposts;
       case "like":
         return stats.likes;
+      case "views":
+        return stats.views;
       case "share":
         return stats.shares;
       case "bookmark":
@@ -141,18 +140,15 @@ export function Actions() {
         className={cn(
           rail
             ? "@container:bottom-6 absolute right-2 bottom-4 flex flex-col"
-            : "mt-3 flex flex-wrap items-center",
+            : "mt-1 flex flex-wrap items-center",
           cfg.tokens.spacing.actionGap,
         )}
       >
-        {resolvedActions.map((action) => {
+        <div className="flex items-center justify-between flex-1">
+          {resolvedActions.slice(0, 4).map((action) => {
           const toggleKey = TOGGLE_MAP[action.id];
           const isActive = toggleKey ? (state[toggleKey] ?? false) : false;
-          const count = (() => {
-            const value = getActionCount(action.id);
-            if (cfg.name === "x" && action.id !== "like") return undefined;
-            return value;
-          })();
+          const count = getActionCount(action.id);
           const FallbackIcon = action.fallbackIcon;
           const iconNode = action.icon ? (
             <span
@@ -164,8 +160,7 @@ export function Actions() {
           ) : FallbackIcon ? (
             <FallbackIcon className="h-4 w-4" aria-hidden="true" />
           ) : null;
-          const showLabel =
-            !iconNode || (cfg.name === "x" && action.id === "share");
+          const showLabel = !iconNode;
 
           return (
             <Tooltip key={action.id}>
@@ -178,7 +173,7 @@ export function Actions() {
                     void run(action.id);
                   }}
                   className={cn(
-                    "min-h-11 gap-1.5 px-2",
+                    "h-auto gap-1.5 px-1 py-1",
                     action.hoverColor,
                     isActive && action.id === "like" && "text-red-500",
                     isActive && action.id === "repost" && "text-green-500",
@@ -188,15 +183,11 @@ export function Actions() {
                   aria-pressed={toggleKey ? isActive : undefined}
                 >
                   {iconNode}
-                  {count !== undefined && count > 0 ? (
+                  {count !== undefined ? (
                     <span className="text-sm">{count}</span>
                   ) : null}
                   {showLabel ? (
-                    <span className="text-sm">
-                      {cfg.name === "x" && action.id === "share"
-                        ? "Copy link"
-                        : action.label}
-                    </span>
+                    <span className="text-sm">{action.label}</span>
                   ) : null}
                   <span className="sr-only">
                     {action.srLabel ?? action.label}
@@ -216,6 +207,68 @@ export function Actions() {
             </Tooltip>
           );
         })}
+        </div>
+        <div className="flex items-center">
+          {resolvedActions.slice(4).map((action, index) => {
+          const toggleKey = TOGGLE_MAP[action.id];
+          const isActive = toggleKey ? (state[toggleKey] ?? false) : false;
+          const FallbackIcon = action.fallbackIcon;
+          const iconNode = action.icon ? (
+            <span
+              aria-hidden
+              className="flex h-4 w-4 items-center justify-center"
+            >
+              {action.icon}
+            </span>
+          ) : FallbackIcon ? (
+            <FallbackIcon className="h-4 w-4" aria-hidden="true" />
+          ) : null;
+          const showLabel = !iconNode;
+
+          return (
+            <Tooltip key={action.id}>
+              <TooltipTrigger asChild>
+                <Button
+                  variant={action.variant}
+                  size="sm"
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    void run(action.id);
+                  }}
+                  className={cn(
+                    "h-auto gap-1.5 px-1 py-1",
+                    action.hoverColor,
+                    isActive && action.id === "like" && "text-red-500",
+                    isActive && action.id === "repost" && "text-green-500",
+                    index > 0 && "-ml-2",
+                  )}
+                  aria-label={action.srLabel ?? action.label}
+                  aria-keyshortcuts={action.hotkey}
+                  aria-pressed={toggleKey ? isActive : undefined}
+                >
+                  {iconNode}
+                  {showLabel ? (
+                    <span className="text-sm">{action.label}</span>
+                  ) : null}
+                  <span className="sr-only">
+                    {action.srLabel ?? action.label}
+                  </span>
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <div className="flex items-center gap-2">
+                  <span>{action.label}</span>
+                  {action.hotkey ? (
+                    <kbd className="bg-muted text-muted-foreground rounded px-1 text-xs font-medium tracking-wide uppercase">
+                      {action.hotkey}
+                    </kbd>
+                  ) : null}
+                </div>
+              </TooltipContent>
+            </Tooltip>
+          );
+        })}
+        </div>
       </div>
     </TooltipProvider>
   );

@@ -232,7 +232,7 @@ export function DemoChat() {
                     "https://images.unsplash.com/photo-1504389273929-44baec1307d2?auto=format&fit=crop&q=80&w=1200",
                   domain: "assistant-ui.com",
                 },
-                stats: { likes: 0, shares: 0 },
+                stats: { comments: 0, reposts: 0, likes: 0, views: 0, shares: 0, bookmarks: 0 },
                 createdAtISO: "2025-11-05T09:15:00.000Z",
               },
             },
@@ -253,7 +253,7 @@ export function DemoChat() {
               decision: {
                 prompt: "What would you like to do with this post?",
                 actions: [
-                  { id: "edit", label: "Edit", variant: "ghost" },
+                  { id: "edit", label: "Edit", variant: "outline" },
                   { id: "send", label: "Send", variant: "default" },
                 ],
                 align: "left",

@@ -33,7 +33,7 @@ export function Body() {
   return (
     <div
       className={cn(
-        "mt-3 break-words whitespace-pre-wrap",
+        "break-words whitespace-pre-wrap",
         cfg.tokens.typography.body,
         cfg.tokens.typography.bodyLineHeight,
         isClamped && "line-clamp-[var(--social-post-clamp)]",

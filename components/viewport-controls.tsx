@@ -11,11 +11,13 @@ export type ViewportSize = "mobile" | "desktop";
 type ViewportControlsProps = {
   viewport: ViewportSize;
   onViewportChange: (viewport: ViewportSize) => void;
+  showThemeToggle?: boolean;
 };
 
 export function ViewportControls({
   viewport,
   onViewportChange,
+  showThemeToggle = false,
 }: ViewportControlsProps) {
   const { setTheme, resolvedTheme } = useTheme();
   const [mounted, setMounted] = React.useState(false);
@@ -31,24 +33,24 @@ export function ViewportControls({
   };
 
   return (
-    <div className="fixed top-4 right-4 z-20">
-      <div className="bg-background shadow-crisp-edge flex gap-1 rounded-full rounded-md border shadow-sm">
-        <Button
-          variant={viewport === "mobile" ? "secondary" : "ghost"}
-          size="icon"
-          onClick={() => onViewportChange("mobile")}
-          title="Mobile view"
-        >
-          <Smartphone className="h-4 w-4" />
-        </Button>
-        <Button
-          variant={viewport === "desktop" ? "secondary" : "ghost"}
-          size="icon"
-          onClick={() => onViewportChange("desktop")}
-          title="Desktop view"
-        >
-          <Monitor className="h-4 w-4" />
-        </Button>
+    <div className="bg-background shadow-crisp-edge flex gap-1 rounded-full rounded-md border shadow-sm">
+      <Button
+        variant={viewport === "mobile" ? "secondary" : "ghost"}
+        size="icon"
+        onClick={() => onViewportChange("mobile")}
+        title="Mobile view"
+      >
+        <Smartphone className="h-4 w-4" />
+      </Button>
+      <Button
+        variant={viewport === "desktop" ? "secondary" : "ghost"}
+        size="icon"
+        onClick={() => onViewportChange("desktop")}
+        title="Desktop view"
+      >
+        <Monitor className="h-4 w-4" />
+      </Button>
+      {showThemeToggle && (
         <Button
           variant="ghost"
           size="icon"
@@ -72,7 +74,7 @@ export function ViewportControls({
           />
           <span className="sr-only">Toggle theme</span>
         </Button>
-      </div>
+      )}
     </div>
   );
 }

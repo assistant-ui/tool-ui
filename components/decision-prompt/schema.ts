@@ -5,7 +5,7 @@ export const DecisionPromptActionSchema = z.object({
   id: z.string().min(1),
   label: z.string().min(1),
   confirmLabel: z.string().optional(),
-  variant: z.enum(["default", "destructive", "secondary", "ghost"]).optional(),
+  variant: z.enum(["default", "destructive", "secondary", "ghost", "outline"]).optional(),
   icon: z.custom<ReactNode>().optional(),
   loading: z.boolean().optional(),
   disabled: z.boolean().optional(),

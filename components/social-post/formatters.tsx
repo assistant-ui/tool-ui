@@ -13,28 +13,27 @@ export function formatRelativeTime(iso?: string, locale = "en-US") {
   const dateMs = new Date(iso).getTime();
   if (Number.isNaN(dateMs)) return undefined;
   const now = Date.now();
-  const diffSeconds = Math.round((dateMs - now) / 1000);
+  const diffSeconds = Math.round((now - dateMs) / 1000);
   const absSeconds = Math.abs(diffSeconds);
-  const rtf = new Intl.RelativeTimeFormat(locale, { numeric: "auto" });
 
-  const table: Array<{ limit: number; divisor: number; unit: Intl.RelativeTimeFormatUnit }> = [
-    { limit: 60, divisor: 1, unit: "second" },
-    { limit: 3600, divisor: 60, unit: "minute" },
-    { limit: 86400, divisor: 3600, unit: "hour" },
-    { limit: 604800, divisor: 86400, unit: "day" },
-    { limit: 2629800, divisor: 604800, unit: "week" },
-    { limit: 31557600, divisor: 2629800, unit: "month" },
+  const table: Array<{ limit: number; divisor: number; unit: string }> = [
+    { limit: 60, divisor: 1, unit: "s" },
+    { limit: 3600, divisor: 60, unit: "m" },
+    { limit: 86400, divisor: 3600, unit: "h" },
+    { limit: 604800, divisor: 86400, unit: "d" },
+    { limit: 2629800, divisor: 604800, unit: "w" },
+    { limit: 31557600, divisor: 2629800, unit: "mo" },
   ];
 
   for (const entry of table) {
     if (absSeconds < entry.limit) {
-      const value = Math.round(diffSeconds / entry.divisor);
-      return rtf.format(value, entry.unit);
+      const value = Math.round(absSeconds / entry.divisor);
+      return `${value}${entry.unit}`;
     }
   }
 
-  const years = Math.round(diffSeconds / 31557600);
-  return rtf.format(years, "year");
+  const years = Math.round(absSeconds / 31557600);
+  return `${years}y`;
 }
 
 export type TextPart = { type: "text" | "url" | "mention" | "hashtag"; value: string };
