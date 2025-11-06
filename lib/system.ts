@@ -18,6 +18,7 @@ When creating a tool UI widget:
 3. **ONLY modify** the \`render\` function body in \`components/demo-tool-ui.tsx\`
 4. Add imports at the top if needed for additional Shadcn components
 5. Keep the \`makeAssistantToolUI\` wrapper structure unchanged
+6. You can update the \`args\` and \`result\` types to match the tool you're building
 
 The widget will automatically display in the preview pane.
 
@@ -65,8 +66,8 @@ import { Button } from "@/components/ui/button"
 // Add more imports here as needed
 
 const DemoToolUI = makeAssistantToolUI<
-  Record<string, any>,
-  {}
+  Record<string, any>, // args type
+  {} // result type
 >({
   toolName: "demo_tool",
   render: ({ args, result }) => {
@@ -178,11 +179,16 @@ import { useState, useEffect } from "react";
 const socialIcons = [MessageCircle, Repeat2, Heart, BarChart3];
 
 const ProposeTweetToolUI = makeAssistantToolUI<
-  { body: string },
-  { status: "approved" | "rejected"; approvedTweet: string }
+  {
+    body: string;
+  },
+  {
+    status: "approved" | "rejected";
+    approvedTweet?: string;
+  }
 >({
   toolName: "proposeTweet",
-  render: ({ args, result, addResult }) => {
+  render: function ProposeTweetToolUI({ args, result, addResult }) {
     const [editedText, setEditedText] = useState(args?.body || "");
     const [isEditing, setIsEditing] = useState(false);
     const [hasEdited, setHasEdited] = useState(false);
@@ -208,29 +214,34 @@ const ProposeTweetToolUI = makeAssistantToolUI<
       addResult({ status: "approved", approvedTweet: editedText });
     };
 
+    const handleReject = () => {
+      addResult({ status: "rejected" });
+    };
+
     return (
       <div className="mx-2 mb-4 space-y-3">
         <div className="text-base">
-          Here's a draft post for X. Review and approve it before posting.
+          Here&apos;s a draft post for X. Review and approve it before posting.
         </div>
 
         <div className="max-w-[600px]">
           <article
             className={\`rounded-xl border bg-card p-3 \$\{
               isApproved ? "border-green-500" : "border-border"
-            }\`}
+            \}\`}
           >
             <div className="flex gap-3">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                alt="Simon Farshid"
+                alt="User"
                 className="h-10 w-10 shrink-0 rounded-full"
-                src="https://api.dicebear.com/7.x/initials/svg?seed=Simon%20Farshid&backgroundColor=1e293b"
+                src="https://api.dicebear.com/7.x/initials/svg?seed=User&backgroundColor=1e293b"
               />
 
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-1">
-                  <span className="font-semibold">Simon Farshid</span>
-                  <span className="text-muted-foreground">@simonfarshid</span>
+                  <span className="font-semibold">User</span>
+                  <span className="text-muted-foreground">@user</span>
                 </div>
 
                 {isEditing ? (
@@ -239,6 +250,7 @@ const ProposeTweetToolUI = makeAssistantToolUI<
                     onChange={(e) => setEditedText(e.target.value)}
                     className="mt-2 min-h-[80px]"
                     placeholder="What's happening?"
+                    maxLength={280}
                   />
                 ) : (
                   <>
@@ -285,9 +297,9 @@ const ProposeTweetToolUI = makeAssistantToolUI<
                   variant="ghost"
                   size="sm"
                   className="rounded-full"
-                  onClick={handleCancel}
+                  onClick={handleReject}
                 >
-                  Cancel
+                  Reject
                 </Button>
                 <Button
                   variant="outline"
