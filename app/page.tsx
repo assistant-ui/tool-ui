@@ -325,7 +325,7 @@ const ResizableChat = memo(function ResizableChat({
             minSize={CHAT_VERTICAL_MIN_SIZE}
             maxSize={CHAT_VERTICAL_MAX_SIZE}
           >
-            <div className="bg-background border-border pointer-events-auto flex h-full w-full overflow-hidden border-2 border-dashed transition-all">
+            <div className="bg-background border-border pointer-events-auto flex h-full w-full overflow-hidden rounded-lg border-2 border-dashed transition-all">
               <DemoChat />
             </div>
           </Panel>

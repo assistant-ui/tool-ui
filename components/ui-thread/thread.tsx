@@ -13,7 +13,7 @@ export const Thread: FC = () => {
   return (
     <ThreadPrimitive.Root className="flex h-full flex-1 flex-col">
       {/* Messages Viewport */}
-      <ThreadPrimitive.Viewport className="relative flex flex-1 flex-col overflow-y-auto px-8">
+      <ThreadPrimitive.Viewport className="relative flex flex-1 flex-col overflow-y-auto px-4">
         {/* Messages */}
         <ThreadPrimitive.Messages
           components={{
