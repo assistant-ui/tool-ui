@@ -149,85 +149,85 @@ function HomePageContent({ showLogoDebug }: { showLogoDebug: boolean }) {
     ((chatPanelSize - CHAT_MIN_SIZE) / (CHAT_MAX_SIZE - CHAT_MIN_SIZE)) * 2.0;
 
   return (
-    <div className="bg-background grid h-screen grid-cols-[minmax(200px,240px)_1fr] grid-rows-[auto_1fr]">
-      {/* A1: Logo - centered */}
-      <div className="bg-background flex items-center justify-start px-6 py-3">
-        <Link href="/">
-          <h1 className="text-xl font-semibold tracking-wide">tool-ui.com</h1>
-        </Link>
-      </div>
-
-      {/* B1: Tabs */}
-      <div className="bg-background flex items-center justify-between px-6 py-3">
-        <nav className="flex items-center gap-1">
-          <Link
-            href="/"
-            className={cn(
-              "rounded-lg px-4 py-2 text-sm font-medium transition-colors",
-              isHome
-                ? "bg-muted text-foreground"
-                : "text-muted-foreground hover:text-foreground hover:bg-muted/50",
-            )}
-          >
-            Home
+    <div className="bg-background flex h-screen flex-col">
+      {/* Header with logo and tabs */}
+      <div className="bg-background flex">
+        <div className="flex w-fit shrink-0 items-center justify-start px-6 py-3">
+          <Link href="/">
+            <h1 className="text-xl font-semibold tracking-wide">tool-ui.com</h1>
           </Link>
-          <Link
-            href="/components"
-            className={cn(
-              "rounded-lg px-4 py-2 text-sm font-medium transition-colors",
-              isComponents
-                ? "bg-muted text-foreground"
-                : "text-muted-foreground hover:text-foreground hover:bg-muted/50",
-            )}
-          >
-            Components
-          </Link>
-          <Link
-            href="/builder"
-            className={cn(
-              "rounded-lg px-4 py-2 text-sm font-medium transition-colors",
-              isBuilder
-                ? "bg-muted text-foreground"
-                : "text-muted-foreground hover:text-foreground hover:bg-muted/50",
-            )}
-          >
-            Builder
-          </Link>
-        </nav>
-        <div className="flex items-center gap-4">
-          <ViewportControls
-            viewport={viewport}
-            onViewportChange={changeViewport}
-            showThemeToggle
-            showViewportButtons
-          />
-          <div className="flex items-center">
-            <Button variant="ghost" size="icon" asChild>
-              <Link
-                href="https://github.com/assistant-ui/tool-ui"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <FaGithub className="size-5" />
-                <span className="sr-only">GitHub Repository</span>
-              </Link>
-            </Button>
-            <Button variant="ghost" size="icon" asChild>
-              <Link
-                href="https://x.com/assistantui"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <FaXTwitter className="size-5" />
-                <span className="sr-only">X (Twitter)</span>
-              </Link>
-            </Button>
+        </div>
+        <div className="flex flex-1 items-center justify-between px-6 py-3">
+          <nav className="flex items-center gap-1">
+            <Link
+              href="/"
+              className={cn(
+                "rounded-lg px-4 py-2 text-sm font-medium transition-colors",
+                isHome
+                  ? "bg-muted text-foreground"
+                  : "text-muted-foreground hover:text-foreground hover:bg-muted/50",
+              )}
+            >
+              Home
+            </Link>
+            <Link
+              href="/components"
+              className={cn(
+                "rounded-lg px-4 py-2 text-sm font-medium transition-colors",
+                isComponents
+                  ? "bg-muted text-foreground"
+                  : "text-muted-foreground hover:text-foreground hover:bg-muted/50",
+              )}
+            >
+              Components
+            </Link>
+            <Link
+              href="/builder"
+              className={cn(
+                "rounded-lg px-4 py-2 text-sm font-medium transition-colors",
+                isBuilder
+                  ? "bg-muted text-foreground"
+                  : "text-muted-foreground hover:text-foreground hover:bg-muted/50",
+              )}
+            >
+              Builder
+            </Link>
+          </nav>
+          <div className="flex items-center gap-4">
+            <ViewportControls
+              viewport={viewport}
+              onViewportChange={changeViewport}
+              showThemeToggle
+              showViewportButtons
+            />
+            <div className="flex items-center">
+              <Button variant="ghost" size="icon" asChild>
+                <Link
+                  href="https://github.com/assistant-ui/tool-ui"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <FaGithub className="size-5" />
+                  <span className="sr-only">GitHub Repository</span>
+                </Link>
+              </Button>
+              <Button variant="ghost" size="icon" asChild>
+                <Link
+                  href="https://x.com/assistantui"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <FaXTwitter className="size-5" />
+                  <span className="sr-only">X (Twitter)</span>
+                </Link>
+              </Button>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* A2 & B2: Main content spanning both columns for home */}
-      <main className="bg-background relative col-span-2 flex flex-row items-end justify-center overflow-hidden">
+      {/* Main content */}
+      <main className="bg-background relative flex flex-1 flex-row items-end justify-center overflow-hidden">
         <div
           className="bg-dot-grid pointer-events-none absolute inset-0 opacity-60 dark:opacity-40"
           aria-hidden="true"
