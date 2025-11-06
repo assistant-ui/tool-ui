@@ -344,7 +344,6 @@ export function DataTable<T extends object = RowData>({
    */
   const resolvedLocale = locale ?? DEFAULT_LOCALE;
 
-  // Internal uncontrolled sort state (seed from defaultSort or legacy props)
   const [internalSortBy, setInternalSortBy] = React.useState<
     ColumnKey<T> | undefined
   >(defaultSort?.by);
@@ -352,7 +351,6 @@ export function DataTable<T extends object = RowData>({
     "asc" | "desc" | undefined
   >(defaultSort?.direction);
 
-  // Effective sort is controlled when `sort` is provided
   const sortBy = controlledSort?.by ?? internalSortBy;
   const sortDirection = controlledSort?.direction ?? internalSortDirection;
 
@@ -376,16 +374,14 @@ export function DataTable<T extends object = RowData>({
       let newDirection: "asc" | "desc" | undefined;
 
       if (sortBy === key) {
-        // Same column: cycle through asc → desc → none
         if (sortDirection === "asc") {
           newDirection = "desc";
         } else if (sortDirection === "desc") {
-          newDirection = undefined; // Return to unsorted
+          newDirection = undefined;
         } else {
           newDirection = "asc";
         }
       } else {
-        // Different column: start with ascending
         newDirection = "asc";
       }
 
@@ -477,7 +473,6 @@ export function DataTable<T extends object = RowData>({
               </DataTableErrorBoundary>
             </div>
           </div>
-          {/* Live region for sort announcements */}
           {sortAnnouncement && (
             <div className="sr-only" aria-live="polite">
               {sortAnnouncement}
@@ -485,14 +480,12 @@ export function DataTable<T extends object = RowData>({
           )}
         </div>
 
-        {/* Mobile card view - uses list semantics for accessibility */}
         <div
           className={cn("flex flex-col gap-3 @md:hidden")}
           role="list"
           aria-label="Data table (mobile card view)"
           aria-describedby="mobile-table-description"
         >
-          {/* Screen reader description */}
           <div id="mobile-table-description" className="sr-only">
             Table data shown as expandable cards. Each card represents one row.
             {columns.length > 0 &&
