@@ -19,7 +19,19 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { useState, type FC } from "react";
+import {
+  InputGroup,
+  InputGroupInput,
+  InputGroupAddon,
+} from "@/components/ui/input-group";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { useState, useEffect, type FC } from "react";
 
 const UserMessage: FC = () => {
   return (
@@ -62,9 +74,19 @@ const MCPModal: FC<{ open: boolean; onOpenChange: (open: boolean) => void }> = (
   onOpenChange,
 }) => {
   const [mcpUrl, setMcpUrl] = useState("");
+  const [transportType, setTransportType] = useState<"http" | "sse">("http");
   const [tools, setTools] = useState<MCPTool[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Auto-detect transport type based on URL
+  useEffect(() => {
+    if (mcpUrl.toLowerCase().endsWith("/sse")) {
+      setTransportType("sse");
+    } else {
+      setTransportType("http");
+    }
+  }, [mcpUrl]);
 
   const loadTools = async () => {
     if (!mcpUrl.trim()) return;
@@ -76,7 +98,10 @@ const MCPModal: FC<{ open: boolean; onOpenChange: (open: boolean) => void }> = (
       const response = await fetch("/api/mcp-tools", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ serverUrl: mcpUrl }),
+        body: JSON.stringify({
+          serverUrl: mcpUrl,
+          transportType,
+        }),
       });
 
       const data = await response.json();
@@ -103,21 +128,33 @@ const MCPModal: FC<{ open: boolean; onOpenChange: (open: boolean) => void }> = (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl max-h-[80vh] flex flex-col">
         <DialogHeader>
-          <DialogTitle>MCP Tools</DialogTitle>
+          <DialogTitle>Import MCP Tool</DialogTitle>
         </DialogHeader>
 
         <div className="flex gap-2 mb-4">
-          <Input
-            placeholder="Enter MCP server URL..."
-            value={mcpUrl}
-            onChange={(e) => setMcpUrl(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                loadTools();
-              }
-            }}
-            className="flex-1"
-          />
+          <InputGroup className="flex-1">
+            <InputGroupInput
+              placeholder="Enter MCP server URL..."
+              value={mcpUrl}
+              onChange={(e) => setMcpUrl(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  loadTools();
+                }
+              }}
+            />
+            <InputGroupAddon align="inline-end" className="pr-1">
+              <Select value={transportType} onValueChange={(value: "http" | "sse") => setTransportType(value)}>
+                <SelectTrigger className="h-6 w-[55px] border-0 text-[11px] px-2 gap-1 shadow-none focus:ring-0 bg-transparent hover:bg-transparent data-[state=open]:bg-transparent">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="http">HTTP</SelectItem>
+                  <SelectItem value="sse">SSE</SelectItem>
+                </SelectContent>
+              </Select>
+            </InputGroupAddon>
+          </InputGroup>
           <Button onClick={loadTools} disabled={loading || !mcpUrl.trim()}>
             {loading ? (
               <>
