@@ -165,7 +165,7 @@ Choose from 3+ options.
 
 ```tsx
 <DecisionPrompt
-  prompt="Choose export format:"
+  prompt="Choose export format"
   actions={[
     { id: "csv", label: "CSV", variant: "secondary" },
     { id: "json", label: "JSON", variant: "secondary" },

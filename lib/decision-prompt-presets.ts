@@ -15,11 +15,12 @@ export type DecisionPromptPresetName =
 
 const binaryPreset: DecisionPromptConfig = {
   prompt: {
-    prompt: "Send this email to 15 participants?",
-    description: "This will notify everyone immediately with the meeting details",
+    prompt: "Mount the 9‑track tape reel?",
+    description:
+      "Loads the next program into core memory. Mind the write‑protect tab.",
     actions: [
       { id: "cancel", label: "Nevermind", variant: "ghost" },
-      { id: "send", label: "Yes, send", variant: "default" },
+      { id: "mount", label: "Mount tape", variant: "default" },
     ],
     align: "right",
   },
@@ -27,28 +28,30 @@ const binaryPreset: DecisionPromptConfig = {
 
 const multiChoicePreset: DecisionPromptConfig = {
   prompt: {
-    prompt: "Choose export format:",
-    description: "Data will be exported with current filters applied",
+    prompt: "Choose your storage medium:",
+    description: "From cards to cloud — pick your era.",
     actions: [
-      { id: "csv", label: "CSV", variant: "secondary" },
-      { id: "json", label: "JSON", variant: "secondary" },
-      { id: "excel", label: "Excel", variant: "secondary" },
-      { id: "pdf", label: "PDF", variant: "secondary" },
+      { id: "cards", label: "Punch cards", variant: "secondary" },
+      { id: "floppy", label: "3.5\" floppy", variant: "secondary" },
+      { id: "zip", label: "Zip disk", variant: "secondary" },
+      { id: "cloud", label: "Cloud", variant: "secondary" },
     ],
     align: "center",
+    layout: "stack",
   },
 };
 
 const destructivePreset: DecisionPromptConfig = {
   prompt: {
-    prompt: "Delete 12 files from the project?",
-    description: "This action cannot be undone. Files will be permanently removed.",
+    prompt: "Format the floppy disk?",
+    description:
+      "This action cannot be undone. All sectors will be erased.",
     actions: [
       { id: "cancel", label: "Cancel", variant: "ghost" },
       {
-        id: "delete",
-        label: "Delete",
-        confirmLabel: "Confirm delete",
+        id: "format",
+        label: "Format",
+        confirmLabel: "Confirm format",
         variant: "destructive",
       },
     ],
@@ -59,8 +62,9 @@ const destructivePreset: DecisionPromptConfig = {
 
 const asyncPreset: DecisionPromptConfig = {
   prompt: {
-    prompt: "Install 3 packages?",
-    description: "npm install lodash react-icons date-fns",
+    prompt: "Install GNU coreutils?",
+    description:
+      "Bringing small, sharp tools from terminals past into today’s shell.",
     actions: [
       { id: "cancel", label: "No, cancel", variant: "ghost" },
       { id: "install", label: "Yes, install", variant: "default" },
@@ -71,15 +75,16 @@ const asyncPreset: DecisionPromptConfig = {
 
 const workflowPreset: DecisionPromptConfig = {
   prompt: {
-    prompt: "Ready to deploy to production?",
-    description: "All tests passed. Choose deployment strategy:",
+    prompt: "Choose your deployment era:",
+    description: "A tour from batch windows to blue/green.",
     actions: [
-      { id: "cancel", label: "Cancel", variant: "ghost" },
-      { id: "canary", label: "Canary release", variant: "secondary" },
+      { id: "batch", label: "Batch window", variant: "ghost" },
+      { id: "ftp", label: "FTP to prod", variant: "secondary" },
       { id: "blue-green", label: "Blue-green", variant: "secondary" },
       { id: "rolling", label: "Rolling update", variant: "default" },
     ],
     align: "right",
+    layout: "stack",
   },
 };
 
@@ -98,9 +103,10 @@ export const decisionPromptPresetDescriptions: Record<
   DecisionPromptPresetName,
   string
 > = {
-  binary: "Simple yes/no confirmation",
-  "multi-choice": "Choose from multiple options",
-  destructive: "Two-stage confirmation for dangerous actions",
-  async: "Action with loading state",
-  workflow: "Multi-option deployment flow",
+  binary: "Simple yes/no with tape-mount nostalgia",
+  "multi-choice": "Storage media, from cards to cloud",
+  destructive: "Two-stage confirmation for destructive formats",
+  async: "Action with loading state (install)",
+  workflow: "Deployment eras from batch to blue/green",
 };
+
