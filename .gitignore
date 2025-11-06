@@ -17,6 +17,7 @@ dist
 # Misc
 .DS_Store
 *.pem
+private
 
 # Debug
 npm-debug.log*
