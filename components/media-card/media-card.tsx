@@ -50,12 +50,12 @@ export function MediaCard(props: MediaCardProps) {
     onAction,
     onBeforeAction,
     onMediaEvent,
-    locale: localeProp,
+    locale: providedLocale,
     ...serializable
   } = props;
 
   const { href: rawHref, source, ...rest } = serializable;
-  const locale = localeProp ?? serializable.locale ?? DEFAULT_LOCALE;
+  const locale = providedLocale ?? DEFAULT_LOCALE;
 
   const sanitizedHref = sanitizeHref(rawHref);
   const sanitizedSourceUrl = sanitizeHref(source?.url);
@@ -74,13 +74,14 @@ export function MediaCard(props: MediaCardProps) {
 
   if (process.env.NODE_ENV !== "production" && cardPayload.kind === "image") {
     if (!(cardPayload.alt && cardPayload.alt.trim())) {
-      console.warn(`[MediaCard] Missing alt text for image card ${cardPayload.id}`);
+      console.warn(
+        `[MediaCard] Missing alt text for image card ${cardPayload.id}`,
+      );
     }
   }
 
-  const [uncontrolledState, setUncontrolledState] = React.useState<MediaCardUIState>(
-    () => defaultState ?? {},
-  );
+  const [uncontrolledState, setUncontrolledState] =
+    React.useState<MediaCardUIState>(() => defaultState ?? {});
   const effectiveState = controlledState ?? uncontrolledState;
 
   const updateState = React.useCallback(
@@ -99,7 +100,8 @@ export function MediaCard(props: MediaCardProps) {
     [controlledState, onStateChange],
   );
 
-  const [mediaElement, setMediaElement] = React.useState<HTMLMediaElement | null>(null);
+  const [mediaElement, setMediaElement] =
+    React.useState<HTMLMediaElement | null>(null);
 
   const resolvedHref = React.useMemo(() => {
     if (cardPayload.kind === "link") {
@@ -131,8 +133,12 @@ export function MediaCard(props: MediaCardProps) {
 
   const isImageCard = cardPayload.kind === "image";
   const isVideoCard = cardPayload.kind === "video";
+  const isAudioCard = cardPayload.kind === "audio";
   const isLinkCard = cardPayload.kind === "link";
-  const cardSpacingClass = isImageCard || isVideoCard || isLinkCard ? "p-0" : DEFAULT_CONTENT_SPACING;
+  const cardSpacingClass =
+    isImageCard || isVideoCard || isLinkCard || isAudioCard
+      ? "p-0"
+      : DEFAULT_CONTENT_SPACING;
   const linkContentPadding = LINK_CONTENT_SPACING;
 
   return (
@@ -146,14 +152,16 @@ export function MediaCard(props: MediaCardProps) {
       <MediaCardProvider value={value}>
         <Card
           className={cn(
-            "@container relative isolate flex min-w-0 flex-col overflow-hidden rounded-xl group w-full",
+            "group @container relative isolate flex w-full min-w-0 flex-col overflow-hidden rounded-xl",
             BASE_CARD_STYLE,
             cardSpacingClass,
             className,
           )}
         >
           {!isLoading && resolvedHref ? (
-            <LinkOverlay label={cardPayload.title ?? cardPayload.domain ?? undefined} />
+            <LinkOverlay
+              label={cardPayload.title ?? cardPayload.domain ?? undefined}
+            />
           ) : null}
           {isLoading ? (
             <div className="relative flex flex-col gap-4">
@@ -168,6 +176,10 @@ export function MediaCard(props: MediaCardProps) {
                 <MediaCardBody />
                 <MediaCardFooter />
               </div>
+            </div>
+          ) : isAudioCard ? (
+            <div className="flex flex-col gap-3 p-3">
+              <MediaFrame />
             </div>
           ) : (
             <div className="relative flex flex-col gap-4">

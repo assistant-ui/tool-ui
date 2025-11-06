@@ -51,7 +51,7 @@ const audioPreset: MediaCardConfig = {
     kind: "audio",
     src: "https://samplelib.com/lib/preview/mp3/sample-6s.mp3",
     title: "Interview snippet",
-    description: "00:30 • PM sync notes captured during the call.",
+    description: "Sync notes captured during the call",
     thumb: "https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=400&auto=format&fit=crop",
     fileSizeBytes: 215040,
     durationMs: 30000,

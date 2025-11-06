@@ -52,7 +52,11 @@ export function MediaCardFooter() {
         timeStyle: isLink ? undefined : "short",
       });
       meta.push(
-        <time key="created" dateTime={card.createdAtISO} title={date.toISOString()}>
+        <time
+          key="created"
+          dateTime={card.createdAtISO}
+          title={date.toISOString()}
+        >
           {formatter.format(date)}
         </time>,
       );
@@ -66,7 +70,7 @@ export function MediaCardFooter() {
   return (
     <div className="flex w-full flex-col gap-3">
       {meta.length > 0 ? (
-        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-muted-foreground">
+        <div className="text-muted-foreground flex flex-wrap items-center gap-x-3 gap-y-1 text-xs">
           {meta.map((node, index) => (
             <React.Fragment key={index}>
               {index > 0 ? (

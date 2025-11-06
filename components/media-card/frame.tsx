@@ -17,11 +17,20 @@ const RATIO_CLASS_MAP: Record<Aspect, string> = {
 };
 
 export function MediaFrame() {
-  const { card, setMediaElement, state, setState, handlers, resolvedSourceUrl } = useMediaCard();
+  const {
+    card,
+    setMediaElement,
+    state,
+    setState,
+    handlers,
+    resolvedSourceUrl,
+  } = useMediaCard();
 
   const ref = React.useRef<HTMLMediaElement | null>(null);
 
-  const ratio = card.ratio ?? (card.kind === "video" || card.kind === "link" ? "16:9" : "auto");
+  const ratio =
+    card.ratio ??
+    (card.kind === "video" || card.kind === "link" ? "16:9" : "auto");
   const fit = card.fit ?? "cover";
   const fitClass = fit === "cover" ? "object-cover" : "object-contain";
 
@@ -53,7 +62,8 @@ export function MediaFrame() {
   if (card.kind === "image") {
     if (!card.src) return null;
     const sourceLabel = card.source?.label ?? card.domain;
-    const sourceUrl = resolvedSourceUrl ?? card.source?.url ?? card.href ?? card.src;
+    const sourceUrl =
+      resolvedSourceUrl ?? card.source?.url ?? card.href ?? card.src;
     const fallbackInitial = (sourceLabel ?? "").trim().charAt(0).toUpperCase();
     const hasSource = Boolean(sourceLabel || card.source?.iconUrl);
     const handleSourceClick = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -78,18 +88,20 @@ export function MediaFrame() {
             decoding="async"
           />
         ) : fallbackInitial ? (
-          <div className="flex h-7 w-7 items-center justify-center rounded-full bg-background/70 text-xs font-semibold uppercase text-foreground">
+          <div className="bg-background/70 text-foreground flex h-7 w-7 items-center justify-center rounded-full font-semibold uppercase">
             {fallbackInitial}
           </div>
         ) : null}
-        {sourceLabel ? <span className="text-xs font-medium text-foreground">{sourceLabel}</span> : null}
+        {sourceLabel ? (
+          <span className="text-foreground font-medium">{sourceLabel}</span>
+        ) : null}
       </div>
     ) : null;
 
     return (
       <div
         className={cn(
-          "relative w-full overflow-hidden rounded-lg bg-muted",
+          "bg-muted relative w-full overflow-hidden rounded-lg",
           ratio !== "auto" ? RATIO_CLASS_MAP[ratio] : "min-h-[160px]",
         )}
       >
@@ -109,12 +121,12 @@ export function MediaFrame() {
             <button
               type="button"
               onClick={handleSourceClick}
-              className="absolute bottom-4 left-4 z-30 inline-flex items-center gap-2 rounded-full border border-border/60 bg-background/80 px-3 py-1.5 text-left text-xs text-foreground shadow-sm backdrop-blur focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              className="border-border/60 bg-background/80 text-foreground focus-visible:ring-ring absolute bottom-4 left-4 z-30 inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-left text-xs shadow-sm backdrop-blur focus-visible:ring-2 focus-visible:outline-none"
             >
               {SourceContent}
             </button>
           ) : (
-            <div className="absolute bottom-4 left-4 z-30 inline-flex items-center gap-2 rounded-full border border-border/60 bg-background/80 px-3 py-1.5 text-xs text-foreground shadow-sm backdrop-blur">
+            <div className="border-border/60 bg-background/80 text-foreground absolute bottom-4 left-4 z-30 inline-flex items-center gap-2 rounded-full border px-3 py-1.5 shadow-sm backdrop-blur">
               {SourceContent}
             </div>
           )
@@ -178,7 +190,7 @@ export function MediaFrame() {
           <>
             <div className="pointer-events-none absolute inset-x-0 top-0 z-20 h-32 bg-gradient-to-b from-black/70 via-black/20 to-transparent opacity-0 transition-opacity duration-200 group-hover:opacity-100" />
             <div className="absolute inset-x-0 top-0 z-30 flex items-start justify-between px-5 pt-4 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
-              <div className="max-w-[70%] text-base font-semibold text-white drop-shadow-sm line-clamp-2">
+              <div className="line-clamp-2 max-w-[70%] font-semibold text-white drop-shadow-sm">
                 {title}
               </div>
               <Button
@@ -200,21 +212,49 @@ export function MediaFrame() {
   if (card.kind === "audio") {
     if (!card.src) return null;
     const thumb = card.thumb ?? card.og?.imageUrl;
+    const showText = Boolean(card.title || card.description);
+    const gridClasses = cn(
+      "grid gap-4",
+      thumb && showText
+        ? "grid-cols-[112px_minmax(0,1fr)]"
+        : thumb
+          ? "grid-cols-[112px]"
+          : "",
+    );
+
     return (
-      <div className="relative flex w-full items-center gap-3 rounded-lg border border-border/60 bg-muted/40 p-3">
-        {thumb ? (
-          <img
-            src={thumb}
-            alt=""
-            aria-hidden="true"
-            loading="lazy"
-            decoding="async"
-            className="relative z-20 h-14 w-14 rounded-md object-cover"
-          />
-        ) : null}
+      <div className="w-full space-y-3">
+        <div className={gridClasses}>
+          {thumb ? (
+            <div className="bg-muted relative h-24 w-full overflow-hidden rounded-md">
+              <img
+                src={thumb}
+                alt=""
+                aria-hidden="true"
+                loading="lazy"
+                decoding="async"
+                className="absolute inset-0 h-full w-full object-cover"
+              />
+            </div>
+          ) : null}
+          {showText ? (
+            <div className="min-w-0 space-y-1 self-center">
+              {card.title ? (
+                <div className="text-foreground line-clamp-2 font-semibold">
+                  {card.title}
+                </div>
+              ) : null}
+              {card.description ? (
+                <div className="text-muted-foreground line-clamp-2">
+                  {card.description}
+                </div>
+              ) : null}
+            </div>
+          ) : null}
+        </div>
         <audio
           ref={ref as React.RefObject<HTMLAudioElement>}
-          className="relative z-20 w-full"
+          className="w-full"
           src={card.src}
           preload="metadata"
           controls
@@ -244,7 +284,7 @@ export function MediaFrame() {
     return (
       <div
         className={cn(
-          "relative w-full overflow-hidden rounded-lg bg-muted",
+          "bg-muted relative w-full overflow-hidden rounded-lg",
           ratio !== "auto" ? RATIO_CLASS_MAP[ratio] : "aspect-[5/3]",
         )}
       >
