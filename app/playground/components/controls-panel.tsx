@@ -201,13 +201,6 @@ export function ControlsPanel({
             )}
           </ItemGroup>
         </TabsContent>
-        <LinearBlur
-          side="bottom"
-          tint="hsl(var(--background) / 0.6)"
-          className="absolute bottom-0 h-20 w-full"
-          strength={100}
-          steps={6}
-        />
       </Tabs>
     </div>
   );
