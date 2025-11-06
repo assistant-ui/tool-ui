@@ -532,20 +532,17 @@ function DataTableEmpty({ message }: { message: string }) {
   const { columns, actions } = useDataTable();
 
   return (
-    <>
-      <DataTableHeader />
-      <TableBody>
-        <TableRow>
-          <TableCell
-            colSpan={columns.length + (actions ? 1 : 0)}
-            role="status"
-            aria-live="polite"
-          >
-            {message}
-          </TableCell>
-        </TableRow>
-      </TableBody>
-    </>
+    <TableBody>
+      <TableRow className="bg-muted/50 h-24 text-center">
+        <TableCell
+          colSpan={columns.length + (actions ? 1 : 0)}
+          role="status"
+          aria-live="polite"
+        >
+          {message}
+        </TableCell>
+      </TableRow>
+    </TableBody>
   );
 }
 

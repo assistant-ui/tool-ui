@@ -226,7 +226,7 @@ export function ClientPreview({ componentId }: { componentId: string }) {
                 steps={6}
               />
               <div className="relative mx-auto">
-                <div className="flex items-center justify-center px-2 pt-4 pb-3">
+                <div className="flex items-center justify-center px-2 pt-6">
                   <TabsList className="bg-primary/5 z-10 gap-2 rounded-lg p-1 backdrop-blur-3xl">
                     <TabsTrigger
                       value="ui"

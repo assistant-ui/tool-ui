@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { DataTable, type Column } from "./index";
 
-
 type StockRow = {
   symbol: string;
   name: string;
@@ -111,7 +110,6 @@ const stockData = [
   },
 ];
 
-
 type TaskRow = {
   title: string;
   status: string;
@@ -213,7 +211,6 @@ const taskData = [
   },
 ];
 
-
 type MetricsRow = {
   endpoint: string;
   p95: number;
@@ -290,7 +287,6 @@ const metricsData = [
   },
 ];
 
-
 type ResourceRow = {
   name: string;
   category: string;
@@ -366,7 +362,6 @@ const resourceData = [
   },
 ];
 
-
 type LayoutRow = {
   id: string;
   description: string;
@@ -441,7 +436,6 @@ const layoutData: LayoutRow[] = [
   },
 ];
 
-
 export function DataTableExample() {
   const [isLoading, setIsLoading] = useState(false);
   const [sort, setSort] = useState<{
@@ -511,7 +505,11 @@ export function DataTableExample() {
         <p className="text-muted-foreground mb-4 text-sm">
           Demonstrates: links, badges, tag arrays, relative dates
         </p>
-        <DataTable rowIdKey="name" columns={resourceColumns} data={resourceData} />
+        <DataTable
+          rowIdKey="name"
+          columns={resourceColumns}
+          data={resourceData}
+        />
       </div>
 
       <div>

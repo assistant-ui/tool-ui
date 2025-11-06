@@ -16,13 +16,7 @@ export const componentsRegistry: ComponentMetadata[] = [
     icon: Table,
     path: "/components/data-table",
   },
-  {
-    id: "social-post",
-    label: "Social Post",
-    description: "Render social media posts from multiple platforms",
-    icon: MessageSquare,
-    path: "/components/social-post",
-  },
+
   {
     id: "media-card",
     label: "Media Card",
@@ -36,6 +30,13 @@ export const componentsRegistry: ComponentMetadata[] = [
     description: "Inline prompts for user decisions and actions",
     icon: CheckCircle2,
     path: "/components/decision-prompt",
+  },
+  {
+    id: "social-post",
+    label: "Social Post",
+    description: "Render social media posts from multiple platforms",
+    icon: MessageSquare,
+    path: "/components/social-post",
   },
 ];
 
