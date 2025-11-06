@@ -65,7 +65,7 @@ export async function POST(req: Request) {
 
     // Choose model based on what's available
     const model = process.env.ANTHROPIC_API_KEY
-      ? anthropic("claude-3-7-sonnet-20250219")
+      ? anthropic("claude-sonnet-4-5-20250929")
       : openai("gpt-4o");
 
     // If we have a repoId and Freestyle is configured, use Freestyle tools

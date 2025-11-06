@@ -13,7 +13,9 @@ import {
 } from "@assistant-ui/react-ai-sdk";
 import { ThreadList } from "@/components/assistant-ui/thread-list";
 import { MarkdownText } from "@/components/assistant-ui/markdown-text";
-import { ArrowUpIcon, Square, Wrench, Loader2, Rocket } from "lucide-react";
+import WebView from "@/components/webview";
+import { ArrowUpIcon, Square, Loader2 } from "lucide-react";
+import { MCPIcon } from "@/components/mcp-icon";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -34,8 +36,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useState, useEffect, type FC } from "react";
-import { createChat, requestDevServer } from "@/lib/freestyle";
-import { FreestyleDevServer } from "freestyle-sandboxes/react/dev-server";
 
 const UserMessage: FC = () => {
   return (
@@ -240,11 +240,7 @@ Please design an intuitive and user-friendly Tool UI component that:
   );
 };
 
-const Composer: FC<{
-  repoId: string | null;
-  onCreateFreestyle: () => void;
-  isCreatingFreestyle: boolean;
-}> = ({ repoId, onCreateFreestyle, isCreatingFreestyle }) => {
+const Composer: FC = () => {
   const [mcpModalOpen, setMcpModalOpen] = useState(false);
 
   return (
@@ -253,45 +249,22 @@ const Composer: FC<{
       <div className="bg-background sticky bottom-0 mx-auto flex w-full max-w-2xl flex-col gap-4 overflow-visible rounded-t-3xl pb-4 md:pb-6">
         <ComposerPrimitive.Root className="group/input-group border-input bg-background has-[textarea:focus-visible]:border-ring has-[textarea:focus-visible]:ring-ring/50 relative flex w-full flex-col rounded-3xl border px-1 pt-2 shadow-xs transition-[color,box-shadow] outline-none has-[textarea:focus-visible]:ring-[3px]">
           <ComposerPrimitive.Input
-            placeholder={
-              repoId
-                ? "Describe the app you want to build..."
-                : "Describe the component you want to build..."
-            }
+            placeholder="Describe the app you want to build..."
             className="placeholder:text-muted-foreground mb-1 max-h-32 min-h-16 w-full resize-none bg-transparent px-3.5 pt-1.5 pb-3 text-base outline-none focus-visible:ring-0"
             rows={1}
             autoFocus
           />
           <div className="relative mx-1 mt-2 mb-2 flex items-center justify-between">
-            <div className="flex gap-1">
-              <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                className="text-muted-foreground hover:text-foreground h-[34px] gap-1.5 rounded-full text-xs"
-                onClick={() => setMcpModalOpen(true)}
-              >
-                <Wrench className="size-3.5" />
-                <span>MCP</span>
-              </Button>
-              {!repoId && (
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  className="text-muted-foreground hover:text-foreground h-[34px] gap-1.5 rounded-full text-xs"
-                  onClick={onCreateFreestyle}
-                  disabled={isCreatingFreestyle}
-                >
-                  {isCreatingFreestyle ? (
-                    <Loader2 className="size-3.5 animate-spin" />
-                  ) : (
-                    <Rocket className="size-3.5" />
-                  )}
-                  <span>Freestyle</span>
-                </Button>
-              )}
-            </div>
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              className="text-muted-foreground hover:text-foreground h-[34px] gap-1.5 rounded-full text-xs"
+              onClick={() => setMcpModalOpen(true)}
+            >
+              <MCPIcon className="size-3.5" />
+              <span>MCP</span>
+            </Button>
             <div className="flex items-center justify-end">
               <ThreadPrimitive.If running={false}>
                 <ComposerPrimitive.Send asChild>
@@ -326,21 +299,13 @@ const Composer: FC<{
   );
 };
 
-const Thread: FC<{
-  repoId: string | null;
-  onCreateFreestyle: () => void;
-  isCreatingFreestyle: boolean;
-}> = ({ repoId, onCreateFreestyle, isCreatingFreestyle }) => {
+const Thread: FC = () => {
   return (
     <ThreadPrimitive.Root className="bg-background flex h-full w-full flex-col">
       <ThreadPrimitive.Viewport className="relative flex flex-1 flex-col overflow-y-auto px-4">
         <ThreadPrimitive.If empty>
           <div className="flex flex-1 items-center justify-center">
-            <Composer
-              repoId={repoId}
-              onCreateFreestyle={onCreateFreestyle}
-              isCreatingFreestyle={isCreatingFreestyle}
-            />
+            <Composer />
           </div>
         </ThreadPrimitive.If>
         <ThreadPrimitive.If empty={false}>
@@ -351,11 +316,7 @@ const Thread: FC<{
             }}
           />
           <div className="min-h-8 grow" />
-          <Composer
-            repoId={repoId}
-            onCreateFreestyle={onCreateFreestyle}
-            isCreatingFreestyle={isCreatingFreestyle}
-          />
+          <Composer />
         </ThreadPrimitive.If>
       </ThreadPrimitive.Viewport>
     </ThreadPrimitive.Root>
@@ -364,28 +325,41 @@ const Thread: FC<{
 
 export default function BuilderPage() {
   const [repoId, setRepoId] = useState<string | null>(null);
-  const [isCreatingFreestyle, setIsCreatingFreestyle] = useState(false);
+  const repoIdRef = useState({ current: repoId })[0];
+
+  // Keep ref in sync with state
+  repoIdRef.current = repoId;
 
   const runtime = useChatRuntime({
     transport: new AssistantChatTransport({
       api: "/api/builder/chat",
-      headers: () => ({
-        "Repo-Id": repoId || "",
-      }),
+      headers: async () => {
+        // Auto-create Freestyle project on first message if not already created
+        if (
+          !repoIdRef.current &&
+          process.env.NEXT_PUBLIC_FREESTYLE_ENABLED !== "false"
+        ) {
+          try {
+            const response = await fetch("/api/builder/create-freestyle", {
+              method: "POST",
+            });
+
+            if (response.ok) {
+              const data = await response.json();
+              setRepoId(data.repoId);
+              repoIdRef.current = data.repoId;
+            }
+          } catch (error) {
+            console.error("Failed to create Freestyle project:", error);
+          }
+        }
+
+        return {
+          "Repo-Id": repoIdRef.current || "",
+        };
+      },
     }),
   });
-
-  const handleCreateFreestyle = async () => {
-    setIsCreatingFreestyle(true);
-    try {
-      const { repoId: newRepoId } = await createChat();
-      setRepoId(newRepoId);
-    } catch (error) {
-      console.error("Failed to create Freestyle project:", error);
-    } finally {
-      setIsCreatingFreestyle(false);
-    }
-  };
 
   return (
     <AssistantRuntimeProvider runtime={runtime}>
@@ -396,20 +370,9 @@ export default function BuilderPage() {
           <ThreadList />
         </div>
         <div className="overflow-hidden">
-          <Thread
-            repoId={repoId}
-            onCreateFreestyle={handleCreateFreestyle}
-            isCreatingFreestyle={isCreatingFreestyle}
-          />
+          <Thread />
         </div>
-        {repoId && (
-          <div className="border-l">
-            <FreestyleDevServer
-              actions={{ requestDevServer }}
-              repoId={repoId}
-            />
-          </div>
-        )}
+        {repoId && <WebView repo={repoId} baseId="" appId={repoId} />}
       </div>
     </AssistantRuntimeProvider>
   );

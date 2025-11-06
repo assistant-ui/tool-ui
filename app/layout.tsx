@@ -6,8 +6,8 @@ import { ThemeProvider } from "@/components/theme-provider";
 
 export const metadata = {
   title: {
-    template: "%s | tool-ui.com",
-    default: "tool-ui.com",
+    template: "%s | Tool UI Directory",
+    default: "Tool UI Directory",
   },
   description: "Open source component library for tool call widgets",
 };

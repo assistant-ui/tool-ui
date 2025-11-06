@@ -256,10 +256,12 @@ export function ClientPreview({ componentId }: { componentId: string }) {
 
         {/* Resizable preview area */}
         <div className="scrollbar-subtle relative flex flex-1 items-center justify-center overflow-auto p-6">
-          <div
-            className="bg-dot-grid pointer-events-none absolute inset-0 opacity-60 dark:opacity-40"
-            aria-hidden="true"
-          />
+          {activeTab === "ui" && (
+            <div
+              className="bg-dot-grid pointer-events-none absolute inset-0 opacity-60 dark:opacity-40"
+              aria-hidden="true"
+            />
+          )}
           {activeTab === "ui" ? (
             <div className="relative h-fit w-full">
               <PanelGroup
