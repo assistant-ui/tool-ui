@@ -11,7 +11,15 @@ import { PlatformLogo } from "./platform-brand";
 import { BadgeCheck } from "lucide-react";
 
 export function Header() {
-  const { post, cfg, locale, state, setState, handlers, allowExternalNavigation } = useSocialPost();
+  const {
+    post,
+    cfg,
+    locale,
+    state,
+    setState,
+    handlers,
+    allowExternalNavigation,
+  } = useSocialPost();
   const handle = post.author.handle
     ? cfg.layout.showHandleWithAt
       ? `@${post.author.handle.replace(/^@/, "")}`
@@ -22,14 +30,21 @@ export function Header() {
     return formatRelativeTime(post.createdAtISO, locale);
   }, [post.createdAtISO, locale]);
   const viewSourceHref = safeHref(post.sourceUrl);
-  const showTime = Boolean(post.createdAtISO && cfg.name !== "x" && relativeTime);
+  const showTime = Boolean(
+    post.createdAtISO && cfg.name !== "x" && relativeTime,
+  );
 
   const timeBlock =
     !showTime || cfg.name === "linkedin" ? null : (
-      <div className={cn("flex flex-wrap items-center gap-1", cfg.tokens.typography.handle)}>
+      <div
+        className={cn(
+          "flex flex-wrap items-center gap-1",
+          cfg.tokens.typography.handle,
+        )}
+      >
         <span aria-hidden="true">·</span>
         <time dateTime={post.createdAtISO} className="sr-only">
-          {new Date(post.createdAtISO).toISOString()}
+          {new Date(post.createdAtISO!).toISOString()}
         </time>
         <span aria-label="Timestamp">{relativeTime}</span>
         {viewSourceHref ? (
@@ -71,20 +86,33 @@ export function Header() {
         {cfg.name === "linkedin" ? (
           <div className="flex min-w-0 flex-col gap-1">
             <div className="flex items-center gap-1">
-              <span id={`post-${post.id}-author`} className={cn("truncate", cfg.tokens.typography.name)}>
+              <span
+                id={`post-${post.id}-author`}
+                className={cn("truncate", cfg.tokens.typography.name)}
+              >
                 {post.author.name}
               </span>
               {post.author.verified ? (
-                <BadgeCheck aria-label="Verified" className={cn("h-4 w-4 shrink-0", cfg.tokens.verified)} />
+                <BadgeCheck
+                  aria-label="Verified"
+                  className={cn("h-4 w-4 shrink-0", cfg.tokens.verified)}
+                />
               ) : null}
             </div>
             {post.author.subtitle ? (
-              <div className={cn("truncate", cfg.tokens.typography.handle)}>{post.author.subtitle}</div>
+              <div className={cn("truncate", cfg.tokens.typography.handle)}>
+                {post.author.subtitle}
+              </div>
             ) : null}
             {showTime ? (
-              <div className={cn("flex flex-wrap items-center gap-1", cfg.tokens.typography.handle)}>
+              <div
+                className={cn(
+                  "flex flex-wrap items-center gap-1",
+                  cfg.tokens.typography.handle,
+                )}
+              >
                 <time dateTime={post.createdAtISO} className="sr-only">
-                  {new Date(post.createdAtISO).toISOString()}
+                  {new Date(post.createdAtISO!).toISOString()}
                 </time>
                 <span aria-label="Timestamp">{relativeTime}</span>
                 {viewSourceHref ? (
@@ -93,7 +121,11 @@ export function Header() {
                     <a
                       href={viewSourceHref}
                       target={allowExternalNavigation ? "_blank" : undefined}
-                      rel={allowExternalNavigation ? "noopener noreferrer" : undefined}
+                      rel={
+                        allowExternalNavigation
+                          ? "noopener noreferrer"
+                          : undefined
+                      }
                       className="underline underline-offset-2"
                       onClick={(event) => {
                         event.stopPropagation();
@@ -110,23 +142,42 @@ export function Header() {
         ) : (
           <>
             <div className="flex items-center gap-1">
-              <span id={`post-${post.id}-author`} className={cn("truncate", cfg.tokens.typography.name)}>
+              <span
+                id={`post-${post.id}-author`}
+                className={cn("truncate", cfg.tokens.typography.name)}
+              >
                 {post.author.name}
               </span>
               {post.author.verified ? (
-                <BadgeCheck aria-label="Verified" className={cn("h-4 w-4 shrink-0", cfg.tokens.verified)} />
+                <BadgeCheck
+                  aria-label="Verified"
+                  className={cn("h-4 w-4 shrink-0", cfg.tokens.verified)}
+                />
               ) : null}
               {handle ? (
-                <span className={cn("truncate", cfg.tokens.typography.handle)}>·</span>
+                <span className={cn("truncate", cfg.tokens.typography.handle)}>
+                  ·
+                </span>
               ) : null}
-              {handle ? <span className={cn("truncate", cfg.tokens.typography.handle)}>{handle}</span> : null}
+              {handle ? (
+                <span className={cn("truncate", cfg.tokens.typography.handle)}>
+                  {handle}
+                </span>
+              ) : null}
               {cfg.layout.showFollowInHeader && !state.following ? (
                 <>
-                  <span className={cn("truncate", cfg.tokens.typography.handle)}>·</span>
+                  <span
+                    className={cn("truncate", cfg.tokens.typography.handle)}
+                  >
+                    ·
+                  </span>
                   <Button
                     variant="ghost"
                     size="sm"
-                    className={cn("h-auto p-0 font-semibold", cfg.tokens.accent)}
+                    className={cn(
+                      "h-auto p-0 font-semibold",
+                      cfg.tokens.accent,
+                    )}
                     onClick={(event) => {
                       event.stopPropagation();
                       setState({ following: true });
@@ -144,7 +195,7 @@ export function Header() {
       <PlatformLogo
         platform={cfg.name}
         color={cfg.tokens.brandColor}
-        className={cn("h-8 w-8 rounded-full bg-muted/10 self-start")}
+        className={cn("bg-muted/10 h-8 w-8 self-start rounded-full")}
       />
     </header>
   );
