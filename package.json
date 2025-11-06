@@ -1,5 +1,5 @@
 {
-  "name": "tool-ui-playground",
+  "name": "tool-ui",
   "version": "0.1.0",
   "private": true,
   "description": "Open source component library for tool call widgets",
