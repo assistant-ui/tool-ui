@@ -205,7 +205,7 @@ export function ClientPreview({ componentId }: { componentId: string }) {
   const [activeTab, setActiveTab] = useState("ui");
 
   return (
-    <div className="flex h-full min-h-0 w-full flex-1">
+    <div className="flex h-full min-h-0 w-full flex-1 overflow-clip rounded-tl-lg border-t border-l">
       <aside className="bg-background scrollbar-subtle flex h-full w-72 shrink-0 flex-col overflow-x-hidden overflow-y-auto border-r">
         <ControlsPanel
           componentId={componentId}
