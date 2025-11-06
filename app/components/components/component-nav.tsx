@@ -55,22 +55,6 @@ export function ComponentNav() {
         collapsed ? "w-16" : "w-54",
       )}
     >
-      <div className="absolute bottom-4 left-2 flex items-center justify-between">
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={toggleCollapsed}
-          className={cn("size-8 shrink-0", collapsed && "mx-auto")}
-          title={collapsed ? "Expand navigation" : "Collapse navigation"}
-        >
-          {collapsed ? (
-            <LucideArrowRightToLine className="size-4" />
-          ) : (
-            <LucideArrowLeftToLine className="size-4" />
-          )}
-        </Button>
-      </div>
-
       <nav className="flex flex-1 flex-col gap-4 px-4 py-4">
         <div className="flex flex-col gap-2">
           <Link

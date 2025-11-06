@@ -28,7 +28,7 @@ const binaryPreset: DecisionPromptConfig = {
 
 const multiChoicePreset: DecisionPromptConfig = {
   prompt: {
-    prompt: "Choose export formats:",
+    prompt: "Choose export formats",
     description: "Select one or more formats to export your data.",
     actions: [
       { id: "csv", label: "CSV", variant: "secondary" },
@@ -36,7 +36,7 @@ const multiChoicePreset: DecisionPromptConfig = {
       { id: "excel", label: "Excel", variant: "secondary" },
       { id: "pdf", label: "PDF", variant: "secondary" },
     ],
-    align: "center",
+    align: "right",
     layout: "stack",
     multiSelect: true,
     minSelections: 1,

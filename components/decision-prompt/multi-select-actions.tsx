@@ -39,7 +39,6 @@ export function MultiSelectActions({
         if (next.has(actionId)) {
           next.delete(actionId);
         } else {
-          // Check max selections
           if (maxSelections && next.size >= maxSelections) {
             return prev;
           }
@@ -82,11 +81,10 @@ export function MultiSelectActions({
 
   return (
     <div className={cn("flex flex-col gap-3", className)}>
-      {/* Selection buttons */}
       <div
         className={cn(
           "flex gap-2.5",
-          isStacked ? "flex-col items-stretch" : "flex-wrap items-center",
+          isStacked ? "flex-col items-stretch gap-1" : "flex-wrap items-center",
           !isStacked && alignClass,
         )}
       >
@@ -94,28 +92,34 @@ export function MultiSelectActions({
           const isSelected = selectedIds.has(action.id);
           const isDisabled = Boolean(
             action.disabled ||
-            isExecuting ||
-            (!isSelected && maxSelections && selectedIds.size >= maxSelections)
+              isExecuting ||
+              (!isSelected &&
+                maxSelections &&
+                selectedIds.size >= maxSelections),
           );
 
           return (
             <Button
               key={action.id}
-              variant={isSelected ? "default" : "secondary"}
+              variant="secondary"
               size="sm"
               onClick={() => toggleSelection(action.id)}
               disabled={isDisabled}
               className={cn(
-                "px-4 py-2 text-sm font-medium transition-all",
-                isStacked ? "w-full justify-start" : "min-w-24",
-                isSelected && "ring-2 ring-offset-2",
+                "min-h-[44px] px-4 py-4 text-sm font-medium transition-all",
+                {
+                  "w-full justify-start": isStacked,
+                  "border-primary/50 bg-primary/5": isSelected,
+                },
               )}
             >
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-3">
                 <div
                   className={cn(
-                    "border-border flex h-4 w-4 items-center justify-center rounded border",
-                    isSelected && "bg-primary border-primary text-primary-foreground",
+                    "flex h-4 w-4 shrink-0 items-center justify-center rounded border-2 transition-colors",
+                    isSelected
+                      ? "border-primary bg-primary text-primary-foreground"
+                      : "border-muted-foreground/40",
                   )}
                 >
                   {isSelected && <Check className="h-3 w-3" />}
@@ -128,14 +132,12 @@ export function MultiSelectActions({
         })}
       </div>
 
-      {/* Confirm/Cancel buttons */}
-      <div className={cn("flex items-center gap-2.5", alignClass)}>
+      <div className={cn("flex items-center gap-4", alignClass)}>
         <Button
           variant="ghost"
           size="sm"
           onClick={handleCancel}
           disabled={isCancelDisabled}
-          className="px-4 py-2 text-sm font-medium"
         >
           {cancelLabel}
         </Button>
@@ -144,7 +146,7 @@ export function MultiSelectActions({
           size="sm"
           onClick={handleConfirm}
           disabled={isConfirmDisabled}
-          className="min-w-24 px-4 py-2 text-sm font-medium"
+          className="min-w-24"
         >
           {isExecuting ? (
             <>
@@ -173,9 +175,7 @@ export function MultiSelectActions({
           ) : (
             <>
               {confirmLabel}
-              {selectedIds.size > 0 && (
-                <span className="ml-1.5 opacity-70">({selectedIds.size})</span>
-              )}
+              {selectedIds.size > 0 && <span>({selectedIds.size})</span>}
             </>
           )}
         </Button>

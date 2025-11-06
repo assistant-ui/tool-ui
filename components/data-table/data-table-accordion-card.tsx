@@ -330,7 +330,7 @@ function SimpleCard({
                 variant={action.variant || "default"}
                 size="sm"
                 onClick={() => handleAction(action)}
-                className="min-h-[44px]"
+                className="min-h-[44px] sm:min-h-auto"
                 aria-label={`${action.label} ${primaryValue}`}
               >
                 {action.label}

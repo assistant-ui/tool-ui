@@ -10,7 +10,7 @@ const imagePreset: MediaCardConfig = {
   card: {
     id: "media-card-image",
     kind: "image",
-    src: "https://images.unsplash.com/photo-1528819622765-d6bcf132f793?w=1200&auto=format&fit=crop",
+    src: "https://images.unsplash.com/photo-1504548840739-580b10ae7715?w=1200&auto=format&fit=crop",
     alt: "Vintage mainframe with blinking lights",
     title: "From mainframes to microchips",
     description:

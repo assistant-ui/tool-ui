@@ -11,7 +11,7 @@ export const sampleX: SocialPostConfig = {
     author: {
       name: "Nick Pattison",
       handle: "thenickpattison",
-      avatarUrl: "https://api.dicebear.com/7.x/avataaars/svg?seed=Nick",
+      avatarUrl: "https://images.unsplash.com/photo-1753288695169-e51f5a3ff24f?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=774",
       verified: true,
     },
     text: "Wild to think: in the 1940s we literally rewired programs by hand. Today, we ship apps worldwide with a single command. From ENIAC to edge — what a ride.",
@@ -33,7 +33,8 @@ export const sampleX: SocialPostConfig = {
         url: "https://www.computerhistory.org/semiconductor/",
         title: "From Tubes to Transistors",
         description: "The invention that powered the information age.",
-        imageUrl: "https://images.unsplash.com/photo-1518779578993-ec3579fee39f?w=600&h=400&fit=crop",
+        imageUrl:
+          "https://images.unsplash.com/photo-1668954729109-165b4aea3416?w=600&h=400&fit=crop",
         domain: "computerhistory.org",
       },
       stats: {
@@ -68,7 +69,7 @@ export const sampleInstagram: SocialPostConfig = {
     author: {
       name: "Alex Rivera",
       handle: "alexrivera",
-      avatarUrl: "https://api.dicebear.com/7.x/avataaars/svg?seed=Alex",
+      avatarUrl: "https://images.unsplash.com/photo-1695840358933-16dd7baa6dfb?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=822",
       verified: true,
     },
     text: "Swipe through: a 1970s terminal, a 1980s home computer, and a 1990s laptop. In a few decades, ‘computer rooms’ fit into backpacks.",
@@ -111,7 +112,7 @@ export const sampleTikTok: SocialPostConfig = {
     author: {
       name: "Jamie Park",
       handle: "@jamiepark",
-      avatarUrl: "https://api.dicebear.com/7.x/avataaars/svg?seed=Jamie",
+      avatarUrl: "https://images.unsplash.com/photo-1751612428149-b7cfb7fe20af?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1044",
       verified: false,
     },
     text: "POV: You boot a 1984 Macintosh. That startup chime still slaps. #retro #vintage #computingHistory",
@@ -150,7 +151,7 @@ export const sampleLinkedIn: SocialPostConfig = {
     author: {
       name: "Dr. Michael Thompson",
       handle: "michaelthompson",
-      avatarUrl: "https://api.dicebear.com/7.x/avataaars/svg?seed=Michael",
+      avatarUrl: "https://images.unsplash.com/photo-1753288695169-e51f5a3ff24f?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=774",
       verified: false,
       subtitle: "VP of Engineering | Systems & Cloud",
     },

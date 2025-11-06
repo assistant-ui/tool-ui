@@ -23,6 +23,7 @@ interface CodePanelProps {
   isLoading?: boolean;
   emptyMessage?: string;
   className?: string;
+  mode?: "details" | "plain";
 }
 
 export function CodePanel({
@@ -38,6 +39,7 @@ export function CodePanel({
   isLoading,
   emptyMessage,
   className,
+  mode = "details",
 }: CodePanelProps) {
   const [copied, setCopied] = useState(false);
 
@@ -280,8 +282,13 @@ export function CodePanel({
 
     // Multi-select mode
     if (prompt.multiSelect) {
-      if (decisionPromptSelectedActions && decisionPromptSelectedActions.length > 0) {
-        props.push(`  selectedActions={${JSON.stringify(decisionPromptSelectedActions)}}`);
+      if (
+        decisionPromptSelectedActions &&
+        decisionPromptSelectedActions.length > 0
+      ) {
+        props.push(
+          `  selectedActions={${JSON.stringify(decisionPromptSelectedActions)}}`,
+        );
       }
 
       if (prompt.align && prompt.align !== "right") {
@@ -361,59 +368,49 @@ export function CodePanel({
   };
 
   return (
-    <div className={className}>
-      <details className="group">
-        <summary className="hover:bg-muted flex cursor-pointer list-none items-center justify-between px-4 py-3 transition-colors [&::-webkit-details-marker]:hidden">
-          <div className="flex items-center gap-3">
-            <Code className="text-muted-foreground h-4 w-4" />
-            <span className="text-sm font-medium">View Code</span>
-          </div>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={(e) => {
-              e.preventDefault();
-              copyCode();
-            }}
-            className="h-8"
-          >
-            {copied ? (
-              <>
-                <Check className="mr-2 h-3.5 w-3.5" />
-                Copied
-              </>
-            ) : (
-              <>
-                <Copy className="mr-2 h-3.5 w-3.5" />
-                Copy
-              </>
-            )}
-          </Button>
-        </summary>
-        <div className="scrollbar-subtle max-h-50dvh overflow-auto">
-          <ShikiHighlighter
-            language="tsx"
-            theme={{ dark: "github-dark-high-contrast", light: "github-light" }}
-            defaultColor="light-dark()"
-            startingLineNumber={1}
-            className="scrollbar-subtle text-sm"
-            style={
-              {
-                padding: "1rem",
-                margin: 0,
-                background: "transparent",
-                overflow: "auto",
-                "--line-numbers-foreground":
-                  "hsl(var(--muted-foreground) / 0.4)",
-                "--line-numbers-width": "2.5ch",
-                "--line-numbers-padding-right": "1.5ch",
-              } as React.CSSProperties
-            }
-          >
-            {code}
-          </ShikiHighlighter>
-        </div>
-      </details>
-    </div>
+    <>
+      <div className="pointer-events-none sticky top-0 z-10 flex h-0 justify-end">
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => copyCode()}
+          className="pointer-events-auto mt-2 mr-6 h-8"
+        >
+          {copied ? (
+            <>
+              <Check className="mr-2 size-3.5" />
+              Copied
+            </>
+          ) : (
+            <>
+              <Copy className="mr-2 size-3.5" />
+              Copy
+            </>
+          )}
+        </Button>
+      </div>
+      <ShikiHighlighter
+        language="tsx"
+        theme={{ dark: "github-dark-dimmed", light: "github-light" }}
+        defaultColor="light-dark()"
+        startingLineNumber={1}
+        showLanguage={false}
+        className="scrollbar-subtle text-sm"
+        style={
+          {
+            padding: "1rem",
+            paddingTop: "3rem",
+            margin: 0,
+            background: "transparent",
+            backgroundColor: "transparent",
+            whiteSpace: "pre-wrap",
+            wordBreak: "break-word",
+            overflowWrap: "anywhere",
+          } as React.CSSProperties
+        }
+      >
+        {code}
+      </ShikiHighlighter>
+    </>
   );
 }

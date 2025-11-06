@@ -113,7 +113,7 @@ export function DecisionPromptActions({
   return (
     <div
       className={cn(
-        "flex gap-2.5",
+        "flex gap-1",
         isStacked ? "flex-col items-stretch" : "flex-wrap items-center",
         !isStacked && alignClass,
         className,
@@ -143,7 +143,7 @@ export function DecisionPromptActions({
             onClick={() => handleActionClick(action)}
             disabled={isDisabled}
             className={cn(
-              "px-4 py-2 text-sm font-medium transition-all",
+              "min-h-[44px] px-4 py-4 text-sm font-medium transition-all sm:min-h-auto",
               isStacked ? "w-full justify-start" : "min-w-24",
               isConfirming &&
                 "ring-destructive animate-pulse ring-2 ring-offset-2",

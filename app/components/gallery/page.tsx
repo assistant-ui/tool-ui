@@ -19,9 +19,9 @@ import { decisionPromptPresets } from "@/lib/decision-prompt-presets";
 export default function ComponentsGalleryPage() {
   return (
     <div className="flex min-h-0 flex-1">
-      <div className="bg-background shadow-crisp-edge scrollbar-subtle flex min-h-0 flex-1 items-start justify-center overflow-auto rounded-lg p-6">
+      <div className="bg-background shadow-crisp-edge scrollbar-subtle flex min-h-0 flex-1 items-start justify-center overflow-auto rounded-lg p-12">
         <div className="mx-auto w-full max-w-6xl">
-          <div className="columns-1 gap-6 [column-fill:_balance] sm:columns-2 lg:columns-3">
+          <div className="columns-1 gap-6 [column-fill:_balance] md:columns-2 lg:columns-3">
             <div className="mb-6 [column-span:all]">
               <DataTable {...sampleStocks} />
             </div>
