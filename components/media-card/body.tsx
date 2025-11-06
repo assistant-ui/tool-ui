@@ -28,13 +28,13 @@ export function MediaCardBody() {
               window.open(resolvedSourceUrl, "_blank", "noopener,noreferrer");
             }
           }}
-          className="relative z-20 w-fit text-xs text-muted-foreground underline-offset-2 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          className="text-muted-foreground focus-visible:ring-ring relative z-20 w-fit text-xs underline-offset-2 hover:underline focus-visible:ring-2 focus-visible:outline-none"
         >
           {card.domain}
         </a>
       ) : null}
       {title ? (
-        <h3 className="text-foreground leading-snug font-medium @lg:text-base">
+        <h3 className="text-foreground text-base font-medium">
           <span className={cn("line-clamp-2")}>{title}</span>
         </h3>
       ) : null}
