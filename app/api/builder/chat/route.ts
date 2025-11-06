@@ -1,16 +1,20 @@
 import { openai } from "@ai-sdk/openai";
-import { streamText, convertToModelMessages } from "ai";
+import { anthropic } from "@ai-sdk/anthropic";
+import { streamText, convertToModelMessages, stepCountIs } from "ai";
 import { checkRateLimit } from "@/lib/rate-limit";
+import { experimental_createMCPClient as createMCPClient } from "@ai-sdk/mcp";
+import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/streamableHttp.js";
+import { requestDevServer } from "@/lib/freestyle";
 
-export const runtime = "edge";
+export const maxDuration = 300;
 
 export async function POST(req: Request) {
   try {
-    if (!process.env.OPENAI_API_KEY) {
+    if (!process.env.OPENAI_API_KEY && !process.env.ANTHROPIC_API_KEY) {
       return new Response(
         JSON.stringify({
           error:
-            "OpenAI API key is not configured. Please set OPENAI_API_KEY in your environment variables.",
+            "API key is not configured. Please set OPENAI_API_KEY or ANTHROPIC_API_KEY in your environment variables.",
         }),
         {
           status: 500,
@@ -45,6 +49,7 @@ export async function POST(req: Request) {
     }
 
     const { messages } = await req.json();
+    const repoId = req.headers.get("Repo-Id");
 
     if (!messages || !Array.isArray(messages)) {
       return new Response(
@@ -58,10 +63,43 @@ export async function POST(req: Request) {
 
     const modelMessages = convertToModelMessages(messages);
 
-    const result = streamText({
-      model: openai("gpt-4o"),
-      messages: modelMessages,
-      system: `You are a helpful UI component builder assistant. You help users design and build user interface components.
+    // Choose model based on what's available
+    const model = process.env.ANTHROPIC_API_KEY
+      ? anthropic("claude-3-7-sonnet-20250219")
+      : openai("gpt-4o");
+
+    // If we have a repoId and Freestyle is configured, use Freestyle tools
+    let tools = {};
+    if (repoId && process.env.FREESTYLE_API_KEY) {
+      try {
+        const { mcpEphemeralUrl } = await requestDevServer({ repoId });
+
+        const devServerMcp = await createMCPClient({
+          transport: new StreamableHTTPClientTransport(
+            new URL(mcpEphemeralUrl),
+          ),
+        });
+
+        tools = await devServerMcp.tools();
+      } catch (error) {
+        console.error("Error setting up Freestyle MCP:", error);
+        // Continue without Freestyle tools if there's an error
+      }
+    }
+
+    const systemPrompt = repoId
+      ? `You are an AI App Builder. The existing app is in the /template directory. Please edit the app how the user wants and commit the changes incrementally.
+
+When building apps:
+- Make incremental changes and commit them
+- Test your changes before committing
+- Write clean, maintainable code
+- Use TypeScript for type safety
+- Follow React and Next.js best practices
+- Be thoughtful about component structure and organization
+
+Be concise, helpful, and focused on creating great applications.`
+      : `You are a helpful UI component builder assistant. You help users design and build user interface components.
 
 Your role is to:
 - Understand user requirements for UI components
@@ -69,9 +107,18 @@ Your role is to:
 - Provide guidance on component structure and styling
 - Help users iterate on their component designs
 
-Be concise, helpful, and focused on creating great user experiences.`,
+Be concise, helpful, and focused on creating great user experiences.`;
+
+    const result = streamText({
+      model,
+      messages: modelMessages,
+      system: systemPrompt,
+      tools,
+      stopWhen: stepCountIs(100),
       temperature: 0.7,
     });
+
+    result.consumeStream();
 
     return result.toUIMessageStreamResponse();
   } catch (error) {
