@@ -16,6 +16,28 @@ const RATIO_CLASS_MAP: Record<Aspect, string> = {
   "9:16": "aspect-[9/16]",
 };
 
+// Extra-fancy eased gradient
+// https://larsenwork.com/easing-gradients/
+const OVERLAY_GRADIENT = `linear-gradient(
+  to bottom,
+  hsl(0, 0%, 0%) 0%,
+  hsla(0, 0%, 0%, 0.987) 8.3%,
+  hsla(0, 0%, 0%, 0.951) 16.6%,
+  hsla(0, 0%, 0%, 0.896) 24.6%,
+  hsla(0, 0%, 0%, 0.825) 32.5%,
+  hsla(0, 0%, 0%, 0.741) 40.1%,
+  hsla(0, 0%, 0%, 0.648) 47.6%,
+  hsla(0, 0%, 0%, 0.55) 54.8%,
+  hsla(0, 0%, 0%, 0.45) 61.7%,
+  hsla(0, 0%, 0%, 0.352) 68.3%,
+  hsla(0, 0%, 0%, 0.259) 74.5%,
+  hsla(0, 0%, 0%, 0.175) 80.4%,
+  hsla(0, 0%, 0%, 0.104) 86%,
+  hsla(0, 0%, 0%, 0.049) 91.1%,
+  hsla(0, 0%, 0%, 0.013) 95.8%,
+  hsla(0, 0%, 0%, 0) 100%
+)` as const;
+
 export function MediaFrame() {
   const {
     card,
@@ -98,7 +120,10 @@ export function MediaFrame() {
         />
         {title || hasSource ? (
           <>
-            <div className="pointer-events-none absolute inset-x-0 top-0 z-20 h-32 bg-gradient-to-b from-black/70 via-black/20 to-transparent opacity-0 transition-opacity duration-200 group-hover:opacity-100" />
+            <div
+              className="pointer-events-none absolute inset-x-0 top-0 z-20 h-32 opacity-0 transition-opacity duration-200 group-hover:opacity-100"
+              style={{ backgroundImage: OVERLAY_GRADIENT }}
+            />
             <div className="absolute inset-x-0 top-0 z-30 flex items-start justify-between gap-3 px-5 pt-4 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
               <div className="flex min-w-0 flex-1 flex-col gap-2">
                 {title ? (
@@ -124,7 +149,7 @@ export function MediaFrame() {
                             decoding="async"
                           />
                         ) : fallbackInitial ? (
-                          <div className="flex h-6 w-6 items-center justify-center rounded-full bg-white/20 text-xs font-semibold uppercase text-white">
+                          <div className="flex h-6 w-6 items-center justify-center rounded-full bg-white/20 text-xs font-semibold text-white uppercase">
                             {fallbackInitial}
                           </div>
                         ) : null}
@@ -147,7 +172,7 @@ export function MediaFrame() {
                           decoding="async"
                         />
                       ) : fallbackInitial ? (
-                        <div className="flex h-6 w-6 items-center justify-center rounded-full bg-white/20 text-xs font-semibold uppercase text-white">
+                        <div className="flex h-6 w-6 items-center justify-center rounded-full bg-white/20 text-xs font-semibold text-white uppercase">
                           {fallbackInitial}
                         </div>
                       ) : null}
@@ -219,7 +244,10 @@ export function MediaFrame() {
         />
         {title ? (
           <>
-            <div className="pointer-events-none absolute inset-x-0 top-0 z-20 h-32 bg-gradient-to-b from-black/70 via-black/20 to-transparent opacity-0 transition-opacity duration-200 group-hover:opacity-100" />
+            <div
+              className="pointer-events-none absolute inset-x-0 top-0 z-20 h-32 opacity-0 transition-opacity duration-200 group-hover:opacity-100"
+              style={{ backgroundImage: OVERLAY_GRADIENT }}
+            />
             <div className="absolute inset-x-0 top-0 z-30 flex items-start justify-between px-5 pt-4 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
               <div className="line-clamp-2 max-w-[70%] font-semibold text-white drop-shadow-sm">
                 {title}

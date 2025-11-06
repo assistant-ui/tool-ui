@@ -10,10 +10,11 @@ const imagePreset: MediaCardConfig = {
   card: {
     id: "media-card-image",
     kind: "image",
-    src: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=1200&auto=format&fit=crop",
+    src: "https://images.unsplash.com/photo-1504198266287-1659872e6590?w=1200&auto=format&fit=crop",
     alt: "Team collaborating on laptops at a wooden desk",
     title: "Design review snapshot",
-    description: "Highlights from the latest feedback session — ready for the next sprint.",
+    description:
+      "Highlights from the latest feedback session — ready for the next sprint.",
     ratio: "4:3",
     domain: "unsplash.com",
     createdAtISO: "2025-02-10T15:30:00.000Z",
@@ -30,7 +31,8 @@ const videoPreset: MediaCardConfig = {
     id: "media-card-video",
     kind: "video",
     src: "https://samplelib.com/lib/preview/mp4/sample-5s.mp4",
-    thumb: "https://images.unsplash.com/photo-1531498860502-7c67cf02f77b?w=900&auto=format&fit=crop",
+    thumb:
+      "https://images.unsplash.com/photo-1733176094181-bc8485500cce?w=900&auto=format&fit=crop",
     title: "Prototype walkthrough",
     description: "2-minute recap of the latest media browsing interactions.",
     ratio: "16:9",
