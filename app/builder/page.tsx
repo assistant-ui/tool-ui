@@ -309,13 +309,7 @@ const MCPModal: FC<{
 **Full Schema:**
 \`\`\`json
 ${JSON.stringify(tool.inputSchema, null, 2)}
-\`\`\`
-
-Please design an intuitive and user-friendly Tool UI component that:
-1. Provides clear input fields for all required parameters
-2. Includes helpful labels and placeholders
-3. Handles validation appropriately
-4. Follows the existing UI patterns in this codebase`;
+\`\`\``;
 
     // Send the message to the current thread
     api.thread().append({
