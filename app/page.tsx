@@ -128,10 +128,10 @@ function HomePageContent({ showLogoDebug }: { showLogoDebug: boolean }) {
           Built on Radix, shadcn/ui, and Tailwind. Open Source.
           <br />
         </p>
-        <Button asChild className="w-fit px-6 py-3" size="lg">
+        <Button asChild className="group w-fit px-6 py-3" size="lg">
           <Link href="/components">
             See the Components
-            <ArrowRight className="size-4 shrink-0" />
+            <ArrowRight className="size-4 shrink-0 transition-transform group-hover:translate-x-1" />
           </Link>
         </Button>
       </div>
