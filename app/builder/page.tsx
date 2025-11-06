@@ -10,9 +10,16 @@ import {
   useChatRuntime,
   AssistantChatTransport,
 } from "@assistant-ui/react-ai-sdk";
-import { ArrowUpIcon, Square } from "lucide-react";
+import { ArrowUpIcon, Square, Wrench, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import type { FC } from "react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { useState, type FC } from "react";
 
 const UserMessage: FC = () => {
   return (
@@ -40,45 +47,188 @@ const AssistantMessage: FC = () => {
   );
 };
 
-const Composer: FC = () => {
-  return (
-    <div className="sticky bottom-0 mx-auto flex w-full max-w-2xl flex-col gap-4 overflow-visible rounded-t-3xl bg-background pb-4 md:pb-6">
-      <ComposerPrimitive.Root className="group/input-group relative flex w-full flex-col rounded-3xl border border-input bg-background px-1 pt-2 shadow-xs transition-[color,box-shadow] outline-none has-[textarea:focus-visible]:border-ring has-[textarea:focus-visible]:ring-[3px] has-[textarea:focus-visible]:ring-ring/50">
-        <ComposerPrimitive.Input
-          placeholder="Describe the component you want to build..."
-          className="mb-1 max-h-32 min-h-16 w-full resize-none bg-transparent px-3.5 pt-1.5 pb-3 text-base outline-none placeholder:text-muted-foreground focus-visible:ring-0"
-          rows={1}
-          autoFocus
-        />
-        <div className="relative mx-1 mt-2 mb-2 flex items-center justify-end">
-          <ThreadPrimitive.If running={false}>
-            <ComposerPrimitive.Send asChild>
-              <Button
-                type="submit"
-                variant="default"
-                size="icon"
-                className="size-[34px] rounded-full p-1"
-              >
-                <ArrowUpIcon className="size-5" />
-              </Button>
-            </ComposerPrimitive.Send>
-          </ThreadPrimitive.If>
+interface MCPTool {
+  name: string;
+  description?: string;
+  inputSchema: {
+    type: string;
+    properties?: Record<string, unknown>;
+    required?: string[];
+  };
+}
 
-          <ThreadPrimitive.If running>
-            <ComposerPrimitive.Cancel asChild>
-              <Button
-                type="button"
-                variant="default"
-                size="icon"
-                className="size-[34px] rounded-full border border-muted-foreground/60 hover:bg-primary/75 dark:border-muted-foreground/90"
-              >
-                <Square className="size-3.5 fill-white dark:fill-black" />
-              </Button>
-            </ComposerPrimitive.Cancel>
-          </ThreadPrimitive.If>
+const MCPModal: FC<{ open: boolean; onOpenChange: (open: boolean) => void }> = ({
+  open,
+  onOpenChange,
+}) => {
+  const [mcpUrl, setMcpUrl] = useState("");
+  const [tools, setTools] = useState<MCPTool[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const loadTools = async () => {
+    if (!mcpUrl.trim()) return;
+
+    setLoading(true);
+    setError(null);
+
+    try {
+      const response = await fetch("/api/mcp-tools", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ serverUrl: mcpUrl }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to fetch tools");
+      }
+
+      setTools(data.tools || []);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to fetch tools");
+      setTools([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGenerateUI = (tool: MCPTool) => {
+    // TODO: Implement UI generation
+    console.log("Generate UI for tool:", tool);
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-2xl max-h-[80vh] flex flex-col">
+        <DialogHeader>
+          <DialogTitle>MCP Tools</DialogTitle>
+        </DialogHeader>
+
+        <div className="flex gap-2 mb-4">
+          <Input
+            placeholder="Enter MCP server URL..."
+            value={mcpUrl}
+            onChange={(e) => setMcpUrl(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                loadTools();
+              }
+            }}
+            className="flex-1"
+          />
+          <Button onClick={loadTools} disabled={loading || !mcpUrl.trim()}>
+            {loading ? (
+              <>
+                <Loader2 className="size-4 animate-spin mr-2" />
+                Loading
+              </>
+            ) : (
+              "Load"
+            )}
+          </Button>
         </div>
-      </ComposerPrimitive.Root>
-    </div>
+
+        {error && (
+          <div className="text-sm text-destructive bg-destructive/10 rounded-md p-3 mb-4">
+            {error}
+          </div>
+        )}
+
+        <div className="flex-1 overflow-y-auto border rounded-md">
+          {tools.length === 0 ? (
+            <div className="flex items-center justify-center h-32 text-muted-foreground text-sm">
+              {loading ? "Loading tools..." : "No tools loaded"}
+            </div>
+          ) : (
+            <div className="divide-y">
+              {tools.map((tool) => (
+                <div
+                  key={tool.name}
+                  className="flex items-center justify-between p-4 hover:bg-muted/50 transition-colors"
+                >
+                  <div className="flex-1 min-w-0 mr-4">
+                    <div className="font-medium text-sm">{tool.name}</div>
+                    {tool.description && (
+                      <div className="text-xs text-muted-foreground mt-1 truncate">
+                        {tool.description}
+                      </div>
+                    )}
+                  </div>
+                  <Button
+                    size="sm"
+                    onClick={() => handleGenerateUI(tool)}
+                    className="shrink-0"
+                  >
+                    Generate UI
+                  </Button>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+const Composer: FC = () => {
+  const [mcpModalOpen, setMcpModalOpen] = useState(false);
+
+  return (
+    <>
+      <MCPModal open={mcpModalOpen} onOpenChange={setMcpModalOpen} />
+      <div className="sticky bottom-0 mx-auto flex w-full max-w-2xl flex-col gap-4 overflow-visible rounded-t-3xl bg-background pb-4 md:pb-6">
+        <ComposerPrimitive.Root className="group/input-group relative flex w-full flex-col rounded-3xl border border-input bg-background px-1 pt-2 shadow-xs transition-[color,box-shadow] outline-none has-[textarea:focus-visible]:border-ring has-[textarea:focus-visible]:ring-[3px] has-[textarea:focus-visible]:ring-ring/50">
+          <ComposerPrimitive.Input
+            placeholder="Describe the component you want to build..."
+            className="mb-1 max-h-32 min-h-16 w-full resize-none bg-transparent px-3.5 pt-1.5 pb-3 text-base outline-none placeholder:text-muted-foreground focus-visible:ring-0"
+            rows={1}
+            autoFocus
+          />
+          <div className="relative mx-1 mt-2 mb-2 flex items-center justify-between">
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              className="h-[34px] rounded-full gap-1.5 text-xs text-muted-foreground hover:text-foreground"
+              onClick={() => setMcpModalOpen(true)}
+            >
+              <Wrench className="size-3.5" />
+              <span>MCP</span>
+            </Button>
+            <div className="flex items-center justify-end">
+              <ThreadPrimitive.If running={false}>
+                <ComposerPrimitive.Send asChild>
+                  <Button
+                    type="submit"
+                    variant="default"
+                    size="icon"
+                    className="size-[34px] rounded-full p-1"
+                  >
+                    <ArrowUpIcon className="size-5" />
+                  </Button>
+                </ComposerPrimitive.Send>
+              </ThreadPrimitive.If>
+
+              <ThreadPrimitive.If running>
+                <ComposerPrimitive.Cancel asChild>
+                  <Button
+                    type="button"
+                    variant="default"
+                    size="icon"
+                    className="size-[34px] rounded-full border border-muted-foreground/60 hover:bg-primary/75 dark:border-muted-foreground/90"
+                  >
+                    <Square className="size-3.5 fill-white dark:fill-black" />
+                  </Button>
+                </ComposerPrimitive.Cancel>
+              </ThreadPrimitive.If>
+            </div>
+          </div>
+        </ComposerPrimitive.Root>
+      </div>
+    </>
   );
 };
 
@@ -88,27 +238,19 @@ const Thread: FC = () => {
       <ThreadPrimitive.Viewport className="relative flex flex-1 flex-col overflow-y-auto px-4">
         <ThreadPrimitive.If empty>
           <div className="flex flex-1 items-center justify-center">
-            <div className="text-center">
-              <div className="mx-auto h-16 w-16 text-green-600 dark:text-green-500 mb-4 flex items-center justify-center">
-                <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="m15 12-8.373 8.373a1 1 0 1 1-3-3L12 9"/>
-                  <path d="m18 15 4-4"/>
-                  <path d="m21.5 11.5-1.914-1.914A2 2 0 0 1 19 8.172V7l-2.26-2.26a6 6 0 0 0-4.202-1.756L9 2.96l.92.82A6.18 6.18 0 0 1 12 8.4V10l2 2h1.172a2 2 0 0 1 1.414.586L18.5 14.5"/>
-                </svg>
-              </div>
-              <h2 className="text-2xl font-semibold mb-2">Builder</h2>
-              <p className="text-muted-foreground mb-8">Build your tool UI components</p>
-            </div>
+            <Composer />
           </div>
         </ThreadPrimitive.If>
-        <ThreadPrimitive.Messages
-          components={{
-            UserMessage,
-            AssistantMessage,
-          }}
-        />
-        <div className="min-h-8 grow" />
-        <Composer />
+        <ThreadPrimitive.If empty={false}>
+          <ThreadPrimitive.Messages
+            components={{
+              UserMessage,
+              AssistantMessage,
+            }}
+          />
+          <div className="min-h-8 grow" />
+          <Composer />
+        </ThreadPrimitive.If>
       </ThreadPrimitive.Viewport>
     </ThreadPrimitive.Root>
   );
