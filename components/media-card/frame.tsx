@@ -282,10 +282,10 @@ export function MediaFrame() {
     );
 
     return (
-      <div className="w-full space-y-3">
+      <div className="flex w-full flex-col gap-3">
         <div className={gridClasses}>
           {thumb ? (
-            <div className="bg-muted relative h-24 w-full overflow-hidden rounded-md">
+            <div className="bg-muted relative size-14 w-full overflow-hidden rounded-md">
               <img
                 src={thumb}
                 alt=""
@@ -313,7 +313,7 @@ export function MediaFrame() {
         </div>
         <audio
           ref={ref as React.RefObject<HTMLAudioElement>}
-          className="w-full"
+          className="h-10 w-full"
           src={card.src}
           preload="metadata"
           controls

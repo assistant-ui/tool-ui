@@ -124,7 +124,7 @@ function HomePageContent({ showLogoDebug }: { showLogoDebug: boolean }) {
           </h2>
         </div>
         <p className="text-muted-foreground mb-2 text-lg">
-          Responsive, accessible, strongly-typed, copy-pasteable. <br />
+          Responsive, accessible, typed, copy-pasteable. <br />
           Built on Radix, shadcn/ui, and Tailwind. Open Source.
           <br />
         </p>
