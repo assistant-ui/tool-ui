@@ -83,7 +83,7 @@ export const Thread: FC = () => {
 
 const UserMessage: FC = () => {
   return (
-    <MessagePrimitive.Root className="mb-4 flex justify-end">
+    <MessagePrimitive.Root className="mb-6 flex justify-end">
       <div className="bg-primary text-primary-foreground max-w-[80%] rounded-lg px-4 py-2 text-sm">
         <MessagePrimitive.Content />
       </div>
@@ -93,17 +93,15 @@ const UserMessage: FC = () => {
 
 const AssistantMessage: FC = () => {
   return (
-    <MessagePrimitive.Root className="mb-4 flex justify-start">
+    <MessagePrimitive.Root className="mb-6 flex justify-start">
       <div className="w-full">
         <MessagePrimitive.Content
           components={{
             Text: ({ text }) => (
-              <div className="bg-muted rounded-lg px-4 py-2 text-sm">
-                {text}
-              </div>
+              <div className="text-sm mb-3">{text}</div>
             ),
             ToolGroup: ({ children }) => (
-              <div className="w-full">{children}</div>
+              <div className="w-full min-w-0 space-y-3">{children}</div>
             ),
           }}
         />
