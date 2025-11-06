@@ -19,7 +19,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       className={`${GeistSans.variable} ${GeistMono.variable}`}
       suppressHydrationWarning
     >
-      <body className="bg-wash flex min-h-screen flex-col">
+      <body className="bg-background flex min-h-screen flex-col">
         <ThemeProvider
           attribute="class"
           defaultTheme="light"
