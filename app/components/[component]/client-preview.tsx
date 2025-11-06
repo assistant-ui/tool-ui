@@ -253,8 +253,12 @@ export function ClientPreview({ componentId }: { componentId: string }) {
         </div>
 
         {/* Resizable preview area */}
-        <div className="flex-1 overflow-auto scrollbar-subtle flex items-center justify-center p-6">
-          <div className="w-full">
+        <div className="relative flex-1 overflow-auto scrollbar-subtle flex items-center justify-center p-6">
+          <div
+            className="bg-dot-grid pointer-events-none absolute inset-0 opacity-60 dark:opacity-40"
+            aria-hidden="true"
+          />
+          <div className="relative w-full h-fit">
             <PanelGroup
               ref={horizontalPanelGroupRef}
               direction="horizontal"
@@ -268,7 +272,7 @@ export function ClientPreview({ componentId }: { componentId: string }) {
               </PanelResizeHandle>
 
               <Panel defaultSize={85} minSize={PREVIEW_MIN_SIZE} maxSize={PREVIEW_MAX_SIZE}>
-                <div className="border-2 border-dashed border-border overflow-hidden transition-all">
+                <div className="bg-background border-2 border-dashed border-border overflow-hidden transition-all">
                 <Tabs value={activeTab} className="flex w-full flex-col"
                       onValueChange={setActiveTab}>
                   <TabsContent
