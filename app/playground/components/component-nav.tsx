@@ -3,7 +3,11 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LucideArrowLeftToLine, LucideArrowRightToLine } from "lucide-react";
+import {
+  LucideArrowLeftToLine,
+  LucideArrowRightToLine,
+  LayoutGrid,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { componentsRegistry } from "@/lib/components-registry";
 import { cn } from "@/lib/utils";
@@ -33,6 +37,16 @@ export function ComponentNav() {
     } catch {}
   };
 
+  const buildLinkClasses = (isActive: boolean) =>
+    cn(
+      "flex items-center gap-3 rounded-md px-3 py-2 text-sm",
+      isActive ? "bg-primary text-primary-foreground" : "hover:bg-muted",
+      collapsed && "justify-center px-0",
+    );
+
+  const galleryPath = "/playground/gallery";
+  const isGalleryActive = pathname.startsWith(galleryPath);
+
   return (
     <aside
       className={cn(
@@ -58,6 +72,18 @@ export function ComponentNav() {
       </div>
 
       <nav className="flex flex-1 flex-col gap-1 p-2">
+        <Link
+          href={galleryPath}
+          className={buildLinkClasses(isGalleryActive)}
+          title={collapsed ? "Gallery" : undefined}
+        >
+          <LayoutGrid className="h-5 w-5 shrink-0" />
+          {!collapsed && (
+            <div className="flex flex-col overflow-hidden">
+              <span className="truncate font-medium">Gallery</span>
+            </div>
+          )}
+        </Link>
         {componentsRegistry.map((component) => {
           const Icon = component.icon;
           const isActive = pathname === component.path;
@@ -66,13 +92,7 @@ export function ComponentNav() {
             <Link
               key={component.id}
               href={component.path}
-              className={cn(
-                "flex items-center gap-3 rounded-md px-3 py-2 text-sm",
-                isActive
-                  ? "bg-primary text-primary-foreground"
-                  : "hover:bg-muted",
-                collapsed && "justify-center px-0",
-              )}
+              className={buildLinkClasses(isActive)}
               title={collapsed ? component.label : undefined}
             >
               <Icon className={cn("h-5 w-5 shrink-0")} />

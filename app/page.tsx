@@ -6,6 +6,7 @@ import {
   useCallback,
   useRef,
   useState,
+  Suspense,
 } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
@@ -33,9 +34,7 @@ const CHAT_LAYOUTS: Record<ViewportSize, [number, number, number]> = {
   desktop: [0, CHAT_MAX_SIZE, 0],
 };
 
-export default function HomePage() {
-  const searchParams = useSearchParams();
-  const showLogoDebug = searchParams.get("logoDebug") === "true";
+function HomePageContent({ showLogoDebug }: { showLogoDebug: boolean }) {
   const [viewport, setViewport] = useState<ViewportSize>("desktop");
   const [chatPanelSize, setChatPanelSize] = useState<number>(
     CHAT_LAYOUTS.desktop[1],
@@ -250,3 +249,17 @@ const ResizableChat = memo(function ResizableChat({
 });
 
 ResizableChat.displayName = "ResizableChat";
+
+function SearchParamsWrapper() {
+  const searchParams = useSearchParams();
+  const showLogoDebug = searchParams.get("logoDebug") === "true";
+  return <HomePageContent showLogoDebug={showLogoDebug} />;
+}
+
+export default function HomePage() {
+  return (
+    <Suspense fallback={<HomePageContent showLogoDebug={false} />}>
+      <SearchParamsWrapper />
+    </Suspense>
+  );
+}
