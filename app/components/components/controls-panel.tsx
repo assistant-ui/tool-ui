@@ -14,12 +14,21 @@ import { PresetSelector } from "./preset-selector";
 import { PresetName } from "@/lib/sample-data";
 import { SocialPostPresetName } from "@/lib/social-post-presets";
 import { MediaCardPresetName } from "@/lib/media-card-presets";
+import { DecisionPromptPresetName } from "@/lib/decision-prompt-presets";
 
 interface ControlsPanelProps {
   componentId: string;
-  currentPreset: PresetName | SocialPostPresetName | MediaCardPresetName;
+  currentPreset:
+    | PresetName
+    | SocialPostPresetName
+    | MediaCardPresetName
+    | DecisionPromptPresetName;
   onSelectPreset: (
-    preset: PresetName | SocialPostPresetName | MediaCardPresetName,
+    preset:
+      | PresetName
+      | SocialPostPresetName
+      | MediaCardPresetName
+      | DecisionPromptPresetName,
   ) => void;
   isLoading: boolean;
   onLoadingChange: (loading: boolean) => void;

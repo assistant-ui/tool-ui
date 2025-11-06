@@ -17,9 +17,18 @@ import {
   MediaCardPresetName,
   mediaCardPresets,
 } from "@/lib/media-card-presets";
+import { DecisionPrompt } from "@/components/registry/decision-prompt";
+import {
+  DecisionPromptPresetName,
+  decisionPromptPresets,
+} from "@/lib/decision-prompt-presets";
 import { useComponents } from "../components-context";
 
-type ComponentPreset = PresetName | SocialPostPresetName | MediaCardPresetName;
+type ComponentPreset =
+  | PresetName
+  | SocialPostPresetName
+  | MediaCardPresetName
+  | DecisionPromptPresetName;
 
 export function ClientPreview({ componentId }: { componentId: string }) {
   const { viewport } = useComponents();
@@ -28,7 +37,9 @@ export function ClientPreview({ componentId }: { componentId: string }) {
       ? "x"
       : componentId === "media-card"
         ? "link"
-        : "stocks",
+        : componentId === "decision-prompt"
+          ? "binary"
+          : "stocks",
   );
   const [isLoading, setIsLoading] = useState(false);
   const [sort, setSort] = useState<SortState>(presets.stocks.defaultSort ?? {});
@@ -36,6 +47,8 @@ export function ClientPreview({ componentId }: { componentId: string }) {
     presets.stocks.emptyMessage ?? "No data available",
   );
   const [mediaCardMaxWidth, setMediaCardMaxWidth] = useState<string>("420px");
+  const [decisionPromptSelectedAction, setDecisionPromptSelectedAction] =
+    useState<string | undefined>();
   const previewContainerRef = useRef<HTMLDivElement | null>(null);
   const previewContentRef = useRef<HTMLDivElement | null>(null);
   const [isPreviewOverflowing, setIsPreviewOverflowing] = useState(false);
@@ -98,6 +111,14 @@ export function ClientPreview({ componentId }: { componentId: string }) {
     [componentId, currentPreset],
   );
 
+  const currentDecisionPromptConfig = useMemo(
+    () =>
+      componentId === "decision-prompt"
+        ? decisionPromptPresets[currentPreset as DecisionPromptPresetName]
+        : undefined,
+    [componentId, currentPreset],
+  );
+
   const handleSelectPreset = useCallback(
     (preset: ComponentPreset) => {
       if (componentId === "data-table") {
@@ -111,6 +132,10 @@ export function ClientPreview({ componentId }: { componentId: string }) {
         setIsLoading(false);
       } else if (componentId === "media-card") {
         setCurrentPreset(preset);
+        setIsLoading(false);
+      } else if (componentId === "decision-prompt") {
+        setCurrentPreset(preset);
+        setDecisionPromptSelectedAction(undefined);
         setIsLoading(false);
       }
     },
@@ -225,6 +250,26 @@ export function ClientPreview({ componentId }: { componentId: string }) {
                 />
               </div>
             )}
+            {componentId === "decision-prompt" && currentDecisionPromptConfig && (
+              <div className="flex justify-center">
+                <div className="w-full max-w-md">
+                  <DecisionPrompt
+                    {...currentDecisionPromptConfig.prompt}
+                    selectedAction={decisionPromptSelectedAction}
+                    onAction={async (actionId) => {
+                      console.log("Decision prompt action:", actionId);
+
+                      // Simulate async for "install" or "send" actions
+                      if (actionId === "install" || actionId === "send") {
+                        await new Promise((resolve) => setTimeout(resolve, 1500));
+                      }
+
+                      setDecisionPromptSelectedAction(actionId);
+                    }}
+                  />
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
@@ -234,6 +279,8 @@ export function ClientPreview({ componentId }: { componentId: string }) {
             config={currentConfig}
             socialPostConfig={currentSocialPostConfig}
             mediaCardConfig={currentMediaCardConfig}
+            decisionPromptConfig={currentDecisionPromptConfig}
+            decisionPromptSelectedAction={decisionPromptSelectedAction}
             mediaCardMaxWidth={mediaCardMaxWidth}
             sort={sort}
             isLoading={isLoading}

@@ -6,6 +6,7 @@ import { Copy, Check, Code } from "lucide-react";
 import { DataTableConfig } from "@/lib/sample-data";
 import { SocialPostConfig } from "@/lib/social-post-presets";
 import { MediaCardConfig } from "@/lib/media-card-presets";
+import { DecisionPromptConfig } from "@/lib/decision-prompt-presets";
 import { ShikiHighlighter } from "react-shiki";
 import "react-shiki/css";
 
@@ -14,6 +15,8 @@ interface CodePanelProps {
   config?: DataTableConfig;
   socialPostConfig?: SocialPostConfig;
   mediaCardConfig?: MediaCardConfig;
+  decisionPromptConfig?: DecisionPromptConfig;
+  decisionPromptSelectedAction?: string;
   mediaCardMaxWidth?: string;
   sort?: { by?: string; direction?: "asc" | "desc" };
   isLoading?: boolean;
@@ -26,6 +29,8 @@ export function CodePanel({
   config,
   socialPostConfig,
   mediaCardConfig,
+  decisionPromptConfig,
+  decisionPromptSelectedAction,
   mediaCardMaxWidth,
   sort,
   isLoading,
@@ -256,6 +261,40 @@ export function CodePanel({
     return `<MediaCard\n${props.join("\n")}\n/>`;
   };
 
+  const generateDecisionPromptCode = () => {
+    if (!decisionPromptConfig) return "";
+    const prompt = decisionPromptConfig.prompt;
+    const props: string[] = [];
+
+    props.push(`  prompt="${prompt.prompt}"`);
+
+    if (prompt.description) {
+      props.push(`  description="${prompt.description}"`);
+    }
+
+    props.push(
+      `  actions={${JSON.stringify(prompt.actions, null, 4).replace(/\n/g, "\n  ")}}`,
+    );
+
+    if (decisionPromptSelectedAction) {
+      props.push(`  selectedAction="${decisionPromptSelectedAction}"`);
+    }
+
+    if (prompt.align && prompt.align !== "right") {
+      props.push(`  align="${prompt.align}"`);
+    }
+
+    if (prompt.confirmTimeout && prompt.confirmTimeout !== 3000) {
+      props.push(`  confirmTimeout={${prompt.confirmTimeout}}`);
+    }
+
+    props.push(
+      `  onAction={(actionId) => {\n    console.log("Action:", actionId);\n    // Handle action here\n  }}`,
+    );
+
+    return `<DecisionPrompt\n${props.join("\n")}\n/>`;
+  };
+
   const generateCode = () => {
     if (componentId === "data-table") {
       return generateDataTableCode();
@@ -263,6 +302,8 @@ export function CodePanel({
       return generateSocialPostCode();
     } else if (componentId === "media-card") {
       return generateMediaCardCode();
+    } else if (componentId === "decision-prompt") {
+      return generateDecisionPromptCode();
     }
     return "";
   };
