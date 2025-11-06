@@ -15,6 +15,8 @@ import { DemoChat } from "@/components/demo-chat";
 import { App as HypercubeCanvas } from "@/components/rotating-hypercube";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
+import { FaGithub } from "react-icons/fa";
+import { FaXTwitter } from "react-icons/fa6";
 import {
   ViewportControls,
   type ViewportSize,
@@ -192,12 +194,36 @@ function HomePageContent({ showLogoDebug }: { showLogoDebug: boolean }) {
             Builder
           </Link>
         </nav>
-        <ViewportControls
-          viewport={viewport}
-          onViewportChange={changeViewport}
-          showThemeToggle
-          showViewportButtons
-        />
+        <div className="flex items-center gap-4">
+          <ViewportControls
+            viewport={viewport}
+            onViewportChange={changeViewport}
+            showThemeToggle
+            showViewportButtons
+          />
+          <div className="flex items-center">
+            <Button variant="ghost" size="icon" asChild>
+              <Link
+                href="https://github.com/assistant-ui/tool-ui"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <FaGithub className="size-5" />
+                <span className="sr-only">GitHub Repository</span>
+              </Link>
+            </Button>
+            <Button variant="ghost" size="icon" asChild>
+              <Link
+                href="https://x.com/assistantui"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <FaXTwitter className="size-5" />
+                <span className="sr-only">X (Twitter)</span>
+              </Link>
+            </Button>
+          </div>
+        </div>
       </div>
 
       {/* A2 & B2: Main content spanning both columns for home */}

@@ -9,7 +9,7 @@ export const metadata = {
     template: "%s | Tool UI Directory",
     default: "Tool UI Directory",
   },
-  description: "Open source component library for tool call widgets",
+  description: "Beautiful UI components for AI tool calls",
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
