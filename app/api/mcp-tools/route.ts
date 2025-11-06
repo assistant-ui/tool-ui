@@ -12,10 +12,6 @@ interface MCPTool {
   };
 }
 
-interface MCPListToolsResponse {
-  tools: MCPTool[];
-}
-
 export async function POST(req: Request) {
   try {
     const { serverUrl, transportType = "http" } = await req.json();

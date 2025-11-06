@@ -7,11 +7,11 @@ import { DecisionPromptReceipt } from "./receipt";
 import { cn } from "./_cn";
 
 export function DecisionPrompt({
-  prompt,
+  prompt: _prompt,
   actions,
   selectedAction,
   selectedActions,
-  description,
+  description: _description,
   onAction = () => {},
   onMultiAction = () => {},
   onBeforeAction,

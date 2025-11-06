@@ -25,7 +25,7 @@ export function Actions() {
   const { post, cfg, state, setState, handlers, actionOverrides } =
     useSocialPost();
 
-  let defaults = Object.keys(cfg.actions).filter((id) => id !== "menu");
+  const defaults = Object.keys(cfg.actions).filter((id) => id !== "menu");
   const serverActions = post.actions ?? [];
   const runtimeOverrides = actionOverrides;
   const runtimeMap = React.useMemo(

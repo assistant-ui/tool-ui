@@ -31,7 +31,7 @@ const useFileSrc = (file: File | undefined) => {
 
   useEffect(() => {
     if (!file) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
+       
       setSrc(undefined);
       return;
     }

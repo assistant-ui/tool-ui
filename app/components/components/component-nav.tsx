@@ -4,11 +4,8 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-  LucideArrowLeftToLine,
-  LucideArrowRightToLine,
   LayoutGrid,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { componentsRegistry } from "@/lib/components-registry";
 import { cn } from "@/lib/utils";
 import { Separator } from "@/components/ui/separator";
@@ -28,15 +25,6 @@ export function ComponentNav() {
     } catch {}
   }, []);
 
-  const toggleCollapsed = () => {
-    const newState = !collapsed;
-    setCollapsed(newState);
-    try {
-      if (typeof window !== "undefined") {
-        window.localStorage.setItem(STORAGE_KEY, String(newState));
-      }
-    } catch {}
-  };
 
   const buildLinkClasses = (isActive: boolean) =>
     cn(

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Copy, Check, Code } from "lucide-react";
+import { Copy, Check } from "lucide-react";
 import { DataTableConfig } from "@/lib/sample-data";
 import { SocialPostConfig } from "@/lib/social-post-presets";
 import { MediaCardConfig } from "@/lib/media-card-presets";
@@ -38,8 +38,6 @@ export function CodePanel({
   sort,
   isLoading,
   emptyMessage,
-  className,
-  mode = "details",
 }: CodePanelProps) {
   const [copied, setCopied] = useState(false);
 

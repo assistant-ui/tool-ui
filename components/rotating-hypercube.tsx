@@ -647,7 +647,7 @@ function DataTableScene({
 
       {/* Data cards */}
       <group position={[0, 0, -roomDepth * 0.4]}>
-        {/* eslint-disable-next-line react-hooks/refs */}
+        { }
         {dataRows.map((row, i) => {
           const yPos = startY - i * params.cardSpacing;
           const zOffset = i * 0.02; // Subtle stagger
@@ -1787,7 +1787,7 @@ function CameraController({
   useEffect(() => {
     camera.position.set(...position);
     if ("fov" in camera && camera.fov !== undefined) {
-      // eslint-disable-next-line react-hooks/immutability
+       
       camera.fov = fov;
       camera.updateProjectionMatrix();
     }
@@ -1903,7 +1903,7 @@ function RotatingCube({
   // Update face scenes when selectedScene changes (if locked and not showing all faces)
   useEffect(() => {
     if (locked && !showAllFaces) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
+       
       setFaceScenes({
         front: selectedScene,
         back: selectedScene,

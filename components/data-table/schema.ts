@@ -38,6 +38,7 @@ const formatSchema = z.discriminatedUnion("kind", [
   z.object({
     kind: z.literal("status"),
     statusMap: z.record(
+      z.string(),
       z.object({
         tone: z.enum(["success", "warning", "danger", "info", "neutral"]),
         label: z.string().optional(),
@@ -61,7 +62,7 @@ const formatSchema = z.discriminatedUnion("kind", [
   z.object({
     kind: z.literal("badge"),
     colorMap: z
-      .record(z.enum(["success", "warning", "danger", "info", "neutral"]))
+      .record(z.string(), z.enum(["success", "warning", "danger", "info", "neutral"]))
       .optional(),
   }),
   z.object({
@@ -112,6 +113,7 @@ const jsonPrimitive = z.union([z.string(), z.number(), z.boolean(), z.null()]);
  * ```
  */
 export const serializableDataSchema = z.record(
+  z.string(),
   z.union([jsonPrimitive, z.array(jsonPrimitive)])
 );
 

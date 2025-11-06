@@ -8,7 +8,7 @@ export function formatCount(n?: number, locale = "en-US") {
   }).format(n);
 }
 
-export function formatRelativeTime(iso?: string, locale = "en-US") {
+export function formatRelativeTime(iso?: string, _locale = "en-US") {
   if (!iso) return undefined;
   const dateMs = new Date(iso).getTime();
   if (Number.isNaN(dateMs)) return undefined;

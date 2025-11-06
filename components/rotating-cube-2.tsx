@@ -177,7 +177,7 @@ function TransitioningShape({
       outgoingUniforms.maskDirection.value.copy(axisDirection);
     }
     if (outgoingUniforms.maskExtent) {
-      // eslint-disable-next-line react-hooks/immutability
+       
       outgoingUniforms.maskExtent.value = extent;
     }
     if (outgoingUniforms.maskSoftness) {
@@ -191,7 +191,7 @@ function TransitioningShape({
       incomingUniforms.maskDirection.value.copy(axisDirection);
     }
     if (incomingUniforms.maskExtent) {
-      // eslint-disable-next-line react-hooks/immutability
+       
       incomingUniforms.maskExtent.value = extent;
     }
     if (incomingUniforms.maskSoftness) {

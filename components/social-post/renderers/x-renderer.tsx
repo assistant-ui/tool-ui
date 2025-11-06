@@ -17,6 +17,7 @@ export function XRenderer() {
   return (
     <div className="flex gap-2">
       {/* Left column: Avatar */}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src={post.author.avatarUrl}
         alt={`${post.author.name} avatar`}

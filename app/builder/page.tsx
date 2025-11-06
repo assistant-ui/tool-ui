@@ -10,6 +10,7 @@ import {
   useChatRuntime,
   AssistantChatTransport,
 } from "@assistant-ui/react-ai-sdk";
+import { ThreadList } from "@/components/assistant-ui/thread-list";
 import { ArrowUpIcon, Square, Wrench, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -18,7 +19,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
 import {
   InputGroup,
   InputGroupInput,
@@ -145,7 +145,7 @@ const MCPModal: FC<{ open: boolean; onOpenChange: (open: boolean) => void }> = (
             />
             <InputGroupAddon align="inline-end" className="pr-1">
               <Select value={transportType} onValueChange={(value: "http" | "sse") => setTransportType(value)}>
-                <SelectTrigger className="h-6 w-[55px] border-0 text-[11px] px-2 gap-1 shadow-none focus:ring-0 bg-transparent hover:bg-transparent data-[state=open]:bg-transparent">
+                <SelectTrigger className="h-6 w-auto border-0 text-xs px-2 gap-1 shadow-none focus:ring-0 bg-transparent hover:bg-transparent data-[state=open]:bg-transparent dark:bg-transparent dark:hover:bg-transparent">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -302,7 +302,14 @@ export default function BuilderPage() {
 
   return (
     <AssistantRuntimeProvider runtime={runtime}>
-      <Thread />
+      <div className="grid h-full grid-cols-[240px_1fr]">
+        <div className="border-r bg-background p-4 overflow-y-auto">
+          <ThreadList />
+        </div>
+        <div className="overflow-hidden">
+          <Thread />
+        </div>
+      </div>
     </AssistantRuntimeProvider>
   );
 }
