@@ -27,6 +27,17 @@ export function ViewportControls({
   const { setTheme, resolvedTheme } = useTheme();
   const [mounted, setMounted] = React.useState(false);
 
+  function changeTheme(newTheme: string) {
+    if (!document.startViewTransition) {
+      setTheme(newTheme);
+      return;
+    }
+
+    document.startViewTransition(() => {
+      setTheme(newTheme);
+    });
+  }
+
   React.useEffect(() => {
     setMounted(true);
   }, []);
@@ -34,7 +45,7 @@ export function ViewportControls({
   const isDark = mounted && resolvedTheme === "dark";
 
   const toggleTheme = () => {
-    setTheme(isDark ? "light" : "dark");
+    changeTheme(isDark ? "light" : "dark");
   };
 
   const controlsContent = (
