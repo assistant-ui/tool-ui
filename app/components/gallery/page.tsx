@@ -2,12 +2,7 @@ import { DataTable } from "@/components/registry/data-table";
 import { MediaCard } from "@/components/registry/media-card";
 import { SocialPost } from "@/components/registry/social-post";
 import { DecisionPrompt } from "@/components/registry/decision-prompt";
-import {
-  sampleStocks,
-  sampleTasks,
-  sampleMetrics,
-  sampleResources,
-} from "@/lib/sample-data";
+import { sampleStocks, sampleMetrics } from "@/lib/sample-data";
 import { mediaCardPresets } from "@/lib/media-card-presets";
 import {
   sampleX,
@@ -35,21 +30,7 @@ export default function ComponentsGalleryPage() {
             </div>
 
             <div className="mb-6 break-inside-avoid lg:mb-10">
-              <div className="w-full">
-                <DataTable {...sampleTasks} />
-              </div>
-            </div>
-
-            <div className="mb-6 break-inside-avoid lg:mb-10">
-              <DecisionPrompt {...decisionPromptPresets.binary.prompt} />
-            </div>
-
-            <div className="mb-6 break-inside-avoid lg:mb-10">
               <MediaCard {...mediaCardPresets.video.card} maxWidth="100%" />
-            </div>
-
-            <div className="mb-6 break-inside-avoid lg:mb-10">
-              <SocialPost {...sampleLinkedIn.post} maxWidth="100%" />
             </div>
 
             <div className="mb-6 break-inside-avoid lg:mb-10">
@@ -67,7 +48,7 @@ export default function ComponentsGalleryPage() {
             </div>
 
             <div className="mb-6 break-inside-avoid lg:mb-10">
-              <DataTable {...sampleResources} />
+              <SocialPost {...sampleLinkedIn.post} maxWidth="100%" />
             </div>
 
             <div className="mb-6 break-inside-avoid lg:mb-10">

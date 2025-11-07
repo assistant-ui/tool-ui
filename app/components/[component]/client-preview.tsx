@@ -255,7 +255,7 @@ export function ClientPreview({ componentId }: { componentId: string }) {
         </div>
 
         {/* Resizable preview area */}
-        <div className="scrollbar-subtle relative flex flex-1 items-center justify-center overflow-auto overscroll-contain px-2 py-6">
+        <div className="scrollbar-subtle relative flex flex-1 justify-center overflow-auto overscroll-contain px-2 py-6 pt-12 lg:pt-16">
           {activeTab === "ui" && (
             <div
               className="bg-dot-grid pointer-events-none absolute inset-0 opacity-60 dark:opacity-40"
@@ -281,8 +281,8 @@ export function ClientPreview({ componentId }: { componentId: string }) {
                   minSize={PREVIEW_MIN_SIZE}
                   maxSize={PREVIEW_MAX_SIZE}
                 >
-                  <div className="bg-background border-border scrollbar-subtle relative overflow-hidden rounded-lg border-2 border-dashed transition-all">
-                    <div className="relative m-0 flex flex-col p-6">
+                  <div className="border-border scrollbar-subtle relative overflow-hidden rounded-lg border-2 border-dashed transition-all">
+                    <div className="relative m-0 flex flex-col p-4">
                       <div className="w-full">
                         {componentId === "data-table" && currentConfig && (
                           <DataTable

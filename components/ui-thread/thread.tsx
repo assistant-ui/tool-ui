@@ -28,7 +28,7 @@ export const Thread: FC = () => {
           <ComposerPrimitive.Root className="group/input-group border-input bg-background has-[textarea:focus-visible]:border-ring has-[textarea:focus-visible]:ring-ring/50 relative flex w-full flex-col rounded-3xl border px-1 pt-2 shadow-xs transition-[color,box-shadow] outline-none has-[textarea:focus-visible]:ring-[3px]">
             <ComposerPrimitive.Input
               placeholder="Ask about stocks..."
-              className="placeholder:text-muted-foreground mb-1 max-h-32 min-h-16 w-full resize-none bg-transparent px-3.5 pt-1.5 pb-3 text-base outline-none focus-visible:ring-0"
+              className="placeholder:text-muted-foreground mb-1 max-h-32 w-full resize-none bg-transparent px-3.5 pt-1.5 pb-3 text-base outline-none focus-visible:ring-0"
               rows={1}
               autoFocus
             />
