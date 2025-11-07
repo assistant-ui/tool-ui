@@ -107,9 +107,9 @@ export const decisionPromptPresetDescriptions: Record<
   DecisionPromptPresetName,
   string
 > = {
-  binary: "Simple yes/no with tape-mount nostalgia",
-  "multi-choice": "Multi-select with checkboxes and confirmation",
-  destructive: "Two-stage confirmation for destructive formats",
-  async: "Action with loading state (install)",
-  workflow: "Deployment eras from batch to blue/green",
+  binary: "Simple binary decision",
+  "multi-choice": "Multiple choice selection with confirmation",
+  destructive: "Two-stage confirmation for destructive actions",
+  async: "Action with loading state",
+  workflow: "Workflow with multiple steps",
 };

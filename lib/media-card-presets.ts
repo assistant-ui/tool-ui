@@ -104,8 +104,8 @@ export const mediaCardPresets: Record<MediaCardPresetName, MediaCardConfig> = {
 
 export const mediaCardPresetDescriptions: Record<MediaCardPresetName, string> =
   {
-    image: "Image attachment with title, description, and tool attribution",
+    image: "Image attachment with title and source attribution",
     video: "Video preview with metadata, duration, and media controls",
     audio: "Audio clip with optional poster artwork and duration metadata",
-    link: "Rich link preview using OpenGraph data and full-card navigation",
+    link: "Rich link preview using OpenGraph data",
   };

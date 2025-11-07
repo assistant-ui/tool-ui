@@ -204,8 +204,8 @@ export const socialPostPresetDescriptions: Record<
   SocialPostPresetName,
   string
 > = {
-  x: "Twitter/X post with engagement stats and verified badge",
-  instagram: "Instagram carousel post with multiple images",
-  tiktok: "TikTok video post with hashtags and high view count",
-  linkedin: "Professional LinkedIn post with link preview and article",
+  x: "X with quoted post and verified badge",
+  instagram: "Instagram post with multiple images",
+  tiktok: "TikTok video post with hashtags",
+  linkedin: "LinkedIn post with link preview",
 };
