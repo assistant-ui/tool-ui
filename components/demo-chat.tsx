@@ -220,7 +220,7 @@ export function DemoChat() {
                   name: "Ariandel Osorio",
                   handle: "ariandelosorio",
                   avatarUrl:
-                    "https://api.dicebear.com/7.x/avataaars/svg?seed=User",
+                    "https://images.unsplash.com/photo-1741336649605-7717819d4b5e?auto=format&fit=crop&q=80&w=1200",
                 },
                 text: "The AI boom is reshaping tech markets. NVDA up 68% P/E, META leading with 1.87% gains. This week's newsletter breaks down what it means for the industry 👇",
 

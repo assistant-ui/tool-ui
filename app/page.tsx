@@ -115,16 +115,16 @@ function HomePageContent({ showLogoDebug }: { showLogoDebug: boolean }) {
     ((chatPanelSize - CHAT_MIN_SIZE) / (CHAT_MAX_SIZE - CHAT_MIN_SIZE)) * 2.0;
 
   return (
-    <div className="bg-background flex h-screen flex-col">
+    <div className="flex h-screen flex-col">
       {/* Header with logo and tabs */}
-      <div className="bg-background flex">
-        <div className="flex w-fit shrink-0 items-center justify-start px-6 py-3">
+      <div className="flex gap-8 px-6 py-3">
+        <div className="flex w-fit shrink-0 items-center justify-start">
           <Link href="/">
             <h1 className="text-xl font-semibold tracking-wide">Tool UI</h1>
           </Link>
         </div>
-        <div className="flex flex-1 items-center justify-between px-6 py-3">
-          <nav className="flex items-center gap-1">
+        <div className="flex flex-1 items-center justify-between">
+          <nav className="flex items-center">
             <Link
               href="/"
               className={cn(
