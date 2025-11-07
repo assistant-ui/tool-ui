@@ -254,7 +254,7 @@ export function ClientPreview({ componentId }: { componentId: string }) {
         </div>
 
         {/* Resizable preview area */}
-        <div className="scrollbar-subtle relative flex flex-1 justify-center overflow-auto overscroll-contain px-2 py-6 pt-12 lg:pt-16">
+        <div className="scrollbar-subtle relative flex flex-1 justify-center overflow-auto overscroll-contain px-2 py-6 pt-12 lg:pt-24">
           {activeTab === "ui" && (
             <div
               className="bg-dot-grid bg-wash pointer-events-none absolute inset-0 opacity-60 dark:opacity-40"
@@ -280,7 +280,7 @@ export function ClientPreview({ componentId }: { componentId: string }) {
                   minSize={PREVIEW_MIN_SIZE}
                   maxSize={PREVIEW_MAX_SIZE}
                 >
-                  <div className="border-border scrollbar-subtle relative min-h-full overflow-hidden rounded-3xl border-2 border-dashed transition-all">
+                  <div className="border-border scrollbar-subtle relative min-h-full overflow-hidden rounded-xl border-2 border-dashed transition-all">
                     <div className="relative m-0 flex min-h-full flex-col items-center justify-center p-4">
                       <div className="w-full">
                         {componentId === "data-table" && currentConfig && (
@@ -301,7 +301,10 @@ export function ClientPreview({ componentId }: { componentId: string }) {
                         )}
                         {componentId === "social-post" &&
                           currentSocialPostConfig && (
-                            <div className="mx-auto" style={{ maxWidth: "600px" }}>
+                            <div
+                              className="mx-auto"
+                              style={{ maxWidth: "600px" }}
+                            >
                               <SocialPost
                                 {...currentSocialPostConfig.post}
                                 isLoading={isLoading}
@@ -314,12 +317,16 @@ export function ClientPreview({ componentId }: { componentId: string }) {
                           )}
                         {componentId === "media-card" &&
                           currentMediaCardConfig && (
-                            <div className="mx-auto" style={{
-                              maxWidth: mediaCardMaxWidth &&
-                                mediaCardMaxWidth.trim().length > 0
-                                ? mediaCardMaxWidth
-                                : undefined
-                            }}>
+                            <div
+                              className="mx-auto"
+                              style={{
+                                maxWidth:
+                                  mediaCardMaxWidth &&
+                                  mediaCardMaxWidth.trim().length > 0
+                                    ? mediaCardMaxWidth
+                                    : undefined,
+                              }}
+                            >
                               <MediaCard
                                 {...currentMediaCardConfig.card}
                                 isLoading={isLoading}
