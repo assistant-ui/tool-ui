@@ -16,12 +16,12 @@ export function ResponsiveHeader({ rightContent }: ResponsiveHeaderProps) {
   const pathname = usePathname();
 
   const isHome = pathname === "/";
-  const isComponents = pathname.startsWith("/components");
+  const isComponents = pathname.startsWith("/docs");
   const isBuilder = pathname.startsWith("/builder");
 
   const navLinks = [
     { href: "/", label: "Home", isActive: isHome },
-    { href: "/components", label: "Components", isActive: isComponents },
+    { href: "/docs/gallery", label: "Components", isActive: isComponents },
     { href: "/builder", label: "Builder", isActive: isBuilder },
   ];
 

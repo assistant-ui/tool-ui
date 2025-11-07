@@ -2,7 +2,7 @@
 
 import { ReactNode, useState } from "react";
 import { usePathname } from "next/navigation";
-import { ComponentNav } from "./components/component-nav";
+import { DocsNav } from "./components/docs-nav";
 import { ComponentsProvider } from "./components-context";
 import { ViewportControls, ViewportSize } from "@/components/viewport-controls";
 import { ResponsiveHeader } from "@/components/responsive-header";
@@ -15,8 +15,7 @@ export default function ComponentsLayout({
   const [viewport, setViewport] = useState<ViewportSize>("desktop");
   const pathname = usePathname();
 
-  const isGallery =
-    pathname === "/components/gallery" || pathname === "/components";
+  const isGallery = pathname === "/docs/gallery" || pathname === "/docs";
 
   return (
     <ComponentsProvider value={{ viewport }}>
@@ -36,8 +35,8 @@ export default function ComponentsLayout({
         {/* Content area with sidebar and main */}
         <div className="flex flex-1 overflow-hidden">
           {/* Sidebar Navigation - hidden on mobile, visible on md and up */}
-          <div className="bg-background hidden w-[200px] shrink-0 overflow-hidden md:block">
-            <ComponentNav />
+          <div className="bg-background hidden w-[240px] shrink-0 overflow-hidden md:block">
+            <DocsNav />
           </div>
 
           {/* Main Content */}

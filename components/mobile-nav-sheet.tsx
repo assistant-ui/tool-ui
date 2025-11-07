@@ -19,17 +19,12 @@ export function MobileNavSheet() {
   const [showScrollIndicator, setShowScrollIndicator] = React.useState(true);
 
   const isHome = pathname === "/";
-  const isComponents =
-    pathname === "/components/gallery" || pathname === "/components";
+  const isComponents = pathname === "/docs/gallery" || pathname === "/docs";
   const isBuilder = pathname.startsWith("/builder");
 
   const mainNavLinks = [
     { href: "/", label: "Home", isActive: isHome },
-    {
-      href: "/components/gallery",
-      label: "Components",
-      isActive: isComponents,
-    },
+    { href: "/docs/gallery", label: "Components", isActive: isComponents },
     { href: "/builder", label: "Builder", isActive: isBuilder },
   ];
 

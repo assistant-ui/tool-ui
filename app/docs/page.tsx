@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 
-export default function ComponentsIndexPage() {
+export default function DocsIndexPage() {
   redirect("/docs/gallery");
 }
+

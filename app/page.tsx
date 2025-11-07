@@ -145,7 +145,7 @@ function HomePageContent({ showLogoDebug }: { showLogoDebug: boolean }) {
             <br />
           </p>
           <Button asChild className="group w-fit px-6 py-3" size="lg">
-            <Link href="/components">
+            <Link href="/docs/gallery">
               See the Components
               <ArrowRight className="size-4 shrink-0 transition-transform group-hover:translate-x-1" />
             </Link>

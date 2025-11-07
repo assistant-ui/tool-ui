@@ -20,28 +20,28 @@ export const componentsRegistry: ComponentMetadata[] = [
     label: "Data Table",
     description: "Display tabular data with sorting and actions",
     icon: Table,
-    path: "/components/data-table",
+    path: "/docs/data-table",
   },
   {
     id: "decision-prompt",
     label: "Decision Prompt",
     description: "Inline prompts for user decisions and actions",
     icon: CheckCircle2,
-    path: "/components/decision-prompt",
+    path: "/docs/decision-prompt",
   },
   {
     id: "media-card",
     label: "Media Card",
     description: "Preview images, links, videos, and audio safely",
     icon: Image,
-    path: "/components/media-card",
+    path: "/docs/media-card",
   },
   {
     id: "social-post",
     label: "Social Post",
     description: "Render social media posts from multiple platforms",
     icon: MessageSquare,
-    path: "/components/social-post",
+    path: "/docs/social-post",
   },
 ];
 
