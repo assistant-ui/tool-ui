@@ -8,8 +8,10 @@ Responsive, accessible, typed, copy-pasteable. Built on Radix, shadcn/ui, and Ta
 
 - Data Table — Sortable columns, row actions, loading/empty states, mobile accordion layout
 - Decision Prompt — Inline decisions with two-stage confirms, receipt state, async-ready
-- Social Post — X/Instagram/LinkedIn renderers; serializable JSON payloads; media + link previews
-- Media Card — Image/video/audio/link cards; OG previews; alt-text validation; serializable
+- Social Post — X/Instagram/LinkedIn renderers; media + link previews
+- Media Card — Image/video/audio/link cards; OG previews; alt-text validation
+
+👀 [Browse components](https://tool-ui.com/components)
 
 ## Builder
 
@@ -17,6 +19,8 @@ Responsive, accessible, typed, copy-pasteable. Built on Radix, shadcn/ui, and Ta
 - Connect an MCP server (HTTP or SSE) and auto-discover tools
 - Auto-generate UI from a tool’s JSON schema
 - Toggle between rendered preview and code; just copy/paste the generated component
+
+🏗️ [Builder](https://tool-ui.com/builder)
 
 ## Contributing
 
