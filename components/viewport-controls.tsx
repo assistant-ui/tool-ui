@@ -47,7 +47,7 @@ export function ViewportControls({
             onClick={() => onViewportChange("mobile")}
             title="Mobile view"
           >
-            <Smartphone className="h-4 w-4" />
+            <Smartphone className="size-4" />
           </Button>
           <Button
             variant={viewport === "desktop" ? "secondary" : "outline"}
@@ -55,7 +55,7 @@ export function ViewportControls({
             onClick={() => onViewportChange("desktop")}
             title="Desktop view"
           >
-            <Monitor className="h-4 w-4" />
+            <Monitor className="size-4" />
           </Button>
         </>
       )}
@@ -71,13 +71,13 @@ export function ViewportControls({
         >
           <Sun
             className={cn(
-              "h-4 w-4 transition-all",
+              "size-4 transition-all",
               isDark ? "scale-0 rotate-90" : "scale-100 rotate-0",
             )}
           />
           <Moon
             className={cn(
-              "absolute h-4 w-4 transition-all",
+              "absolute size-4 transition-all",
               isDark ? "scale-100 rotate-0" : "scale-0 -rotate-90",
             )}
           />

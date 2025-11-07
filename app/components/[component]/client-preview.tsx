@@ -37,8 +37,8 @@ type ComponentPreset =
   | MediaCardPresetName
   | DecisionPromptPresetName;
 
-const PREVIEW_MIN_SIZE = 30;
-const PREVIEW_MAX_SIZE = 85;
+const PREVIEW_MIN_SIZE = 40;
+const PREVIEW_MAX_SIZE = 100;
 
 export function ClientPreview({ componentId }: { componentId: string }) {
   const { viewport } = useComponents();
@@ -223,7 +223,7 @@ export function ClientPreview({ componentId }: { componentId: string }) {
       </aside>
       <div className="flex min-h-0 min-w-0 flex-1 flex-col">
         {/* Header with status and tabs */}
-        <div className="flex items-center justify-between border-b px-6 py-3">
+        <div className="flex items-center justify-between px-6 py-3">
           <div className="flex items-center gap-2">
             <Label htmlFor="preview-loading" className="text-sm">
               Loading
@@ -255,7 +255,7 @@ export function ClientPreview({ componentId }: { componentId: string }) {
         </div>
 
         {/* Resizable preview area */}
-        <div className="scrollbar-subtle relative flex flex-1 items-center justify-center overflow-auto overscroll-contain p-6">
+        <div className="scrollbar-subtle relative flex flex-1 items-center justify-center overflow-auto overscroll-contain px-2 py-6">
           {activeTab === "ui" && (
             <div
               className="bg-dot-grid pointer-events-none absolute inset-0 opacity-60 dark:opacity-40"
@@ -281,7 +281,7 @@ export function ClientPreview({ componentId }: { componentId: string }) {
                   minSize={PREVIEW_MIN_SIZE}
                   maxSize={PREVIEW_MAX_SIZE}
                 >
-                  <div className="bg-background border-border scrollbar-subtle relative overflow-hidden border-2 border-dashed transition-all">
+                  <div className="bg-background border-border scrollbar-subtle relative overflow-hidden rounded-lg border-2 border-dashed transition-all">
                     <div className="relative m-0 flex flex-col p-6">
                       <div className="w-full">
                         {componentId === "data-table" && currentConfig && (

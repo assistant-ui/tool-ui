@@ -33,9 +33,6 @@ import { cn } from "@/lib/utils";
 const CHAT_MIN_SIZE = 50;
 const CHAT_MAX_SIZE = 100;
 
-const CHAT_VERTICAL_MIN_SIZE = 30;
-const CHAT_VERTICAL_MAX_SIZE = 85;
-
 const CHAT_LAYOUTS: Record<ViewportSize, [number, number, number]> = {
   mobile: [25, CHAT_MIN_SIZE, 25],
   desktop: [0, CHAT_MAX_SIZE, 0],
@@ -47,9 +44,7 @@ function HomePageContent({ showLogoDebug }: { showLogoDebug: boolean }) {
     CHAT_LAYOUTS.desktop[1],
   );
   const panelGroupRef = useRef<ImperativePanelGroupHandle | null>(null);
-  const verticalPanelGroupRef = useRef<ImperativePanelGroupHandle | null>(null);
   const isSyncingLayout = useRef(false);
-  const isSyncingVerticalLayout = useRef(false);
   const defaultLayout = CHAT_LAYOUTS.desktop;
   const pathname = usePathname();
 
@@ -102,35 +97,6 @@ function HomePageContent({ showLogoDebug }: { showLogoDebug: boolean }) {
     },
     [updateViewportFromChatSize],
   );
-
-  const handleVerticalLayout = useCallback((sizes: number[]) => {
-    if (!verticalPanelGroupRef.current) {
-      return;
-    }
-
-    if (isSyncingVerticalLayout.current) {
-      isSyncingVerticalLayout.current = false;
-      return;
-    }
-
-    const [top, chat, bottom] = sizes;
-    const clampedChat = Math.min(
-      CHAT_VERTICAL_MAX_SIZE,
-      Math.max(CHAT_VERTICAL_MIN_SIZE, chat),
-    );
-    const spacing = Math.max(0, (100 - clampedChat) / 2);
-    const epsilon = 0.5;
-
-    const isSymmetric =
-      Math.abs(top - spacing) < epsilon &&
-      Math.abs(bottom - spacing) < epsilon &&
-      Math.abs(chat - clampedChat) < epsilon;
-
-    if (!isSymmetric) {
-      isSyncingVerticalLayout.current = true;
-      verticalPanelGroupRef.current.setLayout([spacing, clampedChat, spacing]);
-    }
-  }, []);
 
   const changeViewport = (nextViewport: ViewportSize) => {
     setViewport(nextViewport);
@@ -256,12 +222,10 @@ function HomePageContent({ showLogoDebug }: { showLogoDebug: boolean }) {
           </Button>
         </div>
 
-        <div className="relative z-10 flex h-full flex-1 px-12 py-4">
+        <div className="relative z-10 flex h-full flex-1 px-12 py-12">
           <ResizableChat
             panelGroupRef={panelGroupRef}
-            verticalPanelGroupRef={verticalPanelGroupRef}
             handleLayout={handleLayout}
-            handleVerticalLayout={handleVerticalLayout}
             defaultLayout={defaultLayout}
           />
         </div>
@@ -274,17 +238,13 @@ function HomePageContent({ showLogoDebug }: { showLogoDebug: boolean }) {
 
 type ResizableChatProps = {
   panelGroupRef: MutableRefObject<ImperativePanelGroupHandle | null>;
-  verticalPanelGroupRef: MutableRefObject<ImperativePanelGroupHandle | null>;
   handleLayout: (sizes: number[]) => void;
-  handleVerticalLayout: (sizes: number[]) => void;
   defaultLayout: [number, number, number];
 };
 
 const ResizableChat = memo(function ResizableChat({
   panelGroupRef,
-  verticalPanelGroupRef,
   handleLayout,
-  handleVerticalLayout,
   defaultLayout,
 }: ResizableChatProps) {
   return (
@@ -308,34 +268,9 @@ const ResizableChat = memo(function ResizableChat({
         style={{ overflow: "visible" }}
         className="relative flex items-center justify-center"
       >
-        <PanelGroup
-          ref={verticalPanelGroupRef}
-          direction="vertical"
-          className="h-full w-full"
-          style={{ overflow: "visible" }}
-          onLayout={handleVerticalLayout}
-          autoSaveId="homepage-chat-vertical-layout"
-        >
-          <Panel defaultSize={0} minSize={0} />
-
-          <PanelResizeHandle className="h-0" />
-
-          <Panel
-            defaultSize={100}
-            minSize={CHAT_VERTICAL_MIN_SIZE}
-            maxSize={CHAT_VERTICAL_MAX_SIZE}
-          >
-            <div className="bg-background border-border pointer-events-auto flex h-full w-full overflow-hidden rounded-lg border-2 border-dashed transition-all">
-              <DemoChat />
-            </div>
-          </Panel>
-
-          <PanelResizeHandle className="group relative h-4">
-            <div className="absolute top-1/2 left-1/2 h-1 w-12 -translate-x-1/2 -translate-y-1/2 rounded-full bg-gray-300 opacity-40 transition-all group-hover:bg-gray-400 group-hover:opacity-100 group-data-resize-handle-active:bg-gray-500 group-data-resize-handle-active:opacity-100 dark:bg-gray-600 dark:group-hover:bg-gray-500 dark:group-data-resize-handle-active:bg-gray-400" />
-          </PanelResizeHandle>
-
-          <Panel defaultSize={0} minSize={0} />
-        </PanelGroup>
+        <div className="bg-background border-border pointer-events-auto flex h-full w-full overflow-hidden rounded-lg border-2 border-dashed transition-all">
+          <DemoChat />
+        </div>
       </Panel>
 
       <PanelResizeHandle className="group relative w-4">
