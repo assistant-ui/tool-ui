@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutGrid } from "lucide-react";
+import { Shapes } from "lucide-react";
 import { componentsRegistry } from "@/lib/components-registry";
 import { cn } from "@/lib/utils";
 import { Separator } from "@/components/ui/separator";
@@ -47,7 +47,7 @@ export function ComponentNav() {
             className={buildLinkClasses(isGalleryActive)}
             title={collapsed ? "Gallery" : undefined}
           >
-            <LayoutGrid
+            <Shapes
               className={cn("text-muted-foreground size-4 shrink-0", {
                 "text-primary": isGalleryActive,
               })}

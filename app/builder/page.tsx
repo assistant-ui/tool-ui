@@ -614,22 +614,30 @@ export default function BuilderPage() {
     <PreviewRefreshContext.Provider value={handleRefreshPreview}>
       <AssistantRuntimeProvider runtime={runtime}>
         <PreviewRefreshSetter />
-        <div className="flex h-full">
-          <div className="bg-background w-[240px] shrink-0 overflow-y-auto p-4">
+        <div className="flex h-full flex-col md:flex-row">
+          {/* Thread List Sidebar - hidden on mobile */}
+          <div className="bg-background hidden w-[240px] shrink-0 overflow-y-auto p-4 md:block">
             <ThreadList />
           </div>
+
+          {/* Main Thread Area */}
           <div
-            className="overflow-hidden rounded-tl-lg border-t border-l"
+            className="overflow-hidden border-t md:rounded-tl-lg md:border-l"
             style={{ width: repoId ? `${100 - webviewWidth}%` : "100%" }}
           >
             <Thread />
           </div>
+
+          {/* Preview/Code Panel */}
           {repoId && (
             <>
+              {/* Resize Handle - hidden on mobile */}
               <div
-                className="bg-border hover:bg-primary w-1 cursor-col-resize transition-colors"
+                className="bg-border hover:bg-primary hidden w-1 cursor-col-resize transition-colors md:block"
                 onMouseDown={handleMouseDown}
               />
+
+              {/* Preview Panel */}
               <div
                 className="flex flex-col"
                 style={{ width: `${webviewWidth}%` }}
@@ -644,7 +652,7 @@ export default function BuilderPage() {
                       className="gap-2"
                     >
                       <Eye className="h-4 w-4" />
-                      Preview
+                      <span className="hidden sm:inline">Preview</span>
                     </Button>
                     <Button
                       variant={viewMode === "code" ? "secondary" : "ghost"}
@@ -653,7 +661,7 @@ export default function BuilderPage() {
                       className="gap-2"
                     >
                       <Code className="h-4 w-4" />
-                      Code
+                      <span className="hidden sm:inline">Code</span>
                     </Button>
                   </div>
                   {viewMode === "rendered" ? (

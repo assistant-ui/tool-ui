@@ -15,8 +15,6 @@ import { DemoChat } from "@/components/demo-chat";
 import { App as HypercubeCanvas } from "@/components/rotating-hypercube";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
-import { FaGithub } from "react-icons/fa";
-import { FaXTwitter } from "react-icons/fa6";
 import {
   ViewportControls,
   type ViewportSize,
@@ -27,8 +25,7 @@ import {
   PanelResizeHandle,
   type ImperativePanelGroupHandle,
 } from "react-resizable-panels";
-import { usePathname } from "next/navigation";
-import { cn } from "@/lib/utils";
+import { ResponsiveHeader } from "@/components/responsive-header";
 
 const CHAT_MIN_SIZE = 50;
 const CHAT_MAX_SIZE = 100;
@@ -46,11 +43,6 @@ function HomePageContent({ showLogoDebug }: { showLogoDebug: boolean }) {
   const panelGroupRef = useRef<ImperativePanelGroupHandle | null>(null);
   const isSyncingLayout = useRef(false);
   const defaultLayout = CHAT_LAYOUTS.desktop;
-  const pathname = usePathname();
-
-  const isHome = pathname === "/";
-  const isComponents = pathname.startsWith("/components");
-  const isBuilder = pathname.startsWith("/builder");
 
   const updateViewportFromChatSize = useCallback((chatSize: number) => {
     const threshold = (CHAT_LAYOUTS.mobile[1] + CHAT_LAYOUTS.desktop[1]) / 2;
@@ -117,99 +109,37 @@ function HomePageContent({ showLogoDebug }: { showLogoDebug: boolean }) {
   return (
     <div className="flex h-screen flex-col">
       {/* Header with logo and tabs */}
-      <div className="flex gap-8 px-6 py-3">
-        <div className="flex w-fit shrink-0 items-center justify-start">
-          <Link href="/">
-            <h1 className="text-xl font-semibold tracking-wide">Tool UI</h1>
-          </Link>
-        </div>
-        <div className="flex flex-1 items-center justify-between">
-          <nav className="flex items-center">
-            <Link
-              href="/"
-              className={cn(
-                "rounded-lg px-4 py-2 text-sm font-medium transition-colors",
-                isHome
-                  ? "text-foreground"
-                  : "text-muted-foreground hover:text-foreground hover:bg-muted",
-              )}
-            >
-              Home
-            </Link>
-            <Link
-              href="/components"
-              className={cn(
-                "rounded-lg px-4 py-2 text-sm font-medium transition-colors",
-                isComponents
-                  ? "text-foreground"
-                  : "text-muted-foreground hover:text-foreground hover:bg-muted",
-              )}
-            >
-              Components
-            </Link>
-            <Link
-              href="/builder"
-              className={cn(
-                "rounded-lg px-4 py-2 text-sm font-medium transition-colors",
-                isBuilder
-                  ? "text-foreground"
-                  : "text-muted-foreground hover:text-foreground hover:bg-muted",
-              )}
-            >
-              Builder
-            </Link>
-          </nav>
-          <div className="flex items-center gap-4">
-            <ViewportControls
-              viewport={viewport}
-              onViewportChange={changeViewport}
-              showThemeToggle
-              showViewportButtons
-            />
-            <div className="flex items-center">
-              <Button variant="ghost" size="icon" asChild>
-                <Link
-                  href="https://github.com/assistant-ui/tool-ui"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <FaGithub className="size-5" />
-                  <span className="sr-only">GitHub Repository</span>
-                </Link>
-              </Button>
-              <Button variant="ghost" size="icon" asChild>
-                <Link
-                  href="https://x.com/assistantui"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <FaXTwitter className="size-5" />
-                  <span className="sr-only">X (Twitter)</span>
-                </Link>
-              </Button>
-            </div>
-          </div>
-        </div>
-      </div>
+      <ResponsiveHeader
+        rightContent={
+          <ViewportControls
+            viewport={viewport}
+            onViewportChange={changeViewport}
+            showThemeToggle
+            showViewportButtons
+          />
+        }
+      />
 
       {/* Main content */}
-      <main className="bg-background relative flex flex-1 flex-row items-end justify-center overflow-hidden">
+      <main className="bg-background relative flex flex-1 flex-col overflow-hidden md:flex-row md:items-end md:justify-center">
         <div
           className="bg-dot-grid pointer-events-none absolute inset-0 opacity-60 dark:opacity-40"
           aria-hidden="true"
         />
 
-        <div className="relative z-10 flex max-w-2xl flex-col gap-5 p-8 pb-21 text-left">
+        <div className="relative z-10 flex max-w-2xl flex-col gap-5 p-6 pb-8 text-left md:p-8 md:pb-21">
           <div className="-mb-4 -ml-4 flex items-end justify-start">
             <HypercubeCanvas cubeWidth={cubeWidth} />
           </div>
           <div className="flex flex-col gap-1">
-            <h1 className="text-6xl font-bold tracking-tight">Tool UI</h1>
-            <h2 className="text-2xl tracking-tight">
+            <h1 className="text-4xl font-bold tracking-tight md:text-6xl">
+              Tool UI
+            </h1>
+            <h2 className="text-xl tracking-tight md:text-2xl">
               Beautiful UI components for AI tool calls
             </h2>
           </div>
-          <p className="text-muted-foreground mb-2 text-lg">
+          <p className="text-muted-foreground mb-2 text-base md:text-lg">
             Responsive, accessible, typed, copy-pasteable. <br />
             Built on Radix, shadcn/ui, and Tailwind. Open Source.
             <br />
@@ -222,7 +152,7 @@ function HomePageContent({ showLogoDebug }: { showLogoDebug: boolean }) {
           </Button>
         </div>
 
-        <div className="relative z-10 flex h-full flex-1 px-12 py-12">
+        <div className="relative z-10 hidden h-full flex-1 px-12 py-12 md:flex">
           <ResizableChat
             panelGroupRef={panelGroupRef}
             handleLayout={handleLayout}

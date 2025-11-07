@@ -77,6 +77,9 @@ importers:
       '@react-three/postprocessing':
         specifier: ^3.0.4
         version: 3.0.4(@react-three/fiber@9.4.0(@types/react@19.2.2)(expo-asset@12.0.9(expo@54.0.22)(react-native@0.82.1(@babel/core@7.28.5)(@types/react@19.2.2)(react@19.2.0))(react@19.2.0))(expo-file-system@19.0.17(expo@54.0.22)(react-native@0.82.1(@babel/core@7.28.5)(@types/react@19.2.2)(react@19.2.0)))(expo@54.0.22)(react-dom@19.2.0(react@19.2.0))(react-native@0.82.1(@babel/core@7.28.5)(@types/react@19.2.2)(react@19.2.0))(react@19.2.0)(three@0.181.0))(@types/three@0.181.0)(react@19.2.0)(three@0.181.0)
+      '@silk-hq/components':
+        specifier: ^0.10.0
+        version: 0.10.0(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       '@tailwindcss/cli':
         specifier: ^4.1.16
         version: 4.1.16
@@ -2132,6 +2135,12 @@ packages:
 
   '@shikijs/vscode-textmate@10.0.2':
     resolution: {integrity: sha512-83yeghZ2xxin3Nj8z1NMd/NCuca+gsYXswywDy5bHvwlWL8tpTQmzGeUuHd9FC3E/SBEMvzJRwWEOz5gGes9Qg==}
+
+  '@silk-hq/components@0.10.0':
+    resolution: {integrity: sha512-hWObGDISQSmUpDkUHsDakxR4uKLh013kzrNdmRGQPA+waoXOpTBNmtQV/cQI0Do0I5JHxEqiOoMu0ey9bdkRzQ==}
+    peerDependencies:
+      react: ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+      react-dom: ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
 
   '@sinclair/typebox@0.27.8':
     resolution: {integrity: sha512-+Fj43pSMwJs4KRrH/938Uf+uAELIgVBmQzg/q1YG10djyfA3TnrU8N8XzqCh/okZdszqBQTZf96idMfE5lnwTA==}
@@ -8978,6 +8987,11 @@ snapshots:
       '@types/hast': 3.0.4
 
   '@shikijs/vscode-textmate@10.0.2': {}
+
+  '@silk-hq/components@0.10.0(react-dom@19.2.0(react@19.2.0))(react@19.2.0)':
+    dependencies:
+      react: 19.2.0
+      react-dom: 19.2.0(react@19.2.0)
 
   '@sinclair/typebox@0.27.8': {}
 

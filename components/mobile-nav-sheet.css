@@ -1,0 +1,39 @@
+.MobileNavSheet-view {
+  height: var(--silk-100-lvh-dvh-pct);
+  z-index: 50;
+  position: fixed;
+  inset: 0;
+}
+
+.MobileNavSheet-content {
+  box-sizing: border-box;
+  max-width: 700px;
+  max-height: 100vh;
+  height: 80vh;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  z-index: 52;
+  overflow: hidden;
+}
+
+.MobileNavSheet-content > div {
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+}
+
+.MobileNavSheet-backdrop {
+  background-color: rgb(0 0 0);
+  position: fixed;
+  inset: 0;
+  z-index: 51;
+}
+
+.MobileNavSheet-bleedingBackground {
+  overflow: hidden;
+  border-radius: 16px 16px 0 0;
+  background-color: hsl(var(--background));
+  box-shadow:
+    0 -4px 6px -1px rgb(0 0 0 / 0.1),
+    0 -2px 4px -2px rgb(0 0 0 / 0.1);
+}

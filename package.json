@@ -38,6 +38,7 @@
     "@react-three/drei": "^10.7.6",
     "@react-three/fiber": "^9.4.0",
     "@react-three/postprocessing": "^3.0.4",
+    "@silk-hq/components": "^0.10.0",
     "@tailwindcss/cli": "^4.1.16",
     "@upstash/ratelimit": "^2.0.7",
     "@upstash/redis": "^1.35.6",
