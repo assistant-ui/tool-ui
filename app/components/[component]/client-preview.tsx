@@ -280,8 +280,8 @@ export function ClientPreview({ componentId }: { componentId: string }) {
                   minSize={PREVIEW_MIN_SIZE}
                   maxSize={PREVIEW_MAX_SIZE}
                 >
-                  <div className="border-border scrollbar-subtle relative overflow-hidden rounded-3xl border-2 border-dashed transition-all">
-                    <div className="relative m-0 flex flex-col p-4">
+                  <div className="border-border scrollbar-subtle relative min-h-full overflow-hidden rounded-3xl border-2 border-dashed transition-all">
+                    <div className="relative m-0 flex min-h-full flex-col items-center justify-center p-4">
                       <div className="w-full">
                         {componentId === "data-table" && currentConfig && (
                           <DataTable
@@ -301,28 +301,28 @@ export function ClientPreview({ componentId }: { componentId: string }) {
                         )}
                         {componentId === "social-post" &&
                           currentSocialPostConfig && (
-                            <SocialPost
-                              {...currentSocialPostConfig.post}
-                              isLoading={isLoading}
-                              maxWidth="600px"
-                              onAction={(actionId) => {
-                                console.log("Action:", actionId);
-                                alert(`Action: ${actionId}`);
-                              }}
-                            />
+                            <div className="mx-auto" style={{ maxWidth: "600px" }}>
+                              <SocialPost
+                                {...currentSocialPostConfig.post}
+                                isLoading={isLoading}
+                                onAction={(actionId) => {
+                                  console.log("Action:", actionId);
+                                  alert(`Action: ${actionId}`);
+                                }}
+                              />
+                            </div>
                           )}
                         {componentId === "media-card" &&
                           currentMediaCardConfig && (
-                            <div className="flex justify-center">
+                            <div className="mx-auto" style={{
+                              maxWidth: mediaCardMaxWidth &&
+                                mediaCardMaxWidth.trim().length > 0
+                                ? mediaCardMaxWidth
+                                : undefined
+                            }}>
                               <MediaCard
                                 {...currentMediaCardConfig.card}
                                 isLoading={isLoading}
-                                maxWidth={
-                                  mediaCardMaxWidth &&
-                                  mediaCardMaxWidth.trim().length > 0
-                                    ? mediaCardMaxWidth
-                                    : undefined
-                                }
                                 onAction={(actionId) => {
                                   console.log("MediaCard action:", actionId);
                                 }}
@@ -334,7 +334,7 @@ export function ClientPreview({ componentId }: { componentId: string }) {
                           )}
                         {componentId === "decision-prompt" &&
                           currentDecisionPromptConfig && (
-                            <div className="w-full max-w-md">
+                            <div className="mx-auto w-full max-w-md">
                               <DecisionPrompt
                                 {...currentDecisionPromptConfig.prompt}
                                 selectedAction={decisionPromptSelectedAction}

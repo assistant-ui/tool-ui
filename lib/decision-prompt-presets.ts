@@ -73,7 +73,7 @@ const asyncPreset: DecisionPromptConfig = {
       { id: "cancel", label: "No, cancel", variant: "ghost" },
       { id: "install", label: "Yes, install", variant: "default" },
     ],
-    align: "right",
+    align: "center",
   },
 };
 
@@ -87,7 +87,7 @@ const workflowPreset: DecisionPromptConfig = {
       { id: "blue-green", label: "Blue-green", variant: "secondary" },
       { id: "rolling", label: "Rolling update", variant: "default" },
     ],
-    align: "right",
+    align: "center",
     layout: "stack",
   },
 };

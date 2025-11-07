@@ -106,7 +106,7 @@ export function MultiSelectActions({
               onClick={() => toggleSelection(action.id)}
               disabled={isDisabled}
               className={cn(
-                "transition-xs min-h-[44px] border px-4 py-4 text-sm font-medium",
+                "transition-xs bg-background min-h-[44px] border px-4 py-4 text-sm font-medium",
                 {
                   "w-full justify-start": isStacked,
                   "bg-accent hover:!bg-accent": isSelected,
@@ -176,7 +176,7 @@ export function MultiSelectActions({
           ) : (
             <>
               {confirmLabel}
-              {selectedIds.size > 0 && <span>({selectedIds.size})</span>}
+              {selectedIds.size > 0 && <span>{selectedIds.size}</span>}
             </>
           )}
         </Button>
