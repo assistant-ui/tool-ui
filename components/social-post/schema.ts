@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const platformEnum = z.enum(["x", "instagram", "tiktok", "linkedin"]);
+export const platformEnum = z.enum(["x", "instagram", "linkedin"]);
 export type Platform = z.infer<typeof platformEnum>;
 
 export const aspectEnum = z

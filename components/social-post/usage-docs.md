@@ -1,6 +1,6 @@
 # SocialPost
 
-A fully themed, serializable renderer for X, Instagram, TikTok, and LinkedIn posts. Designed for AI tool UIs, embeds, and regular product surfaces.
+A fully themed, serializable renderer for X, Instagram, and LinkedIn posts. Designed for AI tool UIs, embeds, and regular product surfaces.
 
 - JSON-in/React-out: works with raw LLM/tool payloads.
 - Per-platform layouts with accessible actions, media, link previews, quoted posts.
@@ -110,7 +110,7 @@ export type SocialPostProps = SerializableSocialPost & SocialPostClientProps;
 ```ts
 interface SerializableSocialPost {
   id: string;
-  platform: "x" | "instagram" | "tiktok" | "linkedin";
+  platform: "x" | "instagram" | "linkedin";
   author: {
     name: string;
     handle?: string; // platform handle without "@"
@@ -277,7 +277,6 @@ async function renderToolResult(raw: unknown) {
 | ----------- | ------------------- | ----------------------------------------------------------------------------------------- |
 | `x`         | `XRenderer`         | Quoted posts, link previews, action row under body, stats appear via `Actions`/`Stats`.   |
 | `instagram` | `InstagramRenderer` | Header and actions inside padding, grid media layout for >1 asset, stats below body.      |
-| `tiktok`    | `TikTokRenderer`    | Optional right-rail actions for vertical video, stats below body.                         |
 | `linkedin`  | `LinkedInRenderer`  | Name/role/time separated lines, link preview under media, streamlined like/share actions. |
 
 Tokens for typography, spacing, and hover states live in `components/social-post/platform.ts`. Tweak these if you want to reskin the platforms or add your own variant.

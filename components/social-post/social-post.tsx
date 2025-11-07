@@ -8,7 +8,6 @@ import type { SerializableSocialPost } from "./schema";
 import type { SocialPostClientProps, SocialPostState } from "./context";
 import { XRenderer } from "./renderers/x-renderer";
 import { InstagramRenderer } from "./renderers/instagram-renderer";
-import { TikTokRenderer } from "./renderers/tiktok-renderer";
 import { LinkedInRenderer } from "./renderers/linkedin-renderer";
 
 export const DEFAULT_LOCALE = "en-US" as const;
@@ -16,7 +15,6 @@ export const DEFAULT_LOCALE = "en-US" as const;
 const RENDERERS = {
   x: XRenderer,
   instagram: InstagramRenderer,
-  tiktok: TikTokRenderer,
   linkedin: LinkedInRenderer,
 } as const;
 

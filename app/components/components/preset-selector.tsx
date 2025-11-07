@@ -44,7 +44,6 @@ const dataTablePresetNames: PresetName[] = [
 const socialPostPresetNames: SocialPostPresetName[] = [
   "x",
   "instagram",
-  "tiktok",
   "linkedin",
 ];
 

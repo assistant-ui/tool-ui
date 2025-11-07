@@ -264,59 +264,6 @@ export const PLATFORM: Record<Platform, PlatformConfig> = {
       },
     ],
   },
-  tiktok: {
-    name: "tiktok",
-    tokens: {
-      accent: "text-rose-500 dark:text-rose-400",
-      verified: "text-rose-500",
-      radius: "rounded-none",
-      muted: "text-muted-foreground",
-      actionHover: "hover:opacity-80",
-      brandColor: "#EE1D52",
-      avatarShape: "circle",
-      actionLayout: "right-rail",
-      typography: {
-        name: "text-lg font-bold",
-        handle: "text-base text-muted-foreground",
-        body: "text-lg leading-snug font-medium",
-        stats: "text-xs font-semibold",
-        bodyLineHeight: "leading-snug",
-      },
-      spacing: {
-        container: "p-2",
-        gap: "gap-2",
-        avatarSize: "w-10 h-10",
-        actionGap: "gap-3",
-      },
-      borders: {
-        container: "border border-border",
-        containerHover: "",
-        media: "rounded-lg",
-        shadow: "shadow-xs",
-      },
-      background: {
-        container: "bg-card",
-        containerHover: "",
-        actionHover: "hover:opacity-70 transition-opacity",
-      },
-    },
-    layout: {
-      mediaStrategy: "verticalVideo",
-      defaultAspect: "9:16",
-      showLinkPreview: false,
-      showViews: true,
-      showFollowInHeader: true,
-      showHandleWithAt: false,
-      contentMaxLines: 5,
-    },
-    actions: {
-      like: "Like",
-      comment: "Comment",
-      share: "Share",
-      follow: "Follow",
-      menu: "More",
-    },
-  },
   linkedin: {
     name: "linkedin",
     tokens: {
@@ -338,7 +285,7 @@ export const PLATFORM: Record<Platform, PlatformConfig> = {
       spacing: {
         container: "p-4",
         gap: "gap-3",
-        avatarSize: "w-12 h-12",
+        avatarSize: "size-13",
         actionGap: "gap-2",
       },
       borders: {

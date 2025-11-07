@@ -9,13 +9,13 @@ export const sampleX: SocialPostConfig = {
     id: "x-post-1",
     platform: "x",
     author: {
-      name: "Nick Pattison",
-      handle: "thenickpattison",
+      name: "Athia Zohra",
+      handle: "athiazohra",
       avatarUrl:
         "https://images.unsplash.com/photo-1753288695169-e51f5a3ff24f?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=774",
       verified: true,
     },
-    text: "Wild to think: in the 1940s we literally rewired programs by hand. Today, we ship apps worldwide with a single command. From ENIAC to edge — what a ride.",
+    text: "Wild to think: in the 1940s we literally rewired programs by hand. Today, we ship apps worldwide with a single command.",
     entities: {
       hashtags: ["computingHistory", "eniac", "fromMainframeToMobile"],
       mentions: [],
@@ -113,47 +113,6 @@ export const sampleInstagram: SocialPostConfig = {
   },
 };
 
-export const sampleTikTok: SocialPostConfig = {
-  post: {
-    id: "tiktok-post-1",
-    platform: "tiktok",
-    author: {
-      name: "Jamie Park",
-      handle: "@jamiepark",
-      avatarUrl:
-        "https://images.unsplash.com/photo-1751612428149-b7cfb7fe20af?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1044",
-      verified: false,
-    },
-    text: "POV: You boot a 1984 Macintosh. That startup chime still slaps. #retro #vintage #computingHistory",
-    entities: {
-      hashtags: ["retro", "vintage", "computingHistory"],
-      mentions: [],
-    },
-    media: [
-      {
-        kind: "video",
-        url: "https://sample-videos.com/video321/mp4/720/big_buck_bunny_720p_1mb.mp4",
-        thumbUrl:
-          "https://images.unsplash.com/photo-1587614203976-365c74645e83?w=400&h=700&fit=crop",
-        alt: "Vintage Macintosh on a desk",
-        aspectHint: "9:16",
-      },
-    ],
-    stats: {
-      likes: 12400,
-      comments: 287,
-      shares: 543,
-      views: 85200,
-    },
-    createdAtISO: "2025-11-05T16:20:00.000Z",
-    actions: [
-      { id: "like", label: "Like", variant: "ghost" },
-      { id: "comment", label: "Comment", variant: "ghost" },
-      { id: "share", label: "Share", variant: "ghost" },
-    ],
-  },
-};
-
 export const sampleLinkedIn: SocialPostConfig = {
   post: {
     id: "linkedin-post-1",
@@ -190,13 +149,12 @@ export const sampleLinkedIn: SocialPostConfig = {
   },
 };
 
-export type SocialPostPresetName = "x" | "instagram" | "tiktok" | "linkedin";
+export type SocialPostPresetName = "x" | "instagram" | "linkedin";
 
 export const socialPostPresets: Record<SocialPostPresetName, SocialPostConfig> =
   {
     x: sampleX,
     instagram: sampleInstagram,
-    tiktok: sampleTikTok,
     linkedin: sampleLinkedIn,
   };
 
@@ -206,6 +164,5 @@ export const socialPostPresetDescriptions: Record<
 > = {
   x: "X with quoted post and verified badge",
   instagram: "Instagram post with multiple images",
-  tiktok: "TikTok video post with hashtags",
   linkedin: "LinkedIn post with link preview",
 };
