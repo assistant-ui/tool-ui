@@ -60,7 +60,7 @@ const stockColumns: Column<GenericRow>[] = [
 const stockData: GenericRow[] = [
   {
     symbol: "IBM",
-    name: "International Business Machines (Est. 1911)",
+    name: "International Business Machines",
     price: 170.42,
     change: 1.12,
     changePercent: 0.66,
@@ -68,7 +68,7 @@ const stockData: GenericRow[] = [
   },
   {
     symbol: "AAPL",
-    name: "Apple — from Apple I to Vision Pro",
+    name: "Apple",
     price: 178.25,
     change: 2.35,
     changePercent: 1.34,
@@ -76,7 +76,7 @@ const stockData: GenericRow[] = [
   },
   {
     symbol: "MSFT",
-    name: "Microsoft — BASIC on Altair to Copilot",
+    name: "Microsoft",
     price: 380.0,
     change: 1.24,
     changePercent: 0.33,
@@ -84,7 +84,7 @@ const stockData: GenericRow[] = [
   },
   {
     symbol: "INTC",
-    name: "Intel — 4004 to multi‑chiplet architectures",
+    name: "Intel Corporation",
     price: 39.85,
     change: -0.42,
     changePercent: -1.04,
@@ -92,7 +92,7 @@ const stockData: GenericRow[] = [
   },
   {
     symbol: "ORCL",
-    name: "Oracle — from SQL roots to cloud",
+    name: "Oracle Corporation",
     price: 110.31,
     change: 0.78,
     changePercent: 0.71,
