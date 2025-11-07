@@ -191,6 +191,7 @@
   .dark .scrollbar-subtle:hover::-webkit-scrollbar-thumb {
     background-color: oklch(0 0 0 / 0.55);
   }
+
 }
 
 @layer base {

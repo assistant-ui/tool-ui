@@ -426,7 +426,10 @@ export function DataTable<T extends object = RowData>({
   return (
     <DataTableContext.Provider value={contextValue}>
       <div
-        className={cn("bg-card @container w-full rounded-md", className)}
+        className={cn(
+          "bg-card @container w-full rounded-lg shadow-xs",
+          className,
+        )}
       >
         <div className={cn("hidden @md:block")}>
           <div className="relative">

@@ -17,7 +17,7 @@ import { MediaCardFooter } from "./footer";
 import { LinkOverlay } from "./link-overlay";
 import { MediaCardProgress } from "./progress";
 
-const BASE_CARD_STYLE = "border border-border bg-card text-sm shadow-none";
+const BASE_CARD_STYLE = "border border-border bg-card text-sm shadow-xs";
 const DEFAULT_CONTENT_SPACING = "gap-4 p-5";
 const LINK_CONTENT_SPACING = "px-5 py-4 gap-3";
 
@@ -152,7 +152,7 @@ export function MediaCard(props: MediaCardProps) {
       <MediaCardProvider value={value}>
         <Card
           className={cn(
-            "group @container relative isolate flex w-full min-w-0 flex-col overflow-hidden rounded-xl shadow-sm",
+            "group @container relative isolate flex w-full min-w-0 flex-col overflow-hidden rounded-xl shadow-xs",
             BASE_CARD_STYLE,
             cardSpacingClass,
             className,

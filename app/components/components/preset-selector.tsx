@@ -101,7 +101,7 @@ export function PresetSelector({
           )}
           onClick={() => onSelectPreset(preset)}
         >
-          <ItemContent className="transform-gpu transition-transform duration-300 ease-[cubic-bezier(0.68,-0.55,0.27,1.55)] will-change-transform group-active/item:scale-[0.98] group-active/item:duration-150 group-active/item:ease-out">
+          <ItemContent className="transform-gpu transition-transform duration-300 ease-[cubic-bezier(0.3,-0.55,0.27,1.55)] will-change-transform group-active/item:scale-[0.98] group-active/item:duration-100 group-active/item:ease-out">
             <div className="relative flex items-start justify-between">
               <div className="flex flex-1 flex-col gap-1">
                 <ItemTitle className="flex w-full items-center justify-between capitalize">

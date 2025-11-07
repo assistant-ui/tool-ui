@@ -36,7 +36,6 @@ export function ControlsPanel({
   return (
     <div className="flex h-full flex-col">
       <div className="flex min-h-0 flex-1 flex-col gap-4 px-4 pt-4 pb-24">
-        <span className="text-muted-foreground text-sm">Examples</span>
         <PresetSelector
           componentId={componentId}
           currentPreset={currentPreset}
