@@ -120,7 +120,7 @@ const taskColumns: Column<GenericRow>[] = [
     format: {
       kind: "status",
       statusMap: {
-        todo: { tone: "neutral", label: "To Do" },
+        todo: { tone: "neutral", label: "Todo" },
         in_progress: { tone: "info", label: "In Progress" },
         done: { tone: "success", label: "Done" },
         blocked: { tone: "danger", label: "Blocked" },
@@ -329,28 +329,28 @@ const resourceColumns: Column<GenericRow>[] = [
 const resourceData: GenericRow[] = [
   {
     name: "The ENIAC Story",
-    category: "documentation",
+    category: "Documentation",
     url: "https://www.computerhistory.org/revolution/early-computers/5",
     tags: ["eniac", "vacuum-tube", "history"],
     updatedAt: "2025-05-12T09:00:00.000Z",
   },
   {
     name: "The UNIX Philosophy",
-    category: "reference",
+    category: "Reference",
     url: "https://homepage.cs.uri.edu/~thenry/resources/unix_art/ch01s06.html",
     tags: ["unix", "pipe", "philosophy"],
     updatedAt: "2025-05-12T13:00:00.000Z",
   },
   {
     name: "ARPANET Origins",
-    category: "tutorial",
+    category: "Tutorial",
     url: "https://www.internetsociety.org/internet/history-internet/brief-history-internet/",
     tags: ["arpanet", "internet", "packet-switching"],
     updatedAt: "2025-05-12T18:00:00.000Z",
   },
   {
     name: "Xerox PARC Research",
-    category: "tool",
+    category: "Tool",
     url: "https://xeroxparc.archive.org/",
     tags: ["gui", "wimp", "innovation"],
     updatedAt: "2025-05-06T09:00:00.000Z",

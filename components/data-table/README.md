@@ -589,7 +589,7 @@ Notes:
 
 // Status pills
 { key: 'status', label: 'Status', format: { kind: 'status', statusMap: {
-  todo: { tone: 'neutral', label: 'To Do' },
+  todo: { tone: 'neutral', label: 'Todo' },
   in_progress: { tone: 'info', label: 'In Progress' },
   done: { tone: 'success' },
   blocked: { tone: 'danger' },

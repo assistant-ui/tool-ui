@@ -101,12 +101,12 @@ export function DataTableAccordionCard({
     >
       <AccordionItem value={itemValue} className="group border-0">
         <AccordionTrigger
-          className="hover:bg-muted group-data-[state=open]:bg-muted w-full rounded-none px-4 py-3 hover:no-underline"
+          className="group-data-[state=closed]:hover:bg-accent/50 active:bg-accent/50 group-data-[state=open]:bg-muted w-full rounded-none px-4 py-3 hover:no-underline"
           aria-controls={detailsId}
           aria-label={`${rowLabel}. ${secondary.length > 0 ? "Expand for details" : ""}`}
         >
           <div className="flex w-full items-start justify-between">
-            <div className="min-w-0 flex-1">
+            <div className="flex min-w-0 flex-1 flex-col gap-2">
               {primaryColumn && (
                 <div
                   id={headingId}
@@ -126,7 +126,7 @@ export function DataTableAccordionCard({
 
               {secondaryPrimary.length > 0 && (
                 <div
-                  className="text-muted-foreground flex w-full flex-wrap gap-x-3 gap-y-1"
+                  className="text-muted-foreground flex w-full flex-wrap gap-x-4 gap-y-0.5"
                   role="group"
                   aria-label="Summary information"
                 >
@@ -134,12 +134,12 @@ export function DataTableAccordionCard({
                     <span
                       key={col.key}
                       id={secondaryDataIds[idx]}
-                      className="flex min-w-0 gap-2"
+                      className="flex min-w-0 gap-1 font-normal"
                       role="cell"
                       aria-label={`${col.label}: ${row[col.key]}`}
                     >
-                      <span className="sr-only">{col.label}: </span>
-                      <span aria-hidden="true">{col.label}: </span>
+                      <span className="sr-only">{col.label}:</span>
+                      <span aria-hidden="true">{col.label}:</span>
                       <span className="truncate">
                         {renderFormattedValue({
                           value: row[col.key],
@@ -167,7 +167,9 @@ export function DataTableAccordionCard({
               className={cn(
                 "flex flex-col gap-2 pt-4",
                 "group-data-[state=open]:animate-in group-data-[state=open]:fade-in-0",
+                "group-data-[state=open]:slide-in-from-top-1",
                 "group-data-[state=closed]:animate-out group-data-[state=closed]:fade-out-0",
+                "group-data-[state=closed]:slide-out-to-top-1",
                 "duration-150",
               )}
               role="list"
@@ -180,7 +182,7 @@ export function DataTableAccordionCard({
                   role="listitem"
                 >
                   <dt
-                    className="text-muted-foreground bg-wash shrink-0 rounded px-2 py-1"
+                    className="text-muted-foreground shrink-0"
                     id={`row-${stableRowId}-${String(col.key)}-label`}
                   >
                     {col.label}
@@ -290,7 +292,7 @@ function SimpleCard({
         {otherColumns.map((col) => (
           <div
             key={col.key}
-            className="flex items-start justify-between gap-4"
+            className="flex items-start justify-between gap-4 border border-red-500"
             role="group"
           >
             <span

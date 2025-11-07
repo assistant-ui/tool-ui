@@ -93,7 +93,24 @@ function StatusBadge({ value, options }: StatusBadgeProps) {
         ? "outline"
         : "secondary";
 
-  return <Badge variant={variant}>{label}</Badge>;
+  return (
+    <Badge
+      variant={variant}
+      className={cn(
+        "border",
+        config.tone === "warning" &&
+          "bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-100",
+        config.tone === "success" &&
+          "bg-green-100 text-green-700 dark:bg-green-950 dark:text-green-100",
+        config.tone === "info" &&
+          "bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-100",
+        config.tone === "danger" &&
+          "bg-red-100 text-red-700 dark:bg-red-950 dark:text-red-100",
+      )}
+    >
+      {label}
+    </Badge>
+  );
 }
 
 interface CurrencyValueProps {
@@ -113,7 +130,7 @@ function CurrencyValue({ value, options, locale }: CurrencyValueProps) {
     maximumFractionDigits: decimals,
   }).format(value);
 
-  return <span className="font-mono tabular-nums">{formatted}</span>;
+  return <span className="tabular-nums">{formatted}</span>;
 }
 
 interface PercentValueProps {

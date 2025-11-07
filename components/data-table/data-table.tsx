@@ -533,7 +533,7 @@ function DataTableEmpty({ message }: { message: string }) {
 
   return (
     <TableBody>
-      <TableRow className="bg-muted/50 h-24 text-center">
+      <TableRow className="bg-background h-24 text-center">
         <TableCell
           colSpan={columns.length + (actions ? 1 : 0)}
           role="status"

@@ -128,7 +128,7 @@ const taskColumns: Column<TaskRow>[] = [
     format: {
       kind: "status" as const,
       statusMap: {
-        todo: { tone: "neutral" as const, label: "To Do" },
+        todo: { tone: "neutral" as const, label: "Todo" },
         in_progress: { tone: "info" as const, label: "In Progress" },
         done: { tone: "success" as const, label: "Done" },
         blocked: { tone: "danger" as const, label: "Blocked" },
