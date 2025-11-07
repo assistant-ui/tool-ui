@@ -206,7 +206,7 @@ export function ClientPreview({ componentId }: { componentId: string }) {
 
   return (
     <div className="flex h-full min-h-0 w-full flex-1 overflow-clip rounded-tl-lg border-t border-l">
-      <aside className="bg-background scrollbar-subtle flex h-full w-72 shrink-0 flex-col overflow-x-hidden overflow-y-auto border-r">
+      <aside className="bg-background scrollbar-subtle flex h-full w-72 shrink-0 flex-col overflow-x-hidden overflow-y-auto overscroll-contain border-r">
         <ControlsPanel
           componentId={componentId}
           currentPreset={currentPreset}
@@ -255,7 +255,7 @@ export function ClientPreview({ componentId }: { componentId: string }) {
         </div>
 
         {/* Resizable preview area */}
-        <div className="scrollbar-subtle relative flex flex-1 items-center justify-center overflow-auto p-6">
+        <div className="scrollbar-subtle relative flex flex-1 items-center justify-center overflow-auto overscroll-contain p-6">
           {activeTab === "ui" && (
             <div
               className="bg-dot-grid pointer-events-none absolute inset-0 opacity-60 dark:opacity-40"

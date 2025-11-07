@@ -681,7 +681,6 @@ export default function BuilderPage() {
                   )}
                 </div>
 
-                {/* Content area */}
                 <div className="flex-1 overflow-hidden">
                   {viewMode === "rendered" ? (
                     <WebView key={refreshKey} repo={repoId} />

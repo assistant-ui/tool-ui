@@ -22,7 +22,7 @@ const binaryPreset: DecisionPromptConfig = {
       { id: "cancel", label: "Nevermind", variant: "ghost" },
       { id: "mount", label: "Mount tape", variant: "default" },
     ],
-    align: "right",
+    align: "center",
   },
 };
 

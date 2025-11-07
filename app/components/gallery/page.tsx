@@ -21,7 +21,7 @@ export default function ComponentsGalleryPage() {
     <div className="flex min-h-0 flex-1">
       <div className="bg-background scrollbar-subtle flex min-h-0 flex-1 items-start justify-center overflow-auto rounded-lg rounded-tl-lg border-t border-l p-12">
         <div className="mx-auto w-full max-w-6xl">
-          <div className="columns-1 gap-6 [column-fill:_balance] md:columns-2 lg:columns-3 lg:gap-10">
+          <div className="columns-1 gap-6 [column-fill:_balance] md:columns-2 lg:gap-10 xl:columns-3">
             <div className="mb-6 [column-span:all] lg:mb-10">
               <DataTable {...sampleStocks} />
             </div>
