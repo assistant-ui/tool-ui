@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import { GeistSans } from "geist/font/sans";
 import { GeistMono } from "geist/font/mono";
 import { ThemeProvider } from "@/components/theme-provider";
+import { MobileNavSheet } from "@/components/mobile-nav-sheet";
 
 export const metadata = {
   title: {
@@ -26,6 +27,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           disableTransitionOnChange
         >
           {children}
+          <MobileNavSheet />
         </ThemeProvider>
       </body>
     </html>

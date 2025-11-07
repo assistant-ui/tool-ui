@@ -40,15 +40,15 @@ export function MobileNavSheet() {
       onPresentedChange={setPresented}
       defaultActiveDetent={1}
     >
-      {/* Mobile Trigger Button */}
+      {/* Floating Action Button */}
       <Sheet.Trigger asChild>
         <Button
-          variant="outline"
-          size="sm"
-          className="md:hidden"
+          variant="default"
+          size="icon"
+          className="fixed right-4 bottom-4 z-50 size-14 rounded-full shadow-lg md:hidden"
           aria-label="Open navigation"
         >
-          <Menu className="size-4" />
+          <Menu className="size-6" />
         </Button>
       </Sheet.Trigger>
 
@@ -90,19 +90,19 @@ export function MobileNavSheet() {
                 <Scroll.Content>
                   <nav className="flex flex-col gap-2 p-4 pt-12">
                     {mainNavLinks.map(({ href, label, isActive }) => (
-                      <Sheet.Trigger key={href} asChild>
-                        <Link
-                          href={href}
-                          className={cn(
-                            "rounded-lg px-4 py-4 text-3xl font-medium transition-colors",
-                            isActive
-                              ? "bg-muted text-foreground"
-                              : "text-primary hover:bg-muted/50 hover:text-foreground",
-                          )}
-                        >
-                          {label}
-                        </Link>
-                      </Sheet.Trigger>
+                      <Link
+                        key={href}
+                        href={href}
+                        onClick={() => setPresented(false)}
+                        className={cn(
+                          "rounded-lg px-4 py-4 text-3xl font-medium transition-colors",
+                          isActive
+                            ? "bg-muted text-foreground"
+                            : "text-primary hover:bg-muted/50 hover:text-foreground",
+                        )}
+                      >
+                        {label}
+                      </Link>
                     ))}
                   </nav>
                   <div className="my-3 px-8">
@@ -117,19 +117,19 @@ export function MobileNavSheet() {
                       const isActive = pathname === component.path;
 
                       return (
-                        <Sheet.Trigger key={component.id} asChild>
-                          <Link
-                            href={component.path}
-                            className={cn(
-                              "text-primary rounded-lg px-4 py-3.5",
-                              isActive
-                                ? "bg-muted text-foreground font-medium"
-                                : "text-primary hover:bg-muted/50 hover:text-foreground",
-                            )}
-                          >
-                            {component.label}
-                          </Link>
-                        </Sheet.Trigger>
+                        <Link
+                          key={component.id}
+                          href={component.path}
+                          onClick={() => setPresented(false)}
+                          className={cn(
+                            "text-primary rounded-lg px-4 py-3.5",
+                            isActive
+                              ? "bg-muted text-foreground font-medium"
+                              : "text-primary hover:bg-muted/50 hover:text-foreground",
+                          )}
+                        >
+                          {component.label}
+                        </Link>
                       );
                     })}
                   </div>

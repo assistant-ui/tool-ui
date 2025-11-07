@@ -393,6 +393,7 @@ export function CodePanel({
         defaultColor="light-dark()"
         startingLineNumber={1}
         showLanguage={false}
+        showLineNumbers={true}
         className="scrollbar-subtle text-sm"
         style={
           {

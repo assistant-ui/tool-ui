@@ -181,7 +181,6 @@ const ResizableChat = memo(function ResizableChat({
     <PanelGroup
       ref={panelGroupRef}
       direction="horizontal"
-      autoSaveId="homepage-chat-layout"
       style={{ overflow: "visible" }}
       onLayout={handleLayout}
     >

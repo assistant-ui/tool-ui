@@ -7,7 +7,6 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { FaGithub } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
-import { MobileNavSheet } from "@/components/mobile-nav-sheet";
 
 interface ResponsiveHeaderProps {
   rightContent?: ReactNode;
@@ -79,10 +78,9 @@ export function ResponsiveHeader({ rightContent }: ResponsiveHeaderProps) {
         </div>
       </div>
 
-      {/* Mobile Menu Button and Right Content */}
+      {/* Mobile Right Content */}
       <div className="flex flex-1 items-center justify-end gap-2 md:hidden">
         {rightContent}
-        <MobileNavSheet />
       </div>
     </div>
   );

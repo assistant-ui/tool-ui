@@ -254,7 +254,7 @@ export function ClientPreview({ componentId }: { componentId: string }) {
         </div>
 
         {/* Resizable preview area */}
-        <div className="scrollbar-subtle relative flex flex-1 justify-center overflow-auto overscroll-contain px-2 py-6 pt-12 lg:pt-24">
+        <div className="scrollbar-subtle relative flex flex-1 justify-center overflow-auto overscroll-contain px-2 py-6">
           {activeTab === "ui" && (
             <div
               className="bg-dot-grid bg-wash pointer-events-none absolute inset-0 opacity-60 dark:opacity-40"
@@ -262,11 +262,10 @@ export function ClientPreview({ componentId }: { componentId: string }) {
             />
           )}
           {activeTab === "ui" ? (
-            <div className="relative h-fit w-full">
+            <div className="relative h-fit w-full pt-12 lg:pt-24">
               <PanelGroup
                 ref={horizontalPanelGroupRef}
                 direction="horizontal"
-                autoSaveId={`component-preview-h-${componentId}`}
                 onLayout={handleHorizontalLayout}
               >
                 <Panel defaultSize={7.5} minSize={0} />
