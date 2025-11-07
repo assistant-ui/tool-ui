@@ -22,20 +22,19 @@ export const componentsRegistry: ComponentMetadata[] = [
     icon: Table,
     path: "/components/data-table",
   },
-
-  {
-    id: "media-card",
-    label: "Media Card",
-    description: "Preview images, links, videos, and audio safely",
-    icon: Image,
-    path: "/components/media-card",
-  },
   {
     id: "decision-prompt",
     label: "Decision Prompt",
     description: "Inline prompts for user decisions and actions",
     icon: CheckCircle2,
     path: "/components/decision-prompt",
+  },
+  {
+    id: "media-card",
+    label: "Media Card",
+    description: "Preview images, links, videos, and audio safely",
+    icon: Image,
+    path: "/components/media-card",
   },
   {
     id: "social-post",
