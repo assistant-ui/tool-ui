@@ -101,15 +101,15 @@ export function MultiSelectActions({
           return (
             <Button
               key={action.id}
-              variant="secondary"
+              variant="ghost"
               size="sm"
               onClick={() => toggleSelection(action.id)}
               disabled={isDisabled}
               className={cn(
-                "min-h-[44px] px-4 py-4 text-sm font-medium transition-all",
+                "transition-xs min-h-[44px] border px-4 py-4 text-sm font-medium",
                 {
                   "w-full justify-start": isStacked,
-                  "border-primary/50 bg-primary/5": isSelected,
+                  "bg-accent hover:!bg-accent": isSelected,
                 },
               )}
             >
@@ -117,9 +117,10 @@ export function MultiSelectActions({
                 <div
                   className={cn(
                     "flex h-4 w-4 shrink-0 items-center justify-center rounded border-2 transition-colors",
-                    isSelected
-                      ? "border-primary bg-primary text-primary-foreground"
-                      : "border-muted-foreground/40",
+                    {
+                      "border-primary bg-primary text-primary-foreground":
+                        isSelected,
+                    },
                   )}
                 >
                   {isSelected && <Check className="h-3 w-3" />}

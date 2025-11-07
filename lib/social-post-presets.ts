@@ -20,6 +20,39 @@ export const sampleX: SocialPostConfig = {
       hashtags: ["computingHistory", "eniac", "fromMainframeToMobile"],
       mentions: [],
     },
+    stats: {
+      likes: 5,
+      comments: 2,
+      reposts: 1,
+      views: 450,
+      bookmarks: 3,
+    },
+    createdAtISO: "2025-11-05T14:01:00.000Z",
+    actions: [
+      { id: "reply", label: "Reply", variant: "ghost" },
+      { id: "repost", label: "Repost", variant: "ghost" },
+      { id: "like", label: "Like", variant: "ghost" },
+      { id: "share", label: "Share", variant: "ghost" },
+    ],
+  },
+};
+
+export const sampleXQuoted: SocialPostConfig = {
+  post: {
+    id: "x-post-1",
+    platform: "x",
+    author: {
+      name: "Athia Zohra",
+      handle: "athiazohra",
+      avatarUrl:
+        "https://images.unsplash.com/photo-1753288695169-e51f5a3ff24f?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=774",
+      verified: true,
+    },
+    text: "Wild to think: in the 1940s we literally rewired programs by hand. Today, we ship apps worldwide with a single command.",
+    entities: {
+      hashtags: ["computingHistory", "eniac", "fromMainframeToMobile"],
+      mentions: [],
+    },
     quotedPost: {
       id: "x-post-quoted-1",
       platform: "x",
@@ -153,7 +186,7 @@ export type SocialPostPresetName = "x" | "instagram" | "linkedin";
 
 export const socialPostPresets: Record<SocialPostPresetName, SocialPostConfig> =
   {
-    x: sampleX,
+    x: sampleXQuoted,
     instagram: sampleInstagram,
     linkedin: sampleLinkedIn,
   };
