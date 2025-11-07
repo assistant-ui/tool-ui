@@ -72,7 +72,7 @@ export function ComponentNav() {
                 title={collapsed ? component.label : undefined}
               >
                 {!collapsed && (
-                  <div className="flex flex-col overflow-hidden">
+                  <div className="flex flex-col overflow-hidden font-medium">
                     <span className="truncate">{component.label}</span>
                   </div>
                 )}

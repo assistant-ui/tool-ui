@@ -23,7 +23,7 @@ export default function BuilderLayout({ children }: { children: ReactNode }) {
       <div className="bg-background flex">
         <div className="flex w-fit shrink-0 items-center justify-start px-6 py-3">
           <Link href="/">
-            <h1 className="text-xl font-semibold tracking-wide">tool-ui.com</h1>
+            <h1 className="text-xl font-semibold tracking-wide">Tool UI</h1>
           </Link>
         </div>
         <div className="flex flex-1 items-center justify-between px-6 py-3">
@@ -33,8 +33,8 @@ export default function BuilderLayout({ children }: { children: ReactNode }) {
               className={cn(
                 "rounded-lg px-4 py-2 text-sm font-medium transition-colors",
                 isHome
-                  ? "bg-muted text-foreground"
-                  : "text-muted-foreground hover:text-foreground hover:bg-muted/50",
+                  ? "text-foreground"
+                  : "text-muted-foreground hover:text-foreground hover:bg-muted",
               )}
             >
               Home
@@ -44,8 +44,8 @@ export default function BuilderLayout({ children }: { children: ReactNode }) {
               className={cn(
                 "rounded-lg px-4 py-2 text-sm font-medium transition-colors",
                 isComponents
-                  ? "bg-muted text-foreground"
-                  : "text-muted-foreground hover:text-foreground hover:bg-muted/50",
+                  ? "text-foreground"
+                  : "text-muted-foreground hover:text-foreground hover:bg-muted",
               )}
             >
               Components
@@ -55,8 +55,8 @@ export default function BuilderLayout({ children }: { children: ReactNode }) {
               className={cn(
                 "rounded-lg px-4 py-2 text-sm font-medium transition-colors",
                 isBuilder
-                  ? "bg-muted text-foreground"
-                  : "text-muted-foreground hover:text-foreground hover:bg-muted/50",
+                  ? "text-foreground"
+                  : "text-muted-foreground hover:text-foreground hover:bg-muted",
               )}
             >
               Builder

@@ -3,7 +3,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ControlsPanel } from "../components/controls-panel";
 import { CodePanel } from "../components/code-panel";
-import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { DataTable } from "@/components/registry/data-table";
@@ -221,9 +220,9 @@ export function ClientPreview({ componentId }: { componentId: string }) {
           onMediaCardMaxWidthChange={setMediaCardMaxWidth}
         />
       </aside>
-      <div className="flex min-h-0 min-w-0 flex-1 flex-col">
+      <div className="relative flex min-h-0 min-w-0 flex-1 flex-col">
         {/* Header with status and tabs */}
-        <div className="flex items-center justify-between px-6 py-3">
+        <div className="absolute top-0 right-0 left-0 z-10 flex items-center justify-between px-6 py-3">
           <div className="flex items-center gap-2">
             <Label htmlFor="preview-loading" className="text-sm">
               Loading
@@ -258,7 +257,7 @@ export function ClientPreview({ componentId }: { componentId: string }) {
         <div className="scrollbar-subtle relative flex flex-1 justify-center overflow-auto overscroll-contain px-2 py-6 pt-12 lg:pt-16">
           {activeTab === "ui" && (
             <div
-              className="bg-dot-grid pointer-events-none absolute inset-0 opacity-60 dark:opacity-40"
+              className="bg-dot-grid bg-wash pointer-events-none absolute inset-0 opacity-60 dark:opacity-40"
               aria-hidden="true"
             />
           )}
@@ -281,7 +280,7 @@ export function ClientPreview({ componentId }: { componentId: string }) {
                   minSize={PREVIEW_MIN_SIZE}
                   maxSize={PREVIEW_MAX_SIZE}
                 >
-                  <div className="border-border scrollbar-subtle relative overflow-hidden rounded-lg border-2 border-dashed transition-all">
+                  <div className="border-border scrollbar-subtle relative overflow-hidden rounded-3xl border-2 border-dashed transition-all">
                     <div className="relative m-0 flex flex-col p-4">
                       <div className="w-full">
                         {componentId === "data-table" && currentConfig && (
