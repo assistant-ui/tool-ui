@@ -426,7 +426,7 @@ export function DataTable<T extends object = RowData>({
   return (
     <DataTableContext.Provider value={contextValue}>
       <div
-        className={cn("bg-background @container w-full rounded-md", className)}
+        className={cn("bg-card @container w-full rounded-md", className)}
       >
         <div className={cn("hidden @md:block")}>
           <div className="relative">
@@ -481,7 +481,7 @@ export function DataTable<T extends object = RowData>({
         </div>
 
         <div
-          className={cn("flex flex-col gap-2 @md:hidden")}
+          className={cn("bg-card flex flex-col gap-2 @md:hidden")}
           role="list"
           aria-label="Data table (mobile card view)"
           aria-describedby="mobile-table-description"
@@ -533,7 +533,7 @@ function DataTableEmpty({ message }: { message: string }) {
 
   return (
     <TableBody>
-      <TableRow className="bg-background h-24 text-center">
+      <TableRow className="bg-card h-24 text-center">
         <TableCell
           colSpan={columns.length + (actions ? 1 : 0)}
           role="status"

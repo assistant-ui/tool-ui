@@ -30,18 +30,8 @@ export function ThemeToggle() {
       className="bg-background relative shadow-sm"
       onClick={toggleTheme}
     >
-      <Sun
-        className={cn(
-          "h-4 w-4 transition-all",
-          isDark ? "scale-0 rotate-90" : "scale-100 rotate-0",
-        )}
-      />
-      <Moon
-        className={cn(
-          "absolute h-4 w-4 transition-all",
-          isDark ? "scale-100 rotate-0" : "scale-0 -rotate-90",
-        )}
-      />
+      <Sun className={cn("size-4")} />
+      <Moon className={cn("absolute size-4")} />
       <span className="sr-only">Toggle theme</span>
     </Button>
   );

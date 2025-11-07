@@ -105,7 +105,7 @@ export function SocialPost(props: SocialPostProps) {
   return (
     <article
       className={cn(
-        "text-card-foreground @container",
+        "text-card-foreground bg-background @container",
         cfg.tokens.radius,
         cfg.tokens.spacing.container,
         cfg.tokens.borders.container,
