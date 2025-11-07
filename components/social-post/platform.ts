@@ -101,7 +101,7 @@ export const PLATFORM: Record<Platform, PlatformConfig> = {
       spacing: {
         container: "p-3",
         gap: "gap-2",
-        avatarSize: "w-10 h-10",
+        avatarSize: "size-12",
         actionGap: "gap-12",
       },
       borders: {

@@ -25,6 +25,11 @@ export function Actions() {
   const { post, cfg, state, setState, handlers, actionOverrides } =
     useSocialPost();
 
+  // Don't render if no actions are defined
+  if (!post.actions || post.actions.length === 0) {
+    return null;
+  }
+
   const defaults = Object.keys(cfg.actions).filter((id) => id !== "menu");
   const serverActions = post.actions ?? [];
   const runtimeOverrides = actionOverrides;
@@ -144,7 +149,7 @@ export function Actions() {
           cfg.tokens.spacing.actionGap,
         )}
       >
-        <div className="flex flex-1 items-center justify-between">
+        <div className="flex flex-1 items-center justify-start">
           {resolvedActions.slice(0, 4).map((action) => {
             const toggleKey = TOGGLE_MAP[action.id];
             const isActive = toggleKey ? (state[toggleKey] ?? false) : false;

@@ -217,29 +217,13 @@ export function DemoChat() {
                 id: "x-draft-1",
                 platform: "x",
                 author: {
-                  name: "You",
-                  handle: "yournewsletter",
+                  name: "Ariandel Osorio",
+                  handle: "ariandelosorio",
                   avatarUrl:
                     "https://api.dicebear.com/7.x/avataaars/svg?seed=User",
                 },
                 text: "The AI boom is reshaping tech markets. NVDA up 68% P/E, META leading with 1.87% gains. This week's newsletter breaks down what it means for the industry 👇",
-                linkPreview: {
-                  url: "https://assistant-ui.com/blog/tool-ui-patterns",
-                  title: "Designing tool-friendly media cards",
-                  description:
-                    "How to structure robust previews for images, video, audio, and streaming tool output.",
-                  imageUrl:
-                    "https://images.unsplash.com/photo-1626846116799-ad61f874f99d?auto=format&fit=crop&q=80&w=1200",
-                  domain: "assistant-ui.com",
-                },
-                stats: {
-                  comments: 0,
-                  reposts: 0,
-                  likes: 0,
-                  views: 0,
-                  shares: 0,
-                  bookmarks: 0,
-                },
+
                 createdAtISO: "2025-11-05T09:15:00.000Z",
               },
             },

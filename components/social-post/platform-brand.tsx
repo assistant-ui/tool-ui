@@ -4,12 +4,11 @@ import type { Platform } from "./schema";
 
 type LogoProps = {
   className?: string;
-  color?: string;
 };
 
 const sanitizeId = (value: string) => value.replace(/[^a-zA-Z0-9_-]/g, "-");
 
-const XLogo: React.FC<LogoProps> = ({ className, color }) => (
+const XLogo: React.FC<LogoProps> = ({ className }) => (
   <svg
     viewBox="0 0 300 271"
     width="100%"
@@ -21,7 +20,7 @@ const XLogo: React.FC<LogoProps> = ({ className, color }) => (
   >
     <path
       d="m236 0h46l-101 115 118 156h-92.6l-72.5-94.8-83 94.8h-46l107-123-113-148h94.9l65.5 86.6zm-16.1 244h25.5l-165-218h-27.4z"
-      fill={color ?? "#000"}
+      className="fill-black dark:fill-white"
     />
   </svg>
 );
@@ -133,7 +132,7 @@ export function PlatformLogo({
       role="img"
       aria-label={`${platform} logo`}
     >
-      <Logo className="h-6 w-6" color={color} />
+      <Logo className="size-6" />
     </span>
   );
 }

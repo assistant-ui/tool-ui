@@ -29,8 +29,6 @@ export const sampleX: SocialPostConfig = {
     },
     createdAtISO: "2025-11-05T14:01:00.000Z",
     actions: [
-      { id: "reply", label: "Reply", variant: "ghost" },
-      { id: "repost", label: "Repost", variant: "ghost" },
       { id: "like", label: "Like", variant: "ghost" },
       { id: "share", label: "Share", variant: "ghost" },
     ],
@@ -88,8 +86,6 @@ export const sampleXQuoted: SocialPostConfig = {
     },
     createdAtISO: "2025-11-05T14:01:00.000Z",
     actions: [
-      { id: "reply", label: "Reply", variant: "ghost" },
-      { id: "repost", label: "Repost", variant: "ghost" },
       { id: "like", label: "Like", variant: "ghost" },
       { id: "share", label: "Share", variant: "ghost" },
     ],

@@ -26,7 +26,7 @@ export function ComponentNav() {
   const buildLinkClasses = (isActive: boolean) =>
     cn(
       "flex items-center gap-3 rounded-md px-3 py-2 text-sm",
-      isActive ? "bg-muted text-foreground font-medium" : "hover:bg-muted/50",
+      isActive ? "bg-muted text-foreground" : "hover:bg-muted/50",
       collapsed && "justify-center px-0",
     );
 
@@ -54,7 +54,7 @@ export function ComponentNav() {
             />
             {!collapsed && (
               <div className="flex flex-col overflow-hidden">
-                <span className="truncate font-medium">Gallery</span>
+                <span className="truncate">Gallery</span>
               </div>
             )}
           </Link>
@@ -72,7 +72,7 @@ export function ComponentNav() {
                 title={collapsed ? component.label : undefined}
               >
                 {!collapsed && (
-                  <div className="flex flex-col overflow-hidden font-medium">
+                  <div className="overflow-hidden">
                     <span className="truncate">{component.label}</span>
                   </div>
                 )}
