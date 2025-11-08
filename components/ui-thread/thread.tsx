@@ -11,9 +11,9 @@ import type { FC } from "react";
 
 export const Thread: FC = () => {
   return (
-    <ThreadPrimitive.Root className="flex h-full flex-1 flex-col">
+    <ThreadPrimitive.Root className="flex h-full min-h-0 flex-1 flex-col">
       {/* Messages Viewport */}
-      <ThreadPrimitive.Viewport className="relative flex flex-1 flex-col overflow-y-auto px-4">
+      <ThreadPrimitive.Viewport className="relative flex min-h-0 max-h-full flex-1 flex-col overflow-y-auto px-4">
         {/* Messages */}
         <ThreadPrimitive.Messages
           components={{

@@ -24,34 +24,4 @@ export const docsRegistry: DocsPageMeta[] = [
     description: "Principles for designing Tool UI components",
     path: "/docs/design-guidelines",
   },
-  {
-    id: "implementation-guidelines",
-    label: "Implementation Guidelines",
-    description: "Conventions for building new components",
-    path: "/docs/implementation-guidelines",
-  },
-  {
-    id: "patterns",
-    label: "Patterns",
-    description: "Reusable flows like confirms and error states",
-    path: "/docs/patterns",
-  },
-  {
-    id: "accessibility",
-    label: "Accessibility",
-    description: "WCAG targets, keyboard maps, and ARIA guidance",
-    path: "/docs/accessibility",
-  },
-  {
-    id: "theming-tokens",
-    label: "Theming & Tokens",
-    description: "Colors, spacing, motion, and variants",
-    path: "/docs/theming-tokens",
-  },
-  {
-    id: "architecture",
-    label: "Architecture",
-    description: "Component architecture and container queries",
-    path: "/docs/architecture",
-  },
 ];

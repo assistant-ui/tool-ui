@@ -179,9 +179,14 @@ const FRAGMENT_SHADER = /* glsl */ `
 export function ZenField({ className }: ZenFieldProps) {
   const { resolvedTheme } = useTheme();
   const prefersReducedMotion = usePrefersReducedMotion();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const palette = resolvedTheme === "dark" ? DARK_PALETTE : LIGHT_PALETTE;
-  const blendClass = resolvedTheme === "dark" ? "" : "mix-blend-multiply";
+  const blendClass = mounted && resolvedTheme !== "dark" ? "mix-blend-multiply" : "";
 
   return (
     <div

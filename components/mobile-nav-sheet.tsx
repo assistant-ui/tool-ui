@@ -10,8 +10,9 @@ import { FaXTwitter } from "react-icons/fa6";
 import { componentsRegistry } from "@/lib/components-registry";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import "./mobile-nav-sheet.css";
 import { Separator } from "./ui/separator";
+
+import "./mobile-nav-sheet.css";
 
 export function MobileNavSheet() {
   const pathname = usePathname();
@@ -69,7 +70,6 @@ export function MobileNavSheet() {
             </div>
 
             {/* Top Scroll Indicator Gradient */}
-
             <div className="from-background pointer-events-none absolute top-0 right-0 left-0 z-10 h-24 rounded-tl-xl rounded-tr-xl bg-gradient-to-b to-transparent" />
 
             <Scroll.Root className="scrollbar-subtle flex-1 overflow-hidden">
@@ -137,7 +137,7 @@ export function MobileNavSheet() {
               <div className="from-background pointer-events-none absolute right-0 bottom-16 left-0 h-20 bg-gradient-to-t to-transparent" />
             )}
 
-            {/* Social Links Footer - Fixed to Bottom */}
+            {/* Social Links Footer */}
             <div className="bg-background relative z-10 h-16 w-full px-4 py-3">
               <div className="flex w-full gap-2">
                 <Button variant="outline" size="lg" className="flex-1" asChild>
