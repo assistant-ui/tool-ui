@@ -11,10 +11,7 @@ interface ActiveNavLinkProps {
 
 export function ActiveNavLink({ href, children }: ActiveNavLinkProps) {
   const pathname = usePathname();
-  const isActive =
-    href === "/"
-      ? pathname === "/"
-      : pathname.startsWith(href);
+  const isActive = href === "/" ? pathname === "/" : pathname.startsWith(href);
 
   return (
     <Link
