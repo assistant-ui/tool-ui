@@ -1,8 +1,8 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { ControlsPanel } from "../components/controls-panel";
-import { CodePanel } from "../components/code-panel";
+import { ControlsPanel } from "../_components/controls-panel";
+import { CodePanel } from "../_components/code-panel";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { DataTable } from "@/components/registry/data-table";
@@ -24,7 +24,7 @@ import {
   DecisionPromptPresetName,
   decisionPromptPresets,
 } from "@/lib/decision-prompt-presets";
-import { useComponents } from "../components-context";
+import { useComponents } from "../_components/components-context";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import { Button } from "@/components/ui/button";
 import { ButtonGroup } from "@/components/ui/button-group";

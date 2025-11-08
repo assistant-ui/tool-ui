@@ -5,13 +5,15 @@ import { usePathname } from "next/navigation";
 import { ComponentsProvider } from "./components-context";
 import { ViewportControls, ViewportSize } from "@/components/viewport-controls";
 import AppShell from "@/components/app-shell";
-import { DocsNav } from "./components/docs-nav";
+import { DocsNav } from "./docs-nav";
 
 interface ComponentsLayoutClientProps {
   children: ReactNode;
 }
 
-export function ComponentsLayoutClient({ children }: ComponentsLayoutClientProps) {
+export function ComponentsLayoutClient({
+  children,
+}: ComponentsLayoutClientProps) {
   const [viewport, setViewport] = useState<ViewportSize>("desktop");
   const pathname = usePathname();
   const isGallery = pathname === "/docs/gallery" || pathname === "/docs";
