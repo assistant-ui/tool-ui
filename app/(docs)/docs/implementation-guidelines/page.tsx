@@ -1,6 +1,6 @@
 export default function ImplementationGuidelinesPage() {
   return (
-    <div className="p-6 prose dark:prose-invert max-w-3xl">
+    <div className="prose dark:prose-invert max-w-3xl p-6">
       <h1>Implementation Guidelines</h1>
       <p>Conventions and patterns for building new components.</p>
       <ul>
@@ -13,4 +13,3 @@ export default function ImplementationGuidelinesPage() {
     </div>
   );
 }
-

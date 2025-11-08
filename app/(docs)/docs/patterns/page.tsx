@@ -1,6 +1,6 @@
 export default function PatternsPage() {
   return (
-    <div className="p-6 prose dark:prose-invert max-w-3xl">
+    <div className="prose dark:prose-invert max-w-3xl p-6">
       <h1>Patterns</h1>
       <p>Reusable flows and recipes across components.</p>
       <ul>
@@ -11,4 +11,3 @@ export default function PatternsPage() {
     </div>
   );
 }
-

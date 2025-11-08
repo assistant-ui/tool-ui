@@ -1,6 +1,6 @@
 export default function DesignGuidelinesPage() {
   return (
-    <div className="p-6 prose dark:prose-invert max-w-3xl">
+    <div className="prose dark:prose-invert max-w-3xl p-6">
       <h1>Design Guidelines</h1>
       <p>Principles for designing consistent Tool UI components.</p>
       <ul>
@@ -13,4 +13,3 @@ export default function DesignGuidelinesPage() {
     </div>
   );
 }
-

@@ -1,6 +1,6 @@
 export default function ThemingTokensPage() {
   return (
-    <div className="p-6 prose dark:prose-invert max-w-3xl">
+    <div className="prose dark:prose-invert max-w-3xl p-6">
       <h1>Theming & Tokens</h1>
       <p>Color, spacing, typography, and motion foundations.</p>
       <ul>
@@ -11,4 +11,3 @@ export default function ThemingTokensPage() {
     </div>
   );
 }
-
