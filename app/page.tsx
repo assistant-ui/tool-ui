@@ -163,7 +163,7 @@ function HomePageContent({ showLogoDebug }: { showLogoDebug: boolean }) {
         />
       }
     >
-      <main className="bg-background relative grid h-full max-h-[800px] min-h-0 max-w-[1400px] grid-cols-[2fr_3fr] gap-10 overflow-hidden p-6">
+      <main className="bg-background relative grid h-full max-h-[800px] min-h-0 max-w-[1400px] grid-cols-1 gap-10 overflow-hidden md:grid-cols-[2fr_3fr] md:p-6">
         <div
           className="bg-dot-grid pointer-events-none absolute inset-0 opacity-60 dark:opacity-40"
           aria-hidden="true"
@@ -174,14 +174,12 @@ function HomePageContent({ showLogoDebug }: { showLogoDebug: boolean }) {
             <HypercubeCanvas cubeWidth={cubeWidth} />
           </div>
           <div className="flex flex-col gap-3">
-            <h1 className="text-4xl font-bold tracking-tight md:text-6xl">
-              Tool UI
-            </h1>
-            <h2 className="text-xl tracking-tight md:text-2xl">
+            <h1 className="text-6xl font-bold tracking-tight">Tool UI</h1>
+            <h2 className="text-2xl tracking-tight">
               Beautiful UI components for AI tool calls
             </h2>
           </div>
-          <p className="text-muted-foreground mb-2 text-base md:text-lg">
+          <p className="text-muted-foreground mb-2 text-lg">
             Responsive, accessible, typed, copy-pasteable. <br />
             Built on Radix, shadcn/ui, and Tailwind. Open Source.
             <br />
