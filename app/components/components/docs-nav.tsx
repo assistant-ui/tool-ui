@@ -10,6 +10,7 @@ import { cn } from "@/lib/utils";
 import { Separator } from "@/components/ui/separator";
 
 const STORAGE_KEY = "tool-ui-components-nav-collapsed";
+const SHOW_DOCS_IN_NAV = false;
 
 export function DocsNav() {
   const pathname = usePathname();
@@ -67,33 +68,35 @@ export function DocsNav() {
 
         {/* Docs Section */}
         <div className="flex flex-col gap-12">
-          <div className="mt-4 flex flex-col gap-1 px-4">
-            {!collapsed && (
-              <div className="text-muted-foreground mb-2 px-3 text-sm">
-                Docs
-              </div>
-            )}
-            {docsRegistry.map((doc: DocsPageMeta) => {
-              const isActive = pathname.startsWith(doc.path);
-              return (
-                <Link
-                  key={doc.id}
-                  href={doc.path}
-                  className={buildLinkClasses(isActive)}
-                  title={collapsed ? doc.label : undefined}
-                >
-                  {!collapsed && (
-                    <div className="overflow-hidden">
-                      <span className="truncate">{doc.label}</span>
-                    </div>
-                  )}
-                </Link>
-              );
-            })}
-          </div>
+          {SHOW_DOCS_IN_NAV && (
+            <div className="mt-4 flex flex-col gap-1 px-4">
+              {!collapsed && (
+                <div className="text-muted-foreground mb-2 px-3 text-sm">
+                  Docs
+                </div>
+              )}
+              {docsRegistry.map((doc: DocsPageMeta) => {
+                const isActive = pathname.startsWith(doc.path);
+                return (
+                  <Link
+                    key={doc.id}
+                    href={doc.path}
+                    className={buildLinkClasses(isActive)}
+                    title={collapsed ? doc.label : undefined}
+                  >
+                    {!collapsed && (
+                      <div className="overflow-hidden">
+                        <span className="truncate">{doc.label}</span>
+                      </div>
+                    )}
+                  </Link>
+                );
+              })}
+            </div>
+          )}
 
           {/* Components Section */}
-          <div className="-mt-2 flex flex-col gap-1 px-4">
+          <div className="flex flex-col gap-1 px-4 pt-4">
             {!collapsed && (
               <div className="text-muted-foreground mb-2 px-3 text-sm">
                 Components

@@ -2,11 +2,11 @@
 
 import {
   memo,
-  type MutableRefObject,
   useCallback,
   useRef,
   useState,
   Suspense,
+  type RefObject,
 } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
@@ -16,16 +16,13 @@ import { App as HypercubeCanvas } from "@/components/rotating-hypercube";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import {
-  ViewportControls,
-  type ViewportSize,
-} from "@/components/viewport-controls";
-import {
   Panel,
   PanelGroup,
   PanelResizeHandle,
   type ImperativePanelGroupHandle,
 } from "react-resizable-panels";
-import { ResponsiveHeader } from "@/components/responsive-header";
+import { ViewportControls, ViewportSize } from "@/components/viewport-controls";
+import AppShell from "@/components/app-shell";
 
 const CHAT_MIN_SIZE = 50;
 const CHAT_MAX_SIZE = 100;
@@ -35,12 +32,60 @@ const CHAT_LAYOUTS: Record<ViewportSize, [number, number, number]> = {
   desktop: [0, CHAT_MAX_SIZE, 0],
 };
 
+type ResizableChatProps = {
+  panelGroupRef: RefObject<ImperativePanelGroupHandle | null>;
+  handleLayout: (sizes: number[]) => void;
+  defaultLayout: [number, number, number];
+};
+
+const ResizableChat = memo(function ResizableChat({
+  panelGroupRef,
+  handleLayout,
+  defaultLayout,
+}: ResizableChatProps) {
+  return (
+    <PanelGroup
+      ref={panelGroupRef}
+      className="h-full w-full"
+      direction="horizontal"
+      style={{ overflow: "visible" }}
+      onLayout={handleLayout}
+    >
+      <Panel defaultSize={defaultLayout[0]} minSize={0} />
+
+      <PanelResizeHandle className="group relative w-4">
+        <div className="absolute top-1/2 left-1/2 h-12 w-1 -translate-x-1/2 -translate-y-1/2 rounded-full bg-gray-300 opacity-40 transition-all group-hover:bg-gray-400 group-hover:opacity-100 group-data-resize-handle-active:bg-gray-500 group-data-resize-handle-active:opacity-100 dark:bg-gray-600 dark:group-hover:bg-gray-500 dark:group-data-resize-handle-active:bg-gray-400" />
+      </PanelResizeHandle>
+
+      <Panel
+        defaultSize={defaultLayout[1]}
+        minSize={CHAT_MIN_SIZE}
+        maxSize={CHAT_MAX_SIZE}
+        style={{ overflow: "visible" }}
+        className="relative flex"
+      >
+        <div className="bg-background border-border pointer-events-auto flex h-full min-h-0 w-full min-w-0 overflow-hidden rounded-lg border-2 border-dashed transition-all *:h-full *:min-h-0">
+          <DemoChat />
+        </div>
+      </Panel>
+
+      <PanelResizeHandle className="group relative w-4">
+        <div className="absolute top-1/2 left-1/2 h-12 w-1 -translate-x-1/2 -translate-y-1/2 rounded-full bg-gray-300 group-hover:bg-gray-400 group-data-resize-handle-active:bg-gray-500 dark:bg-gray-600 dark:group-hover:bg-gray-500 dark:group-data-resize-handle-active:bg-gray-400" />
+      </PanelResizeHandle>
+
+      <Panel defaultSize={defaultLayout[2]} minSize={0} />
+    </PanelGroup>
+  );
+});
+
+ResizableChat.displayName = "ResizableChat";
+
 function HomePageContent({ showLogoDebug }: { showLogoDebug: boolean }) {
   const [viewport, setViewport] = useState<ViewportSize>("desktop");
   const [chatPanelSize, setChatPanelSize] = useState<number>(
     CHAT_LAYOUTS.desktop[1],
   );
-  const panelGroupRef = useRef<ImperativePanelGroupHandle | null>(null);
+  const panelGroupRef = useRef<ImperativePanelGroupHandle>(null);
   const isSyncingLayout = useRef(false);
   const defaultLayout = CHAT_LAYOUTS.desktop;
 
@@ -107,31 +152,28 @@ function HomePageContent({ showLogoDebug }: { showLogoDebug: boolean }) {
     ((chatPanelSize - CHAT_MIN_SIZE) / (CHAT_MAX_SIZE - CHAT_MIN_SIZE)) * 2.0;
 
   return (
-    <div className="flex h-screen flex-col">
-      {/* Header with logo and tabs */}
-      <ResponsiveHeader
-        rightContent={
-          <ViewportControls
-            viewport={viewport}
-            onViewportChange={changeViewport}
-            showThemeToggle
-            showViewportButtons
-          />
-        }
-      />
-
-      {/* Main content */}
-      <main className="bg-background relative flex flex-1 flex-col overflow-hidden md:flex-row md:items-end md:justify-center">
+    <AppShell
+      noScroll
+      rightContent={
+        <ViewportControls
+          viewport={viewport}
+          onViewportChange={changeViewport}
+          showThemeToggle
+          showViewportButtons
+        />
+      }
+    >
+      <main className="bg-background relative grid h-full max-h-[800px] min-h-0 max-w-[1400px] grid-cols-[2fr_3fr] gap-10 overflow-hidden p-6">
         <div
           className="bg-dot-grid pointer-events-none absolute inset-0 opacity-60 dark:opacity-40"
           aria-hidden="true"
         />
 
-        <div className="relative z-10 flex max-w-2xl flex-col gap-5 p-6 pb-8 text-left md:p-8 md:pb-21">
+        <div className="relative z-10 flex max-w-2xl shrink-0 flex-col justify-end gap-7 overflow-y-auto pb-[8vh] pl-6">
           <div className="-mb-4 -ml-4 flex items-end justify-start">
             <HypercubeCanvas cubeWidth={cubeWidth} />
           </div>
-          <div className="flex flex-col gap-1">
+          <div className="flex flex-col gap-3">
             <h1 className="text-4xl font-bold tracking-tight md:text-6xl">
               Tool UI
             </h1>
@@ -144,15 +186,15 @@ function HomePageContent({ showLogoDebug }: { showLogoDebug: boolean }) {
             Built on Radix, shadcn/ui, and Tailwind. Open Source.
             <br />
           </p>
-          <Button asChild className="group w-fit px-6 py-3" size="lg">
+          <Button asChild className="group" size="homeCTA">
             <Link href="/docs/gallery">
               See the Components
-              <ArrowRight className="size-4 shrink-0 transition-transform group-hover:translate-x-1" />
+              <ArrowRight className="size-5 shrink-0 transition-transform group-hover:translate-x-1" />
             </Link>
           </Button>
         </div>
 
-        <div className="relative z-10 hidden h-full flex-1 px-12 py-12 md:flex">
+        <div className="relative hidden h-full min-h-0 flex-1 md:flex">
           <ResizableChat
             panelGroupRef={panelGroupRef}
             handleLayout={handleLayout}
@@ -162,56 +204,9 @@ function HomePageContent({ showLogoDebug }: { showLogoDebug: boolean }) {
 
         <Leva hidden={!showLogoDebug} collapsed={!showLogoDebug} />
       </main>
-    </div>
+    </AppShell>
   );
 }
-
-type ResizableChatProps = {
-  panelGroupRef: MutableRefObject<ImperativePanelGroupHandle | null>;
-  handleLayout: (sizes: number[]) => void;
-  defaultLayout: [number, number, number];
-};
-
-const ResizableChat = memo(function ResizableChat({
-  panelGroupRef,
-  handleLayout,
-  defaultLayout,
-}: ResizableChatProps) {
-  return (
-    <PanelGroup
-      ref={panelGroupRef}
-      direction="horizontal"
-      style={{ overflow: "visible" }}
-      onLayout={handleLayout}
-    >
-      <Panel defaultSize={defaultLayout[0]} minSize={0} />
-
-      <PanelResizeHandle className="group relative w-4">
-        <div className="absolute top-1/2 left-1/2 h-12 w-1 -translate-x-1/2 -translate-y-1/2 rounded-full bg-gray-300 opacity-40 transition-all group-hover:bg-gray-400 group-hover:opacity-100 group-data-resize-handle-active:bg-gray-500 group-data-resize-handle-active:opacity-100 dark:bg-gray-600 dark:group-hover:bg-gray-500 dark:group-data-resize-handle-active:bg-gray-400" />
-      </PanelResizeHandle>
-
-      <Panel
-        defaultSize={defaultLayout[1]}
-        minSize={CHAT_MIN_SIZE}
-        maxSize={CHAT_MAX_SIZE}
-        style={{ overflow: "visible" }}
-        className="relative flex items-center justify-center"
-      >
-        <div className="bg-background border-border pointer-events-auto flex h-full w-full overflow-hidden rounded-lg border-2 border-dashed transition-all">
-          <DemoChat />
-        </div>
-      </Panel>
-
-      <PanelResizeHandle className="group relative w-4">
-        <div className="absolute top-1/2 left-1/2 h-12 w-1 -translate-x-1/2 -translate-y-1/2 rounded-full bg-gray-300 group-hover:bg-gray-400 group-data-resize-handle-active:bg-gray-500 dark:bg-gray-600 dark:group-hover:bg-gray-500 dark:group-data-resize-handle-active:bg-gray-400" />
-      </PanelResizeHandle>
-
-      <Panel defaultSize={defaultLayout[2]} minSize={0} />
-    </PanelGroup>
-  );
-});
-
-ResizableChat.displayName = "ResizableChat";
 
 function SearchParamsWrapper() {
   const searchParams = useSearchParams();
