@@ -175,11 +175,11 @@ function HomePageContent({ showLogoDebug }: { showLogoDebug: boolean }) {
           </div>
           <div className="flex flex-col gap-3">
             <h1 className="text-6xl font-bold tracking-tight">Tool UI</h1>
-            <h2 className="text-2xl tracking-tight">
+            <h2 className="text-2xl tracking-tight text-pretty">
               Beautiful UI components for AI tool calls
             </h2>
           </div>
-          <p className="text-muted-foreground mb-2 text-lg">
+          <p className="text-muted-foreground mb-2 text-lg text-pretty">
             Responsive, accessible, typed, copy-pasteable. <br />
             Built on Radix, shadcn/ui, and Tailwind. Open Source.
             <br />

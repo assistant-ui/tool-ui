@@ -614,7 +614,7 @@ export default function BuilderPage() {
     <PreviewRefreshContext.Provider value={handleRefreshPreview}>
       <AssistantRuntimeProvider runtime={runtime}>
         <PreviewRefreshSetter />
-        <div className="flex h-full flex-col md:flex-row">
+        <div className="flex h-full flex-1 flex-col md:flex-row">
           {/* Thread List Sidebar - hidden on mobile */}
           <div className="bg-background hidden w-[240px] shrink-0 overflow-y-auto p-4 md:block">
             <ThreadList />
