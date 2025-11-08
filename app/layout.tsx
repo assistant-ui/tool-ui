@@ -5,12 +5,13 @@ import { GeistMono } from "geist/font/mono";
 import { ThemeProvider } from "@/components/theme-provider";
 import { MobileNavSheet } from "@/components/mobile-nav-sheet";
 
+const isProduction = process.env.NODE_ENV === "production";
+const title = isProduction ? "Tool UI" : "Tool UI — Dev";
+const description = "Beautiful UI components for AI tool calls";
+
 export const metadata = {
-  title: {
-    template: "%s | Tool UI Directory",
-    default: "Tool UI Directory",
-  },
-  description: "Beautiful UI components for AI tool calls",
+  title,
+  description,
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
