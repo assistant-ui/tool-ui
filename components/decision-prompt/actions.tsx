@@ -107,15 +107,28 @@ export function DecisionPromptActions({
     center: "justify-center",
     right: "justify-end",
   }[align];
-
-  const isStacked = layout === "stack";
+  const crossAlignClass = {
+    left: "items-start",
+    center: "items-center",
+    right: "items-end",
+  }[align];
+  // Button content is always centered, regardless of alignment
 
   return (
     <div
       className={cn(
         "flex gap-2",
-        isStacked ? "flex-col items-stretch" : "flex-wrap items-center",
-        !isStacked && alignClass,
+        // Stack by default; switch to inline above a container width
+        // of ~28rem (448px). If explicit stack, stay stacked always.
+        layout === "stack"
+          ? cn("flex-col", crossAlignClass)
+          : cn(
+              // Baseline (narrow): stacked, but let buttons size to content
+              cn("flex-col", crossAlignClass),
+              // Wide containers: inline row with wrapping and alignment
+              "@[28rem]:flex-row @[28rem]:flex-wrap @[28rem]:items-center",
+              `@[28rem]:${alignClass}`,
+            ),
         className,
       )}
     >
@@ -139,12 +152,16 @@ export function DecisionPromptActions({
           <Button
             key={action.id}
             variant={variant}
-            size="sm"
+            // Larger tap target on narrow containers; shrink on wide
+            size="lg"
             onClick={() => handleActionClick(action)}
             disabled={isDisabled}
             className={cn(
               "rounded-full",
-              isStacked && "w-full justify-start",
+              // Center content in all cases
+              "justify-center",
+              // Larger type/padding for small containers; revert on wide
+              "text-base @[28rem]:px-3 @[28rem]:py-2 @[28rem]:text-sm",
               isConfirming &&
                 "ring-destructive animate-pulse ring-2 ring-offset-2",
             )}

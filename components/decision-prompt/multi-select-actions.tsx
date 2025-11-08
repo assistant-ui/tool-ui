@@ -73,8 +73,14 @@ export function MultiSelectActions({
     center: "justify-center",
     right: "justify-end",
   }[align];
+  const crossAlignClass = {
+    left: "items-start",
+    center: "items-center",
+    right: "items-end",
+  }[align];
+  // Button content is always centered, regardless of alignment
 
-  const isStacked = layout === "stack";
+  
   const isConfirmDisabled =
     isExecuting || selectedIds.size < minSelections || selectedIds.size === 0;
   const isCancelDisabled = isExecuting || selectedIds.size === 0;
@@ -84,8 +90,15 @@ export function MultiSelectActions({
       <div
         className={cn(
           "flex gap-2.5",
-          isStacked ? "flex-col items-stretch gap-1" : "flex-wrap items-center",
-          !isStacked && alignClass,
+          layout === "stack"
+            ? cn("flex-col gap-1", crossAlignClass)
+            : cn(
+                // Baseline (narrow): stacked list style, content-fit width
+                cn("flex-col gap-1", crossAlignClass),
+                // Wide containers: inline row with wrapping and alignment
+                "@[28rem]:flex-row @[28rem]:flex-wrap @[28rem]:items-center",
+                `@[28rem]:${alignClass}`,
+              ),
         )}
       >
         {actions.map((action) => {
@@ -106,9 +119,10 @@ export function MultiSelectActions({
               onClick={() => toggleSelection(action.id)}
               disabled={isDisabled}
               className={cn(
-                "transition-xs bg-background min-h-[44px] border px-4 py-4 text-sm font-medium",
+                "transition-xs bg-background min-h-[44px] border text-sm font-medium",
+                // Center content in all cases; responsive padding/type
+                "justify-center px-5 py-4 text-base @[28rem]:px-4 @[28rem]:py-3 @[28rem]:text-sm",
                 {
-                  "w-full justify-start": isStacked,
                   "bg-accent hover:!bg-accent": isSelected,
                 },
               )}
@@ -136,18 +150,19 @@ export function MultiSelectActions({
       <div className={cn("flex items-center gap-4", alignClass)}>
         <Button
           variant="ghost"
-          size="sm"
+          size="lg"
           onClick={handleCancel}
           disabled={isCancelDisabled}
+          className="text-base @[28rem]:text-sm @[28rem]:px-3 @[28rem]:py-2"
         >
           {cancelLabel}
         </Button>
         <Button
           variant="default"
-          size="sm"
+          size="lg"
           onClick={handleConfirm}
           disabled={isConfirmDisabled}
-          className="min-w-24"
+          className="text-base @[28rem]:text-sm @[28rem]:px-3 @[28rem]:py-2"
         >
           {isExecuting ? (
             <>

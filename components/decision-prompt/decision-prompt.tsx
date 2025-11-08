@@ -31,7 +31,7 @@ export function DecisionPrompt({
 
   return (
     <div
-      className={cn(className)}
+      className={cn("@container", className)}
       data-slot="decision-prompt"
       data-state={isCompleted ? "completed" : "active"}
     >
