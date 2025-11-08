@@ -101,7 +101,7 @@ export function DataTableAccordionCard({
     >
       <AccordionItem value={itemValue} className="group border-0">
         <AccordionTrigger
-          className="group-data-[state=closed]:hover:bg-accent/50 active:bg-accent/50 group-data-[state=open]:bg-muted w-full rounded-none px-4 py-3 hover:no-underline"
+          className="group-data-[state=closed]:hover:bg-accent/50 bg-card active:bg-accent/50 group-data-[state=open]:bg-muted w-full rounded-none px-4 py-3 hover:no-underline"
           aria-controls={detailsId}
           aria-label={`${rowLabel}. ${secondary.length > 0 ? "Expand for details" : ""}`}
         >
@@ -157,7 +157,7 @@ export function DataTableAccordionCard({
         </AccordionTrigger>
 
         <AccordionContent
-          className={cn("flex flex-col gap-4", "px-4 pb-4")}
+          className={cn("bg-card flex flex-col gap-4", "px-4 pb-4")}
           id={detailsId}
           role="region"
           aria-labelledby={headingId}

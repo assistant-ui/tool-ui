@@ -425,17 +425,12 @@ export function DataTable<T extends object = RowData>({
 
   return (
     <DataTableContext.Provider value={contextValue}>
-      <div
-        className={cn(
-          "bg-card @container w-full rounded-lg shadow-xs",
-          className,
-        )}
-      >
+      <div className={cn("@container w-full rounded-lg shadow-xs", className)}>
         <div className={cn("hidden @md:block")}>
           <div className="relative">
             <div
               className={cn(
-                "relative w-full overflow-clip overflow-y-auto rounded-md border",
+                "bg-card relative w-full overflow-clip overflow-y-auto rounded-md border",
                 "touch-pan-x",
                 maxHeight && "max-h-[--max-height]",
               )}
@@ -484,7 +479,7 @@ export function DataTable<T extends object = RowData>({
         </div>
 
         <div
-          className={cn("bg-card flex flex-col gap-2 @md:hidden")}
+          className={cn("flex flex-col gap-2 @md:hidden")}
           role="list"
           aria-label="Data table (mobile card view)"
           aria-describedby="mobile-table-description"
