@@ -73,14 +73,7 @@ export function MultiSelectActions({
     center: "justify-center",
     right: "justify-end",
   }[align];
-  const crossAlignClass = {
-    left: "items-start",
-    center: "items-center",
-    right: "items-end",
-  }[align];
-  // Button content is always centered, regardless of alignment
 
-  
   const isConfirmDisabled =
     isExecuting || selectedIds.size < minSelections || selectedIds.size === 0;
   const isCancelDisabled = isExecuting || selectedIds.size === 0;
@@ -89,13 +82,15 @@ export function MultiSelectActions({
     <div className={cn("flex flex-col gap-3", className)}>
       <div
         className={cn(
-          "flex gap-2.5",
+          "flex w-full gap-2.5",
           layout === "stack"
-            ? cn("flex-col gap-1", crossAlignClass)
+            ? // For stacked lists, stretch items so each fills the container
+              "flex-col items-stretch gap-1"
             : cn(
-                // Baseline (narrow): stacked list style, content-fit width
-                cn("flex-col gap-1", crossAlignClass),
-                // Wide containers: inline row with wrapping and alignment
+                // Baseline (narrow): stacked, stretch items to fill width
+                "flex-col items-stretch gap-1",
+                // Wide containers: we still allow row layout if desired,
+                // alignment applies only at wide sizes
                 "@[28rem]:flex-row @[28rem]:flex-wrap @[28rem]:items-center",
                 `@[28rem]:${alignClass}`,
               ),
@@ -119,9 +114,9 @@ export function MultiSelectActions({
               onClick={() => toggleSelection(action.id)}
               disabled={isDisabled}
               className={cn(
-                "transition-xs bg-background min-h-[44px] border text-sm font-medium",
-                // Center content in all cases; responsive padding/type
-                "justify-center px-5 py-4 text-base @[28rem]:px-4 @[28rem]:py-3 @[28rem]:text-sm",
+                "transition-xs bg-background min-h-[44px] w-full border text-sm font-medium",
+                // Always left-align content; responsive padding/type
+                "justify-start px-5 py-4 text-base @[28rem]:px-4 @[28rem]:py-3 @[28rem]:text-sm",
                 {
                   "bg-accent hover:!bg-accent": isSelected,
                 },
@@ -153,7 +148,7 @@ export function MultiSelectActions({
           size="lg"
           onClick={handleCancel}
           disabled={isCancelDisabled}
-          className="text-base @[28rem]:text-sm @[28rem]:px-3 @[28rem]:py-2"
+          className="text-base @[28rem]:px-3 @[28rem]:py-2 @[28rem]:text-sm"
         >
           {cancelLabel}
         </Button>
@@ -162,7 +157,7 @@ export function MultiSelectActions({
           size="lg"
           onClick={handleConfirm}
           disabled={isConfirmDisabled}
-          className="text-base @[28rem]:text-sm @[28rem]:px-3 @[28rem]:py-2"
+          className="text-base @[28rem]:px-3 @[28rem]:py-2 @[28rem]:text-sm"
         >
           {isExecuting ? (
             <>

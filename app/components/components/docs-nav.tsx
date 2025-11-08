@@ -71,7 +71,7 @@ export function DocsNav() {
           {SHOW_DOCS_IN_NAV && (
             <div className="mt-4 flex flex-col gap-1 px-4">
               {!collapsed && (
-                <div className="text-muted-foreground mb-2 px-3 text-sm">
+                <div className="text-muted-foreground mb-2 cursor-default px-3 text-sm select-none">
                   Docs
                 </div>
               )}
@@ -98,7 +98,7 @@ export function DocsNav() {
           {/* Components Section */}
           <div className="flex flex-col gap-1 px-4 pt-4">
             {!collapsed && (
-              <div className="text-muted-foreground mb-2 px-3 text-sm">
+              <div className="text-muted-foreground mb-2 cursor-default px-3 text-sm select-none">
                 Components
               </div>
             )}
