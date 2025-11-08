@@ -1,5 +1,6 @@
 import { ReactNode } from "react";
 import { ResponsiveHeader } from "@/components/responsive-header-server";
+import { cn } from "@/lib/utils";
 
 type AppShellProps = {
   children: ReactNode;
@@ -26,10 +27,10 @@ export default function AppShell({
           </div>
         ) : null}
         <div
-          className={
-            "bg-background flex min-h-0 flex-1 " +
-            (noScroll ? "overflow-hidden" : "overflow-auto")
-          }
+          className={cn("bg-background flex min-h-0 flex-1", {
+            "overflow-auto": !noScroll,
+            "overflow-hidden": noScroll,
+          })}
         >
           {children}
         </div>
