@@ -1,11 +1,11 @@
 "use client";
 
 import { createContext, useContext, ReactNode } from "react";
-
-type ViewportSize = "mobile" | "desktop";
+import { ViewportSize } from "@/components/viewport-controls";
 
 interface ComponentsContextType {
   viewport: ViewportSize;
+  setViewport: (viewport: ViewportSize) => void;
 }
 
 const ComponentsContext = createContext<ComponentsContextType | undefined>(

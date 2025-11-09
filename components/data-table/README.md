@@ -3,7 +3,7 @@
 A flexible, accessible data table component for assistant-ui's widget registry. Built with Radix UI primitives and Tailwind CSS.
 
 **Version:** 0.1.0
-**License:** Apache-2.0
+**License:** MIT 
 
 ## Features
 
@@ -1214,7 +1214,7 @@ For these features, consider [TanStack Table](https://tanstack.com/table) or [AG
 
 ## License
 
-Apache-2.0
+MIT
 
 ## Changelog
 
