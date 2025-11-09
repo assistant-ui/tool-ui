@@ -1,14 +1,14 @@
 "use client";
 
 import { create } from "zustand";
-import type { ViewportSize } from "@/components/viewport-controls";
+import type { ResizableViewportSize } from "@/components/resizable-viewport-controls";
 
 type Layout = [number, number, number];
 
 export const CHAT_MIN_SIZE = 50;
 export const CHAT_MAX_SIZE = 100;
 
-export const CHAT_LAYOUTS: Record<ViewportSize, Layout> = {
+export const CHAT_LAYOUTS: Record<ResizableViewportSize, Layout> = {
   mobile: [25, CHAT_MIN_SIZE, 25],
   desktop: [0, CHAT_MAX_SIZE, 0],
 };
@@ -17,11 +17,11 @@ const VIEWPORT_THRESHOLD =
   (CHAT_LAYOUTS.mobile[1] + CHAT_LAYOUTS.desktop[1]) / 2;
 
 interface HomeState {
-  viewport: ViewportSize;
+  viewport: ResizableViewportSize;
   chatLayout: Layout;
   chatPanelSize: number;
   showLogoDebug: boolean;
-  setViewport: (viewport: ViewportSize) => void;
+  setViewport: (viewport: ResizableViewportSize) => void;
   setChatLayout: (sizes: Layout | number[]) => void;
   setShowLogoDebug: (value: boolean) => void;
 }

@@ -9,7 +9,7 @@ import {
 } from "react-resizable-panels";
 import { Leva } from "leva";
 import { DemoChat } from "@/components/demo-chat";
-import { ViewportControls } from "@/components/viewport-controls";
+import { ResizableViewportControls } from "@/components/resizable-viewport-controls";
 import { CHAT_MIN_SIZE, CHAT_MAX_SIZE, useHomeStore } from "./home-store";
 
 type Layout = [number, number, number];
@@ -89,7 +89,7 @@ export function HomeViewportControls() {
   const setViewport = useHomeStore((state) => state.setViewport);
 
   return (
-    <ViewportControls
+    <ResizableViewportControls
       viewport={viewport}
       onViewportChange={setViewport}
       showThemeToggle

@@ -1,21 +1,21 @@
-import { ReactNode } from "react";
+import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
-type AppShellProps = {
+type ContentLayoutProps = {
   children: ReactNode;
   sidebar?: ReactNode;
   noScroll?: boolean;
 };
 
-export default function AppShell({
+export default function ContentLayout({
   children,
   sidebar,
   noScroll,
-}: AppShellProps) {
+}: ContentLayoutProps) {
   return (
-    <div className="flex w-full max-w-[2000px] flex-1 justify-center overflow-hidden">
+    <div className="flex w-full max-w-[2000px] min-h-0 flex-1 justify-center overflow-hidden">
       {sidebar ? (
-        <div className="hidden w-[220px] shrink-0 overflow-hidden md:block">
+        <div className="hidden w-[220px] shrink-0 overflow-y-auto md:block">
           {sidebar}
         </div>
       ) : null}

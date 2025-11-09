@@ -24,7 +24,7 @@ import {
   DecisionPromptPresetName,
   decisionPromptPresets,
 } from "@/lib/decision-prompt-presets";
-import { useComponents } from "../_components/components-context";
+import { useResizableViewport } from "@/components/resizable-viewport-provider";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import { Button } from "@/components/ui/button";
 import { ButtonGroup } from "@/components/ui/button-group";
@@ -40,7 +40,7 @@ const PREVIEW_MIN_SIZE = 40;
 const PREVIEW_MAX_SIZE = 100;
 
 export function ClientPreview({ componentId }: { componentId: string }) {
-  const { viewport } = useComponents();
+  const { viewport } = useResizableViewport();
   const [currentPreset, setCurrentPreset] = useState<ComponentPreset>(
     componentId === "social-post"
       ? "x"

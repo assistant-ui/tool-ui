@@ -1,20 +1,15 @@
-import { ReactNode } from "react";
-import AppShell from "@/components/app-shell";
-import { ResponsiveHeader } from "@/components/responsive-header-server";
-import {
-  BuilderHeaderControls,
-  BuilderLayoutClient,
-} from "./builder-layout-client";
+import type { ReactNode } from "react";
+import ContentLayout from "@/components/content-layout";
+import { HeaderFrame } from "@/components/header-frame";
+import { ResizableViewportProvider } from "@/components/resizable-viewport-provider";
+import { BuilderHeaderControls } from "./builder-header-controls";
 
 export default function BuilderLayout({ children }: { children: ReactNode }) {
   return (
-    <BuilderLayoutClient>
-      <div className="flex h-screen flex-col items-center pt-16">
-        <div className="absolute top-0 w-full max-w-[2000px]">
-          <ResponsiveHeader rightContent={<BuilderHeaderControls />} />
-        </div>
-        <AppShell noScroll>{children}</AppShell>
-      </div>
-    </BuilderLayoutClient>
+    <ResizableViewportProvider>
+      <HeaderFrame rightContent={<BuilderHeaderControls />}>
+        <ContentLayout noScroll>{children}</ContentLayout>
+      </HeaderFrame>
+    </ResizableViewportProvider>
   );
 }

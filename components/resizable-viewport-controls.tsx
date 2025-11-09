@@ -7,23 +7,23 @@ import { Monitor, Moon, Smartphone, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
 import { cn } from "@/lib/utils";
 
-export type ViewportSize = "mobile" | "desktop";
+export type ResizableViewportSize = "mobile" | "desktop";
 
-type ViewportControlsProps = {
-  viewport: ViewportSize;
-  onViewportChange: (viewport: ViewportSize) => void;
+type ResizableViewportControlsProps = {
+  viewport: ResizableViewportSize;
+  onViewportChange: (viewport: ResizableViewportSize) => void;
   showThemeToggle?: boolean;
   showViewportButtons?: boolean;
   fixed?: boolean;
 };
 
-export function ViewportControls({
+export function ResizableViewportControls({
   viewport,
   onViewportChange,
   showThemeToggle = false,
   showViewportButtons = true,
   fixed = false,
-}: ViewportControlsProps) {
+}: ResizableViewportControlsProps) {
   const { setTheme, resolvedTheme } = useTheme();
   const [mounted, setMounted] = React.useState(false);
 
