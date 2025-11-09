@@ -5,12 +5,10 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Shapes } from "lucide-react";
 import { componentsRegistry } from "@/lib/components-config";
-import { docsRegistry, type DocsPageMeta } from "@/lib/docs-registry";
 import { cn } from "@/lib/utils";
 import { Separator } from "@/components/ui/separator";
 
 const STORAGE_KEY = "tool-ui-components-nav-collapsed";
-const SHOW_DOCS_IN_NAV = false;
 
 export function DocsNav() {
   const pathname = usePathname();
@@ -66,37 +64,8 @@ export function DocsNav() {
 
         <div className="h-4"></div>
 
-        {/* Docs Section */}
-        <div className="flex flex-col gap-12">
-          {SHOW_DOCS_IN_NAV && (
-            <div className="mt-4 flex flex-col gap-1 px-4">
-              {!collapsed && (
-                <div className="text-muted-foreground mb-2 cursor-default px-3 text-sm select-none">
-                  Docs
-                </div>
-              )}
-              {docsRegistry.map((doc: DocsPageMeta) => {
-                const isActive = pathname.startsWith(doc.path);
-                return (
-                  <Link
-                    key={doc.id}
-                    href={doc.path}
-                    className={buildLinkClasses(isActive)}
-                    title={collapsed ? doc.label : undefined}
-                  >
-                    {!collapsed && (
-                      <div className="overflow-hidden">
-                        <span className="truncate">{doc.label}</span>
-                      </div>
-                    )}
-                  </Link>
-                );
-              })}
-            </div>
-          )}
-
-          {/* Components Section */}
-          <div className="flex flex-col gap-1 px-4 pt-4">
+        {/* Components Section */}
+        <div className="flex flex-col gap-1 px-4 pt-4">
             {!collapsed && (
               <div className="text-muted-foreground mb-2 cursor-default px-3 text-sm select-none">
                 Components
@@ -119,7 +88,6 @@ export function DocsNav() {
                 </Link>
               );
             })}
-          </div>
         </div>
       </nav>
     </aside>
