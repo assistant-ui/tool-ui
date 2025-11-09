@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { getComponentById } from "@/lib/components-registry";
+import { getComponentById } from "@/lib/components-config";
 import { ClientPreview } from "./client-preview";
 
 export default async function ComponentPage({

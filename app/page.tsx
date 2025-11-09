@@ -1,11 +1,11 @@
-import ContentLayout from "@/components/content-layout";
-import { HeaderFrame } from "@/components/header-frame";
-import { HomeHero } from "@/components/home/home-hero";
+import ContentLayout from "@/app/components/content-layout";
+import { HeaderFrame } from "@/app/components/header-frame";
+import { HomeHero } from "@/app/components/home/home-hero";
 import {
   HomeClient,
   HomeDebugPanel,
   HomeViewportControls,
-} from "@/components/home/home-client";
+} from "@/app/components/home/home-client";
 
 type HomePageProps = {
   searchParams?: {

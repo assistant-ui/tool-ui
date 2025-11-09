@@ -1,9 +1,9 @@
 import Link from "next/link";
-import { DataTable } from "@/components/registry/data-table";
-import { MediaCard } from "@/components/registry/media-card";
-import { SocialPost } from "@/components/registry/social-post";
-import { DecisionPrompt } from "@/components/registry/decision-prompt";
-import { ZenField } from "@/components/zen-field";
+import { DataTable } from "@/components/data-table";
+import { MediaCard } from "@/components/media-card";
+import { SocialPost } from "@/components/social-post";
+import { DecisionPrompt } from "@/components/decision-prompt";
+import { ZenField } from "@/app/components/zen-field";
 import { sampleStocks, sampleMetrics } from "@/lib/sample-data";
 import { mediaCardPresets } from "@/lib/media-card-presets";
 import {

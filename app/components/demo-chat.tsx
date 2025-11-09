@@ -5,11 +5,11 @@ import {
   useChatRuntime,
   AssistantChatTransport,
 } from "@assistant-ui/react-ai-sdk";
-import { Thread } from "@/components/ui-thread/thread";
-import { GetStocksUI } from "@/components/tool-uis/get-stocks-ui";
-import { RenderMediaCardUI } from "@/components/tool-uis/render-media-card-ui";
-import { RenderSocialPostUI } from "@/components/tool-uis/render-social-post-ui";
-import { RenderDecisionPromptUI } from "@/components/tool-uis/render-decision-prompt-ui";
+import { Thread } from "@/app/components/ui-thread/thread";
+import { GetStocksUI } from "@/app/components/tool-uis/get-stocks-ui";
+import { RenderMediaCardUI } from "@/app/components/tool-uis/render-media-card-ui";
+import { RenderSocialPostUI } from "@/app/components/tool-uis/render-social-post-ui";
+import { RenderDecisionPromptUI } from "@/app/components/tool-uis/render-decision-prompt-ui";
 
 /**
  * Demo Chat Component

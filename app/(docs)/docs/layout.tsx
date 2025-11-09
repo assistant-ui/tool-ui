@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
-import ContentLayout from "@/components/content-layout";
-import { HeaderFrame } from "@/components/header-frame";
-import { ResizableViewportProvider } from "@/components/resizable-viewport-provider";
+import ContentLayout from "@/app/components/content-layout";
+import { HeaderFrame } from "@/app/components/header-frame";
+import { ResizableViewportProvider } from "@/app/components/resizable-viewport-provider";
 import { DocsHeaderControls } from "./_components/docs-header-controls";
 import { DocsNav } from "./_components/docs-nav";
 

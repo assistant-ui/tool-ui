@@ -17,9 +17,9 @@ import {
   useChatRuntime,
   AssistantChatTransport,
 } from "@assistant-ui/react-ai-sdk";
-import { ThreadList } from "@/components/assistant-ui/thread-list";
-import { MarkdownText } from "@/components/assistant-ui/markdown-text";
-import WebView from "@/components/webview";
+import { ThreadList } from "@/app/components/assistant-ui/thread-list";
+import { MarkdownText } from "@/app/components/assistant-ui/markdown-text";
+import WebView from "@/app/components/webview";
 import {
   ArrowUpIcon,
   Square,
@@ -38,7 +38,7 @@ import {
   ChevronLeftIcon,
   ChevronRightIcon,
 } from "lucide-react";
-import { MCPIcon } from "@/components/mcp-icon";
+import { MCPIcon } from "@/app/components/mcp-icon";
 import { Button } from "@/components/ui/button";
 import { CodeBlock, CodeBlockCode } from "@/components/ui/code-block";
 import { getComponentCode } from "@/lib/get-code";
@@ -68,8 +68,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useState, useEffect, type FC, createContext, useContext } from "react";
-import { ToolFallback } from "@/components/assistant-ui/tool-fallback";
-import { TooltipIconButton } from "@/components/assistant-ui/tooltip-icon-button";
+import { ToolFallback } from "@/app/components/assistant-ui/tool-fallback";
+import { TooltipIconButton } from "@/app/components/assistant-ui/tooltip-icon-button";
 import React from "react";
 import { cn } from "@/lib/utils";
 

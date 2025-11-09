@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Shapes } from "lucide-react";
-import { componentsRegistry } from "@/lib/components-registry";
+import { componentsRegistry } from "@/lib/components-config";
 import { docsRegistry, type DocsPageMeta } from "@/lib/docs-registry";
 import { cn } from "@/lib/utils";
 import { Separator } from "@/components/ui/separator";

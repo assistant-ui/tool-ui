@@ -5,26 +5,26 @@ import { ControlsPanel } from "../_components/controls-panel";
 import { CodePanel } from "../_components/code-panel";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import { DataTable } from "@/components/registry/data-table";
-import type { Action } from "@/components/registry/data-table";
+import { DataTable } from "@/components/data-table";
+import type { Action } from "@/components/data-table";
 import type { DataTableRowData, RowData } from "@/components/data-table";
 import { PresetName, presets, SortState } from "@/lib/sample-data";
-import { SocialPost } from "@/components/registry/social-post";
+import { SocialPost } from "@/components/social-post";
 import {
   SocialPostPresetName,
   socialPostPresets,
 } from "@/lib/social-post-presets";
-import { MediaCard } from "@/components/registry/media-card";
+import { MediaCard } from "@/components/media-card";
 import {
   MediaCardPresetName,
   mediaCardPresets,
 } from "@/lib/media-card-presets";
-import { DecisionPrompt } from "@/components/registry/decision-prompt";
+import { DecisionPrompt } from "@/components/decision-prompt";
 import {
   DecisionPromptPresetName,
   decisionPromptPresets,
 } from "@/lib/decision-prompt-presets";
-import { useResizableViewport } from "@/components/resizable-viewport-provider";
+import { useResizableViewport } from "@/app/components/resizable-viewport-provider";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import { Button } from "@/components/ui/button";
 import { ButtonGroup } from "@/components/ui/button-group";

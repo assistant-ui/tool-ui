@@ -7,10 +7,10 @@ import { Sheet, Scroll } from "@silk-hq/components";
 import { Menu } from "lucide-react";
 import { FaGithub } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
-import { componentsRegistry } from "@/lib/components-registry";
+import { componentsRegistry } from "@/lib/components-config";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { Separator } from "./ui/separator";
+import { Separator } from "@/components/ui/separator";
 
 import "./mobile-nav-sheet.css";
 

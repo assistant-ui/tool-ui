@@ -8,8 +8,8 @@ import {
   type ImperativePanelGroupHandle,
 } from "react-resizable-panels";
 import { Leva } from "leva";
-import { DemoChat } from "@/components/demo-chat";
-import { ResizableViewportControls } from "@/components/resizable-viewport-controls";
+import { DemoChat } from "@/app/components/demo-chat";
+import { ResizableViewportControls } from "@/app/components/resizable-viewport-controls";
 import { CHAT_MIN_SIZE, CHAT_MAX_SIZE, useHomeStore } from "./home-store";
 
 type Layout = [number, number, number];

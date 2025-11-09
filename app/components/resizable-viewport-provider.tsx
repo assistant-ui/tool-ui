@@ -7,7 +7,7 @@ import {
   useMemo,
   useState,
 } from "react";
-import { ResizableViewportSize } from "@/components/resizable-viewport-controls";
+import { ResizableViewportSize } from "@/app/components/resizable-viewport-controls";
 
 type ResizableViewportContextValue = {
   viewport: ResizableViewportSize;

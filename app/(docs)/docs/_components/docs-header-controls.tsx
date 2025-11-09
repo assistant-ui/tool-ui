@@ -1,8 +1,8 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { ResizableViewportControls } from "@/components/resizable-viewport-controls";
-import { useResizableViewport } from "@/components/resizable-viewport-provider";
+import { ResizableViewportControls } from "@/app/components/resizable-viewport-controls";
+import { useResizableViewport } from "@/app/components/resizable-viewport-provider";
 
 export function DocsHeaderControls() {
   const { viewport, setViewport } = useResizableViewport();

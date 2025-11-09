@@ -24,14 +24,14 @@ import { LazyMotion, MotionConfig, domAnimation } from "motion/react";
 import * as m from "motion/react-m";
 
 import { Button } from "@/components/ui/button";
-import { MarkdownText } from "@/components/assistant-ui/markdown-text";
-import { ToolFallback } from "@/components/assistant-ui/tool-fallback";
-import { TooltipIconButton } from "@/components/assistant-ui/tooltip-icon-button";
+import { MarkdownText } from "@/app/components/assistant-ui/markdown-text";
+import { ToolFallback } from "@/app/components/assistant-ui/tool-fallback";
+import { TooltipIconButton } from "@/app/components/assistant-ui/tooltip-icon-button";
 import {
   ComposerAddAttachment,
   ComposerAttachments,
   UserMessageAttachments,
-} from "@/components/assistant-ui/attachment";
+} from "@/app/components/assistant-ui/attachment";
 
 import { cn } from "@/lib/utils";
 
