@@ -1,6 +1,9 @@
 import { notFound } from "next/navigation";
 import { getComponentById } from "@/lib/components-config";
-import { ClientPreview } from "./client-preview";
+import { DataTablePreview } from "./previews/data-table-preview";
+import { SocialPostPreview } from "./previews/social-post-preview";
+import { MediaCardPreview } from "./previews/media-card-preview";
+import { DecisionPromptPreview } from "./previews/decision-prompt-preview";
 
 export default async function ComponentPage({
   params,
@@ -13,5 +16,17 @@ export default async function ComponentPage({
     notFound();
   }
 
-  return <ClientPreview key={component} componentId={component} />;
+  // Route to the appropriate preview component
+  switch (component) {
+    case "data-table":
+      return <DataTablePreview />;
+    case "social-post":
+      return <SocialPostPreview />;
+    case "media-card":
+      return <MediaCardPreview />;
+    case "decision-prompt":
+      return <DecisionPromptPreview />;
+    default:
+      notFound();
+  }
 }
