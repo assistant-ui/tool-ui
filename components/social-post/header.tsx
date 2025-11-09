@@ -76,7 +76,7 @@ export function Header() {
           "shrink-0 object-cover",
           cfg.tokens.spacing.avatarSize,
           cfg.tokens.avatarShape === "circle" && "rounded-full",
-          cfg.tokens.avatarShape === "rounded" && "rounded-md",
+          cfg.tokens.avatarShape === "rounded" && "rounded-lg",
           cfg.tokens.avatarShape === "square" && "rounded-none",
         )}
         width={40}

@@ -196,7 +196,7 @@ export function DecisionPromptActions({
             )}
             {label}
             {action.shortcut && !isLoading && (
-              <kbd className="border-border bg-muted ml-2.5 hidden rounded border px-2 py-0.5 font-mono text-xs font-medium sm:inline-block">
+              <kbd className="border-border bg-muted ml-2.5 hidden rounded-lg border px-2 py-0.5 font-mono text-xs font-medium sm:inline-block">
                 {action.shortcut}
               </kbd>
             )}

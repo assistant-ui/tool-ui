@@ -85,7 +85,7 @@ export const PLATFORM: Record<Platform, PlatformConfig> = {
     tokens: {
       accent: "text-blue-500 dark:text-blue-400",
       verified: "text-blue-500",
-      radius: "rounded-xl",
+      radius: "rounded-lg",
       muted: "text-muted-foreground",
       actionHover: "hover:bg-muted",
       brandColor: "#0F1419",
@@ -107,7 +107,7 @@ export const PLATFORM: Record<Platform, PlatformConfig> = {
       borders: {
         container: "border border-border",
         containerHover: "",
-        media: "rounded-2xl overflow-hidden",
+        media: "rounded-lg overflow-hidden",
         shadow: "shadow-xs",
       },
       background: {

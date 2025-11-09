@@ -35,7 +35,7 @@ export class SocialPostErrorBoundary extends React.Component<
     if (this.state.hasError) {
       return (
         this.props.fallback ?? (
-          <div className="border-destructive text-destructive rounded-md border p-4">
+          <div className="border-destructive text-destructive rounded-lg border p-4">
             <p className="font-semibold">Something went wrong</p>
             <p className="text-sm">{this.state.error?.message}</p>
           </div>

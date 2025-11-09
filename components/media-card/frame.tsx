@@ -285,7 +285,7 @@ export function MediaFrame() {
       <div className="flex w-full flex-col gap-3">
         <div className={gridClasses}>
           {thumb ? (
-            <div className="bg-muted relative size-14 w-full overflow-hidden rounded-md">
+            <div className="bg-muted relative size-14 w-full overflow-hidden rounded-lg">
               <img
                 src={thumb}
                 alt=""

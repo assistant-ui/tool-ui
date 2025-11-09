@@ -21,7 +21,7 @@ export function QuotedPost() {
   return (
     <div
       className={cn(
-        "border-border hover:bg-muted/30 mt-3 cursor-pointer rounded-xl border p-3 transition-colors",
+        "border-border hover:bg-muted/30 mt-3 cursor-pointer rounded-lg border p-3 transition-colors",
       )}
       onClick={(event) => {
         event.stopPropagation();
@@ -80,7 +80,7 @@ export function QuotedPost() {
 
       {quotedPost.linkPreview && cfg.layout.showLinkPreview ? (
         <div className="mt-2">
-          <div className="border-border overflow-hidden rounded-xl border">
+          <div className="border-border overflow-hidden rounded-lg border">
             {quotedPost.linkPreview.imageUrl ? (
               <img
                 src={quotedPost.linkPreview.imageUrl}
