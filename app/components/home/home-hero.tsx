@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { HomeHypercube } from "./home-hypercube";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 
 export function HomeHero() {
   return (
@@ -10,7 +11,17 @@ export function HomeHero() {
         <HomeHypercube />
       </div>
       <div className="flex flex-col gap-3">
-        <h1 className="text-6xl font-bold tracking-tight">Tool UI</h1>
+        <div className="flex flex-col gap-3">
+          <div className="flex items-center gap-3">
+            <h1 className="text-6xl font-bold tracking-tight">Tool UI</h1>
+            <Badge
+              variant="outline"
+              className="text-muted-foreground mt-1 text-sm"
+            >
+              Research preview
+            </Badge>
+          </div>
+        </div>
         <h2 className="text-2xl tracking-tight text-pretty">
           Beautiful UI components for AI tool calls
         </h2>

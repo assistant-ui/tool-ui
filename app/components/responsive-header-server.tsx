@@ -1,6 +1,7 @@
 import { ReactNode } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { FaGithub } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
 import { ActiveNavLink } from "./responsive-header";
@@ -14,24 +15,44 @@ export function ResponsiveHeader({ rightContent }: ResponsiveHeaderProps) {
     { href: "/", label: "Home" },
     { href: "/docs/gallery", label: "Components" },
     { href: "/builder", label: "Builder" },
+    {
+      href: "https://www.assistant-ui.com",
+      label: "assistant-ui ↗",
+      external: true,
+    },
   ];
 
   return (
     <div className="flex gap-4 py-3 md:gap-8">
-      <div className="flex w-fit shrink-0 items-center justify-start">
+      <div className="flex w-fit shrink-0 items-center justify-start gap-3">
         <Link href="/">
           <h1 className="text-xl font-semibold tracking-wide">Tool UI</h1>
         </Link>
+        <Badge variant="outline" className="text-muted-foreground">
+          Research preview
+        </Badge>
       </div>
 
       {/* Desktop Navigation */}
       <div className="hidden flex-1 items-center justify-between md:flex">
         <nav className="flex items-center">
-          {navLinks.map(({ href, label }) => (
-            <ActiveNavLink key={href} href={href}>
-              {label}
-            </ActiveNavLink>
-          ))}
+          {navLinks.map(({ href, label, external }) =>
+            external ? (
+              <Link
+                key={href}
+                href={href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-lg px-4 py-2 text-sm font-medium transition-colors"
+              >
+                {label}
+              </Link>
+            ) : (
+              <ActiveNavLink key={href} href={href}>
+                {label}
+              </ActiveNavLink>
+            ),
+          )}
         </nav>
         <div className="flex items-center gap-4">
           {rightContent}
