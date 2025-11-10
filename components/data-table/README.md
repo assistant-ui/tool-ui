@@ -249,6 +249,23 @@ An optional Radix recipe is provided at `components/ui/confirm.tsx`.
 
 ## Examples
 
+### Forced Layout
+
+Control the layout explicitly with the `layout` prop. Default is `auto`, which uses container queries to switch between table and cards.
+
+```tsx
+// Always render full table layout
+<DataTable layout="table" columns={columns} data={rows} />
+
+// Always render stacked cards (mobile style)
+<DataTable layout="cards" columns={columns} data={rows} />
+
+// Automatic (container queries decide) — default behavior
+<DataTable columns={columns} data={rows} />
+```
+
+The root element exposes `data-layout="auto|table|cards"` for theming and testing hooks.
+
 ### Sorting
 
 The DataTable supports both **controlled** and **uncontrolled** sorting:
@@ -630,6 +647,7 @@ interface DataTableSerializableProps<T> {
   columns: Column<T>[];
   data: T[];
   actions?: Action[];
+  layout?: 'auto' | 'table' | 'cards';
   rowIdKey?: string;
   defaultSort?: { by?: string; direction?: "asc" | "desc" };
   sort?: { by?: string; direction?: "asc" | "desc" };

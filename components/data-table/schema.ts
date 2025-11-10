@@ -10,6 +10,8 @@ const actionVariantEnum = z.enum([
   "destructive",
 ]);
 
+const layoutEnum = z.enum(["auto", "table", "cards"]);
+
 const formatSchema = z.discriminatedUnion("kind", [
   z.object({ kind: z.literal("text") }),
   z.object({
@@ -139,6 +141,7 @@ export const serializableActionSchema = z.object({
  * - columns: Column definitions (keys, labels, formatting, etc.)
  * - data: Data rows (primitives only - no functions or class instances)
  * - actions: Action button definitions (ids, labels, variants)
+ * - layout: Optional layout override ('auto' | 'table' | 'cards')
  *
  * Non-serializable props like `onAction`, `onSortChange`, `className`, and `isLoading`
  * must be provided separately in your React component.
@@ -155,6 +158,7 @@ export const serializableDataTableSchema = z.object({
   columns: z.array(serializableColumnSchema),
   data: z.array(serializableDataSchema),
   actions: z.array(serializableActionSchema).optional(),
+  layout: layoutEnum.optional(),
 });
 
 /**
@@ -215,15 +219,16 @@ export type SerializableDataTable = z.infer<typeof serializableDataTableSchema>;
  */
 export function parseSerializableDataTable(
   input: unknown,
-): Pick<DataTableProps<RowData>, "columns" | "data" | "actions"> {
+): Pick<DataTableProps<RowData>, "columns" | "data" | "actions" | "layout"> {
   const res = serializableDataTableSchema.safeParse(input);
   if (!res.success) {
     throw new Error(`Invalid DataTable payload: ${res.error.message}`);
   }
-  const { columns, data, actions } = res.data;
+  const { columns, data, actions, layout } = res.data;
   return {
     columns: columns as unknown as Column<RowData>[],
     data: data as RowData[],
     actions: actions as Action[] | undefined,
+    layout,
   };
 }

@@ -131,6 +131,13 @@ export interface DataTableSerializableProps<T extends object = RowData> {
   /** Action button definitions */
   actions?: Action[];
   /**
+   * Layout mode for the component.
+   * - 'auto' (default): Container queries choose table/cards
+   * - 'table': Force table layout
+   * - 'cards': Force stacked card layout
+   */
+  layout?: "auto" | "table" | "cards";
+  /**
    * Key in row data to use as unique identifier for React keys
    *
    * **Strongly recommended:** Always provide this for dynamic data to prevent
@@ -322,6 +329,7 @@ export function DataTable<T extends object = RowData>({
   data: rawData,
   actions,
   rowIdKey,
+  layout = "auto",
   defaultSort,
   sort: controlledSort,
   emptyMessage = "No data available",
@@ -425,8 +433,20 @@ export function DataTable<T extends object = RowData>({
 
   return (
     <DataTableContext.Provider value={contextValue}>
-      <div className={cn("@container w-full rounded-lg shadow-xs", className)}>
-        <div className={cn("hidden @md:block")}>
+      <div
+        className={cn("@container w-full rounded-lg shadow-xs", className)}
+        data-layout={layout}
+      >
+        {/* Table view: visible at @md+ in auto mode */}
+        <div
+          className={cn(
+            layout === "table"
+              ? "block"
+              : layout === "cards"
+                ? "hidden"
+                : "hidden @md:block",
+          )}
+        >
           <div className="relative">
             <div
               className={cn(
@@ -471,15 +491,18 @@ export function DataTable<T extends object = RowData>({
               </DataTableErrorBoundary>
             </div>
           </div>
-          {sortAnnouncement && (
-            <div className="sr-only" aria-live="polite">
-              {sortAnnouncement}
-            </div>
-          )}
         </div>
 
+        {/* Card view: visible below @md in auto mode */}
         <div
-          className={cn("flex flex-col gap-2 @md:hidden")}
+          className={cn(
+            "flex flex-col gap-2",
+            layout === "cards"
+              ? ""
+              : layout === "table"
+                ? "hidden"
+                : "@md:hidden",
+          )}
           role="list"
           aria-label="Data table (mobile card view)"
           aria-describedby="mobile-table-description"
@@ -512,6 +535,12 @@ export function DataTable<T extends object = RowData>({
             )}
           </DataTableErrorBoundary>
         </div>
+
+        {sortAnnouncement && (
+          <div className="sr-only" aria-live="polite">
+            {sortAnnouncement}
+          </div>
+        )}
       </div>
     </DataTableContext.Provider>
   );

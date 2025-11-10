@@ -38,7 +38,7 @@ export default function ComponentsGalleryPage() {
 
           <div className="mb-5 break-inside-avoid 2xl:mb-5">
             <div className="w-full">
-              <DataTable {...sampleMetrics} />
+              <DataTable layout="cards" {...sampleMetrics} />
             </div>
           </div>
 

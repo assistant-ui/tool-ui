@@ -251,7 +251,7 @@ function TypingCaret({ visible }: { visible: boolean }) {
         ease: "easeInOut",
         repeat: visible ? Infinity : 0,
       }}
-      className="ml-1 inline-block h-[1em] w-[2px] bg-current/80"
+      className="-mb-[2px] ml-1 inline-block h-[1em] w-[2px] bg-current/80"
     />
   );
 }
@@ -693,12 +693,13 @@ export function ChatShowcase() {
           "Filtering by priority…",
           "Sorting by urgency…",
         ],
-        preamble: "Here are the urgent tickets:",
+        preamble: "Here are the most urgent tickets from this week",
         toolUI: (
           <DataTable<SupportTicket>
             rowIdKey="id"
             columns={tableColumns}
             data={tableData}
+            layout="table"
             defaultSort={{ by: "priority", direction: "asc" }}
           />
         ),
@@ -712,7 +713,7 @@ export function ChatShowcase() {
           "Fetching page metadata…",
           "Generating preview…",
         ],
-        preamble: "Found it:",
+        preamble: "Here's what I believe you're looking for:",
         toolUI: <MediaCard {...mediaCard} maxWidth="420px" />,
         toolFallbackHeight: 260,
       },
