@@ -3,7 +3,15 @@
 import { ResizableViewportControls } from "@/app/components/resizable-viewport-controls";
 import { useHomeStore } from "./home-store";
 
-export function HomeViewportControls() {
+type HomeViewportControlsProps = {
+  showThemeToggle?: boolean;
+  showViewportButtons?: boolean;
+};
+
+export function HomeViewportControls({
+  showThemeToggle = true,
+  showViewportButtons = true,
+}: HomeViewportControlsProps) {
   const viewport = useHomeStore((state) => state.viewport);
   const setViewport = useHomeStore((state) => state.setViewport);
 
@@ -11,9 +19,8 @@ export function HomeViewportControls() {
     <ResizableViewportControls
       viewport={viewport}
       onViewportChange={setViewport}
-      showThemeToggle
-      showViewportButtons
+      showThemeToggle={showThemeToggle}
+      showViewportButtons={showViewportButtons}
     />
   );
 }
-

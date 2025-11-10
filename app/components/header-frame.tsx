@@ -12,7 +12,7 @@ export function HeaderFrame({ children, rightContent }: HeaderFrameProps) {
       <div className="w-full max-w-[2000px] shrink-0 px-4 md:px-8">
         <ResponsiveHeader rightContent={rightContent} />
       </div>
-      <div className="flex min-h-0 w-full flex-1 overflow-hidden">
+      <div className="flex min-h-0 w-full flex-1 justify-center overflow-hidden">
         {children}
       </div>
     </div>

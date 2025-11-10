@@ -4,8 +4,18 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { motion } from "motion/react";
 import { cn } from "@/lib/utils";
 import { DataTable, type Column } from "@/components/data-table";
-import type { Stock } from "@/lib/mock-data/stocks";
 import { MediaCard, type SerializableMediaCard } from "@/components/media-card";
+
+// Support ticket type for DataTable demo
+type SupportTicket = {
+  id: string;
+  customer: string;
+  issue: string;
+  priority: "critical" | "high" | "medium" | "low";
+  status: "open" | "in-progress" | "waiting";
+  assignee: string;
+  created: string;
+};
 import {
   SocialPost,
   type SerializableSocialPost,
@@ -486,113 +496,171 @@ export function ChatShowcase() {
     mq.addEventListener?.("change", onChange);
     return () => mq.removeEventListener?.("change", onChange);
   }, []);
-  // DataTable setup
-  const tableColumns: Column<Stock>[] = useMemo(
+  // DataTable setup - Support Tickets
+  const tableColumns: Column<SupportTicket>[] = useMemo(
     () => [
-      { key: "symbol", label: "Symbol", sortable: true, priority: "primary" },
-      { key: "name", label: "Company", sortable: true, priority: "primary" },
+      { key: "id", label: "ID", sortable: true, priority: "primary" },
+      { key: "issue", label: "Issue", sortable: false, priority: "primary" },
       {
-        key: "price",
-        label: "Price",
+        key: "priority",
+        label: "Priority",
         sortable: true,
-        align: "right",
         priority: "primary",
-        format: { kind: "currency", currency: "USD", decimals: 2 },
+        format: {
+          kind: "badge",
+          colorMap: {
+            critical: "danger",
+            high: "warning",
+            medium: "info",
+            low: "success",
+          } as Record<
+            string,
+            "danger" | "warning" | "info" | "success" | "neutral"
+          >,
+        },
       },
       {
-        key: "changePercent",
-        label: "Change %",
+        key: "status",
+        label: "Status",
         sortable: true,
-        align: "right",
-        priority: "secondary",
-        format: { kind: "percent", decimals: 2, showSign: true, basis: "unit" },
+        priority: "primary",
+        format: {
+          kind: "badge",
+          colorMap: {
+            "in-progress": "info",
+            open: "warning",
+            waiting: "neutral",
+          } as Record<
+            string,
+            "danger" | "warning" | "info" | "success" | "neutral"
+          >,
+        },
       },
     ],
     [],
   );
 
-  const tableData: Stock[] = useMemo(
+  const tableData: SupportTicket[] = useMemo(
     () => [
       {
-        symbol: "NVDA",
-        name: "NVIDIA",
-        price: 875.45,
-        change: 12.8,
-        changePercent: 0.0148,
-        volume: 52341200,
-        marketCap: 2160000000000,
-        pe: 68.4,
-        eps: 12.8,
+        id: "TKT-2847",
+        customer: "Acme Corp",
+        issue: "API authentication failing intermittently",
+        priority: "critical",
+        status: "in-progress",
+        assignee: "Sarah Chen",
+        created: "2h ago",
       },
       {
-        symbol: "MSFT",
-        name: "Microsoft",
-        price: 378.91,
-        change: 4.25,
-        changePercent: 0.0113,
-        volume: 22451800,
-        marketCap: 2810000000000,
-        pe: 35.2,
-        eps: 10.76,
+        id: "TKT-2839",
+        customer: "TechStart Inc",
+        issue: "Unable to export data in CSV format",
+        priority: "high",
+        status: "open",
+        assignee: "Mike Rodriguez",
+        created: "4h ago",
       },
       {
-        symbol: "META",
-        name: "Meta",
-        price: 485.32,
-        change: 8.92,
-        changePercent: 0.0187,
-        volume: 18923400,
-        marketCap: 1230000000000,
-        pe: 28.6,
-        eps: 16.97,
+        id: "TKT-2831",
+        customer: "Global Systems",
+        issue: "Dashboard loading slowly for large datasets",
+        priority: "high",
+        status: "waiting",
+        assignee: "Alex Kim",
+        created: "6h ago",
+      },
+      {
+        id: "TKT-2828",
+        customer: "BuildCo",
+        issue: "Webhook delivery failures for payment events",
+        priority: "critical",
+        status: "open",
+        assignee: "Jordan Lee",
+        created: "8h ago",
+      },
+      {
+        id: "TKT-2821",
+        customer: "DataFlow Inc",
+        issue: "Rate limit errors during bulk operations",
+        priority: "high",
+        status: "in-progress",
+        assignee: "Sarah Chen",
+        created: "10h ago",
+      },
+      {
+        id: "TKT-2815",
+        customer: "CloudNine",
+        issue: "User permissions not syncing across teams",
+        priority: "high",
+        status: "open",
+        assignee: "Taylor Singh",
+        created: "12h ago",
+      },
+      {
+        id: "TKT-2809",
+        customer: "Nexus Labs",
+        issue: "Mobile app crashes on iOS 17 devices",
+        priority: "critical",
+        status: "in-progress",
+        assignee: "Mike Rodriguez",
+        created: "14h ago",
+      },
+      {
+        id: "TKT-2801",
+        customer: "Velocity Systems",
+        issue: "Email notifications delayed by 2+ hours",
+        priority: "high",
+        status: "waiting",
+        assignee: "Alex Kim",
+        created: "16h ago",
       },
     ],
     [],
   );
 
-  // MediaCard setup
+  // MediaCard setup - RSC Guide
   const mediaCard: SerializableMediaCard = useMemo(
     () => ({
-      id: "media-card-link",
+      id: "rsc-guide",
       kind: "link",
-      href: "https://assistant-ui.com/blog/tool-ui-patterns",
-      src: "https://assistant-ui.com/blog/tool-ui-patterns",
-      title: "Designing tool-friendly media cards",
+      href: "https://react.dev/reference/rsc/server-components",
+      src: "https://react.dev/reference/rsc/server-components",
+      title: "React Server Components",
       description:
-        "How to structure robust previews for images, video, audio, and streaming tool output.",
+        "Server Components are a new type of Component that renders ahead of time, before bundling. Learn how to use them in your app.",
       ratio: "16:9",
-      domain: "assistant-ui.com",
+      domain: "react.dev",
       thumb:
-        "https://images.unsplash.com/photo-1626846116799-ad61f874f99d?auto=format&fit=crop&q=80&w=1200",
-      createdAtISO: "2025-02-05T09:45:00.000Z",
+        "https://images.unsplash.com/photo-1633356122544-f134324a6cee?auto=format&fit=crop&q=80&w=1200",
+      createdAtISO: "2025-01-15T10:30:00.000Z",
       source: {
-        label: "Docs generator",
-        iconUrl: "https://api.dicebear.com/7.x/shapes/svg?seed=docs",
-        url: "https://assistant-ui.com",
+        label: "React Docs",
+        iconUrl: "https://api.dicebear.com/7.x/shapes/svg?seed=react",
+        url: "https://react.dev",
       },
       og: {
         imageUrl:
-          "https://images.unsplash.com/photo-1626846116799-ad61f874f99d?auto=format&fit=crop&q=80&w=1200",
-        description: "Guidance for building resilient tool surfaces.",
-        title: "Designing tool-friendly media cards",
+          "https://images.unsplash.com/photo-1633356122544-f134324a6cee?auto=format&fit=crop&q=80&w=1200",
+        description: "Official React documentation for Server Components.",
+        title: "React Server Components",
       },
     }),
     [],
   );
 
-  // SocialPost setup
+  // SocialPost setup - Open Source Release
   const socialPost: SerializableSocialPost = useMemo(
     () => ({
-      id: "x-draft-1",
+      id: "x-draft-oss",
       platform: "x",
       author: {
-        name: "Ariandel Osorio",
-        handle: "ariandelosorio",
+        name: "DevTools Team",
+        handle: "devtoolsco",
         avatarUrl:
-          "https://images.unsplash.com/photo-1741336649605-7717819d4b5e?auto=format&fit=crop&q=80&w=1200",
+          "https://images.unsplash.com/photo-1599566150163-29194dcaad36?auto=format&fit=crop&q=80&w=1200",
       },
-      text: "The AI boom is reshaping tech markets. NVDA up 68% P/E, META leading with 1.87% gains. This week's newsletter breaks down what it means for the industry 👇",
-      createdAtISO: "2025-11-05T09:15:00.000Z",
+      text: "We're thrilled to announce that our component library is now open source! 🎉\n\nBuilt with React, TypeScript, and Tailwind. Fully accessible, customizable, and production-ready.\n\nStar us on GitHub and join the community ⭐️\n\ngithub.com/devtools/ui-kit",
+      createdAtISO: "2025-11-10T14:30:00.000Z",
       language: "en-US",
     }),
     [],
@@ -601,9 +669,9 @@ export function ChatShowcase() {
   // DecisionPrompt setup
   const decisionActions: DecisionPromptAction[] = useMemo(
     () => [
-      { id: "cancel", label: "Cancel", variant: "ghost" },
-      { id: "edit", label: "Edit Post", variant: "outline" },
-      { id: "send", label: "Accept and Post", variant: "default" },
+      { id: "cancel", label: "Discard", variant: "ghost" },
+      { id: "edit", label: "Revise", variant: "outline" },
+      { id: "send", label: "Post Now", variant: "default" },
     ],
     [],
   );
@@ -611,50 +679,50 @@ export function ChatShowcase() {
   // Scene configurations
   const sceneConfigs: SceneConfig[] = useMemo(
     () => [
-      // Scene 1: Stocks / DataTable
+      // Scene 1: Support Tickets / DataTable
       {
-        userMessage: "Show me the latest performance for the major AI players.",
+        userMessage: "Show me high-priority support tickets from this week",
         thinkingSteps: [
-          "Searching for recent stock prices…",
-          "Fetching data…",
-          "Analyzing changes…",
+          "Querying ticket database…",
+          "Filtering by priority…",
+          "Sorting by urgency…",
         ],
-        preamble: "Here are the top stocks I found:",
+        preamble: "Here are the urgent tickets:",
         toolUI: (
-          <DataTable<Stock>
-            rowIdKey="symbol"
+          <DataTable<SupportTicket>
+            rowIdKey="id"
             columns={tableColumns}
             data={tableData}
           />
         ),
         toolFallbackHeight: 320,
       },
-      // Scene 2: Media / MediaCard
+      // Scene 2: RSC Guide / MediaCard
       {
-        userMessage: "Pull a good article preview I can include.",
+        userMessage: "Find that React Server Components guide",
         thinkingSteps: [
-          "Finding an article…",
-          "Checking metadata…",
-          "Preparing preview…",
+          "Searching documentation…",
+          "Fetching page metadata…",
+          "Generating preview…",
         ],
-        preamble: "Here's a preview:",
+        preamble: "Found it:",
         toolUI: <MediaCard {...mediaCard} maxWidth="420px" />,
         toolFallbackHeight: 260,
       },
-      // Scene 3: Social / SocialPost + DecisionPrompt
+      // Scene 3: Open Source Release / SocialPost + DecisionPrompt
       {
-        userMessage: "Draft an X post to promote the issue.",
+        userMessage: "Draft a tweet about our open-source release",
         thinkingSteps: [
-          "Drafting a post…",
-          "Linking references…",
-          "Polishing copy…",
+          "Analyzing project details…",
+          "Crafting announcement…",
+          "Adding hashtags…",
         ],
-        preamble: "Here's a draft:",
+        preamble: "Here's a draft announcement:",
         toolUI: (
           <div className="w-full max-w-[600px] min-w-0 space-y-3">
             <SocialPost {...socialPost} className="w-full" maxWidth="100%" />
             <DecisionPrompt
-              prompt="What would you like to do with this post?"
+              prompt="Ready to announce?"
               actions={decisionActions}
               align="left"
               layout="inline"

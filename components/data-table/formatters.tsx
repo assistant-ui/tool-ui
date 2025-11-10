@@ -316,7 +316,13 @@ function BadgeValue({ value, options }: BadgeValueProps) {
         ? "outline"
         : "secondary";
 
-  return <Badge variant={variant}>{value}</Badge>;
+  // Auto-capitalize badge text
+  const displayValue = value
+    .split(/[_-\s]+/)
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join(" ");
+
+  return <Badge variant={variant}>{displayValue}</Badge>;
 }
 
 interface ArrayValueProps {

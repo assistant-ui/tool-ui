@@ -20,7 +20,7 @@ export default function ContentLayout({
         </div>
       ) : null}
       <div
-        className={cn("flex min-h-0 flex-1", {
+        className={cn("flex min-h-0 flex-1 w-full", {
           "overflow-auto": !noScroll,
           "overflow-hidden": noScroll,
         })}

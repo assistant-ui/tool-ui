@@ -17,9 +17,11 @@ export default function HomePage({
   searchParams?: HomePageProps["searchParams"];
 }) {
   return (
-    <HeaderFrame rightContent={<HomeViewportControls />}>
+    <HeaderFrame
+      rightContent={<HomeViewportControls showViewportButtons={false} />}
+    >
       <ContentLayout noScroll>
-        <main className="bg-background relative grid h-full max-h-[800px] min-h-0 max-w-[1400px] grid-cols-1 gap-10 overflow-hidden md:grid-cols-[2fr_3fr] md:p-6">
+        <main className="bg-background relative grid h-full max-h-[800px] min-h-0 w-full max-w-[2000px] grid-cols-1 gap-10 overflow-hidden md:grid-cols-[600px_minmax(0,1fr)] md:p-6">
           <div
             className="bg-dot-grid pointer-events-none absolute inset-0 opacity-60 dark:opacity-40"
             aria-hidden="true"
@@ -28,13 +30,13 @@ export default function HomePage({
             <HomeHero />
           </div>
 
-          <div className="relative hidden h-full min-h-0 flex-1 items-center md:flex">
-            <div className="h-[600px] w-full border border-red-500">
+          <div className="relative hidden h-full min-h-0 w-full min-w-0 items-center lg:flex">
+            <div className="h-[600px] w-full">
               <ChatShowcase />
             </div>
           </div>
-          <HomeDebugPanel />
         </main>
+        <HomeDebugPanel />
       </ContentLayout>
     </HeaderFrame>
   );
