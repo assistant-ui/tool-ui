@@ -72,7 +72,7 @@ export function MobileNavSheet() {
             {/* Top Scroll Indicator Gradient */}
             <div className="from-background pointer-events-none absolute top-0 right-0 left-0 z-10 h-24 rounded-tl-xl rounded-tr-xl bg-gradient-to-b to-transparent" />
 
-            <Scroll.Root className="scrollbar-subtle flex-1 overflow-hidden">
+            <Scroll.Root className="scrollbar-subtle relative flex-1 overflow-hidden">
               <Scroll.View
                 className="h-full"
                 safeArea="visual-viewport"
@@ -130,19 +130,16 @@ export function MobileNavSheet() {
                   </div>
                 </Scroll.Content>
               </Scroll.View>
+
+              {/* Bottom Scroll Indicator Gradient */}
+              {showScrollIndicator && (
+                <div className="MobileNavSheet-bottomGradient" />
+              )}
             </Scroll.Root>
 
-            {/* Scroll Indicator Gradient */}
-            {showScrollIndicator && (
-              <div
-                className="from-background pointer-events-none absolute right-0 left-0 h-20 bg-gradient-to-t to-transparent"
-                style={{ bottom: 'max(4rem, calc(4rem + env(safe-area-inset-bottom, 0px)))' }}
-              />
-            )}
-
             {/* Social Links Footer */}
-            <div className="MobileNavSheet-footer bg-background relative z-10 w-full px-4 py-3">
-              <div className="flex w-full gap-2">
+            <footer className="MobileNavSheet-footer">
+              <div className="MobileNavSheet-footerInner">
                 <Button variant="outline" size="lg" className="flex-1" asChild>
                   <a
                     href="https://github.com/assistant-ui/tool-ui"
@@ -162,7 +159,7 @@ export function MobileNavSheet() {
                   </a>
                 </Button>
               </div>
-            </div>
+            </footer>
           </Sheet.Content>
         </Sheet.View>
       </Sheet.Portal>
