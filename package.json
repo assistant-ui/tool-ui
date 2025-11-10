@@ -23,6 +23,7 @@
     "@assistant-ui/react-markdown": "^0.11.4",
     "@modelcontextprotocol/sdk": "^1.21.0",
     "@radix-ui/react-accordion": "^1.2.12",
+    "@radix-ui/react-avatar": "^1.1.11",
     "@radix-ui/react-dialog": "^1.1.15",
     "@radix-ui/react-dropdown-menu": "^2.1.16",
     "@radix-ui/react-label": "^2.1.8",
