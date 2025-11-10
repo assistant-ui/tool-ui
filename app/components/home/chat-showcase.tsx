@@ -470,6 +470,7 @@ function AnimatedScene({
     if (!config.preamble && timeline.thinkingDone && !timeline.showTool) {
       timeline.setShowTool(true);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     config.preamble,
     timeline.thinkingDone,

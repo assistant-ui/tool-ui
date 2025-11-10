@@ -37,3 +37,15 @@
     0 -4px 6px -1px rgb(0 0 0 / 0.1),
     0 -2px 4px -2px rgb(0 0 0 / 0.1);
 }
+
+/* Safe area support for mobile browsers */
+.MobileNavSheet-footer {
+  /* Use safe-area-max-inset-bottom for sizing to prevent layout thrashing on Chrome Android */
+  --safe-area-max-inset-bottom: env(safe-area-inset-bottom, 0px);
+
+  /* Modern pattern optimized for Chrome performance */
+  bottom: calc(env(safe-area-inset-bottom, 0px) - var(--safe-area-max-inset-bottom));
+
+  /* Ensure minimum padding of 0.75rem (3 on Tailwind scale) plus safe area */
+  padding-bottom: max(0.75rem, calc(0.75rem + var(--safe-area-max-inset-bottom)));
+}

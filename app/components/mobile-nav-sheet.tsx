@@ -134,11 +134,14 @@ export function MobileNavSheet() {
 
             {/* Scroll Indicator Gradient */}
             {showScrollIndicator && (
-              <div className="from-background pointer-events-none absolute right-0 bottom-16 left-0 h-20 bg-gradient-to-t to-transparent" />
+              <div
+                className="from-background pointer-events-none absolute right-0 left-0 h-20 bg-gradient-to-t to-transparent"
+                style={{ bottom: 'max(4rem, calc(4rem + env(safe-area-inset-bottom, 0px)))' }}
+              />
             )}
 
             {/* Social Links Footer */}
-            <div className="bg-background relative z-10 h-16 w-full px-4 py-3">
+            <div className="MobileNavSheet-footer bg-background relative z-10 w-full px-4 py-3">
               <div className="flex w-full gap-2">
                 <Button variant="outline" size="lg" className="flex-1" asChild>
                   <a

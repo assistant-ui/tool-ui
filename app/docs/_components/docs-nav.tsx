@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard } from "lucide-react";
+import { LayoutDashboardIcon } from "lucide-react";
 import { componentsRegistry } from "@/lib/components-config";
 import { cn } from "@/lib/utils";
 
@@ -49,7 +49,7 @@ export function DocsNav() {
             className={buildLinkClasses(isGalleryActive)}
             title={collapsed ? "Gallery" : undefined}
           >
-            <LayoutDashboard
+            <LayoutDashboardIcon
               className={cn("text-muted-foreground size-4 shrink-0", {
                 "text-primary": isGalleryActive,
               })}
