@@ -17,7 +17,7 @@ export function ActiveNavLink({ href, children }: ActiveNavLinkProps) {
     <Link
       href={href}
       className={cn(
-        "rounded-lg px-4 py-2 text-sm font-medium transition-colors",
+        "active:text-foreground bg-background active:bg-primary/10 rounded-lg px-4 py-2 text-sm transition-[colors,background] duration-75",
         isActive
           ? "text-foreground"
           : "text-muted-foreground hover:text-foreground hover:bg-muted",

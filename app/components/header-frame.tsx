@@ -9,10 +9,12 @@ type HeaderFrameProps = {
 export function HeaderFrame({ children, rightContent }: HeaderFrameProps) {
   return (
     <div className="flex h-screen flex-col items-center overflow-hidden">
-      <div className="bg-background/95 supports-backdrop-filter:bg-background/75 w-full max-w-[2000px] shrink-0 backdrop-blur">
+      <div className="w-full max-w-[2000px] shrink-0">
         <ResponsiveHeader rightContent={rightContent} />
       </div>
-      <div className="flex w-full min-h-0 flex-1 overflow-hidden">{children}</div>
+      <div className="flex min-h-0 w-full flex-1 overflow-hidden">
+        {children}
+      </div>
     </div>
   );
 }

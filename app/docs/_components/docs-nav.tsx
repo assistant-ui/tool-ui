@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Shapes } from "lucide-react";
+import { LayoutDashboard } from "lucide-react";
 import { componentsRegistry } from "@/lib/components-config";
 import { cn } from "@/lib/utils";
 import { Separator } from "@/components/ui/separator";
@@ -25,9 +25,12 @@ export function DocsNav() {
 
   const buildLinkClasses = (isActive: boolean) =>
     cn(
-      "flex items-center gap-3 rounded-md px-3 py-2 text-sm",
-      isActive ? "bg-muted text-foreground" : "hover:bg-muted/50",
-      collapsed && "justify-center px-0",
+      "flex items-center gap-3 rounded-lg px-4 hover:bg-primary/5  active:text-foreground bg-background active:bg-primary/10 py-2 text-sm transition-[colors,background] duration-75",
+      {
+        "justify-center px-0": collapsed,
+        "text-primary bg-primary/5": isActive,
+        "text-muted-foreground": !isActive,
+      },
     );
 
   const galleryPath = "/docs/gallery";
@@ -47,7 +50,7 @@ export function DocsNav() {
             className={buildLinkClasses(isGalleryActive)}
             title={collapsed ? "Gallery" : undefined}
           >
-            <Shapes
+            <LayoutDashboard
               className={cn("text-muted-foreground size-4 shrink-0", {
                 "text-primary": isGalleryActive,
               })}
@@ -66,28 +69,28 @@ export function DocsNav() {
 
         {/* Components Section */}
         <div className="flex flex-col gap-1 px-4 pt-4">
-            {!collapsed && (
-              <div className="text-muted-foreground mb-2 cursor-default px-3 text-sm select-none">
-                Components
-              </div>
-            )}
-            {componentsRegistry.map((component) => {
-              const isActive = pathname === component.path;
-              return (
-                <Link
-                  key={component.id}
-                  href={component.path}
-                  className={buildLinkClasses(isActive)}
-                  title={collapsed ? component.label : undefined}
-                >
-                  {!collapsed && (
-                    <div className="overflow-hidden">
-                      <span className="truncate">{component.label}</span>
-                    </div>
-                  )}
-                </Link>
-              );
-            })}
+          {!collapsed && (
+            <div className="text-muted-foreground mb-4 cursor-default px-3 text-xs tracking-widest uppercase select-none">
+              Components
+            </div>
+          )}
+          {componentsRegistry.map((component) => {
+            const isActive = pathname === component.path;
+            return (
+              <Link
+                key={component.id}
+                href={component.path}
+                className={buildLinkClasses(isActive)}
+                title={collapsed ? component.label : undefined}
+              >
+                {!collapsed && (
+                  <div className="overflow-hidden">
+                    <span className="truncate">{component.label}</span>
+                  </div>
+                )}
+              </Link>
+            );
+          })}
         </div>
       </nav>
     </aside>
