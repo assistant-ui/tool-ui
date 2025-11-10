@@ -616,7 +616,7 @@ export default function BuilderPage() {
         <PreviewRefreshSetter />
         <div className="flex h-full flex-1 flex-col md:flex-row">
           {/* Thread List Sidebar - hidden on mobile */}
-          <div className="bg-background hidden w-[240px] shrink-0 overflow-y-auto p-4 md:block">
+          <div className="bg-background hidden w-[220px] shrink-0 overflow-y-auto p-4 md:block">
             <ThreadList />
           </div>
 

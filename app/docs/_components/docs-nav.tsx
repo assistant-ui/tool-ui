@@ -6,7 +6,6 @@ import { usePathname } from "next/navigation";
 import { LayoutDashboard } from "lucide-react";
 import { componentsRegistry } from "@/lib/components-config";
 import { cn } from "@/lib/utils";
-import { Separator } from "@/components/ui/separator";
 
 const STORAGE_KEY = "tool-ui-components-nav-collapsed";
 
@@ -63,14 +62,10 @@ export function DocsNav() {
           </Link>
         </div>
 
-        <Separator />
-
-        <div className="h-4"></div>
-
         {/* Components Section */}
         <div className="flex flex-col gap-1 px-4 pt-4">
           {!collapsed && (
-            <div className="text-muted-foreground mb-4 cursor-default px-3 text-xs tracking-widest uppercase select-none">
+            <div className="text-muted-foreground mb-3 cursor-default px-4 text-xs tracking-widest uppercase select-none">
               Components
             </div>
           )}

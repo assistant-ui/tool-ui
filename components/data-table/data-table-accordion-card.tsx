@@ -292,7 +292,7 @@ function SimpleCard({
         {otherColumns.map((col) => (
           <div
             key={col.key}
-            className="flex items-start justify-between gap-4 border border-red-500"
+            className="flex items-start justify-between gap-4"
             role="group"
           >
             <span
