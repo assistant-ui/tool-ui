@@ -1,11 +1,9 @@
 import ContentLayout from "@/app/components/content-layout";
 import { HeaderFrame } from "@/app/components/header-frame";
 import { HomeHero } from "@/app/components/home/home-hero";
-import {
-  HomeClient,
-  HomeDebugPanel,
-  HomeViewportControls,
-} from "@/app/components/home/home-client";
+import { HomeViewportControls } from "@/app/components/home/home-viewport-controls";
+import { HomeDebugPanel } from "@/app/components/home/home-debug-panel";
+import { ChatShowcase } from "@/app/components/home/chat-showcase";
 
 type HomePageProps = {
   searchParams?: {
@@ -14,12 +12,10 @@ type HomePageProps = {
 };
 
 export default function HomePage({
-  searchParams,
+  searchParams: _searchParams,
 }: {
   searchParams?: HomePageProps["searchParams"];
 }) {
-  const showLogoDebug = searchParams?.logoDebug === "true";
-
   return (
     <HeaderFrame rightContent={<HomeViewportControls />}>
       <ContentLayout noScroll>
@@ -31,7 +27,12 @@ export default function HomePage({
           <div className="relative z-10 flex max-w-2xl shrink-0 flex-col justify-end gap-7 overflow-y-auto pb-[8vh] pl-6">
             <HomeHero />
           </div>
-          <HomeClient showLogoDebug={showLogoDebug} />
+
+          <div className="relative hidden h-full min-h-0 flex-1 items-center md:flex">
+            <div className="h-[600px] w-full border border-red-500">
+              <ChatShowcase />
+            </div>
+          </div>
           <HomeDebugPanel />
         </main>
       </ContentLayout>
