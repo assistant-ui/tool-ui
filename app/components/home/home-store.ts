@@ -8,7 +8,7 @@ type Layout = [number, number, number];
 export const CHAT_MIN_SIZE = 50;
 export const CHAT_MAX_SIZE = 100;
 
-export const CHAT_LAYOUTS: Record<ResizableViewportSize, Layout> = {
+const CHAT_LAYOUTS: Record<ResizableViewportSize, Layout> = {
   mobile: [25, CHAT_MIN_SIZE, 25],
   desktop: [0, CHAT_MAX_SIZE, 0],
 };
@@ -70,5 +70,4 @@ export const useHomeStore = create<HomeState>((set) => ({
     }),
   setShowLogoDebug: (value) => set(() => ({ showLogoDebug: value })),
 }));
-
 

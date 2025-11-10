@@ -168,10 +168,3 @@ export async function getStocks(
   return stocks;
 }
 
-/**
- * Get a single stock by symbol
- */
-export async function getStock(symbol: string): Promise<Stock | null> {
-  const stocks = await getStocks({ symbols: [symbol] });
-  return stocks[0] || null;
-}

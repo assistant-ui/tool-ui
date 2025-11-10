@@ -10,7 +10,7 @@ const redis =
       })
     : null;
 
-export const ratelimit = redis
+const ratelimit = redis
   ? new Ratelimit({
       redis,
       limiter: Ratelimit.slidingWindow(10, "10 m"), // 10 requests per 10 minutes per IP

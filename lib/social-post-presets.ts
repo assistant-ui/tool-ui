@@ -35,7 +35,7 @@ export const sampleX: SocialPostConfig = {
   },
 };
 
-export const sampleXQuoted: SocialPostConfig = {
+const sampleXQuoted: SocialPostConfig = {
   post: {
     id: "x-post-1",
     platform: "x",

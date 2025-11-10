@@ -199,7 +199,7 @@ const taskData: GenericRow[] = [
   },
 ];
 
-export const sampleTasks: DataTableConfig = {
+const sampleTasks: DataTableConfig = {
   columns: taskColumns,
   data: taskData,
   actions: [
@@ -357,20 +357,20 @@ const resourceData: GenericRow[] = [
   },
 ];
 
-export const sampleResources: DataTableConfig = {
+const sampleResources: DataTableConfig = {
   columns: resourceColumns,
   data: resourceData,
   rowIdKey: "name",
 };
 
-export const sampleLocalized: DataTableConfig = {
+const sampleLocalized: DataTableConfig = {
   columns: stockColumns,
   data: stockData,
   rowIdKey: "symbol",
   locale: "de-DE",
 };
 
-export const sampleEmpty: DataTableConfig = {
+const sampleEmpty: DataTableConfig = {
   columns: [
     { key: "id", label: "ID" },
     { key: "name", label: "Name" },
