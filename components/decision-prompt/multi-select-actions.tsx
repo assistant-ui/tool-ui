@@ -68,7 +68,7 @@ export function MultiSelectActions({
     setSelectedIds(new Set());
   }, []);
 
-  const alignClass = {
+  const alignClassButtons = {
     left: "justify-start",
     center: "justify-center",
     right: "justify-end",
@@ -92,7 +92,9 @@ export function MultiSelectActions({
                 // Wide containers: we still allow row layout if desired,
                 // alignment applies only at wide sizes
                 "@[28rem]:flex-row @[28rem]:flex-wrap @[28rem]:items-center",
-                `@[28rem]:${alignClass}`,
+                align === "left" && "@[28rem]:justify-start",
+                align === "center" && "@[28rem]:justify-center",
+                align === "right" && "@[28rem]:justify-end",
               ),
         )}
       >
@@ -142,7 +144,7 @@ export function MultiSelectActions({
         })}
       </div>
 
-      <div className={cn("flex items-center gap-4", alignClass)}>
+      <div className={cn("flex items-center gap-4", alignClassButtons)}>
         <Button
           variant="ghost"
           size="lg"

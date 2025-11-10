@@ -322,7 +322,24 @@ function BadgeValue({ value, options }: BadgeValueProps) {
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
     .join(" ");
 
-  return <Badge variant={variant}>{displayValue}</Badge>;
+  return (
+    <Badge
+      variant={variant}
+      className={cn(
+        "border",
+        tone === "warning" &&
+          "bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-100",
+        tone === "success" &&
+          "bg-green-100 text-green-700 dark:bg-green-950 dark:text-green-100",
+        tone === "info" &&
+          "bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-100",
+        tone === "danger" &&
+          "bg-red-100 text-red-700 dark:bg-red-950 dark:text-red-100",
+      )}
+    >
+      {displayValue}
+    </Badge>
+  );
 }
 
 interface ArrayValueProps {

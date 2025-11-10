@@ -102,11 +102,6 @@ export function DecisionPromptActions({
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [confirmingActionId]);
 
-  const alignClass = {
-    left: "justify-start",
-    center: "justify-center",
-    right: "justify-end",
-  }[align];
   const crossAlignClass = {
     left: "items-start",
     center: "items-center",
@@ -127,7 +122,9 @@ export function DecisionPromptActions({
               cn("flex-col", crossAlignClass),
               // Wide containers: inline row with wrapping and alignment
               "@[28rem]:flex-row @[28rem]:flex-wrap @[28rem]:items-center",
-              `@[28rem]:${alignClass}`,
+              align === "left" && "@[28rem]:justify-start",
+              align === "center" && "@[28rem]:justify-center",
+              align === "right" && "@[28rem]:justify-end",
             ),
         className,
       )}
