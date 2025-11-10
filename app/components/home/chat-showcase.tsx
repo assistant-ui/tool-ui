@@ -11,8 +11,8 @@ type SupportTicket = {
   id: string;
   customer: string;
   issue: string;
-  priority: "critical" | "high" | "medium" | "low";
-  status: "open" | "in-progress" | "waiting";
+  priority: "high" | "medium" | "low";
+  status: "open" | "in-progress" | "waiting" | "done";
   assignee: string;
   created: string;
 };
@@ -81,18 +81,18 @@ const MOTION = {
   },
   // Gentle pauses between phases (ms)
   beats: {
-    afterUser: 200,
-    afterThinking: 120,
-    afterPreamble: 100,
+    afterUser: 700,
+    afterThinking: 500,
+    afterPreamble: 200,
   },
   // Scene hold after tool appears (ms)
-  sceneHold: 3500,
+  sceneHold: 4500,
   // Staggered exit delays (ms) - each item exits slightly after the previous
   exitStagger: {
     user: 0,
     thinking: 80,
-    preamble: 160,
-    tool: 240,
+    preamble: 120,
+    tool: 180,
   },
   // Reduced motion: faster but still pleasant
   reducedMotion: {
@@ -418,6 +418,7 @@ function AnimatedScene({
             enterDurationMs: MOTION.durations.thinkingIn,
             enterDelayMs: 100,
             exitDelayMs: MOTION.exitStagger.thinking,
+            animationType: "fade" as const,
           },
         ]
       : []),
@@ -437,6 +438,7 @@ function AnimatedScene({
             enterDurationMs: MOTION.durations.preambleIn,
             enterDelayMs: MOTION.beats.afterThinking,
             exitDelayMs: MOTION.exitStagger.preamble,
+            animationType: "fade" as const,
           },
         ]
       : []),
@@ -509,9 +511,8 @@ export function ChatShowcase() {
         format: {
           kind: "badge",
           colorMap: {
-            critical: "danger",
-            high: "warning",
-            medium: "info",
+            high: "danger",
+            medium: "warning",
             low: "success",
           } as Record<
             string,
@@ -530,6 +531,7 @@ export function ChatShowcase() {
             "in-progress": "info",
             open: "warning",
             waiting: "neutral",
+            done: "success",
           } as Record<
             string,
             "danger" | "warning" | "info" | "success" | "neutral"
@@ -540,13 +542,14 @@ export function ChatShowcase() {
     [],
   );
 
-  const tableData: SupportTicket[] = useMemo(
-    () => [
+  const tableData: SupportTicket[] = useMemo(() => {
+    const priorityOrder = { high: 0, medium: 1, low: 2 };
+    const tickets: SupportTicket[] = [
       {
         id: "TKT-2847",
         customer: "Acme Corp",
         issue: "API authentication failing intermittently",
-        priority: "critical",
+        priority: "high",
         status: "in-progress",
         assignee: "Sarah Chen",
         created: "2h ago",
@@ -555,7 +558,7 @@ export function ChatShowcase() {
         id: "TKT-2839",
         customer: "TechStart Inc",
         issue: "Unable to export data in CSV format",
-        priority: "high",
+        priority: "medium",
         status: "open",
         assignee: "Mike Rodriguez",
         created: "4h ago",
@@ -564,8 +567,8 @@ export function ChatShowcase() {
         id: "TKT-2831",
         customer: "Global Systems",
         issue: "Dashboard loading slowly for large datasets",
-        priority: "high",
-        status: "waiting",
+        priority: "medium",
+        status: "done",
         assignee: "Alex Kim",
         created: "6h ago",
       },
@@ -573,7 +576,7 @@ export function ChatShowcase() {
         id: "TKT-2828",
         customer: "BuildCo",
         issue: "Webhook delivery failures for payment events",
-        priority: "critical",
+        priority: "high",
         status: "open",
         assignee: "Jordan Lee",
         created: "8h ago",
@@ -591,8 +594,8 @@ export function ChatShowcase() {
         id: "TKT-2815",
         customer: "CloudNine",
         issue: "User permissions not syncing across teams",
-        priority: "high",
-        status: "open",
+        priority: "low",
+        status: "done",
         assignee: "Taylor Singh",
         created: "12h ago",
       },
@@ -600,7 +603,7 @@ export function ChatShowcase() {
         id: "TKT-2809",
         customer: "Nexus Labs",
         issue: "Mobile app crashes on iOS 17 devices",
-        priority: "critical",
+        priority: "high",
         status: "in-progress",
         assignee: "Mike Rodriguez",
         created: "14h ago",
@@ -609,14 +612,17 @@ export function ChatShowcase() {
         id: "TKT-2801",
         customer: "Velocity Systems",
         issue: "Email notifications delayed by 2+ hours",
-        priority: "high",
+        priority: "medium",
         status: "waiting",
         assignee: "Alex Kim",
         created: "16h ago",
       },
-    ],
-    [],
-  );
+    ];
+
+    return tickets.sort(
+      (a, b) => priorityOrder[a.priority] - priorityOrder[b.priority],
+    );
+  }, []);
 
   // MediaCard setup - RSC Guide
   const mediaCard: SerializableMediaCard = useMemo(
@@ -693,6 +699,7 @@ export function ChatShowcase() {
             rowIdKey="id"
             columns={tableColumns}
             data={tableData}
+            defaultSort={{ by: "priority", direction: "asc" }}
           />
         ),
         toolFallbackHeight: 320,
@@ -724,7 +731,7 @@ export function ChatShowcase() {
             <DecisionPrompt
               prompt="Ready to announce?"
               actions={decisionActions}
-              align="left"
+              align="right"
               layout="inline"
             />
           </div>

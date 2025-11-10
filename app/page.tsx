@@ -19,13 +19,15 @@ export default function HomePage({
   return (
     <HeaderFrame
       rightContent={<HomeViewportControls showViewportButtons={false} />}
+      background={
+        <div
+          className="bg-background bg-dot-grid pointer-events-none fixed inset-0 opacity-60 dark:opacity-40"
+          aria-hidden="true"
+        />
+      }
     >
       <ContentLayout noScroll>
-        <main className="bg-background relative grid h-full max-h-[800px] min-h-0 w-full max-w-[2000px] grid-cols-1 gap-10 overflow-hidden md:grid-cols-[600px_minmax(0,1fr)] md:p-6">
-          <div
-            className="bg-dot-grid pointer-events-none absolute inset-0 opacity-60 dark:opacity-40"
-            aria-hidden="true"
-          />
+        <main className="relative grid h-full max-h-[800px] min-h-0 w-full max-w-[2000px] grid-cols-1 gap-10 overflow-hidden md:grid-cols-[600px_minmax(0,1fr)] md:p-6">
           <div className="relative z-10 flex max-w-2xl shrink-0 flex-col justify-end gap-7 overflow-y-auto pb-[8vh] pl-6">
             <HomeHero />
           </div>

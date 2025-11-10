@@ -10,6 +10,7 @@ type StackedItem = {
   enterDurationMs?: number;
   enterDelayMs?: number;
   exitDelayMs?: number;
+  animationType?: "fade" | "scale"; // "fade" only animates opacity, "scale" includes y and scale transforms
 };
 
 // Apple-style motion configuration
@@ -86,6 +87,7 @@ export function StackedList({
               durationMs={it.enterDurationMs ?? 0}
               delayMs={it.enterDelayMs ?? 0}
               exitDelayMs={it.exitDelayMs ?? 0}
+              animationType={it.animationType ?? "scale"}
             >
               {it.node}
             </MeasuredItem>
@@ -103,6 +105,7 @@ function MeasuredItem({
   durationMs,
   delayMs,
   exitDelayMs,
+  animationType = "scale",
 }: {
   y: number;
   children: React.ReactNode;
@@ -110,6 +113,7 @@ function MeasuredItem({
   durationMs: number;
   delayMs: number;
   exitDelayMs: number;
+  animationType?: "fade" | "scale";
 }) {
   const ref = useRef<HTMLDivElement | null>(null);
   const [entered, setEntered] = useState(durationMs === 0 && delayMs === 0);
@@ -134,6 +138,18 @@ function MeasuredItem({
     return () => window.clearTimeout(t);
   }, [durationMs, delayMs]);
 
+  // Determine animation values based on type
+  const isFadeOnly = animationType === "fade";
+  const initialValues = entered
+    ? { opacity: 1, y: 0, scale: 1 }
+    : isFadeOnly
+      ? { opacity: 0, y: 0, scale: 1 }
+      : { opacity: 0, y: 16, scale: 0.97 };
+
+  const exitValues = isFadeOnly
+    ? { opacity: 0, y: 0, scale: 1 }
+    : { opacity: 0, y: -8, scale: 0.97 };
+
   return (
     <motion.div
       layout={false}
@@ -144,11 +160,7 @@ function MeasuredItem({
       style={{ willChange: "transform" }}
     >
       <motion.div
-        initial={
-          entered
-            ? { opacity: 1, y: 0, scale: 1 }
-            : { opacity: 0, y: 16, scale: 0.97 }
-        }
+        initial={initialValues}
         animate={{
           opacity: 1,
           y: 0,
@@ -162,9 +174,7 @@ function MeasuredItem({
           },
         }}
         exit={{
-          opacity: 0,
-          y: -8,
-          scale: 0.97,
+          ...exitValues,
           transition: {
             type: "spring",
             damping: 26,
