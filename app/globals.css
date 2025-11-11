@@ -1,14 +1,19 @@
-@import "@silk-hq/components/layered-styles";
 @import "tailwindcss";
 @import "tw-animate-css";
+
 /* Fumadocs UI styles */
 @import "fumadocs-ui/css/neutral.css";
 @import "fumadocs-ui/css/preset.css";
 @import "fumadocs-ui/css/shiki.css";
-@plugin "@tailwindcss/typography";
 
+/* Prose styles */
+@import "./prose.css";
+
+/* Silk Sheet UI styles */
+@import "@silk-hq/components/layered-styles";
+
+/* Shadcn UI theme styles */
 @custom-variant dark (&:is(.dark *));
-
 @theme inline {
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
@@ -206,109 +211,6 @@
   }
   body {
     @apply bg-background text-foreground;
-  }
-
-  /* Prose (MDX) typography styles */
-  .prose {
-    @apply text-foreground;
-  }
-
-  .prose :where(h1, h2, h3, h4, h5, h6):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
-    @apply font-semibold;
-  }
-
-  .prose :where(h1):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
-    @apply text-4xl mt-0 mb-8 flex items-center gap-3 flex-wrap;
-  }
-
-  .prose :where(h2):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
-    @apply text-2xl mt-12 mb-4 pb-2 border-b border-border;
-  }
-
-  .prose :where(h3):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
-    @apply text-xl mt-8 mb-3;
-  }
-
-  .prose :where(h4):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
-    @apply text-lg mt-6 mb-2;
-  }
-
-  .prose :where(p):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
-    @apply leading-7 mb-4;
-  }
-
-  .prose :where(.lead):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
-    @apply text-xl text-muted-foreground leading-relaxed mb-6;
-  }
-
-  .prose :where(a):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
-    @apply text-primary font-medium underline underline-offset-4 hover:text-primary/80 transition-colors;
-  }
-
-  .prose :where(strong):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
-    @apply font-semibold text-foreground;
-  }
-
-  .prose :where(ul, ol):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
-    @apply my-4 ml-6 space-y-2;
-  }
-
-  .prose :where(ul):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
-    @apply list-disc;
-  }
-
-  .prose :where(ol):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
-    @apply list-decimal;
-  }
-
-  .prose :where(li):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
-    @apply leading-7;
-  }
-
-  .prose :where(li > p):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
-    @apply my-2;
-  }
-
-  .prose :where(code):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
-    @apply bg-muted px-1.5 py-0.5 rounded-md text-sm font-mono;
-  }
-
-  /* Remove Tailwind Typography's visible backtick quotes around inline code */
-  .prose :where(:not(pre) > code)::before,
-  .prose :where(:not(pre) > code)::after {
-    content: none !important;
-  }
-
-  .prose :where(pre):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
-    @apply bg-muted p-4 rounded-lg overflow-x-auto my-6;
-  }
-
-  .prose :where(pre code):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
-    @apply bg-transparent p-0;
-  }
-
-  .prose :where(blockquote):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
-    @apply border-l-4 border-primary pl-4 italic text-muted-foreground my-6;
-  }
-
-  .prose :where(hr):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
-    @apply border-border my-8;
-  }
-
-  .prose :where(table):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
-    @apply w-full my-6 border-collapse;
-  }
-
-  .prose :where(thead):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
-    @apply border-b border-border;
-  }
-
-  .prose :where(th):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
-    @apply text-left font-semibold p-2;
-  }
-
-  .prose :where(td):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
-    @apply p-2 border-t border-border;
   }
 
   /*

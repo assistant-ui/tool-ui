@@ -366,13 +366,13 @@ export function CodePanel({
   };
 
   return (
-    <>
-      <div className="pointer-events-none sticky top-0 z-10 flex h-0 justify-end">
+    <div className="relative mt-12">
+      <div className="pointer-events-none absolute top-8 right-8 z-10 flex justify-end">
         <Button
           variant="ghost"
           size="sm"
           onClick={() => copyCode()}
-          className="pointer-events-auto mt-2 mr-6 h-8"
+          className="pointer-events-auto"
         >
           {copied ? (
             <>
@@ -394,11 +394,9 @@ export function CodePanel({
         startingLineNumber={1}
         showLanguage={false}
         showLineNumbers={true}
-        className="scrollbar-subtle text-sm"
+        className="scrollbar-subtle relative mb-16 px-4 pb-24 text-sm"
         style={
           {
-            padding: "1rem",
-            paddingTop: "3rem",
             margin: 0,
             background: "transparent",
             backgroundColor: "transparent",
@@ -410,6 +408,6 @@ export function CodePanel({
       >
         {code}
       </ShikiHighlighter>
-    </>
+    </div>
   );
 }

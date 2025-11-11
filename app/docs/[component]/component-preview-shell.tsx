@@ -114,22 +114,22 @@ export function ComponentPreviewShell({
               onCheckedChange={onLoadingChange}
             />
           </div>
-          <ButtonGroup>
+          <ButtonGroup className="bg-background rounded-md shadow-md">
             <Button
               variant={activeTab === "ui" ? "secondary" : "outline"}
-              size="icon-sm"
+              size="icon-lg"
               onClick={() => setActiveTab("ui")}
               title="UI view"
             >
-              <Eye className="h-4 w-4" />
+              <Eye className="size-4" />
             </Button>
             <Button
               variant={activeTab === "code" ? "secondary" : "outline"}
-              size="icon-sm"
+              size="icon-lg"
               onClick={() => setActiveTab("code")}
               title="Code view"
             >
-              <Code className="h-4 w-4" />
+              <Code className="size-4" />
             </Button>
           </ButtonGroup>
         </div>
