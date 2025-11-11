@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 
 export function HomeHero() {
   return (
-    <>
+    <div className="flex flex-col gap-7">
       <div className="-mb-4 -ml-4 flex items-end justify-start">
         <HomeHypercube />
       </div>
@@ -37,6 +37,6 @@ export function HomeHero() {
           <ArrowRight className="size-5 shrink-0 transition-transform group-hover:translate-x-1" />
         </Link>
       </Button>
-    </>
+    </div>
   );
 }

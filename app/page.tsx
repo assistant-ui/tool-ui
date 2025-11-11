@@ -27,8 +27,8 @@ export default function HomePage({
       }
     >
       <ContentLayout noScroll>
-        <main className="relative grid h-full max-h-[800px] min-h-0 w-full max-w-[2000px] grid-cols-1 gap-10 overflow-hidden md:grid-cols-[600px_minmax(0,1fr)] md:p-6">
-          <div className="relative z-10 flex max-w-2xl shrink-0 flex-col justify-end gap-7 overflow-y-auto pb-[8vh] pl-6">
+        <main className="relative grid h-full max-h-[800px] min-h-0 w-full max-w-[2000px] grid-cols-1 gap-10 overflow-hidden md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] md:p-6">
+          <div className="relative z-10 flex max-w-[600px] min-w-[500px] flex-col justify-end overflow-y-auto pb-[8vh] pl-6">
             <HomeHero />
           </div>
 
