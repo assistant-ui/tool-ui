@@ -1,0 +1,114 @@
+import { Badge } from "@/components/ui/badge";
+
+# Design Guidelines <Badge variant="warning">Under Construction</Badge>
+
+<div className="lead">
+Core principles and patterns for designing consistent, accessible Tool UI components that provide excellent user experiences.
+</div>
+
+## Interaction Principles
+
+### Confirmation Patterns
+
+For destructive or significant actions, provide clear confirmation mechanisms:
+
+- Use explicit confirm/cancel buttons for irreversible actions
+- Highlight the primary action visually while keeping cancel accessible
+- Provide clear context about what will happen when confirmed
+
+### Progressive Disclosure
+
+Reveal complexity gradually to avoid overwhelming users:
+
+- Show essential information first, hide advanced options initially
+- Use expand/collapse patterns for additional details
+- Maintain context when transitioning between states
+
+## State Management
+
+### Loading States
+
+- Use skeleton screens for predictable layouts
+- Show spinners for indeterminate waits
+- Provide progress indicators when duration is known
+- Keep interactive elements disabled but visible during loading
+
+### Empty States
+
+- Explain why content is empty and what actions users can take
+- Provide helpful guidance or call-to-action buttons
+- Use friendly, encouraging language
+
+### Error States
+
+- Clearly describe what went wrong in plain language
+- Suggest specific actions to resolve the issue
+- Preserve user input when possible to avoid frustration
+- Use appropriate visual indicators (color, icons) for severity
+
+## Responsive Design
+
+### Container Queries
+
+Components adapt to their container size, not viewport size:
+
+- Use container query breakpoints for component-level responsiveness
+- Design components to work in narrow sidebars and wide main areas
+- Test components at various container widths, not just screen sizes
+
+### Touch Targets
+
+- Ensure interactive elements are at least 44x44px
+- Provide adequate spacing between clickable items
+- Design for both mouse precision and touch interaction
+
+## Content & Typography
+
+### Writing Style
+
+- Use clear, concise language that users can quickly scan
+- Write action-oriented button labels (e.g., "Save changes" vs. "OK")
+- Avoid jargon and technical terms when possible
+
+### Hierarchy
+
+- Use typography scale to establish clear visual hierarchy
+- Limit heading levels to maintain clear document structure
+- Use font weight and color to indicate importance
+
+## Motion & Animation
+
+### Purpose-Driven Motion
+
+- Use animation to guide attention and communicate relationships
+- Keep transitions subtle and quick (150-300ms typical)
+- Respect user preferences with prefers-reduced-motion
+- Avoid animations that are purely decorative
+
+## Accessibility
+
+### Semantic HTML
+
+- Use appropriate HTML elements (button, nav, article, etc.)
+- Maintain proper heading hierarchy for screen readers
+- Provide meaningful alt text for images and icons
+
+### Keyboard Navigation
+
+- Ensure all interactive elements are keyboard accessible
+- Provide visible focus indicators with adequate contrast
+- Support common keyboard shortcuts where appropriate
+- Trap focus in modals and maintain logical tab order
+
+### Color & Contrast
+
+- Maintain WCAG AA contrast ratios (4.5:1 for text, 3:1 for UI)
+- Never rely solely on color to convey information
+- Test designs in both light and dark themes
+
+### ARIA Labels
+
+- Provide aria-label for icon-only buttons
+- Use aria-describedby for additional context
+- Keep ARIA attributes updated when content changes
+- Prefer semantic HTML over ARIA when possible

@@ -22,7 +22,7 @@ export function HomeHero() {
             </Badge>
           </div>
         </div>
-        <h2 className="text-2xl tracking-tight text-pretty">
+        <h2 className="text-2xl text-pretty">
           Beautiful UI components for AI tool calls
         </h2>
       </div>

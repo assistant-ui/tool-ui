@@ -32,8 +32,13 @@ export function DocsNav() {
       },
     );
 
+  const docsPages = [
+    { path: "/docs/overview", label: "Overview" },
+    { path: "/docs/design-guidelines", label: "Design Guidelines" },
+  ];
+
   const galleryPath = "/docs/gallery";
-  const isGalleryActive = pathname.startsWith(galleryPath);
+  const isGalleryActive = pathname === galleryPath;
 
   return (
     <aside
@@ -43,6 +48,7 @@ export function DocsNav() {
       )}
     >
       <nav className="flex flex-1 flex-col py-4">
+        {/* Gallery Link */}
         <div className="mb-4 flex flex-col gap-2 px-4">
           <Link
             href={galleryPath}
@@ -62,10 +68,36 @@ export function DocsNav() {
           </Link>
         </div>
 
-        {/* Components Section */}
+        {/* Docs Section */}
         <div className="flex flex-col gap-1 px-4 pt-4">
           {!collapsed && (
-            <div className="text-muted-foreground mb-3 cursor-default px-4 text-xs tracking-widest uppercase select-none">
+            <div className="text-primary/40 mb-3 cursor-default px-4 text-xs tracking-widest uppercase select-none">
+              Docs
+            </div>
+          )}
+          {docsPages.map((page) => {
+            const isActive = pathname === page.path;
+            return (
+              <Link
+                key={page.path}
+                href={page.path}
+                className={buildLinkClasses(isActive)}
+                title={collapsed ? page.label : undefined}
+              >
+                {!collapsed && (
+                  <div className="overflow-hidden">
+                    <span className="truncate">{page.label}</span>
+                  </div>
+                )}
+              </Link>
+            );
+          })}
+        </div>
+
+        {/* Components Section */}
+        <div className="flex flex-col gap-1 px-4 pt-8">
+          {!collapsed && (
+            <div className="text-primary/40 mb-3 cursor-default px-4 text-xs tracking-widest uppercase select-none">
               Components
             </div>
           )}

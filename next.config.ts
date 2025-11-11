@@ -1,7 +1,9 @@
 import { NextConfig } from "next";
+import createMDX from "@next/mdx";
 
 const config: NextConfig = {
   reactStrictMode: true,
+  pageExtensions: ["js", "jsx", "md", "mdx", "ts", "tsx"],
   async redirects() {
     return [
       {
@@ -18,4 +20,8 @@ const config: NextConfig = {
   },
 };
 
-export default config;
+const withMDX = createMDX({
+  // Add markdown plugins here, as desired
+});
+
+export default withMDX(config);
