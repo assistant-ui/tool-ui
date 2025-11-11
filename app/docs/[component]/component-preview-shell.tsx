@@ -94,7 +94,7 @@ export function ComponentPreviewShell({
 
   const Shell = (
     <div className="flex h-full min-h-0 w-full flex-1 overflow-clip">
-      <aside className="bg-background scrollbar-subtle flex h-full w-72 shrink-0 flex-col overflow-x-hidden overflow-y-auto overscroll-contain border-r">
+      <aside className="bg-background scrollbar-subtle flex h-full w-72 shrink-0 flex-col overflow-x-hidden overflow-y-auto overscroll-contain">
         <div className="flex h-full flex-col">
           <div className="flex min-h-0 flex-1 flex-col gap-4 px-4 pt-4 pb-24">
             {presetSelector}

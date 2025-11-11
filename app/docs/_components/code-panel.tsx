@@ -1,14 +1,10 @@
 "use client";
 
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Copy, Check } from "lucide-react";
 import { DataTableConfig } from "@/lib/sample-data";
 import { SocialPostConfig } from "@/lib/social-post-presets";
 import { MediaCardConfig } from "@/lib/media-card-presets";
 import { DecisionPromptConfig } from "@/lib/decision-prompt-presets";
-import { ShikiHighlighter } from "react-shiki";
-import "react-shiki/css";
+import { DynamicCodeBlock } from "fumadocs-ui/components/dynamic-codeblock";
 
 interface CodePanelProps {
   componentId: string;
@@ -39,8 +35,6 @@ export function CodePanel({
   isLoading,
   emptyMessage,
 }: CodePanelProps) {
-  const [copied, setCopied] = useState(false);
-
   const generateDataTableCode = () => {
     if (!config) return "";
 
@@ -359,55 +353,16 @@ export function CodePanel({
 
   const code = generateCode();
 
-  const copyCode = async () => {
-    await navigator.clipboard.writeText(code);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
-
   return (
-    <div className="relative mt-12">
-      <div className="pointer-events-none absolute top-8 right-8 z-10 flex justify-end">
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => copyCode()}
-          className="pointer-events-auto"
-        >
-          {copied ? (
-            <>
-              <Check className="mr-2 size-3.5" />
-              Copied
-            </>
-          ) : (
-            <>
-              <Copy className="mr-2 size-3.5" />
-              Copy
-            </>
-          )}
-        </Button>
-      </div>
-      <ShikiHighlighter
-        language="tsx"
-        theme={{ dark: "github-dark-dimmed", light: "github-light" }}
-        defaultColor="light-dark()"
-        startingLineNumber={1}
-        showLanguage={false}
-        showLineNumbers={true}
-        className="scrollbar-subtle relative mb-16 px-4 pb-24 text-sm"
-        style={
-          {
-            margin: 0,
-            background: "transparent",
-            backgroundColor: "transparent",
-            whiteSpace: "pre-wrap",
-            wordBreak: "break-word",
-            overflowWrap: "anywhere",
-          } as React.CSSProperties
-        }
-      >
-        {code}
-      </ShikiHighlighter>
+    <div className="relative mx-4 mt-12">
+      <DynamicCodeBlock
+        lang="tsx"
+        code={code}
+        codeblock={{
+          "data-line-numbers": true,
+          "data-line-numbers-start": 1,
+        }}
+      />
     </div>
   );
 }

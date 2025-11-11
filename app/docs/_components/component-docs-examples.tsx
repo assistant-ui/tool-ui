@@ -21,8 +21,8 @@ export function ComponentDocsExamples({
       {/* Sticky tablist */}
       <div
         className={cn(
-          "sticky top-0 z-20 flex items-center gap-2 border-b px-3 py-2 sm:px-6 sm:py-3",
-          "bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60",
+          "sticky top-0 z-20 flex items-center justify-center gap-2 border-b px-3 py-2 sm:px-6 sm:py-3",
+          "bg-background/95 supports-[backdrop-filter]:bg-background/60 backdrop-blur",
         )}
         role="tablist"
         aria-label="Component view"
@@ -35,7 +35,7 @@ export function ComponentDocsExamples({
             "inline-flex items-center rounded-md border px-3 py-1.5 text-sm transition-colors",
             active === "docs"
               ? "border-primary/20 bg-primary/10 text-primary"
-              : "border-transparent text-muted-foreground hover:bg-primary/5 hover:text-foreground",
+              : "text-muted-foreground hover:bg-primary/5 hover:text-foreground border-transparent",
           )}
           onClick={() => setActive("docs")}
         >
@@ -49,7 +49,7 @@ export function ComponentDocsExamples({
             "inline-flex items-center rounded-md border px-3 py-1.5 text-sm transition-colors",
             active === "examples"
               ? "border-primary/20 bg-primary/10 text-primary"
-              : "border-transparent text-muted-foreground hover:bg-primary/5 hover:text-foreground",
+              : "text-muted-foreground hover:bg-primary/5 hover:text-foreground border-transparent",
           )}
           onClick={() => setActive("examples")}
         >
@@ -61,10 +61,12 @@ export function ComponentDocsExamples({
       <div className="relative min-h-0 flex-1">
         {active === "docs" ? (
           <div className="z-0 min-h-0 flex-1 p-6 sm:p-10 lg:p-12">
-            <div className="prose dark:prose-invert mx-auto max-w-3xl">{docs}</div>
+            <div className="prose dark:prose-invert mx-auto max-w-3xl">
+              {docs}
+            </div>
           </div>
         ) : (
-          <div className="min-h-0 flex-1 h-full flex">{examples}</div>
+          <div className="flex h-full min-h-0 flex-1">{examples}</div>
         )}
       </div>
     </div>
