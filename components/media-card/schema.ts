@@ -46,7 +46,7 @@ export const serializableMediaCardSchema = z
   .superRefine((value, ctx) => {
     if (value.kind === "image" && !(value.alt && value.alt.trim())) {
       ctx.addIssue({
-        code: z.ZodIssueCode.custom,
+        code: "custom",
         message: "Images require alt text.",
       });
     }
@@ -57,13 +57,13 @@ export const serializableMediaCardSchema = z
       !value.src
     ) {
       ctx.addIssue({
-        code: z.ZodIssueCode.custom,
+        code: "custom",
         message: `${value.kind} requires src.`,
       });
     }
     if (value.kind === "link" && !value.href && !value.src) {
       ctx.addIssue({
-        code: z.ZodIssueCode.custom,
+        code: "custom",
         message: "link requires href or src.",
       });
     }

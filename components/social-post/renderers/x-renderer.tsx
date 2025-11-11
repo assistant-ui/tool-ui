@@ -51,7 +51,6 @@ export function XRenderer() {
         </div>
         <PlatformLogo
           platform={cfg.name}
-          color={cfg.tokens.brandColor}
           className={cn(
             "bg-muted/10 dark-bg-white h-5 w-5 shrink-0 rounded-full",
           )}

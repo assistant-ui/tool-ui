@@ -194,7 +194,6 @@ export function Header() {
       </div>
       <PlatformLogo
         platform={cfg.name}
-        color={cfg.tokens.brandColor}
         className={cn("bg-muted/10 h-8 w-8 self-start rounded-full")}
       />
     </header>

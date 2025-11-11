@@ -25,18 +25,19 @@ export function Actions() {
   const { post, cfg, state, setState, handlers, actionOverrides } =
     useSocialPost();
 
-  // Don't render if no actions are defined
+  const runtimeOverrides = actionOverrides;
+
+  const runtimeMap = React.useMemo(
+    () => new Map(runtimeOverrides.map((override) => [override.id, override])),
+    [runtimeOverrides],
+  );
+
   if (!post.actions || post.actions.length === 0) {
     return null;
   }
 
   const defaults = Object.keys(cfg.actions).filter((id) => id !== "menu");
   const serverActions = post.actions ?? [];
-  const runtimeOverrides = actionOverrides;
-  const runtimeMap = React.useMemo(
-    () => new Map(runtimeOverrides.map((override) => [override.id, override])),
-    [runtimeOverrides],
-  );
 
   const baseList =
     serverActions.length > 0

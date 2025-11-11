@@ -60,3 +60,13 @@ export const SerializableDecisionPromptSchema = DecisionPromptPropsSchema.omit({
 export type SerializableDecisionPrompt = z.infer<
   typeof SerializableDecisionPromptSchema
 >;
+
+export function parseSerializableDecisionPrompt(
+  input: unknown,
+): SerializableDecisionPrompt {
+  const res = SerializableDecisionPromptSchema.safeParse(input);
+  if (!res.success) {
+    throw new Error(`Invalid DecisionPrompt payload: ${res.error.message}`);
+  }
+  return res.data;
+}

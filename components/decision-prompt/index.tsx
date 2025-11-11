@@ -9,3 +9,4 @@ export {
   DecisionPromptPropsSchema,
   SerializableDecisionPromptSchema,
 } from "./schema";
+export { parseSerializableDecisionPrompt } from "./schema";

@@ -118,11 +118,9 @@ const LOGO_MAP: Record<Platform, React.FC<LogoProps>> = {
 
 export function PlatformLogo({
   platform,
-  color,
   className,
 }: {
   platform: Platform;
-  color: string;
   className?: string;
 }) {
   const Logo = LOGO_MAP[platform];
