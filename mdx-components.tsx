@@ -1,32 +1,55 @@
 import type { MDXComponents } from "mdx/types";
+import defaultMdxComponents from "fumadocs-ui/mdx";
+import { Steps, Step } from "fumadocs-ui/components/steps";
+import {
+  Tabs,
+  TabsList,
+  TabsTrigger,
+  TabsContent,
+  Tab,
+} from "fumadocs-ui/components/tabs";
+import { TypeTable } from "fumadocs-ui/components/type-table";
+import { DynamicCodeBlock } from "fumadocs-ui/components/dynamic-codeblock";
+import * as React from "react";
 
 export function useMDXComponents(components: MDXComponents): MDXComponents {
   return {
-    // Custom heading components with anchor links support
-    h1: ({ children, ...props }) => (
-      <h1 {...props}>{children}</h1>
-    ),
-    h2: ({ children, ...props }) => (
-      <h2 {...props}>{children}</h2>
-    ),
-    h3: ({ children, ...props }) => (
-      <h3 {...props}>{children}</h3>
-    ),
-    // Enhanced code blocks
-    code: ({ children, ...props }) => (
-      <code {...props}>{children}</code>
-    ),
-    // Custom links with external indicators
-    a: ({ href, children, ...props }) => (
-      <a
-        href={href}
-        {...props}
-        target={href?.startsWith("http") ? "_blank" : undefined}
-        rel={href?.startsWith("http") ? "noopener noreferrer" : undefined}
-      >
-        {children}
-      </a>
-    ),
+    // Fumadocs defaults (CodeBlock, CodeBlockTabs, Callout, Cards, headings, table wrapper, etc.)
+    ...defaultMdxComponents,
+
+    // Override `pre` to perform client-side Shiki highlighting using Fumadocs dynamic code block
+    pre: (props: any) => {
+      const child = props?.children as React.ReactElement | undefined;
+      if (child && typeof child === "object" && "props" in child) {
+        // Trim trailing newlines to avoid rendering an extra empty line
+        const code = String((child as any).props.children ?? "").replace(/\n+$/, "");
+        const className: string = (child as any).props.className ?? "";
+        const match = /language-([\w-]+)/.exec(className);
+        const lang = match?.[1] ?? "txt";
+        return (
+          <DynamicCodeBlock
+            lang={lang}
+            code={code}
+            // Enable line numbers globally; start at 1
+            codeblock={{ ["data-line-numbers"]: true, ["data-line-numbers-start"]: 1 }}
+          />
+        );
+      }
+      // Fallback
+      return React.createElement("pre", props);
+    },
+
+    // Extra components
+    Steps,
+    Step,
+    Tabs,
+    TabsList,
+    TabsTrigger,
+    TabsContent,
+    Tab,
+    TypeTable,
+
+    // Allow page-level overrides last
     ...components,
   };
 }

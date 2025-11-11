@@ -36,7 +36,10 @@ function ChatBubble({ role, children, className }: BubbleProps) {
   const isUser = role === "user";
   return (
     <div
-      className={cn("flex w-full", isUser ? "justify-end" : "justify-start")}
+      className={cn(
+        "flex w-full",
+        isUser ? "justify-end pb-3" : "justify-start",
+      )}
       aria-label={isUser ? "User message" : "Assistant message"}
     >
       <div
@@ -108,75 +111,7 @@ const MOTION = {
   },
 };
 
-type ThinkingBubbleProps = {
-  steps?: string[];
-  stepDurationMs?: number;
-  reducedMotion?: boolean;
-  onComplete?: (elapsedSeconds: number) => void;
-};
-
-function ThinkingBubble({
-  steps = ["Gathering context…", "Calling tools…", "Processing results…"],
-  stepDurationMs = 450, // Slower for more luxurious feel
-  reducedMotion,
-  onComplete,
-}: ThinkingBubbleProps) {
-  const [index, setIndex] = useState(0);
-  const [finalSeconds, setFinalSeconds] = useState<number | null>(
-    reducedMotion ? 1 : null,
-  );
-  const startRef = useRef<number | null>(null);
-
-  useEffect(() => {
-    if (reducedMotion) return;
-    startRef.current = performance.now();
-    let i = 0;
-    const timers: number[] = [];
-    const max = steps.length;
-
-    const tick = () => {
-      if (i < max - 1) {
-        i += 1;
-        setIndex(i);
-        timers.push(window.setTimeout(tick, stepDurationMs));
-      } else {
-        // Move to final non-shimmer state and freeze elapsed seconds
-        const elapsedMs =
-          performance.now() - (startRef.current ?? performance.now());
-        const secs = Math.max(1, Math.round(elapsedMs / 1000));
-        setFinalSeconds(secs);
-        onComplete?.(secs);
-      }
-    };
-
-    timers.push(window.setTimeout(tick, stepDurationMs));
-
-    return () => {
-      timers.forEach((t) => window.clearTimeout(t));
-    };
-  }, [reducedMotion, stepDurationMs, steps.length, onComplete]);
-
-  const isFinal = finalSeconds != null;
-
-  return (
-    <motion.div
-      key={index}
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={MOTION.springs.smooth}
-    >
-      <ChatBubble role="assistant">
-        <div className="text-muted-foreground">
-          {isFinal ? (
-            `Thought for ${finalSeconds}s`
-          ) : (
-            <span>{steps[index]}</span>
-          )}
-        </div>
-      </ChatBubble>
-    </motion.div>
-  );
-}
+// ThinkingBubble removed: we no longer render an explicit "thinking" phase
 
 type PreambleBubbleProps = {
   text: string;
@@ -311,6 +246,14 @@ function useSceneTimeline({
     return () => window.clearTimeout(id);
   }, [thinkingStarted, reducedMotion, hasUserMessage]);
 
+  // Immediately mark thinking as done once it starts (no visible bubble)
+  useEffect(() => {
+    if (reducedMotion) return;
+    if (!thinkingStarted || thinkingDone) return;
+    const id = window.setTimeout(() => setThinkingDone(true), 0);
+    return () => window.clearTimeout(id);
+  }, [thinkingStarted, thinkingDone, reducedMotion]);
+
   // Auto-advance scene after tool is shown
   useEffect(() => {
     if (!scheduledRef.current && thinkingDone && showTool && !reducedMotion) {
@@ -362,24 +305,16 @@ function AnimatedScene({
   });
 
   // Use refs to keep callbacks stable across renders
-  const handleThinkingCompleteRef = useRef(() => {
-    timeline.setThinkingDone(true);
-  });
   const handlePreambleCompleteRef = useRef(() => {
     timeline.setShowTool(true);
   });
 
   // Update refs when timeline changes
   useEffect(() => {
-    handleThinkingCompleteRef.current = () => timeline.setThinkingDone(true);
     handlePreambleCompleteRef.current = () => timeline.setShowTool(true);
   }, [timeline]);
 
   // Stable callback wrappers
-  const handleThinkingComplete = useCallback(() => {
-    handleThinkingCompleteRef.current();
-  }, []);
-
   const handlePreambleComplete = useCallback(() => {
     handlePreambleCompleteRef.current();
   }, []);
@@ -399,26 +334,6 @@ function AnimatedScene({
             enterDurationMs: MOTION.durations.userIn,
             enterDelayMs: 80,
             exitDelayMs: MOTION.exitStagger.user,
-          },
-        ]
-      : []),
-    // Thinking bubble
-    ...(timeline.thinkingStarted
-      ? [
-          {
-            id: `${sceneId}-thinking`,
-            node: (
-              <ThinkingBubble
-                steps={config.thinkingSteps}
-                reducedMotion={reducedMotion}
-                onComplete={handleThinkingComplete}
-              />
-            ),
-            fallbackHeight: 56,
-            enterDurationMs: MOTION.durations.thinkingIn,
-            enterDelayMs: 100,
-            exitDelayMs: MOTION.exitStagger.thinking,
-            animationType: "fade" as const,
           },
         ]
       : []),

@@ -1,53 +1,160 @@
-import { Badge } from "@/components/ui/badge";
+# Overview
 
-# Overview <Badge variant="warning">Under Construction</Badge>
+Tool UI is an open‑source library of Chat‑ready widgets—small, single‑purpose UI elements that an LLM can summon inside a conversation to present information in a rich and intuitive way, or facilitate quick input.
 
-<div className="lead">
-Tool UI is a collection of beautiful, accessible, copy-pasteable UI components designed specifically for AI tool calls and modern applications.
-</div>
+- Who it’s for: Front‑end engineers building LLM chat UIs who want high‑quality, copy‑pasteable widgets that work with Next.js + Tailwind + shadcn + Radix and any LLM/provider.
+- What it is: A set of polished, inline widgets ("micro ui") and with a clean action model and strong accessibility defaults.
+- Why it’s different: Fully open source / open code. Provider‑agnostic. Built to be dropped into your stack with minimal glue.
 
-## What is Tool UI?
+## Terminology
 
-Tool UI provides ready-to-use React components that handle common interaction
-patterns in AI-powered applications. Each component is crafted with
-accessibility, responsiveness, and user experience in mind.
+- Widget (a.k.a. “Tool UI”): a compact, single‑intent surface rendered inline in the chat.
+- Action: a typed event from a widget (e.g., decision_chosen, row_action) routed to your server (default) or a client handler.
 
-## Core Principles
+## What ships in v1
 
-- **Copy & Paste** - Components are standalone and easy to integrate into your
-  project without complex setup
-- **Accessible by Default** - Built with WCAG compliance and semantic HTML for
-  screen readers and keyboard navigation
-- **Responsive & Adaptive** - Uses container queries to adapt to any layout,
-  from mobile to desktop
-- **Customizable** - Styled with Tailwind CSS and built on Radix UI, making
-  them easy to theme and extend
+### Widgets
 
-## Components
+- DataTable — responsive table with mobile accordion cards, sortable headers, row actions, skeleton/empty/error states.
+- DecisionPrompt — inline decisions (single or multi‑select), built‑in destructive confirm, “receipt” state after completion.
+- MediaCard — image/video/audio/link preview with safe navigation, sensible actions, and metadata.
+- SocialPost — JSON‑driven renderers for X / Instagram / LinkedIn (media, link preview, actions, counts).
 
-Tool UI includes components for common AI interaction patterns:
+### Cross‑cutting
 
-- **Data Table** - Display and interact with structured data from tool
-  responses
-- **Decision Prompt** - Present choices and collect user decisions with clear
-  affordances
-- **Media Card** - Showcase images, videos, and rich media content
-- **Social Post** - Display social media-style content with engagement patterns
+- Action model — server‑first with optional client handler, optimistic UI, and granular loading (auto | self | container | none).
+- Design tokens — shadcn primitives, light/dark, WCAG AA.
+- Schemas — Zod parsers for serializable props; works with raw tool/LLM payloads.
 
-## Documentation Structure
+Note: Tool UI focuses on rendering. Action handling/dispatch is app‑level and not provided by the library.
 
-The documentation is organized into two main sections:
+## Quick Start
 
-- **Docs** - Conceptual guides covering design principles, architecture,
-  patterns, and implementation guidelines
-- **Components** - Live examples with interactive previews and copy-pasteable
-  code for each component
+Looking to render widgets from tool results? See the dedicated Quick Start guide for a copy‑paste setup and examples.
 
-## Tech Stack
+- Quick Start: /docs/quick-start
 
-Tool UI components are built with:
+## Schema‑First DX
 
-- React & TypeScript for type-safe components
-- Tailwind CSS for styling with container queries
-- Radix UI primitives for accessible foundations
-- shadcn/ui patterns for consistency
+Tool UI components ship with Zod schemas that validate the JSON‑serializable props you should return from tools. Use them to reduce glue code and avoid runtime errors.
+
+- Validate on the server with `outputSchema`:
+
+```ts title="app/api/chat/route.ts"
+import { tool, streamText, convertToModelMessages } from "ai";
+import { z } from "zod";
+import { serializableDataTableSchema } from "@/components/data-table/schema";
+import { serializableMediaCardSchema } from "@/components/media-card/schema";
+import { serializableSocialPostSchema } from "@/components/social-post/schema";
+import { SerializableDecisionPromptSchema } from "@/components/decision-prompt/schema";
+
+const tools = {
+  listProducts: tool({
+    description: "List products and prices",
+    inputSchema: z.object({ query: z.string().optional() }),
+    outputSchema: serializableDataTableSchema,
+    async execute({ query }) {
+      const rows = await fetchProducts(query);
+      return {
+        columns: [
+          { key: "name", label: "Product" },
+          { key: "price", label: "Price", format: { kind: "currency", currency: "USD" } },
+        ],
+        data: rows.map(r => ({ id: r.id, name: r.name, price: r.price })),
+      };
+    },
+  }),
+  previewMedia: tool({
+    description: "Render a media card",
+    inputSchema: z.object({ id: z.string() }),
+    outputSchema: serializableMediaCardSchema,
+    async execute({ id }) { return await fetchMediaCard(id); },
+  }),
+  postDetail: tool({
+    description: "Render a social post",
+    inputSchema: z.object({ id: z.string() }),
+    outputSchema: serializableSocialPostSchema,
+    async execute({ id }) { return await fetchSocialPost(id); },
+  }),
+  chooseAction: tool({
+    description: "Ask the user to pick an action",
+    inputSchema: z.object({ prompt: z.string(), actions: z.array(z.object({ id: z.string(), label: z.string() })) }),
+    outputSchema: SerializableDecisionPromptSchema,
+    async execute({ prompt, actions }) { return { prompt, actions }; },
+  }),
+} as const;
+```
+
+- Parse on the client with helpers:
+
+```tsx
+import { DataTable, parseSerializableDataTable } from "@/components/data-table";
+import { MediaCard, parseSerializableMediaCard } from "@/components/media-card";
+import { SocialPost, parseSerializableSocialPost } from "@/components/social-post";
+import { DecisionPrompt, parseSerializableDecisionPrompt } from "@/components/decision-prompt";
+
+// inside message.parts rendering
+if (part.type === 'tool-listProducts' && part.state === 'output-available') {
+  const props = parseSerializableDataTable(part.output);
+  return <DataTable rowIdKey="id" {...props} />;
+}
+
+if (part.type === 'tool-previewMedia' && part.state === 'output-available') {
+  const card = parseSerializableMediaCard(part.output);
+  return <MediaCard {...card} />;
+}
+
+if (part.type === 'tool-postDetail' && part.state === 'output-available') {
+  const post = parseSerializableSocialPost(part.output);
+  return <SocialPost {...post} />;
+}
+
+if (part.type === 'tool-chooseAction' && part.state === 'output-available') {
+  const props = parseSerializableDecisionPrompt(part.output);
+  return (
+    <DecisionPrompt
+      {...props}
+      onAction={(actionId) => fetch('/api/action', { method: 'POST', body: JSON.stringify({ actionId }) })}
+    />
+  );
+}
+```
+
+## Typed Tools in UI
+
+For end‑to‑end type safety, infer types from your tool set and pass them to `useChat`. This gives typed `part.output` without casts.
+
+```ts
+import { InferUITools } from 'ai';
+
+const tools = { /* your tools object */ } as const;
+type MyUITools = InferUITools<typeof tools>;
+
+// Client
+const { messages } = useChat<MyUITools>({ /* transport */ });
+```
+
+You can also infer a single tool’s types with `InferUITool` when building isolated UIs.
+
+## Default Rendering for Unknown Tools
+
+Add a default fallback so tools without a dedicated UI still render something useful.
+
+```tsx title="/components/assistant-ui/thread.tsx"
+import { MessagePrimitive } from "@assistant-ui/react";
+import { ToolFallback } from "@/components/assistant-ui/tool-fallback";
+
+export function Thread() {
+  return (
+    <MessagePrimitive.Root>
+      <MessagePrimitive.Parts components={{ tools: { Fallback: ToolFallback } }} />
+    </MessagePrimitive.Root>
+  );
+}
+```
+
+## Accessibility & compatibility
+
+- WCAG AA contrast, min 44×44px hit targets, focus rings/keyboard parity, reduced‑motion support.
+- Web: Desktop + mobile responsive, Tailwind v4 (native) or v3.2+ with container‑queries plugin.
+- Frameworks: React 18+, Next.js (app/pages). i18n for numbers/dates where relevant.

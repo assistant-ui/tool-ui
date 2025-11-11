@@ -1,0 +1,361 @@
+import { CopyMarkdownButton } from "../_components/copy-markdown-button";
+
+<div className="flex justify-between items-start">
+  # Quick Start
+  <CopyMarkdownButton />
+</div>
+
+Render chat‑ready widgets from tool results in three steps. Choose your SDK path below.
+
+## Prerequisites
+
+```sh
+# Install core dependencies
+npm install ai @ai-sdk/openai zod
+
+# If using Assistant‑UI path (recommended for richer Tool UI)
+npm install @assistant-ui/react @assistant-ui/react-ai-sdk
+```
+
+Create `.env.local` with your provider key (do not expose to the client):
+
+```env
+OPENAI_API_KEY=sk-...
+```
+
+Notes:
+- Use Next.js App Router (`app/` directory) with an API route at `/api/chat`.
+- Keep tool execution on the server. Never put API keys in client components.
+- If you don’t have a `DataTable` component yet, swap it for a simple `<pre>{JSON.stringify(output, null, 2)}</pre>`.
+
+<Steps>
+  <Step>
+    <h3>Define your tool (server)</h3>
+    <Tabs items={["Assistant‑UI + AI SDK", "Vercel AI SDK only"]} label="Choose SDK">
+      <Tab>
+        ```ts
+        // app/api/chat/route.ts
+        import { streamText, convertToModelMessages, tool, type UIMessage } from "ai";
+        import { openai } from "@ai-sdk/openai";
+        import { frontendTools } from "@assistant-ui/react-ai-sdk";
+        import { z } from "zod";
+        import { serializableDataTableSchema } from "@/components/data-table/schema";
+
+        // Allow streaming responses up to 30 seconds
+        export const maxDuration = 30;
+
+        function errorHandler(error: unknown) {
+          if (error == null) return "unknown error";
+          if (typeof error === "string") return error;
+          if (error instanceof Error) return error.message;
+          try {
+            return JSON.stringify(error);
+          } catch {
+            return "unknown error";
+          }
+        }
+
+        export async function POST(req: Request) {
+          const {
+            messages,
+            system,
+            tools: frontendToolsDef,
+          }: { messages: UIMessage[]; system?: string; tools?: Record<string, unknown> } = await req.json();
+          const backendTools = {
+            get_products: tool({
+              description: "List products and prices",
+              inputSchema: z.object({ query: z.string().optional() }),
+              outputSchema: serializableDataTableSchema,
+              execute: async ({ query }) => {
+                const products = await fetchProducts(query);
+                return {
+                  columns: [
+                    { key: "name", label: "Product" },
+                    { key: "price", label: "Price", align: "right", format: { kind: "currency", currency: "USD" } },
+                  ],
+                  data: products.map((p) => ({ id: p.id, name: p.name, price: p.price })),
+                };
+              },
+            }),
+          } as const;
+
+          const result = streamText({
+            model: openai("gpt-4o"),
+            system,
+            messages: convertToModelMessages(messages),
+            tools: {
+              ...frontendTools(frontendToolsDef),
+              ...backendTools,
+            },
+          });
+          return result.toUIMessageStreamResponse({ onError: errorHandler });
+        }
+        ```
+      </Tab>
+      <Tab>
+        ```ts
+        // app/api/chat/route.ts
+        import { streamText, convertToModelMessages, tool, type UIMessage } from "ai";
+        import { openai } from "@ai-sdk/openai";
+        import { z } from "zod";
+        import { serializableDataTableSchema } from "@/components/data-table/schema";
+
+        // Allow streaming responses up to 30 seconds
+        export const maxDuration = 30;
+
+        function errorHandler(error: unknown) {
+          if (error == null) return "unknown error";
+          if (typeof error === "string") return error;
+          if (error instanceof Error) return error.message;
+          try {
+            return JSON.stringify(error);
+          } catch {
+            return "unknown error";
+          }
+        }
+
+        export async function POST(req: Request) {
+          const { messages }: { messages: UIMessage[] } = await req.json();
+          const tools = {
+            get_products: tool({
+              description: "List products and prices",
+              inputSchema: z.object({ query: z.string().optional() }),
+              outputSchema: serializableDataTableSchema,
+              execute: async ({ query }) => {
+                const products = await fetchProducts(query);
+                return {
+                  columns: [
+                    { key: "name", label: "Product" },
+                    { key: "price", label: "Price", align: "right", format: { kind: "currency", currency: "USD" } },
+                  ],
+                  data: products.map((p) => ({ id: p.id, name: p.name, price: p.price })),
+                };
+              },
+            }),
+          } as const;
+
+          const result = streamText({
+            model: openai("gpt-4o"),
+            messages: convertToModelMessages(messages),
+            tools,
+          });
+          return result.toUIMessageStreamResponse({ onError: errorHandler });
+        }
+        // Or use `createStreamableUI` from `@ai-sdk/rsc` to server-render React directly
+        ```
+      </Tab>
+    </Tabs>
+
+  </Step>
+
+  <Step>
+    <h3>Register a Tool UI (client)</h3>
+    <Tabs items={["Assistant‑UI", "Vercel AI SDK"]} label="Choose SDK">
+      <Tab>
+        ```tsx
+        import { makeAssistantToolUI } from "@assistant-ui/react";
+        import { DataTable, parseSerializableDataTable } from "@/components/data-table";
+
+        export const ProductsUI = makeAssistantToolUI<{ query?: string }, unknown>({
+          toolName: "get_products",
+          render: ({ result, status }) => {
+            if (status.type === "running") return <div className="border rounded-lg p-3">Loading…</div>;
+            if (status.type === "incomplete" || !result) return <div className="border rounded-lg p-3">Failed to load.</div>;
+            const props = parseSerializableDataTable(result);
+            return (
+              <DataTable rowIdKey="id" {...props} />
+            );
+          },
+        });
+        ```
+      </Tab>
+      <Tab>
+        ```tsx
+        // For AI SDK, no registration step is required.
+        // You will render typed tool parts from messages in Step 3.
+        // Tip: For client-side tools, use onToolCall and addToolOutput.
+        // Example:
+        // const { addToolOutput } = useChat({
+        //   onToolCall: ({ toolCall }) => {
+        //     if (toolCall.dynamic) return; // narrow types
+        //     if (toolCall.toolName === 'get_location') {
+        //       addToolOutput({ tool: 'get_location', toolCallId: toolCall.toolCallId, output: 'SF' });
+        //     }
+        //   },
+        // });
+        ```
+      </Tab>
+    </Tabs>
+
+  </Step>
+
+  <Step>
+    <h3>Render in chat + handle actions</h3>
+    <Tabs items={["Assistant‑UI", "Vercel AI SDK"]} label="Choose SDK">
+      <Tab>
+        ```tsx
+        import { AssistantRuntimeProvider } from "@assistant-ui/react";
+        import { useChatRuntime, AssistantChatTransport } from "@assistant-ui/react-ai-sdk";
+        import { ProductsUI } from "@/components/tools/products-ui";
+
+        export default function Chat() {
+          const runtime = useChatRuntime({
+            transport: new AssistantChatTransport({ api: "/api/chat" }),
+          });
+          return (
+            <AssistantRuntimeProvider runtime={runtime}>
+              <Thread />
+              <ProductsUI />
+            </AssistantRuntimeProvider>
+          );
+        }
+        ```
+      </Tab>
+      <Tab>
+        ```tsx
+        'use client';
+
+        import { useChat } from '@ai-sdk/react';
+        import { DefaultChatTransport, lastAssistantMessageIsCompleteWithToolCalls } from 'ai';
+        import { DataTable, parseSerializableDataTable } from '@/components/data-table';
+        import { useState } from 'react';
+
+        // Optional local type for tool output to keep TypeScript happy
+        type ProductsOutput = {
+          rowIdKey?: string;
+          columns: Array<{ key: string; label: string; align?: 'left' | 'right' | 'center'; format?: { kind: 'currency'; currency: string } }>;
+          data: Array<Record<string, unknown>>;
+          count: number;
+        };
+
+        export function Chat() {
+          const { messages, sendMessage } = useChat({
+            transport: new DefaultChatTransport({ api: '/api/chat' }),
+            sendAutomaticallyWhen: lastAssistantMessageIsCompleteWithToolCalls,
+          });
+          const [input, setInput] = useState('');
+
+          return (
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                if (input.trim()) {
+                  sendMessage({ text: input });
+                  setInput('');
+                }
+              }}
+            >
+              <ul>
+                {messages.map((m) => (
+                  <li key={m.id}>
+                    {m.parts.map((part, i) => {
+                      switch (part.type) {
+                        case 'text':
+                          return <span key={i}>{part.text}</span>;
+                        case 'tool-get_products': {
+                          const id = part.toolCallId;
+                          switch (part.state) {
+                            case 'input-streaming':
+                              return <div key={id}>Preparing products request…</div>;
+                            case 'input-available':
+                              return <div key={id}>Loading products…</div>;
+                            case 'output-available':
+                              // Validate and parse serializable props from tool output
+                              const serializable = parseSerializableDataTable(part.output);
+                              return (
+                                <div key={id}>
+                                  <DataTable rowIdKey="id" {...serializable} />
+                                </div>
+                              );
+                            case 'output-error':
+                              return <div key={id}>Error: {part.errorText}</div>;
+                          }
+                        }
+                      }
+                    })}
+                  </li>
+                ))}
+              </ul>
+              <input value={input} onChange={(e) => setInput(e.target.value)} />
+            </form>
+          );
+        }
+        ```
+      </Tab>
+    </Tabs>
+
+  </Step>
+</Steps>
+
+See also: Accessibility & compatibility in Overview.
+
+## Optional: Typed Tools in UI (InferUITools)
+
+For end‑to‑end type safety on tool parts, infer types from your shared tool set and pass them to `useChat`. This gives typed `part.output` and better IntelliSense.
+
+1) Move your tools to a shared module:
+
+```ts title="ai/tools.ts"
+import { tool } from 'ai';
+import { z } from 'zod';
+import { serializableDataTableSchema } from '@/components/data-table/schema';
+
+export const tools = {
+  get_products: tool({
+    description: 'List products and prices',
+    inputSchema: z.object({ query: z.string().optional() }),
+    outputSchema: serializableDataTableSchema,
+    async execute({ query }) {
+      const products = await fetchProducts(query);
+      return {
+        columns: [
+          { key: 'name', label: 'Product' },
+          { key: 'price', label: 'Price', align: 'right', format: { kind: 'currency', currency: 'USD' } },
+        ],
+        data: products.map(p => ({ id: p.id, name: p.name, price: p.price })),
+      };
+    },
+  }),
+} as const;
+
+// Export a type only; the client should import types, not server code.
+export type Tools = typeof tools;
+```
+
+2) Server: import and pass `tools` to `streamText`:
+
+```ts title="app/api/chat/route.ts"
+import { tools } from '@/ai/tools';
+
+const result = streamText({
+  model: openai('gpt-4o'),
+  messages: convertToModelMessages(messages),
+  tools,
+});
+```
+
+3) Client: infer UI tool types and annotate `useChat`:
+
+```tsx title="app/page.tsx"
+import { InferUITools } from 'ai';
+import type { Tools } from '@/ai/tools';
+
+type MyUITools = InferUITools<Tools>;
+
+export function Chat() {
+  const { messages } = useChat<MyUITools>({
+    transport: new DefaultChatTransport({ api: '/api/chat' }),
+  });
+
+  // Now message.parts have typed tool parts, e.g. 'tool-get_products'
+}
+```
+
+## Troubleshooting
+
+- “An error occurred” in UI: add `onError` to `toUIMessageStreamResponse` and log a safe message; see server snippet above.
+- `part.output` is `unknown` in TypeScript: define a local output type and cast (see ProductsOutput) or use typed `UIMessage` generics.
+- Nothing renders: ensure you render `message.parts` and handle tool part states (`input-streaming`, `input-available`, `output-available`, `output-error`).
+- Client tools not running: if using Assistant‑UI, use `AssistantChatTransport`; for plain AI SDK, implement `onToolCall` + `addToolOutput`.
+- API not hit: verify `/api/chat` exists and `useChat`/transport `api` path matches. Check network tab for SSE errors.
+- Timeouts on serverless: add `export const maxDuration = 30;` and keep work inside tool `execute` efficient.

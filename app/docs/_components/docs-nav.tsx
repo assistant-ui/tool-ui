@@ -34,7 +34,8 @@ export function DocsNav() {
 
   const docsPages = [
     { path: "/docs/overview", label: "Overview" },
-    { path: "/docs/design-guidelines", label: "Design Guidelines" },
+    { path: "/docs/quick-start", label: "Quick Start" },
+    { path: "/docs/design-guidelines", label: "UI Design Guidelines" },
   ];
 
   const galleryPath = "/docs/gallery";

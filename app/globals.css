@@ -1,6 +1,10 @@
 @import "@silk-hq/components/layered-styles";
 @import "tailwindcss";
 @import "tw-animate-css";
+/* Fumadocs UI styles */
+@import "fumadocs-ui/css/neutral.css";
+@import "fumadocs-ui/css/preset.css";
+@import "fumadocs-ui/css/shiki.css";
 @plugin "@tailwindcss/typography";
 
 @custom-variant dark (&:is(.dark *));
@@ -269,6 +273,12 @@
     @apply bg-muted px-1.5 py-0.5 rounded-md text-sm font-mono;
   }
 
+  /* Remove Tailwind Typography's visible backtick quotes around inline code */
+  .prose :where(:not(pre) > code)::before,
+  .prose :where(:not(pre) > code)::after {
+    content: none !important;
+  }
+
   .prose :where(pre):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
     @apply bg-muted p-4 rounded-lg overflow-x-auto my-6;
   }
@@ -329,4 +339,3 @@
     z-index: 1;
   }
 }
-
