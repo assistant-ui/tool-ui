@@ -31,7 +31,7 @@ export function ResponsiveHeader({ rightContent }: ResponsiveHeaderProps) {
         </Link>
         <Badge
           variant="outline"
-          className="text-muted-foreground cursor-default font-mono font-light select-none"
+          className="text-muted-foreground cursor-default font-mono text-xs font-light select-none"
         >
           Research preview
         </Badge>
