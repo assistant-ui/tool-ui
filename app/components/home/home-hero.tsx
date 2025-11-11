@@ -12,11 +12,11 @@ export function HomeHero() {
       </div>
       <div className="flex flex-col gap-3">
         <div className="flex flex-col gap-3">
-          <div className="flex items-center gap-3">
+          <div className="flex flex-col items-start md:flex-row md:gap-3">
             <h1 className="text-6xl font-bold tracking-tight">Tool UI</h1>
             <Badge
               variant="outline"
-              className="text-muted-foreground mt-1 text-sm"
+              className="text-muted-foreground mt-1 cursor-default font-mono text-sm font-light select-none md:self-end"
             >
               Research preview
             </Badge>
@@ -27,9 +27,10 @@ export function HomeHero() {
         </h2>
       </div>
       <p className="text-muted-foreground mb-2 text-lg text-pretty">
-        Responsive, accessible, typed, copy-pasteable. <br />
-        Built on Radix, shadcn/ui, and Tailwind. Open Source.
-        <br />
+        Responsive, accessible, typed, copy-pasteable.{" "}
+        <br className="hidden md:block" />
+        Built on Radix, shadcn/ui, and Tailwind. Open Source.{" "}
+        <br className="hidden md:block" />
       </p>
       <Button asChild className="group" size="homeCTA">
         <Link href="/docs/gallery">

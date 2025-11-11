@@ -29,7 +29,10 @@ export function ResponsiveHeader({ rightContent }: ResponsiveHeaderProps) {
         <Link href="/">
           <h1 className="text-xl font-semibold tracking-wide">Tool UI</h1>
         </Link>
-        <Badge variant="outline" className="text-muted-foreground">
+        <Badge
+          variant="outline"
+          className="text-muted-foreground cursor-default font-mono font-light select-none"
+        >
           Research preview
         </Badge>
       </div>
