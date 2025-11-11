@@ -1,4 +1,9 @@
-# UI Design Guidelines
+import { CopyMarkdownButton } from "../_components/copy-markdown-button";
+
+<div className="flex justify-between items-start">
+  # UI Design Guidelines
+  <CopyMarkdownButton />
+  </div>
 
 These rules keep widgets glanceable, consistent, and easy to integrate across teams.
 
@@ -130,25 +135,52 @@ If you change these budgets, change them globally—consistency is the real feat
 
 ## Systematize new widgets (repeatable recipe)
 
-1. Spec (required in PR)
-   - Intent (one sentence)
-   - Surface: inline widget (optional list/collection at app level)
-   - Props schema (Zod; JSON‑serializable only)
-   - States: loading / empty / error / success visuals
-   - Actions: typed union + default loadingBehavior
-   - A11y: labels, focus order, alt text, reduced motion
-   - Budgets: first paint, skeleton threshold, TTI
-   - Security: treat payloads as untrusted; validation notes
-2. Boilerplate files
-   - WidgetName.schema.ts (Zod parser + types)
-   - WidgetName.tsx (visuals, tokens, motion)
-   - usage-docs.md (quick start + props table)
-   - Storybook stories (all states), axe a11y tests, unit tests for formatters/reducers
-3. Action handling (app‑level)
-   - Optional `createAction<T>()` helper; server‑first routing; optimistic update + idempotency token. This is an app pattern, not provided by the library.
-4. Lint rules (CI)
-   - ≤2 CTAs; no inner scroll; 44×44px hit targets; AA contrast.
-   - For lists/collections (app‑level): 3–8 items; ≤2 lines metadata; one CTA per item.
+<Steps>
+
+<Step>
+
+#### Spec (required in PR)
+
+- Intent (one sentence)
+- Surface: inline widget (optional list/collection at app level)
+- Props schema (Zod; JSON‑serializable only)
+- States: loading / empty / error / success visuals
+- Actions: typed union + default loadingBehavior
+- A11y: labels, focus order, alt text, reduced motion
+- Budgets: first paint, skeleton threshold, TTI
+- Security: treat payloads as untrusted; validation notes
+
+</Step>
+
+<Step>
+
+#### Boilerplate files
+
+- WidgetName.schema.ts (Zod parser + types)
+- WidgetName.tsx (visuals, tokens, motion)
+- usage-docs.md (quick start + props table)
+- Storybook stories (all states), axe a11y tests, unit tests for formatters/reducers
+
+</Step>
+
+<Step>
+
+#### Action handling (app‑level)
+
+- Optional `createAction<T>()` helper; server‑first routing; optimistic update + idempotency token. This is an app pattern, not provided by the library.
+
+</Step>
+
+<Step>
+
+#### Lint rules (CI)
+
+- ≤2 CTAs; no inner scroll; 44×44px hit targets; AA contrast.
+- For lists/collections (app‑level): 3–8 items; ≤2 lines metadata; one CTA per item.
+
+</Step>
+
+</Steps>
 
 ## Suggested categories (to label & browse widgets)
 

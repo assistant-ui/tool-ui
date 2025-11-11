@@ -1,6 +1,12 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type ReactNode,
+} from "react";
 import { useResizableViewport } from "@/app/components/resizable-viewport-provider";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import { Button } from "@/components/ui/button";
@@ -18,6 +24,11 @@ interface ComponentPreviewShellProps {
   renderCodePanel: (isLoading: boolean) => ReactNode;
   isLoading: boolean;
   onLoadingChange: (loading: boolean) => void;
+  /**
+   * If true, renders with the outer bordered container. When false, renders only the inner content
+   * so it can be embedded in a parent container (e.g., within a Docs/Examples tab shell).
+   */
+  withContainer?: boolean;
 }
 
 export function ComponentPreviewShell({
@@ -26,6 +37,7 @@ export function ComponentPreviewShell({
   renderCodePanel,
   isLoading,
   onLoadingChange,
+  withContainer = true,
 }: ComponentPreviewShellProps) {
   const { viewport } = useResizableViewport();
   const [activeTab, setActiveTab] = useState("ui");
@@ -80,8 +92,8 @@ export function ComponentPreviewShell({
     horizontalPanelGroupRef.current.setLayout([spacing, targetSize, spacing]);
   }, [viewport]);
 
-  return (
-    <div className="flex h-full min-h-0 w-full flex-1 overflow-clip rounded-tl-lg border-t border-l">
+  const Shell = (
+    <div className="flex h-full min-h-0 w-full flex-1 overflow-clip">
       <aside className="bg-background scrollbar-subtle flex h-full w-72 shrink-0 flex-col overflow-x-hidden overflow-y-auto overscroll-contain border-r">
         <div className="flex h-full flex-col">
           <div className="flex min-h-0 flex-1 flex-col gap-4 px-4 pt-4 pb-24">
@@ -122,8 +134,8 @@ export function ComponentPreviewShell({
           </ButtonGroup>
         </div>
 
-        {/* Resizable preview area */}
-        <div className="scrollbar-subtle relative flex flex-1 justify-center overflow-auto overscroll-contain px-2 py-6">
+        {/* Resizable preview area (outer container manages scroll) */}
+        <div className="relative flex flex-1 items-start justify-center overflow-y-scroll px-2 py-6">
           {activeTab === "ui" && (
             <div
               className="bg-dot-grid bg-wash pointer-events-none absolute inset-0 opacity-60 dark:opacity-40"
@@ -131,7 +143,7 @@ export function ComponentPreviewShell({
             />
           )}
           {activeTab === "ui" ? (
-            <div className="relative h-fit w-full pt-12 lg:pt-24">
+            <div className="relative h-fit w-full pt-12 lg:pt-16">
               <PanelGroup
                 ref={horizontalPanelGroupRef}
                 direction="horizontal"
@@ -148,8 +160,8 @@ export function ComponentPreviewShell({
                   minSize={PREVIEW_MIN_SIZE}
                   maxSize={PREVIEW_MAX_SIZE}
                 >
-                  <div className="border-border scrollbar-subtle relative min-h-full overflow-hidden rounded-xl border-2 border-dashed transition-all">
-                    <div className="relative m-0 flex min-h-full flex-col items-center justify-center p-4">
+                  <div className="border-border scrollbar-subtle relative rounded-xl border-2 border-dashed transition-all">
+                    <div className="relative m-0 flex h-full flex-col p-4">
                       <div className="w-full">{renderPreview(isLoading)}</div>
                     </div>
                   </div>
@@ -171,4 +183,10 @@ export function ComponentPreviewShell({
       </div>
     </div>
   );
+
+  if (withContainer) {
+    return <div className="rounded-tl-lg border-t border-l">{Shell}</div>;
+  }
+
+  return Shell;
 }

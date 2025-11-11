@@ -74,7 +74,7 @@ type FormatFor<V> = V extends number
  * Set `sortable: false` explicitly to disable sorting for specific columns.
  */
 export interface Column<
-  T extends object = RowData,
+  T extends object = DataTableRowData,
   K extends ColumnKey<T> = ColumnKey<T>,
 > {
   /** Unique identifier that maps to a key in the row data */
@@ -309,6 +309,10 @@ interface DataTableContextValue<T extends object = RowData> {
   locale?: string;
 }
 
+// We intentionally use `any` here to store the context value,
+// then expose a strongly-typed hook via `useDataTable<T>()` that
+// casts to the caller's row type.
+// This keeps usage ergonomic while avoiding prop-drilling generics.
 const DataTableContext = React.createContext<
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   DataTableContextValue<any> | undefined
@@ -374,8 +378,7 @@ export function DataTable<T extends object = RowData>({
    * - none (unsorted) → asc → desc → none
    * - Clicking different column resets to asc
    *
-   * This allows users to return to original data order, which is important
-   * for exploring data by insertion/chronological order.
+   * This allows users to return to the original data order.
    */
   const handleSort = React.useCallback(
     (key: ColumnKey<T>) => {
@@ -425,7 +428,7 @@ export function DataTable<T extends object = RowData>({
 
   const sortAnnouncement = React.useMemo(() => {
     const col = columns.find((c) => c.key === sortBy);
-    const label = col?.label ?? (typeof sortBy === "string" ? sortBy : "");
+    const label = col?.label ?? sortBy;
     return sortBy && sortDirection
       ? `Sorted by ${label}, ${sortDirection === "asc" ? "ascending" : "descending"}`
       : "";

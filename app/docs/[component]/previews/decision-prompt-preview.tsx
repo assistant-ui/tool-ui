@@ -10,7 +10,7 @@ import {
   decisionPromptPresets,
 } from "@/lib/decision-prompt-presets";
 
-export function DecisionPromptPreview() {
+export function DecisionPromptPreview({ withContainer = true }: { withContainer?: boolean }) {
   const [currentPreset, setCurrentPreset] =
     useState<DecisionPromptPresetName>("multi-choice");
   const [isLoading, setIsLoading] = useState(false);
@@ -28,6 +28,7 @@ export function DecisionPromptPreview() {
 
   return (
     <ComponentPreviewShell
+      withContainer={withContainer}
       isLoading={isLoading}
       onLoadingChange={setIsLoading}
       presetSelector={

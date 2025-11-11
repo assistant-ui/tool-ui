@@ -10,7 +10,7 @@ import {
   socialPostPresets,
 } from "@/lib/social-post-presets";
 
-export function SocialPostPreview() {
+export function SocialPostPreview({ withContainer = true }: { withContainer?: boolean }) {
   const [currentPreset, setCurrentPreset] = useState<SocialPostPresetName>("x");
   const [isLoading, setIsLoading] = useState(false);
 
@@ -23,6 +23,7 @@ export function SocialPostPreview() {
 
   return (
     <ComponentPreviewShell
+      withContainer={withContainer}
       isLoading={isLoading}
       onLoadingChange={setIsLoading}
       presetSelector={

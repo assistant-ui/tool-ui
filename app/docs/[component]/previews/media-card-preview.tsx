@@ -10,7 +10,7 @@ import {
   mediaCardPresets,
 } from "@/lib/media-card-presets";
 
-export function MediaCardPreview() {
+export function MediaCardPreview({ withContainer = true }: { withContainer?: boolean }) {
   const [currentPreset, setCurrentPreset] =
     useState<MediaCardPresetName>("link");
   const [isLoading, setIsLoading] = useState(false);
@@ -23,6 +23,7 @@ export function MediaCardPreview() {
 
   return (
     <ComponentPreviewShell
+      withContainer={withContainer}
       isLoading={isLoading}
       onLoadingChange={setIsLoading}
       presetSelector={

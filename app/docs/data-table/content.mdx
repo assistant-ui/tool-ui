@@ -1,0 +1,107 @@
+import { CopyMarkdownButton } from "../_components/copy-markdown-button";
+
+<div className="flex justify-between items-start">
+  # Data Table
+  <CopyMarkdownButton />
+  </div>
+
+A compact, responsive table component with mobile cards, sorting, statuses, and actions. This page shows a realistic “support tasks by urgency” example with a live demo and server/client snippets.
+
+## Live demo
+
+import { TasksDemo } from "./tasks-demo";
+
+<TasksDemo />
+
+## Server tool
+
+```ts title="app/api/chat/route.ts"
+import { streamText, convertToModelMessages, tool, type UIMessage } from 'ai';
+import { openai } from '@ai-sdk/openai';
+import { z } from 'zod';
+import { serializableDataTableSchema } from '@/components/data-table/schema';
+import { getMockTasks } from '@/lib/mock/tasks';
+
+export const maxDuration = 30;
+
+export async function POST(req: Request) {
+  const { messages }: { messages: UIMessage[] } = await req.json();
+
+  const result = streamText({
+    model: openai('gpt-4o'),
+    messages: convertToModelMessages(messages),
+    tools: {
+      list_tasks: tool({
+        description: 'List support tasks sorted by urgency',
+        inputSchema: z.object({ assignee: z.string().optional() }),
+        outputSchema: serializableDataTableSchema,
+        async execute({ assignee }) {
+          const tasks = await getMockTasks({ assignee });
+          return {
+            columns: [
+              { key: 'priority', label: 'Urgency', format: { kind: 'status', statusMap: { high: { tone: 'danger', label: 'High' }, medium: { tone: 'warning', label: 'Medium' }, low: { tone: 'neutral', label: 'Low' } } } },
+              { key: 'issue', label: 'Issue', truncate: true, priority: 'primary' },
+              { key: 'customer', label: 'Customer', priority: 'primary' },
+              { key: 'status', label: 'Status', format: { kind: 'badge', colorMap: { open: 'info', 'in-progress': 'warning', waiting: 'neutral', done: 'success' } } },
+              { key: 'assignee', label: 'Owner' },
+              { key: 'created', label: 'Created', format: { kind: 'date', dateFormat: 'relative' }, hideOnMobile: true },
+              { key: 'urgencyOrder', label: 'Order', hideOnMobile: true },
+            ],
+            data: tasks.map(t => ({
+              id: t.id,
+              issue: t.issue,
+              customer: t.customer,
+              priority: t.priority,
+              status: t.status,
+              assignee: t.assignee,
+              created: t.created,
+              urgencyOrder: t.priority === 'high' ? 1 : t.priority === 'medium' ? 2 : 3,
+            })),
+          };
+        },
+      }),
+    },
+  });
+
+  return result.toUIMessageStreamResponse();
+}
+```
+
+## Client render
+
+```tsx title="app/page.tsx"
+'use client';
+
+import { useChat } from '@ai-sdk/react';
+import { DefaultChatTransport } from 'ai';
+import { DataTable, parseSerializableDataTable } from '@/components/data-table';
+
+export default function Chat() {
+  const { messages, sendMessage } = useChat({
+    transport: new DefaultChatTransport({ api: '/api/chat' }),
+  });
+
+  return (
+    <div>
+      {messages.map((m) => (
+        <div key={m.id}>
+          {m.parts.map((part, i) => {
+            if (part.type === 'tool-list_tasks' && part.state === 'output-available') {
+              const props = parseSerializableDataTable(part.output);
+              return (
+                <DataTable key={i} rowIdKey="id" defaultSort={{ by: 'urgencyOrder', direction: 'asc' }} {...props} />
+              );
+            }
+            return null;
+          })}
+        </div>
+      ))}
+    </div>
+  );
+}
+```
+
+## Notes
+- Validate and parse with `parseSerializableDataTable` before rendering.
+- Sort by a hidden numeric `urgencyOrder` for consistent ordering.
+- For typed tool parts in the UI, see the Advanced page (InferUITools).

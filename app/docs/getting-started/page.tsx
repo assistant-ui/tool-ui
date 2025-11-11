@@ -1,3 +1,5 @@
+import { Steps, Step } from "fumadocs-ui/components/steps";
+
 export default function GettingStartedPage() {
   return (
     <div className="prose dark:prose-invert max-w-3xl p-6">
@@ -5,11 +7,17 @@ export default function GettingStartedPage() {
       <p>
         Install dependencies, wire Tailwind, and render your first component.
       </p>
-      <ol>
-        <li>Copy the component folder(s) you need.</li>
-        <li>Ensure Radix + shadcn atoms are available.</li>
-        <li>Verify Tailwind and container queries.</li>
-      </ol>
+      <Steps>
+        <Step>
+          <p>Copy the component folder(s) you need.</p>
+        </Step>
+        <Step>
+          <p>Ensure Radix + shadcn atoms are available.</p>
+        </Step>
+        <Step>
+          <p>Verify Tailwind and container queries.</p>
+        </Step>
+      </Steps>
     </div>
   );
 }

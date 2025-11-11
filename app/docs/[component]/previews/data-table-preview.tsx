@@ -12,7 +12,7 @@ import type {
 } from "@/components/data-table";
 import { PresetName, presets, SortState } from "@/lib/sample-data";
 
-export function DataTablePreview() {
+export function DataTablePreview({ withContainer = true }: { withContainer?: boolean }) {
   const [currentPreset, setCurrentPreset] = useState<PresetName>("stocks");
   const [isLoading, setIsLoading] = useState(false);
   const [sort, setSort] = useState<SortState>(presets.stocks.defaultSort ?? {});
@@ -59,6 +59,7 @@ export function DataTablePreview() {
 
   return (
     <ComponentPreviewShell
+      withContainer={withContainer}
       isLoading={isLoading}
       onLoadingChange={setIsLoading}
       presetSelector={

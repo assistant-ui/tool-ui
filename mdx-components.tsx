@@ -11,35 +11,61 @@ import {
 import { TypeTable } from "fumadocs-ui/components/type-table";
 import { DynamicCodeBlock } from "fumadocs-ui/components/dynamic-codeblock";
 import * as React from "react";
+import { AutoLinkChildren, withAutoLink } from "@/lib/docs-autolink";
 
 export function useMDXComponents(components: MDXComponents): MDXComponents {
+  // Wrap selected default components to auto-link Tool UI mentions
+  const Base = defaultMdxComponents as MDXComponents;
+  const P = withAutoLink((Base as Record<string, React.ElementType>).p ?? "p");
+  const LI = withAutoLink(
+    (Base as Record<string, React.ElementType>).li ?? "li",
+  );
+  const Blockquote = withAutoLink(
+    (Base as Record<string, React.ElementType>).blockquote ?? "blockquote",
+  );
+  const TD = withAutoLink(
+    (Base as Record<string, React.ElementType>).td ?? "td",
+  );
+  const TH = withAutoLink(
+    (Base as Record<string, React.ElementType>).th ?? "th",
+  );
+
   return {
-    // Fumadocs defaults (CodeBlock, CodeBlockTabs, Callout, Cards, headings, table wrapper, etc.)
     ...defaultMdxComponents,
 
+    // Auto-link text mentions in common containers
+    p: P,
+    li: LI,
+    blockquote: Blockquote,
+    td: TD,
+    th: TH,
+
     // Override `pre` to perform client-side Shiki highlighting using Fumadocs dynamic code block
-    pre: (props: any) => {
-      const child = props?.children as React.ReactElement | undefined;
-      if (child && typeof child === "object" && "props" in child) {
-        // Trim trailing newlines to avoid rendering an extra empty line
-        const code = String((child as any).props.children ?? "").replace(/\n+$/, "");
-        const className: string = (child as any).props.className ?? "";
+    pre: (props: React.ComponentPropsWithoutRef<"pre">) => {
+      const child = props?.children;
+      if (React.isValidElement(child)) {
+        type CodeChildProps = {
+          className?: string;
+          children?: React.ReactNode;
+        };
+        const element = child as React.ReactElement<CodeChildProps>;
+        const raw = element.props.children;
+        const content =
+          typeof raw === "string" ? raw : React.Children.toArray(raw).join("");
+        const code = String(content).replace(/\n+$/, "");
+        const className = element.props.className ?? "";
         const match = /language-([\w-]+)/.exec(className);
         const lang = match?.[1] ?? "txt";
-        return (
-          <DynamicCodeBlock
-            lang={lang}
-            code={code}
-            // Enable line numbers globally; start at 1
-            codeblock={{ ["data-line-numbers"]: true, ["data-line-numbers-start"]: 1 }}
-          />
-        );
+        const attrs: Record<string, number | boolean> = {
+          "data-line-numbers": true,
+          "data-line-numbers-start": 1,
+        };
+        return <DynamicCodeBlock lang={lang} code={code} codeblock={attrs} />;
       }
-      // Fallback
+
       return React.createElement("pre", props);
     },
 
-    // Extra components
     Steps,
     Step,
     Tabs,
@@ -48,8 +74,7 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
     TabsContent,
     Tab,
     TypeTable,
-
-    // Allow page-level overrides last
+    AutoLinkChildren,
     ...components,
   };
 }
