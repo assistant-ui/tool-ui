@@ -76,14 +76,6 @@ parseSerializableX → render component
 onAction → your app handles it (server/client)
 ```
 
-## Choosing the right Tool UI for the job
-
-- [Data Table](/docs/data-table) — best for scanning or comparing rows, sorting, formatting values, and attaching actions that persist across turns (collapses to cards with `priority` on mobile).
-- Rich text via [Media Card](/docs/media-card) or [Decision Prompt](/docs/decision-prompt) — narrative summaries, single entities, confirmations, or approvals with primary/secondary actions.
-- [Markdown table pattern](/docs/patterns) — tiny, static datasets with no sorting or actions; render inline markdown directly in chat copy.
-
-## Responsive layout
-
 All components respect chat widths, theme tokens, and density constraints, with [Data Table](/docs/data-table#priority) promoting high-priority columns to mobile cards, [Media Card](/docs/media-card) clamping media ratios, and [Decision Prompt](/docs/decision-prompt) stacking buttons for touch targets.
 
 ## Schema-first

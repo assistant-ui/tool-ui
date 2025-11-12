@@ -2,10 +2,34 @@
 
 import * as React from "react";
 import { DynamicCodeBlock } from "fumadocs-ui/components/dynamic-codeblock";
-import { format } from "prettier";
-import prettierPluginBabel from "prettier/plugins/babel";
-import prettierPluginEstree from "prettier/plugins/estree";
-import prettierPluginTypescript from "prettier/plugins/typescript";
+
+type PrettierPlugin = import("prettier").Plugin;
+
+type PrettierLoaderResult = {
+  format: typeof import("prettier/standalone").format;
+  plugins: PrettierPlugin[];
+};
+
+let prettierLoader: Promise<PrettierLoaderResult> | null = null;
+
+async function loadPrettier(): Promise<PrettierLoaderResult> {
+  if (!prettierLoader) {
+    prettierLoader = Promise.all([
+      import("prettier/standalone"),
+      import("prettier/plugins/babel"),
+      import("prettier/plugins/estree"),
+      import("prettier/plugins/typescript"),
+    ]).then(([prettier, babel, estree, typescript]) => ({
+      format: prettier.format,
+      plugins: [
+        ((babel as { default?: PrettierPlugin }).default ?? babel) as PrettierPlugin,
+        ((estree as { default?: PrettierPlugin }).default ?? estree) as PrettierPlugin,
+        ((typescript as { default?: PrettierPlugin }).default ?? typescript) as PrettierPlugin,
+      ],
+    }));
+  }
+  return prettierLoader;
+}
 
 async function formatCode(code: string, lang: string): Promise<string> {
   // Only format languages that Prettier supports
@@ -33,13 +57,11 @@ async function formatCode(code: string, lang: string): Promise<string> {
       tsx: "typescript",
     };
 
+    const { format, plugins } = await loadPrettier();
+
     const formatted = await format(code, {
       parser: parserMap[lang] || "babel",
-      plugins: [
-        prettierPluginBabel,
-        prettierPluginEstree,
-        prettierPluginTypescript,
-      ],
+      plugins,
       semi: true,
       singleQuote: false,
       trailingComma: "es5",
