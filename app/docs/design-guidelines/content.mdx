@@ -5,119 +5,112 @@ import { CopyMarkdownButton } from "../_components/copy-markdown-button";
   <CopyMarkdownButton />
 </div>
 
-Existing and new Tool UIs are expected to adhere to these guidelines.
+Design principles and interaction patterns for building consistent, accessible tool UIs in chat interfaces.
 
-## Principles
-1. Single intent — one clear purpose per widget.
-2. Glanceable — parse in ~3s; copy stays tight and scannable.
-3. Minimal chrome — the conversation is the primary surface.
-4. Accessible — AA contrast, keyboard parity, SR labels, reduced motion.
-6. Clear affordances — obvious primary action; fast feedback; receipts after completion.
+## Core Principles
 
-## Interaction model
+### Single intent
 
-### Server‑first actions (default)
-- Widgets fire typed actions to your server; client handlers are optional for optimistic updates or native integrations.
-- Tool UI does not include an action bus — wire routing in your app (see Quick Start).
+Each component has one clear purpose. Data Table shows structured data, Media Card previews content, Decision Prompt captures choices.
 
-### Loading semantics
-- auto (default) chooses sensible scope
-- self — only the control shows busy/disabled
-- container — veil the card and make it inert
-- none — custom visuals
+### Glanceable
 
-### Optimistic UI
-- Update immediately; reconcile on server ack.
-- On failure, roll back with a short inline error.
+Users parse the UI in ~3 seconds. Copy stays tight, scannable, and contextual—don't repeat what the assistant already said.
 
-### Destructive actions
-- Two‑stage confirm with timeout to reset.
-- Labels are explicit (“Delete 12 files”).
+### Minimal chrome
 
-### Forms
-- Inline widgets: simple fields + basic (native) validation.
-- Complex validation → use your app surface; return a summary card.
+The conversation is the primary surface. Components use subtle borders, balanced spacing, and stay out of the way.
 
-### Motion & feedback
-- Press feedback ≤ 100 ms; spinner by 150 ms; skeleton by 300 ms.
-- Transitions ≤ 200–250 ms; respect prefers‑reduced‑motion.
-- Prefer subtle morph/fade on refresh; avoid layout jumps.
+### Accessible by default
 
-## Performance & lifecycle budgets
-- First paint (inline card): ≤ 200 ms (placeholder OK)
-- Skeleton threshold: ≥ 300 ms
-- Time to interactive: ≤ 1,000 ms
-- Persistence: Result cards persist; ephemeral loaders do not
-- A11y floor: WCAG AA, 44×44px hit targets, full keyboard reachability
+AA contrast, keyboard navigation, screen reader labels, and reduced-motion support are non-negotiable.
 
-## Visual & content rules
-- Typography: shadcn system stacks; minimal sizes (title, body, caption).
-- Contrast: AA minimums always.
-- Copy: short, specific, context‑aware; don’t repeat what the assistant already said.
+### Clear affordances
 
-## Component guidance
+Primary actions are obvious, feedback is immediate (≤100ms press, ≤150ms spinner), and completed actions show receipts.
 
-### DataTable
-- Mobile: auto switches to accordion cards; only primary columns in the summary.
-- Priority: ≤ 2 primary columns; overflow to secondary; hide tertiary on mobile.
-- Alignment: numbers right‑aligned; text left.
-- Sorting: clear indicators (↑/↓/⇅); don’t imply non‑sortable columns.
-- Row actions: ≤ 2 inline; otherwise an overflow menu.
-- IDs: set `rowIdKey` to avoid reconciliation glitches.
-- States: empty, loading (skeleton), error.
-- A11y: headers are `<th scope="col">`; rows are keyboard‑navigable.
 
-### DecisionPrompt
-- Max actions: one primary + one secondary for single‑select.
-- Destructive: two‑stage confirm with timeout reset.
-- Receipt: compact badges summarizing the choice.
-- Multi‑select: enforce `minSelections`/`maxSelections`.
+## Interaction Patterns
 
-### MediaCard
-- Kinds: image | video | audio | link.
-- Required: alt for images; src for media; sanitize href.
-- Actions: few and contextual (play/pause, mute; open/copy).
-- Metadata: duration, size, created date; locale‑format.
-- Navigation: safe targets (noopener, noreferrer); allow handler override.
+### Actions
 
-### SocialPost
-- Per‑platform tokens/layout; accessible actions; media grid or vertical video.
-- Entities: mentions/hashtags/URLs are actionable; supply `onEntityClick`.
-- Counts: compact format (“1.2K”) + SR labels (“1,200 likes”).
-- Link preview: domain + title + 1–2 lines; whole block is a safe link.
+#### Server-first by default
 
-## Systematize new widgets (repeatable recipe)
+Components fire typed actions to your server via `onAction` callbacks. Client handlers are optional for optimistic updates or native integrations. Tool UI doesn't include an action bus—you wire the routing.
 
-<Steps>
+#### Loading states
 
-<Step>
-#### Spec (required in PR)
-- Intent (one sentence)
-- Surface: inline widget (optional list/collection at app level)
-- Props schema (Zod; JSON‑serializable only)
-- States: `loading` / `empty` / `error` / `success`
-- Actions: typed union + default `loadingBehavior`
-- A11y: labels, focus order, alt text, reduced motion
-- Security: treat payloads as untrusted; validation notes
-</Step>
+- `auto` (default): Sensible scope based on action type
+- `self`: Only the control shows busy/disabled
+- `container`: Veil the entire card and make it inert
+- `none`: Custom loading visuals in your app
 
-<Step>
-#### Boilerplate files
-- WidgetName.schema.ts (Zod parser + types)
-- WidgetName.tsx (visuals, tokens, motion)
-- usage-docs.md (quick start + props table)
-- Stories (all states), axe a11y tests, unit tests for formatters/reducers
-</Step>
+#### Optimistic updates
 
-<Step>
-#### Action handling (app‑level)
-- Optional `createAction<T>()` helper; server‑first routing; optimistic update + idempotency token.
-</Step>
+Update immediately, reconcile on server acknowledgment. On failure, roll back with a short inline error message.
 
-<Step>
-#### Lint rules (CI)
-- ≤ 2 CTAs; no inner scroll; 44×44px hit targets; AA contrast.
-- For lists/collections (app‑level): 3–8 items; ≤ 2 lines metadata; one CTA per item.
-</Step>
+#### Destructive actions
 
-</Steps>
+Two-stage confirmation with explicit labels ("Delete 12 files") and timeout to reset.
+
+### Forms & Input
+
+#### Inline widgets only
+
+Simple fields with basic native validation. For complex validation, handle it in your app surface and return a summary card to the chat.
+
+### Motion & Feedback
+
+#### Response timing
+
+- Press feedback: ≤100ms
+- Spinner: ≤150ms
+- Skeleton: ≥300ms (don't flash skeletons for fast responses)
+
+#### Transitions
+
+- Keep under 200–250ms
+- Respect `prefers-reduced-motion`
+- Use subtle morph/fade on refresh
+- Avoid layout jumps
+
+
+
+## Visual Design
+
+### Typography
+Use shadcn system stacks with minimal size variations (title, body, caption). Avoid custom font scales.
+
+### Contrast
+WCAG AA minimums always. Test foreground/background combinations, especially for muted or secondary text.
+
+### Spacing & Density
+Components respect chat width constraints and adapt to narrow viewports. Use consistent spacing tokens from your design system.
+
+### Copy
+Keep it short, specific, and context-aware. Users already have conversation context—don't repeat it in the UI.
+
+
+
+## Accessibility Standards
+
+### WCAG Compliance
+All components meet WCAG AA standards:
+- Contrast ratios: 4.5:1 for text, 3:1 for UI elements
+- Touch targets: 44×44px minimum
+- Focus indicators: Visible and high-contrast
+
+### Keyboard Navigation
+- All interactive elements reachable via Tab
+- Enter/Space activate buttons and controls
+- Arrow keys navigate within components (table rows, card galleries)
+- Escape dismisses dialogs and menus
+
+### Screen Readers
+- Semantic HTML: Use `<th scope="col">` for table headers, proper heading hierarchy
+- ARIA labels for icons and controls without visible text
+- Live regions for dynamic content updates
+- Status announcements for loading/error states
+
+### Reduced Motion
+Respect `prefers-reduced-motion` by disabling transitions and animations.

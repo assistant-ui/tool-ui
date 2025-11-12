@@ -5,110 +5,80 @@ import { CopyMarkdownButton } from "../_components/copy-markdown-button";
   <CopyMarkdownButton />
 </div>
 
-Render interactive, accessible UI in chat from JSON tool outputs. Tool UI ships shadcn/ui-based components you can copy-paste into any Next.js or React conversation UI so tools can return serializable props instead of plain text.
+Tool UI provides interactive, accessible React components that render directly from your tool's JSON outputs. Instead of returning plain text that gets reformatted or parsed unreliably, tools return structured data that renders as rich UI—tables, cards, widgets, and more—in any chat interface.
 
-## Quick start (30 seconds)
+## Why Tool UI?
 
-<Steps>
+**Predictable rendering**
+Structured JSON outputs mean consistent UI every time. No more wrestling with markdown table formatting or hoping the LLM formats lists correctly.
 
-<Step title="Server: return serializable props">
+**Built for chat constraints**
+All components handle narrow viewports, theme tokens, and density requirements. Data Table promotes priority columns to mobile cards, Media Card clamps aspect ratios, and Decision Prompt stacks buttons for 44×44 touch targets.
 
-Define your tool with a serializable schema so LLM outputs stay predictable.
+**Developer control**
+Components render, but your app handles actions. Wire `onAction` callbacks to your own functions—server actions, client handlers, or custom routing.
 
-```ts
-import { tool } from 'ai';
-import { serializableDataTableSchema } from '@/components/data-table/schema';
-
-export const tools = {
-  listProducts: tool({
-    outputSchema: serializableDataTableSchema,
-    async execute() {
-      return {
-        columns: [
-          { key: 'name', label: 'Product' },
-          { key: 'price', label: 'Price', format: { kind: 'currency', currency: 'USD' } },
-        ],
-        data: [{ id: '1', name: 'Widget', price: 29.99 }],
-      };
-    },
-  }),
-} as const;
-```
-
-</Step>
-
-<Step title="Client: parse and render">
-
-Check for the tool output part, parse it, and render the component.
-
-```tsx
-import { DataTable, parseSerializableDataTable } from '@/components/data-table';
-
-if (part.type === 'tool-listProducts' && part.state === 'output-available') {
-  const props = parseSerializableDataTable(part.output);
-  return <DataTable rowIdKey="id" {...props} />;
-}
-```
-
-</Step>
-
-<Step title="Actions: handle clicks in your app">
-
-Attach actions and handle them in your app so follow-up behavior stays under your control.
-
-```tsx
-<DataTable actions={[{ id: 'buy', label: 'Buy' }]} onAction={(id, row) => doSomething(id, row)} />
-```
-
-</Step>
-
-</Steps>
-
-More detail: [Full Quick Start](/docs/quick-start).
+**Schema-validated**
+Every component ships with Zod schemas. Validate tool outputs on the server, parse on the client, and keep types in sync.
 
 ## Mental model
 
 ```
-tool execute → JSON (validated by Zod)
+Tool returns JSON (validated by Zod)
         ↓
 parseSerializableX → render component
         ↓
 onAction → your app handles it (server/client)
 ```
 
-All components respect chat widths, theme tokens, and density constraints, with [Data Table](/docs/data-table#priority) promoting high-priority columns to mobile cards, [Media Card](/docs/media-card) clamping media ratios, and [Decision Prompt](/docs/decision-prompt) stacking buttons for touch targets.
+Tools execute and return structured data. The client parses that data into props, renders the component, and wires up action handlers. Your app controls what happens when users click rows, cards, or buttons.
 
-## Schema-first
+## What Tool UI is not
 
-Components ship with serializable Zod schemas so tools can validate outputs on the server and the UI can `parseSerializableX` before rendering. Keep the snippet tight on the overview and jump to the Quick Start for the full flow.
+- **Not a state manager or agent framework** — You still orchestrate memory, planning, and conversation flow.
+- **Not a server action dispatcher** — You wire `onAction` callbacks to your own server/client functions.
+- **Not a design system** — Components compose shadcn primitives and stay narrowly scoped to chat UI patterns.
 
-```ts
-import { tool } from 'ai';
-import { serializableMediaCardSchema } from '@/components/media-card/schema';
+## When to use which component
 
-const tools = {
-  preview: tool({
-    outputSchema: serializableMediaCardSchema,
-    async execute() {
-      return { id: 'card-1', kind: 'link', href: 'https://example.com' };
-    },
-  }),
-};
-```
+<div id="choose-the-renderer" />
 
-Client side:
+**[Data Table](/docs/data-table)**<br />
+Structured rows with sortable columns, priority-based mobile cards, and row actions. Best for listings, search results, or any tabular data.
 
-```tsx
-import { MediaCard, parseSerializableMediaCard } from '@/components/media-card';
+**[Media Card](/docs/media-card)**<br />
+Link previews, images, videos, or embedded content with metadata overlays. Use for showing external resources, article previews, or visual content.
 
-const card = parseSerializableMediaCard(part.output);
-return <MediaCard {...card} />;
-```
+**[Decision Prompt](/docs/decision-prompt)**<br />
+Present binary or multi-choice decisions with buttons and optional metadata. Perfect for approval flows, configuration choices, or survey-style interactions.
 
-Deep dive: [Quick Start](/docs/quick-start).
+**[Social Post](/docs/social-post)**<br />
+Display message-style content with avatars, timestamps, and reply actions. Use for showing social media posts, comments, or threaded conversations.
+
+## Architecture
+
+Tool UI sits between your tool execution and chat UI:
+
+1. **Server**: Define tools with `outputSchema` using the component's serializable schema
+2. **Client**: Check for tool output parts, parse with `parseSerializableX`, and render
+3. **Actions**: Attach action configs and handle callbacks in your app
+
+All components:
+- Accept serializable props (no functions, dates, or class instances)
+- Validate with Zod schemas before rendering
+- Support theme tokens and responsive breakpoints
+- Provide accessible keyboard navigation and screen reader support
 
 ## Accessibility & compatibility
 
-- WCAG-friendly defaults (contrast, focus rings, 44×44 targets) plus reduced-motion support; see [Accessibility](/docs/accessibility) for audits.
-- Works in React 18+ and Next.js App Router; Tailwind v3.2+ or v4 tokens out of the box.
-- Handles client/server action routing: components render, your app wires the `onAction` handlers and transports.
+**WCAG-friendly defaults**
+Tested for contrast ratios, focus indicators, 44×44 touch targets, and keyboard navigation. Reduced-motion queries respected. See [Accessibility](/docs/accessibility) for audit results and supported assistive technologies.
+
+**Works everywhere**
+- React 18+ and Next.js App Router
+- Tailwind v3.2+ or v4 with standard tokens
+- Any AI SDK provider (OpenAI, Anthropic, Google, etc.)
+- Client or server action handling
+
+
+Ready to build? Head to [Quick Start](/docs/quick-start) for a working implementation in under 5 minutes.

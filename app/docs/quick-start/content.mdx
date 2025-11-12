@@ -5,19 +5,15 @@ import { CopyMarkdownButton } from "../_components/copy-markdown-button";
   <CopyMarkdownButton />
 </div>
 
-Effortlessly display interactive, accessible UI components in chat from JSON tool outputs.
+Get Tool UI working in your chat app in under 5 minutes. This guide walks through setting up a tool that returns structured JSON and rendering it as interactive UI.
 
-- Copy-paste components that render directly from tool JSON.
-- Parse tool output into props, render components, and handle actions.
-- Browse the [gallery](/docs/gallery) to see every component in action.
-
-## Quick start (30 seconds)
+## 30-second overview
 
 <Steps>
 
-<Step title="Server: return serializable props from a tool">
+<Step title="Server: return serializable props">
 
-_Define your tool with a serializable schema so the LLM returns predictable props._
+Define your tool with a serializable schema so LLM outputs stay predictable.
 
 ```ts
 import { tool } from 'ai';
@@ -43,7 +39,7 @@ export const tools = {
 
 <Step title="Client: parse and render">
 
-_In the chat UI, gate on the tool part, parse the payload, and render the component._
+Check for the tool output part, parse it, and render the component.
 
 ```tsx
 import { DataTable, parseSerializableDataTable } from '@/components/data-table';
@@ -56,68 +52,28 @@ if (part.type === 'tool-listProducts' && part.state === 'output-available') {
 
 </Step>
 
-<Step title="Actions: handle clicks in your app">
+<Step title="Actions: handle clicks">
 
-_Pass row or card actions plus an `onAction` handler so your app controls follow-up work._
+Attach actions and handle them in your app so follow-up behavior stays under your control.
 
 ```tsx
-<DataTable actions={[{ id: 'buy', label: 'Buy' }]} onAction={(id, row) => doSomething(id, row)} />
+<DataTable
+  actions={[{ id: 'buy', label: 'Buy' }]}
+  onAction={(id, row) => handlePurchase(id, row)}
+/>
 ```
 
 </Step>
 
 </Steps>
 
-More detail: [Full walkthrough](#detailed-quick-start).
+> **Component choice:** This example uses Data Table, but the parse → render → action pattern is identical for [Media Card](/docs/media-card), [Decision Prompt](/docs/decision-prompt), and [Social Post](/docs/social-post). See [Overview → Choosing the right component](/docs/overview#choose-the-renderer) for guidance.
 
-> The walkthrough below uses MediaCard, but the exact parse → render → action pattern applies to Data Table, Decision Prompt, Social Post, and other components.
 
-## Mental model
 
-```
-Tool returns JSON (validated by Zod)
-        ↓
-parseSerializableX → render component
-        ↓
-onAction → your app handles it (server/client)
-```
+## Full walkthrough
 
-## Choosing the right Tool UI for the job
-
-Need help deciding between Data Table, Media Card, Decision Prompt, Social Post, or the Markdown table pattern? Jump to the [Overview → Choosing the right Tool UI for the job](/docs/overview#choose-the-right-renderer) section for chat-specific guidance.
-
-## Schema-first DX
-
-All components validate serializable props via Zod; parse on the client before rendering to keep server and UI in sync. Import `tool` from `ai` and the component's serializable schema, then keep the server return serializable.
-
-```ts
-const tools = {
-  preview: tool({
-    outputSchema: serializableMediaCardSchema,
-    async execute() {
-      return { id: 'card-1', kind: 'link', href: 'https://example.com' };
-    },
-  }),
-};
-```
-
-Full walkthrough sits in the [Detailed quick start](#detailed-quick-start) below.
-
-## What Tool UI is not
-
-- A state manager or agent framework — you still orchestrate memory and planning.
-- A server action dispatcher — you wire `onAction` callbacks to your own functions.
-- A design-system replacement — components compose shadcn primitives and stay narrowly scoped to chat.
-
-## Accessibility & compatibility
-
-Tool UI ships WCAG-friendly defaults, tested keyboard flows, and works in any Next.js / React app with the AI SDK; see [Accessibility](/docs/accessibility) for specifics and supported browsers.
-
-<div id="detailed-quick-start" />
-
-## Detailed quick start
-
-Use the example below to wire Tool UI end-to-end.
+Follow these steps for a complete working example using Media Card.
 
 ### Prerequisites
 
@@ -144,17 +100,29 @@ Use the example below to wire Tool UI end-to-end.
   </Tab>
 </Tabs>
 
-Make sure you have a model key. In this example we're using the Vercel AI SDK's OpenAI adapter.
+**Set up your API key**
 
-```env
+```env title=".env.local"
 OPENAI_API_KEY=sk-...
 ```
+
+You can use any AI SDK provider—swap `@ai-sdk/openai` for `@ai-sdk/anthropic`, `@ai-sdk/google`, etc. See the [AI SDK docs](https://sdk.vercel.ai/docs/foundations/providers-and-models) for all options.
+
+**Get the component**
+
+Visit the [Media Card component](/docs/media-card) page and use the "Source & install" section to either:
+- Download the ZIP and extract to your project's `components/` directory
+- Clone from the GitHub repo link
+
+The component should end up at `components/media-card/` in your project.
 
 <Steps>
 
 <Step>
 
-### API route with one tool
+### Create the API route
+
+Define a tool that returns serializable Media Card props.
 
 ```ts title="app/api/chat/route.ts"
 import { streamText, convertToModelMessages, tool, type UIMessage } from 'ai';
@@ -172,15 +140,17 @@ export async function POST(req: Request) {
     messages: convertToModelMessages(messages),
     tools: {
       previewLink: tool({
-        description: 'Return a simple link preview',
+        description: 'Show a preview card for a URL',
         inputSchema: z.object({ url: z.string().url() }),
         outputSchema: serializableMediaCardSchema,
         async execute({ url }) {
+          // In production, fetch real metadata from the URL
           return {
             id: 'link-1',
             kind: 'link',
             href: url,
-            title: 'React — Server Components',
+            title: 'React Documentation',
+            description: 'Learn React with our comprehensive guide',
             thumb: 'https://images.unsplash.com/photo-1633356122544-f134324a6cee?auto=format&fit=crop&q=80&w=1200',
           };
         },
@@ -192,13 +162,18 @@ export async function POST(req: Request) {
 }
 ```
 
-Swap `openai('gpt-4o')` for any AI SDK model or provider; see the [AI SDK docs](https://sdk.vercel.ai/docs).
+**Key points**
+- `outputSchema` ensures type safety and validates tool outputs
+- Return serializable data only (no functions, Dates, or class instances)
+- Tool description helps the LLM decide when to call it
 
 </Step>
 
 <Step>
 
-### Minimal client
+### Build the chat UI
+
+Parse tool outputs and render components in your message list.
 
 ```tsx title="app/page.tsx"
 'use client';
@@ -210,54 +185,112 @@ import { useState } from 'react';
 
 export default function Chat() {
   const { messages, sendMessage } = useChat({
-    transport: new DefaultChatTransport({ api: '/api/chat' }), // Match this to your API route
+    transport: new DefaultChatTransport({ api: '/api/chat' }),
   });
   const [input, setInput] = useState('Preview https://react.dev');
 
   return (
-    <form
-      onSubmit={(e) => {
-        e.preventDefault();
-        if (input.trim()) {
-          sendMessage({ text: input });
-          setInput('');
-        }
-      }}
-    >
-      <div>
+    <div className="flex h-screen flex-col">
+      {/* Message list */}
+      <div className="flex-1 overflow-y-auto p-4">
         {messages.map((m) => (
-          <div key={m.id}>
+          <div key={m.id} className="mb-4">
+            <div className="font-semibold">{m.role === 'user' ? 'You' : 'Assistant'}</div>
             {m.parts.map((part, i) => {
+              // Render tool output as Media Card
               if (part.type === 'tool-previewLink' && part.state === 'output-available') {
                 const card = parseSerializableMediaCard(part.output);
                 return <MediaCard key={i} {...card} maxWidth="420px" />;
               }
-              if (part.type === 'text') return <span key={i}>{part.text}</span>;
+              // Render text
+              if (part.type === 'text') {
+                return <p key={i} className="text-sm">{part.text}</p>;
+              }
               return null;
             })}
           </div>
         ))}
       </div>
 
-      <div className="mt-4 flex gap-2">
-        <input
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          placeholder="Try: Preview https://react.dev"
-          className="min-w-0 flex-1 rounded border px-3 py-2"
-        />
-        <button type="submit" className="rounded bg-primary px-3 py-2 text-primary-foreground">Send</button>
-      </div>
-    </form>
+      {/* Input form */}
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          if (input.trim()) {
+            sendMessage({ text: input });
+            setInput('');
+          }
+        }}
+        className="border-t p-4"
+      >
+        <div className="flex gap-2">
+          <input
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            placeholder="Try: Preview https://react.dev"
+            className="min-w-0 flex-1 rounded border px-3 py-2"
+          />
+          <button type="submit" className="rounded bg-primary px-4 py-2 text-primary-foreground">
+            Send
+          </button>
+        </div>
+      </form>
+    </div>
   );
 }
 ```
+
+**Key points**
+- Check `part.type` to identify which tool was called
+- Check `part.state === 'output-available'` before parsing
+- Always call `parseSerializableX` to validate and transform props
+
+</Step>
+
+<Step>
+
+### Add actions (optional)
+
+Wire up click handlers to let users interact with rendered components.
+
+```tsx
+const card = parseSerializableMediaCard(part.output);
+return (
+  <MediaCard
+    {...card}
+    maxWidth="420px"
+    actions={[
+      { id: 'open', label: 'Open' },
+      { id: 'save', label: 'Save' },
+    ]}
+    onAction={(actionId, cardData) => {
+      if (actionId === 'open') {
+        window.open(cardData.href, '_blank');
+      }
+      if (actionId === 'save') {
+        // Handle save logic
+        console.log('Saving', cardData);
+      }
+    }}
+  />
+);
+```
+
+**Key points**
+- Actions are optional—components work without them
+- `onAction` receives the action ID and component data
+- Handle actions client-side or send to server actions
 
 </Step>
 
 </Steps>
 
-> **Common errors**
-> - Missing `@ai-sdk/react` when using `useChat` (install it with the commands above).
-> - Forgetting to `parseSerializableX` before rendering, which causes prop shape mismatches.
-> - Missing or invalid `OPENAI_API_KEY`, resulting in 401 responses from your model provider.
+
+## Next steps
+
+- **Explore components**: Browse the [component gallery](/docs/gallery) to see all available UI patterns
+- **Add more tools**: Each component page has copy-paste schemas and examples
+- **Handle actions**: Wire `onAction` to server actions or client handlers for interactive flows
+- **Customize styling**: All components accept Tailwind classes via `className` props
+
+Need conceptual background? See the [Overview](/docs/overview) for architecture details and component selection guidance.

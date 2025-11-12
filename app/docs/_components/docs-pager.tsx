@@ -42,8 +42,8 @@ function PagerLink({ href, label, direction }: PagerLinkProps) {
       <Link
         href={href}
         className={cn(
-          "flex w-fit flex-1 items-center gap-3",
-          isPrev ? "justify-start text-left" : "justify-between text-right",
+          "inline-flex items-center gap-3",
+          isPrev ? "text-left" : "text-right",
         )}
       >
         {isPrev ? (
@@ -71,7 +71,7 @@ export function DocsPager() {
 
   return (
     <div className="not-prose mt-24">
-      <div className="flex flex-col gap-4 sm:flex-row">
+      <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:justify-between">
         {prev ? (
           <PagerLink href={prev.path} label={prev.label} direction="prev" />
         ) : (

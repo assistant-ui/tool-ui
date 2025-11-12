@@ -1,0 +1,117 @@
+import { CopyMarkdownButton } from "../_components/copy-markdown-button";
+
+<div className="flex justify-between items-start">
+  # Contributing
+  <CopyMarkdownButton />
+</div>
+
+Guidelines for contributing new components to Tool UI.
+
+## Component Structure
+
+Each component lives in `components/component-name/` with this file organization:
+
+### Core files
+
+- `schema.ts` — Zod schema (`serializableXSchema`) and parser function (`parseSerializableX`)
+- `types.ts` — TypeScript type definitions, including client props and internal types
+- `component-name.tsx` — Main component implementation
+- `index.tsx` — Public exports (component, types, parser, error boundary)
+- `error-boundary.tsx` — Error boundary wrapper for the component
+
+### Sub-components (as needed)
+
+- `header.tsx`, `body.tsx`, `footer.tsx`, `actions.tsx` — Smaller composable pieces
+- `context.tsx` — React context for shared state within the component
+
+### Utilities
+
+- `_ui.tsx` — Re-exports shadcn/ui primitives (adapter pattern for swappability)
+- `_cn.ts` — Utility functions (typically just re-exports `cn` helper)
+- `formatters.tsx` — Data formatting utilities (if needed)
+- `utilities.ts` — Component-specific helper functions
+
+### Documentation
+
+- `README.md` — Component overview, features, installation, API reference
+- `usage-docs.md` — Detailed usage examples and patterns (optional)
+
+
+
+## Implementation Checklist
+
+<Steps>
+
+<Step>
+### Define the contract
+
+Before coding:
+- **Intent**: One-sentence purpose—what problem does this solve in chat UIs?
+- **Serializable schema**: Design the Zod schema with JSON-serializable props only (no functions, Dates, class instances)
+- **Required vs optional fields**: Which props are essential? Which have sensible defaults?
+- **Validation rules**: Custom refinements for field dependencies (e.g., images require alt text)
+- **States**: How does it handle loading, empty, error states?
+</Step>
+
+<Step>
+### Build the component
+
+Implementation pattern:
+1. **schema.ts**: Define `serializableXSchema` and `parseSerializableX(input: unknown)` function
+2. **types.ts**: Create client props type (extends serializable props with actions/handlers)
+3. **_ui.tsx**: Re-export needed shadcn/ui components
+4. **component-name.tsx**: Build the main component accepting client props
+5. **Sub-components**: Break complex UIs into header/body/footer/actions files
+6. **context.tsx**: Add React context if sub-components need shared state
+7. **error-boundary.tsx**: Wrap component with error boundary for graceful failures
+8. **index.tsx**: Export public API (component, types, parser, error boundary)
+</Step>
+
+<Step>
+### Document usage
+
+Create clear documentation:
+- **README.md**: Features, installation instructions, basic usage, props table
+- **usage-docs.md**: Advanced patterns, edge cases, integration examples (optional)
+- Include code examples showing server-side tool definition and client-side rendering
+- Document action handling patterns if component supports interactions
+</Step>
+
+<Step>
+### Verify quality
+
+Ensure the component meets standards:
+- **Accessibility**: WCAG AA contrast, 44×44px touch targets, keyboard navigation, screen reader labels
+- **Responsive**: Works on mobile (320px) through desktop widths
+- **No scroll traps**: Avoid inner scroll areas—let chat container handle scrolling
+- **Reduced motion**: Respect `prefers-reduced-motion` for animations
+- **Error handling**: Validate props, show graceful error states, use error boundary
+- **Performance**: Fast first paint (≤200ms), minimal re-renders
+</Step>
+
+</Steps>
+
+
+
+## Design Principles
+
+All components must follow the [UI Guidelines](/docs/design-guidelines):
+
+- **Single intent** — One clear purpose per component
+- **Glanceable** — Scannable in ~3 seconds
+- **Minimal chrome** — Conversation-first design
+- **Accessible by default** — WCAG AA compliance
+- **Clear affordances** — Obvious actions with immediate feedback
+
+
+
+## Submitting Components
+
+When you're ready to contribute:
+
+1. **Test thoroughly**: Verify across viewports, themes, and accessibility tools
+2. **Document completely**: README with features, usage, and API reference
+3. **Follow conventions**: Match existing component patterns and file structure
+4. **Open a PR**: Include examples in your pull request description
+
+Questions? [Open an issue on GitHub](https://github.com/assistant-ui/tool-ui/issues) or [reach out on Discord](https://discord.com/channels/1251324227668283443).
