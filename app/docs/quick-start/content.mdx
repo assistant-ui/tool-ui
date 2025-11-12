@@ -3,11 +3,112 @@ import { CopyMarkdownButton } from "../_components/copy-markdown-button";
 <div className="flex justify-between items-start">
   # Quick Start
   <CopyMarkdownButton />
-  </div>
+</div>
 
-Get a chat rendering a Tool UI component in a couple minutes. We’ll return a simple link preview using MediaCard from a tool and render it inline.
+Tool UI renders interactive, LLM-invoked UI components from JSON tool outputs.
 
-## Prerequisites
+Why you should use Tool UI:
+
+- Copy-paste components, schema-first, shadcn-based.
+- Parse serializable props, wire actions, and stay accessible out of the box.
+- Browse the [gallery](/docs/gallery) to see every component in action.
+
+## Quick start (30 seconds)
+
+1) Server: return serializable props from a tool
+
+```ts
+import { tool } from 'ai';
+import { serializableDataTableSchema } from '@/components/data-table/schema';
+
+export const tools = {
+  listProducts: tool({
+    outputSchema: serializableDataTableSchema,
+    async execute() {
+      return {
+        columns: [
+          { key: 'name', label: 'Product' },
+          { key: 'price', label: 'Price', format: { kind: 'currency', currency: 'USD' } },
+        ],
+        data: [{ id: '1', name: 'Widget', price: 29.99 }],
+      };
+    },
+  }),
+} as const;
+```
+
+2) Client: parse and render
+
+```tsx
+import { DataTable, parseSerializableDataTable } from '@/components/data-table';
+
+if (part.type === 'tool-listProducts' && part.state === 'output-available') {
+  const props = parseSerializableDataTable(part.output);
+  return <DataTable rowIdKey="id" {...props} />;
+}
+```
+
+3) Actions: handle clicks in your app
+
+```tsx
+<DataTable actions={[{ id: 'buy', label: 'Buy' }]} onAction={(id, row) => doSomething(id, row)} />
+```
+
+More detail: [Full quick start](#detailed-quick-start).
+
+## Mental model
+
+```
+tool execute → returns JSON (validated by Zod)
+        ↓
+UI parses (parseSerializableX) → renders component
+        ↓
+User clicks action → your app handles it (server/client)
+```
+
+## Choose the right tool for the job
+
+- [Data Table](/docs/data-table) — scan or compare rows, sort/filter, attach row actions, collapse to cards on mobile with `priority`.
+- [Media Card](/docs/media-card) — rich text or single-object summaries, great for previews and narratives.
+- [Decision Prompt](/docs/decision-prompt) — structured choices, confirmations, or approvals with primary/secondary actions.
+- [Social Post](/docs/social-post) — stylized shareables for marketing or social workflows.
+- [Markdown table pattern](/docs/patterns) — tiny, static data with no actions or sorting; use standard markdown inside chat copy.
+
+
+## Schema-first DX
+
+All components validate serializable props via Zod; parse on the client before rendering to keep server and UI in sync. Import `tool` from `ai` and the component's serializable schema, then keep the server return serializable.
+
+```ts
+const tools = {
+  preview: tool({
+    outputSchema: serializableMediaCardSchema,
+    async execute() {
+      return { id: 'card-1', kind: 'link', href: 'https://example.com' };
+    },
+  }),
+};
+```
+
+Full walkthroughs live in the [Quick Start](#detailed-quick-start).
+
+## What Tool UI is not
+
+- A state manager or agent framework — you still orchestrate memory and planning.
+- A server action dispatcher — you wire `onAction` callbacks to your own functions.
+- A design-system replacement — components compose shadcn primitives and stay narrowly scoped to chat.
+
+## Accessibility & compatibility
+
+Tool UI ships WCAG-friendly defaults, tested keyboard flows, and works in any Next.js / React app with the AI SDK; see [Accessibility](/docs/accessibility) for specifics and supported browsers.
+
+<div id="detailed-quick-start" />
+
+## Detailed quick start
+
+Use the example below to wire Tool UI end-to-end.
+
+### Prerequisites
 
 <Tabs items={["pnpm", "npm", "yarn", "bun"]}>
   <Tab>

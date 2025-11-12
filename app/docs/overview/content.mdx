@@ -3,155 +3,111 @@ import { CopyMarkdownButton } from "../_components/copy-markdown-button";
 <div className="flex justify-between items-start">
   # Overview
   <CopyMarkdownButton />
-  </div>
+</div>
 
-Tool UI is an open‑source library of [shadcn/ui](https://ui.shadcn.com)-inspired, copy-pasteable, single‑purpose UI components that an LLM can invoke—typically via tool call—during a conversation.
+Render interactive, accessible UI in chat from JSON tool outputs. Tool UI ships shadcn-based components you can copy-paste into any Next.js or React conversation UI so tools can return serializable props instead of plain text.
 
+## Quick start (30 seconds)
 
-## What ships in v1
+1) Server: return serializable props from a tool
 
-### Widgets
+```ts
+import { tool } from 'ai';
+import { serializableDataTableSchema } from '@/components/data-table/schema';
 
-- DataTable — responsive table with mobile accordion cards, sortable headers, row actions, skeleton/empty/error states.
-- DecisionPrompt — inline decisions (single or multi‑select), built‑in destructive confirm, “receipt” state after completion.
-- MediaCard — image/video/audio/link preview with safe navigation, sensible actions, and metadata.
-- SocialPost — JSON‑driven renderers for X / Instagram / LinkedIn (media, link preview, actions, counts).
-
-### Cross‑cutting
-
-- Action model — server‑first with optional client handler, optimistic UI, and granular loading (auto | self | container | none).
-- Design tokens — shadcn primitives, light/dark, WCAG AA.
-- Schemas — Zod parsers for serializable props; works with raw tool/LLM payloads.
-
-Note: Tool UI focuses on rendering. Action handling/dispatch is app‑level and not provided by the library.
-
-## Quick Start
-
-Looking to render widgets from tool results? See the dedicated Quick Start guide for a copy‑paste setup and examples.
-
-- Quick Start: /docs/quick-start
-
-## Schema‑First DX
-
-Tool UI components ship with Zod schemas that validate the JSON‑serializable props you should return from tools. Use them to reduce glue code and avoid runtime errors.
-
-- Validate on the server with `outputSchema`:
-
-```ts title="app/api/chat/route.ts"
-import { tool, streamText, convertToModelMessages } from "ai";
-import { z } from "zod";
-import { serializableDataTableSchema } from "@/components/data-table/schema";
-import { serializableMediaCardSchema } from "@/components/media-card/schema";
-import { serializableSocialPostSchema } from "@/components/social-post/schema";
-import { SerializableDecisionPromptSchema } from "@/components/decision-prompt/schema";
-
-const tools = {
+export const tools = {
   listProducts: tool({
-    description: "List products and prices",
-    inputSchema: z.object({ query: z.string().optional() }),
     outputSchema: serializableDataTableSchema,
-    async execute({ query }) {
-      const rows = await fetchProducts(query);
+    async execute() {
       return {
         columns: [
-          { key: "name", label: "Product" },
-          { key: "price", label: "Price", format: { kind: "currency", currency: "USD" } },
+          { key: 'name', label: 'Product' },
+          { key: 'price', label: 'Price', format: { kind: 'currency', currency: 'USD' } },
         ],
-        data: rows.map(r => ({ id: r.id, name: r.name, price: r.price })),
+        data: [{ id: '1', name: 'Widget', price: 29.99 }],
       };
     },
-  }),
-  previewMedia: tool({
-    description: "Render a media card",
-    inputSchema: z.object({ id: z.string() }),
-    outputSchema: serializableMediaCardSchema,
-    async execute({ id }) { return await fetchMediaCard(id); },
-  }),
-  postDetail: tool({
-    description: "Render a social post",
-    inputSchema: z.object({ id: z.string() }),
-    outputSchema: serializableSocialPostSchema,
-    async execute({ id }) { return await fetchSocialPost(id); },
-  }),
-  chooseAction: tool({
-    description: "Ask the user to pick an action",
-    inputSchema: z.object({ prompt: z.string(), actions: z.array(z.object({ id: z.string(), label: z.string() })) }),
-    outputSchema: SerializableDecisionPromptSchema,
-    async execute({ prompt, actions }) { return { prompt, actions }; },
   }),
 } as const;
 ```
 
-- Parse on the client with helpers:
+2) Client: parse and render
 
 ```tsx
-import { DataTable, parseSerializableDataTable } from "@/components/data-table";
-import { MediaCard, parseSerializableMediaCard } from "@/components/media-card";
-import { SocialPost, parseSerializableSocialPost } from "@/components/social-post";
-import { DecisionPrompt, parseSerializableDecisionPrompt } from "@/components/decision-prompt";
+import { DataTable, parseSerializableDataTable } from '@/components/data-table';
 
-// inside message.parts rendering
 if (part.type === 'tool-listProducts' && part.state === 'output-available') {
   const props = parseSerializableDataTable(part.output);
   return <DataTable rowIdKey="id" {...props} />;
 }
-
-if (part.type === 'tool-previewMedia' && part.state === 'output-available') {
-  const card = parseSerializableMediaCard(part.output);
-  return <MediaCard {...card} />;
-}
-
-if (part.type === 'tool-postDetail' && part.state === 'output-available') {
-  const post = parseSerializableSocialPost(part.output);
-  return <SocialPost {...post} />;
-}
-
-if (part.type === 'tool-chooseAction' && part.state === 'output-available') {
-  const props = parseSerializableDecisionPrompt(part.output);
-  return (
-    <DecisionPrompt
-      {...props}
-      onAction={(actionId) => fetch('/api/action', { method: 'POST', body: JSON.stringify({ actionId }) })}
-    />
-  );
-}
 ```
 
-## Typed Tools in UI
+3) Actions: handle clicks in your app
 
-For end‑to‑end type safety, infer types from your tool set and pass them to `useChat`. This gives typed `part.output` without casts.
+```tsx
+<DataTable actions={[{ id: 'buy', label: 'Buy' }]} onAction={(id, row) => doSomething(id, row)} />
+```
+
+More detail: [Full Quick Start](/docs/quick-start).
+
+## Mental model
+
+```
+tool execute → JSON (validated by Zod)
+        ↓
+parseSerializableX → render component
+        ↓
+onAction → your app handles it (server/client)
+```
+
+## Choose the right renderer
+
+- [Data Table](/docs/data-table) — best for scanning or comparing rows, sorting, formatting values, and attaching actions that persist across turns (collapses to cards with `priority` on mobile).
+- Rich text via [Media Card](/docs/media-card) or [Decision Prompt](/docs/decision-prompt) — narrative summaries, single entities, confirmations, or approvals with primary/secondary actions.
+- [Markdown table pattern](/docs/patterns) — tiny, static datasets with no sorting or actions; render inline markdown directly in chat copy.
+
+## Responsive layout
+
+All components respect chat widths, theme tokens, and density constraints, with [Data Table](/docs/data-table#priority) promoting high-priority columns to mobile cards, [Media Card](/docs/media-card) clamping media ratios, and [Decision Prompt](/docs/decision-prompt) stacking buttons for touch targets.
+
+## Schema-first
+
+Components ship with serializable Zod schemas so tools can validate outputs on the server and the UI can `parseSerializableX` before rendering. Keep the snippet tight on the overview and jump to the Quick Start for the full flow.
 
 ```ts
-import { InferUITools } from 'ai';
+import { tool } from 'ai';
+import { serializableMediaCardSchema } from '@/components/media-card/schema';
 
-const tools = { /* your tools object */ } as const;
-type MyUITools = InferUITools<typeof tools>;
-
-// Client
-const { messages } = useChat<MyUITools>({ /* transport */ });
+const tools = {
+  preview: tool({
+    outputSchema: serializableMediaCardSchema,
+    async execute() {
+      return { id: 'card-1', kind: 'link', href: 'https://example.com' };
+    },
+  }),
+};
 ```
 
-You can also infer a single tool’s types with `InferUITool` when building isolated UIs.
+Client side:
 
-## Default Rendering for Unknown Tools
+```tsx
+import { MediaCard, parseSerializableMediaCard } from '@/components/media-card';
 
-Add a default fallback so tools without a dedicated UI still render something useful.
-
-```tsx title="/components/assistant-ui/thread.tsx"
-import { MessagePrimitive } from "@assistant-ui/react";
-import { ToolFallback } from "@/components/assistant-ui/tool-fallback";
-
-export function Thread() {
-  return (
-    <MessagePrimitive.Root>
-      <MessagePrimitive.Parts components={{ tools: { Fallback: ToolFallback } }} />
-    </MessagePrimitive.Root>
-  );
-}
+const card = parseSerializableMediaCard(part.output);
+return <MediaCard {...card} />;
 ```
+
+Deep dive: [Quick Start](/docs/quick-start).
+
+## Where to go next
+
+- [Gallery](/docs/gallery) — interactive presets with code you can copy.
+- Component docs — [Data Table](/docs/data-table), [Media Card](/docs/media-card), [Decision Prompt](/docs/decision-prompt), [Social Post](/docs/social-post).
+- [Quick Start](/docs/quick-start) — full server/client wiring.
+- [Advanced typing guide](/docs/advanced) — infer types from your tools for end-to-end safety.
 
 ## Accessibility & compatibility
 
-- WCAG AA contrast, min 44×44px hit targets, focus rings/keyboard parity, reduced‑motion support.
-- Web: Desktop + mobile responsive, Tailwind v4 (native) or v3.2+ with container‑queries plugin.
-- Frameworks: React 18+, Next.js (app/pages). i18n for numbers/dates where relevant.
+- WCAG-friendly defaults (contrast, focus rings, 44×44 targets) plus reduced-motion support; see [Accessibility](/docs/accessibility) for audits.
+- Works in React 18+ and Next.js App Router; Tailwind v3.2+ or v4 tokens out of the box.
+- Handles client/server action routing: components render, your app wires the `onAction` handlers and transports.

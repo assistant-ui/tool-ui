@@ -19,7 +19,7 @@ import {
   <CopyMarkdownButton />
 </div>
 
-A compact, responsive data table with tri‑state sorting, declarative value formatting, and row actions.
+A compact, responsive data table with sorting, declarative value formatting, and row actions.
 
 <Tabs items={["Preview", "Code"]}>
   <Tab>
@@ -179,13 +179,13 @@ Primitive rows ensure LLM/tool output is JSON-serializable and renderable.
     "Row Type T": {
       description: "Record of JSON primitives or arrays of primitives.",
       type: "DataTableRowData = Record<string, RowPrimitive>",
-      typeDescriptionLink: "components/data-table/data-table.tsx:23",
+      typeDescriptionLink: "components/data-table/types.ts:35",
     },
     RowPrimitive: {
       description:
         "string | number | boolean | null | arrays of these. Do not place objects, Dates, Maps, or functions in row values.",
       type: "string | number | boolean | null | JsonPrimitive[]",
-      typeDescriptionLink: "components/data-table/data-table.tsx:18",
+      typeDescriptionLink: "components/data-table/types.ts:34",
     },
   }}
 />
@@ -234,7 +234,7 @@ Primitive rows ensure LLM/tool output is JSON-serializable and renderable.
   }}
 />
 
-Full types: components/data-table/data-table.tsx
+Full types: components/data-table/types.ts
 
 ## FormatConfig
 All visual formatting for data stays declarative via `columns[i].format`.
