@@ -70,7 +70,7 @@ export function DocsPager() {
   if (!prev && !next) return null;
 
   return (
-    <div className="not-prose mt-12">
+    <div className="not-prose mt-24">
       <div className="flex flex-col gap-4 sm:flex-row">
         {prev ? (
           <PagerLink href={prev.path} label={prev.label} direction="prev" />

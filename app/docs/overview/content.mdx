@@ -13,7 +13,7 @@ Render interactive, accessible UI in chat from JSON tool outputs. Tool UI ships 
 
 <Step title="Server: return serializable props">
 
-_Define your tool with a serializable schema so LLM outputs stay predictable._
+Define your tool with a serializable schema so LLM outputs stay predictable.
 
 ```ts
 import { tool } from 'ai';
@@ -39,7 +39,7 @@ export const tools = {
 
 <Step title="Client: parse and render">
 
-_Check for the tool output part, parse it, and render the component._
+Check for the tool output part, parse it, and render the component.
 
 ```tsx
 import { DataTable, parseSerializableDataTable } from '@/components/data-table';
@@ -54,7 +54,7 @@ if (part.type === 'tool-listProducts' && part.state === 'output-available') {
 
 <Step title="Actions: handle clicks in your app">
 
-_Attach actions and handle them in your app so follow-up behavior stays under your control._
+Attach actions and handle them in your app so follow-up behavior stays under your control.
 
 ```tsx
 <DataTable actions={[{ id: 'buy', label: 'Buy' }]} onAction={(id, row) => doSomething(id, row)} />
@@ -76,7 +76,7 @@ parseSerializableX → render component
 onAction → your app handles it (server/client)
 ```
 
-## Choose the right Tool UI for the job
+## Choosing the right Tool UI for the job
 
 - [Data Table](/docs/data-table) — best for scanning or comparing rows, sorting, formatting values, and attaching actions that persist across turns (collapses to cards with `priority` on mobile).
 - Rich text via [Media Card](/docs/media-card) or [Decision Prompt](/docs/decision-prompt) — narrative summaries, single entities, confirmations, or approvals with primary/secondary actions.

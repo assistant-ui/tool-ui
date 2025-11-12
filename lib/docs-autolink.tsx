@@ -9,6 +9,7 @@ type Pattern = { match: string; href: string };
 const externalPatterns: Pattern[] = [
   { match: "shadcn/ui", href: "https://ui.shadcn.com" },
   { match: "radix", href: "https://www.radix-ui.com" },
+  { match: "Zod", href: "https://zod.dev" },
 ];
 
 // Build patterns for label (e.g., "Media Card"), camel ("MediaCard"), and id ("media-card").

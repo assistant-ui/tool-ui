@@ -3,163 +3,121 @@ import { CopyMarkdownButton } from "../_components/copy-markdown-button";
 <div className="flex justify-between items-start">
   # UI Guidelines
   <CopyMarkdownButton />
-  </div>
+</div>
 
-Following these guidelines will keep your Tool UIs glanceable, consistent, and easy to integrate across teams.
+Existing and new Tool UIs are expected to adhere to these guidelines.
 
 ## Principles
-
 1. Single intent — one clear purpose per widget.
-2. Glanceable — parse in ~3 seconds; keep copy tight.
-3. Inline first — solve in a card; use a carousel only to choose among similar options.
-4. Minimal chrome — let the conversation remain the primary surface.
-5. Accessible by default — AA contrast, keyboard parity, screen‑reader labels, reduced motion.
-6. Predictable actions — obvious primary action; fast feedback; receipts after completion.
+2. Glanceable — parse in ~3s; copy stays tight and scannable.
+3. Minimal chrome — the conversation is the primary surface.
+4. Accessible — AA contrast, keyboard parity, SR labels, reduced motion.
+6. Clear affordances — obvious primary action; fast feedback; receipts after completion.
 
 ## Interaction model
 
 ### Server‑first actions (default)
-
-- Widgets fire typed actions to your server.
-- Client handlers are optional for optimistic updates or native integrations.
-
-Note: Tool UI does not include an action bus. Implement action routing in your app (see Quick Start for examples).
+- Widgets fire typed actions to your server; client handlers are optional for optimistic updates or native integrations.
+- Tool UI does not include an action bus — wire routing in your app (see Quick Start).
 
 ### Loading semantics
-
-- auto (default) chooses sensible scope; or specify:
-- self — only the control shows busy/disabled.
-- container — the whole card veils and goes inert.
-- none — custom visuals.
+- auto (default) chooses sensible scope
+- self — only the control shows busy/disabled
+- container — veil the card and make it inert
+- none — custom visuals
 
 ### Optimistic UI
-
-- Update the UI immediately; reconcile on server ack.
-- On failure, roll back and show a terse inline error.
+- Update immediately; reconcile on server ack.
+- On failure, roll back with a short inline error.
 
 ### Destructive actions
-
-- Two‑stage confirm (confirmLabel) with timeout to reset.
-- Labels must be explicit (“Delete 12 files”).
+- Two‑stage confirm with timeout to reset.
+- Labels are explicit (“Delete 12 files”).
 
 ### Forms
-
-- Inline widgets: only simple fields and basic (native) validation.
-- Complex validation → not a widget; use your app surface and return a summary card.
+- Inline widgets: simple fields + basic (native) validation.
+- Complex validation → use your app surface; return a summary card.
 
 ### Motion & feedback
-
-- Press feedback within 100 ms; spinner by 150 ms; skeleton by 300 ms.
-- Transitions ≤ 200–250 ms; respect prefers-reduced-motion.
-- Prefer subtle morph/fade on data refresh; avoid layout jumps.
+- Press feedback ≤ 100 ms; spinner by 150 ms; skeleton by 300 ms.
+- Transitions ≤ 200–250 ms; respect prefers‑reduced‑motion.
+- Prefer subtle morph/fade on refresh; avoid layout jumps.
 
 ## Performance & lifecycle budgets
-
-- First paint (inline card): ≤ 200 ms (placeholder fine).
-- Skeleton threshold: ≥ 300 ms.
-- Time to interactive: ≤ 1,000 ms.
-- Persistence: Result cards persist in the transcript; ephemeral loaders do not.
-- A11y floor: WCAG AA, 44×44px, keyboard reachability for every interactive element.
-
-If you change these budgets, change them globally—consistency is the real feature.
+- First paint (inline card): ≤ 200 ms (placeholder OK)
+- Skeleton threshold: ≥ 300 ms
+- Time to interactive: ≤ 1,000 ms
+- Persistence: Result cards persist; ephemeral loaders do not
+- A11y floor: WCAG AA, 44×44px hit targets, full keyboard reachability
 
 ## Visual & content rules
-
-- Typography: system stacks via shadcn; minimal sizes (title, body, caption).
+- Typography: shadcn system stacks; minimal sizes (title, body, caption).
 - Contrast: AA minimums always.
-- Density: default “comfortable”; tables may use “compact”.
 - Copy: short, specific, context‑aware; don’t repeat what the assistant already said.
 
-## Component guidance (v1)
+## Component guidance
 
 ### DataTable
-
-- Mobile: auto‑switches to accordion cards; only primary columns show in the summary row.
-- Column priority: at most two primary columns; overflow to secondary; hide tertiary on mobile.
+- Mobile: auto switches to accordion cards; only primary columns in the summary.
+- Priority: ≤ 2 primary columns; overflow to secondary; hide tertiary on mobile.
 - Alignment: numbers right‑aligned; text left.
-- Sorting: clear indicators (↑/↓/⇅). Don’t pretend non‑sortable columns are sortable.
-- Row actions: ≤2 inline buttons; else an overflow menu.
-- IDs: set rowIdKey to avoid React reconciliation glitches.
+- Sorting: clear indicators (↑/↓/⇅); don’t imply non‑sortable columns.
+- Row actions: ≤ 2 inline; otherwise an overflow menu.
+- IDs: set `rowIdKey` to avoid reconciliation glitches.
 - States: empty, loading (skeleton), error.
-- A11y: headers use `<th scope="col">`; rows are keyboard‑navigable.
+- A11y: headers are `<th scope="col">`; rows are keyboard‑navigable.
 
 ### DecisionPrompt
-
-- Max actions: one primary + one secondary in single‑select.
+- Max actions: one primary + one secondary for single‑select.
 - Destructive: two‑stage confirm with timeout reset.
-- Receipt: show compact badges summarizing the choice.
-- Multi‑select: enforce minSelections/maxSelections.
+- Receipt: compact badges summarizing the choice.
+- Multi‑select: enforce `minSelections`/`maxSelections`.
 
 ### MediaCard
-
 - Kinds: image | video | audio | link.
 - Required: alt for images; src for media; sanitize href.
-- Actions: keep contextual and few (e.g., play/pause, mute; open/copy).
+- Actions: few and contextual (play/pause, mute; open/copy).
 - Metadata: duration, size, created date; locale‑format.
-- Navigation: safe targets (noopener,noreferrer), allow handler override.
+- Navigation: safe targets (noopener, noreferrer); allow handler override.
 
 ### SocialPost
-
-- Per‑platform tokens/layout; accessible actions; media grid or vertical‑video.
-- Entities: mentions/hashtags/URLs are actionable; supply onEntityClick.
-- Counts: compact format (“1.2K”) and SR labels (“1,200 likes”).
-- Link preview: domain + title + 1–2 lines description; whole block is a safe link.
+- Per‑platform tokens/layout; accessible actions; media grid or vertical video.
+- Entities: mentions/hashtags/URLs are actionable; supply `onEntityClick`.
+- Counts: compact format (“1.2K”) + SR labels (“1,200 likes”).
+- Link preview: domain + title + 1–2 lines; whole block is a safe link.
 
 ## Systematize new widgets (repeatable recipe)
 
 <Steps>
 
 <Step>
-
 #### Spec (required in PR)
-
 - Intent (one sentence)
 - Surface: inline widget (optional list/collection at app level)
 - Props schema (Zod; JSON‑serializable only)
-- States: loading / empty / error / success visuals
-- Actions: typed union + default loadingBehavior
+- States: `loading` / `empty` / `error` / `success`
+- Actions: typed union + default `loadingBehavior`
 - A11y: labels, focus order, alt text, reduced motion
-- Budgets: first paint, skeleton threshold, TTI
 - Security: treat payloads as untrusted; validation notes
-
 </Step>
 
 <Step>
-
 #### Boilerplate files
-
 - WidgetName.schema.ts (Zod parser + types)
 - WidgetName.tsx (visuals, tokens, motion)
 - usage-docs.md (quick start + props table)
-- Storybook stories (all states), axe a11y tests, unit tests for formatters/reducers
-
+- Stories (all states), axe a11y tests, unit tests for formatters/reducers
 </Step>
 
 <Step>
-
 #### Action handling (app‑level)
-
-- Optional `createAction<T>()` helper; server‑first routing; optimistic update + idempotency token. This is an app pattern, not provided by the library.
-
+- Optional `createAction<T>()` helper; server‑first routing; optimistic update + idempotency token.
 </Step>
 
 <Step>
-
 #### Lint rules (CI)
-
-- ≤2 CTAs; no inner scroll; 44×44px hit targets; AA contrast.
-- For lists/collections (app‑level): 3–8 items; ≤2 lines metadata; one CTA per item.
-
+- ≤ 2 CTAs; no inner scroll; 44×44px hit targets; AA contrast.
+- For lists/collections (app‑level): 3–8 items; ≤ 2 lines metadata; one CTA per item.
 </Step>
 
 </Steps>
-
-## Suggested categories (to label & browse widgets)
-
-- Decision (e.g., DecisionPrompt)
-- Media/Preview (e.g., MediaCard)
-- Data/Status (e.g., DataTable; future metrics/summary cards)
-- Collection (lists of the above; carousels future/app‑level)
-- Entity Preview (chips/tooltips/hover previews; future)
-
-These are tags, not display modes—they help discovery without over‑constraining design.
