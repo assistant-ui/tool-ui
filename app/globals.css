@@ -2,8 +2,8 @@
 @import "tw-animate-css";
 
 /* Fumadocs UI styles */
-@import "fumadocs-ui/css/neutral.css";
 @import "fumadocs-ui/css/preset.css";
+@import "fumadocs-ui/css/shadcn.css";
 @import "fumadocs-ui/css/shiki.css";
 
 /* Prose styles */
@@ -206,6 +206,8 @@
 }
 
 @layer base {
+  /* Map Fumadocs UI tokens to our shadcn theme colors */
+
   * {
     @apply border-border outline-ring/50;
   }

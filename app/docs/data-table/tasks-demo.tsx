@@ -70,15 +70,13 @@ export function TasksDemo() {
 
   return (
     <div className="not-prose">
-      <div className="rounded-lg border">
-        <DataTable
-          rowIdKey="id"
-          columns={columns}
-          data={rows ?? []}
-          defaultSort={{ by: "urgencyOrder", direction: "asc" }}
-          layout="table"
-        />
-      </div>
+      <DataTable
+        rowIdKey="id"
+        columns={columns}
+        data={rows ?? []}
+        defaultSort={{ by: "urgencyOrder", direction: "asc" }}
+        layout="table"
+      />
     </div>
   );
 }

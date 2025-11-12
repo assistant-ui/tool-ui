@@ -33,7 +33,7 @@
   }
 
   .prose :where(a):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
-    @apply text-primary font-medium underline underline-offset-4 hover:text-primary/80 transition-colors;
+    @apply text-primary font-medium hover:text-primary/80 transition-colors;
   }
 
   .prose :where(strong):not(:where([class~="not-prose"], [class~="not-prose"] *)) {

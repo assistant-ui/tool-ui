@@ -1,107 +1,265 @@
 import { CopyMarkdownButton } from "../_components/copy-markdown-button";
+import { DataTable } from "@/components/data-table";
 
 <div className="flex justify-between items-start">
   # Data Table
   <CopyMarkdownButton />
-  </div>
+</div>
 
-A compact, responsive table component with mobile cards, sorting, statuses, and actions. This page shows a realistic “support tasks by urgency” example with a live demo and server/client snippets.
+A compact, responsive data table with tri‑state sorting, declarative value formatting, and row actions.
 
-## Live demo
-
-import { TasksDemo } from "./tasks-demo";
-
-<TasksDemo />
-
-## Server tool
-
-```ts title="app/api/chat/route.ts"
-import { streamText, convertToModelMessages, tool, type UIMessage } from 'ai';
-import { openai } from '@ai-sdk/openai';
-import { z } from 'zod';
-import { serializableDataTableSchema } from '@/components/data-table/schema';
-import { getMockTasks } from '@/lib/mock/tasks';
-
-export const maxDuration = 30;
-
-export async function POST(req: Request) {
-  const { messages }: { messages: UIMessage[] } = await req.json();
-
-  const result = streamText({
-    model: openai('gpt-4o'),
-    messages: convertToModelMessages(messages),
-    tools: {
-      list_tasks: tool({
-        description: 'List support tasks sorted by urgency',
-        inputSchema: z.object({ assignee: z.string().optional() }),
-        outputSchema: serializableDataTableSchema,
-        async execute({ assignee }) {
-          const tasks = await getMockTasks({ assignee });
-          return {
-            columns: [
-              { key: 'priority', label: 'Urgency', format: { kind: 'status', statusMap: { high: { tone: 'danger', label: 'High' }, medium: { tone: 'warning', label: 'Medium' }, low: { tone: 'neutral', label: 'Low' } } } },
-              { key: 'issue', label: 'Issue', truncate: true, priority: 'primary' },
-              { key: 'customer', label: 'Customer', priority: 'primary' },
-              { key: 'status', label: 'Status', format: { kind: 'badge', colorMap: { open: 'info', 'in-progress': 'warning', waiting: 'neutral', done: 'success' } } },
-              { key: 'assignee', label: 'Owner' },
-              { key: 'created', label: 'Created', format: { kind: 'date', dateFormat: 'relative' }, hideOnMobile: true },
-              { key: 'urgencyOrder', label: 'Order', hideOnMobile: true },
-            ],
-            data: tasks.map(t => ({
-              id: t.id,
-              issue: t.issue,
-              customer: t.customer,
-              priority: t.priority,
-              status: t.status,
-              assignee: t.assignee,
-              created: t.created,
-              urgencyOrder: t.priority === 'high' ? 1 : t.priority === 'medium' ? 2 : 3,
-            })),
-          };
-        },
-      }),
-    },
-  });
-
-  return result.toUIMessageStreamResponse();
-}
-```
-
-## Client render
-
-```tsx title="app/page.tsx"
-'use client';
-
-import { useChat } from '@ai-sdk/react';
-import { DefaultChatTransport } from 'ai';
-import { DataTable, parseSerializableDataTable } from '@/components/data-table';
-
-export default function Chat() {
-  const { messages, sendMessage } = useChat({
-    transport: new DefaultChatTransport({ api: '/api/chat' }),
-  });
-
-  return (
-    <div>
-      {messages.map((m) => (
-        <div key={m.id}>
-          {m.parts.map((part, i) => {
-            if (part.type === 'tool-list_tasks' && part.state === 'output-available') {
-              const props = parseSerializableDataTable(part.output);
-              return (
-                <DataTable key={i} rowIdKey="id" defaultSort={{ by: 'urgencyOrder', direction: 'asc' }} {...props} />
-              );
-            }
-            return null;
-          })}
-        </div>
-      ))}
+<Tabs items={["Preview", "Code"]}>
+  <Tab>
+    <div className="not-prose rounded-lg border">
+      <DataTable
+        rowIdKey="id"
+        defaultSort={{ by: "priority", direction: "asc" }}
+        columns={[
+          { key: "issue", label: "Issue", priority: "primary", truncate: true },
+          {
+            key: "priority",
+            label: "Urgency",
+            format: {
+              kind: "status",
+              statusMap: {
+                high: { tone: "danger", label: "High" },
+                medium: { tone: "warning", label: "Medium" },
+                low: { tone: "neutral", label: "Low" },
+              },
+            },
+          },
+        ]}
+        data={[
+          { id: "1", issue: "Payment failing on checkout", priority: "high" },
+          { id: "2", issue: "Billing UI alignment bug", priority: "medium" },
+          { id: "3", issue: "Export CSV missing headers", priority: "low" },
+          { id: "4", issue: "Webhook retries inconsistent", priority: "high" },
+        ]}
+      />
     </div>
+    <div className="mt-3 text-sm">
+      <a className="text-primary underline underline-offset-4" href="/docs/data-table">Open full Examples</a>
+    </div>
+  </Tab>
+  <Tab>
+    ```tsx
+    import { DataTable, type Column } from "@/components/data-table";
+
+    type Row = { id: string; issue: string; priority: "high" | "medium" | "low" };
+
+    const columns: Column<Row>[] = [
+      { key: "issue", label: "Issue", priority: "primary", truncate: true },
+      { key: "priority", label: "Urgency", format: { kind: "status", statusMap: {
+        high: { tone: "danger", label: "High" }, medium: { tone: "warning", label: "Medium" }, low: { tone: "neutral", label: "Low" }
+      } } },
+    ];
+
+    const data: Row[] = [
+      { id: "1", issue: "Payment failing on checkout", priority: "high" },
+      { id: "2", issue: "Billing UI alignment bug", priority: "medium" },
+      { id: "3", issue: "Export CSV missing headers", priority: "low" },
+      { id: "4", issue: "Webhook retries inconsistent", priority: "high" },
+    ];
+
+    export default function Example() {
+      return (
+        <DataTable rowIdKey="id" columns={columns} data={data} defaultSort={{ by: "priority", direction: "asc" }} />
+      );
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Quick Start
+
+```tsx
+import { DataTable, type Column } from "@/components/data-table";
+
+type Row = { id: string; issue: string; priority: "high" | "medium" | "low" };
+
+const columns: Column<Row>[] = [
+  { key: "issue", label: "Issue", priority: "primary", truncate: true },
+  { key: "priority", label: "Urgency", format: { kind: "status", statusMap: {
+    high: { tone: "danger", label: "High" }, medium: { tone: "warning", label: "Medium" }, low: { tone: "neutral", label: "Low" }
+  } } },
+];
+
+const data: Row[] = [
+  { id: "1", issue: "Payment failing on checkout", priority: "high" },
+  { id: "2", issue: "Billing UI alignment bug", priority: "medium" },
+  { id: "3", issue: "Export CSV missing headers", priority: "low" },
+  { id: "4", issue: "Webhook retries inconsistent", priority: "high" },
+];
+
+export default function Example() {
+  return (
+    <DataTable rowIdKey="id" columns={columns} data={data} defaultSort={{ by: "priority", direction: "asc" }} />
   );
 }
 ```
 
+## Core Concepts
+
+### Sorting (tri‑state)
+```tsx
+// Uncontrolled (internal tri‑state): click header to cycle none → asc → desc → none
+<DataTable columns={columns} data={data} />
+
+// Controlled: manage sort in parent
+const [sort, setSort] = useState<{ by?: keyof Row; direction?: 'asc' | 'desc' }>({});
+<DataTable columns={columns} data={data} sort={sort} onSortChange={setSort} />
+```
+
+### Layout & responsiveness
+```tsx
+// Auto (default): container queries switch between table/cards at @md
+<DataTable columns={columns} data={data} />
+
+// Force a layout
+<DataTable layout="table" columns={columns} data={data} />
+<DataTable layout="cards" columns={columns} data={data} />
+
+// Mobile priorities
+const columns = [
+  { key: 'name', label: 'Name', priority: 'primary' },
+  { key: 'price', label: 'Price', priority: 'primary', align: 'right' },
+  { key: 'category', label: 'Category', priority: 'secondary' },
+  { key: 'sku', label: 'SKU', priority: 'tertiary' },
+];
+```
+
+### Declarative formatting
+```tsx
+// Keep data primitive; describe presentation in format
+{ key: 'price', label: 'Price', align: 'right', format: { kind: 'currency', currency: 'USD' } }
+{ key: 'homepage', label: 'Homepage', format: { kind: 'link', external: true } }
+{ key: 'status', label: 'Status', format: { kind: 'badge', colorMap: { open: 'info', closed: 'success' } } }
+```
+
+## Data Shape
+
+<TypeTable
+  type={{
+    data: {
+      description: "Rows to render. Each row is a record of JSON‑serializable values.",
+      type: "T[]",
+      required: true,
+    },
+    "Row Type T": {
+      description: "Record of JSON primitives or arrays of primitives.",
+      type: "DataTableRowData = Record<string, RowPrimitive>",
+      typeDescriptionLink: "components/data-table/data-table.tsx:23",
+    },
+    RowPrimitive: {
+      description:
+        "string | number | boolean | null | arrays of these. Do not place objects, Dates, Maps, or functions in row values.",
+      type: "string | number | boolean | null | JsonPrimitive[]",
+      typeDescriptionLink: "components/data-table/data-table.tsx:18",
+    },
+  }}
+/>
+
+### Why this constraint?
+- Guarantees LLM/tool outputs are renderable without custom serializers
+- Keeps presentation concerns in `columns[i].format`, not in `data`
+
+## API at a glance
+
+<TypeTable
+  type={{
+    columns: { description: "Column definitions", type: "Column<T>[]", required: true },
+    data: { description: "Serializable rows (see Data Shape)", type: "T[]", required: true },
+    rowIdKey: { description: "Stable unique key in each row", type: "keyof T" },
+    layout: { description: "Force table/cards or auto", type: "'auto' | 'table' | 'cards'", default: "'auto'" },
+    defaultSort: { description: "Initial sort (uncontrolled)", type: "{ by?: keyof T; direction?: 'asc' | 'desc' }" },
+    sort: { description: "Controlled sort state (with onSortChange)", type: "{ by?: keyof T; direction?: 'asc' | 'desc' }" },
+    onSortChange: { description: "Update controlled sort", type: "(next) => void" },
+    actions: { description: "Row actions", type: "Action[]" },
+    onAction: { description: "Action click handler", type: "(id, row, ctx?) => void" },
+    onBeforeAction: { description: "Gate actions (confirm, policy)", type: "(args) => boolean | Promise<boolean>" },
+    isLoading: { description: "Show skeletons", type: "boolean", default: "false" },
+    emptyMessage: { description: "Shown when no rows", type: "string", default: '"No data available"' },
+    maxHeight: { description: "Vertical scroll area", type: "string (CSS)" },
+    locale: { description: "Intl locale for formatting", type: "string", default: '"en-US"' },
+  }}
+/>
+
+Full types: components/data-table/data-table.tsx
+
+## FormatConfig cheat‑sheet
+- All formatting is declarative via `columns[i].format` (keep row data primitive)
+
+| Kind | Example |
+| ---- | ------- |
+| number | `{ kind: 'number', decimals: 2, unit: ' ms' }` |
+| currency | `{ kind: 'currency', currency: 'USD', decimals: 2 }` |
+| percent | `{ kind: 'percent', basis: 'fraction', decimals: 1, showSign: true }` |
+| delta | `{ kind: 'delta', decimals: 2, upIsPositive: true, showSign: true }` |
+| date | `{ kind: 'date', dateFormat: 'relative' }` |
+| boolean | `{ kind: 'boolean', labels: { true: 'Yes', false: 'No' } }` |
+| link | `{ kind: 'link', hrefKey: 'url' }` or `{ kind: 'link', external: true }` |
+| badge | `{ kind: 'badge', colorMap: { open: 'info', closed: 'success' } }` |
+| status | `{ kind: 'status', statusMap: { high: { tone: 'danger' } } }` |
+| array | `{ kind: 'array', maxVisible: 3 }` |
+
+## Recipes
+
+### Controlled sorting
+```tsx
+const [sort, setSort] = useState<{ by?: keyof Row; direction?: 'asc' | 'desc' }>({});
+<DataTable columns={columns} data={data} sort={sort} onSortChange={setSort} />
+```
+[Try this in Examples](/docs/data-table)
+
+### Actions with confirmation
+```tsx
+<DataTable
+  actions={[{ id: 'delete', label: 'Delete', variant: 'destructive', requiresConfirmation: true }]}
+  onBeforeAction={({ action, row }) => action.requiresConfirmation ? window.confirm(`Delete ${String((row as any).issue)}?`) : true}
+  onAction={(id, row) => doAction(id, row)}
+/>
+```
+[Try this in Examples](/docs/data-table)
+
+### Mobile priorities
+```tsx
+const columns = [
+  { key: 'name', label: 'Name', priority: 'primary' },
+  { key: 'price', label: 'Price', align: 'right', priority: 'primary' },
+  { key: 'category', label: 'Category', priority: 'secondary' },
+  { key: 'sku', label: 'SKU', priority: 'tertiary' },
+];
+```
+[Try this in Examples](/docs/data-table)
+
+### Fixed width + truncate
+```tsx
+{ key: 'issue', label: 'Issue', width: '160px', truncate: true }
+```
+[Try this in Examples](/docs/data-table)
+
+### Locale
+```tsx
+<DataTable locale="de-DE" columns={[{ key: 'price', label: 'Preis', align: 'right', format: { kind: 'currency', currency: 'EUR' } }]} data={[{ price: 19.5 }]} />
+```
+[Try this in Examples](/docs/data-table)
+
+### Loading / Empty / Max height
+```tsx
+<DataTable isLoading emptyMessage="No items" maxHeight="400px" columns={columns} data={[]} />
+```
+[Try this in Examples](/docs/data-table)
+
+## Accessibility
+- Keyboard focus on header buttons; `aria-sort` reflects state
+- Live region announces sort changes; rows and cells are screen‑reader friendly
+
 ## Notes
-- Validate and parse with `parseSerializableDataTable` before rendering.
-- Sort by a hidden numeric `urgencyOrder` for consistent ordering.
-- For typed tool parts in the UI, see the Advanced page (InferUITools).
+- Validate and parse with `parseSerializableDataTable` for untrusted/LLM output
+- For typed tool parts, see Advanced
+
+## Troubleshooting
+- Actions not firing → Ensure `onAction` is provided and IDs match
+- Sorting not changing → If controlled, ensure `onSortChange` updates state; or remove `sort` to use uncontrolled
+- Mobile layout missing → Verify Tailwind container‑queries (v4 or [plugin](https://github.com/tailwindlabs/tailwindcss-container-queries)) and viewport width
+- Columns missing on mobile → Check `priority` or `hideOnMobile`

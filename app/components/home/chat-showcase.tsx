@@ -398,7 +398,7 @@ function AnimatedScene({
 
   return (
     <div className="h-full min-h-0 overflow-y-auto p-4 pr-3">
-      <StackedList items={displayItems} gap={12} />
+      <StackedList items={displayItems} gap={45} />
     </div>
   );
 }
@@ -480,33 +480,6 @@ export function ChatShowcase() {
         created: "4h ago",
       },
       {
-        id: "TKT-2831",
-        customer: "Global Systems",
-        issue: "Dashboard loading slowly for large datasets",
-        priority: "medium",
-        status: "done",
-        assignee: "Alex Kim",
-        created: "6h ago",
-      },
-      {
-        id: "TKT-2828",
-        customer: "BuildCo",
-        issue: "Webhook delivery failures for payment events",
-        priority: "high",
-        status: "open",
-        assignee: "Jordan Lee",
-        created: "8h ago",
-      },
-      {
-        id: "TKT-2821",
-        customer: "DataFlow Inc",
-        issue: "Rate limit errors during bulk operations",
-        priority: "high",
-        status: "in-progress",
-        assignee: "Sarah Chen",
-        created: "10h ago",
-      },
-      {
         id: "TKT-2815",
         customer: "CloudNine",
         issue: "User permissions not syncing across teams",
@@ -514,15 +487,6 @@ export function ChatShowcase() {
         status: "done",
         assignee: "Taylor Singh",
         created: "12h ago",
-      },
-      {
-        id: "TKT-2809",
-        customer: "Nexus Labs",
-        issue: "Mobile app crashes on iOS 17 devices",
-        priority: "high",
-        status: "in-progress",
-        assignee: "Mike Rodriguez",
-        created: "14h ago",
       },
       {
         id: "TKT-2801",
@@ -629,7 +593,7 @@ export function ChatShowcase() {
           "Fetching page metadata…",
           "Generating preview…",
         ],
-        preamble: "Here's what I believe you're looking for:",
+        preamble: "Was it this one from yesterday?",
         toolUI: <MediaCard {...mediaCard} maxWidth="420px" />,
         toolFallbackHeight: 260,
       },

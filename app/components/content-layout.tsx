@@ -13,14 +13,14 @@ export default function ContentLayout({
   noScroll,
 }: ContentLayoutProps) {
   return (
-    <div className="flex w-full max-w-[2000px] min-h-0 flex-1 justify-center overflow-hidden">
+    <div className="flex min-h-0 w-full max-w-[1440px] flex-1 justify-center overflow-hidden">
       {sidebar ? (
         <div className="hidden w-[220px] shrink-0 overflow-y-auto md:block">
           {sidebar}
         </div>
       ) : null}
       <div
-        className={cn("flex min-h-0 flex-1 w-full", {
+        className={cn("flex min-h-0 w-full flex-1", {
           "overflow-auto": !noScroll,
           "overflow-hidden": noScroll,
         })}

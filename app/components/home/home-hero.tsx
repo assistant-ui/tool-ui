@@ -16,9 +16,9 @@ export function HomeHero() {
             <h1 className="text-6xl font-bold tracking-tight">Tool UI</h1>
             <Badge
               variant="outline"
-              className="text-muted-foreground cursor-default font-mono text-xs select-none md:self-end"
+              className="text-muted-foreground mt-1 cursor-default font-mono text-xs font-light select-none md:self-end"
             >
-              Research preview
+              research preview
             </Badge>
           </div>
         </div>
