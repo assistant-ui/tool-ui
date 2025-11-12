@@ -11,7 +11,7 @@ import {
 import { TypeTable } from "fumadocs-ui/components/type-table";
 import * as React from "react";
 import { AutoLinkChildren, withAutoLink } from "@/lib/docs-autolink";
-import { FormattedCodeBlock } from "@/components/formatted-code-block";
+import { FormattedCodeBlock } from "@/app/components/formatted-code-block";
 
 export function useMDXComponents(components: MDXComponents): MDXComponents {
   // Wrap selected default components to auto-link Tool UI mentions
