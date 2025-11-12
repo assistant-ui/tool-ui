@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState, useMemo } from "react";
+import { useRef, useEffect, useState, useMemo, memo } from "react";
 import { Canvas, useFrame, useThree, extend } from "@react-three/fiber";
 import {
   Edges,
@@ -120,8 +120,33 @@ interface AllSceneParams {
   masonryGallery: MasonryGallerySceneParams;
 }
 
-// Large puffy cloud component for iOS-style weather icon
-function Cloud({
+// Memoize puffs data outside component to avoid recreation
+const CLOUD_PUFFS = [
+  // Bottom row - base of cloud
+  { pos: [-0.5, -0.15, 0] as [number, number, number], scale: 1.0 },
+  { pos: [0, -0.15, 0] as [number, number, number], scale: 1.1 },
+  { pos: [0.5, -0.15, 0] as [number, number, number], scale: 1.0 },
+
+  // Middle row - main body
+  { pos: [-0.6, 0, 0] as [number, number, number], scale: 0.95 },
+  { pos: [-0.3, 0, 0.05] as [number, number, number], scale: 1.05 },
+  { pos: [0, 0, -0.05] as [number, number, number], scale: 1.15 },
+  { pos: [0.3, 0, 0.05] as [number, number, number], scale: 1.1 },
+  { pos: [0.6, 0, 0] as [number, number, number], scale: 0.95 },
+
+  // Top row - puffy top
+  { pos: [-0.4, 0.18, 0] as [number, number, number], scale: 0.85 },
+  { pos: [-0.1, 0.2, 0] as [number, number, number], scale: 0.95 },
+  { pos: [0.2, 0.22, 0] as [number, number, number], scale: 0.9 },
+  { pos: [0.5, 0.18, 0] as [number, number, number], scale: 0.8 },
+
+  // Extra puffs for fullness
+  { pos: [-0.2, 0.08, 0.1] as [number, number, number], scale: 0.75 },
+  { pos: [0.35, 0.08, -0.1] as [number, number, number], scale: 0.7 },
+];
+
+// Large puffy cloud component for iOS-style weather icon - memoized for performance
+const Cloud = memo(function Cloud({
   position,
   scale = 1,
   speed = 1,
@@ -140,43 +165,18 @@ function Cloud({
     }
   });
 
-  // Create large puffy cloud from multiple spheres - iOS weather icon style
-  const puffs = [
-    // Bottom row - base of cloud
-    { pos: [-0.5, -0.15, 0], scale: 1.0 },
-    { pos: [0, -0.15, 0], scale: 1.1 },
-    { pos: [0.5, -0.15, 0], scale: 1.0 },
-
-    // Middle row - main body
-    { pos: [-0.6, 0, 0], scale: 0.95 },
-    { pos: [-0.3, 0, 0.05], scale: 1.05 },
-    { pos: [0, 0, -0.05], scale: 1.15 },
-    { pos: [0.3, 0, 0.05], scale: 1.1 },
-    { pos: [0.6, 0, 0], scale: 0.95 },
-
-    // Top row - puffy top
-    { pos: [-0.4, 0.18, 0], scale: 0.85 },
-    { pos: [-0.1, 0.2, 0], scale: 0.95 },
-    { pos: [0.2, 0.22, 0], scale: 0.9 },
-    { pos: [0.5, 0.18, 0], scale: 0.8 },
-
-    // Extra puffs for fullness
-    { pos: [-0.2, 0.08, 0.1], scale: 0.75 },
-    { pos: [0.35, 0.08, -0.1], scale: 0.7 },
-  ];
-
   return (
     <group ref={cloudRef} position={position} scale={scale}>
-      {puffs.map((puff, i) => (
+      {CLOUD_PUFFS.map((puff, i) => (
         <mesh
           key={i}
-          position={puff.pos as [number, number, number]}
+          position={puff.pos}
           scale={puff.scale}
           castShadow
           receiveShadow
           renderOrder={1}
         >
-          <sphereGeometry args={[0.35, 24, 24]} />
+          <sphereGeometry args={[0.35, 16, 16]} />
           <meshStandardMaterial
             color="#FFFFFF"
             transparent
@@ -191,7 +191,7 @@ function Cloud({
       ))}
     </group>
   );
-}
+});
 
 function SunScene({
   faceWidth,
@@ -243,7 +243,7 @@ function SunScene({
 
       {/* Enclosing sphere to ensure rich blue background */}
       <mesh scale={[skyScale, skyScale, skyScale]}>
-        <sphereGeometry args={[1, 64, 64]} />
+        <sphereGeometry args={[1, 32, 32]} />
         <meshBasicMaterial color="#2563EB" side={THREE.BackSide} />
       </mesh>
 
@@ -252,13 +252,13 @@ function SunScene({
       <group ref={sunRef} position={sunPosition} scale={params.sunScale}>
         {/* Bright core sun sphere */}
         <mesh renderOrder={0}>
-          <sphereGeometry args={[0.5, 64, 64]} />
+          <sphereGeometry args={[0.5, 32, 32]} />
           <meshBasicMaterial color="#FFFFF8" depthTest={true} />
         </mesh>
 
         {/* Inner bright ring */}
         <mesh scale={1.4} renderOrder={0}>
-          <sphereGeometry args={[0.5, 64, 64]} />
+          <sphereGeometry args={[0.5, 32, 32]} />
           <meshBasicMaterial
             color="#FFEE44"
             transparent
@@ -271,7 +271,7 @@ function SunScene({
 
         {/* Close corona glow - intense */}
         <mesh scale={1.8} renderOrder={0}>
-          <sphereGeometry args={[0.5, 64, 64]} />
+          <sphereGeometry args={[0.5, 32, 32]} />
           <meshBasicMaterial
             color="#FFDD22"
             transparent
@@ -284,7 +284,7 @@ function SunScene({
 
         {/* Corona glow using custom shader */}
         <mesh ref={coronaRef} scale={2.5} renderOrder={0}>
-          <sphereGeometry args={[0.5, 64, 64]} />
+          <sphereGeometry args={[0.5, 32, 32]} />
           {/* @ts-expect-error - Custom shader material from extend */}
           <sunGlowMaterial
             transparent
@@ -300,7 +300,7 @@ function SunScene({
 
         {/* Mid glow layer - reduced intensity */}
         <mesh scale={3.5} renderOrder={0}>
-          <sphereGeometry args={[0.5, 64, 64]} />
+          <sphereGeometry args={[0.5, 32, 32]} />
           {/* @ts-expect-error - Custom shader material from extend */}
           <sunGlowMaterial
             transparent
@@ -316,7 +316,7 @@ function SunScene({
 
         {/* Outer glow layer - softer */}
         <mesh scale={5.0} renderOrder={0}>
-          <sphereGeometry args={[0.5, 64, 64]} />
+          <sphereGeometry args={[0.5, 32, 32]} />
           {/* @ts-expect-error - Custom shader material from extend */}
           <sunGlowMaterial
             transparent
@@ -332,7 +332,7 @@ function SunScene({
 
         {/* Additional diffuse glow */}
         <mesh scale={2.0} renderOrder={0}>
-          <sphereGeometry args={[0.5, 32, 32]} />
+          <sphereGeometry args={[0.5, 24, 24]} />
           <meshBasicMaterial
             color="#FFCC00"
             transparent
@@ -482,7 +482,7 @@ function BarGraphScene({
     <>
       {/* Dark gradient background */}
       <mesh scale={[skyScale, skyScale, skyScale]}>
-        <sphereGeometry args={[1, 64, 64]} />
+        <sphereGeometry args={[1, 32, 32]} />
         <meshBasicMaterial color="#0F172A" side={THREE.BackSide} />
       </mesh>
 
@@ -620,7 +620,7 @@ function DataTableScene({
     <>
       {/* Dark background */}
       <mesh scale={[skyScale, skyScale, skyScale]}>
-        <sphereGeometry args={[1, 64, 64]} />
+        <sphereGeometry args={[1, 32, 32]} />
         <meshBasicMaterial color="#0F172A" side={THREE.BackSide} />
       </mesh>
 
@@ -989,7 +989,7 @@ function MasonryGalleryScene({
     <>
       {/* Dark background */}
       <mesh scale={[skyScale, skyScale, skyScale]}>
-        <sphereGeometry args={[1, 64, 64]} />
+        <sphereGeometry args={[1, 32, 32]} />
         <meshBasicMaterial color="#0F172A" side={THREE.BackSide} />
       </mesh>
 
@@ -1707,6 +1707,9 @@ export const App = ({ cubeWidth: propCubeWidth }: { cubeWidth?: number }) => {
           fov: controls.fov,
         }}
         style={{ width: "200px", height: "200px" }}
+        dpr={[1, 2]}
+        performance={{ min: 0.5 }}
+        gl={{ antialias: false, alpha: true }}
       >
         {/* Controllable scene lighting for glass cube */}
         <ambientLight intensity={controls.ambientIntensity} />
@@ -2257,7 +2260,7 @@ function Side({
   return (
     <mesh ref={mesh} position={position} rotation={rotation} renderOrder={0}>
       <planeGeometry args={[faceWidth * 1.001, faceHeight * 1.001]} />
-      <MeshPortalMaterial worldUnits={worldUnits} blur={0} resolution={256}>
+      <MeshPortalMaterial worldUnits={worldUnits} blur={0} resolution={128}>
         {/** Everything in here is inside the portal and isolated from the canvas */}
         {!isScenicScene && <ambientLight intensity={0.5} />}
         {!isScenicScene && <Environment preset="city" />}

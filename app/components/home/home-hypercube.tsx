@@ -1,8 +1,14 @@
 "use client";
 
-import { useMemo } from "react";
-import { App as HypercubeCanvas } from "@/app/components/rotating-hypercube";
+import { useMemo, lazy, Suspense } from "react";
 import { useHomeStore, CHAT_MAX_SIZE, CHAT_MIN_SIZE } from "./home-store";
+
+// Lazy load the three.js component to defer initialization
+const HypercubeCanvas = lazy(() =>
+  import("@/app/components/rotating-hypercube").then((mod) => ({
+    default: mod.App,
+  })),
+);
 
 export function HomeHypercube() {
   const chatPanelSize = useHomeStore((state) => state.chatPanelSize);
@@ -14,5 +20,19 @@ export function HomeHypercube() {
     );
   }, [chatPanelSize]);
 
-  return <HypercubeCanvas cubeWidth={cubeWidth} />;
+  return (
+    <Suspense
+      fallback={
+        <div
+          style={{
+            width: "200px",
+            height: "200px",
+            backgroundColor: "transparent",
+          }}
+        />
+      }
+    >
+      <HypercubeCanvas cubeWidth={cubeWidth} />
+    </Suspense>
+  );
 }
