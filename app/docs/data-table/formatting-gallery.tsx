@@ -242,12 +242,12 @@ export function FormatInlineExample({
   return (
     <div className="not-prose bg-card mt-2 rounded-md border p-3">
       <div className="grid grid-cols-1 gap-2 md:grid-cols-2">
-        <div>
-          <span className="text-muted-foreground">Input:</span>{" "}
+        <div className="flex items-center gap-2">
+          <span className="text-muted-foreground">Input</span>{" "}
           <code>{JSON.stringify(value)}</code>
         </div>
-        <div>
-          <span className="text-muted-foreground">Output:</span>{" "}
+        <div className="flex items-center gap-2">
+          <span className="text-muted-foreground">Output</span>{" "}
           <span className="inline-flex min-h-[20px] items-center gap-1 align-middle">
             {rendered}
           </span>

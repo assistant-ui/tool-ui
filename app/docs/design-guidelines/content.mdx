@@ -1,7 +1,7 @@
 import { CopyMarkdownButton } from "../_components/copy-markdown-button";
 
 <div className="flex justify-between items-start">
-  # UI Design Guidelines
+  # UI Guidelines
   <CopyMarkdownButton />
   </div>
 
@@ -15,34 +15,6 @@ Following these guidelines will keep your Tool UIs glanceable, consistent, and e
 4. Minimal chrome — let the conversation remain the primary surface.
 5. Accessible by default — AA contrast, keyboard parity, screen‑reader labels, reduced motion.
 6. Predictable actions — obvious primary action; fast feedback; receipts after completion.
-
-## Surfaces (v1)
-
-### Inline Widget (default)
-
-All shipped Tool UI components render inline in the transcript (DataTable, DecisionPrompt, MediaCard, SocialPost). Design for one clear outcome with minimal chrome.
-
-Do
-
-- One primary CTA (+ optional secondary where it adds clarity).
-- No inner scroll; auto‑fit height; clamp long text.
-- Include compact context labels (e.g., “Paris · Tomorrow”).
-- Show a receipt/confirmation after completion.
-
-Don’t
-
-- No nested tabs/menus/accordions.
-- Don’t duplicate composer functionality.
-- Don’t exceed two primary actions.
-
-### Grouped Tool Calls (multi‑step)
-
-When multiple tool calls occur in sequence, group them for readability using ToolGroup. Keep each step glanceable; defer heavy details to the final step.
-
-- Provide a concise summary per step; avoid repeating context.
-- Support keyboard navigation and proper SR labels across the group.
-
-Note: carousels are not part of the v1 library. If you build list/collection UIs at the app level, apply similar constraints: consistent hierarchy, short labels, single primary CTA per item, and SR labels.
 
 ## Interaction model
 
@@ -191,25 +163,3 @@ If you change these budgets, change them globally—consistency is the real feat
 - Entity Preview (chips/tooltips/hover previews; future)
 
 These are tags, not display modes—they help discovery without over‑constraining design.
-
-## Drop‑in defaults (you can copy to a config file)
-
-```ts
-export const UX_BUDGETS = {
-  inlineCardFirstPaintMs: 200,
-  spinnerThresholdMs: 150,
-  skeletonThresholdMs: 300,
-  maxTransitionMs: 250,
-  ttiMs: 1000,
-} as const;
-
-export const ACTION_DEFAULTS = {
-  loadingBehavior: "auto" as const, // Button=self, Form=container
-  optimistic: true,
-};
-
-export const A11Y = {
-  minHitTargetPx: 44,
-  contrast: "AA",
-};
-```

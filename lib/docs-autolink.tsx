@@ -5,19 +5,28 @@ type ReactNode = React.ReactNode;
 
 type Pattern = { match: string; href: string };
 
+// Static patterns for external libraries
+const externalPatterns: Pattern[] = [
+  { match: "shadcn/ui", href: "https://ui.shadcn.com" },
+  { match: "radix", href: "https://www.radix-ui.com" },
+];
+
 // Build patterns for label (e.g., "Media Card"), camel ("MediaCard"), and id ("media-card").
-const patterns: Pattern[] = componentsRegistry
-  .flatMap((c) => {
-    const label = c.label;
-    const camel = label.replace(/\s+/g, "");
-    const kebab = c.id;
-    return [
-      { match: label, href: c.path },
-      { match: camel, href: c.path },
-      { match: kebab, href: c.path },
-    ];
-  })
-  .sort((a, b) => b.match.length - a.match.length);
+const patterns: Pattern[] = [
+  ...externalPatterns,
+  ...componentsRegistry
+    .flatMap((c) => {
+      const label = c.label;
+      const camel = label.replace(/\s+/g, "");
+      const kebab = c.id;
+      return [
+        { match: label, href: c.path },
+        { match: camel, href: c.path },
+        { match: kebab, href: c.path },
+      ];
+    })
+    .sort((a, b) => b.match.length - a.match.length),
+];
 
 function isWordChar(ch?: string) {
   return !!ch && /[A-Za-z0-9_]/.test(ch);

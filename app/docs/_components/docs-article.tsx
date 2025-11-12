@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
+import { DocsPager } from "./docs-pager";
 
 type DocsArticleProps = {
   children: ReactNode;
@@ -23,6 +24,7 @@ export function DocsArticle({
           )}
         >
           {children}
+          <DocsPager />
         </div>
       </div>
     </div>

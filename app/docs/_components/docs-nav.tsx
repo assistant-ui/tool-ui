@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { LayoutDashboardIcon } from "lucide-react";
 import { componentsRegistry } from "@/lib/components-config";
 import { cn } from "@/lib/utils";
+import { BASE_DOCS_PAGES } from "./docs-pages";
 
 const STORAGE_KEY = "tool-ui-components-nav-collapsed";
 
@@ -31,13 +32,6 @@ export function DocsNav() {
         "text-muted-foreground": !isActive,
       },
     );
-
-  const docsPages = [
-    { path: "/docs/overview", label: "Overview" },
-    { path: "/docs/quick-start", label: "Quick Start" },
-    { path: "/docs/advanced", label: "Advanced" },
-    { path: "/docs/design-guidelines", label: "UI Design Guidelines" },
-  ];
 
   const galleryPath = "/docs/gallery";
   const isGalleryActive = pathname === galleryPath;
@@ -77,7 +71,7 @@ export function DocsNav() {
               Get Started
             </div>
           )}
-          {docsPages.map((page) => {
+          {BASE_DOCS_PAGES.map((page) => {
             const isActive = pathname === page.path;
             return (
               <Link

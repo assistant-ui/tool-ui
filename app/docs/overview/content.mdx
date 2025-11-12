@@ -5,11 +5,15 @@ import { CopyMarkdownButton } from "../_components/copy-markdown-button";
   <CopyMarkdownButton />
 </div>
 
-Render interactive, accessible UI in chat from JSON tool outputs. Tool UI ships shadcn-based components you can copy-paste into any Next.js or React conversation UI so tools can return serializable props instead of plain text.
+Render interactive, accessible UI in chat from JSON tool outputs. Tool UI ships shadcn/ui-based components you can copy-paste into any Next.js or React conversation UI so tools can return serializable props instead of plain text.
 
 ## Quick start (30 seconds)
 
-1) Server: return serializable props from a tool
+<Steps>
+
+<Step title="Server: return serializable props">
+
+_Define your tool with a serializable schema so LLM outputs stay predictable._
 
 ```ts
 import { tool } from 'ai';
@@ -31,7 +35,11 @@ export const tools = {
 } as const;
 ```
 
-2) Client: parse and render
+</Step>
+
+<Step title="Client: parse and render">
+
+_Check for the tool output part, parse it, and render the component._
 
 ```tsx
 import { DataTable, parseSerializableDataTable } from '@/components/data-table';
@@ -42,11 +50,19 @@ if (part.type === 'tool-listProducts' && part.state === 'output-available') {
 }
 ```
 
-3) Actions: handle clicks in your app
+</Step>
+
+<Step title="Actions: handle clicks in your app">
+
+_Attach actions and handle them in your app so follow-up behavior stays under your control._
 
 ```tsx
 <DataTable actions={[{ id: 'buy', label: 'Buy' }]} onAction={(id, row) => doSomething(id, row)} />
 ```
+
+</Step>
+
+</Steps>
 
 More detail: [Full Quick Start](/docs/quick-start).
 
@@ -60,7 +76,7 @@ parseSerializableX → render component
 onAction → your app handles it (server/client)
 ```
 
-## Choose the right renderer
+## Choose the right Tool UI for the job
 
 - [Data Table](/docs/data-table) — best for scanning or comparing rows, sorting, formatting values, and attaching actions that persist across turns (collapses to cards with `priority` on mobile).
 - Rich text via [Media Card](/docs/media-card) or [Decision Prompt](/docs/decision-prompt) — narrative summaries, single entities, confirmations, or approvals with primary/secondary actions.
@@ -98,13 +114,6 @@ return <MediaCard {...card} />;
 ```
 
 Deep dive: [Quick Start](/docs/quick-start).
-
-## Where to go next
-
-- [Gallery](/docs/gallery) — interactive presets with code you can copy.
-- Component docs — [Data Table](/docs/data-table), [Media Card](/docs/media-card), [Decision Prompt](/docs/decision-prompt), [Social Post](/docs/social-post).
-- [Quick Start](/docs/quick-start) — full server/client wiring.
-- [Advanced typing guide](/docs/advanced) — infer types from your tools for end-to-end safety.
 
 ## Accessibility & compatibility
 

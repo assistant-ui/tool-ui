@@ -1,0 +1,88 @@
+"use client";
+
+import * as React from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { ArrowLeft, ArrowRight } from "lucide-react";
+import { getAllDocsPageLinks } from "./docs-pages";
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+
+function useDocsPagination() {
+  const pathname = usePathname();
+  return React.useMemo(() => {
+    const links = getAllDocsPageLinks();
+    const currentIndex = links.findIndex((link) => link.path === pathname);
+    if (currentIndex === -1) return { prev: null, next: null };
+    const prev = currentIndex > 0 ? links[currentIndex - 1] : null;
+    const next =
+      currentIndex < links.length - 1 ? links[currentIndex + 1] : null;
+    return { prev, next };
+  }, [pathname]);
+}
+
+type PagerLinkProps = {
+  href: string;
+  label: string;
+  direction: "prev" | "next";
+};
+
+function PagerLink({ href, label, direction }: PagerLinkProps) {
+  const isPrev = direction === "prev";
+  return (
+    <Button
+      asChild
+      variant="outline"
+      className={cn(
+        "w-fit gap-3 py-5",
+        isPrev ? "justify-start" : "justify-end text-right",
+      )}
+      aria-label={`Go to ${label}`}
+    >
+      <Link
+        href={href}
+        className={cn(
+          "flex w-fit flex-1 items-center gap-3",
+          isPrev ? "justify-start text-left" : "justify-between text-right",
+        )}
+      >
+        {isPrev ? (
+          <>
+            <ArrowLeft className="text-muted-foreground size-4 shrink-0" />
+            <span className="text-foreground font-medium">{label}</span>
+          </>
+        ) : (
+          <>
+            <span className="text-foreground flex-1 text-right font-medium">
+              {label}
+            </span>
+            <ArrowRight className="text-muted-foreground size-4 shrink-0" />
+          </>
+        )}
+      </Link>
+    </Button>
+  );
+}
+
+export function DocsPager() {
+  const { prev, next } = useDocsPagination();
+
+  if (!prev && !next) return null;
+
+  return (
+    <div className="not-prose mt-12">
+      <div className="flex flex-col gap-4 sm:flex-row">
+        {prev ? (
+          <PagerLink href={prev.path} label={prev.label} direction="prev" />
+        ) : (
+          <span className="hidden flex-1 sm:block" />
+        )}
+        {next ? (
+          <PagerLink href={next.path} label={next.label} direction="next" />
+        ) : (
+          <span className="hidden flex-1 sm:block" />
+        )}
+      </div>
+    </div>
+  );
+}

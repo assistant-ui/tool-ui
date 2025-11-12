@@ -5,17 +5,23 @@ import { CopyMarkdownButton } from "../_components/copy-markdown-button";
   <CopyMarkdownButton />
 </div>
 
-Tool UI renders interactive, LLM-invoked UI components from JSON tool outputs.
+Render interactive, accessible UI in chat from JSON tool outputs.
 
-Why you should use Tool UI:
+Why teams reach for Tool UI:
 
-- Copy-paste components, schema-first, shadcn-based.
-- Parse serializable props, wire actions, and stay accessible out of the box.
+- Copy-paste components that render directly from tool JSON.
+- Parse tool output into props, render components, and handle actions.
 - Browse the [gallery](/docs/gallery) to see every component in action.
+
+Try it: [Gallery presets](/docs/gallery).
 
 ## Quick start (30 seconds)
 
-1) Server: return serializable props from a tool
+<Steps>
+
+<Step title="Server: return serializable props from a tool">
+
+_Define your tool with a serializable schema so the LLM returns predictable props._
 
 ```ts
 import { tool } from 'ai';
@@ -37,7 +43,11 @@ export const tools = {
 } as const;
 ```
 
-2) Client: parse and render
+</Step>
+
+<Step title="Client: parse and render">
+
+_In the chat UI, gate on the tool part, parse the payload, and render the component._
 
 ```tsx
 import { DataTable, parseSerializableDataTable } from '@/components/data-table';
@@ -48,32 +58,37 @@ if (part.type === 'tool-listProducts' && part.state === 'output-available') {
 }
 ```
 
-3) Actions: handle clicks in your app
+</Step>
+
+<Step title="Actions: handle clicks in your app">
+
+_Pass row or card actions plus an `onAction` handler so your app controls follow-up work._
 
 ```tsx
 <DataTable actions={[{ id: 'buy', label: 'Buy' }]} onAction={(id, row) => doSomething(id, row)} />
 ```
 
-More detail: [Full quick start](#detailed-quick-start).
+</Step>
+
+</Steps>
+
+More detail: [Full walkthrough](#detailed-quick-start).
+
+> The walkthrough below uses MediaCard, but the exact parse → render → action pattern applies to Data Table, Decision Prompt, Social Post, and other components.
 
 ## Mental model
 
 ```
-tool execute → returns JSON (validated by Zod)
+Tool returns JSON (validated by Zod)
         ↓
-UI parses (parseSerializableX) → renders component
+parseSerializableX → render component
         ↓
-User clicks action → your app handles it (server/client)
+onAction → your app handles it (server/client)
 ```
 
-## Choose the right tool for the job
+## Choose the right Tool UI for the job
 
-- [Data Table](/docs/data-table) — scan or compare rows, sort/filter, attach row actions, collapse to cards on mobile with `priority`.
-- [Media Card](/docs/media-card) — rich text or single-object summaries, great for previews and narratives.
-- [Decision Prompt](/docs/decision-prompt) — structured choices, confirmations, or approvals with primary/secondary actions.
-- [Social Post](/docs/social-post) — stylized shareables for marketing or social workflows.
-- [Markdown table pattern](/docs/patterns) — tiny, static data with no actions or sorting; use standard markdown inside chat copy.
-
+Need help deciding between Data Table, Media Card, Decision Prompt, Social Post, or the Markdown table pattern? Jump to the [Overview → Choose the right Tool UI for the job](/docs/overview#choose-the-right-renderer) section for chat-specific guidance.
 
 ## Schema-first DX
 
@@ -90,7 +105,7 @@ const tools = {
 };
 ```
 
-Full walkthroughs live in the [Quick Start](#detailed-quick-start).
+Full walkthrough sits in the [Detailed quick start](#detailed-quick-start) below.
 
 ## What Tool UI is not
 
@@ -113,22 +128,22 @@ Use the example below to wire Tool UI end-to-end.
 <Tabs items={["pnpm", "npm", "yarn", "bun"]}>
   <Tab>
     ```sh
-    pnpm add ai @ai-sdk/openai zod
+    pnpm add ai @ai-sdk/openai @ai-sdk/react zod
     ```
   </Tab>
   <Tab>
     ```sh
-    npm install ai @ai-sdk/openai zod
+    npm install ai @ai-sdk/openai @ai-sdk/react zod
     ```
   </Tab>
   <Tab>
     ```sh
-    yarn add ai @ai-sdk/openai zod
+    yarn add ai @ai-sdk/openai @ai-sdk/react zod
     ```
   </Tab>
   <Tab>
     ```sh
-    bun add ai @ai-sdk/openai zod
+    bun add ai @ai-sdk/openai @ai-sdk/react zod
     ```
   </Tab>
 </Tabs>
@@ -181,6 +196,8 @@ export async function POST(req: Request) {
 }
 ```
 
+Swap `openai('gpt-4o')` for any AI SDK model or provider; see the [AI SDK docs](https://sdk.vercel.ai/docs).
+
 </Step>
 
 <Step>
@@ -192,12 +209,12 @@ export async function POST(req: Request) {
 
 import { useChat } from '@ai-sdk/react';
 import { DefaultChatTransport } from 'ai';
-import { MediaCard } from '@/components/media-card';
+import { MediaCard, parseSerializableMediaCard } from '@/components/media-card';
 import { useState } from 'react';
 
 export default function Chat() {
   const { messages, sendMessage } = useChat({
-    transport: new DefaultChatTransport({ api: '/api/chat' }),
+    transport: new DefaultChatTransport({ api: '/api/chat' }), // Match this to your API route
   });
   const [input, setInput] = useState('Preview https://react.dev');
 
@@ -216,7 +233,8 @@ export default function Chat() {
           <div key={m.id}>
             {m.parts.map((part, i) => {
               if (part.type === 'tool-previewLink' && part.state === 'output-available') {
-                return <MediaCard key={i} {...part.output} maxWidth="420px" />;
+                const card = parseSerializableMediaCard(part.output);
+                return <MediaCard key={i} {...card} maxWidth="420px" />;
               }
               if (part.type === 'text') return <span key={i}>{part.text}</span>;
               return null;
@@ -242,3 +260,8 @@ export default function Chat() {
 </Step>
 
 </Steps>
+
+> **Common errors**
+> - Missing `@ai-sdk/react` when using `useChat` (install it with the commands above).
+> - Forgetting to `parseSerializableX` before rendering, which causes prop shape mismatches.
+> - Missing or invalid `OPENAI_API_KEY`, resulting in 401 responses from your model provider.

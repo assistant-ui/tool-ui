@@ -83,13 +83,12 @@ A compact, responsive data table with sorting, declarative value formatting, and
 
 ## When to use
 
-- **Quick rule of thumb**: scan-and-act → Data Table; read-and-understand → rich text; tiny-static → markdown table.
 - **Use Data Table when** you compare 3+ rows across shared attributes (≥2 sortable columns), need numeric/date alignment, row actions, or consistent formats, and expect the data to grow (tool/LLM output) while staying mobile-friendly via column `priority`.
 - **Prefer rich text when** the goal is narrative reading, irregular fields per item, long paragraphs/snippets, or just a few highlighted insights.
-- **Prefer a markdown table when** the dataset is tiny and static (≈2–4 rows, 2–3 columns) with zero sorting, actions, or formatting requirements.
 - **Avoid**: long paragraphs or nested objects in cells, too many mobile columns (promote/demote `priority` or swap to cards), and non-primitive row values (push presentation into `columns[i].format`).
 
 ## Source & install
+Simply copy and paste `components/data-table` alongside to your shadcn/ui components dir, typically `components/ui`.
 
 - [Source on GitHub](https://github.com/assistant-ui/tool-ui/tree/main/components/data-table)
 - [Quick download (ZIP)](https://download-directory.github.io/?url=https://github.com/assistant-ui/tool-ui/tree/main/components/data-table)
@@ -160,14 +159,6 @@ Keep row values primitive; describe presentation in `columns[i].format`. It keep
 ## Data shape
 
 Primitive rows ensure LLM/tool output is JSON-serializable and renderable.
-
-<details className="mt-3">
-  <summary className="cursor-pointer text-sm font-medium">Why primitives?</summary>
-  <div className="mt-2 text-sm text-muted-foreground">
-    They hydrate quickly, avoid Date/timezone mismatches, and keep formatting centralized in
-    <code>columns[i].format</code>.
-  </div>
-</details>
 
 <TypeTable
   type={{
@@ -268,12 +259,10 @@ All visual formatting for data stays declarative via `columns[i].format`.
               <FormatInlineExample
                 value={0.123}
                 output={<PercentValue value={0.123} options={{ kind: 'percent', basis: 'fraction', decimals: 1, showSign: true }} />}
-                note="0.123 → 12.3%"
               />
               <FormatInlineExample
                 value={1.23}
                 output={<PercentValue value={1.23} options={{ kind: 'percent', basis: 'unit', decimals: 2, showSign: true }} />}
-                note="1.23 → 1.23%"
               />
             </>
           ),
