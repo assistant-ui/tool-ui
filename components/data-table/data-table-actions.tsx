@@ -8,7 +8,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "./_ui";
-import { useDataTable, type DataTableRowData, type Action } from "./data-table";
+import { useDataTable } from "./data-table";
+import type { DataTableRowData, Action } from "./types";
 import { getActionLabel } from "./utilities";
 
 interface DataTableActionsProps {

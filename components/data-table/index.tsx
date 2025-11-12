@@ -21,16 +21,16 @@ export {
 export { parseSerializableDataTable } from "./schema";
 
 export type {
+  Column,
+  Action,
   DataTableProps,
   DataTableSerializableProps,
   DataTableClientProps,
-  Column,
-  Action,
   DataTableRowData,
   RowPrimitive,
   RowData,
   ColumnKey,
-} from "./data-table";
+} from "./types";
 export type { FormatConfig } from "./formatters";
 
 export { sortData, parseNumericLike } from "./utilities";

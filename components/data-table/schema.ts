@@ -1,5 +1,5 @@
 import { z } from "zod";
-import type { Action, Column, DataTableProps, RowData } from "./data-table";
+import type { Action, Column, DataTableProps, RowData } from "./types";
 
 const alignEnum = z.enum(["left", "right", "center"]);
 const priorityEnum = z.enum(["primary", "secondary", "tertiary"]);

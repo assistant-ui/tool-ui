@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { cn } from "./_cn";
-import { useDataTable, type Column } from "./data-table";
+import { useDataTable } from "./data-table";
 import {
   Tooltip,
   TooltipContent,
@@ -13,6 +13,7 @@ import {
   TableHead,
   Button,
 } from "./_ui";
+import type { Column } from "./types";
 
 function SortIcon({ state }: { state?: "asc" | "desc" }) {
   let char = "⇅";

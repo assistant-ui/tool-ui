@@ -8,7 +8,7 @@ import {
   Button,
 } from "./_ui";
 import { useDataTable } from "./data-table";
-import type { Column, DataTableRowData, Action } from "./data-table";
+import type { Column, DataTableRowData, Action } from "./types";
 import { renderFormattedValue } from "./formatters";
 import { getRowIdentifier } from "./utilities";
 

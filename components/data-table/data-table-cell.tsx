@@ -3,10 +3,10 @@
 import * as React from "react";
 import { cn } from "./_cn";
 import { renderFormattedValue } from "./formatters";
-import type { Column, DataTableRowData } from "./data-table";
 import { useDataTable } from "./data-table";
 import { TableCell } from "./_ui";
 import { DATA_TABLE_CELL_PADDING } from "./data-table-styles";
+import type { Column, DataTableRowData } from "./types";
 
 interface DataTableCellProps {
   value:

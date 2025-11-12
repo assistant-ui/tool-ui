@@ -1,9 +1,10 @@
 "use client";
 
 import * as React from "react";
-import { useDataTable, type DataTableRowData } from "./data-table";
+import { useDataTable } from "./data-table";
 import { DataTableRow } from "./data-table-row";
 import { TableBody } from "./_ui";
+import type { DataTableRowData } from "./types";
 
 export function DataTableBody() {
   const { data, rowIdKey } = useDataTable<DataTableRowData>();

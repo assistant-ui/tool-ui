@@ -2,11 +2,12 @@
 
 import * as React from "react";
 import { cn } from "./_cn";
-import { useDataTable, type DataTableRowData } from "./data-table";
+import { useDataTable } from "./data-table";
 import { DataTableCell } from "./data-table-cell";
 import { DataTableActions } from "./data-table-actions";
 import { TableRow, TableCell } from "./_ui";
 import { DATA_TABLE_CELL_PADDING } from "./data-table-styles";
+import type { DataTableRowData } from "./types";
 
 interface DataTableRowProps {
   row: DataTableRowData;
