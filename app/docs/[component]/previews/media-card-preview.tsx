@@ -1,6 +1,7 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useState, useEffect } from "react";
+import { useSearchParams, usePathname, useRouter } from "next/navigation";
 import { ComponentPreviewShell } from "../component-preview-shell";
 import { PresetSelector } from "../../_components/preset-selector";
 import { CodePanel } from "../../_components/code-panel";
@@ -11,15 +12,50 @@ import {
 } from "@/lib/media-card-presets";
 
 export function MediaCardPreview({ withContainer = true }: { withContainer?: boolean }) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  // Get preset from URL or use default
+  const presetParam = searchParams.get("preset");
+  const defaultPreset = "link";
+  const initialPreset: MediaCardPresetName =
+    presetParam && presetParam in mediaCardPresets
+      ? (presetParam as MediaCardPresetName)
+      : defaultPreset;
+
   const [currentPreset, setCurrentPreset] =
-    useState<MediaCardPresetName>("link");
+    useState<MediaCardPresetName>(initialPreset);
   const [isLoading, setIsLoading] = useState(false);
+
+  // Sync state when URL changes
+  useEffect(() => {
+    const presetParam = searchParams.get("preset");
+    if (
+      presetParam &&
+      presetParam in mediaCardPresets &&
+      presetParam !== currentPreset
+    ) {
+      setCurrentPreset(presetParam as MediaCardPresetName);
+      setIsLoading(false);
+    }
+  }, [searchParams, currentPreset]);
+
   const currentConfig = mediaCardPresets[currentPreset];
 
-  const handleSelectPreset = useCallback((preset: unknown) => {
-    setCurrentPreset(preset as MediaCardPresetName);
-    setIsLoading(false);
-  }, []);
+  const handleSelectPreset = useCallback(
+    (preset: unknown) => {
+      const presetName = preset as MediaCardPresetName;
+      setCurrentPreset(presetName);
+      setIsLoading(false);
+
+      // Update URL
+      const params = new URLSearchParams(searchParams.toString());
+      params.set("preset", presetName);
+      router.push(`${pathname}?${params.toString()}`, { scroll: false });
+    },
+    [router, pathname, searchParams]
+  );
 
   return (
     <ComponentPreviewShell

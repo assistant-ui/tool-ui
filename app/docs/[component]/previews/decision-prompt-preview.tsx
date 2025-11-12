@@ -1,6 +1,7 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useState, useEffect } from "react";
+import { useSearchParams, usePathname, useRouter } from "next/navigation";
 import { ComponentPreviewShell } from "../component-preview-shell";
 import { PresetSelector } from "../../_components/preset-selector";
 import { CodePanel } from "../../_components/code-panel";
@@ -11,20 +12,56 @@ import {
 } from "@/lib/decision-prompt-presets";
 
 export function DecisionPromptPreview({ withContainer = true }: { withContainer?: boolean }) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  // Get preset from URL or use default
+  const presetParam = searchParams.get("preset");
+  const defaultPreset = "multi-choice";
+  const initialPreset: DecisionPromptPresetName =
+    presetParam && presetParam in decisionPromptPresets
+      ? (presetParam as DecisionPromptPresetName)
+      : defaultPreset;
+
   const [currentPreset, setCurrentPreset] =
-    useState<DecisionPromptPresetName>("multi-choice");
+    useState<DecisionPromptPresetName>(initialPreset);
   const [isLoading, setIsLoading] = useState(false);
   const [selectedAction, setSelectedAction] = useState<string | undefined>();
   const [selectedActions, setSelectedActions] = useState<string[]>([]);
 
+  // Sync state when URL changes
+  useEffect(() => {
+    const presetParam = searchParams.get("preset");
+    if (
+      presetParam &&
+      presetParam in decisionPromptPresets &&
+      presetParam !== currentPreset
+    ) {
+      setCurrentPreset(presetParam as DecisionPromptPresetName);
+      setSelectedAction(undefined);
+      setSelectedActions([]);
+      setIsLoading(false);
+    }
+  }, [searchParams, currentPreset]);
+
   const currentConfig = decisionPromptPresets[currentPreset];
 
-  const handleSelectPreset = useCallback((preset: unknown) => {
-    setCurrentPreset(preset as DecisionPromptPresetName);
-    setSelectedAction(undefined);
-    setSelectedActions([]);
-    setIsLoading(false);
-  }, []);
+  const handleSelectPreset = useCallback(
+    (preset: unknown) => {
+      const presetName = preset as DecisionPromptPresetName;
+      setCurrentPreset(presetName);
+      setSelectedAction(undefined);
+      setSelectedActions([]);
+      setIsLoading(false);
+
+      // Update URL
+      const params = new URLSearchParams(searchParams.toString());
+      params.set("preset", presetName);
+      router.push(`${pathname}?${params.toString()}`, { scroll: false });
+    },
+    [router, pathname, searchParams]
+  );
 
   return (
     <ComponentPreviewShell

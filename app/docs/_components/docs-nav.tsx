@@ -74,7 +74,7 @@ export function DocsNav() {
         <div className="flex flex-col gap-1 px-4 pt-4">
           {!collapsed && (
             <div className="text-primary/40 mb-3 cursor-default px-4 text-xs tracking-widest uppercase select-none">
-              Docs
+              Get Started
             </div>
           )}
           {docsPages.map((page) => {

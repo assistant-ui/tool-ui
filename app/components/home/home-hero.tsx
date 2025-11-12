@@ -29,7 +29,7 @@ export function HomeHero() {
       <p className="text-muted-foreground mb-2 text-lg text-pretty">
         Responsive, accessible, typed, copy-pasteable.{" "}
         <br className="hidden md:block" />
-        Built on Radix, shadcn/ui, and Tailwind. Open Source.{" "}
+        Built on Tailwind, Radix, and shadcn/ui. Open Source.{" "}
         <br className="hidden md:block" />
       </p>
       <Button asChild className="group" size="homeCTA">

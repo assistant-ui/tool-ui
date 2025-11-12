@@ -28,7 +28,7 @@ export default function HomePage({
     >
       <ContentLayout noScroll>
         <main className="relative flex h-full max-h-[800px] min-h-0 w-full max-w-[1440px] flex-col justify-end gap-10 overflow-hidden md:p-6 lg:flex-row">
-          <div className="relative z-10 flex w-full max-w-[450px] flex-col justify-end overflow-y-auto pb-[10vh] pl-6 lg:max-w-[40w] lg:min-w-[400x] lg:shrink lg:grow-0 lg:basis-[40w]">
+          <div className="relative z-10 flex w-full max-w-[500px] flex-col justify-end overflow-y-auto pb-[10vh] pl-6 lg:max-w-[40w] lg:min-w-[400x] lg:shrink lg:grow-0 lg:basis-[40w]">
             <HomeHero />
           </div>
 

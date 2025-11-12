@@ -43,7 +43,7 @@ interface DeltaValueProps {
   options?: Extract<FormatConfig, { kind: "delta" }>;
 }
 
-function DeltaValue({ value, options }: DeltaValueProps) {
+export function DeltaValue({ value, options }: DeltaValueProps) {
   const decimals = options?.decimals ?? 2;
   const upIsPositive = options?.upIsPositive ?? true;
   const showSign = options?.showSign ?? true;
@@ -79,7 +79,7 @@ interface StatusBadgeProps {
   options?: Extract<FormatConfig, { kind: "status" }>;
 }
 
-function StatusBadge({ value, options }: StatusBadgeProps) {
+export function StatusBadge({ value, options }: StatusBadgeProps) {
   const config = options?.statusMap?.[value] ?? {
     tone: "neutral" as Tone,
     label: value,
@@ -119,7 +119,7 @@ interface CurrencyValueProps {
   locale?: string;
 }
 
-function CurrencyValue({ value, options, locale }: CurrencyValueProps) {
+export function CurrencyValue({ value, options, locale }: CurrencyValueProps) {
   const currency = options?.currency ?? "USD";
   const decimals = options?.decimals ?? 2;
 
@@ -138,7 +138,7 @@ interface PercentValueProps {
   options?: Extract<FormatConfig, { kind: "percent" }>;
 }
 
-function PercentValue({ value, options }: PercentValueProps) {
+export function PercentValue({ value, options }: PercentValueProps) {
   const decimals = options?.decimals ?? 2;
   const showSign = options?.showSign ?? false;
   const basis = options?.basis ?? "fraction";
@@ -161,7 +161,7 @@ interface DateValueProps {
   locale?: string;
 }
 
-function DateValue({ value, options, locale }: DateValueProps) {
+export function DateValue({ value, options, locale }: DateValueProps) {
   const dateFormat = options?.dateFormat ?? "short";
   const date = new Date(value);
 
@@ -228,7 +228,7 @@ interface BooleanValueProps {
   options?: Extract<FormatConfig, { kind: "boolean" }>;
 }
 
-function BooleanValue({ value, options }: BooleanValueProps) {
+export function BooleanValue({ value, options }: BooleanValueProps) {
   const labels = options?.labels ?? { true: "Yes", false: "No" };
   const label = value ? labels.true : labels.false;
   const variant = value ? "secondary" : "outline";
@@ -245,7 +245,7 @@ interface LinkValueProps {
   >;
 }
 
-function LinkValue({ value, options, row }: LinkValueProps) {
+export function LinkValue({ value, options, row }: LinkValueProps) {
   const href =
     options?.hrefKey && row ? String(row[options.hrefKey] ?? "") : value;
   const external = options?.external ?? false;
@@ -279,7 +279,7 @@ interface NumberValueProps {
   locale?: string;
 }
 
-function NumberValue({ value, options, locale }: NumberValueProps) {
+export function NumberValue({ value, options, locale }: NumberValueProps) {
   const decimals = options?.decimals ?? 0;
   const unit = options?.unit ?? "";
   const compact = options?.compact ?? false;
@@ -306,7 +306,7 @@ interface BadgeValueProps {
   options?: Extract<FormatConfig, { kind: "badge" }>;
 }
 
-function BadgeValue({ value, options }: BadgeValueProps) {
+export function BadgeValue({ value, options }: BadgeValueProps) {
   const tone = options?.colorMap?.[value] ?? "neutral";
 
   const variant =
@@ -347,7 +347,7 @@ interface ArrayValueProps {
   options?: Extract<FormatConfig, { kind: "array" }>;
 }
 
-function ArrayValue({ value, options }: ArrayValueProps) {
+export function ArrayValue({ value, options }: ArrayValueProps) {
   const maxVisible = options?.maxVisible ?? 3;
   const items: (string | number | boolean | null)[] = Array.isArray(value)
     ? value

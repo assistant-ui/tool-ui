@@ -8,6 +8,8 @@
 
 /* Prose styles */
 @import "./prose.css";
+/* Fumadocs UI overrides */
+@import "./fumadocs-overrides.css";
 
 /* Silk Sheet UI styles */
 @import "@silk-hq/components/layered-styles";
@@ -206,8 +208,6 @@
 }
 
 @layer base {
-  /* Map Fumadocs UI tokens to our shadcn theme colors */
-
   * {
     @apply border-border outline-ring/50;
   }

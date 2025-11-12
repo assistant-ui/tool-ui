@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
+import { useSearchParams, usePathname, useRouter } from "next/navigation";
+import { type ReactNode, useEffect, useRef, useState, Suspense } from "react";
 import { cn } from "@/lib/utils";
 
 interface ComponentDocsExamplesProps {
@@ -9,12 +10,57 @@ interface ComponentDocsExamplesProps {
   defaultTab?: "docs" | "examples";
 }
 
-export function ComponentDocsExamples({
+function ComponentDocsExamplesInner({
   docs,
   examples,
-  defaultTab = "examples",
+  defaultTab = "docs",
 }: ComponentDocsExamplesProps) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const contentRef = useRef<HTMLDivElement>(null);
   const [active, setActive] = useState<"docs" | "examples">(defaultTab);
+
+  useEffect(() => {
+    const tabParam = searchParams.get("tab");
+    if (tabParam === "docs" || tabParam === "examples") {
+      setActive((prev) => (prev === tabParam ? prev : tabParam));
+      return;
+    }
+
+    const hash = typeof window !== "undefined" ? window.location.hash : "";
+    if (hash === "#examples") {
+      setActive((prev) => (prev === "examples" ? prev : "examples"));
+      return;
+    }
+
+    setActive((prev) => (prev === defaultTab ? prev : defaultTab));
+  }, [searchParams, defaultTab]);
+
+  useEffect(() => {
+    if (
+      active === "examples" &&
+      typeof window !== "undefined" &&
+      window.location.hash === "#examples"
+    ) {
+      contentRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }, [active]);
+
+  const pushTabParam = (newTab: "docs" | "examples") => {
+    const currentTab = searchParams.get("tab");
+    if (currentTab === newTab) {
+      return;
+    }
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("tab", newTab);
+    router.push(`${pathname}?${params.toString()}`, { scroll: false });
+  };
+
+  const handleTabChange = (newTab: "docs" | "examples") => {
+    setActive(newTab);
+    pushTabParam(newTab);
+  };
 
   return (
     <div className="bg-background scrollbar-subtle relative box-border flex h-full min-h-0 w-full flex-col overflow-auto overscroll-contain rounded-lg rounded-tl-lg border-t border-l">
@@ -37,7 +83,7 @@ export function ComponentDocsExamples({
               ? "border-primary/20 bg-primary/10 text-primary"
               : "text-muted-foreground hover:bg-primary/5 hover:text-foreground border-transparent",
           )}
-          onClick={() => setActive("docs")}
+          onClick={() => handleTabChange("docs")}
         >
           Docs
         </button>
@@ -51,14 +97,18 @@ export function ComponentDocsExamples({
               ? "border-primary/20 bg-primary/10 text-primary"
               : "text-muted-foreground hover:bg-primary/5 hover:text-foreground border-transparent",
           )}
-          onClick={() => setActive("examples")}
+          onClick={() => handleTabChange("examples")}
         >
           Examples
         </button>
       </div>
 
       {/* Content area */}
-      <div className="relative min-h-0 flex-1">
+      <div
+        id="examples"
+        ref={contentRef}
+        className="relative min-h-0 flex-1 scroll-mt-16"
+      >
         {active === "docs" ? (
           <div className="z-0 min-h-0 flex-1 p-6 sm:p-10 lg:p-12">
             <div className="prose dark:prose-invert mx-auto max-w-3xl">
@@ -70,5 +120,13 @@ export function ComponentDocsExamples({
         )}
       </div>
     </div>
+  );
+}
+
+export function ComponentDocsExamples(props: ComponentDocsExamplesProps) {
+  return (
+    <Suspense fallback={<div className="bg-background scrollbar-subtle relative box-border flex h-full min-h-0 w-full flex-col overflow-auto overscroll-contain rounded-lg rounded-tl-lg border-t border-l" />}>
+      <ComponentDocsExamplesInner {...props} />
+    </Suspense>
   );
 }

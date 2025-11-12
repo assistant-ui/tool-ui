@@ -1,6 +1,7 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useState, useEffect } from "react";
+import { useSearchParams, usePathname, useRouter } from "next/navigation";
 import { ComponentPreviewShell } from "../component-preview-shell";
 import { PresetSelector } from "../../_components/preset-selector";
 import { CodePanel } from "../../_components/code-panel";
@@ -11,15 +12,49 @@ import {
 } from "@/lib/social-post-presets";
 
 export function SocialPostPreview({ withContainer = true }: { withContainer?: boolean }) {
-  const [currentPreset, setCurrentPreset] = useState<SocialPostPresetName>("x");
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  // Get preset from URL or use default
+  const presetParam = searchParams.get("preset");
+  const defaultPreset = "x";
+  const initialPreset: SocialPostPresetName =
+    presetParam && presetParam in socialPostPresets
+      ? (presetParam as SocialPostPresetName)
+      : defaultPreset;
+
+  const [currentPreset, setCurrentPreset] = useState<SocialPostPresetName>(initialPreset);
   const [isLoading, setIsLoading] = useState(false);
+
+  // Sync state when URL changes
+  useEffect(() => {
+    const presetParam = searchParams.get("preset");
+    if (
+      presetParam &&
+      presetParam in socialPostPresets &&
+      presetParam !== currentPreset
+    ) {
+      setCurrentPreset(presetParam as SocialPostPresetName);
+      setIsLoading(false);
+    }
+  }, [searchParams, currentPreset]);
 
   const currentConfig = socialPostPresets[currentPreset];
 
-  const handleSelectPreset = useCallback((preset: unknown) => {
-    setCurrentPreset(preset as SocialPostPresetName);
-    setIsLoading(false);
-  }, []);
+  const handleSelectPreset = useCallback(
+    (preset: unknown) => {
+      const presetName = preset as SocialPostPresetName;
+      setCurrentPreset(presetName);
+      setIsLoading(false);
+
+      // Update URL
+      const params = new URLSearchParams(searchParams.toString());
+      params.set("preset", presetName);
+      router.push(`${pathname}?${params.toString()}`, { scroll: false });
+    },
+    [router, pathname, searchParams]
+  );
 
   return (
     <ComponentPreviewShell

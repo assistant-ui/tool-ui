@@ -9,11 +9,30 @@ Get a chat rendering a Tool UI component in a couple minutes. We’ll return a s
 
 ## Prerequisites
 
-```sh
-npm install ai @ai-sdk/openai zod
-```
+<Tabs items={["pnpm", "npm", "yarn", "bun"]}>
+  <Tab>
+    ```sh
+    pnpm add ai @ai-sdk/openai zod
+    ```
+  </Tab>
+  <Tab>
+    ```sh
+    npm install ai @ai-sdk/openai zod
+    ```
+  </Tab>
+  <Tab>
+    ```sh
+    yarn add ai @ai-sdk/openai zod
+    ```
+  </Tab>
+  <Tab>
+    ```sh
+    bun add ai @ai-sdk/openai zod
+    ```
+  </Tab>
+</Tabs>
 
-Supply a model key. In this example we're using the Vercel AI SDK's OpenAI adapter.
+Make sure you have a model key. In this example we're using the Vercel AI SDK's OpenAI adapter.
 
 ```env
 OPENAI_API_KEY=sk-...

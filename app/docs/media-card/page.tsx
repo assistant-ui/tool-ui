@@ -5,7 +5,6 @@ import { MediaCardPreview } from "../[component]/previews/media-card-preview";
 export default function MediaCardDocsPage() {
   return (
     <ComponentDocsExamples
-      defaultTab="examples"
       docs={<Content />}
       examples={<MediaCardPreview withContainer={false} />}
     />

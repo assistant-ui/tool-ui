@@ -404,7 +404,6 @@ function AnimatedScene({
 }
 
 export function ChatShowcase() {
-  // Reduced motion preference
   const [reducedMotion, setReducedMotion] = useState(false);
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -414,7 +413,7 @@ export function ChatShowcase() {
     mq.addEventListener?.("change", onChange);
     return () => mq.removeEventListener?.("change", onChange);
   }, []);
-  // DataTable setup - Support Tickets
+
   const tableColumns: Column<SupportTicket>[] = useMemo(
     () => [
       { key: "id", label: "ID", sortable: true, priority: "primary" },
@@ -504,7 +503,6 @@ export function ChatShowcase() {
     );
   }, []);
 
-  // MediaCard setup - RSC Guide
   const mediaCard: SerializableMediaCard = useMemo(
     () => ({
       id: "rsc-guide",
@@ -534,7 +532,6 @@ export function ChatShowcase() {
     [],
   );
 
-  // SocialPost setup - Open Source Release
   const socialPost: SerializableSocialPost = useMemo(
     () => ({
       id: "x-draft-oss",
@@ -552,7 +549,6 @@ export function ChatShowcase() {
     [],
   );
 
-  // DecisionPrompt setup
   const decisionActions: DecisionPromptAction[] = useMemo(
     () => [
       { id: "cancel", label: "Discard", variant: "ghost" },
@@ -562,7 +558,6 @@ export function ChatShowcase() {
     [],
   );
 
-  // Scene configurations
   const sceneConfigs: SceneConfig[] = useMemo(
     () => [
       // Scene 1: Support Tickets / DataTable
@@ -642,7 +637,6 @@ export function ChatShowcase() {
     }, exitDuration);
   }, [reducedMotion]);
 
-  // Render
   return (
     <div className="relative flex h-full w-full flex-col overflow-hidden">
       <div

@@ -5,7 +5,6 @@ import { DecisionPromptPreview } from "../[component]/previews/decision-prompt-p
 export default function DecisionPromptDocsPage() {
   return (
     <ComponentDocsExamples
-      defaultTab="examples"
       docs={<Content />}
       examples={<DecisionPromptPreview withContainer={false} />}
     />
