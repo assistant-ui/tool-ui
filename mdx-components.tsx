@@ -9,9 +9,9 @@ import {
   Tab,
 } from "fumadocs-ui/components/tabs";
 import { TypeTable } from "fumadocs-ui/components/type-table";
+import { DynamicCodeBlock } from "fumadocs-ui/components/dynamic-codeblock";
 import * as React from "react";
 import { AutoLinkChildren, withAutoLink } from "@/lib/docs-autolink";
-import { FormattedCodeBlock } from "@/app/components/formatted-code-block";
 
 export function useMDXComponents(components: MDXComponents): MDXComponents {
   // Wrap selected default components to auto-link Tool UI mentions
@@ -62,7 +62,7 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
           "data-line-numbers-start": 1,
         };
 
-        return <FormattedCodeBlock code={code} lang={lang} attrs={attrs} />;
+        return <DynamicCodeBlock lang={lang} code={code} codeblock={attrs} />;
       }
 
       return React.createElement("pre", props);
