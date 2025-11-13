@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { DocsBorderedShell } from "@/app/docs/_components/docs-bordered-shell";
 import { DataTable } from "@/components/data-table";
 import { MediaCard } from "@/components/media-card";
 import { SocialPost } from "@/components/social-post";
@@ -16,9 +17,9 @@ import { ArrowRightIcon } from "lucide-react";
 
 export default function ComponentsGalleryPage() {
   return (
-    <div className="bg-background relative box-border flex h-full min-h-0 w-full flex-col overflow-hidden rounded-lg rounded-tl-lg border-t border-l">
-      <ZenField className="z-0 dark:opacity-10 dark:contrast-200" />
-      <div className="scrollbar-subtle z-10 min-h-0 flex-1 overflow-auto overscroll-contain p-6 sm:p-10 lg:p-12">
+    <DocsBorderedShell>
+      <ZenField className="z-0 dark:opacity-50 dark:contrast-200" />
+      <div className="scrollbar-subtle z-10 min-h-0 flex-1 overflow-y-auto overscroll-contain p-6 sm:p-10 lg:p-12">
         <div className="mx-auto columns-1 gap-5 pb-20 [column-fill:_balance] md:columns-2 2xl:columns-3 2xl:gap-5">
           <div className="mb-5 [column-span:all] 2xl:mb-5">
             <DataTable {...sampleStocks} />
@@ -79,6 +80,6 @@ export default function ComponentsGalleryPage() {
           </div>
         </div>
       </div>
-    </div>
+    </DocsBorderedShell>
   );
 }

@@ -3,7 +3,6 @@ import { Canvas, useFrame, useThree, extend } from "@react-three/fiber";
 import {
   Edges,
   MeshPortalMaterial,
-  Environment,
   Sky,
   RoundedBox,
   shaderMaterial,
@@ -1148,16 +1147,19 @@ const DEFAULT_CAMERA_X = 4;
 const DEFAULT_CAMERA_Y = 1;
 const DEFAULT_CAMERA_Z = 4;
 const DEFAULT_CAMERA_FOV = 50;
-const DEFAULT_ROTATION_SPEED = 3.4;
 const DEFAULT_PAUSE_DURATION = 2;
-const DEFAULT_INITIAL_ROTATION_X = 0;
-const DEFAULT_INITIAL_ROTATION_Y = 80;
-const DEFAULT_INITIAL_ROTATION_Z = 0;
+const DEFAULT_CROSSFADE_DURATION = 0.5;
+const DEFAULT_CUBE_ROTATION_X = 0;
+const DEFAULT_CUBE_ROTATION_Y = 80;
+const DEFAULT_CUBE_ROTATION_Z = 0;
 
 export const App = ({ cubeWidth: propCubeWidth }: { cubeWidth?: number }) => {
+  // Track when canvas is ready to prevent initial flash
+  const [isCanvasReady, setIsCanvasReady] = useState(false);
+
   // Scene Development Controls
   const sceneControls = useControls("Scene Development", {
-    locked: { value: false, label: "🔒 Lock Rotation" },
+    autoTransition: { value: true, label: "🔄 Auto Transition" },
     selectedScene: {
       value: "sun" as SceneType,
       options: [
@@ -1166,11 +1168,7 @@ export const App = ({ cubeWidth: propCubeWidth }: { cubeWidth?: number }) => {
         "dataTable",
         "masonryGallery",
       ] as SceneType[],
-      label: "Scene to View",
-    },
-    showAllFaces: {
-      value: false,
-      label: "Different Scenes Per Face",
+      label: "Selected Scene (manual mode)",
     },
   });
 
@@ -1448,28 +1446,42 @@ export const App = ({ cubeWidth: propCubeWidth }: { cubeWidth?: number }) => {
     { collapsed: sceneControls.selectedScene !== "masonryGallery" },
   );
 
-  // Rotation Controls
-  const rotationControls = useControls("Rotation", {
-    manualRotationY: {
-      value: DEFAULT_INITIAL_ROTATION_Y,
-      min: -180,
-      max: 180,
-      step: 5,
-      label: "Y Rotation (Front=80, Back=-100, Left=-10, Right=170)",
-    },
-    rotationSpeed: {
-      value: DEFAULT_ROTATION_SPEED,
-      min: 0.1,
-      max: 10,
-      step: 0.1,
-      label: "Auto Rotation Speed",
-    },
+  // Transition Controls
+  const transitionControls = useControls("Transition", {
     pauseDuration: {
       value: DEFAULT_PAUSE_DURATION,
       min: 0,
       max: 10,
       step: 0.1,
-      label: "Pause Between Rotations",
+      label: "Pause Between Transitions (sec)",
+    },
+    crossfadeDuration: {
+      value: DEFAULT_CROSSFADE_DURATION,
+      min: 0.1,
+      max: 2,
+      step: 0.1,
+      label: "Crossfade Duration (sec)",
+    },
+    cubeRotationX: {
+      value: DEFAULT_CUBE_ROTATION_X,
+      min: -180,
+      max: 180,
+      step: 5,
+      label: "Cube X Rotation",
+    },
+    cubeRotationY: {
+      value: DEFAULT_CUBE_ROTATION_Y,
+      min: -180,
+      max: 180,
+      step: 5,
+      label: "Cube Y Rotation",
+    },
+    cubeRotationZ: {
+      value: DEFAULT_CUBE_ROTATION_Z,
+      min: -180,
+      max: 180,
+      step: 5,
+      label: "Cube Z Rotation",
     },
   });
 
@@ -1659,29 +1671,11 @@ export const App = ({ cubeWidth: propCubeWidth }: { cubeWidth?: number }) => {
   // Advanced Controls
   const advancedControls = useControls("Advanced", {
     worldUnits: false,
-    initialRotationX: {
-      value: DEFAULT_INITIAL_ROTATION_X,
-      min: -180,
-      max: 180,
-      step: 1,
-    },
-    initialRotationY: {
-      value: DEFAULT_INITIAL_ROTATION_Y,
-      min: -180,
-      max: 180,
-      step: 1,
-    },
-    initialRotationZ: {
-      value: DEFAULT_INITIAL_ROTATION_Z,
-      min: -180,
-      max: 180,
-      step: 1,
-    },
   });
 
   const controls = {
     ...sceneControls,
-    ...rotationControls,
+    ...transitionControls,
     ...cameraControls,
     ...cubeControls,
     ...lightingControls,
@@ -1699,17 +1693,39 @@ export const App = ({ cubeWidth: propCubeWidth }: { cubeWidth?: number }) => {
   };
 
   return (
-    <div style={{ width: "200px", height: "200px" }}>
+    <div style={{ width: "200px", height: "200px", position: "relative" }}>
+      {/* Loading overlay - prevents flash during initialization */}
+      {!isCanvasReady && (
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            backgroundColor: "transparent",
+            zIndex: 10,
+          }}
+        />
+      )}
       <Canvas
         shadows
         camera={{
           position: [controls.cameraX, controls.cameraY, controls.cameraZ],
           fov: controls.fov,
         }}
-        style={{ width: "200px", height: "200px" }}
+        style={{
+          width: "200px",
+          height: "200px",
+          opacity: isCanvasReady ? 1 : 0,
+          transition: "opacity 0.3s ease-in-out",
+        }}
         dpr={[1, 2]}
         performance={{ min: 0.5 }}
         gl={{ antialias: false, alpha: true }}
+        onCreated={({ gl }) => {
+          // Set clear color to transparent immediately to prevent white flash
+          gl.setClearColor(0x000000, 0);
+          // Canvas is ready - fade it in after a brief delay to ensure first frame is rendered
+          setTimeout(() => setIsCanvasReady(true), 100);
+        }}
       >
         {/* Controllable scene lighting for glass cube */}
         <ambientLight intensity={controls.ambientIntensity} />
@@ -1751,15 +1767,13 @@ export const App = ({ cubeWidth: propCubeWidth }: { cubeWidth?: number }) => {
           cubeHeight={controls.cubeHeight}
           cubeDepth={controls.cubeDepth}
           roomDepth={controls.roomDepth}
-          rotationSpeed={controls.rotationSpeed}
           pauseDuration={controls.pauseDuration}
-          initialRotationX={controls.initialRotationX}
-          initialRotationY={controls.initialRotationY}
-          initialRotationZ={controls.initialRotationZ}
-          locked={controls.locked}
+          crossfadeDuration={controls.crossfadeDuration}
+          cubeRotationX={controls.cubeRotationX}
+          cubeRotationY={controls.cubeRotationY}
+          cubeRotationZ={controls.cubeRotationZ}
+          autoTransition={controls.autoTransition}
           selectedScene={controls.selectedScene}
-          manualRotationY={controls.manualRotationY}
-          showAllFaces={controls.showAllFaces}
           edgeRadius={controls.edgeRadius}
           edgeSmoothness={controls.edgeSmoothness}
           edgeThreshold={controls.edgeThreshold}
@@ -1804,15 +1818,13 @@ function RotatingCube({
   cubeHeight,
   cubeDepth,
   roomDepth,
-  rotationSpeed,
   pauseDuration,
-  initialRotationX,
-  initialRotationY,
-  initialRotationZ,
-  locked,
+  crossfadeDuration,
+  cubeRotationX,
+  cubeRotationY,
+  cubeRotationZ,
+  autoTransition,
   selectedScene,
-  manualRotationY,
-  showAllFaces,
   edgeRadius,
   edgeSmoothness,
   edgeThreshold,
@@ -1831,15 +1843,13 @@ function RotatingCube({
   cubeHeight: number;
   cubeDepth: number;
   roomDepth: number;
-  rotationSpeed: number;
   pauseDuration: number;
-  initialRotationX: number;
-  initialRotationY: number;
-  initialRotationZ: number;
-  locked: boolean;
+  crossfadeDuration: number;
+  cubeRotationX: number;
+  cubeRotationY: number;
+  cubeRotationZ: number;
+  autoTransition: boolean;
   selectedScene: SceneType;
-  manualRotationY: number;
-  showAllFaces: boolean;
   edgeRadius: number;
   edgeSmoothness: number;
   edgeThreshold: number;
@@ -1855,261 +1865,92 @@ function RotatingCube({
 }) {
   const cubeGroupRef = useRef<THREE.Group>(null);
 
-  // Helper function to calculate scene for each face based on rotation state
-  const getSceneForFace = (
-    faceId: "front" | "back" | "left" | "right",
-    rotationCount: number,
-    currentSceneIndex: number,
-  ): SceneType => {
-    const isEvenRotation = rotationCount % 2 === 0;
+  // Transition state: tracks current scene, next scene, and opacity for crossfade
+  const [currentScene, setCurrentScene] = useState<SceneType>(SCENE_TYPES[0]);
+  const [nextScene, setNextScene] = useState<SceneType | null>(null);
+  const [crossfadeOpacity, setCrossfadeOpacity] = useState(0); // 0 = current scene fully visible, 1 = next scene fully visible
 
-    if (isEvenRotation) {
-      // Even rotations: Front+Left show current scene, Back+Right show next scene
-      if (faceId === "front" || faceId === "left") {
-        return SCENE_TYPES[currentSceneIndex];
-      } else {
-        return SCENE_TYPES[(currentSceneIndex + 1) % SCENE_TYPES.length];
-      }
-    } else {
-      // Odd rotations: Back+Right show current scene, Front+Left show next scene
-      if (faceId === "back" || faceId === "right") {
-        return SCENE_TYPES[currentSceneIndex];
-      } else {
-        return SCENE_TYPES[(currentSceneIndex + 1) % SCENE_TYPES.length];
-      }
-    }
-  };
-
-  // State to track scene type for each face
-  const [faceScenes, setFaceScenes] = useState<{
-    front: SceneType;
-    back: SceneType;
-    left: SceneType;
-    right: SceneType;
-    top: SceneType;
-    bottom: SceneType;
-  }>(() => {
-    const firstScene = SCENE_TYPES[0];
-    return {
-      // Start with first scene on all faces
-      // The rotation logic will update hidden faces before each rotation
-      front: firstScene,
-      back: firstScene,
-      left: firstScene,
-      right: firstScene,
-      top: firstScene,
-      bottom: firstScene,
-    };
+  const transitionStateRef = useRef({
+    pauseTimer: DEFAULT_PAUSE_DURATION, // Start with initial pause to show first scene
+    isTransitioning: false,
+    transitionTimer: 0,
+    currentSceneIndex: 0,
   });
 
-  // Update face scenes when selectedScene changes (if locked and not showing all faces)
+  // Calculate rotation in radians for direct application
+  const cubeRotationRad = useMemo(
+    () =>
+      [
+        THREE.MathUtils.degToRad(cubeRotationX),
+        THREE.MathUtils.degToRad(cubeRotationY),
+        THREE.MathUtils.degToRad(cubeRotationZ),
+      ] as [number, number, number],
+    [cubeRotationX, cubeRotationY, cubeRotationZ],
+  );
+
+  // Handle manual scene selection (when autoTransition is off)
   useEffect(() => {
-    if (locked && !showAllFaces) {
-      setFaceScenes({
-        front: selectedScene,
-        back: selectedScene,
-        left: selectedScene,
-        right: selectedScene,
-        top: selectedScene,
-        bottom: selectedScene,
-      });
+    if (!autoTransition) {
+      setCurrentScene(selectedScene);
+      setNextScene(null);
+      setCrossfadeOpacity(0);
+      transitionStateRef.current.isTransitioning = false;
     }
-  }, [selectedScene, showAllFaces, locked]);
+  }, [selectedScene, autoTransition]);
 
-  // Convert degrees to radians for initial rotation
-  const initialRotationRadX = THREE.MathUtils.degToRad(initialRotationX);
-  const initialRotationRadY = THREE.MathUtils.degToRad(initialRotationY);
-  const initialRotationRadZ = THREE.MathUtils.degToRad(initialRotationZ);
-
-  const rotationStateRef = useRef({
-    targetRotation: new THREE.Euler(
-      initialRotationRadX,
-      initialRotationRadY,
-      initialRotationRadZ,
-    ),
-    currentRotation: new THREE.Euler(
-      initialRotationRadX,
-      initialRotationRadY,
-      initialRotationRadZ,
-    ),
-    isRotating: false,
-    rotationCount: 0,
-    pauseTimer: 0,
-    pauseDuration: pauseDuration,
-    currentSceneIndex: 0, // Tracks which scene is currently visible to camera
-  });
-
-  // Update pause duration when it changes
-  useEffect(() => {
-    rotationStateRef.current.pauseDuration = pauseDuration;
-  }, [pauseDuration]);
-
-  // Update initial rotation when controls change (only if not currently rotating)
-  useEffect(() => {
-    const initialRotationRadX = THREE.MathUtils.degToRad(initialRotationX);
-    const initialRotationRadY = THREE.MathUtils.degToRad(initialRotationY);
-    const initialRotationRadZ = THREE.MathUtils.degToRad(initialRotationZ);
-
-    if (!rotationStateRef.current.isRotating) {
-      rotationStateRef.current.currentRotation.set(
-        initialRotationRadX,
-        initialRotationRadY,
-        initialRotationRadZ,
-      );
-      rotationStateRef.current.targetRotation.set(
-        initialRotationRadX,
-        initialRotationRadY,
-        initialRotationRadZ,
-      );
-      if (cubeGroupRef.current) {
-        cubeGroupRef.current.rotation.copy(
-          rotationStateRef.current.currentRotation,
-        );
-      }
-    }
-  }, [initialRotationX, initialRotationY, initialRotationZ]);
-
+  // Animation loop for auto-transition and crossfade
   useFrame((_, delta) => {
-    if (!cubeGroupRef.current) return;
+    if (!autoTransition) return;
 
-    const rotationState = rotationStateRef.current;
-
-    // Cap delta to prevent large jumps when page returns from background
-    // Max 100ms (0.1s) per frame to prevent accumulated rotations
+    const transitionState = transitionStateRef.current;
     const cappedDelta = Math.min(delta, 0.1);
 
-    // If locked, use manual rotation
-    if (locked) {
-      const manualRotationRadY = THREE.MathUtils.degToRad(manualRotationY);
-      cubeGroupRef.current.rotation.set(
-        rotationState.currentRotation.x,
-        manualRotationRadY,
-        rotationState.currentRotation.z,
-      );
-      return;
-    }
-
     // If we're paused, wait
-    if (rotationState.pauseTimer > 0) {
-      rotationState.pauseTimer -= cappedDelta;
+    if (transitionState.pauseTimer > 0) {
+      transitionState.pauseTimer -= cappedDelta;
       return;
     }
 
-    // If we're not rotating, start a new rotation
-    if (!rotationState.isRotating) {
-      // FIRST: Update scenes for the next cycle BEFORE starting rotation
+    // If we're not transitioning, start a new transition
+    if (!transitionState.isTransitioning) {
       // Advance to next scene
-      rotationState.currentSceneIndex =
-        (rotationState.currentSceneIndex + 1) % SCENE_TYPES.length;
-      const nextScene = SCENE_TYPES[rotationState.currentSceneIndex];
+      transitionState.currentSceneIndex =
+        (transitionState.currentSceneIndex + 1) % SCENE_TYPES.length;
+      const newNextScene = SCENE_TYPES[transitionState.currentSceneIndex];
 
-      // Update face scenes based on current mode
-      // This happens BEFORE rotation starts, so the hidden faces get new scenes
-      if (showAllFaces) {
-        // Different scenes per face - use complex logic
-        rotationState.rotationCount++;
-        setFaceScenes({
-          front: getSceneForFace(
-            "front",
-            rotationState.rotationCount,
-            rotationState.currentSceneIndex,
-          ),
-          back: getSceneForFace(
-            "back",
-            rotationState.rotationCount,
-            rotationState.currentSceneIndex,
-          ),
-          left: getSceneForFace(
-            "left",
-            rotationState.rotationCount,
-            rotationState.currentSceneIndex,
-          ),
-          right: getSceneForFace(
-            "right",
-            rotationState.rotationCount,
-            rotationState.currentSceneIndex,
-          ),
-          top: SCENE_TYPES[rotationState.currentSceneIndex],
-          bottom: SCENE_TYPES[rotationState.currentSceneIndex],
-        });
-      } else {
-        // Cycle through scenes by alternating which face gets updated
-        // We rotate 180° each time, so we alternate between viewing front and back
-        // - Even rotationCount: viewing front, will rotate to back, so update back + sides
-        // - Odd rotationCount: viewing back, will rotate to front, so update front + sides
-        const isEvenRotation = rotationState.rotationCount % 2 === 0;
+      setNextScene(newNextScene);
+      transitionState.isTransitioning = true;
+      transitionState.transitionTimer = 0;
+    }
 
-        if (isEvenRotation) {
-          // Update back face with the next scene (will be visible after 180° rotation)
-          // Only update the main face to reduce simultaneous scene mounting
-          setFaceScenes((prev) => ({
-            ...prev,
-            back: nextScene,
-            // Keep sides on current scene to avoid creating 5 instances at once
-            // left: nextScene,
-            // right: nextScene,
-            // top: nextScene,
-            // bottom: nextScene,
-          }));
-        } else {
-          // Update front face with the next scene (will be visible after 180° rotation)
-          // Only update the main face to reduce simultaneous scene mounting
-          setFaceScenes((prev) => ({
-            ...prev,
-            front: nextScene,
-            // Keep sides on current scene to avoid creating 5 instances at once
-            // left: nextScene,
-            // right: nextScene,
-            // top: nextScene,
-            // bottom: nextScene,
-          }));
-        }
-
-        rotationState.rotationCount++;
-      }
-
-      // THEN: Start the rotation
-      rotationState.isRotating = true;
-
-      // Rotate only on Y axis (horizontal rotation)
-      const current = rotationState.currentRotation;
-
-      rotationState.targetRotation.set(
-        current.x,
-        current.y + Math.PI, // 180 degrees rotation
-        current.z,
+    // Animate the crossfade
+    if (transitionState.isTransitioning) {
+      transitionState.transitionTimer += cappedDelta;
+      const progress = Math.min(
+        transitionState.transitionTimer / crossfadeDuration,
+        1,
       );
+
+      setCrossfadeOpacity(progress);
+
+      // Check if transition is complete
+      if (progress >= 1) {
+        // Transition complete - swap scenes
+        if (nextScene) {
+          setCurrentScene(nextScene);
+        }
+        setNextScene(null);
+        setCrossfadeOpacity(0);
+        transitionState.isTransitioning = false;
+
+        // Pause before next transition
+        transitionState.pauseTimer = pauseDuration;
+      }
     }
-
-    // Smoothly rotate towards target
-    const current = rotationState.currentRotation;
-    const target = rotationState.targetRotation;
-    const speed = rotationSpeed;
-
-    current.x = THREE.MathUtils.lerp(current.x, target.x, cappedDelta * speed);
-    current.y = THREE.MathUtils.lerp(current.y, target.y, cappedDelta * speed);
-    current.z = THREE.MathUtils.lerp(current.z, target.z, cappedDelta * speed);
-
-    // Check if we've reached the target (within a small threshold)
-    const threshold = 0.01;
-    if (
-      Math.abs(current.x - target.x) < threshold &&
-      Math.abs(current.y - target.y) < threshold &&
-      Math.abs(current.z - target.z) < threshold
-    ) {
-      // Rotation completed - snap to exact target
-      rotationState.currentRotation.copy(target);
-      rotationState.isRotating = false;
-
-      // Pause before next rotation
-      rotationState.pauseTimer = rotationState.pauseDuration;
-    }
-
-    cubeGroupRef.current.rotation.copy(rotationState.currentRotation);
   });
 
   return (
-    <group ref={cubeGroupRef}>
+    <group ref={cubeGroupRef} rotation={cubeRotationRad}>
       {/* Rounded glass-like cube with beveled edges */}
       <RoundedBox
         args={[
@@ -2137,16 +1978,18 @@ function RotatingCube({
       </RoundedBox>
 
       {/* Each face is a separate plane mesh with its own portal */}
+      {/* All faces show the same scene with crossfade */}
       {/* Front face (positive Z) */}
       <Side
         position={[0, 0, cubeDepth / 2 + PLANE_OFFSET]}
         rotation={[0, 0, 0]}
-        bg="orange"
         worldUnits={worldUnits}
         faceWidth={cubeWidth}
         faceHeight={cubeHeight}
         roomDepth={roomDepth}
-        sceneType={faceScenes.front}
+        currentScene={currentScene}
+        nextScene={nextScene}
+        crossfadeOpacity={crossfadeOpacity}
         sceneParams={sceneParams}
       />
 
@@ -2154,12 +1997,13 @@ function RotatingCube({
       <Side
         position={[0, 0, -cubeDepth / 2 - PLANE_OFFSET]}
         rotation={[0, Math.PI, 0]}
-        bg="lightblue"
         worldUnits={worldUnits}
         faceWidth={cubeWidth}
         faceHeight={cubeHeight}
         roomDepth={roomDepth}
-        sceneType={faceScenes.back}
+        currentScene={currentScene}
+        nextScene={nextScene}
+        crossfadeOpacity={crossfadeOpacity}
         sceneParams={sceneParams}
       />
 
@@ -2167,12 +2011,13 @@ function RotatingCube({
       <Side
         position={[cubeWidth / 2 + PLANE_OFFSET, 0, 0]}
         rotation={[0, Math.PI / 2, 0]}
-        bg="lightgreen"
         worldUnits={worldUnits}
         faceWidth={cubeDepth}
         faceHeight={cubeHeight}
         roomDepth={roomDepth}
-        sceneType={faceScenes.right}
+        currentScene={currentScene}
+        nextScene={nextScene}
+        crossfadeOpacity={crossfadeOpacity}
         sceneParams={sceneParams}
       />
 
@@ -2180,12 +2025,13 @@ function RotatingCube({
       <Side
         position={[-cubeWidth / 2 - PLANE_OFFSET, 0, 0]}
         rotation={[0, -Math.PI / 2, 0]}
-        bg="aquamarine"
         worldUnits={worldUnits}
         faceWidth={cubeDepth}
         faceHeight={cubeHeight}
         roomDepth={roomDepth}
-        sceneType={faceScenes.left}
+        currentScene={currentScene}
+        nextScene={nextScene}
+        crossfadeOpacity={crossfadeOpacity}
         sceneParams={sceneParams}
       />
 
@@ -2193,12 +2039,13 @@ function RotatingCube({
       <Side
         position={[0, cubeHeight / 2 + PLANE_OFFSET, 0]}
         rotation={[-Math.PI / 2, 0, 0]}
-        bg="indianred"
         worldUnits={worldUnits}
         faceWidth={cubeWidth}
         faceHeight={cubeDepth}
         roomDepth={roomDepth}
-        sceneType={faceScenes.top}
+        currentScene={currentScene}
+        nextScene={nextScene}
+        crossfadeOpacity={crossfadeOpacity}
         sceneParams={sceneParams}
       />
 
@@ -2206,12 +2053,13 @@ function RotatingCube({
       <Side
         position={[0, -cubeHeight / 2 - PLANE_OFFSET, 0]}
         rotation={[Math.PI / 2, 0, 0]}
-        bg="hotpink"
         worldUnits={worldUnits}
         faceWidth={cubeWidth}
         faceHeight={cubeDepth}
         roomDepth={roomDepth}
-        sceneType={faceScenes.bottom}
+        currentScene={currentScene}
+        nextScene={nextScene}
+        crossfadeOpacity={crossfadeOpacity}
         sceneParams={sceneParams}
       />
     </group>
@@ -2221,161 +2069,69 @@ function RotatingCube({
 function Side({
   position = [0, 0, 0],
   rotation = [0, 0, 0],
-  bg = "#f0f0f0",
   worldUnits = false,
   faceWidth,
   faceHeight,
   roomDepth,
-  sceneType,
+  currentScene,
+  nextScene,
+  crossfadeOpacity,
   sceneParams,
 }: {
   position?: [number, number, number];
   rotation?: [number, number, number];
-  bg?: string;
   worldUnits?: boolean;
   faceWidth: number;
   faceHeight: number;
   roomDepth: number;
-  sceneType: SceneType;
+  currentScene: SceneType;
+  nextScene: SceneType | null;
+  crossfadeOpacity: number;
   sceneParams: AllSceneParams;
 }) {
   const mesh = useRef<THREE.Mesh>(null);
-  const portalGroup = useRef<THREE.Group>(null);
 
-  // Determine if this is a scenic scene (doesn't need room structure)
-  const isScenicScene =
-    sceneType === "sun" ||
-    sceneType === "barGraph" ||
-    sceneType === "dataTable" ||
-    sceneType === "masonryGallery";
+  // Determine which scene to show based on crossfade progress
+  // For a quick crossfade: show current scene until halfway, then switch to next
+  const displayScene =
+    nextScene && crossfadeOpacity > 0.5 ? nextScene : currentScene;
 
-  useFrame((_, delta) => {
-    if (mesh.current && !isScenicScene) {
-      // Only rotate geometry scenes, not scenic scenes
-      mesh.current.rotation.x += delta;
-      mesh.current.rotation.y += delta;
-    }
-  });
+  // Calculate fade overlay opacity for smooth transition
+  // Fade out in first half, fade in during second half
+  const overlayOpacity =
+    nextScene && crossfadeOpacity > 0
+      ? crossfadeOpacity <= 0.5
+        ? crossfadeOpacity * 2 // Fade to black (0 to 1)
+        : (1 - crossfadeOpacity) * 2 // Fade from black (1 to 0)
+      : 0;
 
   return (
     <mesh ref={mesh} position={position} rotation={rotation} renderOrder={0}>
       <planeGeometry args={[faceWidth * 1.001, faceHeight * 1.001]} />
       <MeshPortalMaterial worldUnits={worldUnits} blur={0} resolution={128}>
         {/** Everything in here is inside the portal and isolated from the canvas */}
-        {!isScenicScene && <ambientLight intensity={0.5} />}
-        {!isScenicScene && <Environment preset="city" />}
 
-        {isScenicScene ? (
-          // Render scenic scene directly (no room structure)
-          renderSceneContent(
-            sceneType,
-            faceWidth,
-            faceHeight,
-            roomDepth,
-            sceneParams,
-          )
-        ) : (
-          // Render room structure for geometry scenes
-          <>
-            {/** Room walls - create a box room looking inward */}
-            <group ref={portalGroup}>
-              {/* Back wall (far end of room) */}
-              <mesh position={[0, 0, -roomDepth]} rotation={[0, 0, 0]}>
-                <planeGeometry args={[faceWidth * 2, faceHeight * 2]} />
-                <meshStandardMaterial
-                  color={bg}
-                  roughness={0.8}
-                  metalness={0.1}
-                  side={THREE.DoubleSide}
-                />
-              </mesh>
+        {/* Render the active scene */}
+        {renderSceneContent(
+          displayScene,
+          faceWidth,
+          faceHeight,
+          roomDepth,
+          sceneParams,
+        )}
 
-              {/* Floor */}
-              <mesh
-                position={[0, -faceHeight, -roomDepth / 2]}
-                rotation={[-Math.PI / 2, 0, 0]}
-              >
-                <planeGeometry args={[faceWidth * 2, roomDepth]} />
-                <meshStandardMaterial
-                  color={bg}
-                  roughness={0.8}
-                  metalness={0.1}
-                  side={THREE.DoubleSide}
-                />
-              </mesh>
-
-              {/* Ceiling */}
-              <mesh
-                position={[0, faceHeight, -roomDepth / 2]}
-                rotation={[Math.PI / 2, 0, 0]}
-              >
-                <planeGeometry args={[faceWidth * 2, roomDepth]} />
-                <meshStandardMaterial
-                  color={bg}
-                  roughness={0.8}
-                  metalness={0.1}
-                  side={THREE.DoubleSide}
-                />
-              </mesh>
-
-              {/* Left wall */}
-              <mesh
-                position={[-faceWidth, 0, -roomDepth / 2]}
-                rotation={[0, Math.PI / 2, 0]}
-              >
-                <planeGeometry args={[roomDepth, faceHeight * 2]} />
-                <meshStandardMaterial
-                  color={bg}
-                  roughness={0.8}
-                  metalness={0.1}
-                  side={THREE.DoubleSide}
-                />
-              </mesh>
-
-              {/* Right wall */}
-              <mesh
-                position={[faceWidth, 0, -roomDepth / 2]}
-                rotation={[0, -Math.PI / 2, 0]}
-              >
-                <planeGeometry args={[roomDepth, faceHeight * 2]} />
-                <meshStandardMaterial
-                  color={bg}
-                  roughness={0.8}
-                  metalness={0.1}
-                  side={THREE.DoubleSide}
-                />
-              </mesh>
-
-              {/* Lighting - positioned at the front of the room */}
-              <spotLight
-                castShadow
-                color={bg}
-                intensity={2}
-                position={[0, faceHeight * 0.7, -0.5]}
-                angle={0.8}
-                penumbra={1}
-                shadow-normalBias={0.05}
-                shadow-bias={0.0001}
-              />
-
-              {/* The main shape - positioned in the center of the room */}
-              <mesh
-                castShadow
-                receiveShadow
-                ref={mesh}
-                position={[0, 0, -roomDepth * 0.6]}
-              >
-                {renderSceneContent(
-                  sceneType,
-                  faceWidth,
-                  faceHeight,
-                  roomDepth,
-                  sceneParams,
-                )}
-                <meshLambertMaterial color={bg} />
-              </mesh>
-            </group>
-          </>
+        {/* Fade overlay for smooth transitions */}
+        {overlayOpacity > 0 && (
+          <mesh position={[0, 0, 1]} renderOrder={1000}>
+            <planeGeometry args={[faceWidth * 10, faceHeight * 10]} />
+            <meshBasicMaterial
+              color="#000000"
+              transparent
+              opacity={overlayOpacity}
+              depthTest={false}
+              depthWrite={false}
+            />
+          </mesh>
         )}
       </MeshPortalMaterial>
     </mesh>

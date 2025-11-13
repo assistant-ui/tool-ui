@@ -43,7 +43,10 @@ function ComponentDocsExamplesInner({
       typeof window !== "undefined" &&
       window.location.hash === "#examples"
     ) {
-      contentRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+      contentRef.current?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
     }
   }, [active]);
 
@@ -63,7 +66,7 @@ function ComponentDocsExamplesInner({
   };
 
   return (
-    <div className="bg-background scrollbar-subtle relative box-border flex h-full min-h-0 w-full flex-col overflow-auto overscroll-contain rounded-lg rounded-tl-lg border-t border-l">
+    <div className="bg-background scrollbar-subtle relative box-border flex h-full min-h-0 w-full flex-col overflow-auto overscroll-contain rounded-tl-lg border-t border-l">
       {/* Sticky tablist */}
       <div
         className={cn(
@@ -125,7 +128,11 @@ function ComponentDocsExamplesInner({
 
 export function ComponentDocsExamples(props: ComponentDocsExamplesProps) {
   return (
-    <Suspense fallback={<div className="bg-background scrollbar-subtle relative box-border flex h-full min-h-0 w-full flex-col overflow-auto overscroll-contain rounded-lg rounded-tl-lg border-t border-l" />}>
+    <Suspense
+      fallback={
+        <div className="bg-background scrollbar-subtle relative box-border flex h-full min-h-0 w-full flex-col overflow-auto overscroll-contain rounded-tl-lg border-t border-l" />
+      }
+    >
       <ComponentDocsExamplesInner {...props} />
     </Suspense>
   );
