@@ -25,7 +25,7 @@ export function DocsNav() {
 
   const buildLinkClasses = (isActive: boolean) =>
     cn(
-      "flex items-center gap-3 rounded-lg px-4 hover:bg-primary/5  bg-background active:bg-primary/10 py-2 text-sm transition-[colors,background] duration-75",
+      "flex items-center gap-2 rounded-lg px-4 hover:bg-primary/5 bg-background active:bg-primary/10 py-2 text-sm transition-[colors,background] duration-75",
       {
         "justify-center px-0": collapsed,
         "text-primary bg-primary/5": isActive,
@@ -51,16 +51,16 @@ export function DocsNav() {
             className={buildLinkClasses(isGalleryActive)}
             title={collapsed ? "Gallery" : undefined}
           >
-            <LayoutDashboardIcon
-              className={cn("text-muted-foreground size-4 shrink-0", {
-                "text-primary": isGalleryActive,
-              })}
-            />
             {!collapsed && (
               <div className="flex flex-col overflow-hidden">
                 <span className="truncate">Gallery</span>
               </div>
             )}
+            <LayoutDashboardIcon
+              className={cn("text-muted-foreground size-4 shrink-0", {
+                "text-primary": isGalleryActive,
+              })}
+            />
           </Link>
         </div>
 

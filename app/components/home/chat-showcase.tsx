@@ -46,9 +46,9 @@ function ChatBubble({ role, children, className }: BubbleProps) {
         className={cn(
           "relative max-w-[min(720px,100%)]",
           // Text styling
-          "text-lg leading-relaxed",
+          "text-2xl leading-relaxed",
           // User messages: iMessage blue bubble
-          isUser && "rounded-full bg-[#007AFF] text-white",
+          isUser && "rounded-full bg-[#007AFF] text-white dark:bg-[#002b90]",
           // Assistant messages: no bubble, just content
           !isUser && "text-foreground",
           // padding varies: text vs embedded UI
