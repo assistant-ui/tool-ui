@@ -1,11 +1,7 @@
 .MobileNavSheet-trigger {
   position: fixed;
-  /* Older iOS fallback */
-  right: calc(1rem + constant(safe-area-inset-right));
-  bottom: calc(1rem + constant(safe-area-inset-bottom));
-  /* Modern: account for safe areas and viewport offset */
   right: calc(1rem + env(safe-area-inset-right, 0px));
-  bottom: calc(1rem + max(env(safe-area-inset-bottom, 0px), var(--overlay-offset)));
+  bottom: calc(1rem + env(safe-area-inset-bottom, 0px));
 }
 
 .MobileNavSheet-view {

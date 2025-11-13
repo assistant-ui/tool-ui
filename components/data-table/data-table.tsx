@@ -5,8 +5,6 @@ import { cn } from "./_cn";
 import { sortData } from "./utilities";
 import { Table, TableBody, TableRow, TableCell } from "./_ui";
 import type {
-  Column,
-  Action,
   DataTableProps,
   DataTableContextValue,
   RowData,

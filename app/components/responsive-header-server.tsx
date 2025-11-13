@@ -24,10 +24,12 @@ export function ResponsiveHeader({ rightContent }: ResponsiveHeaderProps) {
   ];
 
   return (
-    <div className="flex gap-4 pt-8 pb-3 md:gap-8">
-      <div className="flex w-fit shrink-0 items-center justify-start gap-3">
+    <div className="flex gap-4 pt-[calc(env(safe-area-inset-top)+0.5rem)] pb-3 md:gap-8 md:pt-8">
+      <div className="flex w-fit shrink-0 items-end justify-start gap-3 md:items-center">
         <Link href="/">
-          <h1 className="text-xl font-semibold tracking-wide">Tool UI</h1>
+          <h1 className="-mb-1 text-xl font-semibold tracking-wide md:mb-0">
+            Tool UI
+          </h1>
         </Link>
         <Badge
           variant="outline"
