@@ -4,16 +4,19 @@ import { DocsHeader } from "../_components/docs-header";
 
 Deep‑dive topics for stronger typing and larger integrations.
 
-## Typed Tools in the UI
+---
 
-With `InferUITools` in AI SDK 5, you can Infer tool input/output types from your tool set to get fully typed `message.parts` in the UI.
+## Tool type inference
 
-- [See InferUITools docs]((https://ai-sdk.dev/docs/reference/ai-sdk-ui/infer-ui-tools))
+With `InferUITools` in AI SDK 5, you can infer tool input/output types from your tool set and get fully typed `message.parts` in the UI.
+
+- [InferUITools reference](https://ai-sdk.dev/docs/reference/ai-sdk-ui/infer-ui-tools)
 
 <Steps>
+
 <Step>
 
-### Share your tools
+### Define tools with output schemas
 
 ```ts title="lib/tools.ts"
 import { tool } from 'ai';
@@ -25,15 +28,16 @@ export const tools = {
     description: 'Return a simple link preview',
     inputSchema: z.object({ url: z.string().url() }),
     outputSchema: serializableMediaCardSchema,
-        async execute({ url }) {
-          return {
-            id: 'link-1',
-            kind: 'link',
-            href: url,
-            title: 'React — Server Components',
-            thumb: 'https://images.unsplash.com/photo-1633356122544-f134324a6cee?auto=format&fit=crop&q=80&w=1200',
-          };
-        },
+    async execute({ url }) {
+      return {
+        id: 'link-1',
+        kind: 'link',
+        href: url,
+        title: 'React — Server Components',
+        thumb:
+          'https://images.unsplash.com/photo-1633356122544-f134324a6cee?auto=format&fit=crop&q=80&w=1200',
+      };
+    },
   }),
 } as const;
 
@@ -43,29 +47,45 @@ export type Tools = typeof tools;
 
 </Step>
 
+
 <Step>
 
-### Use on the server
 
-```ts title="app/api/chat/route.ts"
+### Use tools on the server
+
+```ts
+import { streamText, convertToModelMessages } from 'ai';
+import { openai } from '@ai-sdk/openai';
 import { tools } from '@/lib/tools';
 
-const result = streamText({
-  model: openai('gpt-4o'),
-  messages: convertToModelMessages(messages),
-  tools,
-});
+export async function POST(req: Request) {
+  const { messages } = await req.json();
+
+  const result = streamText({
+    model: openai('gpt-4o'),
+    messages: convertToModelMessages(messages),
+    tools,
+  });
+
+  return result.toUIMessageStreamResponse();
+}
 ```
 
 </Step>
 
+
 <Step>
 
-### Use in the UI
 
-```tsx title="app/page.tsx"
+### Infer UI-level types in the client
+
+```tsx
+'use client';
+
+import { useChat } from '@ai-sdk/react';
 import { InferUITools } from 'ai';
 import type { Tools } from '@/lib/tools';
+import { MediaCard, parseSerializableMediaCard } from '@/components/media-card';
 
 type MyUITools = InferUITools<Tools>;
 
@@ -79,7 +99,8 @@ export default function Chat() {
           {m.parts.map((part, i) => {
             // Fully typed: 'tool-previewLink' with correct output shape
             if (part.type === 'tool-previewLink' && part.state === 'output-available') {
-              return <MediaCard key={i} {...part.output} />;
+              const card = parseSerializableMediaCard(part.output);
+              return <MediaCard key={i} {...card} />;
             }
             return null;
           })}
@@ -92,9 +113,22 @@ export default function Chat() {
 
 </Step>
 
+
 </Steps>
 
+
+
+
 ## Tips
-- Keep runtime boundaries clean: import only types from `ai/tools.ts` on the client.
-- For single tools, `InferUITool` works the same way.
-- Use `outputSchema` for end‑to‑end validation.
+- **Keep runtime boundaries clean**  
+  Export only types from `lib/tools.ts` to the client; never import server code into the browser.
+- **Single-tool helpers**  
+  For a single tool, `InferUITool` works the same way as `InferUITools` but for one tool definition.
+- **End-to-end validation**  
+  Use the component’s `outputSchema` on the server and `parseSerializableX` on the client to validate at both ends.
+- **Lifecycle-aware rendering**  
+  Use `part.state` to respect the Tool UI lifecycle from UI Guidelines￼:  
+  - `state === 'invocation'` → show intent / shell  
+  - `state === 'output-pending'` → show skeleton / loading shell  
+  - `state === 'output-available'` → render the full component  
+  - `state === 'errored'` → show an error surface instead of silently failing

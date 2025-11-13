@@ -7,7 +7,7 @@ export default function SocialPostDocsPage() {
     <ComponentDocsExamples
       docs={<Content />}
       examples={<SocialPostPreview withContainer={false} />}
+      defaultTab="docs"
     />
   );
 }
-

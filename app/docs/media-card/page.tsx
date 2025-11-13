@@ -7,7 +7,7 @@ export default function MediaCardDocsPage() {
     <ComponentDocsExamples
       docs={<Content />}
       examples={<MediaCardPreview withContainer={false} />}
+      defaultTab="docs"
     />
   );
 }
-

@@ -2,112 +2,242 @@ import { DocsHeader } from "../_components/docs-header";
 
 <DocsHeader title="UI Guidelines" />
 
-Design principles and interaction patterns for building consistent, accessible tool UIs in chat interfaces.
+Design principles and interaction patterns for Tool UIs. These guidelines are intentionally compact. As we add more Tool UIs and see real usage, we can expand them with examples and patterns.
 
-## Core Principles
+## 1. Core principles
 
-### Single intent
+### One move per surface
 
-Each component has one clear purpose. Data Table shows structured data, Media Card previews content, Decision Prompt captures choices.
+Each Tool UI supports a single move in the conversation: show data, capture a decision, adjust parameters, or show state.
 
-### Glanceable
+If a surface needs to do more than one of those, split it into multiple Tool UIs.
 
-Users parse the UI in ~3 seconds. Copy stays tight, scannable, and contextual—don't repeat what the assistant already said.
+### Inline, not destination
 
-### Minimal chrome
+Tool UIs live inside messages. They support the current turn rather than becoming a place users “go”.
 
-The conversation is the primary surface. Components use subtle borders, balanced spacing, and stay out of the way.
+Avoid flows that require leaving the conversation or losing message context.
 
-### Accessible by default
+### Assistant-anchored
 
-AA contrast, keyboard navigation, screen reader labels, and reduced-motion support are non-negotiable.
+The assistant introduces, interprets, and follows up on every Tool UI.
 
-### Clear affordances
+The UI shows structure and affordances; the assistant explains why it appeared, what it means, and what to do next.
 
-Primary actions are obvious, feedback is immediate (≤100ms press, ≤150ms spinner), and completed actions show receipts.
+### Schema-driven
 
+Tool UIs render from structured tool outputs that match a published schema.
 
-## Interaction Patterns
+The schema is the contract; the UI is an expression of it. Components should not assume bespoke JSON shapes per use case; they should rely on the published schema only.
 
-### Actions
+### Receipts for anything that acts
 
-#### Server-first by default
+Any Tool UI that can trigger a side effect (send, delete, spend, apply a diff, call external APIs) must leave behind a clear receipt in the transcript:
 
-Components fire typed actions to your server via `onAction` callbacks. Client handlers are optional for optimistic updates or native integrations. Tool UI doesn't include an action bus—you wire the routing.
-
-#### Loading states
-
-- `auto` (default): Sensible scope based on action type
-- `self`: Only the control shows busy/disabled
-- `container`: Veil the entire card and make it inert
-- `none`: Custom loading visuals in your app
-
-#### Optimistic updates
-
-Update immediately, reconcile on server acknowledgment. On failure, roll back with a short inline error message.
-
-#### Destructive actions
-
-Two-stage confirmation with explicit labels ("Delete 12 files") and timeout to reset.
-
-### Forms & Input
-
-#### Inline widgets only
-
-Simple fields with basic native validation. For complex validation, handle it in your app surface and return a summary card to the chat.
-
-### Motion & Feedback
-
-#### Response timing
-
-- Press feedback: ≤100ms
-- Spinner: ≤150ms
-- Skeleton: ≥300ms (don't flash skeletons for fast responses)
-
-#### Transitions
-
-- Keep under 200–250ms
-- Respect `prefers-reduced-motion`
-- Use subtle morph/fade on refresh
-- Avoid layout jumps
+- What happened  
+- Which option(s) were chosen  
+- Any key parameters (ids, counts, amounts)
 
 
 
-## Visual Design
+## 2. Lifecycle
 
-### Typography
-Use shadcn system stacks with minimal size variations (title, body, caption). Avoid custom font scales.
+Tool UIs follow a simple lifecycle. Not every component uses every phase, but all should be designed with these phases in mind.
 
-### Contrast
-WCAG AA minimums always. Test foreground/background combinations, especially for muted or secondary text.
+### 2.1 Invocation
 
-### Spacing & Density
-Components respect chat width constraints and adapt to narrow viewports. Use consistent spacing tokens from your design system.
+The assistant calls a tool or responds to a user request (for example, “show this as a table”) and renders a Tool UI.
 
-### Copy
-Keep it short, specific, and context-aware. Users already have conversation context—don't repeat it in the UI.
+Guidelines:
+
+- The first frame should make the role obvious: *“Here are 12 matching items”*, *“Approve these changes?”*.  
+- The assistant should set context in the surrounding message.
+
+### 2.2 Loading and streaming
+
+Tool responses may stream or arrive in chunks.
+
+Guidelines:
+
+- Use skeletons or clear loading structures that match the eventual layout.  
+- Avoid layout thrash: the outer size should be mostly stable while contents stream in.  
+- For long results, show the first few items quickly with a “View more” affordance.
+
+### 2.3 Interactive window
+
+The period when the user can change inputs, pick actions, or approve changes.
+
+Guidelines:
+
+- Make it visually clear when nothing has happened yet (pending state).  
+- Disable or gate actions until required inputs are present.  
+- For destructive actions, use a two-step pattern (for example, a Decision Prompt-style confirm).
+
+### 2.4 Commit and side effects
+
+The moment an action runs (sending, applying, deleting, purchasing).
+
+Guidelines:
+
+- Show what is being acted on (scope: rows, files, accounts, and so on).  
+- Show where the action goes (target: branch, environment, external system).  
+- For long-running actions, show progress or status, not just a spinner.
+
+### 2.5 Receipt state
+
+After completion, the Tool UI should collapse to a compact, durable summary.
+
+Guidelines:
+
+- Show the outcome: success, partial, failed, or cancelled.  
+- Show key inputs: which action(s) were chosen and a high-level summary of what changed.  
+- Make it easy for the assistant to refer back to this receipt in later turns.
+
+In most apps, a receipt is either a new message (for example, a prompt that collapses into a summary card) or a final, non-interactive state of the same Tool UI in the transcript.
+
+### 2.6 Stale, retried, superseded
+
+Over time, real-world state may drift from what the Tool UI shows.
+
+Guidelines:
+
+- Indicate clearly when a card reflects a past state (for example, “As of 2:41 PM”).  
+- Offer a way to refresh or rerun when appropriate.  
+- When a newer tool run supersedes an older one, make that relationship obvious in the transcript.
 
 
 
-## Accessibility Standards
+## 3. Roles
 
-### WCAG Compliance
-All components meet WCAG AA standards:
-- Contrast ratios: 4.5:1 for text, 3:1 for UI elements
-- Touch targets: 44×44px minimum
-- Focus indicators: Visible and high-contrast
+Every Tool UI should have a single, named role. Roles describe why the UI exists, not how it looks.
 
-### Keyboard Navigation
-- All interactive elements reachable via Tab
-- Enter/Space activate buttons and controls
-- Arrow keys navigate within components (table rows, card galleries)
-- Escape dismisses dialogs and menus
+### 3.1 Information surfaces
 
-### Screen Readers
-- Semantic HTML: Use `<th scope="col">` for table headers, proper heading hierarchy
-- ARIA labels for icons and controls without visible text
-- Live regions for dynamic content updates
-- Status announcements for loading/error states
+Surfaces that structure tool output so it is scannable.
 
-### Reduced Motion
-Respect `prefers-reduced-motion` by disabling transitions and animations.
+Examples:
+
+- Tables and lists  
+- Metric summaries  
+- Code diffs  
+- Social posts and media previews
+
+Guidelines:
+
+- Prioritize the fields users need to decide what to do next.  
+- Use formatting (status badges, numbers, deltas) to reduce cognitive load.  
+- Default to a glanceable view with a clear way to see more detail.
+
+### 3.2 Decision surfaces
+
+Surfaces that ask the user to choose.
+
+Examples:
+
+- Approval prompts  
+- “Send or discard” prompts  
+- Multi-select actions over a result set
+
+Guidelines:
+
+- Make one primary action visually dominant.  
+- Use explicit destructive variants and two-step patterns for dangerous choices.  
+- After completion, replace controls with a receipt that records what was decided.
+
+### 3.3 Control surfaces
+
+Surfaces that adjust how tools or the assistant will behave next.
+
+Examples:
+
+- Filters and sort controls  
+- Date ranges and thresholds  
+- Toggles for options
+
+Guidelines:
+
+- Use safe defaults and clearly communicate the current configuration.  
+- Prefer simple, opinionated controls (chips, presets, sliders) over raw numeric inputs when precision matters.  
+- Changes should be cheap to apply and easy to revert.
+
+### 3.4 State and observability surfaces
+
+Surfaces that show what tools and the assistant are doing.
+
+Examples:
+
+- Progress indicators  
+- Timelines of tool calls  
+- “What happened” logs  
+- Error panels
+
+Guidelines:
+
+- Make ongoing work visible but not overwhelming.  
+- Show enough detail that users can debug when something goes wrong (what tool, which inputs, what error).  
+- Keep these surfaces tightly connected to the messages they relate to.
+
+### 3.5 Composite surfaces
+
+Some Tool UIs blend roles—for example, a table (information) with row actions (decision), or a media preview (information) with quick actions (decision).
+
+Guidelines:
+
+- Start by naming the primary role.  
+- Add secondary roles only when they directly serve the primary one.  
+- If you cannot describe the surface as “X with Y” in one short phrase, it probably needs to be split.
+
+
+
+## 4. Conversation and Tool UIs
+
+Tool UIs and chat are two ways of expressing the same intent. They should stay in sync.
+
+### 4.1 Every control has a sentence
+
+Any important action in a Tool UI should be expressible as a simple sentence:
+
+- “Apply only the high-priority rows.”  
+- “Send the email to the selected recipients.”  
+- “Filter to last 30 days.”
+
+Design components and schemas so the assistant can map between sentences and UI actions reliably.
+
+### 4.2 Referencing surfaces in conversation
+
+Users and the assistant should be able to point at specific Tool UIs and elements:
+
+- “In the table above, sort by price.”  
+- “Remove the second option.”  
+- “Explain the changes in the third file.”
+
+Components should expose stable identifiers for rows, actions, and sub-elements so the runtime can resolve these references.
+
+### 4.3 Editing and rerunning
+
+Users often want to tweak something and try again:
+
+- Add or remove filters.  
+- Change thresholds.  
+- Update a draft and resend.
+
+Design Tool UIs so they can be invoked again with slightly different parameters and still make sense in the transcript (for example, “Updated table with only active items”).
+
+### 4.4 Assistant narration
+
+The assistant’s messages around Tool UIs are part of the UI.
+
+Guidelines:
+
+- Before: set context (“I found 12 results and highlighted the most urgent ones”).  
+- During: narrate important transitions (“Applying the changes you approved above”).  
+- After: summarize outcomes and link them back to receipts (“Done. The table now reflects your updated preferences.”).
+
+
+
+For any new component, aim to:
+
+1. Declare its role.  
+2. Map it cleanly onto this lifecycle.  
+3. Use receipts for any side effects.  
+4. Drive it completely from a serializable schema.

@@ -1,8 +1,230 @@
 import { DocsHeader } from "../_components/docs-header";
+import { SocialPost } from "@/components/social-post";
 
 <DocsHeader title="Social Post" />
 
-A post component for user-generated content with avatars, rich text, media attachments, and actions. This page will include usage guidance, prop reference, and interaction patterns.
+An information + action surface for user-generated content: posts, comments, notes, and threaded messages.
 
-Docs for this component are a work in progress. Check the Examples tab for live presets and code.
+Use Social Post when a tool returns content that should look like **a message authored by someone else**, with avatars, metadata, and optional actions.
 
+<Tabs items={["Preview", "Code"]}>
+  <Tab>
+    <div className="not-prose">
+      <SocialPost
+        id="post-1"
+        platform="x"
+        author={{
+          name: "Ada Lovelace",
+          handle: "ada",
+          avatarUrl: "https://api.dicebear.com/7.x/adventurer/svg?seed=Ada",
+          verified: true,
+        }}
+        text="Thinking about how to make Tool UIs feel more like collaboration than chrome."
+        createdAtISO="2025-01-05T12:00:00.000Z"
+        stats={{ likes: 12, comments: 3, reposts: 1, views: 320 }}
+        actions={[
+          { id: "reply", label: "Reply", variant: "ghost" },
+          { id: "open", label: "Open in app", variant: "ghost" },
+        ]}
+      />
+    </div>
+  </Tab>
+  <Tab>
+    ```tsx
+    import { SocialPost } from "@/components/social-post";
+
+    export function Example() {
+      return (
+        <SocialPost
+          id="post-1"
+          platform="x"
+          author={{
+            name: "Ada Lovelace",
+            handle: "ada",
+            avatarUrl: "https://api.dicebear.com/7.x/adventurer/svg?seed=Ada",
+            verified: true,
+          }}
+          text="Thinking about how to make Tool UIs feel more like collaboration than chrome."
+          createdAtISO="2025-01-05T12:00:00.000Z"
+          stats={{ likes: 12, comments: 3, reposts: 1, views: 320 }}
+          actions={[
+            { id: "reply", label: "Reply", variant: "ghost" },
+            { id: "open", label: "Open in app", variant: "ghost" },
+          ]}
+        />
+      );
+    }
+    ```
+  </Tab>
+</Tabs>
+
+---
+
+## When to use Social Post
+
+Good fits:
+
+- Showing social media posts or comments.  
+- Displaying activity feed items (alerts, notifications, user actions).  
+- Representing external messages (tickets, emails, chat transcripts) inline.
+
+Avoid Social Post for:
+
+- Dense tables of events (Data Table is better).  
+- Editable rich text (use your own editor).
+
+---
+
+
+## Source and install
+
+Copy `components/social-post` into your project:
+
+<Files>
+  <Folder name="components" defaultOpen>
+    <Folder name="social-post" defaultOpen>
+      <File name="social-post.tsx" />
+      <File name="schema.ts" />
+      <File name="types.ts" />
+      <File name="index.tsx" />
+    </Folder>
+  </Folder>
+</Files>
+
+### Download
+- [Source on GitHub](https://github.com/assistant-ui/tool-ui/tree/main/components/social-post)  
+- [Quick download (ZIP)](https://download-directory.github.io/?url=https://github.com/assistant-ui/tool-ui/tree/main/components/social-post)
+
+
+
+## Rendering tool outputs
+
+### Server – fetch a social post
+
+```ts
+import { tool } from 'ai';
+import { serializableSocialPostSchema } from '@/components/social-post/schema';
+
+export const tools = {
+  showTweet: tool({
+    description: 'Show a tweet as a social post',
+    outputSchema: serializableSocialPostSchema,
+    async execute({ id }) {
+      const tweet = await fetchTweet(id);
+      return {
+        id: tweet.id,
+        platform: 'x',
+        author: {
+          name: tweet.author.name,
+          handle: `@${tweet.author.username}`,
+          avatarUrl: tweet.author.avatarUrl,
+        },
+        createdAt: tweet.createdAt,
+        body: tweet.text,
+        meta: { source: 'X', url: tweet.url },
+        metrics: {
+          likes: tweet.likeCount,
+          replies: tweet.replyCount,
+          reposts: tweet.retweetCount,
+        },
+      };
+    },
+  }),
+};
+```
+
+### Client – render and act
+
+```tsx
+import { SocialPost, parseSerializableSocialPost } from '@/components/social-post';
+
+function renderParts(message) {
+  return message.parts.map((part, i) => {
+    if (part.type === 'tool-showTweet' && part.state === 'output-available') {
+      const post = parseSerializableSocialPost(part.output);
+      return (
+        <SocialPost
+          key={i}
+          {...post}
+          actions={[
+            { id: 'open', label: 'Open' },
+            { id: 'reply', label: 'Reply in app' },
+          ]}
+          onAction={(id, post) => {
+            if (id === 'open') window.open(post.meta?.url, '_blank');
+            if (id === 'reply') openReplyComposer(post.id);
+          }}
+        />
+      );
+    }
+
+    if (part.type === 'text') {
+      return <p key={i}>{part.text}</p>;
+    }
+
+    return null;
+  });
+}
+```
+
+
+
+## Props
+
+Social Post is driven by a serializable `SerializableSocialPost` schema.
+
+### Content
+
+<TypeTable
+  type={{
+    id: { description: "Stable identifier for this post", type: "string", required: true },
+    platform: {
+      description: "Optional platform hint",
+      type: "'x' | 'linkedin' | 'forum' | 'internal' | string",
+    },
+    author: {
+      description: "Author information",
+      type: "{ name: string; handle?: string; avatarUrl?: string }",
+      required: true,
+    },
+    createdAt: { description: "ISO timestamp string", type: "string", required: true },
+    body: {
+      description: "Main text content (plain or lightly formatted)",
+      type: "string",
+      required: true,
+    },
+    meta: {
+      description: "Optional contextual metadata (for example, source, channel, labels)",
+      type: "Record<string, string>",
+    },
+    metrics: {
+      description: "Engagement metrics for display only",
+      type: "{ likes?: number; replies?: number; reposts?: number; views?: number }",
+    },
+    replyCount: {
+      description: "Alternative replies count (deprecated in favor of metrics.replies)",
+      type: "number",
+    },
+  }}
+/>
+
+### Actions
+
+<TypeTable
+  type={{
+    actions: {
+      description: "Available actions (buttons or menu items)",
+      type: "Array<{ id: string; label: string; tone?: 'primary' | 'neutral'; icon?: ReactNode }>",
+    },
+    onAction: {
+      description: "Handle action clicks",
+      type: "(id: string, post: SerializableSocialPost) => void",
+    },
+  }}
+/>
+
+
+
+Social Post is intentionally lightweight. It makes external content feel “native” to your chat stream, then hands off all meaningful actions to your app.
+
+---

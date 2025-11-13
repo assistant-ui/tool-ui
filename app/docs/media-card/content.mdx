@@ -1,8 +1,232 @@
 import { DocsHeader } from "../_components/docs-header";
+import { MediaCard } from "@/components/media-card";
 
 <DocsHeader title="Media Card" />
 
-A compact, flexible card for image, video, audio, and link previews. This page will cover usage guidelines, prop types, and layout behaviors.
+An information surface for links, images, video, and audio—optimized for inline previews in chat.
 
-Docs for this component are a work in progress. Check the Examples tab for live presets and code.
+Use Media Card when a tool returns a **single piece of content** you want to preview, highlight, and optionally act on.
 
+<Tabs items={["Preview", "Code"]}>
+  <Tab>
+    <div className="not-prose">
+      <MediaCard
+        id="link-1"
+        kind="link"
+        href="https://react.dev"
+        title="React Docs"
+        description="Learn React with the official documentation."
+        thumb="https://images.unsplash.com/photo-1633356122544-f134324a6cee?auto=format&fit=crop&q=80&w=1200"
+        domain="react.dev"
+        maxWidth="420px"
+      />
+    </div>
+  </Tab>
+  <Tab>
+    ```tsx
+    import { MediaCard } from "@/components/media-card";
+
+    export function Example() {
+      return (
+        <MediaCard
+          id="link-1"
+          kind="link"
+          href="https://react.dev"
+          title="React Docs"
+          description="Learn React with the official documentation."
+          thumb="https://images.unsplash.com/photo-1633356122544-f134324a6cee?auto=format&fit=crop&q=80&w=1200"
+          domain="react.dev"
+          maxWidth="420px"
+        />
+      );
+    }
+    ```
+  </Tab>
+</Tabs>
+
+---
+
+## When to use Media Card
+
+Good fits:
+
+- Link previews (articles, docs, dashboards).  
+- Image / video / audio thumbnails.  
+- File / document summaries.
+
+Avoid Media Card for:
+
+- Large galleries (use multiple cards or a Data Table instead).  
+- Long-form content editing (use a dedicated surface).
+
+---
+
+
+## Source and install
+
+Copy components/media-card into your project next to your shadcn/ui components:
+
+<Files>
+  <Folder name="components" defaultOpen>
+    <Folder name="ui">
+      <File name="button.tsx" />
+      <File name="card.tsx" />
+      <File name="..." />
+    </Folder>
+    <Folder name="media-card" defaultOpen>
+      <File name="media-card.tsx" />
+      <File name="schema.ts" />
+      <File name="types.ts" />
+      <File name="index.tsx" />
+      <File name="..." />
+    </Folder>
+  </Folder>
+</Files>
+
+### Download
+- [Source on GitHub](https://github.com/assistant-ui/tool-ui/tree/main/components/media-card)
+- [Quick download (ZIP)](https://download-directory.github.io/?url=https://github.com/assistant-ui/tool-ui/tree/main/components/media-card)
+
+
+
+## Rendering tool outputs
+
+### Server – define a preview tool
+
+```ts
+import { streamText, convertToModelMessages, tool, type UIMessage } from 'ai';
+import { openai } from '@ai-sdk/openai';
+import { z } from 'zod';
+import { serializableMediaCardSchema } from '@/components/media-card/schema';
+
+export async function POST(req: Request) {
+  const { messages }: { messages: UIMessage[] } = await req.json();
+
+  const result = streamText({
+    model: openai('gpt-4o'),
+    messages: convertToModelMessages(messages),
+    tools: {
+      previewLink: tool({
+        description: 'Show a preview card for a URL',
+        inputSchema: z.object({ url: z.string().url() }),
+        outputSchema: serializableMediaCardSchema,
+        async execute({ url }) {
+          // Replace this stub with real metadata fetching
+          return {
+            id: 'link-1',
+            kind: 'link',
+            href: url,
+            title: 'Example site',
+            description: 'Preview of the requested URL',
+            thumb:
+              'https://images.unsplash.com/photo-1633356122544-f134324a6cee?auto=format&fit=crop&q=80&w=1200',
+            meta: { source: new URL(url).hostname },
+          };
+        },
+      }),
+    },
+  });
+
+  return result.toUIMessageStreamResponse();
+}
+```
+
+### Client – parse and render
+
+```tsx
+import { useChat } from '@ai-sdk/react';
+import { DefaultChatTransport } from 'ai';
+import { MediaCard, parseSerializableMediaCard } from '@/components/media-card';
+
+export default function Chat() {
+  const { messages } = useChat({
+    transport: new DefaultChatTransport({ api: '/api/chat' }),
+  });
+
+  return (
+    <div>
+      {messages.map((m) => (
+        <div key={m.id}>
+          {m.parts.map((part, i) => {
+            if (part.type === 'tool-previewLink' && part.state === 'output-available') {
+              const cardProps = parseSerializableMediaCard(part.output);
+              return (
+                <MediaCard
+                  key={i}
+                  {...cardProps}
+                  maxWidth="420px"
+                  actions={[
+                    { id: 'open', label: 'Open' },
+                    { id: 'save', label: 'Save' },
+                  ]}
+                  onAction={(id, card) => {
+                    if (id === 'open') {
+                      window.open(card.href, '_blank');
+                    }
+                    if (id === 'save') {
+                      // Your app logic here
+                    }
+                  }}
+                />
+              );
+            }
+            return null;
+          })}
+        </div>
+      ))}
+    </div>
+  );
+}
+```
+
+
+
+## Props
+
+Media Card is driven by a serializable SerializableMediaCard schema.
+
+### Content
+
+<TypeTable
+type={{
+id: { description: "Stable identifier for the card", type: "string", required: true },
+kind: { description: "Content kind", type: "'link' | 'image' | 'video' | 'audio' | 'file'", required: true },
+href: { description: "Target URL (for link/file)", type: "string" },
+title: { description: "Primary title text", type: "string", required: true },
+description: { description: "Optional description or excerpt", type: "string" },
+thumb: { description: "Thumbnail URL", type: "string" },
+ratio: { description: "Media aspect ratio", type: "'16:9' | '4:3' | '1:1' | 'auto'", default: "'16:9'" },
+fit: { description: "Object-fit behavior for media", type: "'cover' | 'contain' | 'fill'", default: "'cover'" },
+meta: {
+description: "Small key/value metadata (e.g. source, duration, author)",
+type: "Record<string, string>",
+},
+badge: { description: "Optional status badge label", type: "string" },
+}}
+/>
+
+### Layout & behavior
+
+<TypeTable
+type={{
+maxWidth: { description: "Clamp card width", type: "string (CSS)", default: "'100%'" },
+align: { description: "Horizontal alignment inside the message", type: "'start' | 'center' | 'end'", default: "'start'" },
+clickable: { description: "Whether the whole card acts as a link", type: "boolean", default: "true (if href)" },
+}}
+/>
+
+### Actions
+
+<TypeTable
+type={{
+actions: { description: "Inline actions (buttons, menu items)", type: "Action[]" },
+onAction: {
+description: "Action handler",
+type: "(id: string, card: SerializableMediaCard) => void",
+},
+}}
+/>
+
+
+
+Media Card is intentionally minimal. For full interaction flows (approval, forms, multi-step actions), pair it with [Decision Prompt](/docs/decision-prompt) or a custom control surface.

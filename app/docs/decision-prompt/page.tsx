@@ -7,7 +7,7 @@ export default function DecisionPromptDocsPage() {
     <ComponentDocsExamples
       docs={<Content />}
       examples={<DecisionPromptPreview withContainer={false} />}
+      defaultTab="docs"
     />
   );
 }
-

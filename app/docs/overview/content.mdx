@@ -4,78 +4,105 @@ import { DocsHeader } from "../_components/docs-header";
 
 Tool UI provides interactive, accessible React components that render directly from your tool's JSON outputs. Instead of returning plain text that gets reformatted or parsed unreliably, tools return structured data that renders as rich UI—tables, cards, widgets, and more—in any chat interface.
 
-## Why Tool UI?
+Instead of returning plain text and hoping the model formats it well, your tools return **structured JSON** that renders as **inline, interactive UI surfaces** including tables, data visualizations, cards, and more.
 
-**Predictable rendering**
-Structured JSON outputs mean consistent UI every time. No more wrestling with markdown table formatting or hoping the LLM formats lists correctly.
 
-**Built for chat constraints**
-All components handle narrow viewports, theme tokens, and density requirements. Data Table promotes priority columns to mobile cards, Media Card clamps aspect ratios, and Decision Prompt stacks buttons for 44×44 touch targets.
+## What is Tool UI?
 
-**Developer control**
-Components render, but your app handles actions. Wire `onAction` callbacks to your own functions—server actions, client handlers, or custom routing.
+A *Tool UI* is:
 
-**Schema-validated**
-Every component ships with Zod schemas. Validate tool outputs on the server, parse on the client, and keep types in sync.
+- **Assistant-driven** – It appears because the assistant called a tool or the user asked for it.  
+- **Schema-driven** – It renders from a JSON payload that matches a published schema.  
+- **Inline** – It lives inside the message stream, not as a separate page or modal.  
+- **Interactive** – It can collect decisions, trigger actions, and show progress or receipts.
+
+Our components give you the “view layer” for these surfaces; you bring tools, models, and orchestration.
+
+
+## Why use Tool UI?
+
+**Predictable rendering**  
+Tools emit structured, schema-validated JSON. Components render that structure consistently across conversations, themes, and devices.
+
+**Built for chat constraints**  
+Layouts are tuned for narrow viewports and stacked message flows: mobile-first, keyboard- and screen-reader friendly, with minimal chrome.
+
+**Developer control**  
+Components only render. Your app owns all side effects via callbacks like `onAction`—server actions, client handlers, routing; you decide.
+
+**Schema-validated**  
+Each component ships a serializable schema. Validate tool outputs on the server, parse them on the client, and keep types in sync.
+
+**Stack-agnostic**  
+Use any model/provider and any chat orchestration. The only contract is: “tool returns JSON that matches this schema.”
+
 
 ## Mental model
 
-```
-Tool returns JSON (validated by Zod)
-        ↓
-parseSerializableX → render component
-        ↓
-onAction → your app handles it (server/client)
+```txt
+User / assistant ask for something
+          ↓
+Tool runs and returns JSON (matches component schema)
+          ↓
+Client parses → <Component {...props} />
+          ↓
+User clicks → onAction → your app does the real work
 ```
 
-Tools execute and return structured data. The client parses that data into props, renders the component, and wires up action handlers. Your app controls what happens when users click rows, cards, or buttons.
+The assistant decides when to call tools and what to show. Tool UI decides how to present the output. Your app decides what happens when users interact.
+
+
+
+## Components
+
+Use these building blocks to cover most tool-driven interactions:
+
+Data Table  
+Information surface for structured rows with sorting, mobile-friendly cards, and row actions. Good for search results, lists, and compact dashboards.
+
+Media Card  
+Information surface for links, images, video, and audio. Good for previews of URLs, documents, and media attachments.
+
+Decision Prompt  
+Decision surface for binary and multi-option confirmations in the thread. Good for approvals, “send or discard,” and other high-impact choices.
+
+Social Post  
+Information + action surface for user-generated content: posts, comments, and threaded discussions.
+
+More components will arrive over time. Each has a serializable schema, usage docs, and integration examples.
+
+
+
+## How Tool UI fits into your app
+
+Server / tools
+- Define tools with an `outputSchema` that matches a component’s serializable schema.
+- Validate tool outputs before they reach the client.
+- Keep tool payloads JSON-only (no functions, Dates, class instances).
+
+Assistant / model
+- Decides which tools to call and when.
+- Fills schemas with meaningful values (columns, actions, prompts, and so on).
+- Narrates around Tool UIs (“Here are the top matches…”, “Approve these changes?”).
+
+Client / chat UI
+- Receives tool outputs as message parts.
+- Runs `parseSerializableX(output)` to validate and turn them into component props.
+- Renders `<Component {...props} />`.
+- Implements `onAction`, `onBeforeAction`, and other callbacks to actually do things.
+
+
 
 ## What Tool UI is not
-
-- **Not a state manager or agent framework** — You still orchestrate memory, planning, and conversation flow.
-- **Not a server action dispatcher** — You wire `onAction` callbacks to your own server/client functions.
-- **Not a design system** — Components compose shadcn primitives and stay narrowly scoped to chat UI patterns.
-
-## When to use which component
-
-<div id="choose-the-renderer" />
-
-**[Data Table](/docs/data-table)**<br />
-Structured rows with sortable columns, priority-based mobile cards, and row actions. Best for listings, search results, or any tabular data.
-
-**[Media Card](/docs/media-card)**<br />
-Link previews, images, videos, or embedded content with metadata overlays. Use for showing external resources, article previews, or visual content.
-
-**[Decision Prompt](/docs/decision-prompt)**<br />
-Present binary or multi-choice decisions with buttons and optional metadata. Perfect for approval flows, configuration choices, or survey-style interactions.
-
-**[Social Post](/docs/social-post)**<br />
-Display message-style content with avatars, timestamps, and reply actions. Use for showing social media posts, comments, or threaded conversations.
-
-## Architecture
-
-Tool UI sits between your tool execution and chat UI:
-
-1. **Server**: Define tools with `outputSchema` using the component's serializable schema
-2. **Client**: Check for tool output parts, parse with `parseSerializableX`, and render
-3. **Actions**: Attach action configs and handle callbacks in your app
-
-All components:
-- Accept serializable props (no functions, dates, or class instances)
-- Validate with Zod schemas before rendering
-- Support theme tokens and responsive breakpoints
-- Provide accessible keyboard navigation and screen reader support
-
-## Accessibility & compatibility
-
-**WCAG-friendly defaults**
-Tested for contrast ratios, focus indicators, 44×44 touch targets, and keyboard navigation. Reduced-motion queries respected. See [Accessibility](/docs/accessibility) for audit results and supported assistive technologies.
-
-**Works everywhere**
-- React 18+ and Next.js App Router
-- Tailwind v3.2+ or v4 with standard tokens
-- Any AI SDK provider (OpenAI, Anthropic, Google, etc.)
-- Client or server action handling
+- Not an agent framework – It doesn’t plan or schedule tool calls.
+- Not a state manager – It doesn’t store conversation memory or tool state.
+- Not a server action router – It doesn’t decide what happens when a user clicks.
+- Not a full design system – It focuses on inline, chat-centric Tool UIs and composes primitives from libraries like shadcn/ui.
 
 
-Ready to build? Head to [Quick Start](/docs/quick-start) for a working implementation in under 5 minutes.
+
+## Where to go next
+- Want to wire it up? See [Quick Start](/docs/quick-start).
+- Care about interaction patterns? Read [UI Guidelines](/docs/design-guidelines).
+- Ready to wire types end-to-end? See [Advanced](/docs/advanced).
+- Need a specific surface? Browse [Data Table](/docs/data-table), [Media Card](/docs/media-card), [Decision Prompt](/docs/decision-prompt), and [Social Post](/docs/social-post).

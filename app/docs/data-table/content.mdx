@@ -16,7 +16,7 @@ import {
 
 <DocsHeader title="Data Table" />
 
-A compact, responsive data table with sorting, declarative value formatting, and row actions.
+An information surface for tabular tool outputs with responsive layout, sorting, declarative formatting, and row-level actions.
 
 <Tabs items={["Preview", "Code"]}>
   <Tab>
@@ -47,7 +47,6 @@ A compact, responsive data table with sorting, declarative value formatting, and
         ]}
       />
     </div>
-
   </Tab>
   <Tab>
     ```tsx
@@ -57,9 +56,18 @@ A compact, responsive data table with sorting, declarative value formatting, and
 
     const columns: Column<Row>[] = [
       { key: "issue", label: "Issue", priority: "primary", truncate: true },
-      { key: "priority", label: "Urgency", format: { kind: "status", statusMap: {
-        high: { tone: "danger", label: "High" }, medium: { tone: "warning", label: "Medium" }, low: { tone: "neutral", label: "Low" }
-      } } },
+      {
+        key: "priority",
+        label: "Urgency",
+        format: {
+          kind: "status",
+          statusMap: {
+            high: { tone: "danger", label: "High" },
+            medium: { tone: "warning", label: "Medium" },
+            low: { tone: "neutral", label: "Low" },
+          },
+        },
+      },
     ];
 
     const data: Row[] = [
@@ -71,16 +79,39 @@ A compact, responsive data table with sorting, declarative value formatting, and
 
     export default function Example() {
       return (
-        <DataTable rowIdKey="id" columns={columns} data={data} defaultSort={{ by: "priority", direction: "asc" }} />
+        <DataTable
+          rowIdKey="id"
+          columns={columns}
+          data={data}
+          defaultSort={{ by: "priority", direction: "asc" }}
+        />
       );
     }
     ```
   </Tab>
 </Tabs>
 
-## Source & install
 
-We don't have a CLI yet, so you'll manually copy and paste `components/data-table`. It should sit alongside your shadcn/ui components directory:
+
+## When to use Data Table
+
+Use Data Table when a tool returns **rows of structured objects** and the user needs to:
+
+- Scan and compare items (search results, issues, accounts, logs).  
+- Sort and filter to find what matters.  
+- Take row-level actions (open, approve, escalate, and so on).
+
+Avoid Data Table for:
+
+- Single-record detail views (a Media Card or plain text is often better).  
+- Complex, multi-step forms (use a dedicated control surface instead).
+
+
+
+
+## Source and install
+
+We do not have a CLI yet, so you manually copy `components/data-table` into your project. It should sit alongside your shadcn/ui components directory:
 
 <Files>
   <Folder name="components" defaultOpen>
@@ -99,71 +130,19 @@ We don't have a CLI yet, so you'll manually copy and paste `components/data-tabl
   </Folder>
 </Files>
 
-**Download:**
-- [Source on GitHub](https://github.com/assistant-ui/tool-ui/tree/main/components/data-table)
+### Download
+
+- [Source on GitHub](https://github.com/assistant-ui/tool-ui/tree/main/components/data-table)  
 - [Quick download (ZIP)](https://download-directory.github.io/?url=https://github.com/assistant-ui/tool-ui/tree/main/components/data-table)
 
-## Features
 
 
-### Sorting
-
-Tri‑state sorting: none → asc → desc (click again to reset). Use controlled mode to sync with filters or the URL.
-```tsx
-// Uncontrolled (internal tri‑state): click header to cycle none → asc → desc → none
-<DataTable columns={columns} data={data} />
-
-// Controlled: manage sort in parent
-const [sort, setSort] = useState<{ by?: keyof Row; direction?: 'asc' | 'desc' }>({});
-<DataTable columns={columns} data={data} sort={sort} onSortChange={setSort} />
-```
-
-### Responsive layout
-
-Container queries switch between table and cards; `priority` decides what stays visible on mobile headers.
-
-> Tailwind v4 ships container queries; on v3 install the [tailwind/container-queries](https://github.com/tailwindlabs/tailwindcss-container-queries) plugin.
-```tsx
-// Auto (default): container queries switch between table/cards at @md
-<DataTable columns={columns} data={data} />
-
-// Force a particular layout
-<DataTable layout="table" columns={columns} data={data} />
-<DataTable layout="cards" columns={columns} data={data} />
-
-// Mobile: `priority` controls card header vs. accordion details
-const columns = [
-  { key: 'name', label: 'Name', priority: 'primary' },
-  { key: 'price', label: 'Price', priority: 'primary' },
-  { key: 'category', label: 'Category', priority: 'secondary' },
-  { key: 'sku', label: 'SKU', priority: 'tertiary' },
-];
-```
-
-### Declarative formatting
-
-Keep row values primitive; describe presentation in `columns[i].format`. It keeps UI consistent and LLM/tool outputs JSON‑serializable.
-```tsx
-// Keep data primitive; describe presentation in format
-{ key: 'price', label: 'Price', format: { kind: 'currency', currency: 'USD' } }
-{ key: 'homepage', label: 'Homepage', format: { kind: 'link', external: true } }
-{ key: 'status', label: 'Status', format: { kind: 'badge', colorMap: { open: 'info', closed: 'success' } } }
-```
-
-### Accessibility
-
-- Header buttons are focusable; `aria-sort` reflects state for screen readers
-- A live region announces sort changes; rows and cells read with labels
-- Table toggles `aria-busy` when loading so assistive tech knows data is pending
-
-## Example Usage
+## Rendering tool outputs
 
 <Tabs items={["Assistant UI", "AI SDK"]}>
   <Tab>
 ```tsx
-// ============================================================
-// Server: Define tool (app/api/assistant/route.ts)
-// ============================================================
+// Server: define a tool (app/api/assistant/route.ts)
 import { tool } from 'ai';
 import { serializableDataTableSchema } from '@/components/data-table/schema';
 
@@ -179,15 +158,18 @@ export const tools = {
           { key: 'price', label: 'Price', format: { kind: 'currency', currency: 'USD' } },
           { key: 'stock', label: 'Stock', align: 'right' },
         ],
-        data: results.map(p => ({ id: p.id, name: p.name, price: p.price, stock: p.stock })),
+        data: results.map((p) => ({
+          id: p.id,
+          name: p.name,
+          price: p.price,
+          stock: p.stock,
+        })),
       };
     },
   }),
 };
 
-// ============================================================
-// Client: Render in chat (components/MyAssistant.tsx)
-// ============================================================
+// Client: render in chat (components/MyAssistant.tsx)
 import { Thread } from '@assistant-ui/react';
 import { DataTable, parseSerializableDataTable } from '@/components/data-table';
 
@@ -205,12 +187,11 @@ export function MyAssistant() {
   );
 }
 ```
+
   </Tab>
   <Tab>
 ```tsx
-// ============================================================
-// Server: Define tool (app/api/chat/route.ts)
-// ============================================================
+// Server: define tool (app/api/chat/route.ts)
 import { streamText, tool } from 'ai';
 import { openai } from '@ai-sdk/openai';
 import { serializableDataTableSchema } from '@/components/data-table/schema';
@@ -233,7 +214,12 @@ export async function POST(req: Request) {
               { key: 'price', label: 'Price', format: { kind: 'currency', currency: 'USD' } },
               { key: 'stock', label: 'Stock', align: 'right' },
             ],
-            data: results.map(p => ({ id: p.id, name: p.name, price: p.price, stock: p.stock })),
+            data: results.map((p) => ({
+              id: p.id,
+              name: p.name,
+              price: p.price,
+              stock: p.stock,
+            })),
           };
         },
       }),
@@ -243,9 +229,7 @@ export async function POST(req: Request) {
   return result.toDataStreamResponse();
 }
 
-// ============================================================
-// Client: Render in chat (app/page.tsx)
-// ============================================================
+// Client: render in chat (app/page.tsx)
 import { useChat } from '@ai-sdk/react';
 import { DataTable, parseSerializableDataTable } from '@/components/data-table';
 
@@ -253,7 +237,7 @@ export default function Chat() {
   const { messages } = useChat({ api: '/api/chat' });
 
   return (
-    <div>
+    <>
       {messages.map((m) => (
         <div key={m.id}>
           {m.toolInvocations?.map((tool) => {
@@ -265,31 +249,110 @@ export default function Chat() {
           })}
         </div>
       ))}
-    </div>
+    </>
   );
 }
 ```
+
   </Tab>
 </Tabs>
 
+
+
+## Features
+
+### Sorting
+
+Tri-state sorting: none → asc → desc (click again to reset). Use controlled mode to sync with filters or URL state.
+
+```tsx
+// Uncontrolled: click header to cycle none → asc → desc → none
+<DataTable columns={columns} data={data} />
+
+// Controlled: manage sort in parent
+const [sort, setSort] = useState<{ by?: keyof Row; direction?: 'asc' | 'desc' }>({});
+<DataTable columns={columns} data={data} sort={sort} onSortChange={setSort} />
+```
+
+### Responsive layout
+
+Container queries switch between a classic table and mobile-friendly cards. Column priority decides what stays visible in the card header.
+
+```tsx
+// Auto (default): table on wide screens, cards on narrow
+<DataTable columns={columns} data={data} />
+
+// Force a particular layout
+<DataTable layout="table" columns={columns} data={data} />
+<DataTable layout="cards" columns={columns} data={data} />
+
+// Mobile priorities
+const columns = [
+  { key: 'name', label: 'Name', priority: 'primary' },
+  { key: 'price', label: 'Price', priority: 'primary' },
+  { key: 'category', label: 'Category', priority: 'secondary' },
+  { key: 'sku', label: 'SKU', priority: 'tertiary' },
+];
+```
+
+### Declarative formatting
+
+Keep row values primitive; describe presentation in `columns[i].format`. This keeps UI consistent and tool outputs JSON-serializable.
+
+```tsx
+{ key: 'price', label: 'Price', format: { kind: 'currency', currency: 'USD' } }
+{ key: 'homepage', label: 'Homepage', format: { kind: 'link', external: true } }
+{ key: 'status', label: 'Status', format: { kind: 'badge', colorMap: { open: 'info', closed: 'success' } } }
+```
+
+### Actions and receipts
+- Add actions to show row-level buttons or menus.  
+- Handle clicks in `onAction` and optionally gate them via `onBeforeAction`.  
+- Use [Decision Prompt](/docs/decision-prompt) for higher-risk, multi-row approvals and receipts.
+
+```tsx
+<DataTable
+  rowIdKey="id"
+  actions={[
+    { id: 'open', label: 'Open' },
+    { id: 'archive', label: 'Archive', tone: 'destructive' },
+  ]}
+  onBeforeAction={async ({ id, row }) => {
+    if (id === 'archive') {
+      return confirm(`Archive "${row.name}"?`);
+    }
+    return true;
+  }}
+  onAction={(id, row) => {
+    // Your app logic here
+  }}
+/>
+```
+
+### Accessibility
+- Header buttons are focusable; `aria-sort` reflects state for screen readers.  
+- A live region announces sort changes; rows and cells read with labels.  
+- The table toggles `aria-busy` when loading so assistive tech knows data is pending.  
+- Mobile cards preserve relationships between labels and values.
+
+
+
 ## Props
 
-Data Table accepts serializable rows where each row is a record of JSON primitives (`string`, `number`, `boolean`, `null`) or arrays of primitives. Do not place objects, Dates, Maps, or functions in row values—use `format` configs for presentation instead.
+Data Table accepts serializable rows where each row is a record of JSON primitives (string, number, boolean, null) or arrays of primitives. Keep objects and Dates out of row values; use `format` for presentation.
 
 ### Data
 
 <TypeTable
   type={{
-    columns: { description: "Column definitions", type: "Column<T>[]", required: true },
+    columns: { description: "Column definitions", type: "Column[]", required: true },
     data: { description: "Serializable rows", type: "T[]", required: true },
-    rowIdKey: { description: "Stable unique key in each row", type: "keyof T" },
+    rowIdKey: { description: "Stable unique key in each row", type: "keyof T", required: true },
     locale: { description: "Intl locale for formatting", type: "string", default: '"en-US"' },
   }}
 />
 
 ### Columns
-
-Each column in the `columns` array defines how a data field is displayed:
 
 <TypeTable
   type={{
@@ -300,9 +363,16 @@ Each column in the `columns` array defines how a data field is displayed:
     align: { description: "Text alignment for cells", type: "'left' | 'right' | 'center'", default: "'left'" },
     width: { description: "Fixed width (CSS value)", type: "string" },
     truncate: { description: "Truncate text with ellipsis", type: "boolean", default: "false" },
-    priority: { description: "Mobile display priority (primary = always visible, secondary = expandable, tertiary = hidden)", type: "'primary' | 'secondary' | 'tertiary'" },
+    priority: {
+      description:
+        "Mobile display priority (primary = always visible, secondary = expandable, tertiary = hidden)",
+      type: "'primary' | 'secondary' | 'tertiary'",
+    },
     hideOnMobile: { description: "Completely hide on mobile", type: "boolean", default: "false" },
-    format: { description: "Formatting config for cell values (see Formatting section)", type: "FormatConfig" },
+    format: {
+      description: "Formatting config for cell values (see Formatting section)",
+      type: "FormatConfig",
+    },
   }}
 />
 
@@ -313,7 +383,7 @@ Each column in the `columns` array defines how a data field is displayed:
     layout: { description: "Force table/cards or auto", type: "'auto' | 'table' | 'cards'", default: "'auto'" },
     maxHeight: { description: "Scroll container height", type: "string (CSS)" },
     emptyMessage: { description: "Shown when no rows", type: "string", default: '"No data available"' },
-    isLoading: { description: "Show skeletons", type: "boolean", default: "false" },
+    isLoading: { description: "Show skeletons instead of rows", type: "boolean", default: "false" },
   }}
 />
 
@@ -321,9 +391,18 @@ Each column in the `columns` array defines how a data field is displayed:
 
 <TypeTable
   type={{
-    defaultSort: { description: "Initial sort (uncontrolled)", type: "{ by?: keyof T; direction?: 'asc' | 'desc' }" },
-    sort: { description: "Controlled sort state (with onSortChange)", type: "{ by?: keyof T; direction?: 'asc' | 'desc' }" },
-    onSortChange: { description: "Update controlled sort", type: "(next) => void" },
+    defaultSort: {
+      description: "Initial sort (uncontrolled)",
+      type: "{ by?: keyof T; direction?: 'asc' | 'desc' }",
+    },
+    sort: {
+      description: "Controlled sort state (with onSortChange)",
+      type: "{ by?: keyof T; direction?: 'asc' | 'desc' }",
+    },
+    onSortChange: {
+      description: "Update controlled sort",
+      type: "(next: { by?: keyof T; direction?: 'asc' | 'desc' }) => void",
+    },
   }}
 />
 
@@ -332,132 +411,251 @@ Each column in the `columns` array defines how a data field is displayed:
 <TypeTable
   type={{
     actions: { description: "Row actions", type: "Action[]" },
-    onBeforeAction: { description: "Gate actions (confirm, policy)", type: "(args) => boolean | Promise<boolean>" },
-    onAction: { description: "Action click handler", type: "(id, row, ctx?) => void" },
+    onBeforeAction: {
+      description: "Gate actions (confirm, policy, permissions)",
+      type: "(args: { id: string; row: T }) => boolean | Promise",
+    },
+    onAction: {
+      description: "Action click handler",
+      type: "(id: string, row: T, ctx?: unknown) => void",
+    },
   }}
 />
 
+
+
 ## Formatting
 
-All visual formatting for data stays declarative via `columns[i].format`. Keep row values as primitives (strings, numbers, booleans) and describe presentation through format configs.
+All visual formatting for data stays declarative via `columns[i].format`. Keep row values as primitives and describe presentation through format configs.
 
 <TypeTable
-      type={{
-        number: {
-          description: (
-            <FormatInlineExample
+  type={{
+    number: {
+      description: (
+        <FormatInlineExample
+          value={12345.678}
+          output={
+            <NumberValue
               value={12345.678}
-              output={<NumberValue value={12345.678} options={{ kind: 'number', decimals: 2, unit: ' ms' }} />}
+              options={{ kind: "number", decimals: 2, unit: " ms" }}
             />
-          ),
-          type: "{ kind: 'number', decimals: 2, unit: ' ms' }",
-        },
-        currency: {
-          description: (
-            <FormatInlineExample
+          }
+        />
+      ),
+      type: "{ kind: 'number', decimals?: number, unit?: string }",
+    },
+    currency: {
+      description: (
+        <FormatInlineExample
+          value={178.25}
+          output={
+            <CurrencyValue
               value={178.25}
-              output={<CurrencyValue value={178.25} options={{ kind: 'currency', currency: 'USD', decimals: 2 }} />}
+              options={{ kind: "currency", currency: "USD", decimals: 2 }}
             />
-          ),
-          type: "{ kind: 'currency', currency: 'USD', decimals: 2 }",
-        },
-        percent: {
-          description: (
-            <>
-              <FormatInlineExample
+          }
+        />
+      ),
+      type: "{ kind: 'currency', currency: string, decimals?: number }",
+    },
+    percent: {
+      description: (
+        <>
+          <FormatInlineExample
+            value={0.123}
+            output={
+              <PercentValue
                 value={0.123}
-                output={<PercentValue value={0.123} options={{ kind: 'percent', basis: 'fraction', decimals: 1, showSign: true }} />}
+                options={{
+                  kind: "percent",
+                  basis: "fraction",
+                  decimals: 1,
+                  showSign: true,
+                }}
               />
-              <FormatInlineExample
+            }
+          />
+          <FormatInlineExample
+            value={1.23}
+            output={
+              <PercentValue
                 value={1.23}
-                output={<PercentValue value={1.23} options={{ kind: 'percent', basis: 'unit', decimals: 2, showSign: true }} />}
+                options={{
+                  kind: "percent",
+                  basis: "unit",
+                  decimals: 2,
+                  showSign: true,
+                }}
               />
-            </>
-          ),
-          type: "{ kind: 'percent', basis: 'fraction' | 'unit', decimals?: number, showSign?: boolean }",
-        },
-        delta: {
-          description: (
-            <>
-              <FormatInlineExample
+            }
+          />
+        </>
+      ),
+      type:
+        "{ kind: 'percent', basis: 'fraction' | 'unit', decimals?: number, showSign?: boolean }",
+    },
+    delta: {
+      description: (
+        <>
+          <FormatInlineExample
+            value={2.35}
+            output={
+              <DeltaValue
                 value={2.35}
-                output={<DeltaValue value={2.35} options={{ kind: 'delta', decimals: 2, upIsPositive: true, showSign: true }} />}
+                options={{
+                  kind: "delta",
+                  decimals: 2,
+                  upIsPositive: true,
+                  showSign: true,
+                }}
               />
-              <FormatInlineExample
+            }
+          />
+          <FormatInlineExample
+            value={-1.2}
+            output={
+              <DeltaValue
                 value={-1.2}
-                output={<DeltaValue value={-1.2} options={{ kind: 'delta', decimals: 2, upIsPositive: true, showSign: true }} />}
+                options={{
+                  kind: "delta",
+                  decimals: 2,
+                  upIsPositive: true,
+                  showSign: true,
+                }}
               />
-            </>
-          ),
-          type: "{ kind: 'delta', decimals?: number, upIsPositive?: boolean, showSign?: boolean }",
-        },
-        date: {
-          description: (
-            <>
-              <FormatInlineExample
-                value={'2025-01-05T12:00:00Z'}
-                output={<DateValue value={'2025-01-05T12:00:00Z'} options={{ kind: 'date', dateFormat: 'relative' }} />}
+            }
+          />
+        </>
+      ),
+      type:
+        "{ kind: 'delta', decimals?: number, upIsPositive?: boolean, showSign?: boolean }",
+    },
+    date: {
+      description: (
+        <>
+          <FormatInlineExample
+            value={"2025-01-05T12:00:00Z"}
+            output={
+              <DateValue
+                value={"2025-01-05T12:00:00Z"}
+                options={{ kind: "date", dateFormat: "relative" }}
               />
-              <FormatInlineExample
-                value={'2025-01-05T12:00:00Z'}
-                output={<DateValue value={'2025-01-05T12:00:00Z'} options={{ kind: 'date', dateFormat: 'long' }} locale="de-DE" />}
-                note="Long date with locale"
+            }
+          />
+          <FormatInlineExample
+            value={"2025-01-05T12:00:00Z"}
+            output={
+              <DateValue
+                value={"2025-01-05T12:00:00Z"}
+                options={{ kind: "date", dateFormat: "long" }}
+                locale="de-DE"
               />
-            </>
-          ),
-          type: "{ kind: 'date', dateFormat?: 'short' | 'long' | 'relative' }",
-        },
-        boolean: {
-          description: (
-            <FormatInlineExample
+            }
+            note="Long date with locale"
+          />
+        </>
+      ),
+      type:
+        "{ kind: 'date', dateFormat?: 'short' | 'long' | 'relative' }",
+    },
+    boolean: {
+      description: (
+        <FormatInlineExample
+          value={true}
+          output={
+            <BooleanValue
               value={true}
-              output={<BooleanValue value={true} options={{ kind: 'boolean', labels: { true: 'Yes', false: 'No' } }} />}
+              options={{
+                kind: "boolean",
+                labels: { true: "Yes", false: "No" },
+              }}
             />
-          ),
-          type: "{ kind: 'boolean', labels?: { true: string; false: string } }",
-        },
-        link: {
-          description: (
-            <>
-              <FormatInlineExample
-                value={'Docs Portal'}
-                output={<LinkValue value={'Docs Portal'} row={{ url: '/docs' }} options={{ kind: 'link', hrefKey: 'url' }} />}
+          }
+        />
+      ),
+      type:
+        "{ kind: 'boolean', labels?: { true: string; false: string } }",
+    },
+    link: {
+      description: (
+        <>
+          <FormatInlineExample
+            value={"Docs Portal"}
+            output={
+              <LinkValue
+                value={"Docs Portal"}
+                row={{ url: "/docs" }}
+                options={{ kind: "link", hrefKey: "url" }}
               />
-              <FormatInlineExample
-                value={'https://example.com'}
-                output={<LinkValue value={'https://example.com'} options={{ kind: 'link', external: true }} />}
+            }
+          />
+          <FormatInlineExample
+            value={"https://example.com"}
+            output={
+              <LinkValue
+                value={"https://example.com"}
+                options={{ kind: "link", external: true }}
               />
-            </>
-          ),
-          type: "{ kind: 'link', hrefKey?: string, external?: boolean }",
-        },
-        badge: {
-          description: (
-            <FormatInlineExample
-              value={'open'}
-              output={<BadgeValue value={'open'} options={{ kind: 'badge', colorMap: { open: 'info', closed: 'success' } }} />}
+            }
+          />
+        </>
+      ),
+      type:
+        "{ kind: 'link', hrefKey?: string, external?: boolean }",
+    },
+    badge: {
+      description: (
+        <FormatInlineExample
+          value={"open"}
+          output={
+            <BadgeValue
+              value={"open"}
+              options={{
+                kind: "badge",
+                colorMap: { open: "info", closed: "success" },
+              }}
             />
-          ),
-          type: "{ kind: 'badge', colorMap?: Record<string, Tone> }",
-        },
-        status: {
-          description: (
-            <FormatInlineExample
-              value={'high'}
-              output={<StatusBadge value={'high'} options={{ kind: 'status', statusMap: { high: { tone: 'danger', label: 'High' }, low: { tone: 'neutral', label: 'Low' } } }} />}
+          }
+        />
+      ),
+      type:
+        "{ kind: 'badge', colorMap?: Record<string, Tone> }",
+    },
+    status: {
+      description: (
+        <FormatInlineExample
+          value={"high"}
+          output={
+            <StatusBadge
+              value={"high"}
+              options={{
+                kind: "status",
+                statusMap: {
+                  high: { tone: "danger", label: "High" },
+                  low: { tone: "neutral", label: "Low" },
+                },
+              }}
             />
-          ),
-          type: "{ kind: 'status', statusMap: Record<string, { tone: Tone; label?: string }> }",
-        },
-        array: {
-          description: (
-            <FormatInlineExample
-              value={['alpha','beta','gamma']}
-              output={<ArrayValue value={['alpha','beta','gamma']} options={{ kind: 'array', maxVisible: 2 }} />}
+          }
+        />
+      ),
+      type:
+        "{ kind: 'status', statusMap: Record<string, { tone: Tone; label?: string }> }",
+    },
+    array: {
+      description: (
+        <FormatInlineExample
+          value={["alpha", "beta", "gamma"]}
+          output={
+            <ArrayValue
+              value={["alpha", "beta", "gamma"]}
+              options={{ kind: "array", maxVisible: 2 }}
             />
-          ),
-          type: "{ kind: 'array', maxVisible?: number }",
-        },
-      }}
-    />
-
+          }
+        />
+      ),
+      type:
+        "{ kind: 'array', maxVisible?: number }",
+    },
+  }}
+/>
