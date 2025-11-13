@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { motion } from "motion/react";
+import { AnimatePresence, motion } from "motion/react";
 import { cn } from "@/lib/utils";
 import { DataTable, type Column } from "@/components/data-table";
 import { MediaCard, type SerializableMediaCard } from "@/components/media-card";
@@ -24,7 +24,6 @@ import {
   DecisionPrompt,
   type DecisionPromptAction,
 } from "@/components/decision-prompt";
-import { StackedList } from "./stacked-list";
 
 type BubbleProps = {
   role: "user" | "assistant";
@@ -61,57 +60,39 @@ function ChatBubble({ role, children, className }: BubbleProps) {
   );
 }
 
-// Apple-style motion configuration for smooth, elegant animations
+// Motion configuration for smooth, elegant animations
 const MOTION = {
-  // Sophisticated easing curves
-  ease: {
-    // Apple's signature ease-out (used for entrances and reveals)
-    appleOut: [0.16, 1, 0.3, 1] as [number, number, number, number],
-    // Smooth ease-in-out (used for transitions)
-    appleMid: [0.42, 0, 0.58, 1] as [number, number, number, number],
-    // Gentle expo-out (used for fades and scale)
-    soft: [0.19, 1, 0.22, 1] as [number, number, number, number],
-    // Standard ease (fallback)
-    standard: [0.22, 1, 0.36, 1] as [number, number, number, number],
-  },
-  // Luxurious durations (ms) - slower than typical for elegance
+  // Durations (ms)
   durations: {
     userIn: 500,
-    thinkingIn: 400,
     preambleIn: 280,
     toolIn: 600,
-    sceneTransition: 650,
   },
-  // Gentle pauses between phases (ms)
+  // Pauses between phases (ms)
   beats: {
     afterUser: 700,
-    afterThinking: 500,
+    beforeContent: 500,
     afterPreamble: 200,
   },
   // Scene hold after tool appears (ms)
   sceneHold: 4500,
-  // Staggered exit delays (ms) - each item exits slightly after the previous
+  // Staggered exit delays (ms)
   exitStagger: {
     user: 0,
-    thinking: 80,
     preamble: 120,
     tool: 180,
   },
-  // Reduced motion: faster but still pleasant
+  // Reduced motion settings
   reducedMotion: {
     duration: 250,
     sceneHold: 1500,
   },
-  // Spring configurations for organic motion
+  // Spring configurations
   springs: {
     gentle: { type: "spring" as const, damping: 28, stiffness: 180, mass: 0.8 },
     smooth: { type: "spring" as const, damping: 24, stiffness: 260, mass: 0.8 },
-    bouncy: { type: "spring" as const, damping: 20, stiffness: 200, mass: 0.6 },
-    snappy: { type: "spring" as const, damping: 30, stiffness: 300, mass: 0.5 },
   },
 };
-
-// ThinkingBubble removed: we no longer render an explicit "thinking" phase
 
 type PreambleBubbleProps = {
   text: string;
@@ -191,6 +172,181 @@ function TypingCaret({ visible }: { visible: boolean }) {
   );
 }
 
+// Static demo data - defined at module level to avoid recreation
+const TABLE_COLUMNS: Column<SupportTicket>[] = [
+  { key: "id", label: "ID", sortable: true, priority: "primary" },
+  { key: "issue", label: "Issue", sortable: false, priority: "primary" },
+  {
+    key: "priority",
+    label: "Priority",
+    sortable: true,
+    priority: "primary",
+    format: {
+      kind: "badge",
+      colorMap: {
+        high: "danger",
+        medium: "warning",
+        low: "success",
+      } as Record<
+        string,
+        "danger" | "warning" | "info" | "success" | "neutral"
+      >,
+    },
+  },
+  {
+    key: "status",
+    label: "Status",
+    sortable: true,
+    priority: "primary",
+    format: {
+      kind: "badge",
+      colorMap: {
+        "in-progress": "info",
+        open: "warning",
+        waiting: "neutral",
+        done: "success",
+      } as Record<
+        string,
+        "danger" | "warning" | "info" | "success" | "neutral"
+      >,
+    },
+  },
+];
+
+const TABLE_DATA: SupportTicket[] = (
+  [
+    {
+      id: "TKT-2847",
+      customer: "Acme Corp",
+      issue: "API authentication failing intermittently",
+      priority: "high",
+      status: "in-progress",
+      assignee: "Sarah Chen",
+      created: "2h ago",
+    },
+    {
+      id: "TKT-2839",
+      customer: "TechStart Inc",
+      issue: "Unable to export data in CSV format",
+      priority: "medium",
+      status: "open",
+      assignee: "Mike Rodriguez",
+      created: "4h ago",
+    },
+    {
+      id: "TKT-2815",
+      customer: "CloudNine",
+      issue: "User permissions not syncing across teams",
+      priority: "low",
+      status: "done",
+      assignee: "Taylor Singh",
+      created: "12h ago",
+    },
+    {
+      id: "TKT-2801",
+      customer: "Velocity Systems",
+      issue: "Email notifications delayed by 2+ hours",
+      priority: "medium",
+      status: "waiting",
+      assignee: "Alex Kim",
+      created: "16h ago",
+    },
+  ] as SupportTicket[]
+).sort((a, b) => {
+  const priorityOrder = { high: 0, medium: 1, low: 2 };
+  return priorityOrder[a.priority] - priorityOrder[b.priority];
+});
+
+const MEDIA_CARD: SerializableMediaCard = {
+  id: "rsc-guide",
+  kind: "link",
+  href: "https://react.dev/reference/rsc/server-components",
+  src: "https://react.dev/reference/rsc/server-components",
+  title: "React Server Components",
+  description:
+    "Server Components are a new type of Component that renders ahead of time, before bundling. Learn how to use them in your app.",
+  ratio: "16:9",
+  domain: "react.dev",
+  thumb:
+    "https://images.unsplash.com/photo-1633356122544-f134324a6cee?auto=format&fit=crop&q=80&w=1200",
+  createdAtISO: "2025-01-15T10:30:00.000Z",
+  source: {
+    label: "React Docs",
+    iconUrl: "https://api.dicebear.com/7.x/shapes/svg?seed=react",
+    url: "https://react.dev",
+  },
+  og: {
+    imageUrl:
+      "https://images.unsplash.com/photo-1633356122544-f134324a6cee?auto=format&fit=crop&q=80&w=1200",
+    description: "Official React documentation for Server Components.",
+    title: "React Server Components",
+  },
+};
+
+const SOCIAL_POST: SerializableSocialPost = {
+  id: "x-draft-oss",
+  platform: "x",
+  author: {
+    name: "DevTools Team",
+    handle: "devtoolsco",
+    avatarUrl:
+      "https://images.unsplash.com/photo-1599566150163-29194dcaad36?auto=format&fit=crop&q=80&w=1200",
+  },
+  text: "We're thrilled to announce that our component library is now open source! 🎉\n\nBuilt with React, TypeScript, and Tailwind. Fully accessible, customizable, and production-ready.\n\nStar us on GitHub and join the community ⭐️\n\ngithub.com/devtools/ui-kit",
+  createdAtISO: "2025-11-10T14:30:00.000Z",
+  language: "en-US",
+};
+
+const DECISION_ACTIONS: DecisionPromptAction[] = [
+  { id: "cancel", label: "Discard", variant: "ghost" },
+  { id: "edit", label: "Revise", variant: "outline" },
+  { id: "send", label: "Post Now", variant: "default" },
+];
+
+function createSceneConfigs(): SceneConfig[] {
+  return [
+    // Scene 1: Support Tickets / DataTable
+    {
+      userMessage: "Show me high-priority support tickets from this week",
+      preamble: "Here are the most urgent tickets from this week",
+      toolUI: (
+        <DataTable<SupportTicket>
+          rowIdKey="id"
+          columns={TABLE_COLUMNS}
+          data={TABLE_DATA}
+          layout="table"
+          defaultSort={{ by: "priority", direction: "asc" }}
+        />
+      ),
+      toolFallbackHeight: 320,
+    },
+    // Scene 2: RSC Guide / MediaCard
+    {
+      userMessage: "Find that React Server Components guide",
+      preamble: "Was it this one from yesterday?",
+      toolUI: <MediaCard {...MEDIA_CARD} maxWidth="420px" />,
+      toolFallbackHeight: 260,
+    },
+    // Scene 3: Open Source Release / SocialPost + DecisionPrompt
+    {
+      userMessage: "Draft a tweet about our open-source release",
+      preamble: "Here's a draft announcement:",
+      toolUI: (
+        <div className="w-full max-w-[600px] min-w-0 space-y-3">
+          <SocialPost {...SOCIAL_POST} className="w-full" maxWidth="100%" />
+          <DecisionPrompt
+            prompt="Ready to announce?"
+            actions={DECISION_ACTIONS}
+            align="right"
+            layout="inline"
+          />
+        </div>
+      ),
+      toolFallbackHeight: 480,
+    },
+  ];
+}
+
 function ToolReveal({ children }: { children: React.ReactNode }) {
   return (
     <motion.div
@@ -223,8 +379,7 @@ function useSceneTimeline({
   onComplete: () => void;
   hasUserMessage?: boolean;
 }) {
-  const [thinkingStarted, setThinkingStarted] = useState(reducedMotion);
-  const [thinkingDone, setThinkingDone] = useState(reducedMotion);
+  const [preambleReady, setPreambleReady] = useState(reducedMotion);
   const [showTool, setShowTool] = useState(reducedMotion);
   const scheduledRef = useRef(false);
 
@@ -236,49 +391,38 @@ function useSceneTimeline({
     }
   }, [reducedMotion, onComplete]);
 
-  // Start thinking after user message lands (or immediately if no user message)
+  // Start preamble after user message lands (or immediately if no user message)
   useEffect(() => {
-    if (reducedMotion || thinkingStarted) return;
+    if (reducedMotion || preambleReady) return;
     const delay = hasUserMessage
       ? MOTION.durations.userIn + MOTION.beats.afterUser
       : 0;
-    const id = window.setTimeout(() => setThinkingStarted(true), delay);
+    const id = window.setTimeout(() => setPreambleReady(true), delay);
     return () => window.clearTimeout(id);
-  }, [thinkingStarted, reducedMotion, hasUserMessage]);
-
-  // Immediately mark thinking as done once it starts (no visible bubble)
-  useEffect(() => {
-    if (reducedMotion) return;
-    if (!thinkingStarted || thinkingDone) return;
-    const id = window.setTimeout(() => setThinkingDone(true), 0);
-    return () => window.clearTimeout(id);
-  }, [thinkingStarted, thinkingDone, reducedMotion]);
+  }, [preambleReady, reducedMotion, hasUserMessage]);
 
   // Auto-advance scene after tool is shown
   useEffect(() => {
-    if (!scheduledRef.current && thinkingDone && showTool && !reducedMotion) {
+    if (!scheduledRef.current && preambleReady && showTool && !reducedMotion) {
       scheduledRef.current = true;
       const id = window.setTimeout(onComplete, MOTION.sceneHold);
       return () => window.clearTimeout(id);
     }
-  }, [thinkingDone, showTool, onComplete, reducedMotion]);
+  }, [preambleReady, showTool, onComplete, reducedMotion]);
 
   return useMemo(
     () => ({
-      thinkingStarted,
-      thinkingDone,
+      preambleReady,
       showTool,
-      setThinkingDone,
       setShowTool,
     }),
-    [thinkingStarted, thinkingDone, showTool],
+    [preambleReady, showTool],
   );
 }
 
 // Scene configuration type
 type SceneConfig = {
   userMessage?: string;
-  thinkingSteps: string[];
   preamble?: string;
   toolUI: React.ReactNode;
   toolFallbackHeight?: number;
@@ -304,101 +448,142 @@ function AnimatedScene({
     hasUserMessage: !!config.userMessage,
   });
 
-  // Use refs to keep callbacks stable across renders
-  const handlePreambleCompleteRef = useRef(() => {
-    timeline.setShowTool(true);
-  });
-
-  // Update refs when timeline changes
-  useEffect(() => {
-    handlePreambleCompleteRef.current = () => timeline.setShowTool(true);
-  }, [timeline]);
-
-  // Stable callback wrappers
   const handlePreambleComplete = useCallback(() => {
-    handlePreambleCompleteRef.current();
-  }, []);
-
-  const items = [
-    // User message (if provided)
-    ...(config.userMessage
-      ? [
-          {
-            id: `${sceneId}-user`,
-            node: (
-              <ChatBubble role="user" className="px-6 py-3">
-                {config.userMessage}
-              </ChatBubble>
-            ),
-            fallbackHeight: 64,
-            enterDurationMs: MOTION.durations.userIn,
-            enterDelayMs: 80,
-            exitDelayMs: MOTION.exitStagger.user,
-          },
-        ]
-      : []),
-    // Preamble (if provided)
-    ...(timeline.thinkingDone && config.preamble
-      ? [
-          {
-            id: `${sceneId}-preamble`,
-            node: (
-              <PreambleBubble
-                text={config.preamble}
-                reducedMotion={reducedMotion}
-                onComplete={handlePreambleComplete}
-              />
-            ),
-            fallbackHeight: 56,
-            enterDurationMs: MOTION.durations.preambleIn,
-            enterDelayMs: MOTION.beats.afterThinking,
-            exitDelayMs: MOTION.exitStagger.preamble,
-            animationType: "fade" as const,
-          },
-        ]
-      : []),
-    // Tool UI
-    ...(timeline.thinkingDone && (config.preamble ? timeline.showTool : true)
-      ? [
-          {
-            id: `${sceneId}-tool`,
-            node: (
-              <div className="flex w-full justify-start">
-                <div className="w-full max-w-[720px] *:[&_[data-slot=table]]:min-w-0">
-                  <ToolReveal>{config.toolUI}</ToolReveal>
-                </div>
-              </div>
-            ),
-            fallbackHeight: config.toolFallbackHeight ?? 280,
-            enterDurationMs: MOTION.durations.toolIn,
-            enterDelayMs: config.preamble
-              ? MOTION.beats.afterPreamble
-              : MOTION.beats.afterThinking,
-            exitDelayMs: MOTION.exitStagger.tool,
-          },
-        ]
-      : []),
-  ];
+    timeline.setShowTool(true);
+  }, [timeline]);
 
   // Trigger setShowTool if no preamble
   useEffect(() => {
-    if (!config.preamble && timeline.thinkingDone && !timeline.showTool) {
+    if (!config.preamble && timeline.preambleReady && !timeline.showTool) {
       timeline.setShowTool(true);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     config.preamble,
-    timeline.thinkingDone,
+    timeline.preambleReady,
     timeline.showTool,
     timeline.setShowTool,
   ]);
 
-  // When exiting, clear items to trigger exit animations
-  const displayItems = isExiting ? [] : items;
+  const showItems = !isExiting;
 
   return (
     <div className="h-full min-h-0 overflow-y-auto p-4 pr-3">
-      <StackedList items={displayItems} gap={45} />
+      <div className="flex flex-col">
+        <AnimatePresence>
+          {showItems && config.userMessage && (
+            <motion.div
+              key={`${sceneId}-user`}
+              initial={{ opacity: 0, y: 16, scale: 0.97 }}
+              animate={{
+                opacity: 1,
+                y: 0,
+                scale: 1,
+                transition: {
+                  type: "spring",
+                  damping: 26,
+                  stiffness: 220,
+                  mass: 0.7,
+                  delay: 0.08,
+                },
+              }}
+              exit={{
+                opacity: 0,
+                y: -8,
+                scale: 0.97,
+                transition: {
+                  type: "spring",
+                  damping: 26,
+                  stiffness: 220,
+                  mass: 0.7,
+                  delay: MOTION.exitStagger.user / 1000,
+                },
+              }}
+              className="mb-11"
+            >
+              <ChatBubble role="user" className="px-6 py-3">
+                {config.userMessage}
+              </ChatBubble>
+            </motion.div>
+          )}
+
+          {showItems && timeline.preambleReady && config.preamble && (
+            <motion.div
+              key={`${sceneId}-preamble`}
+              initial={{ opacity: 0 }}
+              animate={{
+                opacity: 1,
+                transition: {
+                  type: "spring",
+                  damping: 26,
+                  stiffness: 220,
+                  mass: 0.7,
+                  delay: MOTION.beats.beforeContent / 1000,
+                },
+              }}
+              exit={{
+                opacity: 0,
+                transition: {
+                  type: "spring",
+                  damping: 26,
+                  stiffness: 220,
+                  mass: 0.7,
+                  delay: MOTION.exitStagger.preamble / 1000,
+                },
+              }}
+              className="mb-3"
+            >
+              <PreambleBubble
+                text={config.preamble}
+                reducedMotion={reducedMotion}
+                onComplete={handlePreambleComplete}
+              />
+            </motion.div>
+          )}
+
+          {showItems &&
+            timeline.preambleReady &&
+            (config.preamble ? timeline.showTool : true) && (
+              <motion.div
+                key={`${sceneId}-tool`}
+                initial={{ opacity: 0, y: 16, scale: 0.97 }}
+                animate={{
+                  opacity: 1,
+                  y: 0,
+                  scale: 1,
+                  transition: {
+                    type: "spring",
+                    damping: 26,
+                    stiffness: 220,
+                    mass: 0.7,
+                    delay: config.preamble
+                      ? MOTION.beats.afterPreamble / 1000
+                      : MOTION.beats.beforeContent / 1000,
+                  },
+                }}
+                exit={{
+                  opacity: 0,
+                  y: -8,
+                  scale: 0.97,
+                  transition: {
+                    type: "spring",
+                    damping: 26,
+                    stiffness: 220,
+                    mass: 0.7,
+                    delay: MOTION.exitStagger.tool / 1000,
+                  },
+                }}
+                className={config.userMessage ? "" : "mb-11"}
+              >
+                <div className="flex w-full justify-start">
+                  <div className="w-full max-w-[720px] *:**:data-[slot=table]:min-w-0">
+                    <ToolReveal>{config.toolUI}</ToolReveal>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+        </AnimatePresence>
+      </div>
     </div>
   );
 }
@@ -414,209 +599,7 @@ export function ChatShowcase() {
     return () => mq.removeEventListener?.("change", onChange);
   }, []);
 
-  const tableColumns: Column<SupportTicket>[] = useMemo(
-    () => [
-      { key: "id", label: "ID", sortable: true, priority: "primary" },
-      { key: "issue", label: "Issue", sortable: false, priority: "primary" },
-      {
-        key: "priority",
-        label: "Priority",
-        sortable: true,
-        priority: "primary",
-        format: {
-          kind: "badge",
-          colorMap: {
-            high: "danger",
-            medium: "warning",
-            low: "success",
-          } as Record<
-            string,
-            "danger" | "warning" | "info" | "success" | "neutral"
-          >,
-        },
-      },
-      {
-        key: "status",
-        label: "Status",
-        sortable: true,
-        priority: "primary",
-        format: {
-          kind: "badge",
-          colorMap: {
-            "in-progress": "info",
-            open: "warning",
-            waiting: "neutral",
-            done: "success",
-          } as Record<
-            string,
-            "danger" | "warning" | "info" | "success" | "neutral"
-          >,
-        },
-      },
-    ],
-    [],
-  );
-
-  const tableData: SupportTicket[] = useMemo(() => {
-    const priorityOrder = { high: 0, medium: 1, low: 2 };
-    const tickets: SupportTicket[] = [
-      {
-        id: "TKT-2847",
-        customer: "Acme Corp",
-        issue: "API authentication failing intermittently",
-        priority: "high",
-        status: "in-progress",
-        assignee: "Sarah Chen",
-        created: "2h ago",
-      },
-      {
-        id: "TKT-2839",
-        customer: "TechStart Inc",
-        issue: "Unable to export data in CSV format",
-        priority: "medium",
-        status: "open",
-        assignee: "Mike Rodriguez",
-        created: "4h ago",
-      },
-      {
-        id: "TKT-2815",
-        customer: "CloudNine",
-        issue: "User permissions not syncing across teams",
-        priority: "low",
-        status: "done",
-        assignee: "Taylor Singh",
-        created: "12h ago",
-      },
-      {
-        id: "TKT-2801",
-        customer: "Velocity Systems",
-        issue: "Email notifications delayed by 2+ hours",
-        priority: "medium",
-        status: "waiting",
-        assignee: "Alex Kim",
-        created: "16h ago",
-      },
-    ];
-
-    return tickets.sort(
-      (a, b) => priorityOrder[a.priority] - priorityOrder[b.priority],
-    );
-  }, []);
-
-  const mediaCard: SerializableMediaCard = useMemo(
-    () => ({
-      id: "rsc-guide",
-      kind: "link",
-      href: "https://react.dev/reference/rsc/server-components",
-      src: "https://react.dev/reference/rsc/server-components",
-      title: "React Server Components",
-      description:
-        "Server Components are a new type of Component that renders ahead of time, before bundling. Learn how to use them in your app.",
-      ratio: "16:9",
-      domain: "react.dev",
-      thumb:
-        "https://images.unsplash.com/photo-1633356122544-f134324a6cee?auto=format&fit=crop&q=80&w=1200",
-      createdAtISO: "2025-01-15T10:30:00.000Z",
-      source: {
-        label: "React Docs",
-        iconUrl: "https://api.dicebear.com/7.x/shapes/svg?seed=react",
-        url: "https://react.dev",
-      },
-      og: {
-        imageUrl:
-          "https://images.unsplash.com/photo-1633356122544-f134324a6cee?auto=format&fit=crop&q=80&w=1200",
-        description: "Official React documentation for Server Components.",
-        title: "React Server Components",
-      },
-    }),
-    [],
-  );
-
-  const socialPost: SerializableSocialPost = useMemo(
-    () => ({
-      id: "x-draft-oss",
-      platform: "x",
-      author: {
-        name: "DevTools Team",
-        handle: "devtoolsco",
-        avatarUrl:
-          "https://images.unsplash.com/photo-1599566150163-29194dcaad36?auto=format&fit=crop&q=80&w=1200",
-      },
-      text: "We're thrilled to announce that our component library is now open source! 🎉\n\nBuilt with React, TypeScript, and Tailwind. Fully accessible, customizable, and production-ready.\n\nStar us on GitHub and join the community ⭐️\n\ngithub.com/devtools/ui-kit",
-      createdAtISO: "2025-11-10T14:30:00.000Z",
-      language: "en-US",
-    }),
-    [],
-  );
-
-  const decisionActions: DecisionPromptAction[] = useMemo(
-    () => [
-      { id: "cancel", label: "Discard", variant: "ghost" },
-      { id: "edit", label: "Revise", variant: "outline" },
-      { id: "send", label: "Post Now", variant: "default" },
-    ],
-    [],
-  );
-
-  const sceneConfigs: SceneConfig[] = useMemo(
-    () => [
-      // Scene 1: Support Tickets / DataTable
-      {
-        userMessage: "Show me high-priority support tickets from this week",
-        thinkingSteps: [
-          "Querying ticket database…",
-          "Filtering by priority…",
-          "Sorting by urgency…",
-        ],
-        preamble: "Here are the most urgent tickets from this week",
-        toolUI: (
-          <DataTable<SupportTicket>
-            rowIdKey="id"
-            columns={tableColumns}
-            data={tableData}
-            layout="table"
-            defaultSort={{ by: "priority", direction: "asc" }}
-          />
-        ),
-        toolFallbackHeight: 320,
-      },
-      // Scene 2: RSC Guide / MediaCard
-      {
-        userMessage: "Find that React Server Components guide",
-        thinkingSteps: [
-          "Searching documentation…",
-          "Fetching page metadata…",
-          "Generating preview…",
-        ],
-        preamble: "Was it this one from yesterday?",
-        toolUI: <MediaCard {...mediaCard} maxWidth="420px" />,
-        toolFallbackHeight: 260,
-      },
-      // Scene 3: Open Source Release / SocialPost + DecisionPrompt
-      {
-        userMessage: "Draft a tweet about our open-source release",
-        thinkingSteps: [
-          "Analyzing project details…",
-          "Crafting announcement…",
-          "Adding hashtags…",
-        ],
-        preamble: "Here's a draft announcement:",
-        toolUI: (
-          <div className="w-full max-w-[600px] min-w-0 space-y-3">
-            <SocialPost {...socialPost} className="w-full" maxWidth="100%" />
-            <DecisionPrompt
-              prompt="Ready to announce?"
-              actions={decisionActions}
-              align="right"
-              layout="inline"
-            />
-          </div>
-        ),
-        toolFallbackHeight: 480,
-      },
-    ],
-    [tableColumns, tableData, mediaCard, socialPost, decisionActions],
-  );
+  const sceneConfigs = useMemo(() => createSceneConfigs(), []);
 
   // Scene switching with exit control
   const [sceneIndex, setSceneIndex] = useState(0);

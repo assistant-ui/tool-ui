@@ -21,7 +21,7 @@ export default function HomePage({
       rightContent={<HomeViewportControls showViewportButtons={false} />}
       background={
         <div
-          className="bg-background bg-dot-grid pointer-events-none fixed inset-0 opacity-60 dark:opacity-40"
+          className="bg-background pointer-events-none fixed inset-0 opacity-60 dark:opacity-40"
           aria-hidden="true"
         />
       }
