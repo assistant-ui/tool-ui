@@ -81,36 +81,37 @@ A compact, responsive data table with sorting, declarative value formatting, and
   </Tab>
 </Tabs>
 
-## When to use
-
-- **Use Data Table when** you compare 3+ rows across shared attributes (≥2 sortable columns), need numeric/date alignment, row actions, or consistent formats, and expect the data to grow (tool/LLM output) while staying mobile-friendly via column `priority`.
-- **Prefer rich text when** the goal is narrative reading, irregular fields per item, long paragraphs/snippets, or just a few highlighted insights.
-- **Avoid**: long paragraphs or nested objects in cells, too many mobile columns (promote/demote `priority` or swap to cards), and non-primitive row values (push presentation into `columns[i].format`).
-
 ## Source & install
-Simply copy and paste `components/data-table` alongside to your shadcn/ui components dir, typically `components/ui`.
 
+We don't have a CLI yet, so you'll manually copy and paste `components/data-table`. It should sit alongside your shadcn/ui components directory:
+
+<Files>
+  <Folder name="components" defaultOpen>
+    <Folder name="ui">
+      <File name="button.tsx" />
+      <File name="table.tsx" />
+      <File name="..." />
+    </Folder>
+    <Folder name="data-table" defaultOpen>
+      <File name="data-table.tsx" />
+      <File name="schema.ts" />
+      <File name="types.ts" />
+      <File name="index.tsx" />
+      <File name="..." />
+    </Folder>
+  </Folder>
+</Files>
+
+**Download:**
 - [Source on GitHub](https://github.com/assistant-ui/tool-ui/tree/main/components/data-table)
 - [Quick download (ZIP)](https://download-directory.github.io/?url=https://github.com/assistant-ui/tool-ui/tree/main/components/data-table)
 
-## UI primitives
-
-This table wraps [shadcn/ui](https://ui.shadcn.com) primitives via a tiny adapter—swap implementations by editing `components/data-table/_ui.tsx`.
-
-| Primitive | Path |
-| --- | --- |
-| `Button` | `components/ui/button.tsx` |
-| `DropdownMenu` | `components/ui/dropdown-menu.tsx` |
-| `Accordion` | `components/ui/accordion.tsx` |
-| `Tooltip` | `components/ui/tooltip.tsx` |
-| `Badge` | `components/ui/badge.tsx` |
-| `Table` | `components/ui/table.tsx` |
-
-
 ## Features
-Short, high‑leverage features you’ll use most often, with tiny examples and why they help.
+
+Short, high‑leverage features you'll use most often, with tiny examples and why they help.
 
 ### Sorting
+
 Tri‑state sorting: none → asc → desc (click again to reset). Use controlled mode to sync with filters or the URL.
 ```tsx
 // Uncontrolled (internal tri‑state): click header to cycle none → asc → desc → none
@@ -122,6 +123,7 @@ const [sort, setSort] = useState<{ by?: keyof Row; direction?: 'asc' | 'desc' }>
 ```
 
 ### Responsive layout
+
 Container queries switch between table and cards; `priority` decides what stays visible on mobile headers.
 
 > Tailwind v4 ships container queries; on v3 install the [tailwind/container-queries](https://github.com/tailwindlabs/tailwindcss-container-queries) plugin.
@@ -143,6 +145,7 @@ const columns = [
 ```
 
 ### Declarative formatting
+
 Keep row values primitive; describe presentation in `columns[i].format`. It keeps UI consistent and LLM/tool outputs JSON‑serializable.
 ```tsx
 // Keep data primitive; describe presentation in format
@@ -152,45 +155,158 @@ Keep row values primitive; describe presentation in `columns[i].format`. It keep
 ```
 
 ### Accessibility
+
 - Header buttons are focusable; `aria-sort` reflects state for screen readers
 - A live region announces sort changes; rows and cells read with labels
 - Table toggles `aria-busy` when loading so assistive tech knows data is pending
 
-## Data shape
+## Example Usage
 
-Primitive rows ensure LLM/tool output is JSON-serializable and renderable.
+<Tabs items={["Assistant UI", "AI SDK"]}>
+  <Tab>
+```tsx
+// ============================================================
+// Server: Define tool (app/api/assistant/route.ts)
+// ============================================================
+import { tool } from 'ai';
+import { serializableDataTableSchema } from '@/components/data-table/schema';
 
-<TypeTable
-  type={{
-    data: {
-      description: "Rows to render. Each row is a record of JSON‑serializable values.",
-      type: "T[]",
-      required: true,
+export const tools = {
+  searchProducts: tool({
+    description: 'Search products and return results in a table',
+    outputSchema: serializableDataTableSchema,
+    async execute({ query }) {
+      const results = await db.products.search(query);
+      return {
+        columns: [
+          { key: 'name', label: 'Product', priority: 'primary' },
+          { key: 'price', label: 'Price', format: { kind: 'currency', currency: 'USD' } },
+          { key: 'stock', label: 'Stock', align: 'right' },
+        ],
+        data: results.map(p => ({ id: p.id, name: p.name, price: p.price, stock: p.stock })),
+      };
     },
-    "Row Type T": {
-      description: "Record of JSON primitives or arrays of primitives.",
-      type: "DataTableRowData = Record<string, RowPrimitive>",
-      typeDescriptionLink: "components/data-table/types.ts:35",
-    },
-    RowPrimitive: {
-      description:
-        "string | number | boolean | null | arrays of these. Do not place objects, Dates, Maps, or functions in row values.",
-      type: "string | number | boolean | null | JsonPrimitive[]",
-      typeDescriptionLink: "components/data-table/types.ts:34",
-    },
-  }}
-/>
+  }),
+};
 
-## API at a glance
+// ============================================================
+// Client: Render in chat (components/MyAssistant.tsx)
+// ============================================================
+import { Thread } from '@assistant-ui/react';
+import { DataTable, parseSerializableDataTable } from '@/components/data-table';
+
+export function MyAssistant() {
+  return (
+    <Thread
+      tools={{
+        searchProducts: (args, result) => {
+          if (!result) return null;
+          const props = parseSerializableDataTable(result);
+          return <DataTable rowIdKey="id" {...props} />;
+        },
+      }}
+    />
+  );
+}
+```
+  </Tab>
+  <Tab>
+```tsx
+// ============================================================
+// Server: Define tool (app/api/chat/route.ts)
+// ============================================================
+import { streamText, tool } from 'ai';
+import { openai } from '@ai-sdk/openai';
+import { serializableDataTableSchema } from '@/components/data-table/schema';
+
+export async function POST(req: Request) {
+  const { messages } = await req.json();
+
+  const result = streamText({
+    model: openai('gpt-4o'),
+    messages,
+    tools: {
+      searchProducts: tool({
+        description: 'Search products and return results in a table',
+        outputSchema: serializableDataTableSchema,
+        async execute({ query }) {
+          const results = await db.products.search(query);
+          return {
+            columns: [
+              { key: 'name', label: 'Product', priority: 'primary' },
+              { key: 'price', label: 'Price', format: { kind: 'currency', currency: 'USD' } },
+              { key: 'stock', label: 'Stock', align: 'right' },
+            ],
+            data: results.map(p => ({ id: p.id, name: p.name, price: p.price, stock: p.stock })),
+          };
+        },
+      }),
+    },
+  });
+
+  return result.toDataStreamResponse();
+}
+
+// ============================================================
+// Client: Render in chat (app/page.tsx)
+// ============================================================
+import { useChat } from '@ai-sdk/react';
+import { DataTable, parseSerializableDataTable } from '@/components/data-table';
+
+export default function Chat() {
+  const { messages } = useChat({ api: '/api/chat' });
+
+  return (
+    <div>
+      {messages.map((m) => (
+        <div key={m.id}>
+          {m.toolInvocations?.map((tool) => {
+            if (tool.toolName === 'searchProducts' && tool.state === 'result') {
+              const props = parseSerializableDataTable(tool.result);
+              return <DataTable key={tool.toolCallId} rowIdKey="id" {...props} />;
+            }
+            return null;
+          })}
+        </div>
+      ))}
+    </div>
+  );
+}
+```
+  </Tab>
+</Tabs>
+
+## Props
+
+Data Table accepts serializable rows where each row is a record of JSON primitives (`string`, `number`, `boolean`, `null`) or arrays of primitives. Do not place objects, Dates, Maps, or functions in row values—use `format` configs for presentation instead.
 
 ### Data
 
 <TypeTable
   type={{
     columns: { description: "Column definitions", type: "Column<T>[]", required: true },
-    data: { description: "Serializable rows (see Data shape)", type: "T[]", required: true },
+    data: { description: "Serializable rows", type: "T[]", required: true },
     rowIdKey: { description: "Stable unique key in each row", type: "keyof T" },
     locale: { description: "Intl locale for formatting", type: "string", default: '"en-US"' },
+  }}
+/>
+
+### Columns
+
+Each column in the `columns` array defines how a data field is displayed:
+
+<TypeTable
+  type={{
+    key: { description: "Maps to a key in the row data", type: "keyof T", required: true },
+    label: { description: "Display text for column header", type: "string", required: true },
+    abbr: { description: "Abbreviated label for narrow viewports", type: "string" },
+    sortable: { description: "Enable sorting for this column", type: "boolean", default: "true" },
+    align: { description: "Text alignment for cells", type: "'left' | 'right' | 'center'", default: "'left'" },
+    width: { description: "Fixed width (CSS value)", type: "string" },
+    truncate: { description: "Truncate text with ellipsis", type: "boolean", default: "false" },
+    priority: { description: "Mobile display priority (primary = always visible, secondary = expandable, tertiary = hidden)", type: "'primary' | 'secondary' | 'tertiary'" },
+    hideOnMobile: { description: "Completely hide on mobile", type: "boolean", default: "false" },
+    format: { description: "Formatting config for cell values (see Formatting section)", type: "FormatConfig" },
   }}
 />
 
@@ -225,15 +341,11 @@ Primitive rows ensure LLM/tool output is JSON-serializable and renderable.
   }}
 />
 
-Full types: components/data-table/types.ts
+## Formatting
 
-## FormatConfig
-All visual formatting for data stays declarative via `columns[i].format`.
+All visual formatting for data stays declarative via `columns[i].format`. Keep row values as primitives (strings, numbers, booleans) and describe presentation through format configs.
 
-<details className="mt-4">
-  <summary className="cursor-pointer text-sm font-medium text-primary">Show formatting kinds</summary>
-  <div className="mt-4 space-y-4">
-    <TypeTable
+<TypeTable
       type={{
         number: {
           description: (
@@ -352,65 +464,4 @@ All visual formatting for data stays declarative via `columns[i].format`.
         },
       }}
     />
-  </div>
-</details>
 
-## Recipes
-
-<div className="flex flex-wrap items-center justify-between gap-3">
-  <p className="text-sm text-muted-foreground">Copy a snippet or jump into the live presets.</p>
-  <a
-    className="text-sm text-primary underline underline-offset-4"
-    href="/docs/data-table?tab=examples#examples"
-  >
-    Open Examples tab
-  </a>
-</div>
-
-### Controlled sorting
-```tsx
-const [sort, setSort] = useState<{ by?: keyof Row; direction?: 'asc' | 'desc' }>({});
-<DataTable columns={columns} data={data} sort={sort} onSortChange={setSort} />
-```
-
-### Actions with confirmation
-```tsx
-<DataTable
-  actions={[{ id: 'delete', label: 'Delete', variant: 'destructive', requiresConfirmation: true }]}
-  onBeforeAction={({ action, row }) => action.requiresConfirmation ? window.confirm(`Delete ${String((row as any).issue)}?`) : true}
-  onAction={(id, row) => doAction(id, row)}
-/>
-```
-
-### Mobile priorities
-```tsx
-const columns = [
-  { key: 'name', label: 'Name', priority: 'primary' },
-  { key: 'price', label: 'Price', align: 'right', priority: 'primary' },
-  { key: 'category', label: 'Category', priority: 'secondary' },
-  { key: 'sku', label: 'SKU', priority: 'tertiary' },
-];
-```
-
-### Fixed width + truncate
-```tsx
-{ key: 'issue', label: 'Issue', width: '160px', truncate: true }
-```
-
-### Locale + Intl formatting
-```tsx
-<DataTable locale="de-DE" columns={[{ key: 'price', label: 'Preis', align: 'right', format: { kind: 'currency', currency: 'EUR' } }]} data={[{ price: 19.5 }]} />
-```
-
-### Loading, empty states, and max height
-```tsx
-<DataTable isLoading emptyMessage="No items" maxHeight="400px" columns={columns} data={[]} />
-```
-
-## Tips & troubleshooting
-- Validate untrusted/LLM output with `parseSerializableDataTable` before rendering
-- Reuse the Advanced tool examples if you need typed tool parts or schema guards
-- Verify `onAction` is passed and IDs match when row actions do nothing
-- Keep controlled sorting in sync via `onSortChange`, or drop `sort` for the built-in tri-state
-- Confirm container queries (Tailwind v4 or the plugin) when the mobile card layout never appears
-- Adjust `priority` or `hideOnMobile` if columns disappear on compact screens

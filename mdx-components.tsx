@@ -10,6 +10,7 @@ import {
 } from "fumadocs-ui/components/tabs";
 import { TypeTable } from "fumadocs-ui/components/type-table";
 import { DynamicCodeBlock } from "fumadocs-ui/components/dynamic-codeblock";
+import { Files, File, Folder } from "fumadocs-ui/components/files";
 import * as React from "react";
 import { AutoLinkChildren, withAutoLink } from "@/lib/docs-autolink";
 
@@ -76,6 +77,9 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
     TabsContent,
     Tab,
     TypeTable,
+    Files,
+    File,
+    Folder,
     AutoLinkChildren,
     ...components,
   };
