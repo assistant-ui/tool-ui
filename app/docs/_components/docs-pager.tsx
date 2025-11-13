@@ -71,16 +71,16 @@ export function DocsPager() {
 
   return (
     <div className="not-prose mt-24">
-      <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex flex-row items-center justify-between gap-4">
         {prev ? (
           <PagerLink href={prev.path} label={prev.label} direction="prev" />
         ) : (
-          <span className="hidden flex-1 sm:block" />
+          <span className="flex-1" />
         )}
         {next ? (
           <PagerLink href={next.path} label={next.label} direction="next" />
         ) : (
-          <span className="hidden flex-1 sm:block" />
+          <span className="flex-1" />
         )}
       </div>
     </div>

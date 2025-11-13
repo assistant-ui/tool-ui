@@ -8,6 +8,7 @@ import { Menu } from "lucide-react";
 import { FaGithub } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
 import { componentsRegistry } from "@/lib/components-config";
+import { BASE_DOCS_PAGES } from "@/app/docs/_components/docs-pages";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -20,11 +21,13 @@ export function MobileNavSheet() {
   const [showScrollIndicator, setShowScrollIndicator] = React.useState(true);
 
   const isHome = pathname === "/";
-  const isComponents = pathname === "/docs/gallery" || pathname === "/docs";
+  const isDocs = pathname.startsWith("/docs") && pathname !== "/docs/gallery";
+  const isComponents = pathname === "/docs/gallery";
   const isBuilder = pathname.startsWith("/builder");
 
   const mainNavLinks = [
     { href: "/", label: "Home", isActive: isHome },
+    { href: "/docs/overview", label: "Docs", isActive: isDocs },
     { href: "/docs/gallery", label: "Components", isActive: isComponents },
     { href: "/builder", label: "Builder", isActive: isBuilder },
   ];
@@ -41,7 +44,7 @@ export function MobileNavSheet() {
         <Button
           variant="default"
           size="icon"
-          className="fixed right-4 bottom-4 z-50 size-14 rounded-full shadow-lg md:hidden"
+          className="MobileNavSheet-trigger z-50 size-14 rounded-full shadow-lg md:hidden"
           aria-label="Open navigation"
         >
           <Menu className="size-6" />
@@ -103,9 +106,38 @@ export function MobileNavSheet() {
                   <div className="my-3 px-8">
                     <Separator />
                   </div>
+
+                  {/* Docs Section */}
                   <div className="flex flex-col gap-1 px-4 py-8">
                     <div className="text-muted-foreground mb-3 px-4 text-xs tracking-widest uppercase">
-                      Jump to component
+                      Get Started
+                    </div>
+
+                    {BASE_DOCS_PAGES.map((page) => {
+                      const isActive = pathname === page.path;
+
+                      return (
+                        <Link
+                          key={page.path}
+                          href={page.path}
+                          onClick={() => setPresented(false)}
+                          className={cn(
+                            "text-primary rounded-lg px-4 py-3.5",
+                            isActive
+                              ? "bg-muted text-foreground font-medium"
+                              : "text-primary hover:bg-muted/50 hover:text-foreground",
+                          )}
+                        >
+                          {page.label}
+                        </Link>
+                      );
+                    })}
+                  </div>
+
+                  {/* Components Section */}
+                  <div className="flex flex-col gap-1 px-4 pb-8">
+                    <div className="text-muted-foreground mb-3 px-4 text-xs tracking-widest uppercase">
+                      Components
                     </div>
 
                     {componentsRegistry.map((component) => {
