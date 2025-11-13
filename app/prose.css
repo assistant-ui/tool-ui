@@ -5,7 +5,7 @@
   }
 
   .prose :where(h1):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
-    @apply text-4xl mt-0 mb-2 flex items-center gap-3 flex-wrap font-medium;
+    @apply text-4xl mt-0 mb-2 flex items-center gap-3 flex-wrap font-semibold;
   }
 
   .prose :where(h2):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
