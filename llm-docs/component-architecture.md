@@ -78,7 +78,7 @@ export {
 
 	•	Style with Tailwind classes and our CSS variables; no custom theme context inside component files.
 
-⸻
+
 
 Props & Schemas (template)
 
@@ -133,7 +133,7 @@ Root props:
 export type MyComponentProps = SerializableMyComponent & MyComponentClientProps;
 
 
-⸻
+
 
 Context & State Pattern
 	•	Export Provider and a use<Component>() hook for subparts:
@@ -166,7 +166,7 @@ export function MyComponentProvider({ value, children }: { value: MyComponentCon
 
 	•	Root component owns the controlled/uncontrolled state merge, then passes the resolved state via context.
 
-⸻
+
 
 Layout & Slots (repeatable pattern)
 	•	Use slots to keep DOM readable and override-friendly:
@@ -214,7 +214,7 @@ export function MyComponent(props: MyComponentProps) {
 
 Note: The outer <article> provides @container + semantics. The inner shadcn Card handles spacing and default surface visuals.
 
-⸻
+
 
 Responsiveness
 	•	Mark root with @container and compose container-query classes in slots:
@@ -223,7 +223,7 @@ Responsiveness
 	•	Use style={{ aspectRatio }} for media frames; choose sensible defaults per kind:
 	•	image: cover, video: contain with preload="metadata", audio: compact row.
 
-⸻
+
 
 Accessibility Checklist (apply to every new component)
 	•	Structure: <article> when self-contained content; <header>, <footer>, <time dateTime> when applicable; lang={locale} passthrough.
@@ -232,7 +232,7 @@ Accessibility Checklist (apply to every new component)
 	•	Keyboard: interactive surfaces support Enter/Space; focus ring visible.
 	•	Links: no nested anchors. Use a LinkOverlay when the entire card is clickable. External links set rel="noopener noreferrer".
 
-⸻
+
 
 Navigation & Actions
 	•	Normalized actions with IDs (e.g., open, copyLink, download, muteToggle).
@@ -242,7 +242,7 @@ Navigation & Actions
 	•	onNavigate(href) (called from every anchor/button that navigates)
 	•	Optimistic UI state (e.g., toggling mute) is fine; external effects belong to the host app.
 
-⸻
+
 
 Performance Guidelines
 	•	Images: loading="lazy" + decoding="async", set width/height where known to reduce CLS.
@@ -250,21 +250,21 @@ Performance Guidelines
 	•	Memoize derived values (splitText, formatted times) if expensive.
 	•	Defer heavy work to caller; components render given data—no implicit fetching.
 
-⸻
+
 
 Error Handling & Skeletons
 	•	Provide a local error-boundary.tsx for opt‑in protection around complex render paths.
 	•	Skeletons should mirror layout (e.g., avatar line + media rectangle), not a generic gray block.
 	•	Add state: "loading" | "error" to serializable props when your component must reflect tool run states.
 
-⸻
+
 
 Testing (quick hits)
 	•	Schema parses valid payloads and rejects invalid ones (image without alt, missing src, bad URLs).
 	•	A11y snapshot: buttons expose aria-pressed when toggled; <time> present when createdAtISO.
 	•	No nested anchors when LinkOverlay is used; onNavigate fires once per click.
 
-⸻
+
 
 LLM “Do/Don’t” for New Components
 
@@ -281,7 +281,7 @@ Don’t
 	•	Use dangerouslySetInnerHTML.
 	•	Create hard-coded platform brand clones.
 
-⸻
+
 
 Example: Slot Anatomy (Minimal)
 
@@ -331,7 +331,7 @@ export function Actions() {
 }
 
 
-⸻
+
 
 Final Notes
 	•	Components should be platform‑inspired where appropriate but not brand clones.

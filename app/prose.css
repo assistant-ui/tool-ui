@@ -68,7 +68,7 @@
   }
 
   .prose :where(code):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
-    @apply px-1.5 py-1 rounded-md font-mono border-none bg-primary/15;
+    @apply px-1.5 py-1 rounded-md font-mono border-none bg-primary/10 dark:bg-primary/15;
   }
 
   /* Remove Tailwind Typography's visible backtick quotes around inline code */
