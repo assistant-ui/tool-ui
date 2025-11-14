@@ -7,25 +7,25 @@ Tool UI is a React component library for rendering rich, interactive UIs when LL
 Instead of plain text, your tools return **structured JSON** that renders as **beautiful, interactive UI components** directly in your chat interface.
 
 
-## Why use Tool UI?
+## Why Use Tool UI?
 
-**Predictable rendering**  
+**Predictable rendering**
 Tools emit structured, schema-validated JSON. Components render that structure consistently across conversations, themes, and devices.
 
-**Built for chat constraints**  
-Layouts are tuned for narrow viewports and stacked message flows: mobile-first, keyboard- and screen-reader friendly, with minimal chrome.
+**Built for chat constraints**
+Layouts are tuned for narrow viewports and stacked message flows—mobile-first, keyboard- and screen-reader friendly, with minimal chrome.
 
-**Developer control**  
+**Developer control**
 Components only render. Your app owns all side effects via callbacks like `onAction`—server actions, client handlers, routing; you decide.
 
-**Schema-validated**  
+**Schema-validated**
 Each component ships a serializable schema. Validate tool outputs on the server, parse them on the client, and keep types in sync.
 
-**Stack-agnostic**  
-Use any model/provider and any chat orchestration. The only contract is: “tool returns JSON that matches this schema.”
+**Stack-agnostic**
+Use any model/provider and any chat orchestration. The only contract is: "tool returns JSON that matches this schema."
 
 
-## How it works
+## How It Works
 
 ```txt
 Assistant calls tool → JSON output → <Component {...props} /> → User interacts → Your app handles it
@@ -37,10 +37,10 @@ The assistant decides when to call tools. Tool UI renders the output. You handle
 
 ## Components
 
-**Data Table** – Display structured data with sorting and row actions
-**Media Card** – Preview links, images, video, and audio
-**Decision Prompt** – Get binary or multi-option confirmations
-**Social Post** – Display user-generated content with interactions
+- **Data Table** — Display structured data with sorting and row actions
+- **Media Card** — Preview links, images, video, and audio
+- **Decision Prompt** — Get binary or multi-option confirmations
+- **Social Post** — Display user-generated content with interactions
 
 
 
@@ -48,16 +48,16 @@ The assistant decides when to call tools. Tool UI renders the output. You handle
 
 Tool UI works with any React app, but integrates best with assistant-ui.
 
-**Your backend:** Define tools that return JSON matching component schemas
-**The LLM:** Decides when to call tools and fills the schemas
-**Your client:** Renders components and handles user interactions
+- **Your backend:** Define tools that return JSON matching component schemas
+- **The LLM:** Decides when to call tools and fills the schemas
+- **Your client:** Renders components and handles user interactions
 
 With assistant-ui you get automatic tool registration, streaming, and state management.
 
 
 
-## Next steps
+## Next Steps
 
-[Quick Start](/docs/quick-start) – Get your first Tool UI working
-[Components](/docs/data-table) – Explore the available components
-[UI Guidelines](/docs/design-guidelines) – Learn the interaction patterns
+- [**Quick Start**](/docs/quick-start) — Get your first Tool UI working
+- [**Components**](/docs/data-table) — Explore the available components
+- [**UI Guidelines**](/docs/design-guidelines) — Learn the interaction patterns

@@ -2,19 +2,19 @@ import { DocsHeader } from "../_components/docs-header";
 
 <DocsHeader title="Advanced" />
 
-Deep‑dive topics for stronger typing and larger integrations.
+Deep-dive topics for stronger typing and larger integrations.
 
-## Tool type inference
+## Tool Type Inference
 
 With `InferUITools` in AI SDK 5, you can infer tool input/output types from your tool set and get fully typed `message.parts` in the UI.
 
-- [InferUITools reference](https://ai-sdk.dev/docs/reference/ai-sdk-ui/infer-ui-tools)
+- [**InferUITools reference**](https://ai-sdk.dev/docs/reference/ai-sdk-ui/infer-ui-tools)
 
 <Steps>
 
 <Step>
 
-### Define tools with output schemas
+### Define Tools with Output Schemas
 
 ```ts title="lib/tools.ts"
 import { tool } from 'ai';
@@ -49,7 +49,7 @@ export type Tools = typeof tools;
 <Step>
 
 
-### Use tools on the server
+### Use Tools on the Server
 
 ```ts
 import { streamText, convertToModelMessages } from 'ai';
@@ -75,7 +75,7 @@ export async function POST(req: Request) {
 <Step>
 
 
-### Infer UI-level types in the client
+### Infer UI-Level Types in the Client
 
 ```tsx
 'use client';
@@ -118,15 +118,19 @@ export default function Chat() {
 
 
 ## Tips
-- **Keep runtime boundaries clean**  
+
+- **Keep runtime boundaries clean**
   Export only types from `lib/tools.ts` to the client; never import server code into the browser.
-- **Single-tool helpers**  
+
+- **Single-tool helpers**
   For a single tool, `InferUITool` works the same way as `InferUITools` but for one tool definition.
-- **End-to-end validation**  
-  Use the component’s `outputSchema` on the server and `parseSerializableX` on the client to validate at both ends.
-- **Lifecycle-aware rendering**  
-  Use `part.state` to respect the Tool UI lifecycle from UI Guidelines￼:  
-  - `state === 'invocation'` → show intent / shell  
-  - `state === 'output-pending'` → show skeleton / loading shell  
-  - `state === 'output-available'` → render the full component  
+
+- **End-to-end validation**
+  Use the component's `outputSchema` on the server and `parseSerializableX` on the client to validate at both ends.
+
+- **Lifecycle-aware rendering**
+  Use `part.state` to respect the Tool UI lifecycle from UI Guidelines:
+  - `state === 'invocation'` → show intent / shell
+  - `state === 'output-pending'` → show skeleton / loading shell
+  - `state === 'output-available'` → render the full component
   - `state === 'errored'` → show an error surface instead of silently failing

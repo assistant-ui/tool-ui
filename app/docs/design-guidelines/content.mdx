@@ -7,9 +7,9 @@ Design principles and interaction patterns for Tool UIs.
 > **Note:** We're continuously expanding these guidelines with concrete examples and patterns from real usage.
 
 
-## Core principles
+## Core Principles
 
-### One move per surface
+### One Move per Surface
 
 Each Tool UI supports a single action: show data, capture decisions, adjust parameters, or display state.
 
@@ -17,13 +17,13 @@ Split multi-purpose surfaces into separate Tool UIs to keep them focused and cle
 
 **Example:** Render search results separately from filtering controls. Show the table first, then offer filters as needed.
 
-### Inline, not destination
+### Inline, Not Destination
 
 Tool UIs live inside messages, supporting the current turn without becoming separate destinations.
 
 Keep users in the conversation context. Richer views should be explicit actions, not defaults.
 
-### Assistant-anchored
+### Assistant-Anchored
 
 The assistant introduces, interprets, and follows up on every Tool UI.
 
@@ -35,7 +35,7 @@ Each Tool UI represents a collaboration: the UI provides structure, the assistan
 - **During:** Explain transitions → *"Q3 spike driven by Enterprise tier"*
 - **After:** Summarize outcomes → *"Changes applied to main branch"*
 
-### Schema-driven
+### Schema-Driven
 
 Tool UIs render from structured outputs matching a published schema. The schema is the contract, the UI its expression.
 
@@ -45,7 +45,7 @@ Tool UIs render from structured outputs matching a published schema. The schema 
 - **Semantic:** Use machine-readable labels that translate to natural language
 - **Temporal:** Add timestamps for staleness detection
 
-### Receipts for side effects
+### Receipts for Side Effects
 
 Any Tool UI triggering side effects (send, delete, spend, apply, call APIs) must leave a durable receipt.
 
@@ -70,7 +70,7 @@ Initial rendering of the Tool UI shell.
 - **Context setting:** Assistant provides context in surrounding message
 - **Visual stability:** Initial frame stays stable as data loads
 
-### Loading and streaming
+### Loading and Streaming
 
 Data arrives in chunks or streams.
 
@@ -78,7 +78,7 @@ Data arrives in chunks or streams.
 - **Layout stability:** Maintain consistent outer dimensions during load
 - **Progressive disclosure:** Show first items quickly, add "View more" for long results
 
-### Interactive window
+### Interactive Window
 
 User can modify inputs, select actions, or approve changes.
 
@@ -87,7 +87,7 @@ User can modify inputs, select actions, or approve changes.
 - **Destructive safety:** Two-step confirmation for dangerous actions
 - **Assistant collaboration:** Surface for proposing changes and highlighting options
 
-### Commit and side effects
+### Commit and Side Effects
 
 Execution of actions with external impact.
 
@@ -96,7 +96,7 @@ Execution of actions with external impact.
 - **Progress tracking:** Display steps/phases, not just spinners
 - **State transition:** Move from interactive to receipt after commit
 
-### Receipt state
+### Receipt State
 
 Compact, permanent summary after completion.
 
@@ -106,7 +106,7 @@ Compact, permanent summary after completion.
 
 Receipts appear as collapsed prompts or final non-interactive states.
 
-### Stale, retried, superseded
+### Stale, Retried, Superseded
 
 Outdated or replaced Tool UIs.
 
@@ -122,7 +122,7 @@ Outdated or replaced Tool UIs.
 
 Every Tool UI has a single role defining *why* it exists. Name the role first.
 
-### Information surfaces
+### Information Surfaces
 
 Structure tool output for scannability.
 
@@ -134,7 +134,7 @@ Structure tool output for scannability.
 - Default to glanceable views with progressive detail
 - **Lifecycle:** Invocation → Loading → Interactive → Stale/Superseded
 
-### Decision surfaces
+### Decision Surfaces
 
 Request user choice.
 
@@ -146,7 +146,7 @@ Request user choice.
 - Replace controls with receipts after completion
 - **Must reach:** Clear committed/receipt state
 
-### Control surfaces
+### Control Surfaces
 
 Adjust tool or assistant behavior.
 
@@ -158,7 +158,7 @@ Adjust tool or assistant behavior.
 - Cheap to apply, easy to revert
 - **Longevity:** Stay interactive longer; supersede when context shifts
 
-### State and observability surfaces
+### State and Observability Surfaces
 
 Show tool and assistant activity.
 
@@ -170,7 +170,7 @@ Show tool and assistant activity.
 - Tightly coupled to related messages
 - **Long operations:** Update state, avoid endless spinners
 
-### Composite surfaces
+### Composite Surfaces
 
 Blend multiple roles.
 
@@ -187,7 +187,7 @@ Blend multiple roles.
 
 Tool UIs and chat express the same intent through different modalities.
 
-### Every control has a sentence
+### Every Control Has a Sentence
 
 Important actions must map to simple sentences:
 
@@ -197,7 +197,7 @@ Important actions must map to simple sentences:
 
 If the assistant can't describe an action in words, the UI is too opaque.
 
-### Referencing surfaces in conversation
+### Referencing Surfaces in Conversation
 
 Enable pointing at specific UIs and elements:
 
@@ -210,7 +210,7 @@ Enable pointing at specific UIs and elements:
 - Stable element identifiers for runtime resolution
 - Ambiguous references resolve to most recent/active surface
 
-### Editing and rerunning
+### Editing and Rerunning
 
 Support iterative refinement:
 
@@ -222,7 +222,7 @@ Support iterative refinement:
 
 Support re-invocation with different parameters.
 
-### Assistant narration
+### Assistant Narration
 
 Assistant messages are part of the UI experience.
 
@@ -233,21 +233,21 @@ Assistant messages are part of the UI experience.
 Clear labels, structure, and receipts enable natural narration.
 
 
-## Design checklist
+## Design Checklist
 
 Validate new Tool UIs against:
 
-### Core design
+### Core Design
 
-- [ ] **Role declaration** → Information, Decision, Control, State, or Composite?
-- [ ] **Lifecycle mapping** → Which phases? What triggers transitions?
-- [ ] **Receipt generation** → Side effects must produce durable receipts
+- [ ] **Role declaration** — Information, Decision, Control, State, or Composite?
+- [ ] **Lifecycle mapping** — Which phases? What triggers transitions?
+- [ ] **Receipt generation** — Side effects must produce durable receipts
 
-### Technical requirements
+### Technical Requirements
 
-- [ ] **Schema-driven** → Fully reconstructable from schema alone
-- [ ] **Conversational mapping** → Every action expressible as a sentence
-- [ ] **Staleness handling** → Clear aging indicators and refresh options
-- [ ] **Supersession strategy** → When to update vs. replace
+- [ ] **Schema-driven** — Fully reconstructable from schema alone
+- [ ] **Conversational mapping** — Every action expressible as a sentence
+- [ ] **Staleness handling** — Clear aging indicators and refresh options
+- [ ] **Supersession strategy** — When to update vs. replace
 
 If a Tool UI fails multiple items, simplify, split, or redesign.

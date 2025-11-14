@@ -9,7 +9,7 @@ Get Tool UI working in your app in minutes. This guide uses assistant-ui (recomm
 
 <Steps>
 
-<Step title="1. Initialize assistant-ui">
+<Step title="Initialize assistant-ui">
 
 Set up the assistant-ui runtime provider that manages the connection between your frontend and backend. This handles message streaming, tool execution, and state management.
 
@@ -33,7 +33,7 @@ function App() {
 
 </Step>
 
-<Step title="2. Define a backend tool">
+<Step title="Define a backend tool">
 
 Create a tool on your server that the LLM can call. The tool returns structured JSON that matches a Tool UI component schema. Here we're creating a link preview tool that returns data for the MediaCard component.
 
@@ -76,7 +76,7 @@ export async function POST(req: Request) {
 
 </Step>
 
-<Step title="3. Register the Tool UI">
+<Step title="Register the Tool UI">
 
 Connect your backend tool to a frontend component. When the LLM calls the `previewLink` tool, assistant-ui will automatically render the MediaCard component with the returned data.
 
@@ -131,18 +131,18 @@ OPENAI_API_KEY=sk-...
 ```
 
 
-## Other frameworks
+## Other Frameworks
 
 Tool UI components work with any React app. Without assistant-ui, you'll need to manually parse tool outputs and render components. For the best experience, we recommend using assistant-ui.
 
 
-## Runtime options
+## Runtime Options
 
 assistant-ui supports multiple runtimes: AI SDK, LangGraph, LangServe, Mastra, or custom backends. The examples above use AI SDK v5.
 
 
-## Next steps
+## Next Steps
 
-- [Explore components](/docs/data-table) – Data Table, Media Card, Decision Prompt, Social Post
-- [UI Guidelines](/docs/design-guidelines) – Learn the interaction patterns
-- [Examples](https://github.com/assistant-ui/assistant-ui/tree/main/examples) – Full implementations
+- [**Explore Components**](/docs/data-table) — Data Table, Media Card, Decision Prompt, Social Post
+- [**UI Guidelines**](/docs/design-guidelines) — Learn the interaction patterns
+- [**Examples**](https://github.com/assistant-ui/assistant-ui/tree/main/examples) — Full implementations

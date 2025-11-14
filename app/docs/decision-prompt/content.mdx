@@ -43,39 +43,46 @@ A decision surface for binary and multi-option confirmations inside the chat str
 
 
 
-## When to use Decision Prompt
+## When to Use Decision Prompt
 
 - **Good for:** Send/discard decisions, approval flows, choosing between clear options
 - **Not for:** Complex forms, low-risk toggles
 
-## Key features
+## Key Features
 
-- **Human-in-the-loop** – Explicit user confirmation before actions
-- **Multi-option support** – Binary or multiple choice prompts
-- **Destructive safeguards** – Extra confirmation for dangerous actions
-- **Loading states** – Show progress during async operations
-- **Receipt pattern** – Collapse to summary after decision
+- **Human-in-the-loop** — Explicit user confirmation before actions
+- **Multi-option support** — Binary or multiple choice prompts
+- **Destructive safeguards** — Extra confirmation for dangerous actions
+- **Loading states** — Show progress during async operations
+- **Receipt pattern** — Collapse to summary after decision
 
 
-## Source and install
+## Source and Install
 
-Copy `components/decision-prompt` into your project:
+Copy `components/decision-prompt` into your project. It should sit alongside your shadcn/ui components directory:
 
 <Files>
   <Folder name="components" defaultOpen>
+    <Folder name="ui">
+      <File name="button.tsx" />
+      <File name="alert.tsx" />
+      <File name="..." />
+    </Folder>
     <Folder name="decision-prompt" defaultOpen>
       <File name="decision-prompt.tsx" />
       <File name="schema.ts" />
       <File name="types.ts" />
       <File name="index.tsx" />
       <File name="error-boundary.tsx" />
+      <File name="..." />
     </Folder>
   </Folder>
 </Files>
 
 ### Download
-- [Source on GitHub](https://github.com/assistant-ui/tool-ui/tree/main/components/decision-prompt)  
-- [Quick download (ZIP)](https://download-directory.github.io/?url=https://github.com/assistant-ui/tool-ui/tree/main/components/decision-prompt)
+
+- [**Source on GitHub**](https://github.com/assistant-ui/tool-ui/tree/main/components/decision-prompt)
+- [**Quick download (ZIP)**](https://download-directory.github.io/?url=https://github.com/assistant-ui/tool-ui/tree/main/components/decision-prompt)
 
 
 
