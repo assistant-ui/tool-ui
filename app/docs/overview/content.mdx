@@ -2,62 +2,158 @@ import { DocsHeader } from "../_components/docs-header";
 
 <DocsHeader title="Overview" />
 
-Tool UI is a React component library for rendering rich, interactive UIs when LLMs execute tools. Built by the [assistant-ui](https://github.com/assistant-ui/assistant-ui) team.
+Tool UI is a React component framework for **conversation‑native** UIs inside AI chats.  
+Tools return **JSON**; Tool UI renders it as **inline, narrated, referenceable** surfaces.
 
-Instead of plain text, your tools return **structured JSON** that renders as **beautiful, interactive UI components** directly in your chat interface.
+## At a glance
 
+- **Conversation‑native components** that live *inside messages*, optimized for chat width and scroll.
+- **Schema‑first rendering**: every surface is driven by a serializable schema with stable IDs.
+- **Assistant‑anchored**: the assistant introduces, interprets, and closes each surface.
+- **Stack‑agnostic**: works with any LLM/provider and orchestration layer.
 
-## Why Use Tool UI?
+## Where it fits
 
-### Predictable rendering
-Tools emit structured, schema-validated JSON. Components render that structure consistently across conversations, themes, and devices.
+Radix/shadcn (primitives) → **Tool UI** (conversation‑native components & schema) → AI SDK / LangGraph / etc. (LLM orchestration)
 
-### Built for chat constraints
-Layouts are tuned for narrow viewports and stacked message flows: mobile-first, keyboard and screen-reader friendly, with minimal chrome.
+## Who it’s for
 
-### Developer control
-Components only render. Your app owns all side effects via callbacks like `onAction`—server actions, client handlers, routing; you decide.
+- **React devs & design engineers** building LLM chat apps.
+- Teams who want **predictable, accessible** UI that the assistant can **reference** (“the second row”).
+- Anyone who wants **typed, schema‑validated** tool outputs instead of brittle HTML strings.
 
-### Schema-validated
-Each component ships a serializable schema. Validate tool outputs on the server, parse them on the client, and keep types in sync.
+## Why Tool UI
 
-### Stack-agnostic
-Use any model/provider and any chat orchestration. The only contract is: "tool returns JSON that matches this schema."
+- **Predictable rendering** — Tools emit schema‑validated JSON; components render consistently across themes/devices.
+- **Built for chat** — Mobile‑first, glanceable, minimal chrome; no in‑message navigation flows.
+- **Developer control** — Components render; **your app** owns side effects via callbacks/server actions.
+- **Type safety** — Serializable schemas on the server, parsers on the client; works great with AI SDK `InferUITools`.
+- **Lifecycle & time aware** — Clear phases and honest “As of …” markers; stale/superseded behavior is explicit.
 
+## Mental model
 
-## How It Works
+See **[UI Guidelines](/docs/design-guidelines)** for the full philosophy. Quick summary:
+
+- **5 Fundamentals:** One intent · Inline · Schema‑first · Assistant‑anchored · Lifecycle & temporal honesty
+- **Roles:** `information`, `decision`, `control`, `state`, `composite`
+- **Lifecycle:** `invocation → output‑pending → interactive → committing → receipt → errored`
+- **Conversation coherence:** Every important action ↔ one **canonical sentence**; side effects yield a **durable receipt** (status, summary, identifiers, timestamp)
+
+## How it works
+
+The assistant calls a tool, the tool returns JSON matching a schema, and the UI renders inline.
 
 ```txt
-Assistant calls tool → JSON output → <Component {...props} /> → User interacts → Your app handles it
+Assistant calls tool → JSON output → <Component {...props} /> → User interacts → Your app handles effects
 ```
 
-The assistant decides when to call tools. Tool UI renders the output. You handle the interactions.
+### Minimal example
+
+**Server side:** Define a tool that returns schema-validated JSON.
+
+**What this demonstrates:**
+- `serializableMediaCardSchema` from `@tool-ui/media-card` ensures type-safe output
+- The returned object includes temporal metadata (`asOf`) for freshness tracking
+- Actions are defined with both UI labels and canonical sentences for conversation coherence
+- The schema guarantees the frontend receives reconstructable, addressable data
+
+```ts title="Server — define a tool with an output schema"
+import { streamText, tool } from "ai";
+import { openai } from "@ai-sdk/openai";
+import { z } from "zod";
+import { serializableMediaCardSchema } from "@tool-ui/media-card";
+
+export async function POST(req: Request) {
+  const { messages } = await req.json();
+
+  const result = streamText({
+    model: openai("gpt-4o"),
+    messages,
+    tools: {
+      previewLink: tool({
+        description: "Show a preview card for a URL",
+        inputSchema: z.object({ url: z.string().url() }),
+        outputSchema: serializableMediaCardSchema,
+        async execute({ url }) {
+          return {
+            id: "link-1",
+            kind: "link",
+            href: url,
+            title: "Example Site",
+            description: "A description of the linked content",
+            thumb: "https://example.com/image.jpg",
+            asOf: new Date().toISOString(),
+            actions: [{ id: "open", label: "Open", sentence: "Open the link" }],
+          };
+        },
+      }),
+    },
+  });
+
+  return result.toUIMessageStreamResponse();
+}
+```
+
+**Client side:** Register the component and let assistant-ui handle rendering.
+
+**What this demonstrates:**
+- `makeAssistantToolUI` connects the tool name to a React component
+- The `result` object is automatically typed and validated against your schema
+- Simply mounting `<PreviewLinkUI />` registers it—no manual plumbing required
+- assistant-ui manages the runtime, streaming, and tool call lifecycle
+
+```tsx title="Client — render with assistant-ui"
+"use client";
+import { AssistantRuntimeProvider } from "@assistant-ui/react";
+import { useChatRuntime, AssistantChatTransport, makeAssistantToolUI } from "@assistant-ui/react-ai-sdk";
+import { MediaCard } from "@tool-ui/media-card";
+
+const PreviewLinkUI = makeAssistantToolUI({
+  toolName: "previewLink",
+  render: ({ result }) => <MediaCard {...result} maxWidth="420px" />,
+});
+
+export default function App() {
+  const runtime = useChatRuntime({ transport: new AssistantChatTransport({ api: "/api/chat" }) });
+  return (
+    <AssistantRuntimeProvider runtime={runtime}>
+      <PreviewLinkUI />
+      {/* your <Thread /> component here */}
+    </AssistantRuntimeProvider>
+  );
+}
+```
+
+## Anatomy of a surface
+
+Every Tool UI surface is addressable and reconstructable. Here's the common schema structure:
+
+**What this shows:**
+- `id` makes the surface referenceable ("the second card")
+- `role` declares the primary purpose (information, decision, control, state, or composite)
+- `asOf` enables temporal honesty and staleness detection
+- `actions` with `sentence` fields enable natural language interaction
+- `receipt` provides durable proof of side effects with timestamps and identifiers
+
+```ts
+{
+  id: string;                     // stable across turns
+  role: "information"|"decision"|"control"|"state"|"composite";
+  asOf?: string;                  // ISO time for freshness
+  actions?: Array<{ id: string; label: string; sentence: string }>;
+  // optional receipt after side effects:
+  receipt?: {
+    outcome: "success"|"partial"|"failed"|"cancelled";
+    summary: string;
+    identifiers?: Record<string, string>;
+    at: string;                   // ISO timestamp
+  };
+}
+```
 
 
+## Next steps
 
-## Components
-
-- **Data Table** — Display structured data with sorting and row actions
-- **Media Card** — Preview links, images, video, and audio
-- **Decision Prompt** — Get binary or multi-option confirmations
-- **Social Post** — Display user-generated content with interactions
-
-
-
-## Integration
-
-Tool UI works with any React app, but integrates best with assistant-ui.
-
-- **Your backend:** Define tools that return JSON matching component schemas
-- **The LLM:** Decides when to call tools and fills the schemas
-- **Your client:** Renders components and handles user interactions
-
-With assistant-ui you get automatic tool registration, streaming, and state management.
-
-
-
-## Next Steps
-
-- [**Quick Start**](/docs/quick-start) — Get your first Tool UI working
-- [**Components**](/docs/data-table) — Explore the available components
-- [**UI Guidelines**](/docs/design-guidelines) — Learn the interaction patterns
+- **[Quick Start](/docs/quick-start)** — Wire your first Tool UI
+- **[UI Guidelines](/docs/design-guidelines)** — Patterns, roles, lifecycle, receipts
+- **[Components](/docs/data-table)** — Explore Data Table, Media Card, Decision Prompt, Social Post

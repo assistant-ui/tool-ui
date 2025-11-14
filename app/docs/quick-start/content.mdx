@@ -13,6 +13,11 @@ Get Tool UI working in your app in minutes. This guide uses assistant-ui (recomm
 
 Set up the assistant-ui runtime provider that manages the connection between your frontend and backend. This handles message streaming, tool execution, and state management.
 
+**What this demonstrates:**
+- `useChatRuntime` creates a runtime that connects to your backend API
+- `AssistantChatTransport` handles the communication protocol with your `/api/chat` endpoint
+- `AssistantRuntimeProvider` makes the runtime available to all child components
+
 ```tsx
 "use client";
 import { AssistantRuntimeProvider } from "@assistant-ui/react";
@@ -36,6 +41,12 @@ function App() {
 <Step title="Define a backend tool">
 
 Create a tool on your server that the LLM can call. The tool returns structured JSON that matches a Tool UI component schema. Here we're creating a link preview tool that returns data for the MediaCard component.
+
+**What this demonstrates:**
+- `serializableMediaCardSchema` ensures your tool output matches the MediaCard component's expected format
+- The `outputSchema` validates that returned data is type-safe and serializable
+- Your tool can fetch real data (APIs, databases) and return it in the component schema format
+- The LLM decides when to call this tool based on the description and user intent
 
 ```ts
 import { streamText, tool } from "ai";
@@ -80,6 +91,13 @@ export async function POST(req: Request) {
 
 Connect your backend tool to a frontend component. When the LLM calls the `previewLink` tool, assistant-ui will automatically render the MediaCard component with the returned data.
 
+**What this demonstrates:**
+- `makeAssistantToolUI` creates a component that listens for tool calls by name
+- Type parameters specify the tool's input schema and output schema for full type safety
+- The `toolName` must exactly match your backend tool name
+- `result` contains the validated data from your backend tool's `execute` function
+- Simply including `<PreviewLinkUI />` in your app registers the UI for that tool
+
 ```tsx
 import { makeAssistantToolUI } from "@assistant-ui/react";
 import { MediaCard, type SerializableMediaCard } from "@tool-ui/media-card";
@@ -114,17 +132,19 @@ That's it! When a user asks the assistant to preview a link, it will call your t
 
 ## Installation
 
+The quickest way to get started is using the assistant-ui CLI, which will set up your project with all necessary dependencies:
+
 ```sh
 npx assistant-ui@latest init
 ```
 
-Or install manually:
+Or install packages manually if you prefer to configure yourself:
 
 ```sh
 pnpm add @assistant-ui/react @assistant-ui/react-ai-sdk ai @ai-sdk/openai zod
 ```
 
-Add your API key:
+Add your OpenAI API key to your environment variables:
 
 ```env
 OPENAI_API_KEY=sk-...

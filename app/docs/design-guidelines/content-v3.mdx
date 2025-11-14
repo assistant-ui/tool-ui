@@ -2,25 +2,25 @@ import { DocsHeader } from "../_components/docs-header";
 
 <DocsHeader title="UI Guidelines" />
 
-Core principles for building conversation-native Tool UIs.
+Core principles for building conversation-native Tool UIs. This document will be tuned over time as we iterate and learn.
 
 ## Fundamentals
 
 Every Tool UI follows these 5 rules:
 
-### 1. One Intent per Surface
+### One Intent per Surface
 Each instance does one primary job. A table that filters, exports, and schedules is three surfaces, not one.
 
-### 2. Inline, Not Destination
+### Inline, Not Destination
 Tool UIs live inside messages. No fullscreen takeovers, no mini-apps. They support the conversation, not replace it.
 
-### 3. Schema-First & Addressable
+### Schema-First & Addressable
 Components render from JSON with stable IDs (surface + key children) enabling references like *"the second row"* or *"the card above"*. Include `asOf` when freshness matters.
 
-### 4. Assistant-Anchored
-The assistant narrates every Tool UI—before, during, and after. The UI never “speaks” silently.
+### Assistant-Anchored
+The assistant narrates every Tool UI before, during, and after interaction. The UI never "speaks" silently.
 
-### 5. Temporal & Lifecycle Aware
+### Temporal & Lifecycle Aware
 Surfaces move through explicit phases and show honest timestamps. Canonical lifecycle:
 **invocation → output-pending → interactive → committing → receipt → errored**.
 
@@ -28,11 +28,21 @@ Surfaces move through explicit phases and show honest timestamps. Canonical life
 
 Every Tool UI declares its primary role:
 
-- **Information** – Display data (e.g., DataTable, MediaCard)
-- **Decision** – Capture choices (e.g., DecisionPrompt)  
-- **Control** – Adjust behavior (filters, parameter chips)
-- **State** – Expose internal tool/assistant activity (observability)
-- **Composite** – Primary + secondary (e.g., DataTable with actions = “information with control”)
+- **Information**: Display data (e.g., DataTable, MediaCard)
+- **Decision**: Capture choices (e.g., DecisionPrompt)
+- **Control**: Adjust behavior (filters, parameter chips)
+- **State**: Expose internal tool/assistant activity (observability)
+- **Composite**: Primary + secondary (e.g., DataTable with actions = "information with control")
+
+## Lifecycle
+
+Tool UIs follow predictable phases:
+
+**invocation → output-pending → interactive → committing → receipt → errored**
+
+Temporal overlays: **fresh** | **active** | **stale** | **historical** | **superseded**.
+
+Significant changes or time gaps: create a new surface and mark the old one **superseded** rather than silently updating stale data.
 
 ## Required Invariants
 
@@ -51,42 +61,30 @@ Every Tool UI declares its primary role:
 - **No layout thrash during streaming** (skeleton matches final layout; no container resize)
 - Errors as **first-class surfaces**, not toasts
 
-## Default Budgets
-
-- **Cognitive**: 3-second glance, ≤3 choices visible, ≤2 disclosure levels
-- **Performance**: Show a meaningful first frame quickly; avoid container resize during streaming
-- **Density**: No inner scrollbars (use “View more”)
-
-## Lifecycle
-
-Tool UIs follow predictable phases:
-
-**invocation → output-pending → interactive → committing → receipt → errored**
-
-Temporal overlays: **fresh** | **active** | **stale** | **historical** | **superseded**.  
-Significant changes or time gaps: create a new surface and mark the old one **superseded** rather than silently updating stale data.
 
 ## Conversation Coherence
 
 Every UI action has a natural language equivalent:
 
-| UI Action | Canonical Sentence | User Says | Assistant Confirms |
-|-----------|--------------------|-----------|--------------------|
-| Click "Approve" | "Approve PR #42" | "yes, approve it" | "Approved PR #42." |
-| Select rows 2–4 | "Select items 2 through 4" | "those three" | "Selected 3 items." |
+**Example 1: Approving an action**
+- UI Action: Click "Approve"
+- Canonical Sentence: "Approve PR #42"
+- User: "yes, approve it"
+- Assistant: "Approved PR #42."
+
+**Example 2: Selecting items**
+- UI Action: Select rows 2-4
+- Canonical Sentence: "Select items 2 through 4"
+- User: "those three"
+- Assistant: "Selected 3 items."
 
 This enables the **Triadic Loop**: User ⇄ Assistant ⇄ Tool UI, where the assistant interprets all interactions.
 
 ## Anti-Patterns
 
-Don’t build these:
-- **Forms in chat** – Multi-field forms pretending to be Tool UIs
-- **Hidden mutations** – Side effects without receipts
-- **Kitchen sinks** – Dashboards crammed into messages
-- **Mini-apps** – Navigation flows inside Tool UIs
+Don't build these:
 
-## Learn More
-
-- **[Components](/docs/data-table)** – See these principles in practice
-- **[Contributing](/docs/contributing)** – Build new components
-- **[Advanced](/docs/advanced)** – Type inference & lifecycle details
+- **Forms in chat**: Multi-field forms pretending to be Tool UIs
+- **Hidden mutations**: Side effects without receipts
+- **Kitchen sinks**: Dashboards crammed into messages
+- **Mini-apps**: Navigation flows inside Tool UIs
