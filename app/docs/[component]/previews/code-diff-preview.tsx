@@ -17,7 +17,11 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 
-export function CodeDiffPreview({ withContainer = true }: { withContainer?: boolean }) {
+export function CodeDiffPreview({
+  withContainer = true,
+}: {
+  withContainer?: boolean;
+}) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -150,7 +154,7 @@ export function CodeDiffPreview({ withContainer = true }: { withContainer?: bool
             onAction={async (event) => {
               console.log("CodeDiff action:", event);
               alert(
-                `Action ${event.actionId} on ${event.scope} (${event.file?.path ?? "diff"})`,
+                `Action ${event.actionId} on ${event.scope} (${"file" in event ? event.file.path : "diff"})`,
               );
             }}
           />
@@ -217,12 +221,12 @@ function PreviewControls({
 }: PreviewControlsProps) {
   return (
     <div className="border-border/60 border-t pt-4">
-      <p className="text-muted-foreground text-xs font-semibold uppercase tracking-wide">
+      <p className="text-muted-foreground text-xs font-semibold tracking-wide uppercase">
         Component state
       </p>
       <div className="mt-4 space-y-4">
         <div>
-          <Label className="text-xs text-muted-foreground">
+          <Label className="text-muted-foreground text-xs">
             Streaming stage
           </Label>
           <div className="mt-2 flex flex-col gap-1">
@@ -234,7 +238,7 @@ function PreviewControls({
               onChange={(event) =>
                 onStreamStageChange(Number(event.target.value))
               }
-              className="accent-primary h-1 w-full cursor-pointer appearance-none rounded-full bg-muted"
+              className="accent-primary bg-muted h-1 w-full cursor-pointer appearance-none rounded-full"
             />
             <span className="text-muted-foreground text-xs">
               Stage {Math.min(streamStage + 1, maxStreamStage + 1)} /{" "}
@@ -295,7 +299,7 @@ function ControlGroup({
 }) {
   return (
     <div>
-      <Label className="text-xs text-muted-foreground">{label}</Label>
+      <Label className="text-muted-foreground text-xs">{label}</Label>
       <div className="mt-2 flex flex-wrap gap-2">{children}</div>
     </div>
   );
@@ -312,7 +316,7 @@ function ToggleRow({
 }) {
   return (
     <div className="flex items-center justify-between gap-4">
-      <span className="text-sm text-foreground">{label}</span>
+      <span className="text-foreground text-sm">{label}</span>
       <Switch checked={checked} onCheckedChange={onCheckedChange} />
     </div>
   );

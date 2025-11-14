@@ -6,6 +6,7 @@ import { MediaCardConfig } from "@/lib/media-card-presets";
 import { DecisionPromptConfig } from "@/lib/decision-prompt-presets";
 import { CodeDiffConfig } from "@/lib/code-diff-presets";
 import { DynamicCodeBlock } from "fumadocs-ui/components/dynamic-codeblock";
+import { cn } from "@/lib/utils";
 
 interface CodePanelProps {
   componentId: string;
@@ -46,6 +47,8 @@ export function CodePanel({
   sort,
   isLoading,
   emptyMessage,
+  className,
+  mode: _mode,
 }: CodePanelProps) {
   const generateDataTableCode = () => {
     if (!config) return "";
@@ -406,7 +409,7 @@ ${controlBlock}/>`;
   const code = generateCode();
 
   return (
-    <div className="relative mx-4 mt-12">
+    <div className={cn("relative mx-4 mt-12", className)}>
       <DynamicCodeBlock
         lang="tsx"
         code={code}
