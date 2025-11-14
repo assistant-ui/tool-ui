@@ -73,7 +73,7 @@ export function MobileNavSheet() {
             </div>
 
             {/* Top Scroll Indicator Gradient */}
-            <div className="from-background pointer-events-none absolute top-0 right-0 left-0 z-10 h-24 rounded-tl-xl rounded-tr-xl bg-gradient-to-b to-transparent" />
+            <div className="from-background pointer-events-none absolute top-0 right-0 left-0 z-10 h-24 rounded-tl-xl rounded-tr-xl bg-linear-to-b to-transparent" />
 
             <Scroll.Root className="scrollbar-subtle relative flex-1 overflow-hidden">
               <Scroll.View

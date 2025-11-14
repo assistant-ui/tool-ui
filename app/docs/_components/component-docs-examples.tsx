@@ -71,7 +71,7 @@ function ComponentDocsExamplesInner({
       <div
         className={cn(
           "sticky top-0 z-20 flex items-center justify-center gap-2 border-b px-3 py-2 sm:px-6 sm:py-3",
-          "bg-background/95 supports-[backdrop-filter]:bg-background/60 backdrop-blur",
+          "bg-background/95 supports-backdrop-filter:bg-background/60 backdrop-blur",
         )}
         role="tablist"
         aria-label="Component view"
