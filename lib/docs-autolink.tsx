@@ -8,6 +8,10 @@ type Pattern = { match: string; href: string };
 // Static patterns for external libraries
 const externalPatterns: Pattern[] = [
   { match: "shadcn/ui", href: "https://ui.shadcn.com" },
+  {
+    match: "assistant-ui",
+    href: "https://www.assistant-ui.com/",
+  },
   { match: "radix", href: "https://www.radix-ui.com" },
   { match: "Zod", href: "https://zod.dev" },
 ];
@@ -118,7 +122,11 @@ function cloneWithChildren(
     el.props as object,
     "children",
   );
-  if (skip || !hasChildren || (el.props as { children?: ReactNode }).children == null) {
+  if (
+    skip ||
+    !hasChildren ||
+    (el.props as { children?: ReactNode }).children == null
+  ) {
     return key != null ? React.cloneElement(el, { key }) : el;
   }
   const nextChildren = transform(

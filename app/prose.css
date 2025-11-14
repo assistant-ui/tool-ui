@@ -34,7 +34,7 @@
   }
 
   .prose :where(a):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
-    @apply text-primary font-medium hover:text-primary/80 transition-colors;
+    @apply text-primary font-medium hover:text-primary/80 transition-colors decoration-1;
   }
 
   .prose :where(strong):not(:where([class~="not-prose"], [class~="not-prose"] *)) {

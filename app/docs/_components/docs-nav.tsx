@@ -29,7 +29,6 @@ export function DocsNav() {
       {
         "justify-center px-0": collapsed,
         "text-primary bg-primary/5": isActive,
-        "text-muted-foreground": !isActive,
       },
     );
 
@@ -67,7 +66,7 @@ export function DocsNav() {
         {/* Docs Section */}
         <div className="flex flex-col gap-1 px-4 pt-4">
           {!collapsed && (
-            <div className="text-primary/40 mb-3 cursor-default px-4 text-xs tracking-widest uppercase select-none">
+            <div className="text-primary/60 mb-3 cursor-default px-4 text-xs tracking-widest uppercase select-none">
               Get Started
             </div>
           )}
@@ -93,7 +92,7 @@ export function DocsNav() {
         {/* Components Section */}
         <div className="flex flex-col gap-1 px-4 pt-8">
           {!collapsed && (
-            <div className="text-primary/40 mb-3 cursor-default px-4 text-xs tracking-widest uppercase select-none">
+            <div className="text-primary/60 mb-3 cursor-default px-4 text-xs tracking-widest uppercase select-none">
               Components
             </div>
           )}

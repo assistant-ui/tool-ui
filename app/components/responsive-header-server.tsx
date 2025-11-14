@@ -27,9 +27,7 @@ export function ResponsiveHeader({ rightContent }: ResponsiveHeaderProps) {
     <div className="flex gap-4 pt-[calc(env(safe-area-inset-top)+0.5rem)] pb-3 md:gap-8 md:pt-8">
       <div className="flex w-fit shrink-0 items-end justify-start gap-3 md:items-center">
         <Link href="/">
-          <h1 className="-mb-1 text-xl font-semibold tracking-wide md:mb-0">
-            Tool UI
-          </h1>
+          <h1 className="-mb-1 text-xl font-bold md:mb-0">Tool UI</h1>
         </Link>
         <Badge
           variant="outline"
@@ -41,7 +39,7 @@ export function ResponsiveHeader({ rightContent }: ResponsiveHeaderProps) {
 
       {/* Desktop Navigation */}
       <div className="hidden flex-1 items-center justify-between md:flex">
-        <nav className="flex items-center">
+        <nav className="flex items-center gap-1">
           {navLinks.map(({ href, label, external }) =>
             external ? (
               <Link
@@ -49,7 +47,7 @@ export function ResponsiveHeader({ rightContent }: ResponsiveHeaderProps) {
                 href={href}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-lg px-4 py-2 text-sm font-medium transition-colors"
+                className="hover:text-foreground hover:bg-muted/50 rounded-lg px-4 py-2 text-sm font-medium transition-colors"
               >
                 {label}
               </Link>
