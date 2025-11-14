@@ -4,7 +4,7 @@ import { DocsHeader } from "../_components/docs-header";
 
 Guidelines for contributing new components to Tool UI.
 
-This page is for people working **inside this repo**—building or modifying components—not for app integrators.
+This page is for people working **inside this repo**. It covers building or modifying components, not app integration.
 
 
 ## Component Structure
@@ -13,28 +13,28 @@ Each component lives in `components/component-name/` with this file organization
 
 ### Core Files
 
-- `schema.ts` — Serializable schema and parser (`serializableXSchema`, `parseSerializableX`)
-- `types.ts` — TypeScript type definitions (serializable props, client props, internal types)
-- `component-name.tsx` — Main component implementation
-- `index.tsx` — Public exports (component, types, parser, error boundary)
-- `error-boundary.tsx` — Error boundary wrapper for the component
+- `schema.ts`: Serializable schema and parser (`serializableXSchema`, `parseSerializableX`)
+- `types.ts`: TypeScript type definitions (serializable props, client props, internal types)
+- `component-name.tsx`: Main component implementation
+- `index.tsx`: Public exports (component, types, parser, error boundary)
+- `error-boundary.tsx`: Error boundary wrapper for the component
 
 ### Sub-Components (as needed)
 
-- `header.tsx`, `body.tsx`, `footer.tsx`, `actions.tsx` — Smaller composable pieces
-- `context.tsx` — React context for shared state within the component
+- `header.tsx`, `body.tsx`, `footer.tsx`, `actions.tsx`: Smaller composable pieces
+- `context.tsx`: React context for shared state within the component
 
 ### Utilities
 
-- `_ui.tsx` — Re-exports shadcn/ui primitives (adapter pattern so consumers can swap them)
-- `_cn.ts` — Utility functions (typically just re-exports `cn`)
-- `formatters.tsx` — Data formatting helpers (if needed)
-- `utilities.ts` — Component-specific helper functions
+- `_ui.tsx`: Re-exports shadcn/ui primitives (adapter pattern so consumers can swap them)
+- `_cn.ts`: Utility functions (typically just re-exports `cn`)
+- `formatters.tsx`: Data formatting helpers (if needed)
+- `utilities.ts`: Component-specific helper functions
 
 ### Documentation
 
-- `README.md` — Component overview, features, installation, API reference
-- `usage-docs.md` — Detailed usage examples and patterns (optional)
+- `README.md`: Component overview, features, installation, API reference
+- `usage-docs.md`: Detailed usage examples and patterns (optional)
 
 
 ## Implementation Checklist
@@ -47,13 +47,13 @@ Each component lives in `components/component-name/` with this file organization
 
 Before coding:
 
-- **Intent** — One-sentence purpose in a chat context (for example, "Inline approval prompt for destructive actions.")
-- **Role** — One of: information, decision, control, observability, or composite (see [UI Guidelines](/docs/design-guidelines))
-- **Serializable schema** — Design the Zod schema with JSON-serializable props only (no functions, Dates, class instances)
-- **Required vs optional fields** — Which props are essential? Which have safe defaults?
-- **States** — How does it handle loading, empty, error, interactive, and receipt states?
-- **Addressability** — How are rows, actions, and sub-elements identified so the assistant can refer to them in later turns?
-- **Actions** — What actions can users take, and what parameters do we send back to the app?
+- **Intent**: One-sentence purpose in a chat context (for example, "Inline approval prompt for destructive actions.")
+- **Role**: One of: information, decision, control, observability, or composite (see [UI Guidelines](/docs/design-guidelines))
+- **Serializable schema**: Design the Zod schema with JSON-serializable props only (no functions, Dates, class instances)
+- **Required vs optional fields**: Which props are essential? Which have safe defaults?
+- **States**: How does it handle loading, empty, error, interactive, and receipt states?
+- **Addressability**: How are rows, actions, and sub-elements identified so the assistant can refer to them in later turns?
+- **Actions**: What actions can users take, and what parameters do we send back to the app?
 
 </Step>
 
@@ -63,19 +63,19 @@ Before coding:
 
 Implementation pattern:
 
-1. `schema.ts` — Define `serializableXSchema` and `parseSerializableX(input: unknown)`
-2. `types.ts` — Create:
+1. `schema.ts`: Define `serializableXSchema` and `parseSerializableX(input: unknown)`
+2. `types.ts`: Create:
    - Serializable props type (derived from the schema)
    - Client props type (serializable props + callbacks like `onAction`, `onBeforeAction`)
-3. `_ui.tsx` — Re-export the shadcn/ui primitives you need (buttons, cards, and so on)
-4. `component-name.tsx` — Build the main component, focused on:
+3. `_ui.tsx`: Re-export the shadcn/ui primitives you need (buttons, cards, and so on)
+4. `component-name.tsx`: Build the main component, focused on:
    - Single intent and role
    - Lifecycle states from [UI Guidelines](/docs/design-guidelines)
    - Minimal but clear chrome
-5. Sub-components — Extract header/body/footer/actions when the component grows
-6. `context.tsx` — Use React context only when sub-components genuinely need shared state
-7. `error-boundary.tsx` — Wrap the component so bad props don't crash the whole chat
-8. `index.tsx` — Export the public API (component, types, parser, error boundary)
+5. Sub-components: Extract header/body/footer/actions when the component grows
+6. `context.tsx`: Use React context only when sub-components genuinely need shared state
+7. `error-boundary.tsx`: Wrap the component so bad props don't crash the whole chat
+8. `index.tsx`: Export the public API (component, types, parser, error boundary)
 
 </Step>
 
@@ -85,8 +85,8 @@ Implementation pattern:
 
 Create clear documentation:
 
-- **README.md** — Features, installation instructions, basic usage, props table
-- **usage-docs.md** (optional) — Advanced patterns, edge cases, integration examples
+- **README.md**: Features, installation instructions, basic usage, props table
+- **usage-docs.md** (optional): Advanced patterns, edge cases, integration examples
 - Include at least one example that shows:
   - Tool definition with `outputSchema`
   - Server-side execution returning serializable props
@@ -101,12 +101,12 @@ Create clear documentation:
 
 Ensure the component meets standards:
 
-- **Accessibility** — WCAG AA contrast, usable touch targets, keyboard navigation, screen reader labels
-- **Responsive** — Works on mobile (320px) through desktop widths
-- **No scroll traps** — Avoid inner scroll areas when possible; let the chat container handle scrolling
-- **Reduced motion** — Respect `prefers-reduced-motion` for animations
-- **Error handling** — Validate props, show graceful error states, use error boundaries
-- **Performance** — Avoid unnecessary re-renders and layout thrash
+- **Accessibility**: WCAG AA contrast, usable touch targets, keyboard navigation, screen reader labels
+- **Responsive**: Works on mobile (320px) through desktop widths
+- **No scroll traps**: Avoid inner scroll areas when possible; let the chat container handle scrolling
+- **Reduced motion**: Respect `prefers-reduced-motion` for animations
+- **Error handling**: Validate props, show graceful error states, use error boundaries
+- **Performance**: Avoid unnecessary re-renders and layout thrash
 
 </Step>
 
@@ -117,13 +117,13 @@ Ensure the component meets standards:
 
 All components must follow the [UI Guidelines](/docs/design-guidelines). In practice, that means:
 
-- **Single intent** — One primary job per component instance
-- **Clear role** — Information, decision, control, or observability (composites must name a primary role)
-- **Conversation-first** — Compact, glanceable, and readable in a few seconds
-- **Receipt-aware** — Any action with side effects must have a receipt pattern
-- **Schema-driven** — Props must be derivable from a serializable schema
-- **Serializable vs client-only** — Keep serializable props separate from client-only props (callbacks, ReactNodes, and so on), with clear naming between the two
-- **Accessible by default** — Keyboard, screen reader, and contrast-friendly out of the box
+- **Single intent**: One primary job per component instance
+- **Clear role**: Information, decision, control, or observability (composites must name a primary role)
+- **Conversation-first**: Compact, glanceable, and readable in a few seconds
+- **Receipt-aware**: Any action with side effects must have a receipt pattern
+- **Schema-driven**: Props must be derivable from a serializable schema
+- **Serializable vs client-only**: Keep serializable props separate from client-only props (callbacks, ReactNodes, and so on), with clear naming between the two
+- **Accessible by default**: Keyboard, screen reader, and contrast-friendly out of the box
 
 Use UI Guidelines for philosophy; this page is about how to express that philosophy in code.
 
@@ -132,10 +132,10 @@ Use UI Guidelines for philosophy; this page is about how to express that philoso
 
 When you are ready to contribute:
 
-1. **Test thoroughly** — Check across viewports, themes, and basic assistive tech (screen reader, keyboard only)
-2. **Document completely** — README with features, API, and at least one end-to-end example
-3. **Follow conventions** — Match existing component patterns and file structure
-4. **Open a PR** — Include screenshots or screen recordings, and link to the relevant docs section
+1. **Test thoroughly**: Check across viewports, themes, and basic assistive tech (screen reader, keyboard only)
+2. **Document completely**: README with features, API, and at least one end-to-end example
+3. **Follow conventions**: Match existing component patterns and file structure
+4. **Open a PR**: Include screenshots or screen recordings, and link to the relevant docs section
 
 Questions? [Open an issue on GitHub](https://github.com/assistant-ui/tool-ui/issues) or [reach out on Discord](https://discord.com/channels/1251324227668283443).
 

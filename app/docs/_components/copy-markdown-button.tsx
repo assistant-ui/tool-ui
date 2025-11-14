@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Check, Copy as CopyIcon } from "lucide-react";
 import * as React from "react";
 
-const MARKDOWN_SNIPPET = `# Tool UI — Quick Start (Assistant‑UI + Vercel AI SDK)
+const MARKDOWN_SNIPPET = `# Tool UI: Quick Start (Assistant‑UI + Vercel AI SDK)
 
 ## Server: API route (Vercel AI SDK)
 

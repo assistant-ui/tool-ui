@@ -29,8 +29,8 @@ Surfaces move through explicit phases and show honest timestamps. Canonical life
 Every Tool UI declares its primary role:
 
 - **Information**: Display data (e.g., DataTable, MediaCard)
-- **Decision**: Capture choices (e.g., DecisionPrompt)
-- **Control**: Adjust behavior (filters, parameter chips)
+- **Decision**: Capture consequential choices that require commitment and produce receipts (e.g., approve/reject prompts, send/cancel dialogs)
+- **Control**: Adjust parameters that modify behavior without commitment. Safe, iterative, no side effects (e.g., filters, sort, date ranges)
 - **State**: Expose internal tool/assistant activity (observability)
 - **Composite**: Primary + secondary (e.g., DataTable with actions = "information with control")
 

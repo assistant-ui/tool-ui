@@ -6,14 +6,14 @@ Design principles and interaction patterns for Tool UIs in conversational AI.
 
 ## Why Tool UI Exists
 
-Traditional component libraries (Radix, shadcn/ui) excel at building interfaces. Tool UI is different—it's the first framework designed for components that are:
+Traditional component libraries (Radix, shadcn/ui) excel at building interfaces. Tool UI is different. It's the first framework designed for components that are:
 
 - **Narrated** by AI assistants
 - **Referenced** in natural language  
 - **Ephemeral** but referenceable in the transcript
 - **Conversation-native** from the ground up
 
-This isn't "components with AI sprinkled on top"—it's a fundamental rethink of UI for the age of conversational AI.
+This isn't "components with AI sprinkled on top". It's a fundamental rethink of UI for the age of conversational AI.
 
 Tool UI is the conversation-native layer between your UI primitives (Radix/shadcn) and your AI stack (AI SDK, LangGraph, etc.).
 
@@ -149,7 +149,7 @@ If a surface enables two unrelated outcomes, split it. A table that filters, exp
 
 Tool UIs live inside messages, optimized for chat width and scroll context.
 
-No fullscreen takeovers, no nested navigation, no mini-apps. Tool UIs support the conversation—they don't replace it. Richer views should be explicit user choices ("Open in app"), not automatic behaviors.
+No fullscreen takeovers, no nested navigation, no mini-apps. Tool UIs support the conversation. They don't replace it. Richer views should be explicit user choices ("Open in app"), not automatic behaviors.
 
 ### 3. Schema-First, Conversation-Ready
 
@@ -223,21 +223,21 @@ Every Tool UI has a primary role defining why it exists.
 
 ### Core Contract 🔴
 
-- **Single outcome & declared role** — One intent, one of the 5 roles
-- **Serializable from schema alone** — No hidden client-only state
-- **Stable IDs** — Surface and key children are addressable
+- **Single outcome & declared role**: One intent, one of the 5 roles
+- **Serializable from schema alone**: No hidden client-only state
+- **Stable IDs**: Surface and key children are addressable
 
 ### Conversation Requirements 🔴
 
-- **Actions carry canonical sentences** — Every button/control maps to natural language
-- **Receipts for side effects** — Durable, timestamped, referenceable
-- **Temporal honesty** — Show `asOf` timestamps and staleness
+- **Actions carry canonical sentences**: Every button/control maps to natural language
+- **Receipts for side effects**: Durable, timestamped, referenceable
+- **Temporal honesty**: Show `asOf` timestamps and staleness
 
 ### Quality Floor 🔴
 
-- **Accessibility baseline** — Keyboard, labels, AA contrast
-- **No layout thrash** — Outer bounds stable during streaming
-- **Errors as surfaces** — Not toasts that vanish
+- **Accessibility baseline**: Keyboard, labels, AA contrast
+- **No layout thrash**: Outer bounds stable during streaming
+- **Errors as surfaces**: Not toasts that vanish
 
 ## Lifecycle Model
 
@@ -258,7 +258,7 @@ Tool UIs follow predictable phases:
 |-------|--------|----------------|
 | **Fresh** | Full color | "Here's the latest..." |
 | **Active** | Glow border | (co-narrates actions) |
-| **Stale** | ⏰ "As of 2:41 PM" | "This is 20 min old—refresh?" |
+| **Stale** | ⏰ "As of 2:41 PM" | "This is 20 min old. Refresh?" |
 | **Historical** | Collapsed | "As we discussed earlier..." |
 | **Superseded** | ↓ "Updated below" | "I've updated this with..." |
 
@@ -317,7 +317,7 @@ Full specification: [UI Specification → Base Schema](./ui-specification)
   </div>
 </div>
 
-The assistant is the only interpreter—the UI never "speaks" silently. This is new: traditional UIs communicate directly with users. Tool UIs always have an interpreter.
+The assistant is the only interpreter. The UI never "speaks" silently. This is new: traditional UIs communicate directly with users. Tool UIs always have an interpreter.
 
 ### Conversational Equivalence
 
@@ -420,27 +420,27 @@ You still use Radix/shadcn under the hood—Tool UI makes them conversation-nati
 ## Design Checklist
 
 ### Core Design 🔴
-- [ ] **One-sentence intent** — Can you describe it in one sentence?
-- [ ] **Primary role declared** — Information, Decision, Control, State, or Composite?
-- [ ] **Lifecycle phases** — Which ones? What triggers transitions?
-- [ ] **Receipts for effects** — Any side effects produce durable receipts?
+- [ ] **One-sentence intent**: Can you describe it in one sentence?
+- [ ] **Primary role declared**: Information, Decision, Control, State, or Composite?
+- [ ] **Lifecycle phases**: Which ones? What triggers transitions?
+- [ ] **Receipts for effects**: Any side effects produce durable receipts?
 
 ### Conversation 🔴
-- [ ] **Schema-driven** — Fully reconstructable from schema alone?
-- [ ] **Stable IDs** — Surface and key elements addressable?
-- [ ] **Canonical sentences** — Every action has natural language?
-- [ ] **Temporal honesty** — Shows "As of" and staleness?
+- [ ] **Schema-driven**: Fully reconstructable from schema alone?
+- [ ] **Stable IDs**: Surface and key elements addressable?
+- [ ] **Canonical sentences**: Every action has natural language?
+- [ ] **Temporal honesty**: Shows "As of" and staleness?
 
 ### Quality 🟡
-- [ ] **Cognitive budget** — 3s glance, ≤3 choices, ≤2 levels?
-- [ ] **Performance** — First content fast, no layout thrash?
-- [ ] **Accessibility** — Keyboard, labels, contrast all good?
-- [ ] **Responsive** — Works mobile-first?
+- [ ] **Cognitive budget**: 3s glance, ≤3 choices, ≤2 levels?
+- [ ] **Performance**: First content fast, no layout thrash?
+- [ ] **Accessibility**: Keyboard, labels, contrast all good?
+- [ ] **Responsive**: Works mobile-first?
 
 If a Tool UI fails multiple checks, simplify, split, or redesign.
 
 ## Next Steps
 
-- [**Quick Start**](./quick-start) — Build your first Tool UI
-- [**Components**](./gallery) — Explore what's available
-- [**Contributing**](./contributing) — Build new components
+- [**Quick Start**](./quick-start): Build your first Tool UI
+- [**Components**](./gallery): Explore what's available
+- [**Contributing**](./contributing): Build new components

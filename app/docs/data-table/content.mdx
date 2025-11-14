@@ -14,7 +14,7 @@ import {
   ArrayValue,
 } from "@/components/data-table";
 
-<DocsHeader title="Data Table" />
+<DocsHeader title="Data Table" role="Information" />
 
 An information surface for tabular tool outputs with responsive layout, sorting, declarative formatting, and row-level actions.
 
@@ -38,12 +38,47 @@ An information surface for tabular tool outputs with responsive layout, sorting,
               },
             },
           },
+          {
+            key: "createdAt",
+            label: "Created",
+            format: { kind: "date", dateFormat: "relative" },
+          },
+          {
+            key: "amount",
+            label: "Amount",
+            align: "right",
+            format: { kind: "currency", currency: "USD", decimals: 2 },
+          },
         ]}
         data={[
-          { id: "1", issue: "Payment failing on checkout", priority: "high" },
-          { id: "2", issue: "Billing UI alignment bug", priority: "medium" },
-          { id: "3", issue: "Export CSV missing headers", priority: "low" },
-          { id: "4", issue: "Webhook retries inconsistent", priority: "high" },
+          {
+            id: "1",
+            issue: "Payment failing on checkout",
+            priority: "high",
+            createdAt: "2025-11-11T09:24:00Z",
+            amount: 129.99,
+          },
+          {
+            id: "2",
+            issue: "Billing UI alignment bug",
+            priority: "medium",
+            createdAt: "2025-11-10T17:03:00Z",
+            amount: 42,
+          },
+          {
+            id: "3",
+            issue: "Export CSV missing headers",
+            priority: "low",
+            createdAt: "2025-11-08T08:00:00Z",
+            amount: 0,
+          },
+          {
+            id: "4",
+            issue: "Webhook retries inconsistent",
+            priority: "high",
+            createdAt: "2025-11-13T22:15:00Z",
+            amount: 527.5,
+          },
         ]}
       />
     </div>
@@ -52,7 +87,13 @@ An information surface for tabular tool outputs with responsive layout, sorting,
     ```tsx
     import { DataTable, type Column } from "@/components/data-table";
 
-    type Row = { id: string; issue: string; priority: "high" | "medium" | "low" };
+    type Row = {
+      id: string;
+      issue: string;
+      priority: "high" | "medium" | "low";
+      createdAt: string;
+      amount: number;
+    };
 
     const columns: Column<Row>[] = [
       { key: "issue", label: "Issue", priority: "primary", truncate: true },
@@ -68,13 +109,39 @@ An information surface for tabular tool outputs with responsive layout, sorting,
           },
         },
       },
+      { key: "createdAt", label: "Created", format: { kind: "date", dateFormat: "relative" } },
+      { key: "amount", label: "Amount", align: "right", format: { kind: "currency", currency: "USD", decimals: 2 } },
     ];
 
     const data: Row[] = [
-      { id: "1", issue: "Payment failing on checkout", priority: "high" },
-      { id: "2", issue: "Billing UI alignment bug", priority: "medium" },
-      { id: "3", issue: "Export CSV missing headers", priority: "low" },
-      { id: "4", issue: "Webhook retries inconsistent", priority: "high" },
+      {
+        id: "1",
+        issue: "Payment failing on checkout",
+        priority: "high",
+        createdAt: "2025-11-11T09:24:00Z",
+        amount: 129.99,
+      },
+      {
+        id: "2",
+        issue: "Billing UI alignment bug",
+        priority: "medium",
+        createdAt: "2025-11-10T17:03:00Z",
+        amount: 42,
+      },
+      {
+        id: "3",
+        issue: "Export CSV missing headers",
+        priority: "low",
+        createdAt: "2025-11-08T08:00:00Z",
+        amount: 0,
+      },
+      {
+        id: "4",
+        issue: "Webhook retries inconsistent",
+        priority: "high",
+        createdAt: "2025-11-13T22:15:00Z",
+        amount: 527.5,
+      },
     ];
 
     export default function Example() {
@@ -100,11 +167,11 @@ An information surface for tabular tool outputs with responsive layout, sorting,
 
 ## Key Features
 
-- **Responsive** — Table on wide screens, cards on mobile
-- **Sorting** — Tri-state: none → asc → desc
-- **Formatting** — Currency, dates, links, badges, etc. via declarative config
-- **Actions** — Row-level buttons with optional confirmation
-- **Accessible** — Screen reader support, keyboard navigation
+- **Responsive**: Table on wide screens, cards on mobile
+- **Sorting**: Tri-state: none → asc → desc
+- **Formatting**: Currency, dates, links, badges, etc. via declarative config
+- **Actions**: Row-level buttons with optional confirmation
+- **Accessible**: Screen reader support, keyboard navigation
 
 
 ## Source and Install
