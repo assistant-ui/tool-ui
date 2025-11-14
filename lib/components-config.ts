@@ -25,6 +25,11 @@ export const componentsRegistry: ComponentMeta[] = [
     label: "Social Post",
     path: "/docs/social-post",
   },
+  {
+    id: "code-diff",
+    label: "Code Diff",
+    path: "/docs/code-diff",
+  },
 ];
 
 export function getComponentById(id: string): ComponentMeta | undefined {

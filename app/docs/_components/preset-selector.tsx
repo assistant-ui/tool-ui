@@ -18,13 +18,18 @@ import {
   DecisionPromptPresetName,
   decisionPromptPresetDescriptions,
 } from "@/lib/decision-prompt-presets";
+import {
+  CodeDiffPresetName,
+  codeDiffPresetDescriptions,
+} from "@/lib/code-diff-presets";
 import { cn } from "@/lib/utils";
 
 type ComponentPreset =
   | PresetName
   | SocialPostPresetName
   | MediaCardPresetName
-  | DecisionPromptPresetName;
+  | DecisionPromptPresetName
+  | CodeDiffPresetName;
 
 interface PresetSelectorProps {
   componentId: string;
@@ -62,6 +67,11 @@ const decisionPromptPresetNames: DecisionPromptPresetName[] = [
   "workflow",
 ];
 
+const codeDiffPresetNames: CodeDiffPresetName[] = [
+  "workspace-sync",
+  "receipt-state",
+];
+
 export function PresetSelector({
   componentId,
   currentPreset,
@@ -74,7 +84,9 @@ export function PresetSelector({
         ? socialPostPresetNames
         : componentId === "media-card"
           ? mediaCardPresetNames
-          : decisionPromptPresetNames;
+          : componentId === "code-diff"
+            ? codeDiffPresetNames
+            : decisionPromptPresetNames;
 
   const descriptions =
     componentId === "data-table"
@@ -83,7 +95,9 @@ export function PresetSelector({
         ? socialPostPresetDescriptions
         : componentId === "media-card"
           ? mediaCardPresetDescriptions
-          : decisionPromptPresetDescriptions;
+          : componentId === "code-diff"
+            ? codeDiffPresetDescriptions
+            : decisionPromptPresetDescriptions;
 
   return (
     <ItemGroup className="gap-1">

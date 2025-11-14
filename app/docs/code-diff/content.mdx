@@ -1,0 +1,158 @@
+import { DocsHeader } from "../_components/docs-header";
+import { CodeDiff } from "@/components/code-diff";
+
+export const exampleDiff = {
+  id: "docs-example",
+  title: "Polish summary card layout",
+  description: "Typography tweaks plus a semantic badge for the delta indicator.",
+  meta: {
+    baseLabel: "main",
+    headLabel: "feature/richer-summary-card",
+    repository: "assistant-ui/tool-ui",
+    isComplete: true,
+  },
+  capturedAtISO: "2024-05-09T08:32:00Z",
+  summary: {
+    filesChanged: 1,
+    insertions: 6,
+    deletions: 2,
+  },
+  emphasisFileIds: ["file-summary-card"],
+  files: [
+    {
+      id: "file-summary-card",
+      path: "components/summary-card.tsx",
+      status: "modified",
+      language: "tsx",
+      insertions: 6,
+      deletions: 2,
+      actions: [{ id: "open-file", label: "Open file", tone: "primary" }],
+      hunks: [
+        {
+          id: "docs-hunk",
+          header: "@@ -24,8 +24,14 @@ export function SummaryCard()",
+          summary: "Adds typography scale and contextual badge",
+          lines: [
+            {
+              id: "docs-context-1",
+              kind: "context",
+              lineNumber: 24,
+              content: "  return (",
+            },
+            {
+              id: "docs-remove-line",
+              kind: "remove",
+              lineNumber: 27,
+              content: "      <span>{metric.value}</span>",
+            },
+            {
+              id: "docs-add-line-1",
+              kind: "add",
+              lineNumber: 27,
+              content:
+                "      <span className=\"text-2xl font-semibold\">{metric.value}</span>",
+              highlightRanges: [{ start: 12, length: 19, kind: "change" }],
+            },
+            {
+              id: "docs-add-line-2",
+              kind: "add",
+              lineNumber: 28,
+              content:
+                "      <Badge tone={metric.delta > 0 ? 'success' : 'neutral'}>{metric.delta}</Badge>",
+              highlightRanges: [{ start: 18, length: 33, kind: "add" }],
+            },
+            {
+              id: "docs-context-2",
+              kind: "context",
+              lineNumber: 33,
+              content: "    </Card>",
+            },
+          ],
+        },
+      ],
+    },
+  ],
+};
+
+<DocsHeader title="Code Diff" />
+
+A streaming-friendly diff surface that renders files, hunks, line-level actions, and receipts directly inside the tool UI.
+
+<Tabs items={["Preview", "Code"]}>
+  <Tab>
+    <div className="not-prose">
+      <CodeDiff
+        {...exampleDiff}
+        variant="inline"
+        defaultViewMode="unified"
+        maxHeight="26rem"
+      />
+    </div>
+  </Tab>
+  <Tab>
+    ```tsx
+    import { CodeDiff } from "@/components/code-diff";
+
+    const diff = {
+      id: "docs-example",
+      title: "Polish summary card layout",
+      files: [
+        {
+          id: "file-summary-card",
+          path: "components/summary-card.tsx",
+          status: "modified",
+          hunks: [
+            {
+              id: "docs-hunk",
+              header: "@@ -24,8 +24,14 @@ export function SummaryCard()",
+              lines: [
+                { id: "docs-context-1", kind: "context", lineNumber: 24, content: "  return (" },
+                { id: "docs-remove-line", kind: "remove", lineNumber: 27, content: "      <span>{metric.value}</span>" },
+                {
+                  id: "docs-add-line-1",
+                  kind: "add",
+                  lineNumber: 27,
+                  content: "      <span className=\\"text-2xl font-semibold\\">{metric.value}</span>",
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    };
+
+    export function Example() {
+      return (
+        <CodeDiff
+          {...diff}
+          variant="inline"
+          defaultViewMode="unified"
+        />
+      );
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Why Code Diff
+
+- **Context aware** – Breaks down by file and hunk with collapsible sections.
+- **LLM friendly** – Accepts serializable JSON snapshots that can stream progressively.
+- **Action ready** – Wire up `onBeforeAction`/`onAction` to gate apply/revert/comment behaviors.
+
+## Tool Integration
+
+Use the schema + parser to validate tool output before rendering:
+
+```tsx
+import { serializableCodeDiffSchema } from "@/components/code-diff";
+
+const showDiff = tool({
+  description: "Compare staging vs prod",
+  outputSchema: serializableCodeDiffSchema,
+  async execute({ base, head }) {
+    const gitDiff = await getGitDiff(base, head);
+    return adaptDiffToSchema(gitDiff);
+  },
+});
+```

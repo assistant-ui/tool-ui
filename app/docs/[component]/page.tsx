@@ -4,6 +4,7 @@ import { DataTablePreview } from "./previews/data-table-preview";
 import { SocialPostPreview } from "./previews/social-post-preview";
 import { MediaCardPreview } from "./previews/media-card-preview";
 import { DecisionPromptPreview } from "./previews/decision-prompt-preview";
+import { CodeDiffPreview } from "./previews/code-diff-preview";
 
 export default async function ComponentPage({
   params,
@@ -26,6 +27,8 @@ export default async function ComponentPage({
       return <MediaCardPreview />;
     case "decision-prompt":
       return <DecisionPromptPreview />;
+    case "code-diff":
+      return <CodeDiffPreview />;
     default:
       notFound();
   }

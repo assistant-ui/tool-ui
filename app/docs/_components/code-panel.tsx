@@ -4,6 +4,7 @@ import { DataTableConfig } from "@/lib/sample-data";
 import { SocialPostConfig } from "@/lib/social-post-presets";
 import { MediaCardConfig } from "@/lib/media-card-presets";
 import { DecisionPromptConfig } from "@/lib/decision-prompt-presets";
+import { CodeDiffConfig } from "@/lib/code-diff-presets";
 import { DynamicCodeBlock } from "fumadocs-ui/components/dynamic-codeblock";
 
 interface CodePanelProps {
@@ -12,6 +13,15 @@ interface CodePanelProps {
   socialPostConfig?: SocialPostConfig;
   mediaCardConfig?: MediaCardConfig;
   decisionPromptConfig?: DecisionPromptConfig;
+  codeDiffConfig?: CodeDiffConfig;
+  codeDiffControls?: {
+    variant?: "inline" | "full";
+    viewMode?: "unified" | "split";
+    showLineNumbers?: boolean;
+    wrapLines?: boolean;
+    maxHeight?: string;
+    isStreaming?: boolean;
+  };
   decisionPromptSelectedAction?: string;
   decisionPromptSelectedActions?: string[];
   mediaCardMaxWidth?: string;
@@ -28,6 +38,8 @@ export function CodePanel({
   socialPostConfig,
   mediaCardConfig,
   decisionPromptConfig,
+  codeDiffConfig,
+  codeDiffControls,
   decisionPromptSelectedAction,
   decisionPromptSelectedActions,
   mediaCardMaxWidth,
@@ -338,6 +350,44 @@ export function CodePanel({
     return `<DecisionPrompt\n${props.join("\n")}\n/>`;
   };
 
+  const generateCodeDiffCode = () => {
+    if (!codeDiffConfig) return "";
+    const diffLiteral = JSON.stringify(codeDiffConfig.diff, null, 2)
+      .split("\n")
+      .map((line) => `    ${line}`)
+      .join("\n");
+
+    const extraProps: string[] = [];
+
+    if (codeDiffControls?.variant) {
+      extraProps.push(`  variant="${codeDiffControls.variant}"`);
+    }
+    if (codeDiffControls?.viewMode) {
+      extraProps.push(`  viewMode="${codeDiffControls.viewMode}"`);
+    }
+    if (codeDiffControls?.showLineNumbers === false) {
+      extraProps.push("  showLineNumbers={false}");
+    }
+    if (codeDiffControls?.wrapLines) {
+      extraProps.push("  wrapLines");
+    }
+    if (codeDiffControls?.maxHeight) {
+      extraProps.push(`  maxHeight="${codeDiffControls.maxHeight}"`);
+    }
+    if (codeDiffControls?.isStreaming) {
+      extraProps.push("  isStreaming");
+    }
+
+    const controlBlock =
+      extraProps.length > 0 ? `${extraProps.join("\n")}\n` : "";
+
+    return `<CodeDiff
+  {...{
+${diffLiteral}
+  }}
+${controlBlock}/>`;
+  };
+
   const generateCode = () => {
     if (componentId === "data-table") {
       return generateDataTableCode();
@@ -347,6 +397,8 @@ export function CodePanel({
       return generateMediaCardCode();
     } else if (componentId === "decision-prompt") {
       return generateDecisionPromptCode();
+    } else if (componentId === "code-diff") {
+      return generateCodeDiffCode();
     }
     return "";
   };
