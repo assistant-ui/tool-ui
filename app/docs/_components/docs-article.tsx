@@ -16,7 +16,7 @@ export function DocsArticle({
         <div
           className={cn(
             "prose dark:prose-invert mx-auto",
-            "max-w-2xl",
+            "max-w-3xl",
             className,
           )}
         >

@@ -5,8 +5,6 @@ import { MediaCard } from "@/components/media-card";
 
 An information surface for links, images, video, and audio—optimized for inline previews in chat.
 
-Use Media Card when a tool returns a **single piece of content** you want to preview, highlight, and optionally act on.
-
 <Tabs items={["Preview", "Code"]}>
   <Tab>
     <div className="not-prose">
@@ -44,22 +42,18 @@ Use Media Card when a tool returns a **single piece of content** you want to pre
   </Tab>
 </Tabs>
 
----
-
 ## When to use Media Card
 
-Good fits:
+- **Good for:** Link previews, media thumbnails, file summaries
+- **Not for:** Large galleries, long-form content editing
 
-- Link previews (articles, docs, dashboards).  
-- Image / video / audio thumbnails.  
-- File / document summaries.
+## Key features
 
-Avoid Media Card for:
-
-- Large galleries (use multiple cards or a Data Table instead).  
-- Long-form content editing (use a dedicated surface).
-
----
+- **Multiple media types** – Links, images, video, audio, files
+- **Smart thumbnails** – Aspect ratios and object-fit control
+- **Metadata display** – Domain, source, duration, author
+- **Click-through support** – Whole card as clickable area
+- **Inline actions** – Buttons for open, save, share
 
 
 ## Source and install
@@ -89,144 +83,72 @@ Copy components/media-card into your project next to your shadcn/ui components:
 
 
 
-## Rendering tool outputs
-
-### Server – define a preview tool
-
-```ts
-import { streamText, convertToModelMessages, tool, type UIMessage } from 'ai';
-import { openai } from '@ai-sdk/openai';
-import { z } from 'zod';
-import { serializableMediaCardSchema } from '@/components/media-card/schema';
-
-export async function POST(req: Request) {
-  const { messages }: { messages: UIMessage[] } = await req.json();
-
-  const result = streamText({
-    model: openai('gpt-4o'),
-    messages: convertToModelMessages(messages),
-    tools: {
-      previewLink: tool({
-        description: 'Show a preview card for a URL',
-        inputSchema: z.object({ url: z.string().url() }),
-        outputSchema: serializableMediaCardSchema,
-        async execute({ url }) {
-          // Replace this stub with real metadata fetching
-          return {
-            id: 'link-1',
-            kind: 'link',
-            href: url,
-            title: 'Example site',
-            description: 'Preview of the requested URL',
-            thumb:
-              'https://images.unsplash.com/photo-1633356122544-f134324a6cee?auto=format&fit=crop&q=80&w=1200',
-            meta: { source: new URL(url).hostname },
-          };
-        },
-      }),
-    },
-  });
-
-  return result.toUIMessageStreamResponse();
-}
-```
-
-### Client – parse and render
+## Usage
 
 ```tsx
-import { useChat } from '@ai-sdk/react';
-import { DefaultChatTransport } from 'ai';
-import { MediaCard, parseSerializableMediaCard } from '@/components/media-card';
+// Backend tool
+import { tool } from 'ai';
+import { z } from 'zod';
+import { serializableMediaCardSchema } from '@tool-ui/media-card';
 
-export default function Chat() {
-  const { messages } = useChat({
-    transport: new DefaultChatTransport({ api: '/api/chat' }),
-  });
+const previewLink = tool({
+  description: 'Show a preview card for a URL',
+  inputSchema: z.object({ url: z.string().url() }),
+  outputSchema: serializableMediaCardSchema,
+  async execute({ url }) {
+    // Fetch real metadata here
+    return {
+      id: 'link-1',
+      kind: 'link',
+      href: url,
+      title: 'Example site',
+      description: 'Preview of the requested URL',
+      thumb: 'https://example.com/image.jpg',
+      meta: { source: new URL(url).hostname },
+    };
+  },
+});
 
-  return (
-    <div>
-      {messages.map((m) => (
-        <div key={m.id}>
-          {m.parts.map((part, i) => {
-            if (part.type === 'tool-previewLink' && part.state === 'output-available') {
-              const cardProps = parseSerializableMediaCard(part.output);
-              return (
-                <MediaCard
-                  key={i}
-                  {...cardProps}
-                  maxWidth="420px"
-                  actions={[
-                    { id: 'open', label: 'Open' },
-                    { id: 'save', label: 'Save' },
-                  ]}
-                  onAction={(id, card) => {
-                    if (id === 'open') {
-                      window.open(card.href, '_blank');
-                    }
-                    if (id === 'save') {
-                      // Your app logic here
-                    }
-                  }}
-                />
-              );
-            }
-            return null;
-          })}
-        </div>
-      ))}
-    </div>
-  );
-}
+// Frontend with assistant-ui
+import { makeAssistantToolUI } from '@assistant-ui/react';
+import { MediaCard } from '@tool-ui/media-card';
+
+export const PreviewLinkUI = makeAssistantToolUI({
+  toolName: 'previewLink',
+  render: ({ result }) => (
+    <MediaCard
+      {...result}
+      maxWidth="420px"
+      actions={[
+        { id: 'open', label: 'Open' },
+        { id: 'save', label: 'Save' },
+      ]}
+      onAction={(id, card) => {
+        if (id === 'open') window.open(card.href, '_blank');
+        // Handle other actions
+      }}
+    />
+  ),
+});
 ```
 
 
 
 ## Props
 
-Media Card is driven by a serializable SerializableMediaCard schema.
-
-### Content
-
 <TypeTable
 type={{
-id: { description: "Stable identifier for the card", type: "string", required: true },
-kind: { description: "Content kind", type: "'link' | 'image' | 'video' | 'audio' | 'file'", required: true },
-href: { description: "Target URL (for link/file)", type: "string" },
-title: { description: "Primary title text", type: "string", required: true },
-description: { description: "Optional description or excerpt", type: "string" },
+id: { description: "Unique identifier", type: "string", required: true },
+kind: { description: "Content type", type: "'link' | 'image' | 'video' | 'audio' | 'file'", required: true },
+href: { description: "Target URL", type: "string" },
+title: { description: "Title text", type: "string", required: true },
+description: { description: "Description", type: "string" },
 thumb: { description: "Thumbnail URL", type: "string" },
-ratio: { description: "Media aspect ratio", type: "'16:9' | '4:3' | '1:1' | 'auto'", default: "'16:9'" },
-fit: { description: "Object-fit behavior for media", type: "'cover' | 'contain' | 'fill'", default: "'cover'" },
-meta: {
-description: "Small key/value metadata (e.g. source, duration, author)",
-type: "Record<string, string>",
-},
-badge: { description: "Optional status badge label", type: "string" },
+ratio: { description: "Aspect ratio", type: "'16:9' | '4:3' | '1:1' | 'auto'", default: "'16:9'" },
+meta: { description: "Key/value metadata", type: "Record<string, string>" },
+badge: { description: "Status badge", type: "string" },
+maxWidth: { description: "Max width", type: "string (CSS)", default: "'100%'" },
+actions: { description: "Action buttons", type: "Action[]" },
+onAction: { description: "Click handler", type: "(id, card) => void" },
 }}
 />
-
-### Layout & behavior
-
-<TypeTable
-type={{
-maxWidth: { description: "Clamp card width", type: "string (CSS)", default: "'100%'" },
-align: { description: "Horizontal alignment inside the message", type: "'start' | 'center' | 'end'", default: "'start'" },
-clickable: { description: "Whether the whole card acts as a link", type: "boolean", default: "true (if href)" },
-}}
-/>
-
-### Actions
-
-<TypeTable
-type={{
-actions: { description: "Inline actions (buttons, menu items)", type: "Action[]" },
-onAction: {
-description: "Action handler",
-type: "(id: string, card: SerializableMediaCard) => void",
-},
-}}
-/>
-
-
-
-Media Card is intentionally minimal. For full interaction flows (approval, forms, multi-step actions), pair it with [Decision Prompt](/docs/decision-prompt) or a custom control surface.

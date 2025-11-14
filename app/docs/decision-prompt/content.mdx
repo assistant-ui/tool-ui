@@ -5,8 +5,6 @@ import { DecisionPrompt } from "@/components/decision-prompt";
 
 A decision surface for binary and multi-option confirmations inside the chat stream.
 
-Use Decision Prompt when the assistant needs the user to **explicitly choose** before a tool runs or a side effect occurs.
-
 <Tabs items={["Preview", "Code"]}>
   <Tab>
     <div className="not-prose">
@@ -16,8 +14,9 @@ Use Decision Prompt when the assistant needs the user to **explicitly choose** b
         actions={[
           { id: "send", label: "Send", variant: "default" },
           { id: "edit", label: "Edit first", variant: "secondary" },
-          { id: "discard", label: "Discard", variant: "destructive" },
+          { id: "delete", label: "Delete", variant: "destructive", confirmLabel: "Confirm delete" }
         ]}
+        align="center"
       />
     </div>
   </Tab>
@@ -46,16 +45,16 @@ Use Decision Prompt when the assistant needs the user to **explicitly choose** b
 
 ## When to use Decision Prompt
 
-Good fits:
+- **Good for:** Send/discard decisions, approval flows, choosing between clear options
+- **Not for:** Complex forms, low-risk toggles
 
-- “Send or discard?” prompts for messages, emails, or posts.  
-- Approving or rejecting actions (deployments, code changes, payments).  
-- Choosing between a few clear options (plans, strategies, next steps).
+## Key features
 
-Avoid Decision Prompt for:
-
-- Complex forms or many inputs (use a dedicated control surface).  
-- Low-risk toggles (chips, switches, or simple buttons are often enough).
+- **Human-in-the-loop** – Explicit user confirmation before actions
+- **Multi-option support** – Binary or multiple choice prompts
+- **Destructive safeguards** – Extra confirmation for dangerous actions
+- **Loading states** – Show progress during async operations
+- **Receipt pattern** – Collapse to summary after decision
 
 
 ## Source and install
@@ -80,137 +79,68 @@ Copy `components/decision-prompt` into your project:
 
 
 
-## Rendering tool outputs
-
-Decision Prompt is usually used as a HITL step between a proposed action and executing it.
-
-### Server – propose a decision
-
-```ts
-import { tool } from 'ai';
-import { serializableDecisionPromptSchema } from '@/components/decision-prompt/schema';
-
-export const tools = {
-  confirmEmailSend: tool({
-    description: 'Ask the user whether to send an email',
-    outputSchema: serializableDecisionPromptSchema,
-    async execute({ draftId }) {
-      // The tool knows about the draft; the UI just needs a prompt.
-      return {
-        id: `confirm-email-${draftId}`,
-        title: 'Send this email?',
-        description: 'The assistant drafted this email based on your last message.',
-        actions: [
-          { id: 'send', label: 'Send', tone: 'primary' },
-          { id: 'edit', label: 'Edit first', tone: 'neutral' },
-          { id: 'discard', label: 'Discard', tone: 'destructive' },
-        ],
-      };
-    },
-  }),
-};
-```
-
-### Client – render and handle decisions
+## Usage
 
 ```tsx
-import { DecisionPrompt, parseSerializableDecisionPrompt } from '@/components/decision-prompt';
+// Backend tool - propose a decision
+import { tool } from 'ai';
+import { serializableDecisionPromptSchema } from '@tool-ui/decision-prompt';
 
-function renderParts(message) {
-  return message.parts.map((part, i) => {
-    if (part.type === 'tool-confirmEmailSend' && part.state === 'output-available') {
-      const promptProps = parseSerializableDecisionPrompt(part.output);
-      return (
-        <DecisionPrompt
-          key={i}
-          {...promptProps}
-          onAction={async (id) => {
-            if (id === 'send') {
-              await sendDraft(promptProps.id);
-            }
-            if (id === 'edit') {
-              openDraftEditor(promptProps.id);
-            }
-          }}
-        />
-      );
-    }
+const confirmEmailSend = tool({
+  description: 'Ask the user whether to send an email',
+  outputSchema: serializableDecisionPromptSchema,
+  async execute({ draftId }) {
+    return {
+      id: `confirm-email-${draftId}`,
+      title: 'Send this email?',
+      description: 'The assistant drafted this email based on your last message.',
+      actions: [
+        { id: 'send', label: 'Send', tone: 'primary' },
+        { id: 'edit', label: 'Edit first', tone: 'neutral' },
+        { id: 'discard', label: 'Discard', tone: 'destructive' },
+      ],
+    };
+  },
+});
 
-    // fall back to text
-    if (part.type === 'text') {
-      return <p key={i}>{part.text}</p>;
-    }
+// Frontend with assistant-ui
+import { makeAssistantToolUI } from '@assistant-ui/react';
+import { DecisionPrompt } from '@tool-ui/decision-prompt';
 
-    return null;
-  });
-}
+export const ConfirmEmailUI = makeAssistantToolUI({
+  toolName: 'confirmEmailSend',
+  render: ({ result }) => (
+    <DecisionPrompt
+      {...result}
+      onAction={async (id) => {
+        if (id === 'send') await sendDraft(result.id);
+        if (id === 'edit') openDraftEditor(result.id);
+        // Handle other actions
+      }}
+    />
+  ),
+});
 ```
-
-
-
-## Behavior and states
-
-Decision Prompt follows the lifecycle from [UI Guidelines](/docs/design-guidelines):
-- Pending – Prompt is visible, no choice made yet.  
-- Confirming (optional) – Destructive actions may require an extra tap/click or explicit confirmation.  
-- Executing – After a click, actions can show a loading state while your app runs.  
-- Receipt – Once resolved, the prompt collapses to a summary of what happened.
-
-The exact receipt UI is up to your app, but prompts should not stay interactable after a definitive decision.
 
 
 
 ## Props
 
-Decision Prompt is driven by a serializable `SerializableDecisionPrompt` schema.
-
-### Content
-
 <TypeTable
   type={{
-    id: { description: "Stable identifier for this prompt", type: "string", required: true },
-    title: { description: "Main question or call to action", type: "string", required: true },
-    description: { description: "Optional supporting context", type: "string" },
-    tone: {
-      description: "Visual tone for the prompt",
-      type: "'neutral' | 'warning' | 'danger'",
-      default: "'neutral'",
-    },
-  }}
-/>
-
-### Actions
-
-<TypeTable
-  type={{
+    id: { description: "Unique identifier", type: "string", required: true },
+    title: { description: "Main question", type: "string", required: true },
+    description: { description: "Supporting context", type: "string" },
+    tone: { description: "Visual tone", type: "'neutral' | 'warning' | 'danger'", default: "'neutral'" },
     actions: {
-      description: "Options presented to the user",
-      type:
-        "Array<{ id: string; label: string; tone?: 'primary' | 'neutral' | 'destructive'; shortcut?: string }>",
+      description: "User options",
+      type: "Array<{ id, label, tone?, shortcut? }>",
       required: true,
     },
-    defaultActionId: {
-      description: "Primary action to emphasize (defaults to first)",
-      type: "string",
-    },
+    defaultActionId: { description: "Primary action", type: "string" },
+    onBeforeAction: { description: "Gate actions", type: "({ id }) => boolean | Promise" },
+    onAction: { description: "Handle choice", type: "(id) => void | Promise" },
   }}
 />
 
-### Callbacks (client-only)
-
-<TypeTable
-  type={{
-    onBeforeAction: {
-      description: "Gate actions (confirm, check permissions, and so on)",
-      type: "(args: { id: string }) => boolean | Promise",
-    },
-    onAction: {
-      description: "Handle the chosen action",
-      type: "(id: string) => void | Promise",
-    },
-  }}
-/>
-
-
-
-Decision Prompt is intentionally narrow: one question, a few clear answers. Use it wherever the assistant needs explicit, audit-friendly consent before acting.
+Follows standard lifecycle: Pending → Confirming → Executing → Receipt.

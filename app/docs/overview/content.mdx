@@ -2,21 +2,9 @@ import { DocsHeader } from "../_components/docs-header";
 
 <DocsHeader title="Overview" />
 
-Tool UI provides interactive, accessible React components that render directly from your tool's JSON outputs. Instead of returning plain text that gets reformatted or parsed unreliably, tools return structured data that renders as rich UI—tables, cards, widgets, and more—in any chat interface.
+Tool UI is a React component library for rendering rich, interactive UIs when LLMs execute tools. Built by the [assistant-ui](https://github.com/assistant-ui/assistant-ui) team.
 
-Instead of returning plain text and hoping the model formats it well, your tools return **structured JSON** that renders as **inline, interactive UI surfaces** including tables, data visualizations, cards, and more.
-
-
-## What is Tool UI?
-
-A *Tool UI* is:
-
-- **Assistant-driven** – It appears because the assistant called a tool or the user asked for it.  
-- **Schema-driven** – It renders from a JSON payload that matches a published schema.  
-- **Inline** – It lives inside the message stream, not as a separate page or modal.  
-- **Interactive** – It can collect decisions, trigger actions, and show progress or receipts.
-
-Our components give you the “view layer” for these surfaces; you bring tools, models, and orchestration.
+Instead of plain text, your tools return **structured JSON** that renders as **beautiful, interactive UI components** directly in your chat interface.
 
 
 ## Why use Tool UI?
@@ -37,72 +25,39 @@ Each component ships a serializable schema. Validate tool outputs on the server,
 Use any model/provider and any chat orchestration. The only contract is: “tool returns JSON that matches this schema.”
 
 
-## Mental model
+## How it works
 
 ```txt
-User / assistant ask for something
-          ↓
-Tool runs and returns JSON (matches component schema)
-          ↓
-Client parses → <Component {...props} />
-          ↓
-User clicks → onAction → your app does the real work
+Assistant calls tool → JSON output → <Component {...props} /> → User interacts → Your app handles it
 ```
 
-The assistant decides when to call tools and what to show. Tool UI decides how to present the output. Your app decides what happens when users interact.
+The assistant decides when to call tools. Tool UI renders the output. You handle the interactions.
 
 
 
 ## Components
 
-Use these building blocks to cover most tool-driven interactions:
-
-Data Table  
-Information surface for structured rows with sorting, mobile-friendly cards, and row actions. Good for search results, lists, and compact dashboards.
-
-Media Card  
-Information surface for links, images, video, and audio. Good for previews of URLs, documents, and media attachments.
-
-Decision Prompt  
-Decision surface for binary and multi-option confirmations in the thread. Good for approvals, “send or discard,” and other high-impact choices.
-
-Social Post  
-Information + action surface for user-generated content: posts, comments, and threaded discussions.
-
-More components will arrive over time. Each has a serializable schema, usage docs, and integration examples.
+**Data Table** – Display structured data with sorting and row actions
+**Media Card** – Preview links, images, video, and audio
+**Decision Prompt** – Get binary or multi-option confirmations
+**Social Post** – Display user-generated content with interactions
 
 
 
-## How Tool UI fits into your app
+## Integration
 
-Server / tools
-- Define tools with an `outputSchema` that matches a component’s serializable schema.
-- Validate tool outputs before they reach the client.
-- Keep tool payloads JSON-only (no functions, Dates, class instances).
+Tool UI works with any React app, but integrates best with assistant-ui.
 
-Assistant / model
-- Decides which tools to call and when.
-- Fills schemas with meaningful values (columns, actions, prompts, and so on).
-- Narrates around Tool UIs (“Here are the top matches…”, “Approve these changes?”).
+**Your backend:** Define tools that return JSON matching component schemas
+**The LLM:** Decides when to call tools and fills the schemas
+**Your client:** Renders components and handles user interactions
 
-Client / chat UI
-- Receives tool outputs as message parts.
-- Runs `parseSerializableX(output)` to validate and turn them into component props.
-- Renders `<Component {...props} />`.
-- Implements `onAction`, `onBeforeAction`, and other callbacks to actually do things.
+With assistant-ui you get automatic tool registration, streaming, and state management.
 
 
 
-## What Tool UI is not
-- Not an agent framework – It doesn’t plan or schedule tool calls.
-- Not a state manager – It doesn’t store conversation memory or tool state.
-- Not a server action router – It doesn’t decide what happens when a user clicks.
-- Not a full design system – It focuses on inline, chat-centric Tool UIs and composes primitives from libraries like shadcn/ui.
+## Next steps
 
-
-
-## Where to go next
-- Want to wire it up? See [Quick Start](/docs/quick-start).
-- Care about interaction patterns? Read [UI Guidelines](/docs/design-guidelines).
-- Ready to wire types end-to-end? See [Advanced](/docs/advanced).
-- Need a specific surface? Browse [Data Table](/docs/data-table), [Media Card](/docs/media-card), [Decision Prompt](/docs/decision-prompt), and [Social Post](/docs/social-post).
+[Quick Start](/docs/quick-start) – Get your first Tool UI working
+[Components](/docs/data-table) – Explore the available components
+[UI Guidelines](/docs/design-guidelines) – Learn the interaction patterns

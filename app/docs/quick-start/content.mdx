@@ -2,148 +2,68 @@ import { DocsHeader } from "../_components/docs-header";
 
 <DocsHeader title="Quick Start" />
 
-Let's wire a Tool UI into your chat app.
-
-This guide shows how to:
-
-1. Define a tool that returns structured output  
-2. Render it as a component in your chat UI  
-3. Handle user actions safely
+Get Tool UI working in your app in minutes. This guide uses assistant-ui (recommended) for the best experience.
 
 
-## 30-second overview
+## Setup
 
 <Steps>
 
-<Step title="1. Server – define a tool with a serializable schema">
+<Step title="1. Initialize assistant-ui">
 
-```ts
-import { tool } from 'ai';
-import { serializableDataTableSchema } from '@/components/data-table/schema';
-
-export const tools = {
-  listProducts: tool({
-    description: 'List products in a table',
-    outputSchema: serializableDataTableSchema,
-    async execute() {
-      return {
-        columns: [
-          { key: 'name', label: 'Product' },
-          { key: 'price', label: 'Price', format: { kind: 'currency', currency: 'USD' } },
-        ],
-        data: [{ id: '1', name: 'Widget', price: 29.99 }],
-      };
-    },
-  }),
-} as const;
-```
-
-</Step>
-
-<Step title="2. Client – parse and render the component">
+Set up the assistant-ui runtime provider that manages the connection between your frontend and backend. This handles message streaming, tool execution, and state management.
 
 ```tsx
-import { DataTable, parseSerializableDataTable } from '@/components/data-table';
+"use client";
+import { AssistantRuntimeProvider } from "@assistant-ui/react";
+import { useChatRuntime, AssistantChatTransport } from "@assistant-ui/react-ai-sdk";
 
-if (part.type === 'tool-listProducts' && part.state === 'output-available') {
-  const props = parseSerializableDataTable(part.output);
-  return <DataTable rowIdKey="id" {...props} />;
+function App() {
+  const runtime = useChatRuntime({
+    transport: new AssistantChatTransport({ api: "/api/chat" }),
+  });
+
+  return (
+    <AssistantRuntimeProvider runtime={runtime}>
+      {/* Your chat UI */}
+    </AssistantRuntimeProvider>
+  );
 }
 ```
 
 </Step>
 
-<Step title="3. Actions – wire clicks to your own handlers">
+<Step title="2. Define a backend tool">
 
-```tsx
-<DataTable
-  rowIdKey="id"
-  actions={[{ id: 'buy', label: 'Buy' }]}
-  onAction={(actionId, row) => {
-    if (actionId === 'buy') {
-      handlePurchase(row.id);
-    }
-  }}
-/>
-```
-
-</Step>
-
-</Steps>
-
-This example uses Data Table, but the pattern is the same for Media Card￼, Decision Prompt￼, and Social Post￼.
-
-
-
-## Full example (AI SDK 5 + Media Card)
-
-This example wires a previewLink tool to a MediaCard when the assistant sees a URL.
-
-1. Install dependencies
-
-<Tabs items={["pnpm", "npm", "yarn", "bun"]}>
-  <Tab>
-    ```sh
-    pnpm add ai @ai-sdk/openai @ai-sdk/react zod
-    ```
-  </Tab>
-
-  <Tab>
-    ```sh
-    npm install ai @ai-sdk/openai @ai-sdk/react zod
-    ```
-  </Tab>
-
-  <Tab>
-    ```sh
-    yarn add ai @ai-sdk/openai @ai-sdk/react zod
-    ```
-  </Tab>
-
-  <Tab>
-    ```sh
-    bun add ai @ai-sdk/openai @ai-sdk/react zod
-    ```
-  </Tab>
-</Tabs>
-
-Set your API key:
-
-```env
-OPENAI_API_KEY=sk-...
-```
-
-2. Define the tool on the server
+Create a tool on your server that the LLM can call. The tool returns structured JSON that matches a Tool UI component schema. Here we're creating a link preview tool that returns data for the MediaCard component.
 
 ```ts
-import { streamText, convertToModelMessages, tool, type UIMessage } from 'ai';
-import { openai } from '@ai-sdk/openai';
-import { z } from 'zod';
-import { serializableMediaCardSchema } from '@/components/media-card/schema';
-
-export const maxDuration = 30;
+import { streamText, tool } from "ai";
+import { openai } from "@ai-sdk/openai";
+import { z } from "zod";
+// Import the schema from the Tool UI package
+import { serializableMediaCardSchema } from "@tool-ui/media-card";
 
 export async function POST(req: Request) {
-  const { messages }: { messages: UIMessage[] } = await req.json();
+  const { messages } = await req.json();
 
   const result = streamText({
-    model: openai('gpt-4o'),
-    messages: convertToModelMessages(messages),
+    model: openai("gpt-4o"),
+    messages,
     tools: {
       previewLink: tool({
-        description: 'Show a preview card for a URL',
+        description: "Show a preview card for a URL",
         inputSchema: z.object({ url: z.string().url() }),
         outputSchema: serializableMediaCardSchema,
         async execute({ url }) {
-          // In production, fetch real metadata from the URL
+          // In production, you'd fetch real metadata here
           return {
-            id: 'link-1',
-            kind: 'link',
+            id: "link-1",
+            kind: "link",
             href: url,
-            title: 'React Documentation',
-            description: 'Learn React with the official docs',
-            thumb:
-              'https://images.unsplash.com/photo-1633356122544-f134324a6cee?auto=format&fit=crop&q=80&w=1200',
+            title: "Example Site",
+            description: "A description of the linked content",
+            thumb: "https://example.com/image.jpg",
           };
         },
       }),
@@ -154,93 +74,75 @@ export async function POST(req: Request) {
 }
 ```
 
-Key points:
-- `outputSchema` enforces the contract between tool and UI.
-- Tool outputs are JSON-only and match `serializableMediaCardSchema`.
-- The description helps the model know when to call this tool.
+</Step>
 
-3. Render Tool UIs in your chat UI
+<Step title="3. Register the Tool UI">
+
+Connect your backend tool to a frontend component. When the LLM calls the `previewLink` tool, assistant-ui will automatically render the MediaCard component with the returned data.
 
 ```tsx
-'use client';
+import { makeAssistantToolUI } from "@assistant-ui/react";
+import { MediaCard, type SerializableMediaCard } from "@tool-ui/media-card";
 
-import { useChat } from '@ai-sdk/react';
-import { DefaultChatTransport } from 'ai';
-import { MediaCard, parseSerializableMediaCard } from '@/components/media-card';
-import { useState } from 'react';
+export const PreviewLinkUI = makeAssistantToolUI<
+  { url: string },
+  SerializableMediaCard
+>({
+  toolName: "previewLink",  // Must match backend tool name
+  render: ({ result }) => (
+    <MediaCard {...result} maxWidth="420px" />
+  ),
+});
 
-export default function Chat() {
-  const { messages, sendMessage } = useChat({
-    transport: new DefaultChatTransport({ api: '/api/chat' }),
-  });
-  const [input, setInput] = useState('Preview https://react.dev');
-
+// Register in your app
+function App() {
   return (
-    <div className="flex h-screen flex-col">
-      {/* Message list */}
-      <div className="flex-1 overflow-y-auto p-4">
-        {messages.map((m) => (
-          <div key={m.id} className="mb-4">
-            <div className="font-semibold">
-              {m.role === 'user' ? 'You' : 'Assistant'}
-            </div>
-            {m.parts.map((part, i) => {
-              // Render tool output as Media Card
-              if (part.type === 'tool-previewLink' && part.state === 'output-available') {
-                const card = parseSerializableMediaCard(part.output);
-                return <MediaCard key={i} {...card} maxWidth="420px" />;
-              }
-
-              // Render text
-              if (part.type === 'text') {
-                return (
-                  <p key={i} className="text-sm">
-                    {part.text}
-                  </p>
-                );
-              }
-
-              return null;
-            })}
-          </div>
-        ))}
-      </div>
-
-      {/* Composer */}
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          if (input.trim()) {
-            sendMessage({ text: input });
-            setInput('');
-          }
-        }}
-        className="border-t p-4"
-      >
-        <div className="flex gap-2">
-          <input
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            placeholder="Try: Preview https://react.dev"
-            className="min-w-0 flex-1 rounded border px-3 py-2"
-          />
-          <button
-            type="submit"
-            className="rounded bg-primary px-4 py-2 text-primary-foreground"
-          >
-            Send
-          </button>
-        </div>
-      </form>
-    </div>
+    <AssistantRuntimeProvider runtime={runtime}>
+      <PreviewLinkUI />
+      <Thread />
+    </AssistantRuntimeProvider>
   );
 }
 ```
 
+That's it! When a user asks the assistant to preview a link, it will call your tool and render a beautiful MediaCard component.
+
+</Step>
+
+</Steps>
+
+
+## Installation
+
+```sh
+npx assistant-ui@latest init
+```
+
+Or install manually:
+
+```sh
+pnpm add @assistant-ui/react @assistant-ui/react-ai-sdk ai @ai-sdk/openai zod
+```
+
+Add your API key:
+
+```env
+OPENAI_API_KEY=sk-...
+```
+
+
+## Other frameworks
+
+Tool UI components work with any React app. Without assistant-ui, you'll need to manually parse tool outputs and render components. For the best experience, we recommend using assistant-ui.
+
+
+## Runtime options
+
+assistant-ui supports multiple runtimes: AI SDK, LangGraph, LangServe, Mastra, or custom backends. The examples above use AI SDK v5.
 
 
 ## Next steps
-- Typed integrations – See Advanced￼ for InferUITools and strongly typed message parts.
-- Patterns and behavior – Read UI Guidelines￼ for how Tool UIs should behave over time.
-- Component specifics – See Data Table￼, Media Card￼, Decision Prompt￼, and Social Post￼ for APIs and usage.
 
+- [Explore components](/docs/data-table) – Data Table, Media Card, Decision Prompt, Social Post
+- [UI Guidelines](/docs/design-guidelines) – Learn the interaction patterns
+- [Examples](https://github.com/assistant-ui/assistant-ui/tree/main/examples) – Full implementations

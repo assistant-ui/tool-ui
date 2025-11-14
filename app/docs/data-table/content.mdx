@@ -95,18 +95,16 @@ An information surface for tabular tool outputs with responsive layout, sorting,
 
 ## When to use Data Table
 
-Use Data Table when a tool returns **rows of structured objects** and the user needs to:
+- **Good for:** Search results, lists, dashboards, logs with sorting and actions
+- **Not for:** Single-record details, complex multi-step forms
 
-- Scan and compare items (search results, issues, accounts, logs).  
-- Sort and filter to find what matters.  
-- Take row-level actions (open, approve, escalate, and so on).
+## Key features
 
-Avoid Data Table for:
-
-- Single-record detail views (a Media Card or plain text is often better).  
-- Complex, multi-step forms (use a dedicated control surface instead).
-
-
+- **Responsive** – Table on wide screens, cards on mobile
+- **Sorting** – Tri-state: none → asc → desc
+- **Formatting** – Currency, dates, links, badges, etc. via declarative config
+- **Actions** – Row-level buttons with optional confirmation
+- **Accessible** – Screen reader support, keyboard navigation
 
 
 ## Source and install
@@ -137,253 +135,75 @@ We do not have a CLI yet, so you manually copy `components/data-table` into your
 
 
 
-## Rendering tool outputs
+## Usage
 
-<Tabs items={["Assistant UI", "AI SDK"]}>
-  <Tab>
+Define a tool that returns table data, then render with the DataTable component.
+
 ```tsx
-// Server: define a tool (app/api/assistant/route.ts)
+// Backend tool
 import { tool } from 'ai';
-import { serializableDataTableSchema } from '@/components/data-table/schema';
+import { serializableDataTableSchema } from '@tool-ui/data-table';
 
-export const tools = {
-  searchProducts: tool({
-    description: 'Search products and return results in a table',
-    outputSchema: serializableDataTableSchema,
-    async execute({ query }) {
-      const results = await db.products.search(query);
-      return {
-        columns: [
-          { key: 'name', label: 'Product', priority: 'primary' },
-          { key: 'price', label: 'Price', format: { kind: 'currency', currency: 'USD' } },
-          { key: 'stock', label: 'Stock', align: 'right' },
-        ],
-        data: results.map((p) => ({
-          id: p.id,
-          name: p.name,
-          price: p.price,
-          stock: p.stock,
-        })),
-      };
-    },
-  }),
-};
+const searchProducts = tool({
+  description: 'Search products and return results in a table',
+  outputSchema: serializableDataTableSchema,
+  async execute({ query }) {
+    const results = await db.products.search(query);
+    return {
+      columns: [
+        { key: 'name', label: 'Product', priority: 'primary' },
+        { key: 'price', label: 'Price', format: { kind: 'currency', currency: 'USD' } },
+        { key: 'stock', label: 'Stock', align: 'right' },
+      ],
+      data: results.map(p => ({
+        id: p.id,
+        name: p.name,
+        price: p.price,
+        stock: p.stock,
+      })),
+    };
+  },
+});
 
-// Client: render in chat (components/MyAssistant.tsx)
-import { Thread } from '@assistant-ui/react';
-import { DataTable, parseSerializableDataTable } from '@/components/data-table';
+// Frontend with assistant-ui
+import { makeAssistantToolUI } from '@assistant-ui/react';
+import { DataTable, parseSerializableDataTable } from '@tool-ui/data-table';
 
-export function MyAssistant() {
-  return (
-    <Thread
-      tools={{
-        searchProducts: (args, result) => {
-          if (!result) return null;
-          const props = parseSerializableDataTable(result);
-          return <DataTable rowIdKey="id" {...props} />;
-        },
-      }}
-    />
-  );
-}
+export const SearchProductsUI = makeAssistantToolUI({
+  toolName: 'searchProducts',
+  render: ({ result }) => {
+    const props = parseSerializableDataTable(result);
+    return <DataTable rowIdKey="id" {...props} />;
+  },
+});
 ```
-
-  </Tab>
-  <Tab>
-```tsx
-// Server: define tool (app/api/chat/route.ts)
-import { streamText, tool } from 'ai';
-import { openai } from '@ai-sdk/openai';
-import { serializableDataTableSchema } from '@/components/data-table/schema';
-
-export async function POST(req: Request) {
-  const { messages } = await req.json();
-
-  const result = streamText({
-    model: openai('gpt-4o'),
-    messages,
-    tools: {
-      searchProducts: tool({
-        description: 'Search products and return results in a table',
-        outputSchema: serializableDataTableSchema,
-        async execute({ query }) {
-          const results = await db.products.search(query);
-          return {
-            columns: [
-              { key: 'name', label: 'Product', priority: 'primary' },
-              { key: 'price', label: 'Price', format: { kind: 'currency', currency: 'USD' } },
-              { key: 'stock', label: 'Stock', align: 'right' },
-            ],
-            data: results.map((p) => ({
-              id: p.id,
-              name: p.name,
-              price: p.price,
-              stock: p.stock,
-            })),
-          };
-        },
-      }),
-    },
-  });
-
-  return result.toDataStreamResponse();
-}
-
-// Client: render in chat (app/page.tsx)
-import { useChat } from '@ai-sdk/react';
-import { DataTable, parseSerializableDataTable } from '@/components/data-table';
-
-export default function Chat() {
-  const { messages } = useChat({ api: '/api/chat' });
-
-  return (
-    <>
-      {messages.map((m) => (
-        <div key={m.id}>
-          {m.toolInvocations?.map((tool) => {
-            if (tool.toolName === 'searchProducts' && tool.state === 'result') {
-              const props = parseSerializableDataTable(tool.result);
-              return <DataTable key={tool.toolCallId} rowIdKey="id" {...props} />;
-            }
-            return null;
-          })}
-        </div>
-      ))}
-    </>
-  );
-}
-```
-
-  </Tab>
-</Tabs>
-
-
-
-## Features
-
-### Sorting
-
-Tri-state sorting: none → asc → desc (click again to reset). Use controlled mode to sync with filters or URL state.
-
-```tsx
-// Uncontrolled: click header to cycle none → asc → desc → none
-<DataTable columns={columns} data={data} />
-
-// Controlled: manage sort in parent
-const [sort, setSort] = useState<{ by?: keyof Row; direction?: 'asc' | 'desc' }>({});
-<DataTable columns={columns} data={data} sort={sort} onSortChange={setSort} />
-```
-
-### Responsive layout
-
-Container queries switch between a classic table and mobile-friendly cards. Column priority decides what stays visible in the card header.
-
-```tsx
-// Auto (default): table on wide screens, cards on narrow
-<DataTable columns={columns} data={data} />
-
-// Force a particular layout
-<DataTable layout="table" columns={columns} data={data} />
-<DataTable layout="cards" columns={columns} data={data} />
-
-// Mobile priorities
-const columns = [
-  { key: 'name', label: 'Name', priority: 'primary' },
-  { key: 'price', label: 'Price', priority: 'primary' },
-  { key: 'category', label: 'Category', priority: 'secondary' },
-  { key: 'sku', label: 'SKU', priority: 'tertiary' },
-];
-```
-
-### Declarative formatting
-
-Keep row values primitive; describe presentation in `columns[i].format`. This keeps UI consistent and tool outputs JSON-serializable.
-
-```tsx
-{ key: 'price', label: 'Price', format: { kind: 'currency', currency: 'USD' } }
-{ key: 'homepage', label: 'Homepage', format: { kind: 'link', external: true } }
-{ key: 'status', label: 'Status', format: { kind: 'badge', colorMap: { open: 'info', closed: 'success' } } }
-```
-
-### Actions and receipts
-- Add actions to show row-level buttons or menus.  
-- Handle clicks in `onAction` and optionally gate them via `onBeforeAction`.  
-- Use [Decision Prompt](/docs/decision-prompt) for higher-risk, multi-row approvals and receipts.
-
-```tsx
-<DataTable
-  rowIdKey="id"
-  actions={[
-    { id: 'open', label: 'Open' },
-    { id: 'archive', label: 'Archive', tone: 'destructive' },
-  ]}
-  onBeforeAction={async ({ id, row }) => {
-    if (id === 'archive') {
-      return confirm(`Archive "${row.name}"?`);
-    }
-    return true;
-  }}
-  onAction={(id, row) => {
-    // Your app logic here
-  }}
-/>
-```
-
-### Accessibility
-- Header buttons are focusable; `aria-sort` reflects state for screen readers.  
-- A live region announces sort changes; rows and cells read with labels.  
-- The table toggles `aria-busy` when loading so assistive tech knows data is pending.  
-- Mobile cards preserve relationships between labels and values.
 
 
 
 ## Props
 
-Data Table accepts serializable rows where each row is a record of JSON primitives (string, number, boolean, null) or arrays of primitives. Keep objects and Dates out of row values; use `format` for presentation.
-
-### Data
+### Core props
 
 <TypeTable
   type={{
     columns: { description: "Column definitions", type: "Column[]", required: true },
-    data: { description: "Serializable rows", type: "T[]", required: true },
-    rowIdKey: { description: "Stable unique key in each row", type: "keyof T", required: true },
-    locale: { description: "Intl locale for formatting", type: "string", default: '"en-US"' },
+    data: { description: "Rows (JSON primitives only)", type: "T[]", required: true },
+    rowIdKey: { description: "Unique key per row", type: "keyof T", required: true },
+    locale: { description: "Intl locale", type: "string", default: '"en-US"' },
   }}
 />
 
-### Columns
+### Column options
 
 <TypeTable
   type={{
-    key: { description: "Maps to a key in the row data", type: "keyof T", required: true },
-    label: { description: "Display text for column header", type: "string", required: true },
-    abbr: { description: "Abbreviated label for narrow viewports", type: "string" },
-    sortable: { description: "Enable sorting for this column", type: "boolean", default: "true" },
-    align: { description: "Text alignment for cells", type: "'left' | 'right' | 'center'", default: "'left'" },
-    width: { description: "Fixed width (CSS value)", type: "string" },
-    truncate: { description: "Truncate text with ellipsis", type: "boolean", default: "false" },
-    priority: {
-      description:
-        "Mobile display priority (primary = always visible, secondary = expandable, tertiary = hidden)",
-      type: "'primary' | 'secondary' | 'tertiary'",
-    },
-    hideOnMobile: { description: "Completely hide on mobile", type: "boolean", default: "false" },
-    format: {
-      description: "Formatting config for cell values (see Formatting section)",
-      type: "FormatConfig",
-    },
-  }}
-/>
-
-### Layout
-
-<TypeTable
-  type={{
-    layout: { description: "Force table/cards or auto", type: "'auto' | 'table' | 'cards'", default: "'auto'" },
-    maxHeight: { description: "Scroll container height", type: "string (CSS)" },
-    emptyMessage: { description: "Shown when no rows", type: "string", default: '"No data available"' },
-    isLoading: { description: "Show skeletons instead of rows", type: "boolean", default: "false" },
+    key: { description: "Row data key", type: "keyof T", required: true },
+    label: { description: "Header text", type: "string", required: true },
+    format: { description: "Cell formatting", type: "FormatConfig" },
+    priority: { description: "Mobile visibility", type: "'primary' | 'secondary' | 'tertiary'" },
+    sortable: { description: "Enable sorting", type: "boolean", default: "true" },
+    align: { description: "Text alignment", type: "'left' | 'right' | 'center'" },
+    truncate: { description: "Truncate with ellipsis", type: "boolean" },
   }}
 />
 
@@ -391,18 +211,9 @@ Data Table accepts serializable rows where each row is a record of JSON primitiv
 
 <TypeTable
   type={{
-    defaultSort: {
-      description: "Initial sort (uncontrolled)",
-      type: "{ by?: keyof T; direction?: 'asc' | 'desc' }",
-    },
-    sort: {
-      description: "Controlled sort state (with onSortChange)",
-      type: "{ by?: keyof T; direction?: 'asc' | 'desc' }",
-    },
-    onSortChange: {
-      description: "Update controlled sort",
-      type: "(next: { by?: keyof T; direction?: 'asc' | 'desc' }) => void",
-    },
+    defaultSort: { description: "Initial sort", type: "{ by?: keyof T; direction?: 'asc' | 'desc' }" },
+    sort: { description: "Controlled sort", type: "{ by?: keyof T; direction?: 'asc' | 'desc' }" },
+    onSortChange: { description: "Sort handler", type: "(sort) => void" },
   }}
 />
 
@@ -411,14 +222,8 @@ Data Table accepts serializable rows where each row is a record of JSON primitiv
 <TypeTable
   type={{
     actions: { description: "Row actions", type: "Action[]" },
-    onBeforeAction: {
-      description: "Gate actions (confirm, policy, permissions)",
-      type: "(args: { id: string; row: T }) => boolean | Promise",
-    },
-    onAction: {
-      description: "Action click handler",
-      type: "(id: string, row: T, ctx?: unknown) => void",
-    },
+    onAction: { description: "Click handler", type: "(id, row) => void" },
+    onBeforeAction: { description: "Gate actions", type: "({ id, row }) => boolean | Promise" },
   }}
 />
 
