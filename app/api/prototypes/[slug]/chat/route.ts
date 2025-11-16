@@ -3,8 +3,8 @@ import type { NextRequest } from "next/server";
 import type { UIMessage } from "ai";
 import type { JSONSchema7 } from "json-schema";
 
-import { streamInstanceResponse } from "@/lib/assistant/engine";
-import { resolveManifest } from "@/lib/instances";
+import { streamInstanceResponse } from "@/lib/prototypes/engine";
+import { resolveManifest } from "@/lib/prototypes/instances";
 import { checkRateLimit } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";

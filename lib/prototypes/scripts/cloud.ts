@@ -5,7 +5,7 @@ import { loadManifestInfo, writeManifestFile } from "./utils/manifest-io";
 import {
   listInstanceSlugs,
   resolveManifest,
-} from "../lib/instances/registry";
+} from "@/lib/prototypes/instances/registry";
 
 const usage = `Usage:
   pnpm cloud:list

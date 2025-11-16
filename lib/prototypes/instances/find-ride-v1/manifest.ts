@@ -57,7 +57,7 @@ export const manifest: ManifestModule["manifest"] = {
       impl: {
         kind: "custom",
         config: {
-          modulePath: "@/lib/server-tools/find-ride/get-user-location",
+          modulePath: "@/lib/prototypes/server-tools/find-ride/get-user-location",
           edgeSafe: false,
         },
       },
@@ -88,7 +88,7 @@ export const manifest: ManifestModule["manifest"] = {
       impl: {
         kind: "custom",
         config: {
-          modulePath: "@/lib/server-tools/find-ride/toggle-gps",
+          modulePath: "@/lib/prototypes/server-tools/find-ride/toggle-gps",
           edgeSafe: false,
         },
       },
@@ -131,7 +131,7 @@ export const manifest: ManifestModule["manifest"] = {
       impl: {
         kind: "custom",
         config: {
-          modulePath: "@/lib/server-tools/find-ride/get-user-destination",
+          modulePath: "@/lib/prototypes/server-tools/find-ride/get-user-destination",
           edgeSafe: false,
         },
       },
@@ -192,7 +192,7 @@ export const manifest: ManifestModule["manifest"] = {
       impl: {
         kind: "custom",
         config: {
-          modulePath: "@/lib/server-tools/find-ride/check-ride-prices",
+          modulePath: "@/lib/prototypes/server-tools/find-ride/check-ride-prices",
           edgeSafe: false,
         },
       },
@@ -236,7 +236,7 @@ export const manifest: ManifestModule["manifest"] = {
       impl: {
         kind: "custom",
         config: {
-          modulePath: "@/lib/server-tools/find-ride/request-payment-method",
+          modulePath: "@/lib/prototypes/server-tools/find-ride/request-payment-method",
           edgeSafe: false,
         },
       },
@@ -275,7 +275,7 @@ export const manifest: ManifestModule["manifest"] = {
       impl: {
         kind: "custom",
         config: {
-          modulePath: "@/lib/server-tools/find-ride/confirm-user-payment",
+          modulePath: "@/lib/prototypes/server-tools/find-ride/confirm-user-payment",
           edgeSafe: false,
         },
       },
@@ -344,7 +344,7 @@ export const manifest: ManifestModule["manifest"] = {
       impl: {
         kind: "custom",
         config: {
-          modulePath: "@/lib/server-tools/find-ride/show-ride-details",
+          modulePath: "@/lib/prototypes/server-tools/find-ride/show-ride-details",
           edgeSafe: false,
         },
       },
@@ -432,7 +432,7 @@ export const manifest: ManifestModule["manifest"] = {
       impl: {
         kind: "custom",
         config: {
-          modulePath: "@/lib/server-tools/find-ride/get-profile-context",
+          modulePath: "@/lib/prototypes/server-tools/find-ride/get-profile-context",
           edgeSafe: false,
         },
       },
@@ -475,7 +475,7 @@ export const manifest: ManifestModule["manifest"] = {
       impl: {
         kind: "custom",
         config: {
-          modulePath: "@/lib/server-tools/find-ride/search-places",
+          modulePath: "@/lib/prototypes/server-tools/find-ride/search-places",
           edgeSafe: false,
         },
       },
@@ -543,7 +543,7 @@ export const manifest: ManifestModule["manifest"] = {
       impl: {
         kind: "custom",
         config: {
-          modulePath: "@/lib/server-tools/find-ride/precheck-prices",
+          modulePath: "@/lib/prototypes/server-tools/find-ride/precheck-prices",
           edgeSafe: false,
         },
       },
@@ -612,7 +612,7 @@ export const manifest: ManifestModule["manifest"] = {
       impl: {
         kind: "custom",
         config: {
-          modulePath: "@/lib/server-tools/find-ride/schedule-ride",
+          modulePath: "@/lib/prototypes/server-tools/find-ride/schedule-ride",
           edgeSafe: false,
         },
       },
@@ -699,7 +699,7 @@ export const manifest: ManifestModule["manifest"] = {
       impl: {
         kind: "custom",
         config: {
-          modulePath: "@/lib/server-tools/find-ride/show-ride-options",
+          modulePath: "@/lib/prototypes/server-tools/find-ride/show-ride-options",
           edgeSafe: false,
         },
       },
@@ -771,7 +771,7 @@ export const manifest: ManifestModule["manifest"] = {
         kind: "custom",
         config: {
           modulePath:
-            "@/lib/server-tools/find-ride/confirm-ride-booking",
+            "@/lib/prototypes/server-tools/find-ride/confirm-ride-booking",
           edgeSafe: false,
         },
       },
