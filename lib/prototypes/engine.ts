@@ -2,10 +2,10 @@ import { frontendTools } from "@assistant-ui/react-ai-sdk";
 import { convertToModelMessages, streamText, tool } from "ai";
 import type { ToolSet, UIMessage } from "ai";
 
-import { jsonSchemaToZod } from "../manifest";
-import type { InstanceManifest, ToolManifest } from "../instances";
+import { jsonSchemaToZod } from "./manifest";
+import type { InstanceManifest, ToolManifest } from "./instances";
 import { resolveLanguageModel } from "./model-resolver";
-import { loadServerToolModule } from "../server-tools/registry";
+import { loadServerToolModule } from "./server-tools/registry";
 
 type ClientTools = Parameters<typeof frontendTools>[0];
 

@@ -52,7 +52,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { ThreadList } from "@/app/components/assistant-ui/thread-list";
 import { MarkdownText } from "@/app/components/assistant-ui/markdown-text";
 import { ToolFallback } from "@/app/components/assistant-ui/tool-fallback";
-import { getCloudClientEnv } from "@/lib/assistant/cloud-client";
+import { getCloudClientEnv } from "@/lib/prototypes/cloud-client";
 import {
   consumePendingReplay,
   ensureThreadMeta,
@@ -63,8 +63,8 @@ import {
   setThreadSnapshot,
   subscribeThreadHistoryStore,
   subscribeThreadMetaStore,
-} from "@/lib/assistant/thread-meta";
-import type { InstanceManifest } from "@/lib/instances";
+} from "@/lib/prototypes/thread-meta";
+import type { InstanceManifest } from "@/lib/prototypes/instances";
 
 type InstanceSummary = {
   slug: string;

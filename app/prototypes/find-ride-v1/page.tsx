@@ -5,10 +5,10 @@ export const dynamic = "force-dynamic";
 export default async function FindRideV1Page({
   searchParams,
 }: {
-  searchParams: Record<string, string | string[] | undefined>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
   return PrototypeInstancePage({
-    params: { slug: "find-ride-v1" },
+    params: Promise.resolve({ slug: "find-ride-v1" }),
     searchParams,
   });
 }

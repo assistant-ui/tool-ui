@@ -1,6 +1,6 @@
 import type { NextRequest } from "next/server";
 
-import { getCloudServerEnv } from "@/lib/assistant/cloud-server";
+import { getCloudServerEnv } from "@/lib/prototypes/cloud-server";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";

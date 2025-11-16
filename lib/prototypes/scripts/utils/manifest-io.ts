@@ -8,13 +8,13 @@ import {
   getManifestModulePath,
   listInstanceSlugs,
   resolveManifest,
-} from "../../lib/instances/registry";
+} from "@/lib/prototypes/instances/registry";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-export const repoRoot = path.resolve(__dirname, "..", "..");
-export const instancesDir = path.join(repoRoot, "lib/instances");
+export const repoRoot = path.resolve(__dirname, "..", "..", "..", "..");
+export const instancesDir = path.join(repoRoot, "lib/prototypes/instances");
 export const registryPath = path.join(instancesDir, "registry.ts");
 
 export const loadManifestInfo = async (slug: string) => {

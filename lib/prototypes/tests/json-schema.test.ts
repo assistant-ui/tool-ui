@@ -6,7 +6,7 @@ import {
   jsonSchemaToTypes,
   jsonSchemaToZod,
   validateJsonSchema,
-} from "../lib/manifest/json-schema";
+} from "../manifest/json-schema";
 
 describe("jsonSchemaToZod", () => {
   it("converts basic string schema", () => {

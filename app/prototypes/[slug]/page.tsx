@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 
 import { InstanceView } from "./instance-view";
-import { listInstanceSlugs, resolveManifest } from "@/lib/instances";
+import { listInstanceSlugs, resolveManifest } from "@/lib/prototypes/instances";
 
 export const dynamic = "force-dynamic";
 

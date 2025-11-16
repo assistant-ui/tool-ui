@@ -12,7 +12,7 @@ import {
   writeManifestFile,
   writeRegistrySource,
 } from "./utils/manifest-io";
-import { resolveManifest } from "../lib/instances/registry";
+import { resolveManifest } from "@/lib/prototypes/instances/registry";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -23,7 +23,7 @@ Creates a new instance manifest by cloning the source manifest.
 - Copies schema/tool definitions
 - Updates meta.slug, meta.version, and meta.forkOf
 - Clears cloud.deploymentId so a new deployment can be registered
-- Registers the new instance inside lib/instances/registry.ts
+- Registers the new instance inside lib/prototypes/instances/registry.ts
 `;
 
 const incrementVersion = (version: string | undefined) => {
