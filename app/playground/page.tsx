@@ -5,7 +5,7 @@ import {
   AssistantChatTransport,
   useChatRuntime,
 } from "@assistant-ui/react-ai-sdk";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
@@ -45,11 +45,12 @@ const PlaygroundPage = () => {
   const [inspectorOpen, setInspectorOpen] = useState(false);
 
   useEffect(() => {
-    const nextSlug = getInitialSlug(slugParam, PROTOTYPES);
-    if (nextSlug && nextSlug !== activeSlug) {
-      setActiveSlug(nextSlug);
+    if (slugParam === null) {
+      return;
     }
-  }, [slugParam, activeSlug]);
+    const nextSlug = getInitialSlug(slugParam, PROTOTYPES);
+    setActiveSlug((current) => (current === nextSlug ? current : nextSlug));
+  }, [slugParam]);
 
   const resolvedSlug = activeSlug ?? PROTOTYPES[0]?.slug ?? "";
 
@@ -74,20 +75,17 @@ const PlaygroundPage = () => {
     router.replace(`?${nextSearch.toString()}`, { scroll: false });
   }, [slugParam, activePrototype, router]);
 
-  const slugRef = useRef<string>(resolvedSlug);
-  useEffect(() => {
-    slugRef.current = activePrototype?.slug ?? "";
-  }, [activePrototype]);
+  const currentSlug = activePrototype?.slug ?? "";
 
   const transport = useMemo(
     () =>
       new AssistantChatTransport({
         api: "/api/playground/chat",
         headers: async () => ({
-          [PROTOTYPE_SLUG_HEADER.toUpperCase()]: slugRef.current,
+          [PROTOTYPE_SLUG_HEADER.toUpperCase()]: currentSlug,
         }),
       }),
-    [],
+    [currentSlug],
   );
 
   const runtime = useChatRuntime({ transport });
@@ -99,8 +97,8 @@ const PlaygroundPage = () => {
           <CardHeader>
             <CardTitle>Playground</CardTitle>
             <CardDescription>
-              Add a prototype definition to `lib/playground/registry.ts` to
-              get started.
+              Add a prototype definition to `lib/playground/registry.ts` to get
+              started.
             </CardDescription>
           </CardHeader>
           <CardContent className="text-muted-foreground space-y-3 text-sm">
@@ -167,7 +165,7 @@ const PlaygroundPage = () => {
           </Button>
         </header>
         <div className="flex flex-1 flex-col overflow-hidden">
-          <AssistantRuntimeProvider runtime={runtime}>
+          <AssistantRuntimeProvider key={currentSlug} runtime={runtime}>
             <ThreadPrimitive.Root className="flex flex-1 flex-col overflow-hidden">
               <ThreadPrimitive.Viewport className="flex flex-1 flex-col overflow-y-auto px-6 py-6">
                 <ThreadPrimitive.If empty>
