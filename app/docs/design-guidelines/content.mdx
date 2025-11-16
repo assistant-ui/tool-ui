@@ -6,6 +6,30 @@ Design principles and interaction patterns for Tool UIs.
 
 > **Note:** We're continuously expanding these guidelines with concrete examples and patterns from real usage.
 
+## Component Library Policy
+
+Tool UI surfaces **must** be composed exclusively from the shadcn/ui wrappers defined in `components/ui/*`.  
+This keeps styling and accessibility consistent across instances and lets us theme everything centrally.
+
+### Allowed primitives
+
+- `Button`, `ButtonGroup`
+- `Card` and `CardHeader/CardContent/CardFooter`
+- `Dialog`
+- `DropdownMenu`
+- `Input`, `InputGroup`, `Textarea`
+- `Label`, `Select`, `Separator`
+- `Skeleton`, `Switch`, `Table`
+- `Tooltip`, `Badge`, `Avatar`, `Accordion`, `Item`
+
+> Need a new primitive? Add the shadcn wrapper under `components/ui/` and document it before using it in Tool UIs.
+
+### Fork, edit, promote
+
+- Use `pnpm fork:instance <source> <target>` to clone a manifest for a new experiment.
+- Draft schema or UI changes locally via the JSON editor in the instance view (stored in localStorage).
+- Run `pnpm cloud:deploy <slug> <deploymentId>` (or `cloud:promote`) to track Cloud deployments in the manifest once stable.
+
 
 ## Core Principles
 
