@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 
 function useDocsPagination() {
   const pathname = usePathname();
+
   return React.useMemo(() => {
     const links = getAllDocsPageLinks();
     const currentIndex = links.findIndex((link) => link.path === pathname);

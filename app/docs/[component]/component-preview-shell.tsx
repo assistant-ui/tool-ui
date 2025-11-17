@@ -135,7 +135,7 @@ export function ComponentPreviewShell({
         </div>
 
         {/* Resizable preview area (outer container manages scroll) */}
-        <div className="relative flex flex-1 items-start justify-center overflow-y-scroll px-2 py-6">
+        <div className="relative flex flex-1 items-start justify-center overflow-y-scroll border-l px-2 py-6">
           {activeTab === "ui" && (
             <div
               className="bg-dot-grid bg-wash pointer-events-none absolute inset-0 opacity-60 dark:opacity-40"
