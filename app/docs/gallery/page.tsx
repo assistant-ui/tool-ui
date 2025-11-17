@@ -5,14 +5,14 @@ import { MediaCard } from "@/components/media-card";
 import { SocialPost } from "@/components/social-post";
 import { DecisionPrompt } from "@/components/decision-prompt";
 import { ZenField } from "@/app/components/zen-field";
-import { sampleStocks, sampleMetrics } from "@/lib/sample-data";
-import { mediaCardPresets } from "@/lib/media-card-presets";
+import { sampleStocks, sampleMetrics } from "@/lib/presets/data-table";
+import { mediaCardPresets } from "@/lib/presets/media-card";
 import {
   sampleX,
   sampleInstagram,
   sampleLinkedIn,
-} from "@/lib/social-post-presets";
-import { decisionPromptPresets } from "@/lib/decision-prompt-presets";
+} from "@/lib/presets/social-post";
+import { decisionPromptPresets } from "@/lib/presets/decision-prompt";
 import { ArrowRightIcon } from "lucide-react";
 
 export default function ComponentsGalleryPage() {

@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { getComponentById } from "@/lib/components-config";
+import { getComponentById } from "@/lib/docs/component-registry";
 import { DataTablePreview } from "./previews/data-table-preview";
 import { SocialPostPreview } from "./previews/social-post-preview";
 import { MediaCardPreview } from "./previews/media-card-preview";

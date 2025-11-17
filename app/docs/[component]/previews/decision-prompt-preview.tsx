@@ -9,7 +9,7 @@ import { DecisionPrompt } from "@/components/decision-prompt";
 import {
   DecisionPromptPresetName,
   decisionPromptPresets,
-} from "@/lib/decision-prompt-presets";
+} from "@/lib/presets/decision-prompt";
 
 export function DecisionPromptPreview({ withContainer = true }: { withContainer?: boolean }) {
   const router = useRouter();

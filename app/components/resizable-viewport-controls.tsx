@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { ButtonGroup } from "@/components/ui/button-group";
 import { Monitor, Moon, Smartphone, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/ui/cn";
 
 export type ResizableViewportSize = "mobile" | "desktop";
 

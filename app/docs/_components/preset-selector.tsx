@@ -5,20 +5,23 @@ import {
   ItemGroup,
   ItemTitle,
 } from "@/components/ui/item";
-import { PresetName, presetDescriptions } from "@/lib/sample-data";
+import {
+  PresetName,
+  presetDescriptions,
+} from "@/lib/presets/data-table";
 import {
   SocialPostPresetName,
   socialPostPresetDescriptions,
-} from "@/lib/social-post-presets";
+} from "@/lib/presets/social-post";
 import {
   MediaCardPresetName,
   mediaCardPresetDescriptions,
-} from "@/lib/media-card-presets";
+} from "@/lib/presets/media-card";
 import {
   DecisionPromptPresetName,
   decisionPromptPresetDescriptions,
-} from "@/lib/decision-prompt-presets";
-import { cn } from "@/lib/utils";
+} from "@/lib/presets/decision-prompt";
+import { cn } from "@/lib/ui/cn";
 
 type ComponentPreset =
   | PresetName

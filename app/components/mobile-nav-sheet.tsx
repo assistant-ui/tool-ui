@@ -7,9 +7,9 @@ import { Sheet, Scroll } from "@silk-hq/components";
 import { Menu } from "lucide-react";
 import { FaGithub } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
-import { componentsRegistry } from "@/lib/components-config";
+import { componentsRegistry } from "@/lib/docs/component-registry";
 import { BASE_DOCS_PAGES } from "@/app/docs/_components/docs-pages";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/ui/cn";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 

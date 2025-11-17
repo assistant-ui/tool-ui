@@ -1,11 +1,11 @@
 import { openai } from "@ai-sdk/openai";
 import { anthropic } from "@ai-sdk/anthropic";
 import { streamText, convertToModelMessages, stepCountIs } from "ai";
-import { checkRateLimit } from "@/lib/rate-limit";
 import { experimental_createMCPClient as createMCPClient } from "@ai-sdk/mcp";
 import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/streamableHttp.js";
-import { requestDevServer } from "@/lib/freestyle";
-import { SYSTEM_MESSAGE } from "@/lib/system";
+import { checkRateLimit } from "@/lib/integrations/rate-limit/upstash";
+import { requestDevServer } from "@/lib/integrations/freestyle/create-chat";
+import { SYSTEM_MESSAGE } from "@/lib/system/tool-builder-message";
 
 export const maxDuration = 300;
 

@@ -41,7 +41,7 @@ import {
 import { MCPIcon } from "@/app/components/mcp-icon";
 import { Button } from "@/components/ui/button";
 import { CodeBlock, CodeBlockCode } from "@/components/ui/code-block";
-import { getComponentCode } from "@/lib/get-code";
+import { getComponentCode } from "@/lib/integrations/freestyle/get-code";
 import {
   Card,
   CardHeader,
@@ -71,7 +71,7 @@ import { useState, useEffect, type FC, createContext, useContext } from "react";
 import { ToolFallback } from "@/app/components/assistant-ui/tool-fallback";
 import { TooltipIconButton } from "@/app/components/assistant-ui/tooltip-icon-button";
 import React from "react";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/ui/cn";
 
 // Context for refreshing the preview pane
 const PreviewRefreshContext = createContext<(() => void) | null>(null);

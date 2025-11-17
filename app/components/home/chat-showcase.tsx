@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/ui/cn";
 import { DataTable, type Column } from "@/components/data-table";
 import { MediaCard, type SerializableMediaCard } from "@/components/media-card";
 
