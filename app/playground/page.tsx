@@ -1,10 +1,6 @@
 "use client";
 
-import { AssistantRuntimeProvider, ThreadPrimitive } from "@assistant-ui/react";
-import {
-  AssistantChatTransport,
-  useChatRuntime,
-} from "@assistant-ui/react-ai-sdk";
+import { ChatPane } from "./chat-pane";
 import { useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
@@ -18,11 +14,9 @@ import {
 } from "@/components/ui/card";
 import { listPrototypes } from "@/lib/playground";
 import type { Prototype } from "@/lib/playground";
-import { AssistantMessage, Composer, UserMessage } from "./chat-ui";
 import { ToolInspector } from "./tool-inspector";
 
 const PROTOTYPES = listPrototypes();
-const PROTOTYPE_SLUG_HEADER = "x-prototype-slug";
 
 const getInitialSlug = (slugParam: string | null, prototypes: Prototype[]) => {
   if (
@@ -74,21 +68,6 @@ const PlaygroundPage = () => {
     nextSearch.set("slug", activePrototype.slug);
     router.replace(`?${nextSearch.toString()}`, { scroll: false });
   }, [slugParam, activePrototype, router]);
-
-  const currentSlug = activePrototype?.slug ?? "";
-
-  const transport = useMemo(
-    () =>
-      new AssistantChatTransport({
-        api: "/api/playground/chat",
-        headers: async () => ({
-          [PROTOTYPE_SLUG_HEADER.toUpperCase()]: currentSlug,
-        }),
-      }),
-    [currentSlug],
-  );
-
-  const runtime = useChatRuntime({ transport });
 
   if (PROTOTYPES.length === 0 || !activePrototype) {
     return (
@@ -165,32 +144,7 @@ const PlaygroundPage = () => {
           </Button>
         </header>
         <div className="flex flex-1 flex-col overflow-hidden">
-          <AssistantRuntimeProvider key={currentSlug} runtime={runtime}>
-            <ThreadPrimitive.Root className="flex flex-1 flex-col overflow-hidden">
-              <ThreadPrimitive.Viewport className="flex flex-1 flex-col overflow-y-auto px-6 py-6">
-                <ThreadPrimitive.If empty>
-                  <div className="text-muted-foreground mx-auto flex max-w-lg flex-1 flex-col items-center justify-center gap-3 text-center">
-                    <p className="text-base font-medium">
-                      Start exploring {activePrototype.title}
-                    </p>
-                    <p className="text-sm">
-                      Describe a task or ask a question to see how this tool
-                      collection responds.
-                    </p>
-                  </div>
-                </ThreadPrimitive.If>
-                <ThreadPrimitive.Messages
-                  components={{
-                    UserMessage,
-                    AssistantMessage,
-                  }}
-                />
-              </ThreadPrimitive.Viewport>
-              <div className="border-border bg-background/95 border-t px-6 py-4">
-                <Composer />
-              </div>
-            </ThreadPrimitive.Root>
-          </AssistantRuntimeProvider>
+          <ChatPane key={activePrototype.slug} prototype={activePrototype} />
         </div>
       </main>
       <ToolInspector
