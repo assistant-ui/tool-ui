@@ -1,14 +1,7 @@
 import { MOCK_NOW } from "./shared";
+import type { RideSummary } from "./shared";
 
-type ConfirmRideBookingArgs = {
-  provider: string;
-  service: string;
-  etaMinutes: number;
-  price: number;
-  currency?: string;
-  pickup: string;
-  destination: string;
-};
+type ConfirmRideBookingArgs = RideSummary;
 
 type ConfirmRideBookingResult = {
   confirmation: {

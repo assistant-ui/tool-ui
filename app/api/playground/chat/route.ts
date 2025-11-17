@@ -3,8 +3,7 @@ import type { NextRequest } from "next/server";
 import type { UIMessage } from "ai";
 
 import { findPrototype, streamPrototypeResponse } from "@/lib/playground";
-
-const PROTOTYPE_SLUG_HEADER = "x-prototype-slug";
+import { PROTOTYPE_SLUG_HEADER } from "@/lib/playground/constants";
 
 const isUiMessageArray = (value: unknown): value is UIMessage[] =>
   Array.isArray(value);

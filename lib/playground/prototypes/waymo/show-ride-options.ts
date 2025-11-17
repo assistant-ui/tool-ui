@@ -4,12 +4,7 @@ import {
   SUGGESTION_REASONS,
   SUGGESTION_SERVICES,
 } from "./shared";
-
-type Candidate = {
-  id: string;
-  label: string;
-  address: string;
-};
+import type { Candidate } from "./shared";
 
 type ShowRideOptionsArgs = {
   pickup: string;

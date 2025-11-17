@@ -1,12 +1,6 @@
-type ScheduleRideArgs = {
-  provider: string;
-  service: string;
-  etaMinutes: number;
-  price: number;
-  currency?: string;
-  pickup: string;
-  destination: string;
-};
+import type { RideSummary } from "./shared";
+
+type ScheduleRideArgs = RideSummary;
 
 type ScheduleRideResult = {
   confirmation: {

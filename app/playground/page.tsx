@@ -103,25 +103,20 @@ const PlaygroundPage = () => {
           <h1 className="text-lg font-semibold">Tool UI Playground</h1>
         </div>
         <div className="flex-1 overflow-y-auto px-2 py-4">
-          <div className="space-y-2">
+          <div className="flex flex-col gap-2">
             {PROTOTYPES.map((prototype) => {
               const isActive = prototype.slug === activePrototype.slug;
               return (
                 <Button
                   key={prototype.slug}
                   variant={isActive ? "secondary" : "ghost"}
-                  className="w-full justify-start"
+                  className="w-full justify-start py-4"
                   onClick={() => setActiveSlug(prototype.slug)}
                 >
                   <div className="flex flex-col items-start">
                     <span className="text-sm font-medium">
                       {prototype.title}
                     </span>
-                    {prototype.summary ? (
-                      <span className="text-muted-foreground text-xs">
-                        {prototype.summary}
-                      </span>
-                    ) : null}
                   </div>
                 </Button>
               );

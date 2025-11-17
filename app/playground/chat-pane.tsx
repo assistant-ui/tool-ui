@@ -16,47 +16,55 @@ import type {
 import type { UIMessage } from "ai";
 
 import type { Prototype } from "@/lib/playground";
+import { PROTOTYPE_SLUG_HEADER } from "@/lib/playground/constants";
 import { AssistantMessage, Composer, UserMessage } from "./chat-ui";
 
-const PROTOTYPE_SLUG_HEADER = "x-prototype-slug";
+const THREAD_STORAGE_KEY_PREFIX = "playground:thread:";
+
+const getThreadStorageKey = (slug: string) =>
+  `${THREAD_STORAGE_KEY_PREFIX}${slug}`;
+
+const readThreadRepo = (slug: string): ExportedMessageRepository => {
+  if (typeof window === "undefined") {
+    return { headId: null, messages: [] };
+  }
+
+  const raw = window.localStorage.getItem(getThreadStorageKey(slug));
+  if (!raw) {
+    return { headId: null, messages: [] };
+  }
+
+  try {
+    const parsed = JSON.parse(raw) as ExportedMessageRepository;
+    return {
+      headId: parsed.headId ?? null,
+      messages: parsed.messages ?? [],
+    };
+  } catch (error) {
+    console.warn("Failed to parse stored playground thread", error);
+    return { headId: null, messages: [] };
+  }
+};
+
+const writeThreadRepo = (slug: string, repo: ExportedMessageRepository) => {
+  if (typeof window === "undefined") {
+    return;
+  }
+  try {
+    window.localStorage.setItem(
+      getThreadStorageKey(slug),
+      JSON.stringify(repo),
+    );
+  } catch (error) {
+    console.warn("Failed to persist playground thread", error);
+  }
+};
 
 const createLocalStorageHistoryAdapter = (
   slug: string,
 ): ThreadHistoryAdapter => {
-  const storageKey = `playground:thread:${slug}`;
-
-  const read = (): ExportedMessageRepository => {
-    if (typeof window === "undefined") {
-      return { headId: null, messages: [] };
-    }
-
-    const raw = window.localStorage.getItem(storageKey);
-    if (!raw) {
-      return { headId: null, messages: [] };
-    }
-
-    try {
-      const parsed = JSON.parse(raw) as ExportedMessageRepository;
-      return {
-        headId: parsed.headId ?? null,
-        messages: parsed.messages ?? [],
-      };
-    } catch (error) {
-      console.warn("Failed to parse stored playground thread", error);
-      return { headId: null, messages: [] };
-    }
-  };
-
-  const write = (repo: ExportedMessageRepository) => {
-    if (typeof window === "undefined") {
-      return;
-    }
-    try {
-      window.localStorage.setItem(storageKey, JSON.stringify(repo));
-    } catch (error) {
-      console.warn("Failed to persist playground thread", error);
-    }
-  };
+  const read = () => readThreadRepo(slug);
+  const write = (repo: ExportedMessageRepository) => writeThreadRepo(slug, repo);
 
   const upsertMessage = (
     repo: ExportedMessageRepository,
@@ -138,17 +146,19 @@ export type ChatPaneProps = {
   prototype: Prototype;
 };
 
+const createTransportForPrototype = (slug: string) =>
+  new AssistantChatTransport({
+    api: "/api/playground/chat",
+    headers: async () => ({
+      [PROTOTYPE_SLUG_HEADER]: slug,
+    }),
+  });
+
 export const ChatPane = ({ prototype }: ChatPaneProps) => {
   const { slug, title } = prototype;
 
   const transport = useMemo(
-    () =>
-      new AssistantChatTransport({
-        api: "/api/playground/chat",
-        headers: async () => ({
-          [PROTOTYPE_SLUG_HEADER.toUpperCase()]: slug,
-        }),
-      }),
+    () => createTransportForPrototype(slug),
     [slug],
   );
 
@@ -158,17 +168,10 @@ export const ChatPane = ({ prototype }: ChatPaneProps) => {
   );
 
   const seedMessages = useMemo<UIMessage[]>(() => {
-    if (typeof window === "undefined") return [];
-    try {
-      const raw = window.localStorage.getItem(`playground:thread:${slug}`);
-      if (!raw) return [];
-      const repo = JSON.parse(raw) as ExportedMessageRepository;
-      return (repo.messages ?? []).map(
-        (m) => m.message as unknown as UIMessage,
-      );
-    } catch {
-      return [];
-    }
+    const repo = readThreadRepo(slug);
+    return (repo.messages ?? []).map(
+      (entry) => entry.message as unknown as UIMessage,
+    );
   }, [slug]);
 
   const runtime = useChatRuntime({

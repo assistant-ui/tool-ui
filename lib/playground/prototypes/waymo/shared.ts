@@ -1,3 +1,5 @@
+import { z } from "zod";
+
 export const MOCK_NOW = "2024-06-01T12:00:00.000Z";
 
 export const DEFAULT_PICKUP = {
@@ -91,3 +93,35 @@ export const PLACE_CHOICES = [
 export const SUGGESTION_SERVICES = ["Standard", "XL", "Premium"] as const;
 
 export const SUGGESTION_REASONS = ["frequent", "workday", "recent"] as const;
+
+export const PAYMENT_METHODS = [
+  "apple_pay",
+  "google_pay",
+  "card",
+] as const;
+
+export type PaymentMethod = (typeof PAYMENT_METHODS)[number];
+
+export const paymentMethodEnum = z.enum(PAYMENT_METHODS);
+
+export const candidateSchema = z.object({
+  id: z.string().min(1),
+  label: z.string().min(1),
+  address: z.string().min(1),
+});
+
+export const candidateArraySchema = z.array(candidateSchema).min(1);
+
+export type Candidate = z.infer<typeof candidateSchema>;
+
+export const rideSummarySchema = z.object({
+  provider: z.string().min(1),
+  service: z.string().min(1),
+  etaMinutes: z.number().min(0),
+  price: z.number().min(0),
+  currency: z.string().optional(),
+  pickup: z.string().min(1),
+  destination: z.string().min(1),
+});
+
+export type RideSummary = z.infer<typeof rideSummarySchema>;
