@@ -13,7 +13,7 @@ import { cn } from "@/lib/ui/cn";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 
-import "@/app/styles/mobile-nav-sheet.css";
+import "@/app/styles/nav-sheet.css";
 
 export function MobileNavSheet() {
   const pathname = usePathname();
