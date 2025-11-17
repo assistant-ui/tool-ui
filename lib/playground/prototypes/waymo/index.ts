@@ -20,7 +20,6 @@ import { precheckPrices } from "./precheck-prices";
 import { scheduleRide } from "./schedule-ride";
 import { showRideOptions } from "./show-ride-options";
 import { confirmRideBooking } from "./confirm-ride-booking";
-import { selectFrequentLocation } from "./select-frequent-location";
 import type { Prototype } from "../../types";
 
 const getUserLocationInput = z.object({
@@ -70,8 +69,6 @@ const showRideOptionsInput = z.object({
 
 const getProfileContextInput = z.object({});
 
-const selectFrequentLocationInput = z.object({});
-
 export const waymoPrototype: Prototype = {
   slug: "waymo-booking",
   title: "Waymo Booking Assistant",
@@ -95,17 +92,6 @@ export const waymoPrototype: Prototype = {
       input: toggleGpsInput,
       execute: async (rawArgs: unknown) =>
         toggleGps(toggleGpsInput.parse(rawArgs ?? {})),
-    },
-    {
-      name: "select_frequent_location",
-      description:
-        "Present the user's frequent locations (favorites like Home and Work, plus recents) when they request a ride without specifying a destination. Use this to show a visual location picker UI.",
-      uiId: "waymo-location-selector",
-      input: selectFrequentLocationInput,
-      execute: async (rawArgs: unknown) => {
-        selectFrequentLocationInput.parse(rawArgs ?? {});
-        return selectFrequentLocation();
-      },
     },
     {
       name: "get_user_destination",
