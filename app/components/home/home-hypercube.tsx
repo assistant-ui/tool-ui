@@ -5,7 +5,7 @@ import { useHomeStore, CHAT_MAX_SIZE, CHAT_MIN_SIZE } from "./home-store";
 
 // Lazy load the three.js component to defer initialization
 const HypercubeCanvas = lazy(() =>
-  import("@/app/components/rotating-hypercube").then((mod) => ({
+  import("@/app/components/visuals/rotating-hypercube").then((mod) => ({
     default: mod.App,
   })),
 );

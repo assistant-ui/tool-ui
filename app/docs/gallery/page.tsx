@@ -4,7 +4,7 @@ import { DataTable } from "@/components/data-table";
 import { MediaCard } from "@/components/media-card";
 import { SocialPost } from "@/components/social-post";
 import { DecisionPrompt } from "@/components/decision-prompt";
-import { ZenField } from "@/app/components/zen-field";
+import { ZenField } from "@/app/components/visuals/zen-field";
 import { sampleStocks, sampleMetrics } from "@/lib/presets/data-table";
 import { mediaCardPresets } from "@/lib/presets/media-card";
 import {
