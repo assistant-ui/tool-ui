@@ -1,6 +1,6 @@
 import type { ZodTypeAny } from "zod";
 
-export type ToolUiId = "fallback";
+export type ToolUiId = "fallback" | "waymo-location-selector";
 
 export type ToolExecute = (args: unknown) => Promise<unknown>;
 

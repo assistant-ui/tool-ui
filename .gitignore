@@ -42,3 +42,6 @@ next-env.d.ts
 # Cursor
 .cursor
 .claude
+
+# VSCode
+.vscode
