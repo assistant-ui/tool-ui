@@ -7,6 +7,10 @@ const registry: Record<ToolUiId, () => Promise<ToolCallMessagePartComponent>> = 
     import("@/app/components/assistant-ui/tool-fallback").then(
       (mod) => mod.ToolFallback,
     ),
+  "waymo-location-selector": () =>
+    import("@/app/components/assistant-ui/tool-fallback").then(
+      (mod) => mod.ToolFallback,
+    ),
 };
 
 export const TOOL_UI_REGISTRY = registry;

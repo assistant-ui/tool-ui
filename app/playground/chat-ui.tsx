@@ -29,7 +29,9 @@ export const AssistantMessage = () => (
       <MessagePrimitive.Content
         components={{
           Text: MarkdownText,
-          tools: { Fallback: ToolFallback },
+          tools: {
+            Fallback: ToolFallback,
+          },
         }}
       />
       <AssistantActionBar />
@@ -39,7 +41,7 @@ export const AssistantMessage = () => (
 
 const UserActionBar = () => (
   <ActionBarPrimitive.Root className={actionBarClassName}>
-    <ActionBarPrimitive.Edit asChild>
+    {/* <ActionBarPrimitive.Edit asChild>
       <Button variant="ghost" size="sm">
         Edit
       </Button>
@@ -48,7 +50,7 @@ const UserActionBar = () => (
       <Button variant="ghost" size="sm">
         Copy
       </Button>
-    </ActionBarPrimitive.Copy>
+    </ActionBarPrimitive.Copy> */}
   </ActionBarPrimitive.Root>
 );
 
@@ -58,16 +60,16 @@ const AssistantActionBar = () => (
     autohide="not-last"
     className={actionBarClassName}
   >
-    <ActionBarPrimitive.Copy asChild>
+    {/* <ActionBarPrimitive.Copy asChild>
       <Button variant="ghost" size="sm">
         Copy
       </Button>
-    </ActionBarPrimitive.Copy>
-    <ActionBarPrimitive.Reload asChild>
+    </ActionBarPrimitive.Copy> */}
+    {/* <ActionBarPrimitive.Reload asChild>
       <Button variant="ghost" size="sm">
         Retry
       </Button>
-    </ActionBarPrimitive.Reload>
+    </ActionBarPrimitive.Reload> */}
   </ActionBarPrimitive.Root>
 );
 
