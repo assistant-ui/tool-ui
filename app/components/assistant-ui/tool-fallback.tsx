@@ -1,3 +1,5 @@
+"use client";
+
 import type { ToolCallMessagePartComponent } from "@assistant-ui/react";
 import { CheckIcon, ChevronDownIcon, ChevronUpIcon } from "lucide-react";
 import { useState } from "react";
