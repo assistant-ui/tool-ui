@@ -9,7 +9,7 @@ import { MediaCard } from "@/components/media-card";
 import {
   MediaCardPresetName,
   mediaCardPresets,
-} from "@/lib/media-card-presets";
+} from "@/lib/presets/media-card";
 
 export function MediaCardPreview({ withContainer = true }: { withContainer?: boolean }) {
   const router = useRouter();

@@ -11,7 +11,7 @@ import type {
   DataTableRowData,
   RowData,
 } from "@/components/data-table";
-import { PresetName, presets, SortState } from "@/lib/sample-data";
+import { PresetName, presets, SortState } from "@/lib/presets/data-table";
 
 export function DataTablePreview({ withContainer = true }: { withContainer?: boolean }) {
   const router = useRouter();

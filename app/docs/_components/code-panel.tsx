@@ -1,9 +1,9 @@
 "use client";
 
-import { DataTableConfig } from "@/lib/sample-data";
-import { SocialPostConfig } from "@/lib/social-post-presets";
-import { MediaCardConfig } from "@/lib/media-card-presets";
-import { DecisionPromptConfig } from "@/lib/decision-prompt-presets";
+import { DataTableConfig } from "@/lib/presets/data-table";
+import { SocialPostConfig } from "@/lib/presets/social-post";
+import { MediaCardConfig } from "@/lib/presets/media-card";
+import { DecisionPromptConfig } from "@/lib/presets/decision-prompt";
 import { DynamicCodeBlock } from "fumadocs-ui/components/dynamic-codeblock";
 
 interface CodePanelProps {

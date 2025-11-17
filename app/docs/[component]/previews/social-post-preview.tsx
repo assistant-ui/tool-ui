@@ -9,7 +9,7 @@ import { SocialPost } from "@/components/social-post";
 import {
   SocialPostPresetName,
   socialPostPresets,
-} from "@/lib/social-post-presets";
+} from "@/lib/presets/social-post";
 
 export function SocialPostPreview({ withContainer = true }: { withContainer?: boolean }) {
   const router = useRouter();

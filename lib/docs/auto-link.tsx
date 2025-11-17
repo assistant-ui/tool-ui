@@ -1,5 +1,5 @@
 import * as React from "react";
-import { componentsRegistry } from "@/lib/components-config";
+import { componentsRegistry } from "@/lib/docs/component-registry";
 
 type ReactNode = React.ReactNode;
 

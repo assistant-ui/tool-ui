@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/ui/cn";
 import { DocsPager } from "./docs-pager";
 import { DocsBorderedShell } from "./docs-bordered-shell";
 

@@ -1,8 +1,8 @@
 import { openai } from "@ai-sdk/openai";
 import { streamText, convertToModelMessages } from "ai";
 import { z } from "zod";
-import { checkRateLimit } from "@/lib/rate-limit";
-import { getStocks } from "@/lib/mock-data/stocks";
+import { checkRateLimit } from "@/lib/integrations/rate-limit/upstash";
+import { getStocks } from "@/lib/mocks/stocks";
 
 export const runtime = "edge";
 
