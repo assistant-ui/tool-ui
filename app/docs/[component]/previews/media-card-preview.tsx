@@ -11,12 +11,15 @@ import {
   mediaCardPresets,
 } from "@/lib/presets/media-card";
 
-export function MediaCardPreview({ withContainer = true }: { withContainer?: boolean }) {
+export function MediaCardPreview({
+  withContainer = true,
+}: {
+  withContainer?: boolean;
+}) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  // Get preset from URL or use default
   const presetParam = searchParams.get("preset");
   const defaultPreset = "link";
   const initialPreset: MediaCardPresetName =
@@ -28,7 +31,6 @@ export function MediaCardPreview({ withContainer = true }: { withContainer?: boo
     useState<MediaCardPresetName>(initialPreset);
   const [isLoading, setIsLoading] = useState(false);
 
-  // Sync state when URL changes
   useEffect(() => {
     const presetParam = searchParams.get("preset");
     if (
@@ -49,12 +51,11 @@ export function MediaCardPreview({ withContainer = true }: { withContainer?: boo
       setCurrentPreset(presetName);
       setIsLoading(false);
 
-      // Update URL
       const params = new URLSearchParams(searchParams.toString());
       params.set("preset", presetName);
       router.push(`${pathname}?${params.toString()}`, { scroll: false });
     },
-    [router, pathname, searchParams]
+    [router, pathname, searchParams],
   );
 
   return (
