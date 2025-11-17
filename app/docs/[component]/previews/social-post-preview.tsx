@@ -11,12 +11,15 @@ import {
   socialPostPresets,
 } from "@/lib/presets/social-post";
 
-export function SocialPostPreview({ withContainer = true }: { withContainer?: boolean }) {
+export function SocialPostPreview({
+  withContainer = true,
+}: {
+  withContainer?: boolean;
+}) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  // Get preset from URL or use default
   const presetParam = searchParams.get("preset");
   const defaultPreset = "x";
   const initialPreset: SocialPostPresetName =
@@ -24,10 +27,10 @@ export function SocialPostPreview({ withContainer = true }: { withContainer?: bo
       ? (presetParam as SocialPostPresetName)
       : defaultPreset;
 
-  const [currentPreset, setCurrentPreset] = useState<SocialPostPresetName>(initialPreset);
+  const [currentPreset, setCurrentPreset] =
+    useState<SocialPostPresetName>(initialPreset);
   const [isLoading, setIsLoading] = useState(false);
 
-  // Sync state when URL changes
   useEffect(() => {
     const presetParam = searchParams.get("preset");
     if (
@@ -48,12 +51,11 @@ export function SocialPostPreview({ withContainer = true }: { withContainer?: bo
       setCurrentPreset(presetName);
       setIsLoading(false);
 
-      // Update URL
       const params = new URLSearchParams(searchParams.toString());
       params.set("preset", presetName);
       router.push(`${pathname}?${params.toString()}`, { scroll: false });
     },
-    [router, pathname, searchParams]
+    [router, pathname, searchParams],
   );
 
   return (

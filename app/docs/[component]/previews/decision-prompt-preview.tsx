@@ -11,12 +11,15 @@ import {
   decisionPromptPresets,
 } from "@/lib/presets/decision-prompt";
 
-export function DecisionPromptPreview({ withContainer = true }: { withContainer?: boolean }) {
+export function DecisionPromptPreview({
+  withContainer = true,
+}: {
+  withContainer?: boolean;
+}) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  // Get preset from URL or use default
   const presetParam = searchParams.get("preset");
   const defaultPreset = "multi-choice";
   const initialPreset: DecisionPromptPresetName =
@@ -30,7 +33,6 @@ export function DecisionPromptPreview({ withContainer = true }: { withContainer?
   const [selectedAction, setSelectedAction] = useState<string | undefined>();
   const [selectedActions, setSelectedActions] = useState<string[]>([]);
 
-  // Sync state when URL changes
   useEffect(() => {
     const presetParam = searchParams.get("preset");
     if (
@@ -55,12 +57,11 @@ export function DecisionPromptPreview({ withContainer = true }: { withContainer?
       setSelectedActions([]);
       setIsLoading(false);
 
-      // Update URL
       const params = new URLSearchParams(searchParams.toString());
       params.set("preset", presetName);
       router.push(`${pathname}?${params.toString()}`, { scroll: false });
     },
-    [router, pathname, searchParams]
+    [router, pathname, searchParams],
   );
 
   return (
@@ -84,7 +85,6 @@ export function DecisionPromptPreview({ withContainer = true }: { withContainer?
             onAction={async (actionId) => {
               console.log("Decision prompt action:", actionId);
 
-              // Simulate async for "install" or "send" actions
               if (actionId === "install" || actionId === "send") {
                 await new Promise((resolve) => setTimeout(resolve, 1500));
               }

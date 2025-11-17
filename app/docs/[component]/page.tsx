@@ -12,11 +12,11 @@ export default async function ComponentPage({
 }) {
   const { component } = await params;
   const resolved = getComponentById(component);
+
   if (!resolved) {
     notFound();
   }
 
-  // Route to the appropriate preview component
   switch (component) {
     case "data-table":
       return <DataTablePreview />;
