@@ -19,7 +19,7 @@ import {
 } from "@assistant-ui/react-ai-sdk";
 import { ThreadList } from "@/app/components/assistant-ui/thread-list";
 import { MarkdownText } from "@/app/components/assistant-ui/markdown-text";
-import WebView from "@/app/components/webview";
+import WebView from "@/app/components/builder/webview";
 import {
   ArrowUpIcon,
   Square,
@@ -38,7 +38,7 @@ import {
   ChevronLeftIcon,
   ChevronRightIcon,
 } from "lucide-react";
-import { MCPIcon } from "@/app/components/mcp-icon";
+import { MCPIcon } from "@/app/components/builder/mcp-icon";
 import { Button } from "@/components/ui/button";
 import { CodeBlock, CodeBlockCode } from "@/components/ui/code-block";
 import { getComponentCode } from "@/lib/integrations/freestyle/get-code";

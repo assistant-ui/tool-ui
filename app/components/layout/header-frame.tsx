@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { ResponsiveHeader } from "@/app/components/responsive-header-server";
+import { ResponsiveHeader } from "@/app/components/layout/responsive-header-server";
 
 type HeaderFrameProps = {
   children: ReactNode;

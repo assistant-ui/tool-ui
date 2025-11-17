@@ -8,12 +8,11 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+  Item,
+  ItemContent,
+  ItemGroup,
+  ItemTitle,
+} from "@/components/ui/item";
 import type { Tool } from "@/lib/playground";
 
 type ToolInspectorProps = {
@@ -38,33 +37,33 @@ export const ToolInspector = ({
           code-defined for now.
         </DialogDescription>
       </DialogHeader>
-      <div className="max-h-[60vh] space-y-4 overflow-y-auto pr-2">
-        {tools.map((tool) => (
-          <Card
-            key={tool.name}
-            className="rounded-lg border px-4 py-4 shadow-none"
-          >
-            <CardHeader className="px-0">
-              <CardTitle className="text-base font-semibold">
-                {tool.name}
-              </CardTitle>
-              <CardDescription>{tool.description}</CardDescription>
-            </CardHeader>
-            <CardContent className="px-0">
-              <div className="flex flex-wrap gap-4 text-sm">
-                <span className="text-muted-foreground">
-                  UI: {tool.uiId ?? "fallback"}
-                </span>
-                <span className="text-muted-foreground">
-                  Input schema: {tool.input ? "provided" : "—"}
-                </span>
-                <span className="text-muted-foreground">
-                  Output schema: {tool.output ? "provided" : "—"}
-                </span>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
+      <div className="max-h-[60vh] overflow-y-auto pr-2">
+        <ItemGroup className="space-y-3">
+          {tools.map((tool) => (
+            <Item
+              key={tool.name}
+              variant="outline"
+              className="shadow-none"
+            >
+              <ItemContent>
+                <ItemTitle className="text-base font-semibold">
+                  {tool.name}
+                </ItemTitle>
+                <div className="mt-1 flex flex-wrap gap-4 text-sm">
+                  <span className="text-muted-foreground">
+                    UI: {tool.uiId ?? "fallback"}
+                  </span>
+                  <span className="text-muted-foreground">
+                    Input schema: {tool.input ? "provided" : "—"}
+                  </span>
+                  <span className="text-muted-foreground">
+                    Output schema: {tool.output ? "provided" : "—"}
+                  </span>
+                </div>
+              </ItemContent>
+            </Item>
+          ))}
+        </ItemGroup>
       </div>
     </DialogContent>
   </Dialog>

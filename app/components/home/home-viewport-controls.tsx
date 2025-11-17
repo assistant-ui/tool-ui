@@ -1,6 +1,6 @@
 "use client";
 
-import { ResizableViewportControls } from "@/app/components/resizable-viewport-controls";
+import { ResizableViewportControls } from "@/app/components/builder/resizable-viewport-controls";
 import { useHomeStore } from "./home-store";
 
 type HomeViewportControlsProps = {

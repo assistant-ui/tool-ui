@@ -1,7 +1,7 @@
 "use client";
 
 import { create } from "zustand";
-import type { ResizableViewportSize } from "@/app/components/resizable-viewport-controls";
+import type { ResizableViewportSize } from "@/app/components/builder/resizable-viewport-controls";
 
 type Layout = [number, number, number];
 
