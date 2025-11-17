@@ -1,7 +1,7 @@
 "use client";
 
 import { ChatPane } from "./chat-pane";
-import { useEffect, useMemo, useState } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
@@ -28,7 +28,7 @@ const getInitialSlug = (slugParam: string | null, prototypes: Prototype[]) => {
   return prototypes[0]?.slug ?? null;
 };
 
-const PlaygroundPage = () => {
+const PlaygroundContent = () => {
   const searchParams = useSearchParams();
   const router = useRouter();
   const slugParam = searchParams.get("slug");
@@ -151,5 +151,22 @@ const PlaygroundPage = () => {
     </div>
   );
 };
+
+const PlaygroundPage = () => (
+  <Suspense
+    fallback={
+      <div className="bg-background text-foreground flex min-h-screen items-center justify-center px-6 py-12">
+        <Card className="max-w-xl">
+          <CardHeader>
+            <CardTitle>Tool UI Playground</CardTitle>
+            <CardDescription>Loading playground…</CardDescription>
+          </CardHeader>
+        </Card>
+      </div>
+    }
+  >
+    <PlaygroundContent />
+  </Suspense>
+);
 
 export default PlaygroundPage;
