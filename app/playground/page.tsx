@@ -1,7 +1,8 @@
 "use client";
 
 import { ChatPane } from "./chat-pane";
-import { Suspense, useEffect, useMemo, useState } from "react";
+import type { ChatPaneRef } from "./chat-pane";
+import { Suspense, useEffect, useMemo, useState, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
@@ -12,6 +13,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { RotateCcw } from "lucide-react";
 import { listPrototypes } from "@/lib/playground";
 import type { Prototype } from "@/lib/playground";
 import { ToolInspector } from "./tool-inspector";
@@ -37,6 +39,7 @@ const PlaygroundContent = () => {
     getInitialSlug(slugParam, PROTOTYPES),
   );
   const [inspectorOpen, setInspectorOpen] = useState(false);
+  const chatPaneRef = useRef<ChatPaneRef>(null);
 
   useEffect(() => {
     if (slugParam === null) {
@@ -134,12 +137,26 @@ const PlaygroundContent = () => {
               </p>
             ) : null}
           </div>
-          <Button variant="outline" onClick={() => setInspectorOpen(true)}>
-            View tools
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={() => chatPaneRef.current?.resetThread()}
+              title="Reset thread"
+            >
+              <RotateCcw className="h-4 w-4" />
+            </Button>
+            <Button variant="outline" onClick={() => setInspectorOpen(true)}>
+              View tools
+            </Button>
+          </div>
         </header>
         <div className="flex flex-1 flex-col overflow-hidden">
-          <ChatPane key={activePrototype.slug} prototype={activePrototype} />
+          <ChatPane
+            key={activePrototype.slug}
+            ref={chatPaneRef}
+            prototype={activePrototype}
+          />
         </div>
       </main>
       <ToolInspector

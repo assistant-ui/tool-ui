@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useCallback, useImperativeHandle, forwardRef } from "react";
 import { AssistantRuntimeProvider, ThreadPrimitive } from "@assistant-ui/react";
 import {
   AssistantChatTransport,
@@ -146,6 +146,10 @@ export type ChatPaneProps = {
   prototype: Prototype;
 };
 
+export type ChatPaneRef = {
+  resetThread: () => void;
+};
+
 const createTransportForPrototype = (slug: string) =>
   new AssistantChatTransport({
     api: "/api/playground/chat",
@@ -154,7 +158,7 @@ const createTransportForPrototype = (slug: string) =>
     }),
   });
 
-export const ChatPane = ({ prototype }: ChatPaneProps) => {
+export const ChatPane = forwardRef<ChatPaneRef, ChatPaneProps>(({ prototype }, ref) => {
   const { slug, title } = prototype;
 
   const transport = useMemo(
@@ -179,6 +183,22 @@ export const ChatPane = ({ prototype }: ChatPaneProps) => {
     messages: seedMessages,
     adapters: { history: historyAdapter },
   });
+
+  const resetThread = useCallback(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    // Clear localStorage
+    window.localStorage.removeItem(getThreadStorageKey(slug));
+
+    // Reset runtime to empty state
+    runtime.switchToNewThread();
+  }, [slug, runtime]);
+
+  useImperativeHandle(ref, () => ({
+    resetThread,
+  }), [resetThread]);
 
   return (
     <AssistantRuntimeProvider runtime={runtime}>
@@ -206,4 +226,6 @@ export const ChatPane = ({ prototype }: ChatPaneProps) => {
       </ThreadPrimitive.Root>
     </AssistantRuntimeProvider>
   );
-};
+});
+
+ChatPane.displayName = "ChatPane";
