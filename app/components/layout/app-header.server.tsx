@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { FaGithub } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
-import { ActiveNavLink } from "./responsive-header";
+import { ActiveNavLink } from "./header-active-link.client";
 
 interface ResponsiveHeaderProps {
   rightContent?: ReactNode;
