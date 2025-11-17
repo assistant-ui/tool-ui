@@ -10,6 +10,8 @@ import { Button } from "@/components/ui/button";
 import { MarkdownText } from "@/app/components/assistant-ui/markdown-text";
 import { ToolFallback } from "@/app/components/assistant-ui/tool-fallback";
 
+const actionBarClassName = "text-muted-foreground flex gap-2 text-xs";
+
 export const UserMessage = () => (
   <MessagePrimitive.Root className="mx-auto w-full max-w-2xl py-3">
     <div className="ml-auto flex max-w-[85%] flex-col items-end gap-2">
@@ -36,7 +38,7 @@ export const AssistantMessage = () => (
 );
 
 const UserActionBar = () => (
-  <ActionBarPrimitive.Root className="text-muted-foreground flex gap-2 text-xs">
+  <ActionBarPrimitive.Root className={actionBarClassName}>
     <ActionBarPrimitive.Edit asChild>
       <Button variant="ghost" size="sm">
         Edit
@@ -54,7 +56,7 @@ const AssistantActionBar = () => (
   <ActionBarPrimitive.Root
     hideWhenRunning
     autohide="not-last"
-    className="text-muted-foreground flex gap-2 text-xs"
+    className={actionBarClassName}
   >
     <ActionBarPrimitive.Copy asChild>
       <Button variant="ghost" size="sm">

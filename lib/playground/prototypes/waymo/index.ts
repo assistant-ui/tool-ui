@@ -2,6 +2,11 @@ import { z } from "zod";
 
 import { WAYMO_SYSTEM_MESSAGE_V2 } from "@/app/prototypes/find-ride/system-message-v2";
 
+import {
+  candidateArraySchema,
+  paymentMethodEnum,
+  rideSummarySchema,
+} from "./shared";
 import { getUserLocation } from "./get-user-location";
 import { toggleGps } from "./toggle-gps";
 import { getUserDestination } from "./get-user-destination";
@@ -36,8 +41,6 @@ const checkRidePricesInput = z.object({
   services: z.array(z.string().min(1)).min(1).optional(),
 });
 
-const paymentMethodEnum = z.enum(["apple_pay", "google_pay", "card"]);
-
 const requestPaymentMethodInput = z.object({
   preferred: paymentMethodEnum.optional(),
 });
@@ -47,28 +50,12 @@ const confirmUserPaymentInput = z.object({
   currency: z.string().optional(),
 });
 
-const rideSummaryInput = z.object({
-  provider: z.string().min(1),
-  service: z.string().min(1),
-  etaMinutes: z.number().min(0),
-  price: z.number().min(0),
-  currency: z.string().optional(),
-  pickup: z.string().min(1),
-  destination: z.string().min(1),
-});
+const rideSummaryInput = rideSummarySchema;
 
 const searchPlacesInput = z.object({
   query: z.string().min(1),
   near: z.string().optional(),
 });
-
-const candidateSchema = z.object({
-  id: z.string().min(1),
-  label: z.string().min(1),
-  address: z.string().min(1),
-});
-
-const candidateArraySchema = z.array(candidateSchema).min(1);
 
 const precheckPricesInput = z.object({
   pickup: z.string().min(1),

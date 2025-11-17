@@ -1,4 +1,4 @@
-type PaymentMethod = "apple_pay" | "google_pay" | "card";
+import type { PaymentMethod } from "./shared";
 
 type RequestPaymentMethodArgs = {
   preferred?: PaymentMethod;

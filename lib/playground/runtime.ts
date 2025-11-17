@@ -2,6 +2,7 @@ import { anthropic } from "@ai-sdk/anthropic";
 import { openai } from "@ai-sdk/openai";
 import {
   convertToModelMessages,
+  stepCountIs,
   streamText,
   tool,
   type LanguageModel,
@@ -20,7 +21,10 @@ const PROVIDERS: Record<string, (modelId: string) => LanguageModel> = {
   anthropic,
 };
 
-const ensureObjectSchema = (schema: z.ZodTypeAny | undefined, toolName: string) => {
+const normalizeToolInputSchema = (
+  schema: z.ZodTypeAny | undefined,
+  toolName: string,
+) => {
   if (!schema) {
     return z.object({});
   }
@@ -72,7 +76,10 @@ export const buildToolSet = (prototype: Prototype): ToolSet => {
       );
     }
 
-    const inputSchema = ensureObjectSchema(definition.input, definition.name);
+    const inputSchema = normalizeToolInputSchema(
+      definition.input,
+      definition.name,
+    );
 
     const builtTool = tool<unknown, unknown>({
       description: definition.description,
@@ -99,5 +106,6 @@ export const streamPrototypeResponse = (
     system: prototype.systemPrompt,
     messages: convertToModelMessages(messages),
     tools,
+    stopWhen: stepCountIs(100),
   });
 };

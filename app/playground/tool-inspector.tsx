@@ -16,17 +16,19 @@ import {
 } from "@/components/ui/card";
 import type { Tool } from "@/lib/playground";
 
+type ToolInspectorProps = {
+  open: boolean;
+  onOpenChange: (next: boolean) => void;
+  tools: Tool[];
+  prototypeTitle: string;
+};
+
 export const ToolInspector = ({
   open,
   onOpenChange,
   tools,
   prototypeTitle,
-}: {
-  open: boolean;
-  onOpenChange: (next: boolean) => void;
-  tools: Tool[];
-  prototypeTitle: string;
-}) => (
+}: ToolInspectorProps) => (
   <Dialog open={open} onOpenChange={onOpenChange}>
     <DialogContent className="max-w-3xl">
       <DialogHeader>
