@@ -7,7 +7,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { useResizableViewport } from "@/app/components/resizable-viewport-provider";
+import { useResizableViewport } from "@/app/components/builder/resizable-viewport-provider";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import { Button } from "@/components/ui/button";
 import { ButtonGroup } from "@/components/ui/button-group";

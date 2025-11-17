@@ -1,5 +1,5 @@
-import ContentLayout from "@/app/components/content-layout";
-import { HeaderFrame } from "@/app/components/header-frame";
+import ContentLayout from "@/app/components/layout/page-shell";
+import { HeaderFrame } from "@/app/components/layout/app-shell";
 import { HomeHero } from "@/app/components/home/home-hero";
 import { HomeViewportControls } from "@/app/components/home/home-viewport-controls";
 import { HomeDebugPanel } from "@/app/components/home/home-debug-panel";

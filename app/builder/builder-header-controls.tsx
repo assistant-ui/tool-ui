@@ -1,7 +1,7 @@
 "use client";
 
-import { ResizableViewportControls } from "@/app/components/resizable-viewport-controls";
-import { useResizableViewport } from "@/app/components/resizable-viewport-provider";
+import { ResizableViewportControls } from "@/app/components/builder/resizable-viewport-controls";
+import { useResizableViewport } from "@/app/components/builder/resizable-viewport-provider";
 
 export function BuilderHeaderControls() {
   const { viewport, setViewport } = useResizableViewport();

@@ -1,7 +1,7 @@
 "use client";
 
 import { requestDevServer as requestDevServerInner } from "./webview-actions";
-import "./loader.css";
+import "@/app/styles/builder-loader.css";
 import {
   FreestyleDevServer,
   FreestyleDevServerHandle,
