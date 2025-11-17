@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { WAYMO_SYSTEM_MESSAGE_V2 } from "@/app/prototypes/find-ride/system-message-v2";
+import { WAYMO_SYSTEM_MESSAGE_V2 } from "./system-message-v2";
 
 import {
   candidateArraySchema,

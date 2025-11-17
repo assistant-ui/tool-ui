@@ -14,11 +14,7 @@
     "test": "vitest run",
     "test:watch": "vitest watch",
     "format": "prettier --write \"**/*.{js,jsx,ts,tsx,md,json}\"",
-    "format:check": "prettier --check \"**/*.{js,jsx,ts,tsx,md,json}\"",
-    "fork:instance": "tsx lib/prototypes/scripts/fork-instance.ts",
-    "cloud:list": "tsx lib/prototypes/scripts/cloud.ts list",
-    "cloud:deploy": "tsx lib/prototypes/scripts/cloud.ts deploy",
-    "cloud:promote": "tsx lib/prototypes/scripts/cloud.ts promote"
+    "format:check": "prettier --check \"**/*.{js,jsx,ts,tsx,md,json}\""
   },
   "dependencies": {
     "@ai-sdk/anthropic": "^2.0.41",
