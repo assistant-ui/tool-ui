@@ -1,6 +1,6 @@
 "use client";
 
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/ui/cn";
 import { useTheme } from "next-themes";
 import React, { useEffect, useState } from "react";
 import { codeToHtml } from "shiki";

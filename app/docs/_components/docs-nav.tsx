@@ -4,8 +4,8 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { LayoutDashboardIcon } from "lucide-react";
-import { componentsRegistry } from "@/lib/components-config";
-import { cn } from "@/lib/utils";
+import { componentsRegistry } from "@/lib/docs/component-registry";
+import { cn } from "@/lib/ui/cn";
 import { BASE_DOCS_PAGES } from "./docs-pages";
 
 const STORAGE_KEY = "tool-ui-components-nav-collapsed";

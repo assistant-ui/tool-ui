@@ -1,4 +1,4 @@
-import { createChat } from "@/lib/freestyle";
+import { createChat } from "@/lib/integrations/freestyle/create-chat";
 
 export async function POST() {
   try {

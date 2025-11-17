@@ -1,4 +1,4 @@
-import { componentsRegistry } from "@/lib/components-config";
+import { componentsRegistry } from "@/lib/docs/component-registry";
 
 export type DocsPageLink = {
   path: string;

@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { getAllDocsPageLinks } from "./docs-pages";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/ui/cn";
 import { Button } from "@/components/ui/button";
 
 function useDocsPagination() {

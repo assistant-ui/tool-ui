@@ -2,7 +2,7 @@
 
 import { useSearchParams, usePathname, useRouter } from "next/navigation";
 import { type ReactNode, useEffect, useRef, useState, Suspense } from "react";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/ui/cn";
 
 interface ComponentDocsExamplesProps {
   docs: ReactNode;

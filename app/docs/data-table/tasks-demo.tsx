@@ -1,7 +1,7 @@
 "use client";
 
 import { Column, DataTable, DataTableRowData } from "@/components/data-table";
-import { getMockTasks } from "@/lib/mock/tasks";
+import { getMockTasks } from "@/lib/mocks/tasks";
 import { useEffect, useState } from "react";
 
 export function TasksDemo() {
