@@ -10,6 +10,7 @@ import {
   type UIMessage,
 } from "ai";
 import { z } from "zod";
+import { frontendTools } from "@assistant-ui/react-ai-sdk";
 
 import type { Prototype } from "./types";
 import { hasToolUi } from "./tool-uis";
@@ -98,9 +99,20 @@ export const buildToolSet = (prototype: Prototype): ToolSet => {
 export const streamPrototypeResponse = (
   prototype: Prototype,
   messages: UIMessage[],
+  clientTools?: unknown,
 ) => {
   const model = resolveModel(DEFAULT_MODEL);
-  const tools = buildToolSet(prototype);
+  const prototypeTools = buildToolSet(prototype);
+
+  // Merge frontend tools with prototype tools
+  const tools = clientTools
+    ? {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        ...(frontendTools(clientTools as any) as any),
+        ...prototypeTools,
+      }
+    : prototypeTools;
+
   return streamText({
     model,
     system: prototype.systemPrompt,

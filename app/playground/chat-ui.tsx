@@ -9,7 +9,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { MarkdownText } from "@/app/components/assistant-ui/markdown-text";
 import { ToolFallback } from "@/app/components/assistant-ui/tool-fallback";
-import { FrequentLocationSelector } from "@/lib/playground/prototypes/waymo/wip-tool-uis";
 
 const actionBarClassName = "text-muted-foreground flex gap-2 text-xs";
 
@@ -32,9 +31,6 @@ export const AssistantMessage = () => (
           Text: MarkdownText,
           tools: {
             Fallback: ToolFallback,
-            by_name: {
-              select_frequent_location: FrequentLocationSelector,
-            },
           },
         }}
       />

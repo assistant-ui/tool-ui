@@ -1,9 +1,9 @@
 "use client";
 
-import type { ToolCallMessagePartComponent } from "@assistant-ui/react";
+import type { ToolCallMessagePartProps } from "@assistant-ui/react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Home, Briefcase, MapPin, Clock } from "lucide-react";
+import { Home, Briefcase, MapPin, Clock, CheckCircle2 } from "lucide-react";
 
 type FrequentLocation = {
   id: string;
@@ -15,6 +15,7 @@ type FrequentLocation = {
 type SelectFrequentLocationResult = {
   locations: FrequentLocation[];
   prompt: string;
+  selectedLocation?: FrequentLocation;
 };
 
 const getLocationIcon = (label: string) => {
@@ -24,14 +25,43 @@ const getLocationIcon = (label: string) => {
   return <MapPin className="h-5 w-5" />;
 };
 
-export const FrequentLocationSelector: ToolCallMessagePartComponent = ({ result }) => {
+export const FrequentLocationSelector = ({
+  result,
+  addResult
+}: ToolCallMessagePartProps<Record<string, never>, SelectFrequentLocationResult>) => {
   if (!result || typeof result !== "object") {
     return null;
   }
 
   const data = result as SelectFrequentLocationResult;
-  const { locations, prompt } = data;
 
+  // Receipt Mode - Show what was selected
+  if (data.selectedLocation) {
+    const { selectedLocation } = data;
+    return (
+      <Card className="p-4 max-w-md">
+        <div className="flex items-start gap-3">
+          <div className="text-green-600 mt-0.5">
+            <CheckCircle2 className="h-5 w-5" />
+          </div>
+          <div className="flex-1">
+            <div className="flex items-center gap-2 mb-1">
+              <div className="text-muted-foreground">
+                {getLocationIcon(selectedLocation.label)}
+              </div>
+              <span className="font-semibold">{selectedLocation.label}</span>
+            </div>
+            <div className="text-sm text-muted-foreground">
+              {selectedLocation.address}
+            </div>
+          </div>
+        </div>
+      </Card>
+    );
+  }
+
+  // Interactive Mode - Show location options
+  const { locations, prompt } = data;
   const favorites = locations.filter((loc) => loc.category === "favorite");
   const recents = locations.filter((loc) => loc.category === "recent");
 
@@ -55,8 +85,11 @@ export const FrequentLocationSelector: ToolCallMessagePartComponent = ({ result 
               <Button
                 key={location.id}
                 variant="outline"
-                className="w-full justify-start text-left h-auto py-3 px-4"
-                disabled
+                className="w-full justify-start text-left h-auto py-3 px-4 hover:bg-accent"
+                onClick={() => addResult({
+                  ...data,
+                  selectedLocation: location
+                })}
               >
                 <div className="flex items-start gap-3 w-full">
                   <div className="mt-0.5 text-muted-foreground">
@@ -86,8 +119,11 @@ export const FrequentLocationSelector: ToolCallMessagePartComponent = ({ result 
               <Button
                 key={location.id}
                 variant="outline"
-                className="w-full justify-start text-left h-auto py-3 px-4"
-                disabled
+                className="w-full justify-start text-left h-auto py-3 px-4 hover:bg-accent"
+                onClick={() => addResult({
+                  ...data,
+                  selectedLocation: location
+                })}
               >
                 <div className="flex items-start gap-3 w-full">
                   <div className="mt-0.5 text-muted-foreground">
@@ -106,9 +142,9 @@ export const FrequentLocationSelector: ToolCallMessagePartComponent = ({ result 
         </div>
       )}
 
-      <Button variant="ghost" className="w-full" disabled>
-        Search for a different location
-      </Button>
+      <div className="text-center text-sm text-muted-foreground">
+        or type a different location
+      </div>
     </Card>
   );
 };

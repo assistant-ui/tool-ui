@@ -72,6 +72,12 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const result = streamPrototypeResponse(prototype, messages);
+  // Extract frontend tools from request body
+  const clientTools: unknown =
+    typeof body === "object" && body !== null && "tools" in body
+      ? (body as Record<string, unknown>).tools
+      : undefined;
+
+  const result = streamPrototypeResponse(prototype, messages, clientTools);
   return result.toUIMessageStreamResponse();
 }

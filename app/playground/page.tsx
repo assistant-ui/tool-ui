@@ -2,7 +2,14 @@
 
 import { ChatPane } from "./chat-pane";
 import type { ChatPaneRef } from "./chat-pane";
-import { Suspense, useEffect, useMemo, useState, useRef } from "react";
+import {
+  Suspense,
+  useEffect,
+  useMemo,
+  useState,
+  useRef,
+  useCallback,
+} from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
@@ -13,7 +20,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { RotateCcw } from "lucide-react";
+import { RotateCcw, Copy, Check } from "lucide-react";
 import { listPrototypes } from "@/lib/playground";
 import type { Prototype } from "@/lib/playground";
 import { ToolInspector } from "./tool-inspector";
@@ -39,6 +46,7 @@ const PlaygroundContent = () => {
     getInitialSlug(slugParam, PROTOTYPES),
   );
   const [inspectorOpen, setInspectorOpen] = useState(false);
+  const [copiedState, setCopiedState] = useState(false);
   const chatPaneRef = useRef<ChatPaneRef>(null);
 
   useEffect(() => {
@@ -56,6 +64,69 @@ const PlaygroundContent = () => {
       PROTOTYPES.find((prototype) => prototype.slug === resolvedSlug) ?? null,
     [resolvedSlug],
   );
+
+  const copyChatState = useCallback(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    const storageKey = `playground:thread:${resolvedSlug}`;
+    const raw = window.localStorage.getItem(storageKey);
+
+    let stateToShare: string;
+
+    if (!raw) {
+      stateToShare = JSON.stringify(
+        {
+          prototype: activePrototype?.title ?? resolvedSlug,
+          slug: resolvedSlug,
+          messages: [],
+          note: "No messages in thread yet",
+        },
+        null,
+        2,
+      );
+    } else {
+      try {
+        const parsed = JSON.parse(raw);
+        stateToShare = JSON.stringify(
+          {
+            prototype: activePrototype?.title ?? resolvedSlug,
+            slug: resolvedSlug,
+            systemPrompt: activePrototype?.systemPrompt,
+            tools: activePrototype?.tools?.map((tool) => ({
+              name: tool.name,
+              description: tool.description,
+            })),
+            ...parsed,
+          },
+          null,
+          2,
+        );
+      } catch {
+        stateToShare = JSON.stringify(
+          {
+            prototype: activePrototype?.title ?? resolvedSlug,
+            slug: resolvedSlug,
+            error: "Failed to parse chat state",
+            rawState: raw,
+          },
+          null,
+          2,
+        );
+      }
+    }
+
+    navigator.clipboard
+      .writeText(stateToShare)
+      .then(() => {
+        setCopiedState(true);
+        setTimeout(() => setCopiedState(false), 2000);
+      })
+      .catch((error) => {
+        console.error("Failed to copy chat state", error);
+      });
+  }, [resolvedSlug, activePrototype]);
 
   useEffect(() => {
     if (!activePrototype) {
@@ -138,6 +209,18 @@ const PlaygroundContent = () => {
             ) : null}
           </div>
           <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={copyChatState}
+              title="Copy chat state for debugging"
+            >
+              {copiedState ? (
+                <Check className="h-4 w-4" />
+              ) : (
+                <Copy className="h-4 w-4" />
+              )}
+            </Button>
             <Button
               variant="outline"
               size="icon"

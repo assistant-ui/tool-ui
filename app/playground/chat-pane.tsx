@@ -1,7 +1,17 @@
 "use client";
 
-import { useMemo, useCallback, useImperativeHandle, forwardRef } from "react";
-import { AssistantRuntimeProvider, ThreadPrimitive } from "@assistant-ui/react";
+import {
+  useMemo,
+  useCallback,
+  useImperativeHandle,
+  forwardRef,
+  useEffect,
+} from "react";
+import {
+  AssistantRuntimeProvider,
+  ThreadPrimitive,
+  useAssistantState,
+} from "@assistant-ui/react";
 import {
   AssistantChatTransport,
   useChatRuntime,
@@ -18,6 +28,7 @@ import type { UIMessage } from "ai";
 import type { Prototype } from "@/lib/playground";
 import { PROTOTYPE_SLUG_HEADER } from "@/lib/playground/constants";
 import { AssistantMessage, Composer, UserMessage } from "./chat-ui";
+import { SelectFrequentLocationTool } from "@/lib/playground/prototypes/waymo/select-frequent-location-tool";
 
 const THREAD_STORAGE_KEY_PREFIX = "playground:thread:";
 
@@ -64,7 +75,8 @@ const createLocalStorageHistoryAdapter = (
   slug: string,
 ): ThreadHistoryAdapter => {
   const read = () => readThreadRepo(slug);
-  const write = (repo: ExportedMessageRepository) => writeThreadRepo(slug, repo);
+  const write = (repo: ExportedMessageRepository) =>
+    writeThreadRepo(slug, repo);
 
   const upsertMessage = (
     repo: ExportedMessageRepository,
@@ -75,7 +87,15 @@ const createLocalStorageHistoryAdapter = (
     );
 
     if (existingIndex >= 0) {
-      repo.messages[existingIndex] = item;
+      // Merge the updated message while preserving existing data
+      repo.messages[existingIndex] = {
+        ...repo.messages[existingIndex],
+        ...item,
+        message: {
+          ...repo.messages[existingIndex].message,
+          ...item.message,
+        },
+      };
     } else {
       repo.messages.push(item);
     }
@@ -158,74 +178,163 @@ const createTransportForPrototype = (slug: string) =>
     }),
   });
 
-export const ChatPane = forwardRef<ChatPaneRef, ChatPaneProps>(({ prototype }, ref) => {
-  const { slug, title } = prototype;
+// Component to sync tool call results to localStorage
+const ToolResultPersistence = ({ slug }: { slug: string }) => {
+  const messages = useAssistantState(({ thread }) => thread.messages);
 
-  const transport = useMemo(
-    () => createTransportForPrototype(slug),
-    [slug],
-  );
+  useEffect(() => {
+    if (!messages || messages.length === 0) return;
 
-  const historyAdapter = useMemo(
-    () => createLocalStorageHistoryAdapter(slug),
-    [slug],
-  );
-
-  const seedMessages = useMemo<UIMessage[]>(() => {
+    // Only update assistant messages with tool calls in storage
     const repo = readThreadRepo(slug);
-    return (repo.messages ?? []).map(
-      (entry) => entry.message as unknown as UIMessage,
-    );
-  }, [slug]);
+    let hasChanges = false;
 
-  const runtime = useChatRuntime({
-    transport,
-    messages: seedMessages,
-    adapters: { history: historyAdapter },
-  });
+    for (const runtimeMsg of messages) {
+      if (runtimeMsg.role !== "assistant") continue;
 
-  const resetThread = useCallback(() => {
-    if (typeof window === "undefined") {
-      return;
+      // Find this message in storage
+      const storedMsgIndex = repo.messages.findIndex(
+        (entry) => entry.message.id === runtimeMsg.id,
+      );
+
+      if (storedMsgIndex === -1) continue;
+
+      const storedMsg = repo.messages[storedMsgIndex].message;
+
+      // Stored messages use "parts", runtime messages use "content"
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const storedParts = (storedMsg as any).parts;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const runtimeParts = (runtimeMsg as any).content;
+
+      if (
+        storedMsg.role === "assistant" &&
+        Array.isArray(storedParts) &&
+        Array.isArray(runtimeParts)
+      ) {
+        // Update tool call results by matching toolCallId
+        for (const runtimePart of runtimeParts) {
+          if (
+            runtimePart &&
+            typeof runtimePart === "object" &&
+            "type" in runtimePart &&
+            runtimePart.type === "tool-call" &&
+            "result" in runtimePart &&
+            "toolCallId" in runtimePart
+          ) {
+            // Find matching part by toolCallId in stored message
+            // Stored parts use specific tool names like "tool-select_frequent_location"
+            const storedPart = storedParts.find(
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              (part: any) =>
+                part?.type?.startsWith?.("tool-") &&
+                part?.toolCallId === runtimePart.toolCallId,
+            );
+
+            if (storedPart) {
+              // Stored parts use "output" instead of "result"
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              const storedResult = (storedPart as any).output;
+              const runtimeResult = runtimePart.result;
+
+              if (
+                JSON.stringify(storedResult) !== JSON.stringify(runtimeResult)
+              ) {
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                (storedPart as any).output = runtimeResult;
+                hasChanges = true;
+              }
+            }
+          }
+        }
+      }
     }
 
-    // Clear localStorage
-    window.localStorage.removeItem(getThreadStorageKey(slug));
+    if (hasChanges) {
+      writeThreadRepo(slug, repo);
+    }
+  }, [messages, slug]);
 
-    // Reset runtime to empty state
-    runtime.switchToNewThread();
-  }, [slug, runtime]);
+  return null;
+};
 
-  useImperativeHandle(ref, () => ({
-    resetThread,
-  }), [resetThread]);
+export const ChatPane = forwardRef<ChatPaneRef, ChatPaneProps>(
+  ({ prototype }, ref) => {
+    const { slug, title } = prototype;
 
-  return (
-    <AssistantRuntimeProvider runtime={runtime}>
-      <ThreadPrimitive.Root className="flex flex-1 flex-col overflow-hidden">
-        <ThreadPrimitive.Viewport className="flex flex-1 flex-col overflow-y-auto px-6 py-6">
-          <ThreadPrimitive.If empty>
-            <div className="text-muted-foreground mx-auto flex max-w-lg flex-1 flex-col items-center justify-center gap-3 text-center">
-              <p className="text-base font-medium">Start exploring {title}</p>
-              <p className="text-sm">
-                Describe a task or ask a question to see how this tool
-                collection responds.
-              </p>
-            </div>
-          </ThreadPrimitive.If>
-          <ThreadPrimitive.Messages
-            components={{
-              UserMessage,
-              AssistantMessage,
-            }}
-          />
-        </ThreadPrimitive.Viewport>
-        <div className="border-border bg-background/95 border-t px-6 py-4">
-          <Composer />
-        </div>
-      </ThreadPrimitive.Root>
-    </AssistantRuntimeProvider>
-  );
-});
+    const transport = useMemo(() => createTransportForPrototype(slug), [slug]);
+
+    const historyAdapter = useMemo(
+      () => createLocalStorageHistoryAdapter(slug),
+      [slug],
+    );
+
+    const seedMessages = useMemo<UIMessage[]>(() => {
+      const repo = readThreadRepo(slug);
+      return (repo.messages ?? []).map(
+        (entry) => entry.message as unknown as UIMessage,
+      );
+    }, [slug]);
+
+    const runtime = useChatRuntime({
+      transport,
+      messages: seedMessages,
+      adapters: { history: historyAdapter },
+    });
+
+    const resetThread = useCallback(() => {
+      if (typeof window === "undefined") {
+        return;
+      }
+
+      // Clear localStorage
+      window.localStorage.removeItem(getThreadStorageKey(slug));
+
+      // Reset runtime to empty state
+      runtime.switchToNewThread();
+    }, [slug, runtime]);
+
+    useImperativeHandle(
+      ref,
+      () => ({
+        resetThread,
+      }),
+      [resetThread],
+    );
+
+    return (
+      <AssistantRuntimeProvider runtime={runtime}>
+        {/* Mount Waymo-specific tools */}
+        {slug === "waymo-booking" && <SelectFrequentLocationTool />}
+
+        {/* Auto-persist tool result updates to localStorage */}
+        <ToolResultPersistence slug={slug} />
+
+        <ThreadPrimitive.Root className="flex flex-1 flex-col overflow-hidden">
+          <ThreadPrimitive.Viewport className="flex flex-1 flex-col overflow-y-auto px-6 py-6">
+            <ThreadPrimitive.If empty>
+              <div className="text-muted-foreground mx-auto flex max-w-lg flex-1 flex-col items-center justify-center gap-3 text-center">
+                <p className="text-base font-medium">Start exploring {title}</p>
+                <p className="text-sm">
+                  Describe a task or ask a question to see how this tool
+                  collection responds.
+                </p>
+              </div>
+            </ThreadPrimitive.If>
+            <ThreadPrimitive.Messages
+              components={{
+                UserMessage,
+                AssistantMessage,
+              }}
+            />
+          </ThreadPrimitive.Viewport>
+          <div className="border-border bg-background/95 border-t px-6 py-4">
+            <Composer />
+          </div>
+        </ThreadPrimitive.Root>
+      </AssistantRuntimeProvider>
+    );
+  },
+);
 
 ChatPane.displayName = "ChatPane";
