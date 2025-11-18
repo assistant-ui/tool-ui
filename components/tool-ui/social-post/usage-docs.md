@@ -23,7 +23,7 @@ Paths below assume the component lives at `@/components/social-post`. Adjust imp
 import {
   SocialPost,
   type SerializableSocialPost,
-} from "@/components/social-post";
+} from "@/components/tool-ui/social-post";
 
 const post: SerializableSocialPost = {
   id: "example-linkedin-1",
@@ -259,7 +259,7 @@ When consuming untrusted JSON (LLM/tool responses), validate with the shipped sc
 import {
   SocialPost,
   parseSerializableSocialPost,
-} from "@/components/social-post";
+} from "@/components/tool-ui/social-post";
 
 async function renderToolResult(raw: unknown) {
   const post = parseSerializableSocialPost(raw); // throws on invalid payloads

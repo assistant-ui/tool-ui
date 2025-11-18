@@ -1,4 +1,4 @@
-import type { SerializableDecisionPrompt } from "@/components/decision-prompt";
+import type { SerializableDecisionPrompt } from "@/components/tool-ui/decision-prompt";
 
 export interface DecisionPromptConfig {
   prompt: SerializableDecisionPrompt;

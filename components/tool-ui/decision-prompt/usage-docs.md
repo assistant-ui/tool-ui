@@ -14,7 +14,7 @@ A flexible, inline component for presenting decisions and action choices to user
 ## Basic Usage
 
 ```tsx
-import { DecisionPrompt } from "@/components/decision-prompt";
+import { DecisionPrompt } from "@/components/tool-ui/decision-prompt";
 
 function MyComponent() {
   const [selectedAction, setSelectedAction] = useState<string>();
@@ -334,10 +334,10 @@ Full TypeScript support with Zod validation:
 import type {
   DecisionPromptAction,
   DecisionPromptProps,
-} from "@/components/decision-prompt";
+} from "@/components/tool-ui/decision-prompt";
 
 // For message persistence (without functions)
-import type { SerializableDecisionPrompt } from "@/components/decision-prompt";
+import type { SerializableDecisionPrompt } from "@/components/tool-ui/decision-prompt";
 ```
 
 ## Examples
