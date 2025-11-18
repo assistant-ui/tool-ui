@@ -27,7 +27,7 @@ export const SelectFrequentLocationTool = makeAssistantTool<
 >({
   toolName: "select_frequent_location",
   description:
-    "Present the user's frequent locations (favorites like Home and Work, plus recents) when they request a ride without specifying a destination. Use this to show a visual location picker UI.",
+    "Present the user's frequent locations (favorites like Home and Work, plus recents) when they request a ride without specifying a destination. Use this to show a visual location picker UI. When the tool result includes `selectedLocation`, treat that as the rider's confirmed destination and continue without calling this tool again.",
   parameters: z.object({}),
   execute: async () => {
     const favorites: FrequentLocation[] = DEFAULT_FAVORITES.map((fav) => ({
