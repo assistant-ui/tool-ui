@@ -44,3 +44,6 @@ next-env.d.ts
 
 # Claude
 .claude
+
+# VSCode
+.vscode
