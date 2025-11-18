@@ -8,6 +8,8 @@ This document outlines the patterns for creating interactive Tool UIs with recei
 
 **Key Principle**: Tool UIs are **stateless** - their mode (interactive vs receipt) is derived from the `result` prop, not component state.
 
+This document focuses on the frontend `makeAssistantTool` pattern and the interactive → receipt transformation used in the Waymo prototype. For repo-wide architecture and collaboration guidelines that apply to this and other prototypes, see `COLLAB_GUIDELINES.md` at the project root.
+
 ---
 
 ## Architecture
@@ -426,10 +428,42 @@ Tool Usage:
 - **Cause**: `addResult` not updating the field checked for receipt mode
 - **Fix**: Ensure you spread `...result` and add selection field
 
-### Receipt state not persisting across page reloads ⚠️ IMPORTANT
-- **Cause**: The default history adapter only persists on message append, not on tool result updates from `addResult()`
-- **Symptoms**: Tool UI shows receipt after clicking, but reverts to interactive mode after page refresh
-- **Fix**: Add a `ToolResultPersistence` component that surgically updates only tool call results in localStorage (without touching user messages):
+### Receipt state not persisting across page reloads ⚠️ CRITICAL
+
+**Problem**: When users interact with a Tool UI (e.g., clicking a location), the receipt state displays correctly, but disappears after refreshing the page.
+
+**Root Cause**: The assistant-ui `ThreadHistoryAdapter` only persists **new messages**, not **updates to existing messages**. When `addResult()` is called, it updates an existing tool call message part, which doesn't trigger the history adapter's `append()` method. The adapter tracks message IDs and skips re-persisting messages it has already seen.
+
+**Why This Happens**:
+1. Tool is called → `execute()` returns initial result → Message created with tool call
+2. History adapter saves this message (message ID added to `historyIds` set)
+3. User interacts → `addResult()` updates the tool result in the **same message**
+4. History adapter checks: "Already seen this message ID? Skip persistence"
+5. Updated result never gets saved to localStorage
+6. On page reload → Old result (without user's selection) is loaded
+
+**Format Differences Between Runtime and Storage**:
+- **Runtime messages** (from `useAssistantState`):
+  - Use `content` array
+  - Tool results stored in `result` field
+  - Tool parts have generic type: `"tool-call"`
+- **Storage messages** (in localStorage):
+  - Use `parts` array
+  - Tool results stored in `output` field
+  - Tool parts have specific type: `"tool-select_frequent_location"`, `"tool-get_user_destination"`, etc.
+- **Message structure differences**:
+  - Runtime may exclude `step-start` parts (count: 1)
+  - Storage includes all parts like `step-start` (count: 2+)
+  - **Must match by `toolCallId`, not array index!**
+
+**Solution**: Add a `ToolResultPersistence` component that:
+1. Listens to runtime message changes via `useAssistantState`
+2. Compares runtime tool results with stored results in localStorage
+3. Detects when `addResult()` has added data (e.g., `selectedLocation`)
+4. Surgically updates **only** the changed tool result's `output` field
+5. Preserves all other message data (especially user messages)
+
+**Implementation**:
 
 ```tsx
 // Component to sync tool call results to localStorage
@@ -455,36 +489,46 @@ const ToolResultPersistence = ({ slug }: { slug: string }) => {
 
       const storedMsg = repo.messages[storedMsgIndex].message;
 
-      // Check if this is an assistant message with content parts
+      // ⚠️ CRITICAL: Storage uses "parts", runtime uses "content"
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const storedParts = (storedMsg as any).parts;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const runtimeParts = (runtimeMsg as any).content;
+
       if (
         storedMsg.role === "assistant" &&
-        Array.isArray(storedMsg.content) &&
-        Array.isArray(runtimeMsg.content)
+        Array.isArray(storedParts) &&
+        Array.isArray(runtimeParts)
       ) {
-        // Update tool call results in the stored message
-        for (let i = 0; i < runtimeMsg.content.length; i++) {
-          const runtimePart = runtimeMsg.content[i];
-
+        // Match tool calls by toolCallId, NOT by array index
+        for (const runtimePart of runtimeParts) {
           if (
             runtimePart &&
             typeof runtimePart === "object" &&
             "type" in runtimePart &&
             runtimePart.type === "tool-call" &&
-            "result" in runtimePart
+            "result" in runtimePart &&
+            "toolCallId" in runtimePart
           ) {
-            // Find corresponding part in stored message
-            const storedPart = storedMsg.content[i];
+            // ⚠️ CRITICAL: Storage uses specific tool names like "tool-select_frequent_location"
+            // Runtime uses generic "tool-call". Match by toolCallId instead!
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const storedPart = storedParts.find(
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              (part: any) =>
+                part?.type?.startsWith?.("tool-") &&
+                part?.toolCallId === runtimePart.toolCallId
+            );
 
-            if (
-              storedPart &&
-              typeof storedPart === "object" &&
-              "type" in storedPart &&
-              storedPart.type === "tool-call" &&
-              "result" in storedPart
-            ) {
-              // Update the result if it's changed
-              if (JSON.stringify(storedPart.result) !== JSON.stringify(runtimePart.result)) {
-                (storedPart as any).result = runtimePart.result;
+            if (storedPart) {
+              // ⚠️ CRITICAL: Storage uses "output", runtime uses "result"
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              const storedResult = (storedPart as any).output;
+              const runtimeResult = runtimePart.result;
+
+              if (JSON.stringify(storedResult) !== JSON.stringify(runtimeResult)) {
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                (storedPart as any).output = runtimeResult;
                 hasChanges = true;
               }
             }
@@ -507,6 +551,44 @@ const ToolResultPersistence = ({ slug }: { slug: string }) => {
   {/* rest of your UI */}
 </AssistantRuntimeProvider>
 ```
+
+**Critical Implementation Notes**:
+
+1. **Use `useAssistantState`**, not deprecated `useThread`:
+   ```tsx
+   const messages = useAssistantState(({ thread }) => thread.messages);
+   ```
+
+2. **Match by `toolCallId`, NEVER by array index**:
+   - Runtime might have `[tool-call]` (1 part)
+   - Storage might have `[step-start, tool-select_frequent_location]` (2 parts)
+   - Indices don't align! Match by ID.
+
+3. **Check type with `startsWith("tool-")`**, not exact equality:
+   ```tsx
+   part?.type?.startsWith?.("tool-")  // ✅ Matches "tool-select_frequent_location"
+   part?.type === "tool-call"         // ❌ Won't match storage
+   ```
+
+4. **Access correct field names**:
+   | Field | Runtime | Storage |
+   |-------|---------|---------|
+   | Parts container | `content` | `parts` |
+   | Tool result | `result` | `output` |
+   | Tool type | `"tool-call"` | `"tool-{toolName}"` |
+
+5. **Handle type safety with eslint-disable**:
+   - Storage format isn't properly typed
+   - Use `as any` with `// eslint-disable-next-line @typescript-eslint/no-explicit-any`
+
+**Testing Receipt Persistence**:
+- [ ] Call tool → interact → `addResult()` triggered
+- [ ] Receipt shows correctly before refresh
+- [ ] **Refresh page** → receipt still shows (CRITICAL)
+- [ ] Check localStorage → `output` contains selection
+- [ ] No console errors about missing fields
+- [ ] Works with multiple tool calls in same message
+- [ ] Thread reset clears persisted data
 
 ### Type errors with `frontendTools`
 - **Cause**: Type mismatch between frontend tool format and AI SDK ToolSet
