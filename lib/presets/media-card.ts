@@ -1,4 +1,4 @@
-import type { SerializableMediaCard } from "@/components/media-card";
+import type { SerializableMediaCard } from "@/components/tool-ui/media-card";
 
 export interface MediaCardConfig {
   card: SerializableMediaCard;

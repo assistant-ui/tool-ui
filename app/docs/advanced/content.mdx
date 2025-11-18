@@ -19,7 +19,7 @@ With `InferUITools` in AI SDK 5, you can infer tool input/output types from your
 ```ts title="lib/tools.ts"
 import { tool } from 'ai';
 import { z } from 'zod';
-import { serializableMediaCardSchema } from '@/components/media-card/schema';
+import { serializableMediaCardSchema } from '@/components/tool-ui/media-card/schema';
 
 export const tools = {
   previewLink: tool({
@@ -83,7 +83,7 @@ export async function POST(req: Request) {
 import { useChat } from '@ai-sdk/react';
 import { InferUITools } from 'ai';
 import type { Tools } from '@/lib/tools';
-import { MediaCard, parseSerializableMediaCard } from '@/components/media-card';
+import { MediaCard, parseSerializableMediaCard } from '@/components/tool-ui/media-card';
 
 type MyUITools = InferUITools<Tools>;
 

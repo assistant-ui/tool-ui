@@ -1,4 +1,4 @@
-import type { SerializableSocialPost } from "@/components/social-post";
+import type { SerializableSocialPost } from "@/components/tool-ui/social-post";
 
 export interface SocialPostConfig {
   post: SerializableSocialPost;

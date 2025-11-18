@@ -1,5 +1,5 @@
 import { DocsHeader } from "../_components/docs-header";
-import { DataTable } from "@/components/data-table";
+import { DataTable } from "@/components/tool-ui/data-table";
 import { FormatInlineExample } from "./formatting-gallery";
 import {
   NumberValue,
@@ -12,7 +12,7 @@ import {
   BadgeValue,
   StatusBadge,
   ArrayValue,
-} from "@/components/data-table";
+} from "@/components/tool-ui/data-table";
 
 <DocsHeader title="Data Table" role="Information" />
 
@@ -85,7 +85,7 @@ An information surface for tabular tool outputs with responsive layout, sorting,
   </Tab>
   <Tab>
     ```tsx
-    import { DataTable, type Column } from "@/components/data-table";
+    import { DataTable, type Column } from "@/components/tool-ui/data-table";
 
     type Row = {
       id: string;

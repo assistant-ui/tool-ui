@@ -3,8 +3,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { cn } from "@/lib/ui/cn";
-import { DataTable, type Column } from "@/components/data-table";
-import { MediaCard, type SerializableMediaCard } from "@/components/media-card";
+import { DataTable, type Column } from "@/components/tool-ui/data-table";
+import { MediaCard, type SerializableMediaCard } from "@/components/tool-ui/media-card";
 
 // Support ticket type for DataTable demo
 type SupportTicket = {
@@ -19,11 +19,11 @@ type SupportTicket = {
 import {
   SocialPost,
   type SerializableSocialPost,
-} from "@/components/social-post";
+} from "@/components/tool-ui/social-post";
 import {
   DecisionPrompt,
   type DecisionPromptAction,
-} from "@/components/decision-prompt";
+} from "@/components/tool-ui/decision-prompt";
 
 type BubbleProps = {
   role: "user" | "assistant";

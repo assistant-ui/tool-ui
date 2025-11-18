@@ -1,25 +1,25 @@
 "use client";
 
-export { Button } from "../ui/button";
+export { Button } from "../../ui/button";
 export {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "../ui/dropdown-menu";
+} from "../../ui/dropdown-menu";
 export {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "../ui/accordion";
+} from "../../ui/accordion";
 export {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "../ui/tooltip";
-export { Badge } from "../ui/badge";
+} from "../../ui/tooltip";
+export { Badge } from "../../ui/badge";
 export {
   Table,
   TableHeader,
@@ -27,4 +27,4 @@ export {
   TableHead,
   TableRow,
   TableCell,
-} from "../ui/table";
+} from "../../ui/table";

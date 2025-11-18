@@ -5,7 +5,7 @@ import { useSearchParams, usePathname, useRouter } from "next/navigation";
 import { ComponentPreviewShell } from "../component-preview-shell";
 import { PresetSelector } from "../../_components/preset-selector";
 import { CodePanel } from "../../_components/code-panel";
-import { SocialPost } from "@/components/social-post";
+import { SocialPost } from "@/components/tool-ui/social-post";
 import {
   SocialPostPresetName,
   socialPostPresets,
