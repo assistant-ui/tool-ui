@@ -9,7 +9,6 @@ import {
 } from "react";
 import {
   AssistantRuntimeProvider,
-  ThreadPrimitive,
   useAssistantState,
 } from "@assistant-ui/react";
 import {
@@ -30,8 +29,10 @@ import {
 
 import type { Prototype } from "@/lib/playground";
 import { PROTOTYPE_SLUG_HEADER } from "@/lib/playground/constants";
-import { AssistantMessage, Composer, UserMessage } from "./chat-ui";
+
 import { SelectFrequentLocationTool } from "@/lib/playground/prototypes/waymo/select-frequent-location-tool";
+import { MapPreviewTool } from "@/lib/playground/prototypes/waymo/map-preview-tool";
+import { Thread } from "@/components/assistant-ui/thread";
 
 const THREAD_STORAGE_KEY_PREFIX = "playground:thread:";
 
@@ -263,7 +264,7 @@ const ToolResultPersistence = ({ slug }: { slug: string }) => {
 
 export const ChatPane = forwardRef<ChatPaneRef, ChatPaneProps>(
   ({ prototype }, ref) => {
-    const { slug, title } = prototype;
+    const { slug } = prototype;
 
     const transport = useMemo(() => createTransportForPrototype(slug), [slug]);
 
@@ -309,32 +310,17 @@ export const ChatPane = forwardRef<ChatPaneRef, ChatPaneProps>(
     return (
       <AssistantRuntimeProvider runtime={runtime}>
         {/* Mount Waymo-specific tools */}
-        {slug === "waymo-booking" && <SelectFrequentLocationTool />}
+        {slug === "waymo-booking" && (
+          <>
+            <SelectFrequentLocationTool />
+            <MapPreviewTool />
+          </>
+        )}
 
         {/* Auto-persist tool result updates to localStorage */}
         <ToolResultPersistence slug={slug} />
 
-        <ThreadPrimitive.Root className="flex flex-1 flex-col overflow-hidden">
-          <ThreadPrimitive.Viewport className="flex flex-1 flex-col overflow-y-auto px-6 py-6">
-            <ThreadPrimitive.If empty>
-              <div className="text-muted-foreground mx-auto flex max-w-lg flex-1 flex-col items-center justify-center gap-3 text-center">
-                <p className="text-base font-medium">Start exploring {title}</p>
-                <p className="text-sm">
-                  Describe a task or ask a question to see how this tool
-                  collection responds.
-                </p>
-              </div>
-            </ThreadPrimitive.If>
-            <ThreadPrimitive.Messages
-              components={{
-                UserMessage,
-                AssistantMessage,
-              }}
-            />
-          </ThreadPrimitive.Viewport>
-
-          <Composer />
-        </ThreadPrimitive.Root>
+        <Thread />
       </AssistantRuntimeProvider>
     );
   },
