@@ -25,7 +25,7 @@ lib/playground/prototypes/waymo/
 │   ├── FrequentLocationSelector.tsx  # UI Component
 │   └── README.md
 ├── select-frequent-location-tool.tsx  # Tool + UI Definition
-└── index.ts                           # Backend tool registry (legacy)
+└── index.ts                           # Backend tool registry
 ```
 
 ### Backend Integration
