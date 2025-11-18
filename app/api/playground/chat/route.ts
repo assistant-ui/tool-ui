@@ -72,6 +72,32 @@ export async function POST(request: NextRequest) {
     );
   }
 
+  if (process.env.NODE_ENV !== "production") {
+    try {
+      const lastAssistantWithTools = [...messages]
+        .reverse()
+        .find(
+          (message) =>
+            message.role === "assistant" &&
+            Array.isArray(message.parts) &&
+            message.parts.some(
+              (part) => typeof part?.type === "string" && part.type.startsWith("tool-"),
+            ),
+        );
+      if (lastAssistantWithTools) {
+        const toolParts = lastAssistantWithTools.parts?.filter(
+          (part) => typeof part?.type === "string" && part.type.startsWith("tool-"),
+        );
+        console.debug(
+          "[playground] forwarding tool parts:",
+          JSON.stringify(toolParts, null, 2),
+        );
+      }
+    } catch (error) {
+      console.warn("[playground] failed to log tool parts", error);
+    }
+  }
+
   // Extract frontend tools from request body
   const clientTools: unknown =
     typeof body === "object" && body !== null && "tools" in body
