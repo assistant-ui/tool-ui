@@ -14,22 +14,6 @@ The playground serves as a sandbox for:
 - Validating design decisions before committing to the main library
 - Testing tool calling behavior and user flows
 
-## Current Components
-
-### FrequentLocationSelector
-
-A shadcn/ui-based component that displays a user's frequent locations (favorites and recents) as an interactive picker.
-
-**Tool:** `select_frequent_location`
-
-**Use Case:** When a user requests a ride without specifying a destination, this UI presents their most frequently used locations (Home, Work, etc.) for quick selection.
-
-**Features:**
-- Categorizes locations into Favorites and Recents
-- Uses contextual icons (Home, Work, generic location)
-- Provides a fallback option to search for different locations
-- Built entirely with shadcn/ui components for consistency
-
 ## Promotion Criteria
 
 Tool UIs in this directory may be promoted to the main Tool UI library when they:
@@ -44,7 +28,7 @@ Tool UIs in this directory may be promoted to the main Tool UI library when they
 wip-tool-uis/
 ├── README.md                      # This file
 ├── index.tsx                      # Exports all WIP components
-└── FrequentLocationSelector.tsx  # Location picker component
+└── <individual tool ui components>
 ```
 
 ## Development Guidelines
