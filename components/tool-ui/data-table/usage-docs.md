@@ -23,7 +23,7 @@ Paths used below assume the component lives at:
 ## Quick start
 
 ```tsx
-import { DataTable, type Column } from "@/components/data-table";
+import { DataTable, type Column } from "@/components/tool-ui/data-table";
 
 type Row = {
   symbol: string;
@@ -414,7 +414,7 @@ A simple tool UI can render a table directly from a tool's JSON response.
 
 ```tsx
 import { makeAssistantToolUI } from "@assistant-ui/react";
-import { DataTable, type Column } from "@/components/data-table";
+import { DataTable, type Column } from "@/components/tool-ui/data-table";
 
 type Row = Record<string, string | number | boolean | null | (string | number | boolean | null)[]>;
 type Output = {
@@ -463,7 +463,7 @@ export const ProductsUI = makeAssistantToolUI<{ query: string }, Output>({
 
 ```ts
 // __tests__/sortData.spec.ts
-import { sortData } from "@/components/data-table/utilities";
+import { sortData } from "@/components/tool-ui/data-table/utilities";
 
 type Row = { a: unknown };
 
@@ -496,7 +496,7 @@ test("nulls sort last", () => {
 // __tests__/DataTableHeader.a11y.spec.tsx
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { DataTable, type Column } from "@/components/data-table";
+import { DataTable, type Column } from "@/components/tool-ui/data-table";
 
 type Row = { name: string; price: number };
 
@@ -549,7 +549,7 @@ export {
   DataTableActions,
   DataTableAccordionCard,
   useDataTable,
-} from "@/components/data-table";
+} from "@/components/tool-ui/data-table";
 ```
 
 This lets you insert custom rows, extra columns, or wrap cells with analytics providers. Stick with `<DataTable />` unless you need full control.

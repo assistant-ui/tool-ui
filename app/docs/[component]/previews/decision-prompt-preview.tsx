@@ -5,7 +5,7 @@ import { useSearchParams, usePathname, useRouter } from "next/navigation";
 import { ComponentPreviewShell } from "../component-preview-shell";
 import { PresetSelector } from "../../_components/preset-selector";
 import { CodePanel } from "../../_components/code-panel";
-import { DecisionPrompt } from "@/components/decision-prompt";
+import { DecisionPrompt } from "@/components/tool-ui/decision-prompt";
 import {
   DecisionPromptPresetName,
   decisionPromptPresets,

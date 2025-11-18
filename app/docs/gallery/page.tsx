@@ -1,9 +1,9 @@
 import Link from "next/link";
 import { DocsBorderedShell } from "@/app/docs/_components/docs-bordered-shell";
-import { DataTable } from "@/components/data-table";
-import { MediaCard } from "@/components/media-card";
-import { SocialPost } from "@/components/social-post";
-import { DecisionPrompt } from "@/components/decision-prompt";
+import { DataTable } from "@/components/tool-ui/data-table";
+import { MediaCard } from "@/components/tool-ui/media-card";
+import { SocialPost } from "@/components/tool-ui/social-post";
+import { DecisionPrompt } from "@/components/tool-ui/decision-prompt";
 import { ZenField } from "@/app/components/visuals/zen-field";
 import { sampleStocks, sampleMetrics } from "@/lib/presets/data-table";
 import { mediaCardPresets } from "@/lib/presets/media-card";

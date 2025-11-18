@@ -196,3 +196,5 @@ export const waymoPrototype: Prototype = {
     },
   ],
 };
+
+export { WaymoDemo } from "./WaymoDemo";

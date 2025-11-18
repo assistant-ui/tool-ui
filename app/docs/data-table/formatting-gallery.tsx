@@ -4,7 +4,7 @@ import * as React from "react";
 import {
   renderFormattedValue,
   type FormatConfig,
-} from "@/components/data-table";
+} from "@/components/tool-ui/data-table";
 
 type Row = Record<
   string,

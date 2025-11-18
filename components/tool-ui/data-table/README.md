@@ -115,7 +115,7 @@ If your Tailwind config uses a prefix (e.g., `prefix: 'tw-'`), prefix both the c
 ## Basic Usage
 
 ```tsx
-import { DataTable } from "@/components/data-table";
+import { DataTable } from "@/components/tool-ui/data-table";
 
 function MyComponent() {
   return (
@@ -681,7 +681,7 @@ interface DataTableProps<T>
 **Usage pattern:**
 
 ```tsx
-import type { DataTableSerializableProps, DataTableClientProps } from '@/components/data-table'
+import type { DataTableSerializableProps, DataTableClientProps } from '@/components/tool-ui/data-table'
 
 // From LLM tool call - only serializable props
 const serializableProps: DataTableSerializableProps = parseSerializableDataTable(llmResult)
@@ -872,7 +872,7 @@ Here's how to structure tool call payloads for the DataTable:
 **Example 4: Rendering the tool result**
 
 ```tsx
-import { parseSerializableDataTable } from "@/components/data-table/schema";
+import { parseSerializableDataTable } from "@/components/tool-ui/data-table/schema";
 
 // In your tool UI component
 function StockTableToolUI({ result }: { result: unknown }) {
@@ -907,7 +907,7 @@ import {
   serializableDataTableSchema,
   parseSerializableDataTable,
   type SerializableDataTable,
-} from "@/components/data-table/schema";
+} from "@/components/tool-ui/data-table/schema";
 
 // Validate unknown data
 const result = serializableDataTableSchema.safeParse(unknownData);
@@ -928,7 +928,7 @@ The component exports helpful utility functions:
 Sort an array of objects by a key:
 
 ```tsx
-import { sortData } from "@/components/data-table";
+import { sortData } from "@/components/tool-ui/data-table";
 
 const sorted = sortData(rows, "price", "desc");
 ```
@@ -938,7 +938,7 @@ const sorted = sortData(rows, "price", "desc");
 Generate accessible labels for action buttons:
 
 ```tsx
-import { getActionLabel } from "@/components/data-table";
+import { getActionLabel } from "@/components/tool-ui/data-table";
 
 getActionLabel("View", { name: "Widget" });
 // => "View for Widget"
@@ -1095,7 +1095,7 @@ import {
   DataTableRow,
   DataTableCell,
   useDataTable,
-} from "@/components/data-table";
+} from "@/components/tool-ui/data-table";
 
 function CustomTable() {
   return (
