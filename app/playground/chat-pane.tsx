@@ -24,8 +24,6 @@ import type {
   ThreadHistoryAdapter,
 } from "@assistant-ui/react";
 import {
-  getToolOrDynamicToolName,
-  isToolOrDynamicToolUIPart,
   lastAssistantMessageIsCompleteWithToolCalls,
   type UIMessage,
 } from "ai";
@@ -175,53 +173,6 @@ export type ChatPaneRef = {
   resetThread: () => void;
 };
 
-type ToolPart = Parameters<typeof getToolOrDynamicToolName>[0];
-
-const TOOL_RECEIPT_VALIDATORS: Record<string, (output: unknown) => boolean> = {
-  select_frequent_location: (output) =>
-    Boolean(
-      output &&
-        typeof output === "object" &&
-        "selectedLocation" in output &&
-        (output as { selectedLocation?: unknown }).selectedLocation,
-    ),
-};
-
-const shouldAutoSubmitTools = ({ messages }: { messages: UIMessage[] }) => {
-  if (!lastAssistantMessageIsCompleteWithToolCalls({ messages })) {
-    return false;
-  }
-
-  const lastMessage = messages[messages.length - 1];
-  if (!lastMessage || lastMessage.role !== "assistant" || !lastMessage.parts) {
-    return false;
-  }
-
-  const toolParts = lastMessage.parts.filter(isFrontendToolPart);
-  if (toolParts.length === 0) {
-    return false;
-  }
-
-  return toolParts.every((part) => {
-    if ((part as { state?: string }).state === "output-error") {
-      return true;
-    }
-
-    const toolName = getToolOrDynamicToolName(part);
-    const validator = TOOL_RECEIPT_VALIDATORS[toolName];
-    return validator ? validator((part as { output?: unknown }).output) : true;
-  });
-};
-
-const isFrontendToolPart = (
-  part: UIMessage["parts"][number],
-): part is ToolPart => {
-  return (
-    isToolOrDynamicToolUIPart(part) &&
-    !(part as { providerExecuted?: boolean }).providerExecuted
-  );
-};
-
 const createTransportForPrototype = (slug: string) =>
   new AssistantChatTransport({
     api: "/api/playground/chat",
@@ -332,7 +283,7 @@ export const ChatPane = forwardRef<ChatPaneRef, ChatPaneProps>(
       transport,
       messages: seedMessages,
       adapters: { history: historyAdapter },
-      sendAutomaticallyWhen: shouldAutoSubmitTools,
+      sendAutomaticallyWhen: lastAssistantMessageIsCompleteWithToolCalls,
     });
 
     const resetThread = useCallback(() => {
@@ -381,9 +332,8 @@ export const ChatPane = forwardRef<ChatPaneRef, ChatPaneProps>(
               }}
             />
           </ThreadPrimitive.Viewport>
-          <div className="border-border bg-background/95 border-t px-6 py-4">
-            <Composer />
-          </div>
+
+          <Composer />
         </ThreadPrimitive.Root>
       </AssistantRuntimeProvider>
     );
