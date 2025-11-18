@@ -23,7 +23,10 @@ import type {
   MessageFormatRepository,
   ThreadHistoryAdapter,
 } from "@assistant-ui/react";
-import type { UIMessage } from "ai";
+import {
+  lastAssistantMessageIsCompleteWithToolCalls,
+  type UIMessage,
+} from "ai";
 
 import type { Prototype } from "@/lib/playground";
 import { PROTOTYPE_SLUG_HEADER } from "@/lib/playground/constants";
@@ -280,6 +283,7 @@ export const ChatPane = forwardRef<ChatPaneRef, ChatPaneProps>(
       transport,
       messages: seedMessages,
       adapters: { history: historyAdapter },
+      sendAutomaticallyWhen: lastAssistantMessageIsCompleteWithToolCalls,
     });
 
     const resetThread = useCallback(() => {
@@ -328,9 +332,8 @@ export const ChatPane = forwardRef<ChatPaneRef, ChatPaneProps>(
               }}
             />
           </ThreadPrimitive.Viewport>
-          <div className="border-border bg-background/95 border-t px-6 py-4">
-            <Composer />
-          </div>
+
+          <Composer />
         </ThreadPrimitive.Root>
       </AssistantRuntimeProvider>
     );
