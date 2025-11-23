@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, Fragment } from "react";
 import type { DecisionPromptAction } from "./schema";
 import { Button } from "./_ui";
 import { cn } from "./_cn";
+import { Separator } from "@/components/ui/separator";
 import { Check } from "lucide-react";
 
 interface MultiSelectActionsProps {
@@ -74,6 +75,17 @@ export function MultiSelectActions({
     right: "justify-end",
   }[align];
 
+  const actionsContainerLayout =
+    layout === "stack"
+      ? "flex-col"
+      : cn(
+          "flex-col",
+          "@[28rem]:flex-row @[28rem]:flex-wrap @[28rem]:divide-y @[28rem]:divide-x @[28rem]:divide-border",
+          align === "left" && "@[28rem]:justify-start",
+          align === "center" && "@[28rem]:justify-center",
+          align === "right" && "@[28rem]:justify-end",
+        );
+
   const isConfirmDisabled =
     isExecuting || selectedIds.size < minSelections || selectedIds.size === 0;
   const isCancelDisabled = isExecuting || selectedIds.size === 0;
@@ -82,23 +94,11 @@ export function MultiSelectActions({
     <div className={cn("flex flex-col gap-3", className)}>
       <div
         className={cn(
-          "flex w-full gap-2.5",
-          layout === "stack"
-            ? // For stacked lists, stretch items so each fills the container
-              "flex-col items-stretch gap-1"
-            : cn(
-                // Baseline (narrow): stacked, stretch items to fill width
-                "flex-col items-stretch gap-1",
-                // Wide containers: we still allow row layout if desired,
-                // alignment applies only at wide sizes
-                "@[28rem]:flex-row @[28rem]:flex-wrap @[28rem]:items-center",
-                align === "left" && "@[28rem]:justify-start",
-                align === "center" && "@[28rem]:justify-center",
-                align === "right" && "@[28rem]:justify-end",
-              ),
+          "group/list flex w-full overflow-hidden rounded-2xl border bg-card/60 shadow-xs px-5 py-2.5",
+          actionsContainerLayout,
         )}
       >
-        {actions.map((action) => {
+        {actions.map((action, index) => {
           const isSelected = selectedIds.has(action.id);
           const isDisabled = Boolean(
             action.disabled ||
@@ -109,37 +109,52 @@ export function MultiSelectActions({
           );
 
           return (
-            <Button
-              key={action.id}
-              variant="ghost"
-              size="sm"
-              onClick={() => toggleSelection(action.id)}
-              disabled={isDisabled}
-              className={cn(
-                "transition-xs bg-background min-h-[44px] w-full border text-sm font-medium",
-                // Always left-align content; responsive padding/type
-                "justify-start px-5 py-4 text-base @[28rem]:px-4 @[28rem]:py-3 @[28rem]:text-sm",
-                {
-                  "bg-accent hover:!bg-accent": isSelected,
-                },
-              )}
-            >
-              <div className="flex items-center gap-3">
-                <div
+            <Fragment key={action.id}>
+              {index > 0 && (
+                <Separator
                   className={cn(
-                    "flex h-4 w-4 shrink-0 items-center justify-center rounded border-2 transition-colors",
+                    "[.peer:hover+&]:opacity-0 [&:has(+_:hover)]:opacity-0",
                     {
-                      "border-primary bg-primary text-primary-foreground":
-                        isSelected,
+                      "@[28rem]:hidden": layout === "inline",
                     },
                   )}
-                >
-                  {isSelected && <Check className="h-3 w-3" />}
+                />
+              )}
+              <Button
+                data-id={action.id}
+                variant="ghost"
+                size="sm"
+                onClick={() => toggleSelection(action.id)}
+                disabled={isDisabled}
+                aria-pressed={isSelected}
+                className={cn(
+                  "peer group relative min-h-[44px] w-full justify-start text-left text-sm font-medium",
+                  "rounded-none border-0 bg-transparent hover:bg-transparent! px-0 text-base shadow-none transition-none @[28rem]:text-sm",
+                  { "@[28rem]:flex-1 @[28rem]:min-w-48": layout !== "stack" },
+                )}
+              >
+                <span
+                  className={cn(
+                    "absolute inset-0 -mx-3 -my-0.5 rounded-lg bg-accent/60 group-active:bg-accent/80 opacity-0 group-hover:opacity-100",
+                  )}
+                />
+                <div className="relative flex items-center gap-3">
+                  <div
+                    className={cn(
+                      "flex h-4 w-4 shrink-0 items-center justify-center rounded border-2 transition-colors",
+                      {
+                        "border-primary bg-primary text-primary-foreground":
+                          isSelected,
+                      },
+                    )}
+                  >
+                    {isSelected && <Check className="h-3 w-3" />}
+                  </div>
+                  {action.icon && <span>{action.icon}</span>}
+                  {action.label}
                 </div>
-                {action.icon && <span>{action.icon}</span>}
-                {action.label}
-              </div>
-            </Button>
+              </Button>
+            </Fragment>
           );
         })}
       </div>
