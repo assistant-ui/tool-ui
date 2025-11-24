@@ -40,10 +40,10 @@ export function ActionButtons({
       className={cn(
         "flex flex-col gap-2",
         crossAlignClass,
-        "@md/actions:flex-row @md/actions:flex-wrap @md/actions:items-center",
-        align === "left" && "@md/actions:justify-start",
-        align === "center" && "@md/actions:justify-center",
-        align === "right" && "@md/actions:justify-end",
+        "@sm/actions:flex-row @md/actions:flex-wrap @md/actions:items-center",
+        align === "left" && "@sm/actions:justify-start",
+        align === "center" && "@sm/actions:justify-center",
+        align === "right" && "@sm/actions:justify-end",
         className,
       )}
     >
