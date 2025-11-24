@@ -18,6 +18,8 @@ import {
 
 An information surface for tabular tool outputs with responsive layout, sorting, declarative formatting, and row-level actions.
 
+> **Compat:** Tailwind v4 works out of the box. On Tailwind v3.2+, add `@tailwindcss/container-queries`.
+
 <Tabs items={["Preview", "Code"]}>
   <Tab>
     <div className="not-prose">
@@ -155,10 +157,9 @@ An information surface for tabular tool outputs with responsive layout, sorting,
       );
     }
     ```
+
   </Tab>
 </Tabs>
-
-
 
 ## When to Use Data Table
 
@@ -172,7 +173,6 @@ An information surface for tabular tool outputs with responsive layout, sorting,
 - **Formatting**: Currency, dates, links, badges, etc. via declarative config
 - **Actions**: Row-level buttons with optional confirmation
 - **Accessible**: Screen reader support, keyboard navigation
-
 
 ## Source and Install
 
@@ -200,29 +200,31 @@ Copy `components/data-table` into your project. It should sit alongside your sha
 - [**Source on GitHub**](https://github.com/assistant-ui/tool-ui/tree/main/components/data-table)
 - [**Quick download (ZIP)**](https://download-directory.github.io/?url=https://github.com/assistant-ui/tool-ui/tree/main/components/data-table)
 
-
-
 ## Usage
 
 Define a tool that returns table data, then render with the DataTable component.
 
 ```tsx
 // Backend tool
-import { tool } from 'ai';
-import { serializableDataTableSchema } from '@tool-ui/data-table';
+import { tool } from "ai";
+import { serializableDataTableSchema } from "@tool-ui/data-table";
 
 const searchProducts = tool({
-  description: 'Search products and return results in a table',
+  description: "Search products and return results in a table",
   outputSchema: serializableDataTableSchema,
   async execute({ query }) {
     const results = await db.products.search(query);
     return {
       columns: [
-        { key: 'name', label: 'Product', priority: 'primary' },
-        { key: 'price', label: 'Price', format: { kind: 'currency', currency: 'USD' } },
-        { key: 'stock', label: 'Stock', align: 'right' },
+        { key: "name", label: "Product", priority: "primary" },
+        {
+          key: "price",
+          label: "Price",
+          format: { kind: "currency", currency: "USD" },
+        },
+        { key: "stock", label: "Stock", align: "right" },
       ],
-      data: results.map(p => ({
+      data: results.map((p) => ({
         id: p.id,
         name: p.name,
         price: p.price,
@@ -233,11 +235,11 @@ const searchProducts = tool({
 });
 
 // Frontend with assistant-ui
-import { makeAssistantToolUI } from '@assistant-ui/react';
-import { DataTable, parseSerializableDataTable } from '@tool-ui/data-table';
+import { makeAssistantToolUI } from "@assistant-ui/react";
+import { DataTable, parseSerializableDataTable } from "@tool-ui/data-table";
 
 export const SearchProductsUI = makeAssistantToolUI({
-  toolName: 'searchProducts',
+  toolName: "searchProducts",
   render: ({ result }) => {
     const props = parseSerializableDataTable(result);
     return <DataTable rowIdKey="id" {...props} />;
@@ -245,17 +247,27 @@ export const SearchProductsUI = makeAssistantToolUI({
 });
 ```
 
-
-
 ## Props
 
 ### Core Props
 
 <TypeTable
   type={{
-    columns: { description: "Column definitions", type: "Column[]", required: true },
-    data: { description: "Rows (JSON primitives only)", type: "T[]", required: true },
-    rowIdKey: { description: "Unique key per row", type: "keyof T", required: true },
+    columns: {
+      description: "Column definitions",
+      type: "Column[]",
+      required: true,
+    },
+    data: {
+      description: "Rows (JSON primitives only)",
+      type: "T[]",
+      required: true,
+    },
+    rowIdKey: {
+      description: "Unique key per row",
+      type: "keyof T",
+      required: true,
+    },
     locale: { description: "Intl locale", type: "string", default: '"en-US"' },
   }}
 />
@@ -267,9 +279,19 @@ export const SearchProductsUI = makeAssistantToolUI({
     key: { description: "Row data key", type: "keyof T", required: true },
     label: { description: "Header text", type: "string", required: true },
     format: { description: "Cell formatting", type: "FormatConfig" },
-    priority: { description: "Mobile visibility", type: "'primary' | 'secondary' | 'tertiary'" },
-    sortable: { description: "Enable sorting", type: "boolean", default: "true" },
-    align: { description: "Text alignment", type: "'left' | 'right' | 'center'" },
+    priority: {
+      description: "Mobile visibility",
+      type: "'primary' | 'secondary' | 'tertiary'",
+    },
+    sortable: {
+      description: "Enable sorting",
+      type: "boolean",
+      default: "true",
+    },
+    align: {
+      description: "Text alignment",
+      type: "'left' | 'right' | 'center'",
+    },
     truncate: { description: "Truncate with ellipsis", type: "boolean" },
   }}
 />
@@ -278,8 +300,14 @@ export const SearchProductsUI = makeAssistantToolUI({
 
 <TypeTable
   type={{
-    defaultSort: { description: "Initial sort", type: "{ by?: keyof T; direction?: 'asc' | 'desc' }" },
-    sort: { description: "Controlled sort", type: "{ by?: keyof T; direction?: 'asc' | 'desc' }" },
+    defaultSort: {
+      description: "Initial sort",
+      type: "{ by?: keyof T; direction?: 'asc' | 'desc' }",
+    },
+    sort: {
+      description: "Controlled sort",
+      type: "{ by?: keyof T; direction?: 'asc' | 'desc' }",
+    },
     onSortChange: { description: "Sort handler", type: "(sort) => void" },
   }}
 />
@@ -290,11 +318,12 @@ export const SearchProductsUI = makeAssistantToolUI({
   type={{
     actions: { description: "Row actions", type: "Action[]" },
     onAction: { description: "Click handler", type: "(id, row) => void" },
-    onBeforeAction: { description: "Gate actions", type: "({ id, row }) => boolean | Promise" },
+    onBeforeAction: {
+      description: "Gate actions",
+      type: "({ id, row }) => boolean | Promise",
+    },
   }}
 />
-
-
 
 ## Formatting
 
@@ -363,8 +392,7 @@ All visual formatting for data stays declarative via `columns[i].format`. Keep r
           />
         </>
       ),
-      type:
-        "{ kind: 'percent', basis: 'fraction' | 'unit', decimals?: number, showSign?: boolean }",
+      type: "{ kind: 'percent', basis: 'fraction' | 'unit', decimals?: number, showSign?: boolean }",
     },
     delta: {
       description: (
@@ -399,8 +427,7 @@ All visual formatting for data stays declarative via `columns[i].format`. Keep r
           />
         </>
       ),
-      type:
-        "{ kind: 'delta', decimals?: number, upIsPositive?: boolean, showSign?: boolean }",
+      type: "{ kind: 'delta', decimals?: number, upIsPositive?: boolean, showSign?: boolean }",
     },
     date: {
       description: (
@@ -427,8 +454,7 @@ All visual formatting for data stays declarative via `columns[i].format`. Keep r
           />
         </>
       ),
-      type:
-        "{ kind: 'date', dateFormat?: 'short' | 'long' | 'relative' }",
+      type: "{ kind: 'date', dateFormat?: 'short' | 'long' | 'relative' }",
     },
     boolean: {
       description: (
@@ -445,8 +471,7 @@ All visual formatting for data stays declarative via `columns[i].format`. Keep r
           }
         />
       ),
-      type:
-        "{ kind: 'boolean', labels?: { true: string; false: string } }",
+      type: "{ kind: 'boolean', labels?: { true: string; false: string } }",
     },
     link: {
       description: (
@@ -472,8 +497,7 @@ All visual formatting for data stays declarative via `columns[i].format`. Keep r
           />
         </>
       ),
-      type:
-        "{ kind: 'link', hrefKey?: string, external?: boolean }",
+      type: "{ kind: 'link', hrefKey?: string, external?: boolean }",
     },
     badge: {
       description: (
@@ -490,8 +514,7 @@ All visual formatting for data stays declarative via `columns[i].format`. Keep r
           }
         />
       ),
-      type:
-        "{ kind: 'badge', colorMap?: Record<string, Tone> }",
+      type: "{ kind: 'badge', colorMap?: Record<string, Tone> }",
     },
     status: {
       description: (
@@ -511,8 +534,7 @@ All visual formatting for data stays declarative via `columns[i].format`. Keep r
           }
         />
       ),
-      type:
-        "{ kind: 'status', statusMap: Record<string, { tone: Tone; label?: string }> }",
+      type: "{ kind: 'status', statusMap: Record<string, { tone: Tone; label?: string }> }",
     },
     array: {
       description: (
@@ -526,8 +548,7 @@ All visual formatting for data stays declarative via `columns[i].format`. Keep r
           }
         />
       ),
-      type:
-        "{ kind: 'array', maxVisible?: number }",
+      type: "{ kind: 'array', maxVisible?: number }",
     },
   }}
 />
