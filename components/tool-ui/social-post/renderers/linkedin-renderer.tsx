@@ -4,7 +4,7 @@ import { Header } from "../header";
 import { Body } from "../body";
 import { Media } from "../media";
 import { LinkPreview } from "../link-preview";
-import { Actions } from "../actions";
+import { Actions } from "../post-actions";
 
 export function LinkedInRenderer() {
   return (

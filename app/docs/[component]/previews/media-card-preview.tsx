@@ -88,16 +88,9 @@ export function MediaCardPreview({
         <CodePanel
           className="h-full w-full"
           componentId="media-card"
-          config={undefined}
-          socialPostConfig={undefined}
           mediaCardConfig={currentConfig}
-          decisionPromptConfig={undefined}
-          decisionPromptSelectedAction={undefined}
-          decisionPromptSelectedActions={[]}
           mediaCardMaxWidth="420px"
-          sort={{}}
           isLoading={loading}
-          emptyMessage=""
           mode="plain"
         />
       )}

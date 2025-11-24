@@ -3,6 +3,7 @@ import * as React from "react";
 import type { ReactNode } from "react";
 import type { SerializableSocialPost } from "./schema";
 import type { PlatformConfig } from "./platform";
+import type { ActionsProp } from "../shared";
 
 export interface SocialPostState {
   liked?: boolean;
@@ -46,6 +47,19 @@ export interface SocialPostClientProps {
   onEntityClick?: (type: "mention" | "hashtag" | "url", value: string) => void;
   onMediaEvent?: (type: "open" | "play" | "pause", payload?: unknown) => void;
   onNavigate?: (href: string, post: SerializableSocialPost) => void;
+  onPostAction?: (
+    actionId: string,
+    post: SerializableSocialPost,
+    ctx?: { messageId?: string },
+  ) => void;
+  onBeforePostAction?: (args: {
+    action: string;
+    post: SerializableSocialPost;
+    messageId?: string;
+  }) => boolean | Promise<boolean>;
+  footerActions?: ActionsProp;
+  onFooterAction?: (actionId: string) => void | Promise<void>;
+  onBeforeFooterAction?: (actionId: string) => boolean | Promise<boolean>;
 }
 
 export interface SocialPostContextValue {
@@ -58,8 +72,8 @@ export interface SocialPostContextValue {
   setState: (patch: Partial<SocialPostState>) => void;
   handlers: Pick<
     SocialPostClientProps,
-    | "onBeforeAction"
-    | "onAction"
+    | "onBeforePostAction"
+    | "onPostAction"
     | "onEntityClick"
     | "onMediaEvent"
     | "onNavigate"
