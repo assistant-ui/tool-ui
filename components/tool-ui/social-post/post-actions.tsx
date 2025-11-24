@@ -101,13 +101,13 @@ export function Actions() {
 
   async function run(actionId: string) {
     const shouldProceed =
-      (await handlers.onBeforeAction?.({
+      (await handlers.onBeforePostAction?.({
         action: actionId,
         post,
         messageId: post.messageId,
       })) ?? true;
     if (!shouldProceed) return;
-    handlers.onAction?.(actionId, post, { messageId: post.messageId });
+    handlers.onPostAction?.(actionId, post, { messageId: post.messageId });
     runtimeMap.get(actionId)?.onClick?.(post);
 
     if (actionId in TOGGLE_MAP) {

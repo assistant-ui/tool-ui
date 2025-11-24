@@ -95,7 +95,7 @@ export function Actions() {
 
   async function run(actionId: MediaActionId) {
     const shouldProceed =
-      (await handlers.onBeforeAction?.({
+      (await handlers.onBeforeMediaAction?.({
         action: actionId,
         card,
       })) ?? true;
@@ -170,7 +170,7 @@ export function Actions() {
         break;
     }
 
-    handlers.onAction?.(actionId, card);
+    handlers.onMediaAction?.(actionId, card);
   }
 
   const playing =

@@ -5,19 +5,5 @@
  * copied to another project by updating these imports to match the target
  * project's component library paths.
  */
-"use client";
-
 export { Button } from "../../ui/button";
-export {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "../../ui/dropdown-menu";
-export {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "../../ui/tooltip";
-export { Badge } from "../../ui/badge";
+export { Separator } from "../../ui/separator";

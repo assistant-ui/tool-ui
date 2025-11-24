@@ -1,12 +1,12 @@
 import Content from "./content.mdx";
 import { ComponentDocsExamples } from "../_components/component-docs-examples";
-import { DecisionPromptPreview } from "../[component]/previews/decision-prompt-preview";
+import { OptionListPreview } from "../[component]/previews/option-list-preview";
 
-export default function DecisionPromptDocsPage() {
+export default function OptionListDocsPage() {
   return (
     <ComponentDocsExamples
       docs={<Content />}
-      examples={<DecisionPromptPreview withContainer={false} />}
+      examples={<OptionListPreview withContainer={false} />}
       defaultTab="docs"
     />
   );

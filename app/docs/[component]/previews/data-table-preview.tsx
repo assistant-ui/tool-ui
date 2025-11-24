@@ -130,12 +130,6 @@ export function DataTablePreview({
           className="h-full w-full"
           componentId="data-table"
           config={currentConfig}
-          socialPostConfig={undefined}
-          mediaCardConfig={undefined}
-          decisionPromptConfig={undefined}
-          decisionPromptSelectedAction={undefined}
-          decisionPromptSelectedActions={[]}
-          mediaCardMaxWidth={undefined}
           sort={sort}
           isLoading={loading}
           emptyMessage={emptyMessage}

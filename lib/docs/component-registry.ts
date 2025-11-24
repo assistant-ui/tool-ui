@@ -11,9 +11,9 @@ export const componentsRegistry: ComponentMeta[] = [
     path: "/docs/data-table",
   },
   {
-    id: "decision-prompt",
-    label: "Decision Prompt",
-    path: "/docs/decision-prompt",
+    id: "option-list",
+    label: "Option List",
+    path: "/docs/option-list",
   },
   {
     id: "media-card",

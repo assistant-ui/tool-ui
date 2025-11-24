@@ -5,7 +5,7 @@ import { cn } from "../_cn";
 import { Body } from "../body";
 import { Media } from "../media";
 import { QuotedPost } from "../quoted-post";
-import { Actions } from "../actions";
+import { Actions } from "../post-actions";
 import { LinkPreview } from "../link-preview";
 import { BadgeCheck } from "lucide-react";
 import { PlatformLogo } from "../platform-brand";

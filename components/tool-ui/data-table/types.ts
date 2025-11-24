@@ -1,3 +1,4 @@
+import type { ActionsProp } from "../shared";
 import type { FormatConfig } from "./formatters";
 
 /**
@@ -246,6 +247,10 @@ export interface DataTableClientProps<T extends object = RowData> {
     by?: ColumnKey<T>;
     direction?: "asc" | "desc";
   }) => void;
+  /** Optional footer actions rendered below the table */
+  footerActions?: ActionsProp;
+  onFooterAction?: (actionId: string) => void | Promise<void>;
+  onBeforeFooterAction?: (actionId: string) => boolean | Promise<boolean>;
 }
 
 /**

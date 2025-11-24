@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Actions } from "./actions";
+import { Actions } from "./media-actions";
 import { useMediaCard } from "./context";
 
 function formatDuration(durationMs: number) {

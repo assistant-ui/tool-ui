@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import type { SerializableMediaCard } from "./schema";
+import type { ActionsProp } from "../shared";
 
 export type MediaCardUIState = {
   playing?: boolean;
@@ -26,6 +27,15 @@ export interface MediaCardClientProps {
     type: "play" | "pause" | "mute" | "unmute",
     payload?: unknown,
   ) => void;
+  onMediaAction?: (actionId: string, card: SerializableMediaCard) => void;
+  onBeforeMediaAction?: (args: {
+    action: string;
+    card: SerializableMediaCard;
+  }) => boolean | Promise<boolean>;
+  footerActions?: ActionsProp;
+  onFooterAction?: (actionId: string) => void | Promise<void>;
+  onBeforeFooterAction?: (actionId: string) => boolean | Promise<boolean>;
+  locale?: string;
 }
 
 export interface MediaCardContextValue {
@@ -37,7 +47,7 @@ export interface MediaCardContextValue {
   setState: (patch: Partial<MediaCardUIState>) => void;
   handlers: Pick<
     MediaCardClientProps,
-    "onNavigate" | "onAction" | "onBeforeAction" | "onMediaEvent"
+    "onNavigate" | "onMediaAction" | "onBeforeMediaAction" | "onMediaEvent"
   >;
   mediaElement: HTMLMediaElement | null;
   setMediaElement: (node: HTMLMediaElement | null) => void;

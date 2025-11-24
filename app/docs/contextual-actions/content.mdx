@@ -1,0 +1,120 @@
+import { DocsHeader } from "../_components/docs-header";
+
+<DocsHeader title="Contextual Actions" role="Controls" />
+
+Lightweight, in-flow CTA rows attached to tool UIs—meant for time-bound, conversational decisions tied to the content above.
+
+## Shape
+
+`ActionsProp` accepts either an array of actions or an object with inline layout config:
+
+```ts
+// Array form
+[
+  { id: "approve", label: "Approve", variant: "default" },
+  { id: "reject", label: "Reject", variant: "destructive", confirmLabel: "Confirm" },
+]
+
+// Config form
+{
+  items: [
+    { id: "export", label: "Export CSV", variant: "secondary" },
+    { id: "sync", label: "Sync", variant: "default", confirmLabel: "Confirm" },
+  ],
+  align: "right",      // default "right"
+  confirmTimeout: 3000 // default 3000ms
+}
+```
+
+### Action fields
+
+- `id` (required): unique identifier.
+- `label` (required): button text.
+- `variant`: `"default" | "secondary" | "ghost" | "destructive" | "outline"`.
+- `confirmLabel`: triggers a two-step confirm pattern (label shown on second click).
+- `disabled`, `loading`: disable or show spinner.
+- `shortcut`: optional keyboard hint.
+- `icon`: ReactNode (runtime only; omitted in serializable shape).
+
+## Handlers
+
+- `onAction(id)`: called after confirm/preflight.
+- `onBeforeAction(id) => boolean | Promise<boolean>`: return `false` to cancel (use for confirmations or auth gates).
+- Confirmations: provided by `confirmLabel` + optional `confirmTimeout` (defaults to 3000ms).
+
+## Serialization
+
+Use `SerializableAction`/`SerializableActionsConfig` when actions come from tool/LLM output. Runtime code can provide React icons and handlers.
+
+- **Tool output:** stick to the serializable shapes so payloads survive `JSON.stringify` and hydrate cleanly.
+- **Runtime overrides:** when you render the component, you can add icons or custom handlers on top of the serializable payload without mutating the tool contract.
+
+## Examples
+
+### Footer actions on DataTable
+
+```tsx
+<DataTable
+  {...data}
+  footerActions={{
+    items: [
+      { id: "export", label: "Export", variant: "secondary" },
+      {
+        id: "sync",
+        label: "Sync",
+        variant: "default",
+        confirmLabel: "Confirm",
+      },
+    ],
+    align: "right",
+  }}
+  onFooterAction={(id) => console.log(id)}
+/>
+```
+
+### MediaCard footer
+
+```tsx
+<MediaCard
+  {...card}
+  footerActions={[
+    { id: "open", label: "Open", variant: "default" },
+    { id: "save", label: "Save", variant: "secondary" },
+  ]}
+  onFooterAction={(id) => console.log(id)}
+/>
+```
+
+### SocialPost footer CTA
+
+```tsx
+<SocialPost
+  {...post}
+  footerActions={[
+    { id: "save", label: "Save draft", variant: "secondary" },
+    { id: "share", label: "Share", variant: "default" },
+  ]}
+  onFooterAction={(id) => console.log(id)}
+/>
+```
+
+### Standalone ActionButtons
+
+```tsx
+import { ActionButtons } from "@/components/tool-ui/shared";
+
+<ActionButtons
+  actions={[
+    { id: "cancel", label: "Cancel", variant: "ghost" },
+    { id: "send", label: "Send", variant: "default", confirmLabel: "Confirm" },
+  ]}
+  onAction={(id) => console.log(id)}
+/>
+```
+
+## Design guidance
+
+- Default to 2–3 CTAs tied directly to the content above; avoid toolbar sprawl.
+- Use `confirmLabel` for destructive/high-impact actions; keep `confirmTimeout` short.
+- ActionButtons are responsive by default using container queries—they stack vertically on narrow containers and display inline on wider ones.
+- For richer controls, prefer dedicated components (OptionList, filters) and keep this strip focused on decisions.

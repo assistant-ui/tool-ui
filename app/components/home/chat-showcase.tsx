@@ -20,10 +20,6 @@ import {
   SocialPost,
   type SerializableSocialPost,
 } from "@/components/tool-ui/social-post";
-import {
-  DecisionPrompt,
-  type DecisionPromptAction,
-} from "@/components/tool-ui/decision-prompt";
 
 type BubbleProps = {
   role: "user" | "assistant";
@@ -297,10 +293,10 @@ const SOCIAL_POST: SerializableSocialPost = {
   language: "en-US",
 };
 
-const DECISION_ACTIONS: DecisionPromptAction[] = [
-  { id: "cancel", label: "Discard", variant: "ghost" },
-  { id: "edit", label: "Revise", variant: "outline" },
-  { id: "send", label: "Post Now", variant: "default" },
+const SOCIAL_POST_ACTIONS = [
+  { id: "cancel", label: "Discard", variant: "ghost" as const },
+  { id: "edit", label: "Revise", variant: "outline" as const },
+  { id: "send", label: "Post Now", variant: "default" as const },
 ];
 
 function createSceneConfigs(): SceneConfig[] {
@@ -327,18 +323,17 @@ function createSceneConfigs(): SceneConfig[] {
       toolUI: <MediaCard {...MEDIA_CARD} maxWidth="420px" />,
       toolFallbackHeight: 260,
     },
-    // Scene 3: Open Source Release / SocialPost + DecisionPrompt
+    // Scene 3: Open Source Release / SocialPost with footerActions
     {
       userMessage: "Draft a tweet about our open-source release",
       preamble: "Here's a draft announcement:",
       toolUI: (
-        <div className="w-full max-w-[600px] min-w-0 space-y-3">
-          <SocialPost {...SOCIAL_POST} className="w-full" maxWidth="100%" />
-          <DecisionPrompt
-            prompt="Ready to announce?"
-            actions={DECISION_ACTIONS}
-            align="right"
-            layout="inline"
+        <div className="w-full max-w-[600px] min-w-0">
+          <SocialPost
+            {...SOCIAL_POST}
+            className="w-full"
+            maxWidth="100%"
+            footerActions={SOCIAL_POST_ACTIONS}
           />
         </div>
       ),

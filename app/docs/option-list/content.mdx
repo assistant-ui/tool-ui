@@ -1,0 +1,155 @@
+import { DocsHeader } from "../_components/docs-header";
+import { OptionList } from "@/components/tool-ui/option-list";
+
+<DocsHeader title="Option List" role="Decision" />
+
+A decision surface for single or multi-select choices. Optimized for inline selection prompts in chat.
+
+<Tabs items={["Preview", "Code"]}>
+  <Tab>
+    <div className="not-prose">
+      <OptionList
+        options={[
+          { id: "csv", label: "CSV" },
+          { id: "json", label: "JSON" },
+          { id: "xlsx", label: "Excel (XLSX)" },
+        ]}
+        selectionMode="multi"
+        maxSelections={2}
+        footerActions={[
+          { id: "cancel", label: "Clear", variant: "ghost" },
+          { id: "confirm", label: "Export", variant: "default" },
+        ]}
+      />
+    </div>
+  </Tab>
+  <Tab>
+    ```tsx
+    import { OptionList } from "@/components/tool-ui/option-list";
+
+    export function Example() {
+      return (
+        <OptionList
+          options={[
+            { id: "csv", label: "CSV" },
+            { id: "json", label: "JSON" },
+            { id: "xlsx", label: "Excel (XLSX)" },
+          ]}
+          selectionMode="multi"
+          maxSelections={2}
+          footerActions={[
+            { id: "cancel", label: "Clear", variant: "ghost" },
+            { id: "confirm", label: "Export", variant: "default" },
+          ]}
+          onConfirm={(selection) => console.log(selection)}
+        />
+      );
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## When to Use Option List
+
+- **Good for:** File format selection, preference choices, confirmation prompts
+- **Not for:** Long lists (use DataTable), complex forms, free-text input
+
+## Key Features
+
+- **Single or multi-select**: Radio-style or checkbox-style selection
+- **Selection constraints**: Min/max selection limits
+- **Configurable actions**: Customizable footer buttons
+- **Controlled or uncontrolled**: Works with or without external state
+
+## Source and Install
+
+Copy `components/option-list` into your project next to your shadcn/ui components:
+
+<Files>
+  <Folder name="components" defaultOpen>
+    <Folder name="ui">
+      <File name="button.tsx" />
+      <File name="separator.tsx" />
+      <File name="..." />
+    </Folder>
+    <Folder name="option-list" defaultOpen>
+      <File name="option-list.tsx" />
+      <File name="schema.ts" />
+      <File name="index.tsx" />
+      <File name="_ui.tsx" />
+      <File name="_cn.ts" />
+    </Folder>
+  </Folder>
+</Files>
+
+### Download
+
+- [**Source on GitHub**](https://github.com/assistant-ui/tool-ui/tree/main/components/option-list)
+- [**Quick download (ZIP)**](https://download-directory.github.io/?url=https://github.com/assistant-ui/tool-ui/tree/main/components/option-list)
+
+## Usage
+
+```tsx
+// Backend tool
+import { tool } from 'ai';
+import { z } from 'zod';
+import { serializableOptionListSchema } from '@tool-ui/option-list';
+
+const selectFormat = tool({
+  description: 'Let user select export format(s)',
+  inputSchema: z.object({ formats: z.array(z.string()) }),
+  outputSchema: serializableOptionListSchema,
+  async execute({ formats }) {
+    return {
+      options: formats.map(f => ({ id: f, label: f.toUpperCase() })),
+      selectionMode: 'multi',
+      maxSelections: 2,
+    };
+  },
+});
+
+// Frontend with assistant-ui
+import { makeAssistantToolUI } from '@assistant-ui/react';
+import { OptionList } from '@tool-ui/option-list';
+
+export const SelectFormatUI = makeAssistantToolUI({
+  toolName: 'selectFormat',
+  render: ({ result }) => (
+    <OptionList
+      {...result}
+      onConfirm={(selection) => {
+        console.log('Selected formats:', selection);
+      }}
+    />
+  ),
+});
+```
+
+## Props
+
+<TypeTable
+type={{
+options: { description: "List of selectable options", type: "OptionListOption[]", required: true },
+selectionMode: { description: "Selection behavior", type: "'single' | 'multi'", default: "'multi'" },
+value: { description: "Controlled selection value", type: "string | string[] | null" },
+defaultValue: { description: "Initial selection (uncontrolled)", type: "string | string[] | null" },
+minSelections: { description: "Minimum required selections", type: "number", default: "1" },
+maxSelections: { description: "Maximum allowed selections", type: "number" },
+footerActions: { description: "Footer action buttons", type: "Action[] | ActionsConfig" },
+onChange: { description: "Selection change handler", type: "(value) => void" },
+onConfirm: { description: "Confirm button handler", type: "(value) => void | Promise<void>" },
+onCancel: { description: "Cancel/clear handler", type: "() => void" },
+}}
+/>
+
+## Option Schema
+
+<TypeTable
+type={{
+id: { description: "Unique option identifier", type: "string", required: true },
+label: { description: "Display text", type: "string", required: true },
+description: { description: "Secondary text", type: "string" },
+icon: { description: "Optional icon element", type: "ReactNode" },
+disabled: { description: "Disable this option", type: "boolean" },
+}}
+/>

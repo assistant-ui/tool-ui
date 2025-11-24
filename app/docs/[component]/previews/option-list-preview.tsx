@@ -5,13 +5,13 @@ import { useSearchParams, usePathname, useRouter } from "next/navigation";
 import { ComponentPreviewShell } from "../component-preview-shell";
 import { PresetSelector } from "../../_components/preset-selector";
 import { CodePanel } from "../../_components/code-panel";
-import { SocialPost } from "@/components/tool-ui/social-post";
+import { OptionList } from "@/components/tool-ui/option-list";
 import {
-  SocialPostPresetName,
-  socialPostPresets,
-} from "@/lib/presets/social-post";
+  OptionListPresetName,
+  optionListPresets,
+} from "@/lib/presets/option-list";
 
-export function SocialPostPreview({
+export function OptionListPreview({
   withContainer = true,
 }: {
   withContainer?: boolean;
@@ -21,35 +21,38 @@ export function SocialPostPreview({
   const searchParams = useSearchParams();
 
   const presetParam = searchParams.get("preset");
-  const defaultPreset = "x";
-  const initialPreset: SocialPostPresetName =
-    presetParam && presetParam in socialPostPresets
-      ? (presetParam as SocialPostPresetName)
+  const defaultPreset = "export";
+  const initialPreset: OptionListPresetName =
+    presetParam && presetParam in optionListPresets
+      ? (presetParam as OptionListPresetName)
       : defaultPreset;
 
   const [currentPreset, setCurrentPreset] =
-    useState<SocialPostPresetName>(initialPreset);
+    useState<OptionListPresetName>(initialPreset);
   const [isLoading, setIsLoading] = useState(false);
+  const [selection, setSelection] = useState<string[] | string | null>(null);
 
   useEffect(() => {
     const presetParam = searchParams.get("preset");
     if (
       presetParam &&
-      presetParam in socialPostPresets &&
+      presetParam in optionListPresets &&
       presetParam !== currentPreset
     ) {
-      setCurrentPreset(presetParam as SocialPostPresetName);
+      setCurrentPreset(presetParam as OptionListPresetName);
       setIsLoading(false);
+      setSelection(null);
     }
   }, [searchParams, currentPreset]);
 
-  const currentConfig = socialPostPresets[currentPreset];
+  const currentConfig = optionListPresets[currentPreset];
 
   const handleSelectPreset = useCallback(
     (preset: unknown) => {
-      const presetName = preset as SocialPostPresetName;
+      const presetName = preset as OptionListPresetName;
       setCurrentPreset(presetName);
       setIsLoading(false);
+      setSelection(null);
 
       const params = new URLSearchParams(searchParams.toString());
       params.set("preset", presetName);
@@ -65,29 +68,30 @@ export function SocialPostPreview({
       onLoadingChange={setIsLoading}
       presetSelector={
         <PresetSelector
-          componentId="social-post"
+          componentId="option-list"
           currentPreset={currentPreset}
           onSelectPreset={handleSelectPreset}
         />
       }
-      renderPreview={(loading) => (
-        <div className="mx-auto" style={{ maxWidth: "600px" }}>
-          <SocialPost
-            {...currentConfig.post}
-            isLoading={loading}
-            onAction={(actionId) => {
-              console.log("Action:", actionId);
-              alert(`Action: ${actionId}`);
+      renderPreview={() => (
+        <div className="mx-auto" style={{ maxWidth: "420px" }}>
+          <OptionList
+            {...currentConfig.optionList}
+            value={selection}
+            onChange={setSelection}
+            onConfirm={(sel) => {
+              console.log("OptionList confirmed:", sel);
+              alert(`Selection confirmed: ${JSON.stringify(sel)}`);
             }}
           />
         </div>
       )}
-      renderCodePanel={(loading) => (
+      renderCodePanel={() => (
         <CodePanel
           className="h-full w-full"
-          componentId="social-post"
-          socialPostConfig={currentConfig}
-          isLoading={loading}
+          componentId="option-list"
+          optionListConfig={currentConfig}
+          optionListSelection={selection}
           mode="plain"
         />
       )}
