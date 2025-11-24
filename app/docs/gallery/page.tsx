@@ -1,9 +1,9 @@
 import Link from "next/link";
 import { DocsBorderedShell } from "@/app/docs/_components/docs-bordered-shell";
-import { DataTable } from "@/components/data-table";
-import { MediaCard } from "@/components/media-card";
-import { SocialPost } from "@/components/social-post";
-import { DecisionPrompt } from "@/components/decision-prompt";
+import { DataTable } from "@/components/tool-ui/data-table";
+import { MediaCard } from "@/components/tool-ui/media-card";
+import { SocialPost } from "@/components/tool-ui/social-post";
+import { OptionList } from "@/components/tool-ui/option-list";
 import { ZenField } from "@/app/components/zen-field";
 import { sampleStocks, sampleMetrics } from "@/lib/sample-data";
 import { mediaCardPresets } from "@/lib/media-card-presets";
@@ -12,7 +12,7 @@ import {
   sampleInstagram,
   sampleLinkedIn,
 } from "@/lib/social-post-presets";
-import { decisionPromptPresets } from "@/lib/decision-prompt-presets";
+import { optionListPresets } from "@/lib/presets/option-list";
 import { ArrowRightIcon } from "lucide-react";
 
 export default function ComponentsGalleryPage() {
@@ -56,11 +56,11 @@ export default function ComponentsGalleryPage() {
           </div>
 
           <div className="mb-5 break-inside-avoid 2xl:mb-5">
-            <DecisionPrompt {...decisionPromptPresets.destructive.prompt} />
+            <OptionList {...optionListPresets.export.optionList} />
           </div>
 
           <div className="mb-5 break-inside-avoid 2xl:mb-5">
-            <DecisionPrompt {...decisionPromptPresets["multi-choice"].prompt} />
+            <OptionList {...optionListPresets.travel.optionList} />
           </div>
 
           <div className="mb-5 break-inside-avoid 2xl:mb-5">

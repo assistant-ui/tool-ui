@@ -3,8 +3,11 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { cn } from "@/lib/utils";
-import { DataTable, type Column } from "@/components/data-table";
-import { MediaCard, type SerializableMediaCard } from "@/components/media-card";
+import { DataTable, type Column } from "@/components/tool-ui/data-table";
+import {
+  MediaCard,
+  type SerializableMediaCard,
+} from "@/components/tool-ui/media-card";
 
 // Support ticket type for DataTable demo
 type SupportTicket = {
@@ -19,11 +22,8 @@ type SupportTicket = {
 import {
   SocialPost,
   type SerializableSocialPost,
-} from "@/components/social-post";
-import {
-  DecisionPrompt,
-  type DecisionPromptAction,
-} from "@/components/decision-prompt";
+} from "@/components/tool-ui/social-post";
+import type { Action } from "@/components/tool-ui/shared";
 
 type BubbleProps = {
   role: "user" | "assistant";
@@ -297,10 +297,10 @@ const SOCIAL_POST: SerializableSocialPost = {
   language: "en-US",
 };
 
-const DECISION_ACTIONS: DecisionPromptAction[] = [
-  { id: "cancel", label: "Discard", variant: "ghost" },
-  { id: "edit", label: "Revise", variant: "outline" },
-  { id: "send", label: "Post Now", variant: "default" },
+const DRAFT_ACTIONS: Action[] = [
+  { id: "discard", label: "Discard", variant: "ghost" },
+  { id: "edit", label: "Edit", variant: "outline" },
+  { id: "post", label: "Post Now", variant: "default" },
 ];
 
 function createSceneConfigs(): SceneConfig[] {
@@ -327,20 +327,20 @@ function createSceneConfigs(): SceneConfig[] {
       toolUI: <MediaCard {...MEDIA_CARD} maxWidth="420px" />,
       toolFallbackHeight: 260,
     },
-    // Scene 3: Open Source Release / SocialPost + DecisionPrompt
+    // Scene 3: Open Source Release / SocialPost with footer actions
     {
       userMessage: "Draft a tweet about our open-source release",
       preamble: "Here's a draft announcement:",
       toolUI: (
-        <div className="w-full max-w-[600px] min-w-0 space-y-3">
-          <SocialPost {...SOCIAL_POST} className="w-full" maxWidth="100%" />
-          <DecisionPrompt
-            prompt="Ready to announce?"
-            actions={DECISION_ACTIONS}
-            align="right"
-            layout="inline"
-          />
-        </div>
+        <SocialPost
+          {...SOCIAL_POST}
+          className="w-full"
+          maxWidth="600px"
+          footerActions={{
+            items: DRAFT_ACTIONS,
+            align: "right",
+          }}
+        />
       ),
       toolFallbackHeight: 480,
     },

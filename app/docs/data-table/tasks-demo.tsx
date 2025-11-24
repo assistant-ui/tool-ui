@@ -1,6 +1,10 @@
 "use client";
 
-import { Column, DataTable, DataTableRowData } from "@/components/data-table";
+import {
+  Column,
+  DataTable,
+  DataTableRowData,
+} from "@/components/tool-ui/data-table";
 import { getMockTasks } from "@/lib/mock/tasks";
 import { useEffect, useState } from "react";
 

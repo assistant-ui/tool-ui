@@ -1,5 +1,5 @@
 import { DocsHeader } from "../_components/docs-header";
-import { MediaCard } from "@/components/media-card";
+import { MediaCard } from "@/components/tool-ui/media-card";
 
 <DocsHeader title="Media Card" role="Information" />
 
@@ -22,7 +22,7 @@ An information surface for links, images, video, and audio. Optimized for inline
   </Tab>
   <Tab>
     ```tsx
-    import { MediaCard } from "@/components/media-card";
+    import { MediaCard } from "@/components/tool-ui/media-card";
 
     export function Example() {
       return (
@@ -53,7 +53,7 @@ An information surface for links, images, video, and audio. Optimized for inline
 - **Smart thumbnails**: Aspect ratios and object-fit control
 - **Metadata display**: Domain, source, duration, author
 - **Click-through support**: Whole card as clickable area
-- **Inline actions**: Buttons for open, save, share
+- **Inline actions + CTA row**: Built-in media controls plus footer [Contextual Actions](/docs/contextual-actions)
 
 
 ## Source and Install
@@ -120,19 +120,41 @@ export const PreviewLinkUI = makeAssistantToolUI({
     <MediaCard
       {...result}
       maxWidth="420px"
-      actions={[
-        { id: 'open', label: 'Open' },
-        { id: 'save', label: 'Save' },
-      ]}
-      onAction={(id, card) => {
-        if (id === 'open') window.open(card.href, '_blank');
-        // Handle other actions
+      footerActions={{
+        items: [
+          { id: 'save', label: 'Save', variant: 'secondary' },
+          { id: 'open', label: 'Open', variant: 'default' },
+        ],
+        align: 'right',
+      }}
+      onBeforeFooterAction={(id) =>
+        id === 'open' ? window.confirm('Open link?') : true
+      }
+      onFooterAction={(id) => {
+        if (id === 'open' && result.href) window.open(result.href, '_blank');
       }}
     />
   ),
 });
 ```
 
+## Contextual footer actions
+
+Use `footerActions` for a footer CTA row powered by the shared Contextual Actions API (array or config form). `card` below is any `SerializableMediaCard` payload.
+
+```tsx
+<MediaCard
+  {...card}
+  footerActions={[
+    { id: "bookmark", label: "Save", variant: "secondary" },
+    { id: "open", label: "Open", variant: "default", confirmLabel: "Confirm" },
+  ]}
+  onBeforeFooterAction={(id) => (id === "open" ? window.confirm("Open link?") : true)}
+  onFooterAction={(id) => console.log(id)}
+/>
+```
+
+When `footerActions` come from a tool response, keep them serializable (no icons). Add icons or runtime-only tweaks in your render layer if needed.
 
 
 ## Props
@@ -149,7 +171,9 @@ ratio: { description: "Aspect ratio", type: "'16:9' | '4:3' | '1:1' | 'auto'", d
 meta: { description: "Key/value metadata", type: "Record<string, string>" },
 badge: { description: "Status badge", type: "string" },
 maxWidth: { description: "Max width", type: "string (CSS)", default: "'100%'" },
-actions: { description: "Action buttons", type: "Action[]" },
-onAction: { description: "Click handler", type: "(id, card) => void" },
+footerActions: { description: "Contextual footer actions (array or { items; align?; layout?; confirmTimeout? })", type: "Action[] | ActionsConfig" },
+onBeforeFooterAction: { description: "Preflight for footer actions (return false to cancel)", type: "(id) => boolean | Promise<boolean>" },
+onFooterAction: { description: "Footer action handler", type: "(id) => void | Promise<void>" },
+onMediaAction: { description: "Built-in media action handler (open, copy link, download, play/pause)", type: "(id, card) => void" },
 }}
 />

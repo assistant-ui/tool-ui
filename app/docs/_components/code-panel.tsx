@@ -3,7 +3,8 @@
 import { DataTableConfig } from "@/lib/sample-data";
 import { SocialPostConfig } from "@/lib/social-post-presets";
 import { MediaCardConfig } from "@/lib/media-card-presets";
-import { DecisionPromptConfig } from "@/lib/decision-prompt-presets";
+import { OptionListConfig } from "@/lib/presets/option-list";
+import type { OptionListSelection } from "@/components/tool-ui/option-list";
 import { DynamicCodeBlock } from "fumadocs-ui/components/dynamic-codeblock";
 
 interface CodePanelProps {
@@ -11,9 +12,8 @@ interface CodePanelProps {
   config?: DataTableConfig;
   socialPostConfig?: SocialPostConfig;
   mediaCardConfig?: MediaCardConfig;
-  decisionPromptConfig?: DecisionPromptConfig;
-  decisionPromptSelectedAction?: string;
-  decisionPromptSelectedActions?: string[];
+  optionListConfig?: OptionListConfig;
+  optionListSelection?: OptionListSelection;
   mediaCardMaxWidth?: string;
   sort?: { by?: string; direction?: "asc" | "desc" };
   isLoading?: boolean;
@@ -27,9 +27,8 @@ export function CodePanel({
   config,
   socialPostConfig,
   mediaCardConfig,
-  decisionPromptConfig,
-  decisionPromptSelectedAction,
-  decisionPromptSelectedActions,
+  optionListConfig,
+  optionListSelection,
   mediaCardMaxWidth,
   sort,
   isLoading,
@@ -257,85 +256,49 @@ export function CodePanel({
     return `<MediaCard\n${props.join("\n")}\n/>`;
   };
 
-  const generateDecisionPromptCode = () => {
-    if (!decisionPromptConfig) return "";
-    const prompt = decisionPromptConfig.prompt;
+  const generateOptionListCode = () => {
+    if (!optionListConfig) return "";
+    const list = optionListConfig.optionList;
     const props: string[] = [];
 
-    props.push(`  prompt="${prompt.prompt}"`);
+    props.push(
+      `  options={${JSON.stringify(list.options, null, 4).replace(/\n/g, "\n  ")}}`,
+    );
 
-    if (prompt.description) {
-      props.push(`  description="${prompt.description}"`);
+    if (list.selectionMode && list.selectionMode !== "multi") {
+      props.push(`  selectionMode="${list.selectionMode}"`);
+    }
+
+    if (list.minSelections && list.minSelections !== 1) {
+      props.push(`  minSelections={${list.minSelections}}`);
+    }
+
+    if (list.maxSelections) {
+      props.push(`  maxSelections={${list.maxSelections}}`);
+    }
+
+    if (optionListSelection) {
+      const selectionValue = Array.isArray(optionListSelection)
+        ? JSON.stringify(optionListSelection)
+        : optionListSelection === null
+          ? "null"
+          : `"${optionListSelection}"`;
+      props.push(`  value={${selectionValue}}`);
+    }
+
+    if (list.footerActions) {
+      props.push(
+        `  footerActions={${JSON.stringify(list.footerActions, null, 4).replace(/\n/g, "\n  ")}}`,
+      );
     }
 
     props.push(
-      `  actions={${JSON.stringify(prompt.actions, null, 4).replace(/\n/g, "\n  ")}}`,
+      `  onConfirm={(selection) => {\n    console.log("Selection:", selection);\n    // Handle selection here\n  }}`,
     );
 
-    // Multi-select mode
-    if (prompt.multiSelect) {
-      if (
-        decisionPromptSelectedActions &&
-        decisionPromptSelectedActions.length > 0
-      ) {
-        props.push(
-          `  selectedActions={${JSON.stringify(decisionPromptSelectedActions)}}`,
-        );
-      }
+    props.push(`  onCancel={() => {\n    // Handle cancel here\n  }}`);
 
-      if (prompt.align && prompt.align !== "right") {
-        props.push(`  align="${prompt.align}"`);
-      }
-
-      if (prompt.layout && prompt.layout !== "inline") {
-        props.push(`  layout="${prompt.layout}"`);
-      }
-
-      props.push(`  multiSelect={true}`);
-
-      if (prompt.minSelections && prompt.minSelections !== 1) {
-        props.push(`  minSelections={${prompt.minSelections}}`);
-      }
-
-      if (prompt.maxSelections) {
-        props.push(`  maxSelections={${prompt.maxSelections}}`);
-      }
-
-      if (prompt.confirmLabel && prompt.confirmLabel !== "Confirm") {
-        props.push(`  confirmLabel="${prompt.confirmLabel}"`);
-      }
-
-      if (prompt.cancelLabel && prompt.cancelLabel !== "Cancel") {
-        props.push(`  cancelLabel="${prompt.cancelLabel}"`);
-      }
-
-      props.push(
-        `  onMultiAction={(actionIds) => {\n    console.log("Selected actions:", actionIds);\n    // Handle multi-action here\n  }}`,
-      );
-    } else {
-      // Single-select mode
-      if (decisionPromptSelectedAction) {
-        props.push(`  selectedAction="${decisionPromptSelectedAction}"`);
-      }
-
-      if (prompt.align && prompt.align !== "right") {
-        props.push(`  align="${prompt.align}"`);
-      }
-
-      if (prompt.layout && prompt.layout !== "inline") {
-        props.push(`  layout="${prompt.layout}"`);
-      }
-
-      if (prompt.confirmTimeout && prompt.confirmTimeout !== 3000) {
-        props.push(`  confirmTimeout={${prompt.confirmTimeout}}`);
-      }
-
-      props.push(
-        `  onAction={(actionId) => {\n    console.log("Action:", actionId);\n    // Handle action here\n  }}`,
-      );
-    }
-
-    return `<DecisionPrompt\n${props.join("\n")}\n/>`;
+    return `<OptionList\n${props.join("\n")}\n/>`;
   };
 
   const generateCode = () => {
@@ -345,8 +308,8 @@ export function CodePanel({
       return generateSocialPostCode();
     } else if (componentId === "media-card") {
       return generateMediaCardCode();
-    } else if (componentId === "decision-prompt") {
-      return generateDecisionPromptCode();
+    } else if (componentId === "option-list") {
+      return generateOptionListCode();
     }
     return "";
   };

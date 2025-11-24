@@ -71,7 +71,7 @@ export default function Chat() {
 "use client";
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport, lastAssistantMessageIsCompleteWithToolCalls } from "ai";
-import { DataTable } from "@/components/data-table";
+import { DataTable } from "@/components/tool-ui/data-table";
 import { useState } from "react";
 
 export function Chat() {
@@ -139,4 +139,3 @@ export function CopyMarkdownButton() {
     </Button>
   );
 }
-

@@ -1,4 +1,8 @@
-import type { Column, Action, RowPrimitive } from "@/components/data-table";
+import type {
+  Column,
+  Action,
+  RowPrimitive,
+} from "@/components/tool-ui/data-table";
 
 type GenericRow = Record<string, RowPrimitive>;
 export type SortState = { by?: string; direction?: "asc" | "desc" };

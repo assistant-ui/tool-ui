@@ -5,7 +5,7 @@ import { useSearchParams, usePathname, useRouter } from "next/navigation";
 import { ComponentPreviewShell } from "../component-preview-shell";
 import { PresetSelector } from "../../_components/preset-selector";
 import { CodePanel } from "../../_components/code-panel";
-import { SocialPost } from "@/components/social-post";
+import { SocialPost } from "@/components/tool-ui/social-post";
 import {
   SocialPostPresetName,
   socialPostPresets,
@@ -73,7 +73,7 @@ export function SocialPostPreview({ withContainer = true }: { withContainer?: bo
           <SocialPost
             {...currentConfig.post}
             isLoading={loading}
-            onAction={(actionId) => {
+            onPostAction={(actionId) => {
               console.log("Action:", actionId);
               alert(`Action: ${actionId}`);
             }}
@@ -87,9 +87,6 @@ export function SocialPostPreview({ withContainer = true }: { withContainer?: bo
           config={undefined}
           socialPostConfig={currentConfig}
           mediaCardConfig={undefined}
-          decisionPromptConfig={undefined}
-          decisionPromptSelectedAction={undefined}
-          decisionPromptSelectedActions={[]}
           mediaCardMaxWidth={undefined}
           sort={{}}
           isLoading={loading}

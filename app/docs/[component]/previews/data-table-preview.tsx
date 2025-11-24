@@ -5,12 +5,12 @@ import { useSearchParams, usePathname, useRouter } from "next/navigation";
 import { ComponentPreviewShell } from "../component-preview-shell";
 import { PresetSelector } from "../../_components/preset-selector";
 import { CodePanel } from "../../_components/code-panel";
-import { DataTable } from "@/components/data-table";
+import { DataTable } from "@/components/tool-ui/data-table";
 import type {
   Action,
   DataTableRowData,
   RowData,
-} from "@/components/data-table";
+} from "@/components/tool-ui/data-table";
 import { PresetName, presets, SortState } from "@/lib/sample-data";
 
 export function DataTablePreview({ withContainer = true }: { withContainer?: boolean }) {
@@ -119,9 +119,6 @@ export function DataTablePreview({ withContainer = true }: { withContainer?: boo
           config={currentConfig}
           socialPostConfig={undefined}
           mediaCardConfig={undefined}
-          decisionPromptConfig={undefined}
-          decisionPromptSelectedAction={undefined}
-          decisionPromptSelectedActions={[]}
           mediaCardMaxWidth={undefined}
           sort={sort}
           isLoading={loading}

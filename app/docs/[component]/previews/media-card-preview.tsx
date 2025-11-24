@@ -5,7 +5,7 @@ import { useSearchParams, usePathname, useRouter } from "next/navigation";
 import { ComponentPreviewShell } from "../component-preview-shell";
 import { PresetSelector } from "../../_components/preset-selector";
 import { CodePanel } from "../../_components/code-panel";
-import { MediaCard } from "@/components/media-card";
+import { MediaCard } from "@/components/tool-ui/media-card";
 import {
   MediaCardPresetName,
   mediaCardPresets,
@@ -74,7 +74,7 @@ export function MediaCardPreview({ withContainer = true }: { withContainer?: boo
           <MediaCard
             {...currentConfig.card}
             isLoading={loading}
-            onAction={(actionId) => {
+            onMediaAction={(actionId) => {
               console.log("MediaCard action:", actionId);
             }}
             onNavigate={(href) => {
@@ -90,9 +90,6 @@ export function MediaCardPreview({ withContainer = true }: { withContainer?: boo
           config={undefined}
           socialPostConfig={undefined}
           mediaCardConfig={currentConfig}
-          decisionPromptConfig={undefined}
-          decisionPromptSelectedAction={undefined}
-          decisionPromptSelectedActions={[]}
           mediaCardMaxWidth="420px"
           sort={{}}
           isLoading={loading}

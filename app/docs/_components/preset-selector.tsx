@@ -15,16 +15,16 @@ import {
   mediaCardPresetDescriptions,
 } from "@/lib/media-card-presets";
 import {
-  DecisionPromptPresetName,
-  decisionPromptPresetDescriptions,
-} from "@/lib/decision-prompt-presets";
+  OptionListPresetName,
+  optionListPresetDescriptions,
+} from "@/lib/presets/option-list";
 import { cn } from "@/lib/utils";
 
 type ComponentPreset =
   | PresetName
   | SocialPostPresetName
   | MediaCardPresetName
-  | DecisionPromptPresetName;
+  | OptionListPresetName;
 
 interface PresetSelectorProps {
   componentId: string;
@@ -54,12 +54,10 @@ const mediaCardPresetNames: MediaCardPresetName[] = [
   "audio",
 ];
 
-const decisionPromptPresetNames: DecisionPromptPresetName[] = [
-  "multi-choice",
-  "binary",
-  "destructive",
-  "async",
-  "workflow",
+const optionListPresetNames: OptionListPresetName[] = [
+  "export",
+  "travel",
+  "notifications",
 ];
 
 export function PresetSelector({
@@ -74,7 +72,7 @@ export function PresetSelector({
         ? socialPostPresetNames
         : componentId === "media-card"
           ? mediaCardPresetNames
-          : decisionPromptPresetNames;
+          : optionListPresetNames;
 
   const descriptions =
     componentId === "data-table"
@@ -83,7 +81,7 @@ export function PresetSelector({
         ? socialPostPresetDescriptions
         : componentId === "media-card"
           ? mediaCardPresetDescriptions
-          : decisionPromptPresetDescriptions;
+          : optionListPresetDescriptions;
 
   return (
     <ItemGroup className="gap-1">
