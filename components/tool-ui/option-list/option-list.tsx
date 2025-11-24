@@ -6,7 +6,7 @@ import type {
   OptionListSelection,
   OptionListOption,
 } from "./schema";
-import { useActionButtons } from "../shared/use-action-buttons";
+import { useActionButtons, normalizeActionsConfig } from "../shared";
 import { Button, Separator } from "./_ui";
 import { cn } from "./_cn";
 import { Check } from "lucide-react";
@@ -54,8 +54,6 @@ function areSetsEqual(a: Set<string>, b: Set<string>) {
 export function OptionList({
   options,
   selectionMode = "multi",
-  confirmLabel = "Confirm",
-  cancelLabel = "Clear",
   minSelections = 1,
   maxSelections,
   value,
@@ -63,6 +61,7 @@ export function OptionList({
   onChange,
   onConfirm,
   onCancel,
+  footerActions,
   className,
 }: OptionListProps) {
   const effectiveMaxSelections = selectionMode === "single" ? 1 : maxSelections;
@@ -152,16 +151,21 @@ export function OptionList({
     onCancel?.();
   }, [onCancel, updateSelection]);
 
-  const footerActions = useMemo(
-    () => [
-      { id: "cancel", label: cancelLabel, variant: "ghost" as const },
-      { id: "confirm", label: confirmLabel, variant: "default" as const },
-    ],
-    [cancelLabel, confirmLabel],
-  );
+  const normalizedFooterActions = useMemo(() => {
+    const normalized = normalizeActionsConfig(footerActions);
+    if (normalized) return normalized;
+    return {
+      items: [
+        { id: "cancel", label: "Clear", variant: "ghost" as const },
+        { id: "confirm", label: "Confirm", variant: "default" as const },
+      ],
+      align: "right" as const,
+      layout: "inline" as const,
+    } satisfies ReturnType<typeof normalizeActionsConfig>;
+  }, [footerActions]);
 
   const { actions: resolvedFooterActions, runAction } = useActionButtons({
-    actions: footerActions,
+    actions: normalizedFooterActions.items,
     onBeforeAction: (id) => {
       if (id === "confirm") {
         return selectedCount >= minSelections && selectedCount > 0;
@@ -178,6 +182,7 @@ export function OptionList({
         handleCancel();
       }
     },
+    confirmTimeout: normalizedFooterActions.confirmTimeout,
   });
 
   const isConfirmDisabled =
@@ -244,7 +249,7 @@ export function OptionList({
                 onClick={() => toggleSelection(option.id)}
                 disabled={isDisabled}
                 className={cn(
-                  "peer group relative min-h-[44px] w-full justify-start text-left text-sm font-medium",
+                  "peer group relative min-h-[50px] w-full justify-start text-left text-sm font-medium",
                   "rounded-none border-0 bg-transparent px-0 text-base shadow-none transition-none hover:bg-transparent! @[28rem]:text-sm",
                 )}
               >
@@ -271,7 +276,14 @@ export function OptionList({
         })}
       </div>
 
-      <div className={cn("flex items-center justify-end gap-4")}>
+      <div
+        className={cn(
+          "flex items-center gap-4",
+          normalizedFooterActions.layout === "stack"
+            ? "flex-col items-end"
+            : "flex-row justify-end",
+        )}
+      >
         {resolvedFooterActions.map((action) => {
           const isConfirm = action.id === "confirm";
           const gatedDisabled =

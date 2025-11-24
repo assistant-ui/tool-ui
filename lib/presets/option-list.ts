@@ -15,10 +15,12 @@ const exportPreset: OptionListConfig = {
       { id: "pdf", label: "PDF" },
     ],
     selectionMode: "multi",
-    confirmLabel: "Export",
-    cancelLabel: "Clear",
     minSelections: 1,
     maxSelections: 3,
+    footerActions: [
+      { id: "cancel", label: "Clear", variant: "ghost" },
+      { id: "confirm", label: "Export", variant: "default" },
+    ],
   },
 };
 
@@ -38,7 +40,10 @@ const travelPreset: OptionListConfig = {
       },
     ],
     selectionMode: "single",
-    confirmLabel: "Continue",
+    footerActions: [
+      { id: "cancel", label: "Back", variant: "ghost" },
+      { id: "confirm", label: "Continue", variant: "default" },
+    ],
   },
 };
 
@@ -51,10 +56,12 @@ const notificationsPreset: OptionListConfig = {
       { id: "slack", label: "Slack" },
     ],
     selectionMode: "multi",
-    confirmLabel: "Save",
-    cancelLabel: "Reset",
     minSelections: 1,
     maxSelections: 2,
+    footerActions: [
+      { id: "cancel", label: "Reset", variant: "ghost" },
+      { id: "confirm", label: "Save", variant: "default" },
+    ],
   },
 };
 

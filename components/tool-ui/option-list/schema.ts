@@ -1,5 +1,11 @@
 import { z } from "zod";
 import type { ReactNode } from "react";
+import type { Action, ActionsConfig, ActionsProp } from "../shared";
+import {
+  ActionSchema,
+  SerializableActionSchema,
+  SerializableActionsConfigSchema,
+} from "../shared";
 
 export const OptionListOptionSchema = z.object({
   id: z.string().min(1),
@@ -18,8 +24,9 @@ export const OptionListPropsSchema = z.object({
   defaultValue: z
     .union([z.array(z.string()), z.string(), z.null()])
     .optional(),
-  confirmLabel: z.string().optional(),
-  cancelLabel: z.string().optional(),
+  footerActions: z
+    .union([z.array(ActionSchema), SerializableActionsConfigSchema])
+    .optional(),
   minSelections: z.number().min(0).optional(),
   maxSelections: z.number().min(1).optional(),
   className: z.string().optional(),
@@ -38,10 +45,14 @@ export type OptionListProps = Omit<
   onChange?: (value: OptionListSelection) => void;
   onConfirm?: (value: OptionListSelection) => void | Promise<void>;
   onCancel?: () => void;
+  footerActions?: ActionsProp;
 };
 
 export const SerializableOptionListSchema = OptionListPropsSchema.extend({
   options: z.array(OptionListOptionSchema.omit({ icon: true })),
+  footerActions: z
+    .union([z.array(SerializableActionSchema), SerializableActionsConfigSchema])
+    .optional(),
 });
 
 export type SerializableOptionList = z.infer<typeof SerializableOptionListSchema>;

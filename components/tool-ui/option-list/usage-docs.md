@@ -20,13 +20,33 @@ export function ExportSelector() {
     <OptionList
       options={options}
       selectionMode="multi"
-      confirmLabel="Export"
-      cancelLabel="Clear"
       onConfirm={(ids) => console.log(ids)}
+      footerActions={[
+        { id: "cancel", label: "Clear", variant: "ghost" },
+        { id: "confirm", label: "Export", variant: "default" },
+      ]}
     />
   );
 }
 ```
+
+### Custom footer actions
+
+Uses the shared Contextual Actions semantics. Gating (minSelections) still applies to the `confirm` action.
+
+```tsx
+<OptionList
+  options={options}
+  footerActions={[
+    { id: "cancel", label: "Reset", variant: "ghost" },
+    { id: "confirm", label: "Apply", variant: "default", confirmLabel: "Confirm" },
+  ]}
+  minSelections={1}
+  onConfirm={(ids) => applyFilters(ids)}
+  onCancel={() => clearFilters()}
+/>
+```
+
 
 ### Single-select variant
 
@@ -54,8 +74,7 @@ export function ExportSelector() {
 | `onChange` | `(value) => void` | — | Fired on every toggle. |
 | `onConfirm` | `(value) => void \| Promise<void>` | — | Fired on confirm. |
 | `onCancel` | `() => void` | — | Fired on clear. |
-| `confirmLabel` | `string` | `"Confirm"` | Confirm button text. |
-| `cancelLabel` | `string` | `"Clear"` | Cancel/clear button text. |
+| `footerActions` | `Action[] \| ActionsConfig` | — | Optional custom CTA row; defaults to Cancel/Confirm. Uses shared Contextual Actions semantics (align/layout/confirmTimeout supported). |
 | `minSelections` | `number` | `1` | Disables confirm until this count is met. |
 | `maxSelections` | `number` | — | Caps selections (auto-set to 1 in `single` mode). |
 | `align` | — | — | Removed (footer buttons are right-aligned by default). |

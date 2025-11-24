@@ -269,12 +269,10 @@ export function CodePanel({
       props.push(`  selectionMode="${optionList.selectionMode}"`);
     }
 
-    if (optionList.confirmLabel && optionList.confirmLabel !== "Confirm") {
-      props.push(`  confirmLabel="${optionList.confirmLabel}"`);
-    }
-
-    if (optionList.cancelLabel && optionList.cancelLabel !== "Clear") {
-      props.push(`  cancelLabel="${optionList.cancelLabel}"`);
+    if (optionList.footerActions) {
+      props.push(
+        `  footerActions={${JSON.stringify(optionList.footerActions, null, 4).replace(/\n/g, "\n  ")}}`,
+      );
     }
 
     if (optionList.minSelections && optionList.minSelections !== 1) {
