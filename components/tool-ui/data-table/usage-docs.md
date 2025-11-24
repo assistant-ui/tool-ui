@@ -158,6 +158,32 @@ export default function Example() {
 
 ---
 
+### Footer actions (shared actions API)
+
+`tableActions` accepts either an array of actions or an object with inline layout config:
+
+```tsx
+// Array form
+tableActions={[
+  { id: "approve", label: "Approve", variant: "default" },
+  { id: "reject", label: "Reject", variant: "destructive", confirmLabel: "Confirm" },
+]}
+
+// Config form with layout/align/confirm timeout
+tableActions={{
+  items: [
+    { id: "export", label: "Export CSV", variant: "secondary" },
+    { id: "sync", label: "Sync", variant: "default", confirmLabel: "Confirm" },
+  ],
+  align: "right",
+  layout: "inline",
+  confirmTimeout: 3000,
+}}
+
+Handlers: `onTableAction(id)` and optional `onBeforeTableAction(id)` (return false to cancel).
+
+---
+
 ### `Column<T>` (declarative columns)
 
 ```tsx

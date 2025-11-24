@@ -15,6 +15,14 @@ import {
 import { optionListPresets } from "@/lib/presets/option-list";
 import { ArrowRightIcon } from "lucide-react";
 
+const socialFooterActions = {
+  items: [
+    { id: "save", label: "Save draft", variant: "secondary" as const },
+    { id: "share", label: "Share", variant: "default" as const },
+  ],
+  align: "right" as const,
+};
+
 export default function ComponentsGalleryPage() {
   return (
     <DocsBorderedShell>
@@ -26,7 +34,12 @@ export default function ComponentsGalleryPage() {
           </div>
 
           <div className="mb-5 break-inside-avoid 2xl:mb-5">
-            <SocialPost {...sampleX.post} maxWidth="100%" />
+            <SocialPost
+              {...sampleX.post}
+              maxWidth="100%"
+              footerActions={socialFooterActions}
+              onAction={(id) => console.log("Social action:", id)}
+            />
           </div>
 
           <div className="mb-5 break-inside-avoid 2xl:mb-5">
@@ -52,7 +65,12 @@ export default function ComponentsGalleryPage() {
           </div>
 
           <div className="mb-5 break-inside-avoid 2xl:mb-5">
-            <SocialPost {...sampleInstagram.post} maxWidth="100%" />
+            <SocialPost
+              {...sampleInstagram.post}
+              maxWidth="100%"
+              footerActions={socialFooterActions}
+              onAction={(id) => console.log("Social action:", id)}
+            />
           </div>
 
           <div className="mb-5 break-inside-avoid 2xl:mb-5">
@@ -68,7 +86,12 @@ export default function ComponentsGalleryPage() {
           </div>
 
           <div className="mb-5 break-inside-avoid 2xl:mb-5">
-            <SocialPost {...sampleLinkedIn.post} maxWidth="100%" />
+            <SocialPost
+              {...sampleLinkedIn.post}
+              maxWidth="100%"
+              footerActions={socialFooterActions}
+              onAction={(id) => console.log("Social action:", id)}
+            />
           </div>
 
           <div className="mb-5 break-inside-avoid 2xl:mb-5">

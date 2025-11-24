@@ -3,6 +3,7 @@ import * as React from "react";
 import type { ReactNode } from "react";
 import type { SerializableSocialPost } from "./schema";
 import type { PlatformConfig } from "./platform";
+import type { ActionsProp } from "../shared";
 
 export interface SocialPostState {
   liked?: boolean;
@@ -28,6 +29,7 @@ export interface SocialPostClientProps {
   className?: string;
   variant?: "card" | "inline";
   maxWidth?: string;
+  footerActions?: ActionsProp;
   allowExternalNavigation?: boolean;
   actionOverrides?: SocialPostActionOverride[];
   defaultState?: SocialPostState;

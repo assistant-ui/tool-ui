@@ -4,6 +4,7 @@ export type {
   Action,
   SerializableAction,
   ActionsConfig,
+  SerializableActionsConfig,
 } from "./schema";
 export type { ActionsProp } from "./actions-config";
 export { normalizeActionsConfig } from "./actions-config";
@@ -12,4 +13,5 @@ export {
   SerializableActionSchema,
   ActionButtonsPropsSchema,
   SerializableActionsSchema,
+  SerializableActionsConfigSchema,
 } from "./schema";

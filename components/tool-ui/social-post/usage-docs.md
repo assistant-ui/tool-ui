@@ -185,6 +185,7 @@ interface SerializableSocialPost {
 | `className`               | `string`                                                       | —        | Additional wrapper classes.                                                                          |
 | `variant`                 | `"card" \| "inline"`                                           | `"card"` | `inline` removes padding/border so you can compose inside your own card stack.                       |
 | `maxWidth`                | `string`                                                       | —        | Applies `style={{ maxWidth }}` to the root `<article>`.                                              |
+| `footerActions`           | `Action[] \| { items; align?; layout?; confirmTimeout? }`      | —        | Optional CTA row rendered under the post using the shared actions API.                               |
 | `allowExternalNavigation` | `boolean`                                                      | `true`   | When `false`, links omit `target="_blank"` so hosts can intercept navigation.                        |
 | `actionOverrides`         | `SocialPostActionOverride[]`                                   | `[]`     | Replace labels/icons/variants for existing actions or inject new ones.                               |
 | `defaultState`            | `SocialPostState`                                              | `{}`     | Initial uncontrolled toggle state (liked, saved, etc.).                                              |
@@ -222,6 +223,7 @@ interface SocialPostActionOverride {
 - Each platform ships with sensible defaults (X: reply/repost/like/share/bookmark, etc.). If the payload includes `actions`, those take precedence.
 - Toggling is automatic for the `like`, `repost`, `save`/`bookmark`, and `follow` actions. Controlled mode lets you sync state back into your store.
 - Stats are displayed next to matching actions when counts are provided. For X, only the like button shows counts to match native UI expectations.
+- Footer CTAs: pass `footerActions` as an array or `{ items, align?, layout?, confirmTimeout? }`. It uses the shared `ActionButtons` under the post and respects `onBeforeAction`/`onAction`.
 
 ### Event hooks in practice
 

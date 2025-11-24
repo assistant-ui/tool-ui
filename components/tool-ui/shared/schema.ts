@@ -37,4 +37,15 @@ export type ActionsConfig = {
   confirmTimeout?: number;
 };
 
+export const SerializableActionsConfigSchema = z.object({
+  items: z.array(SerializableActionSchema).min(1),
+  align: z.enum(["left", "center", "right"]).optional(),
+  layout: z.enum(["inline", "stack"]).optional(),
+  confirmTimeout: z.number().positive().optional(),
+});
+
+export type SerializableActionsConfig = z.infer<
+  typeof SerializableActionsConfigSchema
+>;
+
 export type SerializableAction = z.infer<typeof SerializableActionSchema>;
