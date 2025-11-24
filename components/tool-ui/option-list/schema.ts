@@ -18,8 +18,6 @@ export const OptionListPropsSchema = z.object({
   defaultValue: z
     .union([z.array(z.string()), z.string(), z.null()])
     .optional(),
-  align: z.enum(["left", "center", "right"]).optional(),
-  layout: z.enum(["inline", "stack"]).optional(),
   confirmLabel: z.string().optional(),
   cancelLabel: z.string().optional(),
   minSelections: z.number().min(0).optional(),

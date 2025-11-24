@@ -1,17 +1,12 @@
 "use client";
 
-import {
-  useMemo,
-  useState,
-  useCallback,
-  useEffect,
-  Fragment,
-} from "react";
+import { useMemo, useState, useCallback, useEffect, Fragment } from "react";
 import type {
   OptionListProps,
   OptionListSelection,
   OptionListOption,
 } from "./schema";
+import { useActionButtons } from "../shared/use-action-buttons";
 import { Button, Separator } from "./_ui";
 import { cn } from "./_cn";
 import { Check } from "lucide-react";
@@ -32,11 +27,7 @@ function normalizeToSet(
   }
 
   const arr =
-    typeof value === "string"
-      ? [value]
-      : Array.isArray(value)
-        ? value
-        : [];
+    typeof value === "string" ? [value] : Array.isArray(value) ? value : [];
 
   return new Set(maxSelections ? arr.slice(0, maxSelections) : arr);
 }
@@ -63,8 +54,6 @@ function areSetsEqual(a: Set<string>, b: Set<string>) {
 export function OptionList({
   options,
   selectionMode = "multi",
-  align = "right",
-  layout = "inline",
   confirmLabel = "Confirm",
   cancelLabel = "Clear",
   minSelections = 1,
@@ -97,7 +86,6 @@ export function OptionList({
   );
 
   const selectedCount = selectedIds.size;
-  const [isExecuting, setIsExecuting] = useState(false);
 
   const updateSelection = useCallback(
     (next: Set<string>) => {
@@ -140,10 +128,7 @@ export function OptionList({
         if (isSelected) {
           next.delete(optionId);
         } else {
-          if (
-            effectiveMaxSelections &&
-            next.size >= effectiveMaxSelections
-          ) {
+          if (effectiveMaxSelections && next.size >= effectiveMaxSelections) {
             return;
           }
           next.add(optionId);
@@ -156,24 +141,10 @@ export function OptionList({
   );
 
   const handleConfirm = useCallback(async () => {
-    if (!onConfirm || isExecuting) return;
-
+    if (!onConfirm) return;
     if (selectedCount === 0 || selectedCount < minSelections) return;
-
-    try {
-      setIsExecuting(true);
-      await onConfirm(setToSelection(selectedIds, selectionMode));
-    } finally {
-      setIsExecuting(false);
-    }
-  }, [
-    isExecuting,
-    minSelections,
-    onConfirm,
-    selectedCount,
-    selectedIds,
-    selectionMode,
-  ]);
+    await onConfirm(setToSelection(selectedIds, selectionMode));
+  }, [minSelections, onConfirm, selectedCount, selectedIds, selectionMode]);
 
   const handleCancel = useCallback(() => {
     const empty = new Set<string>();
@@ -181,26 +152,37 @@ export function OptionList({
     onCancel?.();
   }, [onCancel, updateSelection]);
 
-  const alignClassButtons = {
-    left: "justify-start",
-    center: "justify-center",
-    right: "justify-end",
-  }[align];
+  const footerActions = useMemo(
+    () => [
+      { id: "cancel", label: cancelLabel, variant: "ghost" as const },
+      { id: "confirm", label: confirmLabel, variant: "default" as const },
+    ],
+    [cancelLabel, confirmLabel],
+  );
 
-  const actionsContainerLayout =
-    layout === "stack"
-      ? "flex-col"
-      : cn(
-          "flex-col",
-          "@[28rem]:flex-row @[28rem]:flex-wrap @[28rem]:divide-y @[28rem]:divide-x @[28rem]:divide-border",
-          align === "left" && "@[28rem]:justify-start",
-          align === "center" && "@[28rem]:justify-center",
-          align === "right" && "@[28rem]:justify-end",
-        );
+  const { actions: resolvedFooterActions, runAction } = useActionButtons({
+    actions: footerActions,
+    onBeforeAction: (id) => {
+      if (id === "confirm") {
+        return selectedCount >= minSelections && selectedCount > 0;
+      }
+      if (id === "cancel") {
+        return selectedCount > 0;
+      }
+      return true;
+    },
+    onAction: async (id) => {
+      if (id === "confirm") {
+        await handleConfirm();
+      } else if (id === "cancel") {
+        handleCancel();
+      }
+    },
+  });
 
   const isConfirmDisabled =
-    isExecuting || selectedCount < minSelections || selectedCount === 0;
-  const isCancelDisabled = isExecuting || selectedCount === 0;
+    selectedCount < minSelections || selectedCount === 0;
+  const isCancelDisabled = selectedCount === 0;
 
   const indicatorShape =
     selectionMode === "single" ? "rounded-full" : "rounded";
@@ -208,38 +190,30 @@ export function OptionList({
   const renderIndicator = (option: OptionListOption, isSelected: boolean) => (
     <div
       className={cn(
-        "flex h-4 w-4 shrink-0 items-center justify-center border-2 transition-colors",
+        "flex size-4 shrink-0 items-center justify-center border-2 transition-colors",
         indicatorShape,
-        isSelected &&
-          "border-primary bg-primary text-primary-foreground",
+        isSelected && "border-primary bg-primary text-primary-foreground",
         !isSelected && "border-muted-foreground/50",
         option.disabled && "opacity-50",
       )}
     >
-      {selectionMode === "multi" && isSelected && (
-        <Check className="h-3 w-3" />
-      )}
+      {selectionMode === "multi" && isSelected && <Check className="size-3" />}
       {selectionMode === "single" && isSelected && (
-        <span className="h-2 w-2 rounded-full bg-current" />
+        <span className="size-2 rounded-full bg-current" />
       )}
     </div>
   );
 
   return (
     <div
-      className={cn(
-        "flex flex-col gap-3",
-        "text-foreground",
-        className,
-      )}
+      className={cn("flex flex-col gap-3", "text-foreground", className)}
       data-slot="option-list"
       role="group"
       aria-label="Option list"
     >
       <div
         className={cn(
-          "group/list bg-card/60 flex w-full overflow-hidden rounded-2xl border px-5 py-2.5 shadow-xs",
-          actionsContainerLayout,
+          "group/list bg-card/60 flex w-full flex-col overflow-hidden rounded-2xl border px-5 py-2.5 shadow-xs",
         )}
         role="listbox"
         aria-multiselectable={selectionMode === "multi"}
@@ -251,26 +225,20 @@ export function OptionList({
             effectiveMaxSelections !== undefined &&
             selectedCount >= effectiveMaxSelections &&
             !isSelected;
-          const isDisabled =
-            option.disabled || isExecuting || isSelectionLocked;
+          const isDisabled = option.disabled || isSelectionLocked;
 
           return (
             <Fragment key={option.id}>
               {index > 0 && (
                 <Separator
-                  className={cn(
-                    "[&:has(+_:hover)]:opacity-0 [.peer:hover+&]:opacity-0",
-                    {
-                      "@[28rem]:hidden": layout === "inline",
-                    },
-                  )}
-                  orientation={layout === "stack" ? "horizontal" : "vertical"}
+                  className="[&:has(+_:hover)]:opacity-0 [.peer:hover+&]:opacity-0"
+                  orientation="horizontal"
                 />
               )}
               <Button
                 data-id={option.id}
                 variant="ghost"
-                size="sm"
+                size="lg"
                 role="option"
                 aria-selected={isSelected}
                 onClick={() => toggleSelection(option.id)}
@@ -278,12 +246,11 @@ export function OptionList({
                 className={cn(
                   "peer group relative min-h-[44px] w-full justify-start text-left text-sm font-medium",
                   "rounded-none border-0 bg-transparent px-0 text-base shadow-none transition-none hover:bg-transparent! @[28rem]:text-sm",
-                  { "@[28rem]:min-w-48 @[28rem]:flex-1": layout !== "stack" },
                 )}
               >
                 <span
                   className={cn(
-                    "bg-accent/60 group-active:bg-accent/80 absolute inset-0 -mx-3 -my-0.5 rounded-lg opacity-0 group-hover:opacity-100",
+                    "bg-primary/5 active:bg-primary/10 absolute inset-0 -mx-3 -my-0.5 rounded-lg opacity-0 group-hover:opacity-100",
                   )}
                 />
                 <div className="relative flex items-center gap-3">
@@ -304,56 +271,52 @@ export function OptionList({
         })}
       </div>
 
-      <div className={cn("flex items-center gap-4", alignClassButtons)}>
-        <Button
-          variant="ghost"
-          size="lg"
-          onClick={handleCancel}
-          disabled={isCancelDisabled}
-          className="text-base @[28rem]:px-3 @[28rem]:py-2 @[28rem]:text-sm"
-        >
-          {cancelLabel}
-        </Button>
-        <Button
-          variant="default"
-          size="lg"
-          onClick={handleConfirm}
-          disabled={isConfirmDisabled}
-          className="text-base @[28rem]:px-3 @[28rem]:py-2 @[28rem]:text-sm"
-        >
-          {isExecuting ? (
-            <>
-              <svg
-                className="mr-2 h-4 w-4 animate-spin"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-              >
-                <circle
-                  className="opacity-25"
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  stroke="currentColor"
-                  strokeWidth="4"
-                />
-                <path
-                  className="opacity-75"
-                  fill="currentColor"
-                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                />
-              </svg>
-              {confirmLabel}
-            </>
-          ) : (
-            <>
-              {confirmLabel}
-              {selectionMode === "multi" && selectedCount > 0 && (
-                <span>{selectedCount}</span>
-              )}
-            </>
-          )}
-        </Button>
+      <div className={cn("flex items-center justify-end gap-4")}>
+        {resolvedFooterActions.map((action) => {
+          const isConfirm = action.id === "confirm";
+          const gatedDisabled =
+            (isConfirm && isConfirmDisabled) ||
+            (!isConfirm && action.id === "cancel" && isCancelDisabled);
+
+          return (
+            <Button
+              key={action.id}
+              variant={action.variant === "ghost" ? "ghost" : "default"}
+              size="lg"
+              onClick={() => runAction(action.id)}
+              disabled={action.isDisabled || gatedDisabled}
+              className="text-base @[28rem]:px-3 @[28rem]:py-2 @[28rem]:text-sm"
+            >
+              {action.isLoading ? (
+                <svg
+                  className="mr-2 size-4 animate-spin"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  />
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  />
+                </svg>
+              ) : null}
+              {action.currentLabel}
+              {isConfirm &&
+                selectionMode === "multi" &&
+                selectedCount > 0 &&
+                !action.isLoading && <span>{selectedCount}</span>}
+            </Button>
+          );
+        })}
       </div>
     </div>
   );

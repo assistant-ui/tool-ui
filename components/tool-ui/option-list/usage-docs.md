@@ -58,5 +58,5 @@ export function ExportSelector() {
 | `cancelLabel` | `string` | `"Clear"` | Cancel/clear button text. |
 | `minSelections` | `number` | `1` | Disables confirm until this count is met. |
 | `maxSelections` | `number` | — | Caps selections (auto-set to 1 in `single` mode). |
-| `align` | `"left" \| "center" \| "right"` | `"right"` | Footer button alignment. |
-| `layout` | `"inline" \| "stack"` | `"inline"` | Stack options or allow inline wrap on wide containers. |
+| `align` | — | — | Removed (footer buttons are right-aligned by default). |
+| `layout` | — | — | Removed (options are stacked vertically). |

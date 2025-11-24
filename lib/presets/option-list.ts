@@ -15,7 +15,6 @@ const exportPreset: OptionListConfig = {
       { id: "pdf", label: "PDF" },
     ],
     selectionMode: "multi",
-    layout: "stack",
     confirmLabel: "Export",
     cancelLabel: "Clear",
     minSelections: 1,
@@ -39,7 +38,6 @@ const travelPreset: OptionListConfig = {
       },
     ],
     selectionMode: "single",
-    align: "center",
     confirmLabel: "Continue",
   },
 };
@@ -53,7 +51,6 @@ const notificationsPreset: OptionListConfig = {
       { id: "slack", label: "Slack" },
     ],
     selectionMode: "multi",
-    align: "left",
     confirmLabel: "Save",
     cancelLabel: "Reset",
     minSelections: 1,
@@ -74,5 +71,5 @@ export const optionListPresetDescriptions: Record<
 > = {
   export: "Multi-select with max choices enforced",
   travel: "Single-select with radio styling",
-  notifications: "Multi-select aligned to the left with reset/confirm",
+  notifications: "Multi-select with reset/confirm",
 };

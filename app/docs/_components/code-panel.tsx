@@ -269,14 +269,6 @@ export function CodePanel({
       props.push(`  selectionMode="${optionList.selectionMode}"`);
     }
 
-    if (optionList.align && optionList.align !== "right") {
-      props.push(`  align="${optionList.align}"`);
-    }
-
-    if (optionList.layout && optionList.layout !== "inline") {
-      props.push(`  layout="${optionList.layout}"`);
-    }
-
     if (optionList.confirmLabel && optionList.confirmLabel !== "Confirm") {
       props.push(`  confirmLabel="${optionList.confirmLabel}"`);
     }

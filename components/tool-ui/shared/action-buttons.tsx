@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
 import type { Action } from "./schema";
 import { Button } from "./_ui";
 import { cn } from "./_cn";
+import { useActionButtons } from "./use-action-buttons";
 
 export interface ActionButtonsProps {
   actions: Action[];
@@ -24,72 +24,12 @@ export function ActionButtons({
   layout = "inline",
   className,
 }: ActionButtonsProps) {
-  const [confirmingActionId, setConfirmingActionId] = useState<string | null>(
-    null,
-  );
-  const [executingActionId, setExecutingActionId] = useState<string | null>(
-    null,
-  );
-  const [timeoutId, setTimeoutId] = useState<NodeJS.Timeout | null>(null);
-
-  // Clear timeout on unmount
-  useEffect(() => {
-    return () => {
-      if (timeoutId) {
-        clearTimeout(timeoutId);
-      }
-    };
-  }, [timeoutId]);
-
-  // Reset confirm state after timeout
-  useEffect(() => {
-    if (!confirmingActionId) return;
-    const id = setTimeout(() => setConfirmingActionId(null), confirmTimeout);
-    setTimeoutId(id);
-    return () => clearTimeout(id);
-  }, [confirmingActionId, confirmTimeout]);
-
-  const handleActionClick = useCallback(
-    async (action: Action) => {
-      if (action.disabled || action.loading || executingActionId) {
-        return;
-      }
-
-      if (action.confirmLabel && confirmingActionId !== action.id) {
-        setConfirmingActionId(action.id);
-        return;
-      }
-
-      if (onBeforeAction) {
-        const shouldProceed = await onBeforeAction(action.id);
-        if (!shouldProceed) {
-          setConfirmingActionId(null);
-          return;
-        }
-      }
-
-      try {
-        setExecutingActionId(action.id);
-        await onAction(action.id);
-      } finally {
-        setExecutingActionId(null);
-        setConfirmingActionId(null);
-      }
-    },
-    [confirmingActionId, executingActionId, onAction, onBeforeAction],
-  );
-
-  // Handle escape key to cancel confirmation
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape" && confirmingActionId) {
-        setConfirmingActionId(null);
-      }
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [confirmingActionId]);
+  const { actions: resolvedActions, runAction } = useActionButtons({
+    actions,
+    onAction,
+    onBeforeAction,
+    confirmTimeout,
+  });
 
   const crossAlignClass = {
     left: "items-start",
@@ -113,18 +53,8 @@ export function ActionButtons({
         className,
       )}
     >
-      {actions.map((action) => {
-        const isConfirming = confirmingActionId === action.id;
-        const isExecuting = executingActionId === action.id;
-        const isLoading = action.loading || isExecuting;
-        const isDisabled =
-          action.disabled || (executingActionId !== null && !isExecuting);
-
-        const label =
-          isConfirming && action.confirmLabel
-            ? action.confirmLabel
-            : action.label;
-
+      {resolvedActions.map((action) => {
+        const label = action.currentLabel;
         const variant = action.variant || "default";
 
         return (
@@ -132,20 +62,20 @@ export function ActionButtons({
             key={action.id}
             variant={variant}
             size="lg"
-            onClick={() => handleActionClick(action)}
-            disabled={isDisabled}
+            onClick={() => runAction(action.id)}
+            disabled={action.isDisabled}
             className={cn(
               "rounded-full",
               "justify-center",
               "text-base @[28rem]:px-3 @[28rem]:py-2 @[28rem]:text-sm",
-              isConfirming &&
+              action.isConfirming &&
                 "ring-destructive animate-pulse ring-2 ring-offset-2",
             )}
             aria-label={
               action.shortcut ? `${label} (${action.shortcut})` : label
             }
           >
-            {isLoading && (
+            {action.isLoading && (
               <svg
                 className="mr-2 h-4 w-4 animate-spin"
                 xmlns="http://www.w3.org/2000/svg"
@@ -167,11 +97,11 @@ export function ActionButtons({
                 />
               </svg>
             )}
-            {action.icon && !isLoading && (
+            {action.icon && !action.isLoading && (
               <span className="mr-2">{action.icon}</span>
             )}
             {label}
-            {action.shortcut && !isLoading && (
+            {action.shortcut && !action.isLoading && (
               <kbd className="border-border bg-muted ml-2.5 hidden rounded-lg border px-2 py-0.5 font-mono text-xs font-medium sm:inline-block">
                 {action.shortcut}
               </kbd>
