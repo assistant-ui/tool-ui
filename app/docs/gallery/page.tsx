@@ -3,7 +3,7 @@ import { DocsBorderedShell } from "@/app/docs/_components/docs-bordered-shell";
 import { DataTable } from "@/components/tool-ui/data-table";
 import { MediaCard } from "@/components/tool-ui/media-card";
 import { SocialPost } from "@/components/tool-ui/social-post";
-import { DecisionPrompt } from "@/components/tool-ui/decision-prompt";
+import { OptionList } from "@/components/tool-ui/option-list";
 import { ZenField } from "@/app/components/visuals/zen-field";
 import { sampleStocks, sampleMetrics } from "@/lib/presets/data-table";
 import { mediaCardPresets } from "@/lib/presets/media-card";
@@ -12,7 +12,7 @@ import {
   sampleInstagram,
   sampleLinkedIn,
 } from "@/lib/presets/social-post";
-import { decisionPromptPresets } from "@/lib/presets/decision-prompt";
+import { optionListPresets } from "@/lib/presets/option-list";
 import { ArrowRightIcon } from "lucide-react";
 
 export default function ComponentsGalleryPage() {
@@ -56,11 +56,15 @@ export default function ComponentsGalleryPage() {
           </div>
 
           <div className="mb-5 break-inside-avoid 2xl:mb-5">
-            <DecisionPrompt {...decisionPromptPresets.destructive.prompt} />
+            <div className="w-full max-w-md">
+              <OptionList {...optionListPresets.export.optionList} />
+            </div>
           </div>
 
           <div className="mb-5 break-inside-avoid 2xl:mb-5">
-            <DecisionPrompt {...decisionPromptPresets["multi-choice"].prompt} />
+            <div className="w-full max-w-md">
+              <OptionList {...optionListPresets.travel.optionList} />
+            </div>
           </div>
 
           <div className="mb-5 break-inside-avoid 2xl:mb-5">

@@ -132,9 +132,6 @@ export function DataTablePreview({
           config={currentConfig}
           socialPostConfig={undefined}
           mediaCardConfig={undefined}
-          decisionPromptConfig={undefined}
-          decisionPromptSelectedAction={undefined}
-          decisionPromptSelectedActions={[]}
           mediaCardMaxWidth={undefined}
           sort={sort}
           isLoading={loading}

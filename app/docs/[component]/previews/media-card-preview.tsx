@@ -91,9 +91,6 @@ export function MediaCardPreview({
           config={undefined}
           socialPostConfig={undefined}
           mediaCardConfig={currentConfig}
-          decisionPromptConfig={undefined}
-          decisionPromptSelectedAction={undefined}
-          decisionPromptSelectedActions={[]}
           mediaCardMaxWidth="420px"
           sort={{}}
           isLoading={loading}

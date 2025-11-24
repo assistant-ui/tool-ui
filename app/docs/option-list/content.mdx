@@ -1,0 +1,61 @@
+import { DocsHeader } from "../_components/docs-header";
+import { OptionList } from "@/components/tool-ui/option-list";
+
+<DocsHeader title="Option List" role="Selection" />
+
+Pick one or many options with built-in confirm/clear actions. Ships with checkbox (multi) and radio (single) affordances for inline tool replies.
+
+<Tabs items={["Preview", "Code"]}>
+  <Tab>
+    <div className="not-prose">
+      <OptionList
+        options={[
+          { id: "csv", label: "CSV" },
+          { id: "json", label: "JSON" },
+          { id: "xlsx", label: "Excel (XLSX)" },
+        ]}
+        selectionMode="multi"
+        confirmLabel="Export"
+        cancelLabel="Clear"
+      />
+    </div>
+  </Tab>
+  <Tab>
+    ```tsx
+    import { OptionList } from "@/components/tool-ui/option-list";
+
+    export function ExportSelector() {
+      return (
+        <OptionList
+          options={[
+            { id: "csv", label: "CSV" },
+            { id: "json", label: "JSON" },
+            { id: "xlsx", label: "Excel (XLSX)" },
+          ]}
+          selectionMode="multi"
+          confirmLabel="Export"
+          cancelLabel="Clear"
+          onConfirm={(ids) => console.log(ids)}
+        />
+      );
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## When to Use Option List
+
+- Inline confirmation for multi-select tool outputs
+- Single-choice pickers without modal flows
+- Quick "add to cart" or filter selection in chat results
+
+## Key Features
+
+- **Dual modes**: checkbox-style multi or radio-style single select
+- **Async-friendly**: confirm button shows a spinner while awaiting your handler
+- **Constraints**: `minSelections`/`maxSelections` and alignment/layout tweaks
+- **Serializable**: Zod schemas ship alongside (`OptionListPropsSchema`)
+
+## Install
+
+Copy `components/tool-ui/option-list` into your project and ensure the shadcn-style button and separator atoms are available (or adjust `_ui.tsx` to your paths).

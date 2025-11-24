@@ -11,6 +11,7 @@ import type {
   DataTableRowData,
   ColumnKey,
 } from "./types";
+import { ActionButtons, normalizeActionsConfig } from "../shared";
 
 /**
  * Default locale for all Intl formatting operations.
@@ -60,6 +61,9 @@ export function DataTable<T extends object = RowData>({
   onSortChange,
   className,
   locale,
+  tableActions,
+  onTableAction,
+  onBeforeTableAction,
 }: DataTableProps<T>) {
   /**
    * Resolved locale with explicit default.
@@ -148,6 +152,11 @@ export function DataTable<T extends object = RowData>({
       ? `Sorted by ${label}, ${sortDirection === "asc" ? "ascending" : "descending"}`
       : "";
   }, [columns, sortBy, sortDirection]);
+
+  const normalizedTableActions = React.useMemo(
+    () => normalizeActionsConfig(tableActions),
+    [tableActions],
+  );
 
   return (
     <DataTableContext.Provider value={contextValue}>
@@ -259,6 +268,19 @@ export function DataTable<T extends object = RowData>({
             {sortAnnouncement}
           </div>
         )}
+
+        {normalizedTableActions ? (
+          <div className="mt-4">
+            <ActionButtons
+              actions={normalizedTableActions.items}
+              align={normalizedTableActions.align}
+              layout={normalizedTableActions.layout}
+              confirmTimeout={normalizedTableActions.confirmTimeout}
+              onAction={(id) => onTableAction?.(id)}
+              onBeforeAction={onBeforeTableAction}
+            />
+          </div>
+        ) : null}
       </div>
     </DataTableContext.Provider>
   );

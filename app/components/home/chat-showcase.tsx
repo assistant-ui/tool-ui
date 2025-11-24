@@ -21,9 +21,9 @@ import {
   type SerializableSocialPost,
 } from "@/components/tool-ui/social-post";
 import {
-  DecisionPrompt,
-  type DecisionPromptAction,
-} from "@/components/tool-ui/decision-prompt";
+  ActionButtons,
+  type Action as SharedAction,
+} from "@/components/tool-ui/shared";
 
 type BubbleProps = {
   role: "user" | "assistant";
@@ -297,7 +297,7 @@ const SOCIAL_POST: SerializableSocialPost = {
   language: "en-US",
 };
 
-const DECISION_ACTIONS: DecisionPromptAction[] = [
+const DECISION_ACTIONS: SharedAction[] = [
   { id: "cancel", label: "Discard", variant: "ghost" },
   { id: "edit", label: "Revise", variant: "outline" },
   { id: "send", label: "Post Now", variant: "default" },
@@ -327,18 +327,18 @@ function createSceneConfigs(): SceneConfig[] {
       toolUI: <MediaCard {...MEDIA_CARD} maxWidth="420px" />,
       toolFallbackHeight: 260,
     },
-    // Scene 3: Open Source Release / SocialPost + DecisionPrompt
+    // Scene 3: Open Source Release / SocialPost + inline actions
     {
       userMessage: "Draft a tweet about our open-source release",
       preamble: "Here's a draft announcement:",
       toolUI: (
         <div className="w-full max-w-[600px] min-w-0 space-y-3">
           <SocialPost {...SOCIAL_POST} className="w-full" maxWidth="100%" />
-          <DecisionPrompt
-            prompt="Ready to announce?"
+          <ActionButtons
             actions={DECISION_ACTIONS}
             align="right"
             layout="inline"
+            onAction={(id) => console.log("Action:", id)}
           />
         </div>
       ),

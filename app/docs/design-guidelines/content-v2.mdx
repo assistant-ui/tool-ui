@@ -69,25 +69,24 @@ Tool UI is the conversation-native layer between your UI primitives (Radix/shadc
 
 These examples are here to ground the guidelines in something concrete. Full docs live on each component page.
 
-### Decision Prompt (Decision Role)
+### Option List (Decision Role)
 
-Inline confirmation surface:
+Inline single- or multi-select with confirm/clear:
 
 ```tsx
-import { DecisionPrompt } from "@tool-ui/decision-prompt";
+import { OptionList } from "@tool-ui/option-list";
 
-<DecisionPrompt
-  id="approve-pr-42"
-  title="Approve this pull request?"
-  description="Merges feature branch into main."
-  actions={[
+<OptionList
+  options={[
     { id: "approve", label: "Approve" },
     { id: "reject", label: "Reject" },
   ]}
+  selectionMode="single"
+  confirmLabel="Continue"
 />
 ```
 
-- **Intent:** "Approve or reject this pull request"  
+- **Intent:** "Pick an option and confirm"  
 - **Role:** decision  
 - **Lifecycle:** invocation → interactive → receipt
 
@@ -189,7 +188,7 @@ Every Tool UI has a primary role defining why it exists.
 
 ### Decision  
 **Purpose:** Capture user choice  
-**Examples:** DecisionPrompt, SingleChoice, MultiSelect  
+**Examples:** OptionList, SingleChoice, MultiSelect  
 **Patterns:**
 - One visually dominant primary action
 - Two-step confirmation for destructive actions

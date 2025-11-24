@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import type { SerializableMediaCard } from "./schema";
+import type { ActionsProp } from "../shared";
 
 export type MediaCardUIState = {
   playing?: boolean;
@@ -13,6 +14,9 @@ export interface MediaCardClientProps {
   className?: string;
   maxWidth?: string;
   isLoading?: boolean;
+  actions?: ActionsProp;
+  onActionsBeforeAction?: (actionId: string) => boolean | Promise<boolean>;
+  onActionsAction?: (actionId: string) => void | Promise<void>;
   state?: MediaCardUIState;
   defaultState?: MediaCardUIState;
   onStateChange?: (state: MediaCardUIState) => void;

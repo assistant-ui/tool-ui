@@ -3,7 +3,7 @@ import { getComponentById } from "@/lib/docs/component-registry";
 import { DataTablePreview } from "./previews/data-table-preview";
 import { SocialPostPreview } from "./previews/social-post-preview";
 import { MediaCardPreview } from "./previews/media-card-preview";
-import { DecisionPromptPreview } from "./previews/decision-prompt-preview";
+import { OptionListPreview } from "./previews/option-list-preview";
 
 export default async function ComponentPage({
   params,
@@ -24,8 +24,8 @@ export default async function ComponentPage({
       return <SocialPostPreview />;
     case "media-card":
       return <MediaCardPreview />;
-    case "decision-prompt":
-      return <DecisionPromptPreview />;
+    case "option-list":
+      return <OptionListPreview />;
     default:
       notFound();
   }

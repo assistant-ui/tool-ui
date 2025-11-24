@@ -16,6 +16,8 @@ import { MediaCardBody } from "./body";
 import { MediaCardFooter } from "./footer";
 import { LinkOverlay } from "./link-overlay";
 import { MediaCardProgress } from "./progress";
+import { ActionButtons, normalizeActionsConfig } from "../shared";
+import type { ActionsConfig } from "../shared";
 
 const BASE_CARD_STYLE = "border border-border bg-card text-sm shadow-xs";
 const DEFAULT_CONTENT_SPACING = "gap-4 p-5";
@@ -50,6 +52,9 @@ export function MediaCard(props: MediaCardProps) {
     onAction,
     onBeforeAction,
     onMediaEvent,
+    actions: footerActions,
+    onActionsAction,
+    onActionsBeforeAction,
     locale: providedLocale,
     ...serializable
   } = props;
@@ -141,6 +146,11 @@ export function MediaCard(props: MediaCardProps) {
       : DEFAULT_CONTENT_SPACING;
   const linkContentPadding = LINK_CONTENT_SPACING;
 
+  const normalizedFooterActions = React.useMemo(
+    () => normalizeActionsConfig(footerActions),
+    [footerActions],
+  );
+
   return (
     <article
       className="relative w-full"
@@ -190,6 +200,18 @@ export function MediaCard(props: MediaCardProps) {
             </div>
           )}
         </Card>
+        {normalizedFooterActions ? (
+          <div className="mt-3">
+            <ActionButtons
+              actions={normalizedFooterActions.items}
+              align={normalizedFooterActions.align}
+              layout={normalizedFooterActions.layout}
+              confirmTimeout={normalizedFooterActions.confirmTimeout}
+              onAction={(id) => onActionsAction?.(id)}
+              onBeforeAction={onActionsBeforeAction}
+            />
+          </div>
+        ) : null}
       </MediaCardProvider>
     </article>
   );

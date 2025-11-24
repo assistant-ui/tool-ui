@@ -1,12 +1,12 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
-import type { DecisionPromptAction } from "./schema";
+import { useState, useEffect, useCallback } from "react";
+import type { Action } from "./schema";
 import { Button } from "./_ui";
 import { cn } from "./_cn";
 
-interface DecisionPromptActionsProps {
-  actions: DecisionPromptAction[];
+export interface ActionButtonsProps {
+  actions: Action[];
   onAction: (actionId: string) => void | Promise<void>;
   onBeforeAction?: (actionId: string) => boolean | Promise<boolean>;
   confirmTimeout?: number;
@@ -15,7 +15,7 @@ interface DecisionPromptActionsProps {
   className?: string;
 }
 
-export function DecisionPromptActions({
+export function ActionButtons({
   actions,
   onAction,
   onBeforeAction,
@@ -23,53 +23,43 @@ export function DecisionPromptActions({
   align = "right",
   layout = "inline",
   className,
-}: DecisionPromptActionsProps) {
+}: ActionButtonsProps) {
   const [confirmingActionId, setConfirmingActionId] = useState<string | null>(
     null,
   );
   const [executingActionId, setExecutingActionId] = useState<string | null>(
     null,
   );
-  const timeoutRef = useRef<NodeJS.Timeout | undefined>(undefined);
+  const [timeoutId, setTimeoutId] = useState<NodeJS.Timeout | null>(null);
 
   // Clear timeout on unmount
   useEffect(() => {
     return () => {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
+      if (timeoutId) {
+        clearTimeout(timeoutId);
       }
     };
-  }, []);
+  }, [timeoutId]);
 
   // Reset confirm state after timeout
   useEffect(() => {
-    if (confirmingActionId) {
-      timeoutRef.current = setTimeout(() => {
-        setConfirmingActionId(null);
-      }, confirmTimeout);
-
-      return () => {
-        if (timeoutRef.current) {
-          clearTimeout(timeoutRef.current);
-        }
-      };
-    }
+    if (!confirmingActionId) return;
+    const id = setTimeout(() => setConfirmingActionId(null), confirmTimeout);
+    setTimeoutId(id);
+    return () => clearTimeout(id);
   }, [confirmingActionId, confirmTimeout]);
 
   const handleActionClick = useCallback(
-    async (action: DecisionPromptAction) => {
-      // If action is disabled or loading, do nothing
+    async (action: Action) => {
       if (action.disabled || action.loading || executingActionId) {
         return;
       }
 
-      // Two-stage pattern: if action has confirmLabel and not yet confirming
       if (action.confirmLabel && confirmingActionId !== action.id) {
         setConfirmingActionId(action.id);
         return;
       }
 
-      // Check if action should proceed
       if (onBeforeAction) {
         const shouldProceed = await onBeforeAction(action.id);
         if (!shouldProceed) {
@@ -78,7 +68,6 @@ export function DecisionPromptActions({
         }
       }
 
-      // Execute the action
       try {
         setExecutingActionId(action.id);
         await onAction(action.id);
@@ -107,20 +96,15 @@ export function DecisionPromptActions({
     center: "items-center",
     right: "items-end",
   }[align];
-  // Button content is always centered, regardless of alignment
 
   return (
     <div
       className={cn(
         "flex gap-2",
-        // Stack by default; switch to inline above a container width
-        // of ~28rem (448px). If explicit stack, stay stacked always.
         layout === "stack"
           ? cn("flex-col", crossAlignClass)
           : cn(
-              // Baseline (narrow): stacked, but let buttons size to content
               cn("flex-col", crossAlignClass),
-              // Wide containers: inline row with wrapping and alignment
               "@[28rem]:flex-row @[28rem]:flex-wrap @[28rem]:items-center",
               align === "left" && "@[28rem]:justify-start",
               align === "center" && "@[28rem]:justify-center",
@@ -136,28 +120,23 @@ export function DecisionPromptActions({
         const isDisabled =
           action.disabled || (executingActionId !== null && !isExecuting);
 
-        // Determine label: use confirmLabel if in confirm state
         const label =
           isConfirming && action.confirmLabel
             ? action.confirmLabel
             : action.label;
 
-        // Determine variant: make destructive actions more prominent in confirm state
         const variant = action.variant || "default";
 
         return (
           <Button
             key={action.id}
             variant={variant}
-            // Larger tap target on narrow containers; shrink on wide
             size="lg"
             onClick={() => handleActionClick(action)}
             disabled={isDisabled}
             className={cn(
               "rounded-full",
-              // Center content in all cases
               "justify-center",
-              // Larger type/padding for small containers; revert on wide
               "text-base @[28rem]:px-3 @[28rem]:py-2 @[28rem]:text-sm",
               isConfirming &&
                 "ring-destructive animate-pulse ring-2 ring-offset-2",
