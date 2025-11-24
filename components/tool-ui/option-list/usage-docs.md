@@ -2,6 +2,8 @@
 
 An inline list for choosing one or many options with a built-in confirm/clear footer. Ships with checkbox (multi) and radio (single) styles and async-friendly confirm handling.
 
+> For quick CTA rows under a component, prefer [Contextual Actions](/docs/contextual-actions). Use OptionList when you need the user to select values before confirming.
+
 ## Quick start
 
 ```tsx

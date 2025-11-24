@@ -49,6 +49,9 @@ An information + action surface for user-generated content: posts, comments, not
             { id: "reply", label: "Reply", variant: "ghost" },
             { id: "open", label: "Open in app", variant: "ghost" },
           ]}
+          onPostAction={(id) => {
+            if (id === "open") window.open("https://x.com", "_blank");
+          }}
         />
       );
     }
@@ -143,7 +146,7 @@ export const ShowTweetUI = makeAssistantToolUI({
         { id: 'open', label: 'Open' },
         { id: 'reply', label: 'Reply' },
       ]}
-      onAction={(id, post) => {
+      onPostAction={(id, post) => {
         if (id === 'open') window.open(post.meta?.url, '_blank');
         if (id === 'reply') openReplyComposer(post.id);
       }}
@@ -170,6 +173,6 @@ export const ShowTweetUI = makeAssistantToolUI({
     meta: { description: "Metadata", type: "Record<string, string>" },
     metrics: { description: "Engagement stats", type: "{ likes?, replies?, reposts?, views? }" },
     actions: { description: "Action buttons", type: "Action[]" },
-    onAction: { description: "Click handler", type: "(id, post) => void" },
-  }}
+onPostAction: { description: "Click handler", type: "(id, post) => void" },
+}}
 />

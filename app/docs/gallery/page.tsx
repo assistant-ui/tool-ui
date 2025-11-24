@@ -38,7 +38,6 @@ export default function ComponentsGalleryPage() {
               {...sampleX.post}
               maxWidth="100%"
               footerActions={socialFooterActions}
-              onAction={(id) => console.log("Social action:", id)}
             />
           </div>
 
@@ -69,7 +68,6 @@ export default function ComponentsGalleryPage() {
               {...sampleInstagram.post}
               maxWidth="100%"
               footerActions={socialFooterActions}
-              onAction={(id) => console.log("Social action:", id)}
             />
           </div>
 
@@ -90,7 +88,6 @@ export default function ComponentsGalleryPage() {
               {...sampleLinkedIn.post}
               maxWidth="100%"
               footerActions={socialFooterActions}
-              onAction={(id) => console.log("Social action:", id)}
             />
           </div>
 

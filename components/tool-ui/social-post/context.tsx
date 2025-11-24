@@ -35,16 +35,18 @@ export interface SocialPostClientProps {
   defaultState?: SocialPostState;
   state?: SocialPostState;
   onStateChange?: (next: SocialPostState) => void;
-  onBeforeAction?: (args: {
+  onBeforePostAction?: (args: {
     action: string;
     post: SerializableSocialPost;
     messageId?: string;
   }) => boolean | Promise<boolean>;
-  onAction?: (
+  onPostAction?: (
     action: string,
     post: SerializableSocialPost,
     ctx?: { messageId?: string },
   ) => void;
+  onBeforeFooterAction?: (actionId: string) => boolean | Promise<boolean>;
+  onFooterAction?: (actionId: string) => void | Promise<void>;
   onEntityClick?: (type: "mention" | "hashtag" | "url", value: string) => void;
   onMediaEvent?: (type: "open" | "play" | "pause", payload?: unknown) => void;
   onNavigate?: (href: string, post: SerializableSocialPost) => void;
@@ -60,8 +62,8 @@ export interface SocialPostContextValue {
   setState: (patch: Partial<SocialPostState>) => void;
   handlers: Pick<
     SocialPostClientProps,
-    | "onBeforeAction"
-    | "onAction"
+    | "onBeforePostAction"
+    | "onPostAction"
     | "onEntityClick"
     | "onMediaEvent"
     | "onNavigate"

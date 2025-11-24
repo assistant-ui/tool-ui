@@ -182,6 +182,8 @@ tableActions={{
 
 Handlers: `onTableAction(id)` and optional `onBeforeTableAction(id)` (return false to cancel).
 
+See also: [Contextual Actions](/docs/contextual-actions).
+
 ---
 
 ### `Column<T>` (declarative columns)

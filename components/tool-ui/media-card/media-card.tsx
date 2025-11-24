@@ -17,7 +17,6 @@ import { MediaCardFooter } from "./footer";
 import { LinkOverlay } from "./link-overlay";
 import { MediaCardProgress } from "./progress";
 import { ActionButtons, normalizeActionsConfig } from "../shared";
-import type { ActionsConfig } from "../shared";
 
 const BASE_CARD_STYLE = "border border-border bg-card text-sm shadow-xs";
 const DEFAULT_CONTENT_SPACING = "gap-4 p-5";
@@ -49,12 +48,12 @@ export function MediaCard(props: MediaCardProps) {
     defaultState,
     onStateChange,
     onNavigate,
-    onAction,
-    onBeforeAction,
     onMediaEvent,
-    actions: footerActions,
-    onActionsAction,
-    onActionsBeforeAction,
+    footerActions,
+    onFooterAction,
+    onBeforeFooterAction,
+    onMediaAction,
+    onBeforeMediaAction,
     locale: providedLocale,
     ...serializable
   } = props;
@@ -124,8 +123,8 @@ export function MediaCard(props: MediaCardProps) {
     setState: updateState,
     handlers: {
       onNavigate,
-      onAction,
-      onBeforeAction,
+      onMediaAction,
+      onBeforeMediaAction,
       onMediaEvent,
     },
     mediaElement,
@@ -207,8 +206,8 @@ export function MediaCard(props: MediaCardProps) {
               align={normalizedFooterActions.align}
               layout={normalizedFooterActions.layout}
               confirmTimeout={normalizedFooterActions.confirmTimeout}
-              onAction={(id) => onActionsAction?.(id)}
-              onBeforeAction={onActionsBeforeAction}
+              onAction={(id) => onFooterAction?.(id)}
+              onBeforeAction={onBeforeFooterAction}
             />
           </div>
         ) : null}

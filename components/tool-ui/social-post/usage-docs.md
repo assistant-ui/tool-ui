@@ -54,7 +54,7 @@ export default function Example() {
   return (
     <SocialPost
       {...post}
-      onAction={(actionId) => {
+      onPostAction={(actionId) => {
         console.log("Action clicked:", actionId);
       }}
     />
@@ -191,8 +191,10 @@ interface SerializableSocialPost {
 | `defaultState`            | `SocialPostState`                                              | `{}`     | Initial uncontrolled toggle state (liked, saved, etc.).                                              |
 | `state`                   | `SocialPostState`                                              | —        | Controlled state. Provide `onStateChange` to listen for updates.                                     |
 | `onStateChange`           | `(next) => void`                                               | —        | Called whenever toggles change (both controlled/uncontrolled).                                       |
-| `onBeforeAction`          | `({ action, post, messageId }) => boolean \| Promise<boolean>` | —        | Return `false` to cancel an action (confirmation, auth guards, etc.).                                |
-| `onAction`                | `(actionId, post, ctx) => void`                                | —        | Fired after a successful action trigger. `ctx.messageId` is forwarded from the payload.              |
+| `onBeforePostAction`      | `({ action, post, messageId }) => boolean \| Promise<boolean>` | —        | Return `false` to cancel a built-in action (confirmation, auth guards, etc.).                        |
+| `onPostAction`            | `(actionId, post, ctx) => void`                                | —        | Fired after a successful built-in action trigger. `ctx.messageId` is forwarded from the payload.     |
+| `onBeforeFooterAction`    | `(id) => boolean \| Promise<boolean>`                          | —        | Preflight for footer CTA row (`footerActions`). Return `false` to cancel.                            |
+| `onFooterAction`          | `(id) => void \| Promise<void>`                                | —        | Footer CTA handler.                                                                                  |
 | `onEntityClick`           | `(type, value) => void`                                        | —        | Called when a hashtag/mention/url button is pressed.                                                 |
 | `onMediaEvent`            | `(type, payload?) => void`                                     | —        | Events: `"open"` (with `{ index }`), `"play"`, `"pause"`.                                            |
 | `onNavigate`              | `(href, post) => void`                                         | —        | Invoked when navigation happens (links in body, “View source”). Use to log telemetry or open modals. |
@@ -223,21 +225,42 @@ interface SocialPostActionOverride {
 - Each platform ships with sensible defaults (X: reply/repost/like/share/bookmark, etc.). If the payload includes `actions`, those take precedence.
 - Toggling is automatic for the `like`, `repost`, `save`/`bookmark`, and `follow` actions. Controlled mode lets you sync state back into your store.
 - Stats are displayed next to matching actions when counts are provided. For X, only the like button shows counts to match native UI expectations.
-- Footer CTAs: pass `footerActions` as an array or `{ items, align?, layout?, confirmTimeout? }`. It uses the shared `ActionButtons` under the post and respects `onBeforeAction`/`onAction`.
+- Footer CTAs: pass `footerActions` as an array or `{ items, align?, layout?, confirmTimeout? }`. It uses the shared `ActionButtons` under the post and respects `onBeforeFooterAction`/`onFooterAction`.
+
+See also: [Contextual Actions](/docs/contextual-actions).
+
+### Footer actions example
+
+```tsx
+<SocialPost
+  {...post}
+  footerActions={{
+    items: [
+      { id: "save", label: "Save draft", variant: "secondary" },
+      { id: "share", label: "Share", variant: "default", confirmLabel: "Confirm" },
+    ],
+    align: "right",
+  }}
+  onBeforeFooterAction={(id) => (id === "share" ? window.confirm("Share this?") : true)}
+  onFooterAction={(id) => trackCta(id)}
+/>
+```
+
+`footerActions` accepts either an array (simplest) or a config object with layout/alignment/confirm timeout. When actions ship from a tool response, keep them serializable (no React icons); add icons in `actionOverrides` at runtime if you need them.
 
 ### Event hooks in practice
 
 ```tsx
 <SocialPost
   {...post}
-  onBeforeAction={async ({ action }) => {
+  onBeforePostAction={async ({ action }) => {
     if (action === "like" && !user) {
       await openAuthModal();
       return false;
     }
     return true;
   }}
-  onAction={(action, post, { messageId }) => {
+  onPostAction={(action, post, { messageId }) => {
     analytics.track("social_post_action", { action, id: post.id, messageId });
   }}
   onEntityClick={(type, value) => {
@@ -324,7 +347,7 @@ const toolComponents = {
     return (
       <SocialPost
         {...result.post}
-        onAction={(actionId, post) => {
+        onPostAction={(actionId, post) => {
           sendMessage(`User selected ${actionId} on ${post.platform} post ${post.id}`);
         }}
       />
@@ -357,7 +380,7 @@ Use these for Storybook stories, integration tests, or quick demos.
 
 - **Custom actions**: supply `actionOverrides` to add share sheets or route to deep links.
 - **Custom platform**: clone an entry in `platform.ts`, add a renderer under `components/social-post/renderers`, and register it in `RENDERERS` inside `social-post.tsx`.
-- **Analytics**: combine `onAction`, `onNavigate`, and `onMediaEvent` to emit telemetry without mutating the core component.
+- **Analytics**: combine `onPostAction`, `onNavigate`, and `onMediaEvent` to emit telemetry without mutating the core component.
 - **Host cards**: switch to `variant="inline"` and wrap `<SocialPost />` inside your own container to blend with existing card systems.
 
 After reading this doc you should be able to copy the folder, feed it serializable payloads, hook into actions, and ship a production-ready social post experience. Enjoy!

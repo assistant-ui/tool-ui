@@ -14,18 +14,18 @@ export interface MediaCardClientProps {
   className?: string;
   maxWidth?: string;
   isLoading?: boolean;
-  actions?: ActionsProp;
-  onActionsBeforeAction?: (actionId: string) => boolean | Promise<boolean>;
-  onActionsAction?: (actionId: string) => void | Promise<void>;
+  footerActions?: ActionsProp;
+  onBeforeFooterAction?: (actionId: string) => boolean | Promise<boolean>;
+  onFooterAction?: (actionId: string) => void | Promise<void>;
+  onBeforeMediaAction?: (args: {
+    action: string;
+    card: SerializableMediaCard;
+  }) => boolean | Promise<boolean>;
+  onMediaAction?: (actionId: string, card: SerializableMediaCard) => void;
   state?: MediaCardUIState;
   defaultState?: MediaCardUIState;
   onStateChange?: (state: MediaCardUIState) => void;
   onNavigate?: (href: string, card: SerializableMediaCard) => void;
-  onAction?: (actionId: string, card: SerializableMediaCard) => void;
-  onBeforeAction?: (args: {
-    action: string;
-    card: SerializableMediaCard;
-  }) => boolean | Promise<boolean>;
   onMediaEvent?: (
     type: "play" | "pause" | "mute" | "unmute",
     payload?: unknown,
@@ -41,7 +41,10 @@ export interface MediaCardContextValue {
   setState: (patch: Partial<MediaCardUIState>) => void;
   handlers: Pick<
     MediaCardClientProps,
-    "onNavigate" | "onAction" | "onBeforeAction" | "onMediaEvent"
+    | "onNavigate"
+    | "onMediaAction"
+    | "onBeforeMediaAction"
+    | "onMediaEvent"
   >;
   mediaElement: HTMLMediaElement | null;
   setMediaElement: (node: HTMLMediaElement | null) => void;

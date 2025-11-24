@@ -47,6 +47,14 @@ Tool UIs live inside messages, supporting the current turn without becoming sepa
 
 Keep users in the conversation context. Richer views should be explicit actions, not defaults.
 
+### Contextual CTA Rows
+
+Use [Contextual Actions](/docs/contextual-actions) as the default CTA strip under Tool UIs.
+
+- Keep 2–3 actions tied to the content; prefer `layout="inline"` and right alignment unless mobile demands stacking.
+- Use `confirmLabel`/`onBeforeAction` for destructive or high-impact steps.
+- If users must pick options first, pair the CTA row with controls (filters, `OptionList`) instead of expanding the CTA bar.
+
 ### Assistant-Anchored
 
 The assistant introduces, interprets, and follows up on every Tool UI.

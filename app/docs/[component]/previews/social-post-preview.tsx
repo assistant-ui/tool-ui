@@ -75,7 +75,7 @@ export function SocialPostPreview({
           <SocialPost
             {...currentConfig.post}
             isLoading={loading}
-            onAction={(actionId) => {
+            onPostAction={(actionId) => {
               console.log("Action:", actionId);
               alert(`Action: ${actionId}`);
             }}

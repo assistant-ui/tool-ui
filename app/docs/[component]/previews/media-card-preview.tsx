@@ -75,7 +75,7 @@ export function MediaCardPreview({
           <MediaCard
             {...currentConfig.card}
             isLoading={loading}
-            onAction={(actionId) => {
+            onMediaAction={(actionId) => {
               console.log("MediaCard action:", actionId);
             }}
             onNavigate={(href) => {

@@ -32,8 +32,10 @@ export function SocialPost(props: SocialPostProps) {
     defaultState,
     state: controlledState,
     onStateChange,
-    onBeforeAction,
-    onAction,
+    onBeforePostAction,
+    onPostAction,
+    onBeforeFooterAction,
+    onFooterAction,
     onEntityClick,
     onMediaEvent,
     onNavigate,
@@ -93,15 +95,11 @@ export function SocialPost(props: SocialPostProps) {
   const handleFooterAction = React.useCallback(
     async (actionId: string) => {
       const proceed =
-        (await onBeforeAction?.({
-          action: actionId,
-          post: postPayload,
-          messageId: postPayload.messageId,
-        })) ?? true;
+        (await onBeforeFooterAction?.(actionId)) ?? true;
       if (!proceed) return;
-      onAction?.(actionId, postPayload, { messageId: postPayload.messageId });
+      onFooterAction?.(actionId);
     },
-    [onAction, onBeforeAction, postPayload],
+    [onBeforeFooterAction, onFooterAction],
   );
 
   const value: SocialPostContextValue = {
@@ -113,8 +111,8 @@ export function SocialPost(props: SocialPostProps) {
     actionOverrides,
     setState: updateState,
     handlers: {
-      onBeforeAction,
-      onAction,
+      onBeforePostAction,
+      onPostAction,
       onEntityClick,
       onMediaEvent,
       onNavigate,
@@ -170,7 +168,7 @@ export function SocialPost(props: SocialPostProps) {
             layout={normalizedFooterActions.layout}
             confirmTimeout={normalizedFooterActions.confirmTimeout}
             onAction={handleFooterAction}
-            onBeforeAction={undefined}
+            onBeforeAction={onBeforeFooterAction}
           />
         </div>
       ) : null}
