@@ -1,5 +1,6 @@
 "use client";
 
+import * as React from "react";
 import type { Action } from "./schema";
 import { Button } from "./_ui";
 import { cn } from "./_cn";
@@ -12,6 +13,22 @@ export interface ActionButtonsProps {
   confirmTimeout?: number;
   align?: "left" | "center" | "right";
   className?: string;
+}
+
+/**
+ * Sort priority for mobile layout (lower = bottom of stack = easier to reach)
+ * - default: primary actions at bottom (thumb zone)
+ * - secondary: middle
+ * - destructive: top (requires intentional reach)
+ */
+const VARIANT_SORT_PRIORITY: Record<string, number> = {
+  default: 0,
+  secondary: 1,
+  destructive: 2,
+};
+
+function getVariantPriority(variant: string | undefined): number {
+  return VARIANT_SORT_PRIORITY[variant ?? "default"] ?? 1;
 }
 
 export function ActionButtons({
@@ -29,22 +46,40 @@ export function ActionButtons({
     confirmTimeout,
   });
 
+  // Sort actions for mobile: destructive at top, default at bottom
+  // We reverse because flex-col-reverse puts last items at bottom
+  const sortedActions = React.useMemo(() => {
+    return [...resolvedActions].sort(
+      (a, b) => getVariantPriority(a.variant) - getVariantPriority(b.variant),
+    );
+  }, [resolvedActions]);
+
+  // Check if we have destructive actions for visual separation
+  const hasDestructive = sortedActions.some((a) => a.variant === "destructive");
+  const destructiveIndex = sortedActions.findIndex(
+    (a) => a.variant === "destructive",
+  );
+
   return (
     <div
       className={cn(
-        // Mobile: full-width stacked buttons (iOS-like)
-        "flex flex-col gap-2",
-        // Desktop: inline row with alignment
-        "@sm/actions:flex-row @sm/actions:flex-wrap @sm/actions:items-center",
+        // Mobile: full-width stacked buttons (iOS-like), reversed for thumb reach
+        "flex flex-col-reverse gap-3",
+        // Desktop: inline row with alignment, normal order
+        "@sm/actions:flex-row @sm/actions:gap-2 @sm/actions:flex-wrap @sm/actions:items-center",
         align === "left" && "@sm/actions:justify-start",
         align === "center" && "@sm/actions:justify-center",
         align === "right" && "@sm/actions:justify-end",
         className,
       )}
     >
-      {resolvedActions.map((action) => {
+      {sortedActions.map((action, index) => {
         const label = action.currentLabel;
         const variant = action.variant || "default";
+
+        // Add top margin to first destructive action on mobile for visual separation
+        const isFirstDestructive =
+          hasDestructive && index === destructiveIndex;
 
         return (
           <Button
@@ -56,10 +91,12 @@ export function ActionButtons({
             className={cn(
               "rounded-full",
               "justify-center",
-              // Mobile: full width, larger touch target
-              "w-full text-base",
+              // Mobile: full width, larger touch target, min 44px height
+              "min-h-11 w-full text-base",
               // Desktop: fit content, smaller
-              "@sm/actions:w-auto @sm/actions:px-3 @sm/actions:py-2 @sm/actions:text-sm",
+              "@sm/actions:min-h-0 @sm/actions:w-auto @sm/actions:px-3 @sm/actions:py-2 @sm/actions:text-sm",
+              // Visual separation for destructive actions on mobile
+              isFirstDestructive && "mt-2 @sm/actions:mt-0 @sm/actions:ml-2",
               action.isConfirming &&
                 "ring-destructive animate-pulse ring-2 ring-offset-2",
             )}

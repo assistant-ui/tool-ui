@@ -462,7 +462,12 @@ const sampleActions: DataTableConfig = {
   footerActions: [
     { id: "assign", label: "Assign to me", variant: "default" },
     { id: "escalate", label: "Escalate", variant: "secondary" },
-    { id: "export", label: "Export report", variant: "secondary" },
+    {
+      id: "close",
+      label: "Close tickets",
+      confirmLabel: "Confirm close",
+      variant: "destructive",
+    },
   ],
 };
 
