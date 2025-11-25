@@ -83,13 +83,6 @@ export interface Column<
   format?: FormatFor<T[K]>;
 }
 
-export interface Action {
-  id: string;
-  label: string;
-  variant?: "default" | "secondary" | "ghost" | "destructive";
-  requiresConfirmation?: boolean;
-}
-
 /**
  * Serializable props that can come from LLM tool calls or be JSON-serialized.
  *
@@ -101,7 +94,6 @@ export interface Action {
  * const serializableProps: DataTableSerializableProps = {
  *   columns: [...],
  *   data: [...],
- *   actions: [...],
  *   rowIdKey: "id",
  *   defaultSort: { by: "price", direction: "desc" }
  * }
@@ -125,8 +117,6 @@ export interface DataTableSerializableProps<T extends object = RowData> {
   columns: Column<T>[];
   /** Row data (primitives only - no functions or class instances) */
   data: T[];
-  /** Action button definitions */
-  actions?: Action[];
   /**
    * Layout mode for the component.
    * - 'auto' (default): Container queries choose table/cards
@@ -206,8 +196,9 @@ export interface DataTableSerializableProps<T extends object = RowData> {
  * const clientProps: DataTableClientProps = {
  *   isLoading: false,
  *   className: "my-table",
- *   onAction: (id, row) => console.log(id, row),
- *   onSortChange: (next) => setSort(next)
+ *   onSortChange: (next) => setSort(next),
+ *   footerActions: [{ id: "export", label: "Export" }],
+ *   onFooterAction: (id) => console.log(id)
  * }
  * ```
  */
@@ -216,27 +207,6 @@ export interface DataTableClientProps<T extends object = RowData> {
   isLoading?: boolean;
   /** Additional CSS classes */
   className?: string;
-  /**
-   * Optional preflight hook to decide whether an action should proceed.
-   * Return false (or a Promise resolving to false) to cancel the action.
-   *
-   * Treats `requiresConfirmation` on the action as metadata only; the table
-   * does not enforce confirmation.
-   */
-  onBeforeAction?: (args: {
-    action: Action;
-    row: T | DataTableRowData;
-    messageId?: string;
-  }) => boolean | Promise<boolean>;
-  /** Action button click handler (required if actions are provided) */
-  onAction?: (
-    actionId: string,
-    row: T,
-    context?: {
-      messageId?: string;
-      sendMessage?: (message: string) => void;
-    },
-  ) => void;
   /**
    * Sort change handler for controlled mode (required if sort is provided)
    *
@@ -288,8 +258,9 @@ export interface DataTableClientProps<T extends object = RowData> {
  * // Combine with React-specific props
  * <DataTable
  *   {...serializableProps}
- *   onAction={(id, row) => handleAction(id, row)}
  *   onSortChange={setSort}
+ *   footerActions={[{ id: "export", label: "Export" }]}
+ *   onFooterAction={(id) => handleAction(id)}
  *   isLoading={loading}
  * />
  * ```
@@ -301,13 +272,10 @@ export interface DataTableProps<T extends object = RowData>
 export interface DataTableContextValue<T extends object = RowData> {
   columns: Column<T>[];
   data: T[];
-  actions?: Action[];
   rowIdKey?: ColumnKey<T>;
   sortBy?: ColumnKey<T>;
   sortDirection?: "asc" | "desc";
   toggleSort?: (key: ColumnKey<T>) => void;
-  onBeforeAction?: DataTableProps<T>["onBeforeAction"];
-  onAction?: DataTableProps<T>["onAction"];
   messageId?: string;
   isLoading?: boolean;
   locale?: string;

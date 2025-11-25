@@ -3,7 +3,6 @@ export { DataTableHeader, DataTableHead } from "./data-table-header";
 export { DataTableBody } from "./data-table-body";
 export { DataTableRow } from "./data-table-row";
 export { DataTableCell } from "./data-table-cell";
-export { DataTableActions } from "./data-table-actions";
 export { DataTableAccordionCard } from "./data-table-accordion-card";
 export { renderFormattedValue } from "./formatters";
 export {
@@ -22,7 +21,6 @@ export { parseSerializableDataTable } from "./schema";
 
 export type {
   Column,
-  Action,
   DataTableProps,
   DataTableSerializableProps,
   DataTableClientProps,

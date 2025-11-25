@@ -16,7 +16,7 @@ import {
 
 <DocsHeader title="Data Table" mdxPath="app/docs/data-table/content.mdx" />
 
-An information surface for tabular tool outputs with responsive layout, sorting, declarative formatting, and row-level actions.
+An information surface for tabular tool outputs with responsive layout, sorting, and declarative formatting.
 
 <Tabs items={["Preview", "Code"]}>
   <Tab>
@@ -162,7 +162,7 @@ An information surface for tabular tool outputs with responsive layout, sorting,
 
 ## When to Use Data Table
 
-- **Good for:** Search results, lists, dashboards, logs with sorting and actions
+- **Good for:** Search results, lists, dashboards, logs with sorting
 - **Not for:** Single-record details, complex multi-step forms
 
 ## Key Features
@@ -170,7 +170,7 @@ An information surface for tabular tool outputs with responsive layout, sorting,
 - **Responsive**: Table on wide screens, cards on mobile
 - **Sorting**: Tri-state: none → asc → desc
 - **Formatting**: Currency, dates, links, badges, etc. via declarative config
-- **Actions**: Row-level buttons with optional confirmation
+- **Footer Actions**: Surface-level actions via `footerActions` prop
 - **Accessible**: Screen reader support, keyboard navigation
 
 
@@ -284,13 +284,13 @@ export const SearchProductsUI = makeAssistantToolUI({
   }}
 />
 
-### Actions
+### Footer Actions
 
 <TypeTable
   type={{
-    actions: { description: "Row actions", type: "Action[]" },
-    onAction: { description: "Click handler", type: "(id, row) => void" },
-    onBeforeAction: { description: "Gate actions", type: "({ id, row }) => boolean | Promise" },
+    footerActions: { description: "Surface-level actions below the table", type: "Action[] | ActionsConfig" },
+    onFooterAction: { description: "Click handler", type: "(actionId: string) => void" },
+    onBeforeFooterAction: { description: "Gate actions (return false to cancel)", type: "(actionId: string) => boolean | Promise<boolean>" },
   }}
 />
 

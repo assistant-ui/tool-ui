@@ -11,8 +11,8 @@ A flexible, accessible data table component for assistant-ui's widget registry. 
 
 - ✅ Full table layout with sortable columns
 - ✅ Horizontal scroll with gradient shadow affordances
-- ✅ Row actions (inline buttons or dropdown menu)
 - ✅ Visual sort indicators (chevron icons)
+- ✅ Footer actions for surface-level CTAs
 
 ### Mobile
 
@@ -67,7 +67,6 @@ components/data-table/
 ├── data-table-body.tsx
 ├── data-table-row.tsx
 ├── data-table-cell.tsx
-├── data-table-actions.tsx
 ├── data-table-accordion-card.tsx  # Mobile card component
 ├── error-boundary.tsx             # Error boundary component
 ├── formatters.tsx                 # Value formatters
@@ -143,22 +142,22 @@ function MyComponent() {
 
 ### DataTableProps
 
-| Prop             | Type                                    | Default               | Description                                                                                 |
-| ---------------- | --------------------------------------- | --------------------- | ------------------------------------------------------------------------------------------- | --------------------------- |
-| `columns`        | `Column[]`                              | Required              | Column definitions                                                                          |
-| `data`           | `Record<string, any>[]`                 | Required              | Row data                                                                                    |
-| `actions`        | `Action[]`                              | `undefined`           | Row action buttons                                                                          |
-| `rowIdKey`       | `string`                                | `undefined`           | **⚠️ Strongly Recommended:** Key in each row used for stable React keys (see warning below) |
-| `defaultSort`    | `{ by?: string; direction?: 'asc'       | 'desc' }`             | `undefined`                                                                                 | Initial sort (uncontrolled) |
-| `sort`           | `{ by?: string; direction?: 'asc'       | 'desc' }`             | `undefined`                                                                                 | Controlled sort state       |
-| `onSortChange`   | `(next) => void`                        | `undefined`           | Controlled sort change handler                                                              |
-| `isLoading`      | `boolean`                               | `false`               | Show loading skeleton                                                                       |
-| `emptyMessage`   | `string`                                | `"No data available"` | Empty state message                                                                         |
-| `maxHeight`      | `string`                                | `undefined`           | Max height with vertical scroll                                                             |
-| `onBeforeAction` | `(args) => boolean \| Promise<boolean>` | `undefined`           | Preflight hook to decide if an action proceeds. Return `false` to cancel.                   |
-| `onAction`       | `function`                              | `undefined`           | Action button click handler                                                                 |
-| `locale`         | `string`                                | `undefined`           | Locale for formatting/sorting (e.g., `en-US`)                                               |
-| `className`      | `string`                                | `undefined`           | Additional CSS classes                                                                      |
+| Prop                   | Type                                         | Default               | Description                                                                                 |
+| ---------------------- | -------------------------------------------- | --------------------- | ------------------------------------------------------------------------------------------- |
+| `columns`              | `Column[]`                                   | Required              | Column definitions                                                                          |
+| `data`                 | `Record<string, any>[]`                      | Required              | Row data                                                                                    |
+| `rowIdKey`             | `string`                                     | `undefined`           | **⚠️ Strongly Recommended:** Key in each row used for stable React keys (see warning below) |
+| `defaultSort`          | `{ by?: string; direction?: 'asc' \| 'desc' }` | `undefined`           | Initial sort (uncontrolled)                                                                 |
+| `sort`                 | `{ by?: string; direction?: 'asc' \| 'desc' }` | `undefined`           | Controlled sort state                                                                       |
+| `onSortChange`         | `(next) => void`                             | `undefined`           | Controlled sort change handler                                                              |
+| `isLoading`            | `boolean`                                    | `false`               | Show loading skeleton                                                                       |
+| `emptyMessage`         | `string`                                     | `"No data available"` | Empty state message                                                                         |
+| `maxHeight`            | `string`                                     | `undefined`           | Max height with vertical scroll                                                             |
+| `footerActions`        | `Action[] \| ActionsConfig`                  | `undefined`           | Surface-level actions rendered below the table                                              |
+| `onFooterAction`       | `(actionId: string) => void`                 | `undefined`           | Footer action click handler                                                                 |
+| `onBeforeFooterAction` | `(actionId: string) => boolean \| Promise<boolean>` | `undefined`    | Preflight hook to gate footer actions. Return `false` to cancel.                            |
+| `locale`               | `string`                                     | `undefined`           | Locale for formatting/sorting (e.g., `en-US`)                                               |
+| `className`            | `string`                                     | `undefined`           | Additional CSS classes                                                                      |
 
 > **⚠️ Critical: Always provide `rowIdKey` for dynamic data**
 >
@@ -215,37 +214,53 @@ interface Column {
 - `tertiary`: Completely hidden on mobile (optional/advanced fields)
 - No priority specified: Auto-assigned (first 2 columns = primary, rest = secondary)
 
-### Action
+### Footer Actions
 
-````typescript
+Footer actions provide surface-level CTAs that apply to the table as a whole. Use these for operations like "Export", "Sync", or "Clear selection".
+
+```typescript
 interface Action {
   id: string                       // Action identifier
   label: string                    // Button text
   variant?: 'default' | 'secondary' | 'ghost' | 'destructive'
-  requiresConfirmation?: boolean   // Metadata only; use onBeforeAction to confirm
+  confirmLabel?: string            // Two-step confirm label (optional)
 }
+```
 
-Confirmation is application policy, not table behavior. Use `onBeforeAction` to implement confirmation flows the way your app prefers.
+The `confirmLabel` field enables a built-in two-step confirmation pattern - the button shows the original label, then changes to the confirm label when clicked. The action only fires on the second click (or auto-cancels after the timeout).
 
-Examples:
-
-1) Native confirm (zero deps)
+**Example: Footer actions with confirmation**
 
 ```tsx
 <DataTable
-  actions={[{ id: 'delete', label: 'Delete', variant: 'destructive', requiresConfirmation: true }]}
-  onBeforeAction={({ action, row }) => action.requiresConfirmation ? window.confirm(`Delete ${String((row as any).name ?? 'item')}?`) : true}
-  onAction={(id, row) => performAction(id, row)}
+  columns={columns}
+  data={rows}
+  footerActions={[
+    { id: "export", label: "Export CSV", variant: "secondary" },
+    { id: "sync", label: "Sync", variant: "default" },
+    { id: "clear", label: "Clear All", confirmLabel: "Confirm Clear", variant: "destructive" },
+  ]}
+  onFooterAction={(actionId) => {
+    if (actionId === "export") exportToCsv(rows);
+    if (actionId === "clear") clearAllRows();
+  }}
 />
-````
+```
 
-2. Your modal system (Radix, Headless UI, custom)
+For custom confirmation flows (modals, etc.), use `onBeforeFooterAction`:
 
-Create a `useConfirm()` hook that returns `confirm({ title, body }) => Promise<boolean>` and call it in `onBeforeAction`.
-
-An optional Radix recipe is provided at `components/ui/confirm.tsx`.
-
-````
+```tsx
+<DataTable
+  footerActions={[{ id: "delete", label: "Delete All", variant: "destructive" }]}
+  onBeforeFooterAction={(actionId) => {
+    if (actionId === "delete") {
+      return window.confirm("Delete all items?");
+    }
+    return true;
+  }}
+  onFooterAction={(actionId) => performAction(actionId)}
+/>
+```
 
 ## Examples
 
@@ -381,28 +396,25 @@ onSortChange={(next) => {
 }}
 ```
 
-### With Actions
+### With Footer Actions
 
 ```tsx
 <DataTable
   columns={columns}
   data={rows}
-  actions={[
-    { id: "view", label: "View", variant: "secondary" },
-    { id: "edit", label: "Edit" },
-    { id: "delete", label: "Delete", variant: "destructive" },
+  footerActions={[
+    { id: "export", label: "Export", variant: "secondary" },
+    { id: "refresh", label: "Refresh", variant: "default" },
   ]}
-  onAction={(actionId, row) => {
-    if (actionId === "view") {
-      console.log("Viewing:", row);
-    } else if (actionId === "delete") {
-      console.log("Deleting:", row);
+  onFooterAction={(actionId) => {
+    if (actionId === "export") {
+      console.log("Exporting data...");
+    } else if (actionId === "refresh") {
+      console.log("Refreshing...");
     }
   }}
 />
 ```
-
-**Note:** 1-2 actions show as inline buttons. 3+ actions show in a dropdown menu.
 
 ### Loading State
 
@@ -646,7 +658,6 @@ The DataTable component has **strict type separation** between serializable and 
 interface DataTableSerializableProps<T> {
   columns: Column<T>[];
   data: T[];
-  actions?: Action[];
   layout?: 'auto' | 'table' | 'cards';
   rowIdKey?: string;
   defaultSort?: { by?: string; direction?: "asc" | "desc" };
@@ -661,7 +672,9 @@ interface DataTableSerializableProps<T> {
 interface DataTableClientProps<T> {
   isLoading?: boolean;
   className?: string;
-  onAction?: (actionId: string, row: T) => void;
+  footerActions?: Action[] | ActionsConfig;
+  onFooterAction?: (actionId: string) => void;
+  onBeforeFooterAction?: (actionId: string) => boolean | Promise<boolean>;
   onSortChange?: (next: { by?: string; direction?: "asc" | "desc" }) => void;
 }
 
@@ -689,7 +702,8 @@ const serializableProps: DataTableSerializableProps = parseSerializableDataTable
 // Combine with React-specific props
 const clientProps: DataTableClientProps = {
   isLoading: false,
-  onAction: (id, row) => handleAction(id, row),
+  footerActions: [{ id: "export", label: "Export" }],
+  onFooterAction: (id) => handleAction(id),
   onSortChange: setSort
 }
 
@@ -776,7 +790,7 @@ Here's how to structure tool call payloads for the DataTable:
 }
 ```
 
-**Example 2: With formatting and actions**
+**Example 2: With rich formatting**
 
 ```json
 {
@@ -819,16 +833,6 @@ Here's how to structure tool call payloads for the DataTable:
     { "symbol": "AAPL", "price": 178.25, "change": 2.5, "status": "up" },
     { "symbol": "GOOGL", "price": 142.8, "change": -1.2, "status": "down" },
     { "symbol": "MSFT", "price": 420.55, "change": 0.1, "status": "stable" }
-  ],
-  "actions": [
-    { "id": "view", "label": "View Details", "variant": "secondary" },
-    { "id": "buy", "label": "Buy", "variant": "default" },
-    {
-      "id": "sell",
-      "label": "Sell",
-      "variant": "destructive",
-      "requiresConfirmation": true
-    }
   ],
   "emptyMessage": "No stocks available"
 }
@@ -877,22 +881,21 @@ import { parseSerializableDataTable } from "@/components/tool-ui/data-table/sche
 // In your tool UI component
 function StockTableToolUI({ result }: { result: unknown }) {
   // Validate and parse the LLM's response
-  const { columns, data, actions } = parseSerializableDataTable(result);
+  const { columns, data } = parseSerializableDataTable(result);
 
   return (
     <DataTable
       columns={columns}
       data={data}
-      actions={actions}
-      onAction={(actionId, row, context) => {
-        // Your React handler - not serializable
-        if (actionId === "view") {
-          context?.sendMessage?.(`Show details for ${row.symbol}`);
+      footerActions={[
+        { id: "export", label: "Export CSV", variant: "secondary" },
+        { id: "refresh", label: "Refresh", variant: "default" },
+      ]}
+      onFooterAction={(actionId) => {
+        if (actionId === "export") {
+          exportToCsv(data);
         }
       }}
-      // Controlled sorting (optional)
-      // sort={sort}
-      // onSortChange={setSort}
     />
   );
 }
@@ -933,20 +936,6 @@ import { sortData } from "@/components/tool-ui/data-table";
 const sorted = sortData(rows, "price", "desc");
 ```
 
-### getActionLabel
-
-Generate accessible labels for action buttons:
-
-```tsx
-import { getActionLabel } from "@/components/tool-ui/data-table";
-
-getActionLabel("View", { name: "Widget" });
-// => "View for Widget"
-
-getActionLabel("Delete", { id: 123, title: "My Item" }, "title");
-// => "Delete for My Item"
-```
-
 ## Responsive Behavior
 
 The DataTable automatically adapts to **container size** (not viewport size) using CSS container queries. This allows it to work correctly in viewport simulators and constrained layouts.
@@ -962,7 +951,6 @@ The DataTable automatically adapts to **container size** (not viewport size) usi
   - Secondary columns in expanded section (tap to reveal)
   - Tertiary columns hidden
   - Large touch targets (44px minimum)
-  - Actions moved to expanded section
   - **Stable IDs:** Accordion state persists across sorting/filtering using `rowIdKey`
 
 **Breakpoint:** 768px (Tailwind `@md`)
@@ -1038,7 +1026,6 @@ The DataTable component is designed with comprehensive accessibility support for
 
 - Each row: `"Row N: [primary value]"` (e.g., "Row 1: AAPL")
 - Each data cell: `"[Column label]: [value]"` (e.g., "Price: $174.50")
-- Action buttons: `"[Action] [primary value]"` (e.g., "Delete AAPL")
 - Expandable sections: `"Row details"` region
 
 **ARIA Relationships:**
@@ -1156,10 +1143,13 @@ const tools = {
 // Render in chat
 <DataTable
   {...toolResult}
-  onAction={(actionId, row) => {
-    if (actionId === 'view') {
-      // Trigger follow-up interaction
-      sendMessage(`Show detailed info for ${row.symbol}`)
+  footerActions={[
+    { id: "export", label: "Export", variant: "secondary" },
+  ]}
+  onFooterAction={(actionId) => {
+    if (actionId === 'export') {
+      // Export the data
+      exportToCsv(toolResult.data);
     }
   }}
 />

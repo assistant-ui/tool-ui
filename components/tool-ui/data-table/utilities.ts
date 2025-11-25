@@ -67,21 +67,6 @@ export function sortData<T, K extends Extract<keyof T, string>>(
 }
 
 /**
- * Generate accessible label for action button
- */
-export function getActionLabel(
-  actionLabel: string,
-  row: Record<
-    string,
-    string | number | boolean | null | (string | number | boolean | null)[]
-  >,
-  identifierKey?: string,
-): string {
-  const identifier = getRowIdentifier(row, identifierKey);
-  return identifier ? `${actionLabel} for ${identifier}` : `${actionLabel} row`;
-}
-
-/**
  * Return a human-friendly identifier for a row using common keys
  *
  * Accepts any JSON-serializable primitive or array of primitives.
@@ -110,24 +95,6 @@ export function getRowIdentifier(
   }
 
   return String(candidate).trim();
-}
-
-/**
- * Build a standard confirmation description string for destructive/confirm dialogs.
- * Reuses the row identifier when available.
- */
-export function getConfirmDescription(
-  row: Record<
-    string,
-    string | number | boolean | null | (string | number | boolean | null)[]
-  >,
-  actionLabel?: string,
-  identifierKey?: string,
-): string {
-  const id = getRowIdentifier(row, identifierKey);
-  const actionText = actionLabel ?? "this action";
-  const base = id ? `${actionText} for ${id}` : actionText;
-  return `This action cannot be undone. This will ${base.toLowerCase()}.`;
 }
 
 /**

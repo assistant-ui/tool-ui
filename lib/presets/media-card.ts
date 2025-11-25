@@ -1,10 +1,12 @@
 import type { SerializableMediaCard } from "@/components/tool-ui/media-card";
+import type { SerializableAction } from "@/components/tool-ui/shared";
 
 export interface MediaCardConfig {
   card: SerializableMediaCard;
+  footerActions?: SerializableAction[];
 }
 
-export type MediaCardPresetName = "image" | "video" | "audio" | "link";
+export type MediaCardPresetName = "image" | "video" | "audio" | "link" | "actions";
 
 const imagePreset: MediaCardConfig = {
   card: {
@@ -99,11 +101,43 @@ const linkPreset: MediaCardConfig = {
   },
 };
 
+const actionsPreset: MediaCardConfig = {
+  card: {
+    surfaceId: "media-card-preview-actions",
+    assetId: "media-card-actions",
+    kind: "image",
+    src: "https://images.unsplash.com/photo-1518770660439-4636190af475?w=1200&auto=format&fit=crop",
+    alt: "Circuit board with processor chip",
+    title: "System architecture diagram",
+    description:
+      "A detailed overview of the microprocessor layout and memory subsystem.",
+    ratio: "16:9",
+    domain: "unsplash.com",
+    createdAtISO: "2025-03-15T10:00:00.000Z",
+    source: {
+      label: "Tech archives",
+      iconUrl: "https://api.dicebear.com/7.x/shapes/svg?seed=tech",
+      url: "https://assistant-ui.com",
+    },
+  },
+  footerActions: [
+    { id: "download", label: "Download", variant: "secondary" },
+    { id: "share", label: "Share", variant: "default" },
+    {
+      id: "delete",
+      label: "Delete",
+      confirmLabel: "Confirm delete",
+      variant: "destructive",
+    },
+  ],
+};
+
 export const mediaCardPresets: Record<MediaCardPresetName, MediaCardConfig> = {
   image: imagePreset,
   video: videoPreset,
   audio: audioPreset,
   link: linkPreset,
+  actions: actionsPreset,
 };
 
 export const mediaCardPresetDescriptions: Record<MediaCardPresetName, string> =
@@ -112,4 +146,5 @@ export const mediaCardPresetDescriptions: Record<MediaCardPresetName, string> =
     video: "Video preview with metadata, duration, and media controls",
     audio: "Audio clip with optional poster artwork and duration metadata",
     link: "Rich link preview using OpenGraph data",
+    actions: "Image with footer action buttons and confirmation",
   };

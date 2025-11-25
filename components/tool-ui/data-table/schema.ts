@@ -1,15 +1,9 @@
 import { z } from "zod";
 import { SurfaceIdSchema } from "../shared";
-import type { Action, Column, DataTableProps, RowData } from "./types";
+import type { Column, DataTableProps, RowData } from "./types";
 
 const alignEnum = z.enum(["left", "right", "center"]);
 const priorityEnum = z.enum(["primary", "secondary", "tertiary"]);
-const actionVariantEnum = z.enum([
-  "default",
-  "secondary",
-  "ghost",
-  "destructive",
-]);
 
 const layoutEnum = z.enum(["auto", "table", "cards"]);
 
@@ -128,13 +122,6 @@ export const serializableDataSchema = z.record(
   z.union([jsonPrimitive, z.array(jsonPrimitive)]),
 );
 
-export const serializableActionSchema = z.object({
-  id: z.string(),
-  label: z.string(),
-  variant: actionVariantEnum.optional(),
-  requiresConfirmation: z.boolean().optional(),
-});
-
 /**
  * Zod schema for validating DataTable payloads from LLM tool calls.
  *
@@ -142,17 +129,16 @@ export const serializableActionSchema = z.object({
  * - surfaceId: Unique identifier for this surface in the conversation
  * - columns: Column definitions (keys, labels, formatting, etc.)
  * - data: Data rows (primitives only - no functions or class instances)
- * - actions: Action button definitions (ids, labels, variants)
  * - layout: Optional layout override ('auto' | 'table' | 'cards')
  *
- * Non-serializable props like `onAction`, `onSortChange`, `className`, and `isLoading`
+ * Non-serializable props like `onSortChange`, `className`, and `isLoading`
  * must be provided separately in your React component.
  *
  * @example
  * ```ts
  * const result = serializableDataTableSchema.safeParse(llmResponse)
  * if (result.success) {
- *   // result.data contains validated surfaceId, columns, data, and actions
+ *   // result.data contains validated surfaceId, columns, and data
  * }
  * ```
  */
@@ -160,7 +146,6 @@ export const serializableDataTableSchema = z.object({
   surfaceId: SurfaceIdSchema,
   columns: z.array(serializableColumnSchema),
   data: z.array(serializableDataSchema),
-  actions: z.array(serializableActionSchema).optional(),
   layout: layoutEnum.optional(),
 });
 
@@ -170,15 +155,15 @@ export const serializableDataTableSchema = z.object({
  * This type includes only JSON-serializable data that can come from LLM tool calls:
  * - Column definitions (format configs, alignment, labels, etc.)
  * - Row data (primitives: strings, numbers, booleans, null, string arrays)
- * - Action definitions (button labels and variants)
  *
  * Excluded from this type:
- * - Event handlers (`onAction`, `onSortChange`)
- * - React-specific props (`className`, `isLoading`)
+ * - Event handlers (`onSortChange`, `onFooterAction`)
+ * - React-specific props (`className`, `isLoading`, `footerActions`)
  *
  * @example
  * ```ts
  * const payload: SerializableDataTable = {
+ *   surfaceId: "data-table-expenses",
  *   columns: [
  *     { key: "name", label: "Name" },
  *     { key: "price", label: "Price", format: { kind: "currency", currency: "USD" } }
@@ -200,10 +185,10 @@ export type SerializableDataTable = z.infer<typeof serializableDataTableSchema>;
  * 3. Returns typed serializable props ready to pass to the `<DataTable>` component
  *
  * The returned props are **serializable only** - you must provide client-side props
- * separately (onAction, onSortChange, isLoading, className).
+ * separately (onSortChange, isLoading, className, footerActions, onFooterAction).
  *
  * @param input - Unknown data to validate (typically from an LLM tool call)
- * @returns Validated and typed DataTable serializable props (surfaceId, columns, data, actions)
+ * @returns Validated and typed DataTable serializable props (surfaceId, columns, data)
  * @throws Error with validation details if input is invalid
  *
  * @example
@@ -214,7 +199,8 @@ export type SerializableDataTable = z.infer<typeof serializableDataTableSchema>;
  *   return (
  *     <DataTable
  *       {...serializableProps}
- *       onAction={(id, row) => console.log(id, row)}
+ *       footerActions={[{ id: "export", label: "Export" }]}
+ *       onFooterAction={(id) => console.log(id)}
  *     />
  *   )
  * }
@@ -222,17 +208,16 @@ export type SerializableDataTable = z.infer<typeof serializableDataTableSchema>;
  */
 export function parseSerializableDataTable(
   input: unknown,
-): Pick<DataTableProps<RowData>, "surfaceId" | "columns" | "data" | "actions" | "layout"> {
+): Pick<DataTableProps<RowData>, "surfaceId" | "columns" | "data" | "layout"> {
   const res = serializableDataTableSchema.safeParse(input);
   if (!res.success) {
     throw new Error(`Invalid DataTable payload: ${res.error.message}`);
   }
-  const { surfaceId, columns, data, actions, layout } = res.data;
+  const { surfaceId, columns, data, layout } = res.data;
   return {
     surfaceId,
     columns: columns as unknown as Column<RowData>[],
     data: data as RowData[],
-    actions: actions as Action[] | undefined,
     layout,
   };
 }

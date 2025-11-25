@@ -4,7 +4,7 @@ export interface OptionListConfig {
   optionList: SerializableOptionList;
 }
 
-export type OptionListPresetName = "export" | "travel" | "notifications" | "receipt";
+export type OptionListPresetName = "export" | "travel" | "notifications" | "receipt" | "actions";
 
 const exportPreset: OptionListConfig = {
   optionList: {
@@ -88,12 +88,47 @@ const receiptPreset: OptionListConfig = {
   },
 };
 
+const actionsPreset: OptionListConfig = {
+  optionList: {
+    surfaceId: "option-list-preview-actions",
+    options: [
+      {
+        id: "immediate",
+        label: "Deploy now",
+        description: "Push to production immediately",
+      },
+      {
+        id: "scheduled",
+        label: "Schedule",
+        description: "Set a specific deployment time",
+      },
+      {
+        id: "canary",
+        label: "Canary release",
+        description: "Roll out to 10% of users first",
+      },
+    ],
+    selectionMode: "single",
+    footerActions: [
+      { id: "cancel", label: "Cancel", variant: "ghost" },
+      { id: "preview", label: "Preview", variant: "secondary" },
+      {
+        id: "deploy",
+        label: "Deploy",
+        confirmLabel: "Confirm deploy",
+        variant: "default",
+      },
+    ],
+  },
+};
+
 export const optionListPresets: Record<OptionListPresetName, OptionListConfig> =
   {
     export: exportPreset,
     travel: travelPreset,
     notifications: notificationsPreset,
     receipt: receiptPreset,
+    actions: actionsPreset,
   };
 
 export const optionListPresetDescriptions: Record<
@@ -104,4 +139,5 @@ export const optionListPresetDescriptions: Record<
   travel: "Single-select with radio styling",
   notifications: "Multi-select with reset/confirm",
   receipt: "Confirmed selection (receipt state)",
+  actions: "Footer actions with confirmation pattern",
 };

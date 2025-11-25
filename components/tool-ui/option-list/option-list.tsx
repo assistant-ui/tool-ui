@@ -114,7 +114,7 @@ function OptionItem({
     >
       <span
         className={cn(
-          "bg-primary/5 absolute inset-0 -mx-3 -my-0.5 rounded-lg opacity-0 group-hover:opacity-100",
+          "bg-primary/5 absolute inset-0 -mx-3 -my-0.5 rounded-xl opacity-0 group-hover:opacity-100",
         )}
       />
       <div className="relative flex items-start gap-3">
@@ -375,7 +375,7 @@ export function OptionList({
     >
       <div
         className={cn(
-          "group/list bg-card/60 flex w-full flex-col overflow-hidden rounded-2xl border px-5 py-2.5 shadow-xs",
+          "group/list bg-card flex w-full flex-col overflow-hidden rounded-2xl border px-4 py-1.5 shadow-xs",
         )}
         role="listbox"
         aria-multiselectable={selectionMode === "multi"}

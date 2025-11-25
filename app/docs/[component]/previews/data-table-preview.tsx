@@ -6,11 +6,6 @@ import { ComponentPreviewShell } from "../component-preview-shell";
 import { PresetSelector } from "../../_components/preset-selector";
 import { CodePanel } from "../../_components/code-panel";
 import { DataTable } from "@/components/tool-ui/data-table";
-import type {
-  Action,
-  DataTableRowData,
-  RowData,
-} from "@/components/tool-ui/data-table";
 import { PresetName, presets, SortState } from "@/lib/presets/data-table";
 
 export function DataTablePreview({
@@ -72,33 +67,6 @@ export function DataTablePreview({
     [router, pathname, searchParams],
   );
 
-  const handleBeforeAction = useCallback(
-    async ({
-      action,
-      row,
-    }: {
-      action: Action;
-      row: DataTableRowData | RowData;
-    }) => {
-      if (action.requiresConfirmation) {
-        const candidateKeys = [currentConfig?.rowIdKey, "title", "name"]
-          .filter(Boolean)
-          .map(String);
-        const labelCandidate = candidateKeys
-          .map((key) => (row as Record<string, unknown>)[key])
-          .find((value): value is string => typeof value === "string");
-        const label = labelCandidate ?? "this item";
-
-        return window.confirm(
-          `Proceed with ${action.label.toLowerCase()} for ${label}?`,
-        );
-      }
-
-      return true;
-    },
-    [currentConfig?.rowIdKey],
-  );
-
   return (
     <ComponentPreviewShell
       withContainer={withContainer}
@@ -118,10 +86,9 @@ export function DataTablePreview({
           onSortChange={setSort}
           isLoading={loading}
           emptyMessage={emptyMessage}
-          onBeforeAction={handleBeforeAction}
-          onAction={(actionId, row) => {
-            console.log("Action:", actionId, "Row:", row);
-            alert(`Action: ${actionId}\nRow: ${JSON.stringify(row, null, 2)}`);
+          footerActions={currentConfig.footerActions}
+          onFooterAction={(actionId) => {
+            console.log("Footer action:", actionId);
           }}
         />
       )}

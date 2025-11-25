@@ -47,7 +47,6 @@ export function useDataTable<T extends object = RowData>() {
 export function DataTable<T extends object = RowData>({
   columns,
   data: rawData,
-  actions,
   rowIdKey,
   layout = "auto",
   defaultSort,
@@ -56,8 +55,6 @@ export function DataTable<T extends object = RowData>({
   isLoading = false,
   maxHeight,
   messageId,
-  onBeforeAction,
-  onAction,
   onSortChange,
   className,
   locale,
@@ -133,13 +130,10 @@ export function DataTable<T extends object = RowData>({
   const contextValue: DataTableContextValue<T> = {
     columns,
     data,
-    actions,
     rowIdKey,
     sortBy,
     sortDirection,
     toggleSort: handleSort,
-    onBeforeAction,
-    onAction,
     messageId,
     isLoading,
     locale: resolvedLocale,
@@ -161,7 +155,7 @@ export function DataTable<T extends object = RowData>({
   return (
     <DataTableContext.Provider value={contextValue}>
       <div
-        className={cn("@container w-full rounded-lg shadow-xs", className)}
+        className={cn("@container w-full", className)}
         data-layout={layout}
       >
         {/* Table view: visible at @md+ in auto mode */}
@@ -197,7 +191,6 @@ export function DataTable<T extends object = RowData>({
                           style={col.width ? { width: col.width } : undefined}
                         />
                       ))}
-                      {actions && actions.length > 0 && <col />}
                     </colgroup>
                   )}
                   {isLoading ? (
@@ -295,16 +288,12 @@ function DataTableContent() {
 }
 
 function DataTableEmpty({ message }: { message: string }) {
-  const { columns, actions } = useDataTable();
+  const { columns } = useDataTable();
 
   return (
     <TableBody>
       <TableRow className="bg-card h-24 text-center">
-        <TableCell
-          colSpan={columns.length + (actions ? 1 : 0)}
-          role="status"
-          aria-live="polite"
-        >
+        <TableCell colSpan={columns.length} role="status" aria-live="polite">
           {message}
         </TableCell>
       </TableRow>
@@ -313,7 +302,7 @@ function DataTableEmpty({ message }: { message: string }) {
 }
 
 function DataTableSkeleton() {
-  const { columns, actions } = useDataTable();
+  const { columns } = useDataTable();
 
   return (
     <>
@@ -326,11 +315,6 @@ function DataTableSkeleton() {
                 <div className="bg-muted/50 h-4 animate-pulse rounded" />
               </TableCell>
             ))}
-            {actions && (
-              <TableCell>
-                <div className="bg-muted/50 h-8 w-20 animate-pulse rounded" />
-              </TableCell>
-            )}
           </TableRow>
         ))}
       </TableBody>

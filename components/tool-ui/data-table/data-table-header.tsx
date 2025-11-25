@@ -37,7 +37,7 @@ function SortIcon({ state }: { state?: "asc" | "desc" }) {
 }
 
 export function DataTableHeader() {
-  const { columns, actions } = useDataTable();
+  const { columns } = useDataTable();
 
   return (
     <TooltipProvider delayDuration={300}>
@@ -50,11 +50,6 @@ export function DataTableHeader() {
               columnIndex={columnIndex}
             />
           ))}
-          {actions && actions.length > 0 && (
-            <TableHead scope="col" className="pr-6 text-right">
-              Actions
-            </TableHead>
-          )}
         </TableRow>
       </TableHeader>
     </TooltipProvider>

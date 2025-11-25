@@ -5,10 +5,9 @@ import {
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-  Button,
 } from "./_ui";
 import { useDataTable } from "./data-table";
-import type { Column, DataTableRowData, Action } from "./types";
+import type { Column, DataTableRowData } from "./types";
 import { renderFormattedValue } from "./formatters";
 import { getRowIdentifier } from "./utilities";
 
@@ -48,27 +47,11 @@ export function DataTableAccordionCard({
   row,
   index,
 }: DataTableAccordionCardProps) {
-  const {
-    columns,
-    actions,
-    onAction,
-    onBeforeAction,
-    messageId,
-    locale,
-    rowIdKey,
-  } = useDataTable();
+  const { columns, locale, rowIdKey } = useDataTable();
 
   const { primary, secondary } = categorizeColumns(columns);
 
-  const handleAction = async (action: Action, e?: React.MouseEvent) => {
-    e?.stopPropagation();
-    const proceed =
-      (await onBeforeAction?.({ action, row, messageId })) ?? true;
-    if (!proceed) return;
-    onAction?.(action.id, row, { messageId });
-  };
-
-  if (secondary.length === 0 && (!actions || actions.length === 0)) {
+  if (secondary.length === 0) {
     return <SimpleCard row={row} columns={primary} index={index} />;
   }
 
@@ -208,26 +191,6 @@ export function DataTableAccordionCard({
             </dl>
           )}
 
-          {actions && actions.length > 0 && onAction && (
-            <div
-              className="flex flex-wrap gap-2"
-              role="group"
-              aria-label="Row actions"
-            >
-              {actions.map((action) => (
-                <Button
-                  key={action.id}
-                  variant={action.variant || "default"}
-                  size="sm"
-                  onClick={(e) => handleAction(action, e)}
-                  className="min-h-[44px] sm:min-h-auto"
-                  aria-label={`${action.label} ${primaryValue}`}
-                >
-                  {action.label}
-                </Button>
-              ))}
-            </div>
-          )}
         </AccordionContent>
       </AccordionItem>
     </Accordion>
@@ -246,17 +209,9 @@ function SimpleCard({
   columns: Column[];
   index: number;
 }) {
-  const { onAction, onBeforeAction, actions, messageId, locale, rowIdKey } =
-    useDataTable();
+  const { locale, rowIdKey } = useDataTable();
   const primaryColumn = columns[0];
   const otherColumns = columns.slice(1);
-
-  const handleAction = async (action: Action) => {
-    const proceed =
-      (await onBeforeAction?.({ action, row, messageId })) ?? true;
-    if (!proceed) return;
-    onAction?.(action.id, row, { messageId });
-  };
 
   const stableRowId =
     getRowIdentifier(row, rowIdKey ? String(rowIdKey) : undefined) ||
@@ -268,79 +223,56 @@ function SimpleCard({
   const rowLabel = `Row ${index + 1}: ${primaryValue}`;
 
   return (
-    <>
-      <div
-        className="flex flex-col gap-2 rounded-lg border p-4"
-        role="listitem"
-        aria-label={rowLabel}
-      >
-        {primaryColumn && (
-          <div
-            role="heading"
-            aria-level={3}
-            aria-label={`${primaryColumn.label}: ${row[primaryColumn.key]}`}
+    <div
+      className="flex flex-col gap-2 rounded-lg border p-4"
+      role="listitem"
+      aria-label={rowLabel}
+    >
+      {primaryColumn && (
+        <div
+          role="heading"
+          aria-level={3}
+          aria-label={`${primaryColumn.label}: ${row[primaryColumn.key]}`}
+        >
+          {renderFormattedValue({
+            value: row[primaryColumn.key],
+            column: primaryColumn,
+            row,
+            locale,
+          })}
+        </div>
+      )}
+
+      {otherColumns.map((col) => (
+        <div
+          key={col.key}
+          className="flex items-start justify-between gap-4"
+          role="group"
+        >
+          <span
+            className="text-muted-foreground"
+            id={`row-${stableRowId}-${String(col.key)}-label`}
+          >
+            {col.label}:
+          </span>
+          <span
+            className={cn(
+              "min-w-0 break-words",
+              col.align === "right" && "text-right",
+              col.align === "center" && "text-center",
+            )}
+            role="cell"
+            aria-labelledby={`row-${stableRowId}-${String(col.key)}-label`}
           >
             {renderFormattedValue({
-              value: row[primaryColumn.key],
-              column: primaryColumn,
+              value: row[col.key],
+              column: col,
               row,
               locale,
             })}
-          </div>
-        )}
-
-        {otherColumns.map((col) => (
-          <div
-            key={col.key}
-            className="flex items-start justify-between gap-4"
-            role="group"
-          >
-            <span
-              className="text-muted-foreground"
-              id={`row-${stableRowId}-${String(col.key)}-label`}
-            >
-              {col.label}:
-            </span>
-            <span
-              className={cn(
-                "min-w-0 break-words",
-                col.align === "right" && "text-right",
-                col.align === "center" && "text-center",
-              )}
-              role="cell"
-              aria-labelledby={`row-${stableRowId}-${String(col.key)}-label`}
-            >
-              {renderFormattedValue({
-                value: row[col.key],
-                column: col,
-                row,
-                locale,
-              })}
-            </span>
-          </div>
-        ))}
-
-        {actions && actions.length > 0 && onAction && (
-          <div
-            className="mt-3 flex flex-wrap gap-2 border-t pt-3"
-            role="group"
-            aria-label="Row actions"
-          >
-            {actions.map((action) => (
-              <Button
-                key={action.id}
-                variant={action.variant || "default"}
-                size="sm"
-                onClick={() => handleAction(action)}
-                className="min-h-[44px] sm:min-h-auto"
-                aria-label={`${action.label} ${primaryValue}`}
-              >
-                {action.label}
-              </Button>
-            ))}
-          </div>
-        )}
-      </div>
-    </>
+          </span>
+        </div>
+      ))}
+    </div>
   );
 }

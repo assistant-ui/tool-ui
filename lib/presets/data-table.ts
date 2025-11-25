@@ -1,4 +1,5 @@
-import type { Column, Action, RowPrimitive } from "@/components/tool-ui/data-table";
+import type { Column, RowPrimitive } from "@/components/tool-ui/data-table";
+import type { SerializableAction } from "@/components/tool-ui/shared";
 
 type GenericRow = Record<string, RowPrimitive>;
 export type SortState = { by?: string; direction?: "asc" | "desc" };
@@ -7,12 +8,12 @@ export interface DataTableConfig {
   surfaceId: string;
   columns: Column[];
   data: GenericRow[];
-  actions?: Action[];
   rowIdKey?: string;
   defaultSort?: SortState;
   maxHeight?: string;
   emptyMessage?: string;
   locale?: string;
+  footerActions?: SerializableAction[];
 }
 
 const stockColumns: Column<GenericRow>[] = [
@@ -105,11 +106,6 @@ export const sampleStocks: DataTableConfig = {
   surfaceId: "data-table-preview-stocks",
   columns: stockColumns,
   data: stockData,
-  actions: [
-    { id: "edit", label: "Edit", variant: "secondary" },
-    { id: "buy", label: "Buy", variant: "default" },
-    { id: "sell", label: "Sell", variant: "destructive" },
-  ],
   rowIdKey: "symbol",
 };
 
@@ -205,16 +201,6 @@ const sampleTasks: DataTableConfig = {
   surfaceId: "data-table-preview-tasks",
   columns: taskColumns,
   data: taskData,
-  actions: [
-    { id: "edit", label: "Edit", variant: "secondary" },
-    { id: "complete", label: "Complete", variant: "default" },
-    {
-      id: "delete",
-      label: "Delete",
-      variant: "destructive",
-      requiresConfirmation: true,
-    },
-  ],
   rowIdKey: "title",
 };
 
@@ -387,13 +373,107 @@ const sampleEmpty: DataTableConfig = {
   emptyMessage: "No rows yet. Connect a data source.",
 };
 
+const actionsColumns: Column<GenericRow>[] = [
+  { key: "id", label: "Ticket", priority: "primary" },
+  { key: "subject", label: "Subject", priority: "primary", truncate: true },
+  {
+    key: "priority",
+    label: "Priority",
+    priority: "primary",
+    format: {
+      kind: "status",
+      statusMap: {
+        urgent: { tone: "danger", label: "Urgent" },
+        high: { tone: "warning", label: "High" },
+        normal: { tone: "neutral", label: "Normal" },
+      },
+    },
+  },
+  {
+    key: "status",
+    label: "Status",
+    priority: "secondary",
+    format: {
+      kind: "status",
+      statusMap: {
+        open: { tone: "info", label: "Open" },
+        pending: { tone: "warning", label: "Pending" },
+        escalated: { tone: "danger", label: "Escalated" },
+      },
+    },
+  },
+  {
+    key: "waitTime",
+    label: "Wait Time",
+    abbr: "Wait",
+    align: "right",
+    priority: "secondary",
+    format: { kind: "number", decimals: 0, unit: "h" },
+  },
+  {
+    key: "createdAt",
+    label: "Created",
+    priority: "tertiary",
+    format: { kind: "date", dateFormat: "relative" },
+  },
+];
+
+const actionsData: GenericRow[] = [
+  {
+    id: "TKT-4521",
+    subject: "Payment failed - urgent customer escalation",
+    priority: "urgent",
+    status: "escalated",
+    waitTime: 36,
+    createdAt: "2025-11-23T08:15:00.000Z",
+  },
+  {
+    id: "TKT-4518",
+    subject: "Cannot access account after password reset",
+    priority: "high",
+    status: "open",
+    waitTime: 12,
+    createdAt: "2025-11-24T14:30:00.000Z",
+  },
+  {
+    id: "TKT-4515",
+    subject: "Billing discrepancy on November invoice",
+    priority: "high",
+    status: "pending",
+    waitTime: 8,
+    createdAt: "2025-11-24T18:45:00.000Z",
+  },
+  {
+    id: "TKT-4512",
+    subject: "Feature request: export to PDF",
+    priority: "normal",
+    status: "open",
+    waitTime: 4,
+    createdAt: "2025-11-25T09:00:00.000Z",
+  },
+];
+
+const sampleActions: DataTableConfig = {
+  surfaceId: "data-table-preview-actions",
+  columns: actionsColumns,
+  data: actionsData,
+  rowIdKey: "id",
+  defaultSort: { by: "waitTime", direction: "desc" },
+  footerActions: [
+    { id: "assign", label: "Assign to me", variant: "default" },
+    { id: "escalate", label: "Escalate", variant: "secondary" },
+    { id: "export", label: "Export report", variant: "secondary" },
+  ],
+};
+
 export type PresetName =
   | "stocks"
   | "tasks"
   | "metrics"
   | "resources"
   | "localized"
-  | "empty";
+  | "empty"
+  | "actions";
 
 export const presets: Record<PresetName, DataTableConfig> = {
   stocks: sampleStocks,
@@ -402,13 +482,15 @@ export const presets: Record<PresetName, DataTableConfig> = {
   resources: sampleResources,
   localized: sampleLocalized,
   empty: sampleEmpty,
+  actions: sampleActions,
 };
 
 export const presetDescriptions: Record<PresetName, string> = {
-  stocks: "Market data with currency, delta, percent, and actions",
-  tasks: "Status pills, boolean badges, and confirmation-required actions",
+  stocks: "Market data with currency, delta, and percent formatting",
+  tasks: "Status pills, boolean badges, and date formatting",
   metrics: "Numbers with units, inverted deltas, and default sorting",
   resources: "Links, tag arrays, and relative dates",
   localized: "German locale formatting for numbers and currency",
   empty: "Empty state messaging with configurable text",
+  actions: "Support ticket queue with footer actions",
 };

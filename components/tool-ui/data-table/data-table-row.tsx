@@ -1,12 +1,9 @@
 "use client";
 
 import * as React from "react";
-import { cn } from "./_cn";
 import { useDataTable } from "./data-table";
 import { DataTableCell } from "./data-table-cell";
-import { DataTableActions } from "./data-table-actions";
-import { TableRow, TableCell } from "./_ui";
-import { DATA_TABLE_CELL_PADDING } from "./data-table-styles";
+import { TableRow } from "./_ui";
 import type { DataTableRowData } from "./types";
 
 interface DataTableRowProps {
@@ -15,7 +12,7 @@ interface DataTableRowProps {
 }
 
 export function DataTableRow({ row, className }: DataTableRowProps) {
-  const { columns, actions } = useDataTable();
+  const { columns } = useDataTable();
 
   return (
     <TableRow className={className}>
@@ -28,11 +25,6 @@ export function DataTableRow({ row, className }: DataTableRowProps) {
           columnIndex={columnIndex}
         />
       ))}
-      {actions && actions.length > 0 && (
-        <TableCell className={cn(DATA_TABLE_CELL_PADDING, "text-right")}>
-          <DataTableActions row={row} />
-        </TableCell>
-      )}
     </TableRow>
   );
 }

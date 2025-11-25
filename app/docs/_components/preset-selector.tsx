@@ -42,12 +42,14 @@ const dataTablePresetNames: PresetName[] = [
   "resources",
   "localized",
   "empty",
+  "actions",
 ];
 
 const socialPostPresetNames: SocialPostPresetName[] = [
   "x",
   "instagram",
   "linkedin",
+  "actions",
 ];
 
 const mediaCardPresetNames: MediaCardPresetName[] = [
@@ -55,12 +57,15 @@ const mediaCardPresetNames: MediaCardPresetName[] = [
   "image",
   "video",
   "audio",
+  "actions",
 ];
 
 const optionListPresetNames: OptionListPresetName[] = [
   "export",
   "travel",
   "notifications",
+  "receipt",
+  "actions",
 ];
 
 export function PresetSelector({

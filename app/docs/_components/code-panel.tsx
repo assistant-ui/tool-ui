@@ -46,12 +46,6 @@ export function CodePanel({
       `  data={${JSON.stringify(config.data, null, 4).replace(/\n/g, "\n  ")}}`,
     );
 
-    if (config.actions && config.actions.length > 0) {
-      props.push(
-        `  actions={${JSON.stringify(config.actions, null, 4).replace(/\n/g, "\n  ")}}`,
-      );
-    }
-
     if (config.rowIdKey) {
       props.push(`  rowIdKey="${config.rowIdKey}"`);
     }
@@ -78,6 +72,13 @@ export function CodePanel({
       props.push(`  locale="${config.locale}"`);
     }
 
+    if (config.footerActions && config.footerActions.length > 0) {
+      props.push(
+        `  footerActions={${JSON.stringify(config.footerActions, null, 4).replace(/\n/g, "\n  ")}}`,
+      );
+      props.push(`  onFooterAction={(actionId) => console.log("Action:", actionId)}`);
+    }
+
     // Generate sorting guidance only when relying on controlled state
     const sortingComment: string[] = [];
     if (!config.defaultSort && sort?.by && sort?.direction) {
@@ -95,15 +96,7 @@ export function CodePanel({
     const sortingExplanation =
       sortingComment.length > 0 ? `\n${sortingComment.join("\n")}\n` : "";
 
-    const requiresConfirmation = config.actions?.some(
-      (action) => action.requiresConfirmation,
-    );
-
-    const confirmationHint = requiresConfirmation
-      ? `\n// Tip: pair actions that set requiresConfirmation with onBeforeAction to trigger confirms.\n`
-      : "";
-
-    return `${sortingExplanation}<DataTable\n${props.join("\n")}\n/>${confirmationHint}`;
+    return `${sortingExplanation}<DataTable\n${props.join("\n")}\n/>`;
   };
 
   const generateSocialPostCode = () => {
@@ -251,6 +244,13 @@ export function CodePanel({
 
     if (isLoading) {
       props.push(`  isLoading={true}`);
+    }
+
+    if (mediaCardConfig.footerActions && mediaCardConfig.footerActions.length > 0) {
+      props.push(
+        `  footerActions={${JSON.stringify(mediaCardConfig.footerActions, null, 4).replace(/\n/g, "\n  ")}}`,
+      );
+      props.push(`  onFooterAction={(actionId) => console.log("Action:", actionId)}`);
     }
 
     return `<MediaCard\n${props.join("\n")}\n/>`;

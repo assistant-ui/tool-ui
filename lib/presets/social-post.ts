@@ -183,13 +183,46 @@ export const sampleLinkedIn: SocialPostConfig = {
   },
 };
 
-export type SocialPostPresetName = "x" | "instagram" | "linkedin";
+const sampleActions: SocialPostConfig = {
+  post: {
+    surfaceId: "social-post-preview-actions",
+    postId: "actions-post-1",
+    platform: "x",
+    author: {
+      name: "DevOps Weekly",
+      handle: "devopsweekly",
+      avatarUrl: "https://api.dicebear.com/7.x/shapes/svg?seed=devops",
+      verified: true,
+    },
+    text: "Announcing our new CI/CD pipeline templates! Check them out and let us know what you think.",
+    entities: {
+      hashtags: ["DevOps", "CICD", "Automation"],
+      mentions: [],
+    },
+    stats: {
+      likes: 128,
+      comments: 24,
+      reposts: 45,
+      views: 3200,
+    },
+    createdAtISO: "2025-11-24T16:30:00.000Z",
+    actions: [
+      { id: "like", label: "Like", variant: "ghost" },
+      { id: "bookmark", label: "Bookmark", variant: "ghost" },
+      { id: "share", label: "Share", variant: "secondary" },
+      { id: "report", label: "Report", variant: "destructive" },
+    ],
+  },
+};
+
+export type SocialPostPresetName = "x" | "instagram" | "linkedin" | "actions";
 
 export const socialPostPresets: Record<SocialPostPresetName, SocialPostConfig> =
   {
     x: sampleXQuoted,
     instagram: sampleInstagram,
     linkedin: sampleLinkedIn,
+    actions: sampleActions,
   };
 
 export const socialPostPresetDescriptions: Record<
@@ -199,4 +232,5 @@ export const socialPostPresetDescriptions: Record<
   x: "X with quoted post and verified badge",
   instagram: "Instagram post with multiple images",
   linkedin: "LinkedIn post with link preview",
+  actions: "Post with multiple action button variants",
 };
