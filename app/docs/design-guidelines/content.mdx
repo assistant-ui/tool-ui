@@ -4,151 +4,216 @@ import { DocsHeader } from "../_components/docs-header";
 
 Design principles and interaction patterns for Tool UIs.
 
-> **Note:** We're continuously expanding these guidelines with concrete examples and patterns from real usage.
+## The Collaboration Model
 
-## Component Library Policy
+Traditional UI is two-party: **User ↔ Interface**. Tool UI introduces a third participant.
 
-Tool UI surfaces **must** be composed exclusively from the shadcn/ui wrappers defined in `components/ui/*`.  
-This keeps styling and accessibility consistent across instances and lets us theme everything centrally.
+```
+              User
+             ↙    ↘
+       controls    observes
+           ↓          ↓
+      Surface ←————→ Assistant
+             mediates
+```
 
-### Allowed primitives
+The assistant isn't just generating UI—it contextualizes, interprets, and narrates. The surface isn't a standalone widget—it's one half of a presentation that only makes sense with the assistant's words around it.
 
-- `Button`, `ButtonGroup`
-- `Card` and `CardHeader/CardContent/CardFooter`
-- `Dialog`
-- `DropdownMenu`
-- `Input`, `InputGroup`, `Textarea`
-- `Label`, `Select`, `Separator`
-- `Skeleton`, `Switch`, `Table`
-- `Tooltip`, `Badge`, `Avatar`, `Accordion`, `Item`
+### Division of Labor
 
-> Need a new primitive? Add the shadcn wrapper under `components/ui/` and document it before using it in Tool UIs.
+| Capability | Surface | Assistant |
+|------------|---------|-----------|
+| Display structured data | ✓ | |
+| Enable precise interaction | ✓ | |
+| Provide context and explanation | | ✓ |
+| Reference conversation history | | ✓ |
+| Execute side effects | ✓ (triggers) | ✓ (initiates) |
 
-### Fork, edit, promote
-
-- Use `pnpm fork:instance <source> <target>` to clone a manifest for a new experiment.
-- Draft schema or UI changes locally via the JSON editor in the instance view (stored in localStorage).
-- Run `pnpm cloud:deploy <slug> <deploymentId>` (or `cloud:promote`) to track Cloud deployments in the manifest once stable.
+**Key insight:** Surfaces and assistants are complementary. Don't make surfaces explain themselves (that's narration). Don't make assistants render complex data inline (that's what surfaces are for).
 
 
 ## Core Principles
 
-### One Move per Surface
+### One Intent per Surface
 
-Each Tool UI supports a single action: show data, capture decisions, adjust parameters, or display state.
+Each surface answers one question. Secondary interactions may support that intent but must not compete with it.
 
-Split multi-purpose surfaces into separate Tool UIs to keep them focused and clear.
+| Level | Definition | Example |
+|-------|------------|---------|
+| **Atom** | Single role, single action | Confirmation prompt |
+| **Molecule** | Primary role + supporting interactions | Table with row actions |
+| **Organism** | Multiple competing intents | Avoid—split it up |
 
-**Example:** Render search results separately from filtering controls. Show the table first, then offer filters as needed.
+**The test:** If you removed the secondary interactions, would the surface still make sense?
+
+- DataTable without row actions? Still useful. ✓ Molecule
+- OptionList without confirm button? Useless. ✓ Atom (button is essential)
+- Dashboard with charts AND filters AND actions? Split it. ✗ Organism
 
 ### Inline, Not Destination
 
-Tool UIs live inside messages, supporting the current turn without becoming separate destinations.
+Surfaces live inside messages, supporting the current turn without becoming separate destinations.
 
-Keep users in the conversation context. Richer views should be explicit actions, not defaults.
+Keep users in the conversation. Richer views should be explicit actions, not defaults.
 
 ### Assistant-Anchored
 
-The assistant introduces, interprets, and follows up on every Tool UI.
+The assistant introduces, interprets, and follows up on every surface. Each surface is a collaboration: the UI provides structure, the assistant provides context.
 
-Each Tool UI represents a collaboration: the UI provides structure, the assistant provides context and guidance.
+**Narration phases:**
 
-**Narration patterns:**
-
-- **Before:** Set context → *"Found 12 matching PRs, highlighting urgent ones"*
-- **During:** Explain transitions → *"Q3 spike driven by Enterprise tier"*
-- **After:** Summarize outcomes → *"Changes applied to main branch"*
+| Phase | Purpose | When |
+|-------|---------|------|
+| **Introduction** | Set context before surface appears | Always |
+| **Annotation** | Explain patterns, anomalies | When helpful |
+| **Guidance** | Suggest actions for decisions | For Decision surfaces |
+| **Summary** | Recap outcomes | After side effects |
 
 ### Schema-Driven
 
-Tool UIs render from structured outputs matching a published schema. The schema is the contract, the UI its expression.
+Surfaces render from structured JSON matching a schema. The schema is the contract, the UI its expression.
 
 **Schema requirements:**
 
-- **Complete:** Include all data for rendering and state restoration (labels, IDs, configs, status)
-- **Semantic:** Use machine-readable labels that translate to natural language
-- **Temporal:** Add timestamps for staleness detection
+- **Complete:** Include all data for rendering and state restoration
+- **Semantic:** Machine-readable labels that translate to natural language
+- **Temporal:** Add `asOf` timestamps for staleness detection
 
 ### Receipts for Side Effects
 
-Any Tool UI triggering side effects (send, delete, spend, apply, call APIs) must leave a durable receipt.
+Any action changing something outside the conversation must produce a receipt.
 
-**Receipts must capture:**
+```typescript
+interface Receipt {
+  outcome: "success" | "partial" | "failed" | "cancelled";
+  summary: string;
+  identifiers?: Record<string, string>;
+  at: string; // ISO timestamp
+}
+```
 
-- **Outcome:** Success, partial, failed, or cancelled
-- **Action:** What was chosen and its scope
-- **Details:** IDs, counts, amounts, targets, timestamps
+Receipts are proof—they let users verify, assistants reference, and provide audit trails.
 
-Permanent references and audit trail.
+
+## Design Laws
+
+Physical and cognitive constraints for embedded UIs.
+
+### Law 1: Vertical Budget
+
+Communicate purpose within **300px of vertical space**.
+
+| Zone | Content |
+|------|---------|
+| First 300px | Primary value—what it shows, what user can do |
+| Beyond 300px | Progressive detail, expanded content |
+| Maximum | ~600px before requiring scroll/pagination |
+
+### Law 2: Width Tax
+
+Every horizontal element competes for 400-600px of space.
+
+| Pattern | Viability |
+|---------|-----------|
+| Single column | Preferred |
+| Two columns | OK for key-value pairs |
+| Three+ columns | Tables only, with scroll fallback |
+| Inline form fields | Avoid; stack vertically |
+
+### Law 3: Touch Targets
+
+Minimum **44×44px** for all interactive elements.
+
+| Element | Minimum | Recommended |
+|---------|---------|-------------|
+| Buttons | 44×44px | 44×48px |
+| Icon buttons | 44×44px | 48×48px |
+| List items | 44px height | 48-56px height |
+
+### Law 4: Choice Limits
+
+Limit visible choices aggressively. The assistant handles overflow.
+
+| Context | Maximum |
+|---------|---------|
+| Primary actions | 2-3 |
+| Option list items | 5-7 |
+| Table rows (initial) | 5-7 |
+| Filter options | 4-6 |
+
+### Law 5: Feedback Timing
+
+| Duration | Required Feedback |
+|----------|-------------------|
+| < 100ms | State change (press, selection) |
+| 100ms - 1s | Loading indicator |
+| 1s - 10s | Progress indicator + status |
+| > 10s | Progress bar + cancel option |
+
+### Law 6: Safety Friction
+
+Match friction to consequence:
+
+| Action Type | Friction |
+|-------------|----------|
+| Read-only | None |
+| Reversible | None |
+| Irreversible, low-stakes | Confirmation step |
+| Irreversible, high-stakes | Two-step + summary |
 
 
 ## Lifecycle
 
-Tool UIs follow a predictable lifecycle. Components may skip phases.
+Surfaces follow a predictable lifecycle. Components may skip phases.
 
-### Invocation
+### Pending
 
-Initial rendering of the Tool UI shell.
+Initial shell, awaiting data.
 
-- **Clear purpose:** First frame reveals intent (*"12 matching items"*, *"Approve changes?"*)
-- **Context setting:** Assistant provides context in surrounding message
-- **Visual stability:** Initial frame stays stable as data loads
+- Show skeleton matching eventual layout
+- Maintain visual stability as data loads
+- First frame should reveal intent
 
-### Loading and Streaming
+### Ready
 
-Data arrives in chunks or streams.
+Data loaded, surface interactive.
 
-- **Skeleton states:** Match eventual layout structure
-- **Layout stability:** Maintain consistent outer dimensions during load
-- **Progressive disclosure:** Show first items quickly, add "View more" for long results
+- User can view and act
+- Visually indicate uncommitted selections
+- Gate actions until requirements met
 
-### Interactive Window
+### Committing
 
-User can modify inputs, select actions, or approve changes.
+User action in progress.
 
-- **Pending state:** Visually indicate uncommitted state
-- **Input validation:** Gate actions until requirements met
-- **Destructive safety:** Two-step confirmation for dangerous actions
-- **Assistant collaboration:** Surface for proposing changes and highlighting options
+- Show progress on triggered action
+- Display scope of what's affected
+- Show destination for side effects
 
-### Commit and Side Effects
+### Committed
 
-Execution of actions with external impact.
+Action complete, surface settled.
 
-- **Scope visibility:** Show what's being affected (rows, files, accounts)
-- **Target clarity:** Show destination (branch, environment, system)
-- **Progress tracking:** Display steps/phases, not just spinners
-- **State transition:** Move from interactive to receipt after commit
+- Show receipt with outcome
+- Controls become disabled (Static mode)
+- Remains referenceable by assistant
 
-### Receipt State
+### Stale
 
-Compact, permanent summary after completion.
+Data may be outdated.
 
-- **Outcome display:** Success, partial, failed, or cancelled
-- **Action summary:** What was chosen and what changed
-- **Reference-able:** Easy for assistant to cite later (*"As shown in the merge receipt above"*)
-
-Receipts appear as collapsed prompts or final non-interactive states.
-
-### Stale, Retried, Superseded
-
-Outdated or replaced Tool UIs.
-
-- **Temporal markers:** Show when data was captured (*"As of 2:41 PM"*)
-- **Refresh options:** Provide rerun capability
-- **Update strategy:**
-  - Simple refreshes → Update in place
-  - Structural changes → Create new UI, mark old as superseded
-- **Visual hierarchy:** De-emphasize superseded UIs while keeping them visible for audit
+- Show "As of" timestamp
+- Provide refresh option
+- Visual de-emphasis
 
 
 ## Roles
 
-Every Tool UI has a single role defining *why* it exists. Name the role first.
+Every surface has a primary role. Name it first.
 
-### Information Surfaces
+### Information
 
-Structure tool output for scannability.
+Display data for understanding.
 
 **Examples:** Tables, lists, metric summaries, code diffs, media previews
 
@@ -156,11 +221,10 @@ Structure tool output for scannability.
 - Prioritize decision-enabling fields
 - Use visual encoding (badges, deltas) to reduce cognitive load
 - Default to glanceable views with progressive detail
-- **Lifecycle:** Invocation → Loading → Interactive → Stale/Superseded
 
-### Decision Surfaces
+### Decision
 
-Request user choice.
+Capture user choice.
 
 **Examples:** Approval prompts, send/discard dialogs, multi-select actions
 
@@ -168,110 +232,113 @@ Request user choice.
 - One visually dominant primary action
 - Two-step confirmation for destructive actions
 - Replace controls with receipts after completion
-- **Must reach:** Clear committed/receipt state
 
-### Control Surfaces
+### Control
 
-Adjust tool or assistant behavior.
+Adjust parameters.
 
-**Examples:** Filters, sort controls, date ranges, thresholds, option toggles
+**Examples:** Filters, sort controls, date ranges, thresholds
 
 **Guidelines:**
 - Safe defaults with clear current state
 - Opinionated controls (chips, presets) over raw inputs
 - Cheap to apply, easy to revert
-- **Longevity:** Stay interactive longer; supersede when context shifts
 
-### State and Observability Surfaces
+### State
 
-Show tool and assistant activity.
+Show activity and progress.
 
-**Examples:** Progress indicators, tool call timelines, activity logs, error panels
+**Examples:** Progress indicators, tool call timelines, activity logs
 
 **Guidelines:**
 - Visible but not overwhelming
-- Debugging detail (tool, inputs, errors)
-- Tightly coupled to related messages
-- **Long operations:** Update state, avoid endless spinners
-
-### Composite Surfaces
-
-Blend multiple roles.
-
-**Examples:** Table with row actions, media preview with quick actions
-
-**Rules:**
-- Name primary role first
-- Secondary roles must serve the primary
-- Must be describable as "X with Y"
-- Side effects require receipts
+- Update during long operations
+- Debugging detail for tool calls
 
 
-## Conversation and Tool UIs
+## Conversation Coherence
 
-Tool UIs and chat express the same intent through different modalities.
+### Every Action Has a Sentence
 
-### Every Control Has a Sentence
+Important actions must be expressible as natural language:
 
-Important actions must map to simple sentences:
+| Button | Sentence |
+|--------|----------|
+| "Confirm" | "Yes, go ahead" |
+| "Filter to errors" | "Only show errors" |
+| ↻ (refresh) | "Refresh this" |
 
-- *"Apply only high-priority rows"*
-- *"Send to selected recipients"*
-- *"Filter to last 30 days"*
+If the assistant can't describe an action, the UI is too opaque.
 
-If the assistant can't describe an action in words, the UI is too opaque.
+### Surfaces are Referenceable
 
-### Referencing Surfaces in Conversation
-
-Enable pointing at specific UIs and elements:
+Enable pointing at specific elements:
 
 - *"Sort the table above by price"*
 - *"Remove the second option"*
-- *"Explain changes in the third file"*
+- *"Explain the third row"*
 
 **Requirements:**
-- Stable UI identity in transcript
-- Stable element identifiers for runtime resolution
-- Ambiguous references resolve to most recent/active surface
+- Stable surface identity in transcript
+- Stable element identifiers
+- Ambiguous references resolve to most recent surface
 
-### Editing and Rerunning
+### Supersession
 
-Support iterative refinement:
+When a new surface replaces an older one:
 
-**Common patterns:** Add/remove filters, adjust thresholds, update drafts
-
-**Update strategies:**
-- **Minor changes:** Update in place (*"Table now shows only active items"*)
-- **Major changes:** Create new UI, reference previous (*"Updated version below"*)
-
-Support re-invocation with different parameters.
-
-### Assistant Narration
-
-Assistant messages are part of the UI experience.
-
-- **Before:** Set context → *"Found 12 results, highlighting urgent ones"*
-- **During:** Narrate transitions → *"Applying approved changes"*
-- **After:** Summarize outcomes → *"Table updated with your preferences"*
-
-Clear labels, structure, and receipts enable natural narration.
+1. Old surface becomes visually de-emphasized
+2. Old surface becomes Static (actions disabled)
+3. Old surface shows "Updated below" indicator
+4. Old surface remains in scroll history
 
 
 ## Design Checklist
 
-Validate new Tool UIs against:
+### Identity
+- [ ] Role declared (Information, Decision, Control, State)?
+- [ ] Primary intent clear?
+- [ ] If composite, primary role dominates?
 
-### Core Design
+### Lifecycle
+- [ ] Phases mapped?
+- [ ] Transitions defined?
+- [ ] Staleness handled?
 
-- [ ] **Role declaration**: Information, Decision, Control, State, or Composite?
-- [ ] **Lifecycle mapping**: Which phases? What triggers transitions?
-- [ ] **Receipt generation**: Side effects must produce durable receipts
+### Constraints
+- [ ] Primary value in first 300px?
+- [ ] Works in 400-600px width?
+- [ ] Touch targets 44px+?
+- [ ] Choices limited to 5-7?
 
-### Technical Requirements
+### Narration
+- [ ] Assistant can introduce it?
+- [ ] Assistant can add insight?
+- [ ] Assistant can reference it later?
 
-- [ ] **Schema-driven**: Fully reconstructable from schema alone
-- [ ] **Conversational mapping**: Every action expressible as a sentence
-- [ ] **Staleness handling**: Clear aging indicators and refresh options
-- [ ] **Supersession strategy**: When to update vs. replace
+### Actions
+- [ ] Every action speakable?
+- [ ] Friction matches stakes?
+- [ ] Side effects produce receipts?
 
-If a Tool UI fails multiple items, simplify, split, or redesign.
+### Accessibility
+- [ ] Full keyboard navigation?
+- [ ] Screen reader support?
+- [ ] 4.5:1 contrast minimum?
+- [ ] Respects prefers-reduced-motion?
+
+### Schema
+- [ ] Zod schema defined?
+- [ ] Runtime props (callbacks) separated?
+- [ ] Parser function exported?
+
+
+## Component Library
+
+Surfaces must use shadcn/ui wrappers from `components/ui/*` for consistent styling and accessibility.
+
+### Allowed primitives
+
+`Button`, `Card`, `Dialog`, `DropdownMenu`, `Input`, `Label`, `Select`, `Skeleton`, `Table`, `Tooltip`, `Badge`, `Avatar`, `Accordion`
+
+> Need a new primitive? Add the shadcn wrapper under `components/ui/` first.
