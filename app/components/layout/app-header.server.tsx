@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { FaGithub } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
+import { LogoMark } from "@/components/ui/logo";
 import { ActiveNavLink } from "./header-active-link.client";
 
 interface ResponsiveHeaderProps {
@@ -26,7 +27,8 @@ export function ResponsiveHeader({ rightContent }: ResponsiveHeaderProps) {
   return (
     <div className="flex gap-4 pt-[calc(env(safe-area-inset-top)+0.5rem)] pb-3 md:gap-8 md:pt-8">
       <div className="flex w-fit shrink-0 items-end justify-start gap-3 md:items-center">
-        <Link href="/">
+        <Link href="/" className="flex items-center gap-2">
+          <LogoMark className="size-6" />
           <h1 className="-mb-1 text-xl font-bold md:mb-0">Tool UI</h1>
         </Link>
         <Badge
