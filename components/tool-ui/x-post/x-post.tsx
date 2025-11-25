@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { BadgeCheck, Heart, Share } from "lucide-react";
+import { Heart, Share } from "lucide-react";
 import { cn } from "@/lib/ui/cn";
 import { Button } from "@/components/ui/button";
 import {
@@ -14,12 +14,11 @@ import {
   ActionButtons,
   normalizeActionsConfig,
   type ActionsProp,
+  formatRelativeTime,
+  formatCount,
+  getDomain,
 } from "../shared";
 import type { XPostData, XPostMedia, XPostLinkPreview } from "./schema";
-
-// ============================================================================
-// Types
-// ============================================================================
 
 export interface XPostProps {
   post: XPostData;
@@ -28,37 +27,6 @@ export interface XPostProps {
   footerActions?: ActionsProp;
   onFooterAction?: (actionId: string) => void;
 }
-
-// ============================================================================
-// Utilities
-// ============================================================================
-
-function formatRelativeTime(iso: string): string {
-  const seconds = Math.round((Date.now() - new Date(iso).getTime()) / 1000);
-  if (seconds < 60) return `${seconds}s`;
-  if (seconds < 3600) return `${Math.round(seconds / 60)}m`;
-  if (seconds < 86400) return `${Math.round(seconds / 3600)}h`;
-  if (seconds < 604800) return `${Math.round(seconds / 86400)}d`;
-  return `${Math.round(seconds / 604800)}w`;
-}
-
-function formatCount(n: number): string {
-  if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`;
-  if (n >= 1_000) return `${(n / 1_000).toFixed(1)}K`;
-  return String(n);
-}
-
-function getDomain(url: string): string {
-  try {
-    return new URL(url).hostname.replace(/^www\./, "");
-  } catch {
-    return "";
-  }
-}
-
-// ============================================================================
-// Sub-components
-// ============================================================================
 
 function Avatar({ src, alt }: { src: string; alt: string }) {
   return (
@@ -162,7 +130,7 @@ function PostMedia({
   return (
     <button
       type="button"
-      className="bg-muted mt-3 w-full overflow-hidden rounded-xl"
+      className="bg-muted mt-2 w-full overflow-hidden rounded-xl"
       style={{ aspectRatio }}
       onClick={() => onOpen?.(0)}
     >
@@ -194,7 +162,7 @@ function PostLinkPreview({ preview }: { preview: XPostLinkPreview }) {
       href={preview.url}
       target="_blank"
       rel="noopener noreferrer"
-      className="hover:bg-muted/50 mt-3 block overflow-hidden rounded-xl border transition-colors"
+      className="hover:bg-muted/50 mt-2 block overflow-hidden rounded-xl border transition-colors"
     >
       {preview.imageUrl && (
         // eslint-disable-next-line @next/next/no-img-element
@@ -222,29 +190,31 @@ function PostLinkPreview({ preview }: { preview: XPostLinkPreview }) {
 
 function QuotedPostCard({ post }: { post: XPostData }) {
   return (
-    <div className="hover:bg-muted/30 mt-3 rounded-xl border p-3 transition-colors">
-      <div className="flex items-center gap-2">
+    <div className="hover:bg-muted/30 mt-2 rounded-xl border p-3 transition-colors">
+      <div className="flex min-w-0 items-center gap-1">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={post.author.avatarUrl}
           alt={`${post.author.name} avatar`}
-          className="size-5 rounded-full object-cover"
+          className="size-4 rounded-full object-cover"
         />
-        <span className="font-semibold">{post.author.name}</span>
+        <span className="truncate font-semibold">{post.author.name}</span>
         {post.author.verified && (
-          <BadgeCheck className="size-4 text-blue-500" />
+          <VerifiedBadge className="size-3.5 shrink-0 text-blue-500" />
         )}
-        <span className="text-muted-foreground">@{post.author.handle}</span>
+        <span className="text-muted-foreground truncate">
+          @{post.author.handle}
+        </span>
         {post.createdAt && (
           <>
-            <span className="text-muted-foreground">·</span>
-            <span className="text-muted-foreground">
+            <span className="text-muted-foreground shrink-0">·</span>
+            <span className="text-muted-foreground shrink-0">
               {formatRelativeTime(post.createdAt)}
             </span>
           </>
         )}
       </div>
-      {post.text && <p className="mt-2">{post.text}</p>}
+      {post.text && <p className="mt-1.5">{post.text}</p>}
       {post.media?.[0] && (
         // eslint-disable-next-line @next/next/no-img-element
         <img
@@ -309,22 +279,17 @@ function PostActions({
   stats?: XPostData["stats"];
   onAction: (action: string) => void;
 }) {
-  const [liked, setLiked] = React.useState(false);
-
   return (
     <TooltipProvider delayDuration={300}>
-      <div className="mt-1 flex items-center gap-4">
+      <div className="mt-3 flex items-center gap-6">
         <ActionButton
           icon={Heart}
           label="Like"
           count={stats?.likes}
-          active={liked}
-          hoverColor="hover:text-red-500 hover:bg-red-500/10"
-          activeColor="text-red-500"
-          onClick={() => {
-            setLiked(!liked);
-            onAction("like");
-          }}
+          active={stats?.isLiked}
+          hoverColor="hover:text-pink-500 hover:bg-pink-500/10"
+          activeColor="text-pink-500 fill-pink-500"
+          onClick={() => onAction("like")}
         />
         <ActionButton
           icon={Share}
@@ -336,10 +301,6 @@ function PostActions({
     </TooltipProvider>
   );
 }
-
-// ============================================================================
-// Main Component
-// ============================================================================
 
 export function XPost({
   post,
@@ -354,7 +315,7 @@ export function XPost({
   );
 
   return (
-    <div className={cn("flex flex-col gap-3", className)}>
+    <div className={cn("flex flex-col gap-1.5", className)}>
       <article className="bg-card rounded-xl border p-3 shadow-sm">
         <div className="flex gap-3">
           <Avatar

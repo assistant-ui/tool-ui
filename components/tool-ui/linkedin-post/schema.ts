@@ -22,6 +22,7 @@ export const linkedInPostLinkPreviewSchema = z.object({
 
 export const linkedInPostStatsSchema = z.object({
   likes: z.number().optional(),
+  isLiked: z.boolean().optional(),
 });
 
 export interface LinkedInPostData {
@@ -46,7 +47,9 @@ export const linkedInPostSchema: z.ZodType<LinkedInPostData> = z.object({
 
 export type LinkedInPostAuthor = z.infer<typeof linkedInPostAuthorSchema>;
 export type LinkedInPostMedia = z.infer<typeof linkedInPostMediaSchema>;
-export type LinkedInPostLinkPreview = z.infer<typeof linkedInPostLinkPreviewSchema>;
+export type LinkedInPostLinkPreview = z.infer<
+  typeof linkedInPostLinkPreviewSchema
+>;
 export type LinkedInPostStats = z.infer<typeof linkedInPostStatsSchema>;
 
 export function parseLinkedInPost(input: unknown): LinkedInPostData {

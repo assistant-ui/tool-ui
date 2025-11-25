@@ -24,6 +24,9 @@ export const xPostLinkPreviewSchema = z.object({
 
 export const xPostStatsSchema = z.object({
   likes: z.number().optional(),
+  isLiked: z.boolean().optional(),
+  isReposted: z.boolean().optional(),
+  isBookmarked: z.boolean().optional(),
 });
 
 export interface XPostData {

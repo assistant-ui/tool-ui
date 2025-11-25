@@ -15,6 +15,7 @@ export const instagramPostMediaSchema = z.object({
 
 export const instagramPostStatsSchema = z.object({
   likes: z.number().optional(),
+  isLiked: z.boolean().optional(),
 });
 
 export interface InstagramPostData {

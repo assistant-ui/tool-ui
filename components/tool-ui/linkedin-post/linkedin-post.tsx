@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { ThumbsUp, Share, MoreHorizontal } from "lucide-react";
+import { ThumbsUp, Share } from "lucide-react";
 import { cn } from "@/lib/ui/cn";
 import { Button } from "@/components/ui/button";
 import {
@@ -14,16 +14,15 @@ import {
   ActionButtons,
   normalizeActionsConfig,
   type ActionsProp,
+  formatRelativeTime,
+  formatCount,
+  getDomain,
 } from "../shared";
 import type {
   LinkedInPostData,
   LinkedInPostMedia,
   LinkedInPostLinkPreview,
 } from "./schema";
-
-// ============================================================================
-// Types
-// ============================================================================
 
 export interface LinkedInPostProps {
   post: LinkedInPostData;
@@ -32,37 +31,6 @@ export interface LinkedInPostProps {
   footerActions?: ActionsProp;
   onFooterAction?: (actionId: string) => void;
 }
-
-// ============================================================================
-// Utilities
-// ============================================================================
-
-function formatRelativeTime(iso: string): string {
-  const seconds = Math.round((Date.now() - new Date(iso).getTime()) / 1000);
-  if (seconds < 60) return `${seconds}s`;
-  if (seconds < 3600) return `${Math.round(seconds / 60)}m`;
-  if (seconds < 86400) return `${Math.round(seconds / 3600)}h`;
-  if (seconds < 604800) return `${Math.round(seconds / 86400)}d`;
-  return `${Math.round(seconds / 604800)}w`;
-}
-
-function formatCount(n: number): string {
-  if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`;
-  if (n >= 1_000) return `${(n / 1_000).toFixed(1)}K`;
-  return String(n);
-}
-
-function getDomain(url: string): string {
-  try {
-    return new URL(url).hostname.replace(/^www\./, "");
-  } catch {
-    return "";
-  }
-}
-
-// ============================================================================
-// Sub-components
-// ============================================================================
 
 function LinkedinLogo({ className }: { className?: string }) {
   return (
@@ -99,7 +67,7 @@ function Header({
       <img
         src={author.avatarUrl}
         alt={`${author.name} avatar`}
-        className="size-10 rounded-full object-cover"
+        className="size-12 rounded-full object-cover"
       />
       <div className="flex min-w-0 flex-1 flex-col leading-tight">
         <span className="text-sm font-semibold">{author.name}</span>
@@ -122,11 +90,28 @@ function Header({
 }
 
 function PostBody({ text }: { text?: string }) {
+  const [isExpanded, setIsExpanded] = React.useState(false);
+  const shouldTruncate = text && text.length > 280;
+
   if (!text) return null;
+
   return (
-    <p className="mt-3 text-sm leading-relaxed wrap-break-word whitespace-pre-wrap">
-      {text}
-    </p>
+    <div className="text-sm leading-relaxed wrap-break-word whitespace-pre-wrap">
+      {shouldTruncate && !isExpanded ? (
+        <>
+          {text.slice(0, 280)}
+          ...
+          <button
+            onClick={() => setIsExpanded(true)}
+            className="text-muted-foreground hover:text-foreground ml-1 font-medium hover:underline"
+          >
+            see more
+          </button>
+        </>
+      ) : (
+        text
+      )}
+    </div>
   );
 }
 
@@ -135,7 +120,7 @@ function PostMedia({ media }: { media: LinkedInPostMedia[] }) {
 
   const item = media[0];
   return (
-    <div className="mt-3 overflow-hidden rounded-lg">
+    <div className="overflow-hidden rounded-lg">
       {item.type === "image" ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img
@@ -166,7 +151,7 @@ function PostLinkPreview({ preview }: { preview: LinkedInPostLinkPreview }) {
       href={preview.url}
       target="_blank"
       rel="noopener noreferrer"
-      className="hover:bg-muted/50 mt-3 block overflow-hidden rounded-lg border transition-colors"
+      className="hover:bg-muted/50 block overflow-hidden rounded-lg border transition-colors"
     >
       {preview.imageUrl && (
         // eslint-disable-next-line @next/next/no-img-element
@@ -244,21 +229,16 @@ function PostActions({
   stats?: LinkedInPostData["stats"];
   onAction: (action: string) => void;
 }) {
-  const [liked, setLiked] = React.useState(false);
-
   return (
     <TooltipProvider delayDuration={300}>
-      <div className="mt-2 flex items-center gap-1 border-t pt-1.5">
+      <div className="mt-1 flex items-center gap-1 border-t pt-1.5">
         <ActionButton
           icon={ThumbsUp}
           label="Like"
-          active={liked}
+          active={stats?.isLiked}
           hoverColor="hover:bg-muted"
           activeColor="text-blue-600 fill-blue-600"
-          onClick={() => {
-            setLiked(!liked);
-            onAction("like");
-          }}
+          onClick={() => onAction("like")}
         />
         <ActionButton
           icon={Share}
@@ -270,10 +250,6 @@ function PostActions({
     </TooltipProvider>
   );
 }
-
-// ============================================================================
-// Main Component
-// ============================================================================
 
 export function LinkedInPost({
   post,
@@ -289,7 +265,7 @@ export function LinkedInPost({
 
   return (
     <div className={cn("flex flex-col gap-3", className)}>
-      <article className="bg-card rounded-lg border p-4 shadow-sm">
+      <article className="bg-card flex flex-col gap-3 rounded-lg border p-4 shadow-sm">
         <Header author={post.author} createdAt={post.createdAt} />
         <PostBody text={post.text} />
 

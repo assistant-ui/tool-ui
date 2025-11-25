@@ -14,12 +14,9 @@ import {
   ActionButtons,
   normalizeActionsConfig,
   type ActionsProp,
+  formatRelativeTime,
 } from "../shared";
 import type { InstagramPostData, InstagramPostMedia } from "./schema";
-
-// ============================================================================
-// Types
-// ============================================================================
 
 export interface InstagramPostProps {
   post: InstagramPostData;
@@ -28,29 +25,6 @@ export interface InstagramPostProps {
   footerActions?: ActionsProp;
   onFooterAction?: (actionId: string) => void;
 }
-
-// ============================================================================
-// Utilities
-// ============================================================================
-
-function formatRelativeTime(iso: string): string {
-  const seconds = Math.round((Date.now() - new Date(iso).getTime()) / 1000);
-  if (seconds < 60) return `${seconds}s`;
-  if (seconds < 3600) return `${Math.round(seconds / 60)}m`;
-  if (seconds < 86400) return `${Math.round(seconds / 3600)}h`;
-  if (seconds < 604800) return `${Math.round(seconds / 86400)}d`;
-  return `${Math.round(seconds / 604800)}w`;
-}
-
-function formatCount(n: number): string {
-  if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`;
-  if (n >= 1_000) return `${(n / 1_000).toFixed(1)}K`;
-  return String(n);
-}
-
-// ============================================================================
-// Sub-components
-// ============================================================================
 
 function InstagramLogo({ className }: { className?: string }) {
   const id = React.useId();
@@ -117,7 +91,7 @@ function Header({
   createdAt?: string;
 }) {
   return (
-    <header className="flex items-center gap-3 px-3 py-2">
+    <header className="flex items-center gap-3 p-3">
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src={author.avatarUrl}
@@ -155,68 +129,75 @@ function MediaGrid({
 }) {
   if (media.length === 0) return null;
 
+  const renderItem = (item: InstagramPostMedia, index: number) => (
+    <button
+      key={index}
+      type="button"
+      className="bg-muted relative block size-full overflow-hidden"
+      onClick={() => onOpen?.(index)}
+    >
+      {item.type === "image" ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={item.url}
+          alt={item.alt}
+          className="size-full object-cover"
+          loading="lazy"
+        />
+      ) : (
+        <video src={item.url} playsInline className="size-full object-cover" />
+      )}
+    </button>
+  );
+
   // Single image
   if (media.length === 1) {
-    const item = media[0];
     return (
-      <button
-        type="button"
-        className="bg-muted relative block aspect-square w-full"
-        onClick={() => onOpen?.(0)}
-      >
-        {item.type === "image" ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={item.url}
-            alt={item.alt}
-            className="size-full object-cover"
-            loading="lazy"
-          />
-        ) : (
-          <video
-            src={item.url}
-            controls
-            playsInline
-            className="size-full object-cover"
-          />
-        )}
-      </button>
+      <div className="aspect-square w-full overflow-hidden">
+        {renderItem(media[0], 0)}
+      </div>
     );
   }
 
-  // Grid for multiple images
+  // Two images (side by side)
+  if (media.length === 2) {
+    return (
+      <div className="grid aspect-square w-full grid-cols-2 gap-0.5 overflow-hidden">
+        {media.map(renderItem)}
+      </div>
+    );
+  }
+
+  // Three images (one big left, two small right)
+  if (media.length === 3) {
+    return (
+      <div className="grid aspect-square w-full grid-cols-2 gap-0.5 overflow-hidden">
+        <div className="h-full">{renderItem(media[0], 0)}</div>
+        <div className="grid h-full grid-rows-2 gap-0.5">
+          {media.slice(1).map((item, i) => (
+            <div key={i + 1} className="h-full">
+              {renderItem(item, i + 1)}
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  // Four or more (grid)
   return (
-    <div className="grid grid-cols-2 gap-0.5">
+    <div className="grid aspect-square w-full grid-cols-2 gap-0.5 overflow-hidden">
       {media.slice(0, 4).map((item, index) => (
-        <button
-          key={index}
-          type="button"
-          className="bg-muted relative block aspect-square w-full"
-          onClick={() => onOpen?.(index)}
-        >
-          {item.type === "image" ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={item.url}
-              alt={item.alt}
-              className="size-full object-cover"
-              loading="lazy"
-            />
-          ) : (
-            <video
-              src={item.url}
-              playsInline
-              className="size-full object-cover"
-            />
-          )}
+        <div key={index} className="relative h-full w-full">
+          {renderItem(item, index)}
           {index === 3 && media.length > 4 && (
-            <div className="absolute inset-0 flex items-center justify-center bg-black/50">
+            <div className="pointer-events-none absolute inset-0 flex items-center justify-center bg-black/50">
               <span className="text-2xl font-semibold text-white">
                 +{media.length - 4}
               </span>
             </div>
           )}
-        </button>
+        </div>
       ))}
     </div>
   );
@@ -225,9 +206,9 @@ function MediaGrid({
 function PostBody({ text }: { text?: string }) {
   if (!text) return null;
   return (
-    <p className="text-sm leading-relaxed wrap-break-word whitespace-pre-wrap">
+    <span className="text-sm leading-relaxed wrap-break-word whitespace-pre-wrap">
       {text}
-    </p>
+    </span>
   );
 }
 
@@ -256,10 +237,10 @@ function ActionButton({
             e.stopPropagation();
             onClick();
           }}
-          className={cn("h-auto p-2", hoverColor, active && activeColor)}
+          className={cn("h-auto", hoverColor, active && activeColor)}
           aria-label={label}
         >
-          <Icon className="size-6" />
+          <Icon className="size-5" />
         </Button>
       </TooltipTrigger>
       <TooltipContent>{label}</TooltipContent>
@@ -267,22 +248,23 @@ function ActionButton({
   );
 }
 
-function PostActions({ onAction }: { onAction: (action: string) => void }) {
-  const [liked, setLiked] = React.useState(false);
-
+function PostActions({
+  stats,
+  onAction,
+}: {
+  stats?: InstagramPostData["stats"];
+  onAction: (action: string) => void;
+}) {
   return (
     <TooltipProvider delayDuration={300}>
       <div className="flex items-center gap-1">
         <ActionButton
           icon={Heart}
           label="Like"
-          active={liked}
+          active={stats?.isLiked}
           hoverColor="hover:opacity-60"
-          activeColor="text-red-500"
-          onClick={() => {
-            setLiked(!liked);
-            onAction("like");
-          }}
+          activeColor="text-red-500 fill-red-500"
+          onClick={() => onAction("like")}
         />
         <ActionButton
           icon={Share}
@@ -294,17 +276,6 @@ function PostActions({ onAction }: { onAction: (action: string) => void }) {
     </TooltipProvider>
   );
 }
-
-function Stats({ likes }: { likes?: number }) {
-  if (likes === undefined) return null;
-  return (
-    <div className="text-sm font-semibold">{formatCount(likes)} likes</div>
-  );
-}
-
-// ============================================================================
-// Main Component
-// ============================================================================
 
 export function InstagramPost({
   post,
@@ -324,14 +295,18 @@ export function InstagramPost({
         <Header author={post.author} createdAt={post.createdAt} />
 
         {post.media && post.media.length > 0 && (
-          <MediaGrid media={post.media} />
+          <div className="mb-4">
+            <MediaGrid media={post.media} />
+          </div>
         )}
 
-        <div className="px-3 pb-3">
-          <PostActions onAction={(action) => onAction?.(action, post)} />
-          <Stats likes={post.stats?.likes} />
+        <div className="flex flex-col gap-2 px-3 pb-3">
+          <PostActions
+            stats={post.stats}
+            onAction={(action) => onAction?.(action, post)}
+          />
           {post.text && (
-            <div className="mt-1">
+            <div>
               <span className="text-sm font-semibold">
                 {post.author.handle}
               </span>{" "}

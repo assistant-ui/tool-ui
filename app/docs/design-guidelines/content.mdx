@@ -191,4 +191,4 @@ The receipt shows what the user chose. The assistant's follow-up confirms the ou
 - **Hidden mutations:** Actions that change state should produce visible receipts.
 - **Kitchen sinks:** If it needs tabs or navigation, consider breaking it into separate Tool UIs.
 - **Silent surfaces:** Always have the assistant introduce a Tool UI.
-- **Redundant narration:** The assistant shouldn't just describe what the surface already shows. It's more useful to add context or insight.
+- **Redundant narration:** The assistant shouldn't describe what the surface already shows. Conversely, the surface shouldn't echo what the assistant just said. If the assistant asks "Where to?", the surface doesn't need a header saying "Where to?" — just show the options. Divide the work: the assistant provides context, the surface provides structure.
