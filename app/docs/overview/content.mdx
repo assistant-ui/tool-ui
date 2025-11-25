@@ -28,13 +28,13 @@ Radix/shadcn (primitives) → **Tool UI** (conversation‑native components & sc
 - **Built for chat**: Mobile‑first, glanceable, minimal chrome; no in‑message navigation flows.
 - **Developer control**: Components render; **your app** owns side effects via callbacks/server actions.
 - **Type safety**: Serializable schemas on the server, parsers on the client; works great with AI SDK `InferUITools`.
-- **Lifecycle & time aware**: Clear phases and honest "As of …" markers; stale/superseded behavior is explicit.
+- **Lifecycle aware**: Clear phases from invocation through receipt; supersession behavior is explicit.
 
 ## Mental model
 
 See **[UI Guidelines](/docs/design-guidelines)** for the full philosophy. Quick summary:
 
-- **5 Fundamentals:** One intent · Inline · Schema‑first · Assistant‑anchored · Lifecycle & temporal honesty
+- **5 Fundamentals:** One intent · Inline · Schema‑first · Assistant‑anchored · Lifecycle aware
 - **Roles:** `information`, `decision`, `control`, `state`, `composite`
 - **Lifecycle:** `invocation → output‑pending → interactive → committing → receipt → errored`
 - **Conversation coherence:** Every important action ↔ one **canonical sentence**; side effects yield a **durable receipt** (status, summary, identifiers, timestamp)
@@ -53,7 +53,6 @@ Assistant calls tool → JSON output → <Component {...props} /> → User inter
 
 **What this demonstrates:**
 - `serializableMediaCardSchema` from `@tool-ui/media-card` ensures type-safe output
-- The returned object includes temporal metadata (`asOf`) for freshness tracking
 - Actions are defined with both UI labels and canonical sentences for conversation coherence
 - The schema guarantees the frontend receives reconstructable, addressable data
 
@@ -76,14 +75,13 @@ export async function POST(req: Request) {
         outputSchema: serializableMediaCardSchema,
         async execute({ url }) {
           return {
-            id: "link-1",
+            surfaceId: "link-preview-1",
+            assetId: "link-1",
             kind: "link",
             href: url,
             title: "Example Site",
             description: "A description of the linked content",
             thumb: "https://example.com/image.jpg",
-            asOf: new Date().toISOString(),
-            actions: [{ id: "open", label: "Open", sentence: "Open the link" }],
           };
         },
       }),
@@ -129,17 +127,15 @@ export default function App() {
 Every Tool UI surface is addressable and reconstructable. Here's the common schema structure:
 
 **What this shows:**
-- `id` makes the surface referenceable ("the second card")
+- `surfaceId` makes the surface referenceable by the assistant ("the link preview above")
 - `role` declares the primary purpose (information, decision, control, state, or composite)
-- `asOf` enables temporal honesty and staleness detection
 - `actions` with `sentence` fields enable natural language interaction
 - `receipt` provides durable proof of side effects with timestamps and identifiers
 
 ```ts
 {
-  id: string;                     // stable across turns
+  surfaceId: string;              // stable identifier for this rendering
   role: "information"|"decision"|"control"|"state"|"composite";
-  asOf?: string;                  // ISO time for freshness
   actions?: Array<{ id: string; label: string; sentence: string }>;
   // optional receipt after side effects:
   receipt?: {
