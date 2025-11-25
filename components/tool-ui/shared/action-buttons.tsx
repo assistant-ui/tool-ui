@@ -16,19 +16,22 @@ export interface ActionButtonsProps {
 }
 
 /**
- * Sort priority for mobile layout (lower = bottom of stack = easier to reach)
- * - default: primary actions at bottom (thumb zone)
- * - secondary: middle
- * - destructive: top (requires intentional reach)
+ * Sort priority (lower = appears first in sorted array)
+ * Combined with flex-col-reverse (mobile) and flex-row-reverse (desktop):
+ * - default (primary): first in array → bottom on mobile, right on desktop
+ * - secondary: middle-right
+ * - ghost: middle-left (less prominent than secondary)
+ * - destructive: last in array → top on mobile, left on desktop
  */
 const VARIANT_SORT_PRIORITY: Record<string, number> = {
   default: 0,
   secondary: 1,
-  destructive: 2,
+  ghost: 2,
+  destructive: 3,
 };
 
 function getVariantPriority(variant: string | undefined): number {
-  return VARIANT_SORT_PRIORITY[variant ?? "default"] ?? 1;
+  return VARIANT_SORT_PRIORITY[variant ?? "default"] ?? 2;
 }
 
 export function ActionButtons({
@@ -46,8 +49,8 @@ export function ActionButtons({
     confirmTimeout,
   });
 
-  // Sort actions for mobile: destructive at top, default at bottom
-  // We reverse because flex-col-reverse puts last items at bottom
+  // Sort actions by priority: default (0) → secondary (1) → destructive (2)
+  // Combined with flex-*-reverse, first items appear at bottom (mobile) / right (desktop)
   const sortedActions = React.useMemo(() => {
     return [...resolvedActions].sort(
       (a, b) => getVariantPriority(a.variant) - getVariantPriority(b.variant),
@@ -65,11 +68,11 @@ export function ActionButtons({
       className={cn(
         // Mobile: full-width stacked buttons (iOS-like), reversed for thumb reach
         "flex flex-col-reverse gap-3",
-        // Desktop: inline row with alignment, normal order
-        "@sm/actions:flex-row @sm/actions:gap-2 @sm/actions:flex-wrap @sm/actions:items-center",
-        align === "left" && "@sm/actions:justify-start",
+        // Desktop: inline row reversed so primary/default ends up on right
+        "@sm/actions:flex-row-reverse @sm/actions:gap-2 @sm/actions:flex-wrap @sm/actions:items-center",
+        align === "left" && "@sm/actions:justify-end",
         align === "center" && "@sm/actions:justify-center",
-        align === "right" && "@sm/actions:justify-end",
+        align === "right" && "@sm/actions:justify-start",
         className,
       )}
     >
@@ -95,8 +98,8 @@ export function ActionButtons({
               "min-h-11 w-full text-base",
               // Desktop: fit content, smaller
               "@sm/actions:min-h-0 @sm/actions:w-auto @sm/actions:px-3 @sm/actions:py-2 @sm/actions:text-sm",
-              // Visual separation for destructive actions on mobile
-              isFirstDestructive && "mt-2 @sm/actions:mt-0 @sm/actions:ml-2",
+              // Visual separation for destructive actions on mobile (top) and desktop (left)
+              isFirstDestructive && "mt-2 @sm/actions:mt-0 @sm/actions:mr-2",
               action.isConfirming &&
                 "ring-destructive animate-pulse ring-2 ring-offset-2",
             )}
