@@ -4,7 +4,7 @@ export interface OptionListConfig {
   optionList: SerializableOptionList;
 }
 
-export type OptionListPresetName = "export" | "travel" | "notifications";
+export type OptionListPresetName = "export" | "travel" | "notifications" | "receipt";
 
 const exportPreset: OptionListConfig = {
   optionList: {
@@ -67,11 +67,33 @@ const notificationsPreset: OptionListConfig = {
   },
 };
 
+const receiptPreset: OptionListConfig = {
+  optionList: {
+    surfaceId: "option-list-preview-receipt",
+    options: [
+      {
+        id: "walk",
+        label: "Walking",
+        description: "Sidewalk-friendly route",
+      },
+      { id: "drive", label: "Driving", description: "Fastest ETA" },
+      {
+        id: "transit",
+        label: "Transit",
+        description: "Use subway and buses",
+      },
+    ],
+    selectionMode: "single",
+    confirmed: "drive",
+  },
+};
+
 export const optionListPresets: Record<OptionListPresetName, OptionListConfig> =
   {
     export: exportPreset,
     travel: travelPreset,
     notifications: notificationsPreset,
+    receipt: receiptPreset,
   };
 
 export const optionListPresetDescriptions: Record<
@@ -81,4 +103,5 @@ export const optionListPresetDescriptions: Record<
   export: "Pick two (you can't have all three)",
   travel: "Single-select with radio styling",
   notifications: "Multi-select with reset/confirm",
+  receipt: "Confirmed selection (receipt state)",
 };

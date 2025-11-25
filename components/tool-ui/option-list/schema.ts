@@ -38,6 +38,27 @@ export const OptionListPropsSchema = z.object({
   defaultValue: z
     .union([z.array(z.string()), z.string(), z.null()])
     .optional(),
+  /**
+   * When set, renders the component in receipt/confirmed state.
+   *
+   * In receipt state:
+   * - Only the confirmed option(s) are shown
+   * - Footer actions are hidden
+   * - The component is read-only
+   *
+   * Use this with assistant-ui's `addResult` to show the outcome of a decision.
+   *
+   * @example
+   * ```tsx
+   * // In makeAssistantToolUI render:
+   * if (result) {
+   *   return <OptionList {...args} confirmed={result} />;
+   * }
+   * ```
+   */
+  confirmed: z
+    .union([z.array(z.string()), z.string(), z.null()])
+    .optional(),
   footerActions: z
     .union([z.array(ActionSchema), SerializableActionsConfigSchema])
     .optional(),
@@ -52,12 +73,14 @@ export type OptionListOption = z.infer<typeof OptionListOptionSchema>;
 
 export type OptionListProps = Omit<
   z.infer<typeof OptionListPropsSchema>,
-  "value" | "defaultValue"
+  "value" | "defaultValue" | "confirmed"
 > & {
   /** @see OptionListPropsSchema.surfaceId */
   surfaceId: string;
   value?: OptionListSelection;
   defaultValue?: OptionListSelection;
+  /** @see OptionListPropsSchema.confirmed */
+  confirmed?: OptionListSelection;
   onChange?: (value: OptionListSelection) => void;
   onConfirm?: (value: OptionListSelection) => void | Promise<void>;
   onCancel?: () => void;

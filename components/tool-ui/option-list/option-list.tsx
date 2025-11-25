@@ -52,6 +52,160 @@ function areSetsEqual(a: Set<string>, b: Set<string>) {
   return true;
 }
 
+interface SelectionIndicatorProps {
+  mode: "multi" | "single";
+  isSelected: boolean;
+  disabled?: boolean;
+}
+
+function SelectionIndicator({
+  mode,
+  isSelected,
+  disabled,
+}: SelectionIndicatorProps) {
+  const shape = mode === "single" ? "rounded-full" : "rounded";
+
+  return (
+    <div
+      className={cn(
+        "flex size-4 shrink-0 items-center justify-center border-2 transition-colors",
+        shape,
+        isSelected && "border-primary bg-primary text-primary-foreground",
+        !isSelected && "border-muted-foreground/50",
+        disabled && "opacity-50",
+      )}
+    >
+      {mode === "multi" && isSelected && <Check className="size-3" />}
+      {mode === "single" && isSelected && (
+        <span className="size-2 rounded-full bg-current" />
+      )}
+    </div>
+  );
+}
+
+interface OptionItemProps {
+  option: OptionListOption;
+  isSelected: boolean;
+  isDisabled: boolean;
+  selectionMode: "multi" | "single";
+  onToggle: () => void;
+}
+
+function OptionItem({
+  option,
+  isSelected,
+  isDisabled,
+  selectionMode,
+  onToggle,
+}: OptionItemProps) {
+  return (
+    <Button
+      data-id={option.id}
+      variant="ghost"
+      size="lg"
+      role="option"
+      aria-selected={isSelected}
+      onClick={onToggle}
+      disabled={isDisabled}
+      className={cn(
+        "peer group relative h-auto min-h-[50px] w-full justify-start text-left text-sm font-medium",
+        "rounded-none border-0 bg-transparent px-0 py-2 text-base shadow-none transition-none hover:bg-transparent! @md/option-list:text-sm",
+      )}
+    >
+      <span
+        className={cn(
+          "bg-primary/5 absolute inset-0 -mx-3 -my-0.5 rounded-lg opacity-0 group-hover:opacity-100",
+        )}
+      />
+      <div className="relative flex items-start gap-3">
+        <span className="flex h-6 items-center">
+          <SelectionIndicator
+            mode={selectionMode}
+            isSelected={isSelected}
+            disabled={option.disabled}
+          />
+        </span>
+        {option.icon && (
+          <span className="flex h-6 items-center">{option.icon}</span>
+        )}
+        <div className="flex flex-col text-left">
+          <span className="leading-6">{option.label}</span>
+          {option.description && (
+            <span className="text-muted-foreground text-sm font-normal">
+              {option.description}
+            </span>
+          )}
+        </div>
+      </div>
+    </Button>
+  );
+}
+
+interface OptionListReceiptProps {
+  options: OptionListOption[];
+  confirmedIds: Set<string>;
+  className?: string;
+}
+
+function OptionListReceipt({
+  options,
+  confirmedIds,
+  className,
+}: OptionListReceiptProps) {
+  const confirmedOptions = options.filter((opt) => confirmedIds.has(opt.id));
+
+  return (
+    <div
+      className={cn(
+        "@container/option-list flex w-full flex-col",
+        "text-foreground",
+        className,
+      )}
+      data-slot="option-list"
+      data-receipt="true"
+      role="status"
+      aria-label="Confirmed selection"
+    >
+      <div
+        className={cn(
+          "bg-card/60 flex w-full flex-col overflow-hidden rounded-2xl border px-5 py-2.5 shadow-xs",
+        )}
+      >
+        {confirmedOptions.map((option, index) => (
+          <Fragment key={option.id}>
+            {index > 0 && <Separator orientation="horizontal" />}
+            <div className="flex min-h-[50px] items-start gap-3 py-2">
+              <span className="flex h-6 items-center">
+                <div
+                  className={cn(
+                    "flex size-4 shrink-0 items-center justify-center rounded border-2",
+                    "border-primary bg-primary text-primary-foreground",
+                  )}
+                >
+                  <Check className="size-3" />
+                </div>
+              </span>
+              {option.icon && (
+                <span className="flex h-6 items-center">{option.icon}</span>
+              )}
+              <div className="flex flex-col text-left">
+                <span className="text-base leading-6 font-medium @md/option-list:text-sm">
+                  {option.label}
+                </span>
+                {option.description && (
+                  <span className="text-muted-foreground text-sm font-normal">
+                    {option.description}
+                  </span>
+                )}
+              </div>
+            </div>
+          </Fragment>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export function OptionList({
   options,
   selectionMode = "multi",
@@ -59,6 +213,7 @@ export function OptionList({
   maxSelections,
   value,
   defaultValue,
+  confirmed,
   onChange,
   onConfirm,
   onCancel,
@@ -152,6 +307,17 @@ export function OptionList({
     onCancel?.();
   }, [onCancel, updateSelection]);
 
+  const handleFooterAction = useCallback(
+    async (actionId: string) => {
+      if (actionId === "confirm") {
+        await handleConfirm();
+      } else if (actionId === "cancel") {
+        handleCancel();
+      }
+    },
+    [handleConfirm, handleCancel],
+  );
+
   const normalizedFooterActions = useMemo(() => {
     const normalized = normalizeActionsConfig(footerActions);
     if (normalized) return normalized;
@@ -192,36 +358,16 @@ export function OptionList({
     selectedCount,
   ]);
 
-  const handleFooterAction = useCallback(
-    async (actionId: string) => {
-      if (actionId === "confirm") {
-        await handleConfirm();
-      } else if (actionId === "cancel") {
-        handleCancel();
-      }
-    },
-    [handleConfirm, handleCancel],
-  );
-
-  const indicatorShape =
-    selectionMode === "single" ? "rounded-full" : "rounded";
-
-  const renderIndicator = (option: OptionListOption, isSelected: boolean) => (
-    <div
-      className={cn(
-        "flex size-4 shrink-0 items-center justify-center border-2 transition-colors",
-        indicatorShape,
-        isSelected && "border-primary bg-primary text-primary-foreground",
-        !isSelected && "border-muted-foreground/50",
-        option.disabled && "opacity-50",
-      )}
-    >
-      {selectionMode === "multi" && isSelected && <Check className="size-3" />}
-      {selectionMode === "single" && isSelected && (
-        <span className="size-2 rounded-full bg-current" />
-      )}
-    </div>
-  );
+  if (confirmed !== undefined && confirmed !== null) {
+    const confirmedIds = normalizeToSet(confirmed, selectionMode);
+    return (
+      <OptionListReceipt
+        options={options}
+        confirmedIds={confirmedIds}
+        className={className}
+      />
+    );
+  }
 
   return (
     <div
@@ -258,41 +404,13 @@ export function OptionList({
                   orientation="horizontal"
                 />
               )}
-              <Button
-                data-id={option.id}
-                variant="ghost"
-                size="lg"
-                role="option"
-                aria-selected={isSelected}
-                onClick={() => toggleSelection(option.id)}
-                disabled={isDisabled}
-                className={cn(
-                  "peer group relative h-auto min-h-[50px] w-full justify-start text-left text-sm font-medium",
-                  "rounded-none border-0 bg-transparent px-0 py-2 text-base shadow-none transition-none hover:bg-transparent! @md/option-list:text-sm",
-                )}
-              >
-                <span
-                  className={cn(
-                    "bg-primary/5 absolute inset-0 -mx-3 -my-0.5 rounded-lg opacity-0 group-hover:opacity-100",
-                  )}
-                />
-                <div className="relative flex items-start gap-3">
-                  <span className="flex h-6 items-center">
-                    {renderIndicator(option, isSelected)}
-                  </span>
-                  {option.icon && (
-                    <span className="flex h-6 items-center">{option.icon}</span>
-                  )}
-                  <div className="flex flex-col text-left">
-                    <span className="leading-6">{option.label}</span>
-                    {option.description && (
-                      <span className="text-muted-foreground text-sm font-normal">
-                        {option.description}
-                      </span>
-                    )}
-                  </div>
-                </div>
-              </Button>
+              <OptionItem
+                option={option}
+                isSelected={isSelected}
+                isDisabled={isDisabled}
+                selectionMode={selectionMode}
+                onToggle={() => toggleSelection(option.id)}
+              />
             </Fragment>
           );
         })}
