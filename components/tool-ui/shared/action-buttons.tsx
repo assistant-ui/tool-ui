@@ -29,18 +29,13 @@ export function ActionButtons({
     confirmTimeout,
   });
 
-  const crossAlignClass = {
-    left: "items-start",
-    center: "items-center",
-    right: "items-end",
-  }[align];
-
   return (
     <div
       className={cn(
+        // Mobile: full-width stacked buttons (iOS-like)
         "flex flex-col gap-2",
-        crossAlignClass,
-        "@sm/actions:flex-row @md/actions:flex-wrap @md/actions:items-center",
+        // Desktop: inline row with alignment
+        "@sm/actions:flex-row @sm/actions:flex-wrap @sm/actions:items-center",
         align === "left" && "@sm/actions:justify-start",
         align === "center" && "@sm/actions:justify-center",
         align === "right" && "@sm/actions:justify-end",
@@ -61,7 +56,10 @@ export function ActionButtons({
             className={cn(
               "rounded-full",
               "justify-center",
-              "text-base @md/actions:px-3 @md/actions:py-2 @md/actions:text-sm",
+              // Mobile: full width, larger touch target
+              "w-full text-base",
+              // Desktop: fit content, smaller
+              "@sm/actions:w-auto @sm/actions:px-3 @sm/actions:py-2 @sm/actions:text-sm",
               action.isConfirming &&
                 "ring-destructive animate-pulse ring-2 ring-offset-2",
             )}
