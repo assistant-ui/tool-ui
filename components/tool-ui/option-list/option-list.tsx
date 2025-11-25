@@ -273,7 +273,7 @@ export function OptionList({
               >
                 <span
                   className={cn(
-                    "bg-primary/5 active:bg-primary/10 absolute inset-0 -mx-3 -my-0.5 rounded-lg opacity-0 group-hover:opacity-100",
+                    "bg-primary/5 absolute inset-0 -mx-3 -my-0.5 rounded-lg opacity-0 group-hover:opacity-100",
                   )}
                 />
                 <div className="relative flex items-start gap-3">
