@@ -10,15 +10,15 @@ A decision surface for single or multi-select choices. Optimized for inline sele
     <div className="not-prose">
       <OptionList
         options={[
-          { id: "csv", label: "CSV" },
-          { id: "json", label: "JSON" },
-          { id: "xlsx", label: "Excel (XLSX)" },
+          { id: "good", label: "Good", description: "High quality work" },
+          { id: "fast", label: "Fast", description: "Quick turnaround" },
+          { id: "cheap", label: "Cheap", description: "Low cost" },
         ]}
         selectionMode="multi"
         maxSelections={2}
         footerActions={[
-          { id: "cancel", label: "Clear", variant: "ghost" },
-          { id: "confirm", label: "Export", variant: "default" },
+          { id: "cancel", label: "Reset", variant: "ghost" },
+          { id: "confirm", label: "Confirm", variant: "default" },
         ]}
       />
     </div>
@@ -31,15 +31,15 @@ A decision surface for single or multi-select choices. Optimized for inline sele
       return (
         <OptionList
           options={[
-            { id: "csv", label: "CSV" },
-            { id: "json", label: "JSON" },
-            { id: "xlsx", label: "Excel (XLSX)" },
+            { id: "good", label: "Good", description: "High quality work" },
+            { id: "fast", label: "Fast", description: "Quick turnaround" },
+            { id: "cheap", label: "Cheap", description: "Low cost" },
           ]}
           selectionMode="multi"
           maxSelections={2}
           footerActions={[
-            { id: "cancel", label: "Clear", variant: "ghost" },
-            { id: "confirm", label: "Export", variant: "default" },
+            { id: "cancel", label: "Reset", variant: "ghost" },
+            { id: "confirm", label: "Confirm", variant: "default" },
           ]}
           onConfirm={(selection) => console.log(selection)}
         />

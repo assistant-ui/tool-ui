@@ -9,17 +9,16 @@ export type OptionListPresetName = "export" | "travel" | "notifications";
 const exportPreset: OptionListConfig = {
   optionList: {
     options: [
-      { id: "csv", label: "CSV" },
-      { id: "json", label: "JSON" },
-      { id: "xlsx", label: "Excel (XLSX)" },
-      { id: "pdf", label: "PDF" },
+      { id: "good", label: "Good", description: "High quality work" },
+      { id: "fast", label: "Fast", description: "Quick turnaround" },
+      { id: "cheap", label: "Cheap", description: "Low cost" },
     ],
     selectionMode: "multi",
     minSelections: 1,
-    maxSelections: 3,
+    maxSelections: 2,
     footerActions: [
-      { id: "cancel", label: "Clear", variant: "ghost" },
-      { id: "confirm", label: "Export", variant: "default" },
+      { id: "cancel", label: "Reset", variant: "ghost" },
+      { id: "confirm", label: "Confirm", variant: "default" },
     ],
   },
 };
@@ -41,7 +40,7 @@ const travelPreset: OptionListConfig = {
     ],
     selectionMode: "single",
     footerActions: [
-      { id: "cancel", label: "Back", variant: "ghost" },
+      { id: "cancel", label: "Reset", variant: "ghost" },
       { id: "confirm", label: "Continue", variant: "default" },
     ],
   },
@@ -76,7 +75,7 @@ export const optionListPresetDescriptions: Record<
   OptionListPresetName,
   string
 > = {
-  export: "Multi-select with max choices enforced",
+  export: "Pick two (you can't have all three)",
   travel: "Single-select with radio styling",
   notifications: "Multi-select with reset/confirm",
 };
