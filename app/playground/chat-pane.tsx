@@ -32,6 +32,12 @@ import type { Prototype } from "@/lib/playground";
 import { PROTOTYPE_SLUG_HEADER } from "@/lib/playground/constants";
 import { AssistantMessage, Composer, UserMessage } from "./chat-ui";
 import { SelectFrequentLocationTool } from "@/lib/playground/prototypes/waymo/select-frequent-location-tool";
+import {
+  SelectDestinationTool,
+  SelectPickupTool,
+  GetRideQuoteTool,
+  GetTripStatusTool,
+} from "@/lib/playground/prototypes/waymo-v2";
 
 const THREAD_STORAGE_KEY_PREFIX = "playground:thread:";
 
@@ -310,6 +316,16 @@ export const ChatPane = forwardRef<ChatPaneRef, ChatPaneProps>(
       <AssistantRuntimeProvider runtime={runtime}>
         {/* Mount Waymo-specific tools */}
         {slug === "waymo-booking" && <SelectFrequentLocationTool />}
+
+        {/* Mount Waymo v2 tools */}
+        {slug === "waymo-v2" && (
+          <>
+            <SelectDestinationTool />
+            <SelectPickupTool />
+            <GetRideQuoteTool />
+            <GetTripStatusTool />
+          </>
+        )}
 
         {/* Auto-persist tool result updates to localStorage */}
         <ToolResultPersistence slug={slug} />
