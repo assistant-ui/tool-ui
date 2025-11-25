@@ -225,7 +225,11 @@ export function OptionList({
 
   return (
     <div
-      className={cn("flex w-full flex-col gap-3", "text-foreground", className)}
+      className={cn(
+        "@container/option-list flex w-full flex-col gap-3",
+        "text-foreground",
+        className,
+      )}
       data-slot="option-list"
       role="group"
       aria-label="Option list"
@@ -263,8 +267,8 @@ export function OptionList({
                 onClick={() => toggleSelection(option.id)}
                 disabled={isDisabled}
                 className={cn(
-                  "peer group relative min-h-[50px] w-full justify-start text-left text-sm font-medium",
-                  "rounded-none border-0 bg-transparent px-0 text-base shadow-none transition-none hover:bg-transparent! @[28rem]:text-sm",
+                  "peer group relative h-auto min-h-[50px] w-full justify-start text-left text-sm font-medium",
+                  "rounded-none border-0 bg-transparent px-0 py-2 text-base shadow-none transition-none hover:bg-transparent! @md/option-list:text-sm",
                 )}
               >
                 <span
@@ -272,13 +276,17 @@ export function OptionList({
                     "bg-primary/5 active:bg-primary/10 absolute inset-0 -mx-3 -my-0.5 rounded-lg opacity-0 group-hover:opacity-100",
                   )}
                 />
-                <div className="relative flex items-center gap-3">
-                  {renderIndicator(option, isSelected)}
-                  {option.icon && <span>{option.icon}</span>}
+                <div className="relative flex items-start gap-3">
+                  <span className="flex h-6 items-center">
+                    {renderIndicator(option, isSelected)}
+                  </span>
+                  {option.icon && (
+                    <span className="flex h-6 items-center">{option.icon}</span>
+                  )}
                   <div className="flex flex-col text-left">
-                    <span>{option.label}</span>
+                    <span className="leading-6">{option.label}</span>
                     {option.description && (
-                      <span className="text-muted-foreground mt-0.5 text-sm font-normal">
+                      <span className="text-muted-foreground text-sm font-normal">
                         {option.description}
                       </span>
                     )}
