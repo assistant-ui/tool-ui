@@ -7,10 +7,6 @@ import {
 } from "@/components/ui/item";
 import { PresetName, presetDescriptions } from "@/lib/presets/data-table";
 import {
-  SocialPostPresetName,
-  socialPostPresetDescriptions,
-} from "@/lib/presets/social-post";
-import {
   MediaCardPresetName,
   mediaCardPresetDescriptions,
 } from "@/lib/presets/media-card";
@@ -20,11 +16,7 @@ import {
 } from "@/lib/presets/option-list";
 import { cn } from "@/lib/ui/cn";
 
-type ComponentPreset =
-  | PresetName
-  | SocialPostPresetName
-  | MediaCardPresetName
-  | OptionListPresetName;
+type ComponentPreset = PresetName | MediaCardPresetName | OptionListPresetName;
 
 interface PresetSelectorProps {
   componentId: string;
@@ -36,13 +28,6 @@ const dataTablePresetNames: PresetName[] = [
   "stocks",
   "tasks",
   "resources",
-  "actions",
-];
-
-const socialPostPresetNames: SocialPostPresetName[] = [
-  "x",
-  "instagram",
-  "linkedin",
   "actions",
 ];
 
@@ -70,20 +55,16 @@ export function PresetSelector({
   const presetNames =
     componentId === "data-table"
       ? dataTablePresetNames
-      : componentId === "social-post"
-        ? socialPostPresetNames
-        : componentId === "media-card"
-          ? mediaCardPresetNames
-          : optionListPresetNames;
+      : componentId === "media-card"
+        ? mediaCardPresetNames
+        : optionListPresetNames;
 
   const descriptions =
     componentId === "data-table"
       ? presetDescriptions
-      : componentId === "social-post"
-        ? socialPostPresetDescriptions
-        : componentId === "media-card"
-          ? mediaCardPresetDescriptions
-          : optionListPresetDescriptions;
+      : componentId === "media-card"
+        ? mediaCardPresetDescriptions
+        : optionListPresetDescriptions;
 
   return (
     <ItemGroup className="gap-1">

@@ -22,7 +22,7 @@ export const componentsRegistry: ComponentMeta[] = [
   },
   {
     id: "social-post",
-    label: "Social Post",
+    label: "Social Posts",
     path: "/docs/social-post",
   },
 ];

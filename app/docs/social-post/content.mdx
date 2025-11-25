@@ -1,176 +1,232 @@
 import { DocsHeader } from "../_components/docs-header";
-import { SocialPost } from "@/components/tool-ui/social-post";
+import { XPost } from "@/components/tool-ui/x-post";
+import { InstagramPost } from "@/components/tool-ui/instagram-post";
+import { LinkedInPost } from "@/components/tool-ui/linkedin-post";
+import { DataTable } from "@/components/tool-ui/data-table";
 
-<DocsHeader title="Social Post" mdxPath="app/docs/social-post/content.mdx" />
+<DocsHeader title="Social Posts" mdxPath="app/docs/social-post/content.mdx" />
 
-An information + action surface for user-generated content: posts, comments, notes, and threaded messages.
+A family of platform-specific components for rendering social media content: `XPost`, `InstagramPost`, and `LinkedInPost`. Each component is optimized for its platform's visual style while sharing a consistent API pattern.
 
-<Tabs items={["Preview", "Code"]}>
+<Tabs items={["X Post", "Instagram Post", "LinkedIn Post"]}>
   <Tab>
     <div className="not-prose w-[540px]">
-      <SocialPost
-        id="post-1"
-        platform="x"
-        author={{
-          name: "Ada Lovelace",
-          handle: "ada",
-          avatarUrl: "https://api.dicebear.com/7.x/adventurer/svg?seed=Ada",
-          verified: true,
+      <XPost
+        post={{
+          id: "post-1",
+          author: {
+            name: "Ada Lovelace",
+            handle: "ada",
+            avatarUrl: "https://api.dicebear.com/7.x/adventurer/svg?seed=Ada",
+            verified: true,
+          },
+          text: "Thinking about how to make Tool UIs feel more like collaboration than chrome.",
+          stats: { likes: 12 },
+          createdAt: "2025-01-05T12:00:00.000Z",
         }}
-        text="Thinking about how to make Tool UIs feel more like collaboration than chrome."
-        createdAtISO="2025-01-05T12:00:00.000Z"
-        stats={{ likes: 12, comments: 3, reposts: 1, views: 320 }}
-        actions={[
-          { id: "reply", label: "Reply", variant: "ghost" },
-          { id: "open", label: "Open in app", variant: "ghost" },
+        footerActions={[
+          { id: "open", label: "Open in app" },
         ]}
       />
     </div>
   </Tab>
   <Tab>
-    ```tsx
-    import { SocialPost } from "@/components/tool-ui/social-post";
-
-    export function Example() {
-      return (
-        <SocialPost
-          id="post-1"
-          platform="x"
-          author={{
+    <div className="not-prose w-[540px]">
+      <InstagramPost
+        post={{
+          id: "post-2",
+          author: {
             name: "Ada Lovelace",
             handle: "ada",
             avatarUrl: "https://api.dicebear.com/7.x/adventurer/svg?seed=Ada",
             verified: true,
-          }}
-          text="Thinking about how to make Tool UIs feel more like collaboration than chrome."
-          createdAtISO="2025-01-05T12:00:00.000Z"
-          stats={{ likes: 12, comments: 3, reposts: 1, views: 320 }}
-          actions={[
-            { id: "reply", label: "Reply", variant: "ghost" },
-            { id: "open", label: "Open in app", variant: "ghost" },
-          ]}
-          maxWidth="540px"
-        />
-      );
-    }
-    ```
+          },
+          text: "Golden hour vibes",
+          media: [{
+            type: "image",
+            url: "https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?w=800&h=800&fit=crop",
+            alt: "City skyline",
+          }],
+          stats: { likes: 842 },
+          createdAt: "2025-01-05T18:00:00.000Z",
+        }}
+      />
+    </div>
+  </Tab>
+  <Tab>
+    <div className="not-prose w-[540px]">
+      <LinkedInPost
+        post={{
+          id: "post-3",
+          author: {
+            name: "Ada Lovelace",
+            avatarUrl: "https://api.dicebear.com/7.x/adventurer/svg?seed=Ada",
+            headline: "Engineering Lead | Building the future",
+          },
+          text: "Excited to share that our team shipped a major update today. Six months of hard work paid off!",
+          stats: { likes: 234 },
+          createdAt: "2025-01-05T09:00:00.000Z",
+        }}
+      />
+    </div>
   </Tab>
 </Tabs>
 
-## When to Use Social Post
+## Components
+
+This is a collection of three separate, platform-specific components:
+
+<div className="not-prose my-6">
+  <DataTable
+    columns={[
+      { key: "component", label: "Component" },
+      { key: "import", label: "Import" },
+      { key: "useCase", label: "Use Case" },
+    ]}
+    data={[
+      { component: "XPost", import: "@/components/tool-ui/x-post", useCase: "Twitter/X posts, quoted tweets" },
+      { component: "InstagramPost", import: "@/components/tool-ui/instagram-post", useCase: "Instagram posts, image carousels" },
+      { component: "LinkedInPost", import: "@/components/tool-ui/linkedin-post", useCase: "LinkedIn posts, professional content" },
+    ]}
+  />
+</div>
+
+Each component is independent and can be imported separately, allowing for tree-shaking when you only need one platform.
+
+## When to Use
 
 - **Good for:** Social media posts, activity feeds, external messages
 - **Not for:** Dense event tables, editable rich text
 
 ## Key Features
 
-- **Platform styling**: X, LinkedIn, Instagram
-- **Author details**: Avatar, name, handle, verified badge
-- **Engagement metrics**: Likes, replies, reposts, views
-- **Timestamp formatting**: Relative or absolute dates
-- **Action buttons**: Reply, open, share + custom interactions
-
+- **Platform-native styling**: Each component mirrors its platform's visual language
+- **Simple props**: Flat `post` object, no complex configuration
+- **Footer actions**: Add custom actions below any post via `footerActions`
+- **Lightweight**: ~250 lines per component, no shared context or state management
 
 ## Source and Install
 
-Copy `components/social-post` into your project. It should sit alongside your shadcn/ui components directory:
+Copy the platform component(s) you need into your project:
 
 <Files>
   <Folder name="components" defaultOpen>
-    <Folder name="ui">
-      <File name="avatar.tsx" />
-      <File name="button.tsx" />
-      <File name="..." />
-    </Folder>
-    <Folder name="social-post" defaultOpen>
-      <File name="social-post.tsx" />
-      <File name="schema.ts" />
-      <File name="types.ts" />
-      <File name="index.tsx" />
-      <File name="..." />
+    <Folder name="tool-ui" defaultOpen>
+      <Folder name="x-post">
+        <File name="x-post.tsx" />
+        <File name="schema.ts" />
+        <File name="index.ts" />
+      </Folder>
+      <Folder name="instagram-post">
+        <File name="instagram-post.tsx" />
+        <File name="schema.ts" />
+        <File name="index.ts" />
+      </Folder>
+      <Folder name="linkedin-post">
+        <File name="linkedin-post.tsx" />
+        <File name="schema.ts" />
+        <File name="index.ts" />
+      </Folder>
     </Folder>
   </Folder>
 </Files>
 
-### Download
-
-- [**Source on GitHub**](https://github.com/assistant-ui/tool-ui/tree/main/components/social-post)
-- [**Quick download (ZIP)**](https://download-directory.github.io/?url=https://github.com/assistant-ui/tool-ui/tree/main/components/social-post)
-
-
-
 ## Usage
 
 ```tsx
-// Backend tool
-import { tool } from 'ai';
-import { serializableSocialPostSchema } from '@tool-ui/social-post';
+import { XPost } from "@/components/tool-ui/x-post";
+import { InstagramPost } from "@/components/tool-ui/instagram-post";
+import { LinkedInPost } from "@/components/tool-ui/linkedin-post";
 
-const showTweet = tool({
-  description: 'Show a tweet as a social post',
-  outputSchema: serializableSocialPostSchema,
-  async execute({ id }) {
-    const tweet = await fetchTweet(id);
-    return {
-      id: tweet.id,
-      platform: 'x',
-      author: {
-        name: tweet.author.name,
-        handle: `@${tweet.author.username}`,
-        avatarUrl: tweet.author.avatarUrl,
-      },
-      createdAt: tweet.createdAt,
-      body: tweet.text,
-      meta: { source: 'X', url: tweet.url },
-      metrics: {
-        likes: tweet.likeCount,
-        replies: tweet.replyCount,
-        reposts: tweet.retweetCount,
-      },
-    };
-  },
-});
+// X Post
+<XPost
+  post={{
+    id: "tweet-123",
+    author: { name: "Jane", handle: "jane", avatarUrl: "...", verified: true },
+    text: "Hello world!",
+    stats: { likes: 42 },
+    createdAt: "2025-01-01T12:00:00Z",
+  }}
+  onAction={(action, post) => console.log(action, post.id)}
+  footerActions={[{ id: "report", label: "Report", variant: "destructive" }]}
+  onFooterAction={(id) => console.log(id)}
+/>
 
-// Frontend with assistant-ui
-import { makeAssistantToolUI } from '@assistant-ui/react';
-import { SocialPost } from '@tool-ui/social-post';
+// Instagram Post
+<InstagramPost
+  post={{
+    id: "ig-123",
+    author: { name: "Jane", handle: "jane", avatarUrl: "..." },
+    text: "Beach day!",
+    media: [{ type: "image", url: "...", alt: "Beach photo" }],
+    stats: { likes: 1234 },
+  }}
+/>
 
-export const ShowTweetUI = makeAssistantToolUI({
-  toolName: 'showTweet',
-  render: ({ result }) => (
-    <SocialPost
-      {...result}
-      actions={[
-        { id: 'open', label: 'Open' },
-        { id: 'reply', label: 'Reply' },
-      ]}
-      onAction={(id, post) => {
-        if (id === 'open') window.open(post.meta?.url, '_blank');
-        if (id === 'reply') openReplyComposer(post.id);
-      }}
-    />
-  ),
-});
+// LinkedIn Post
+<LinkedInPost
+  post={{
+    id: "li-123",
+    author: { name: "Jane Smith", avatarUrl: "...", headline: "CEO at Acme" },
+    text: "Excited to announce...",
+    linkPreview: { url: "...", title: "News", domain: "acme.com" },
+    stats: { likes: 89 },
+  }}
+/>
 ```
 
-
-
 ## Props
+
+All three components share the same prop pattern:
+
+<TypeTable
+  type={{
+    post: { description: "Platform-specific post data", type: "XPostData | InstagramPostData | LinkedInPostData", required: true },
+    className: { description: "Additional CSS classes", type: "string" },
+    onAction: { description: "Called when like/share clicked", type: "(action: string, post) => void" },
+    footerActions: { description: "Custom actions below the post", type: "Action[]" },
+    onFooterAction: { description: "Called when footer action clicked", type: "(actionId: string) => void" },
+  }}
+/>
+
+### XPostData
 
 <TypeTable
   type={{
     id: { description: "Unique identifier", type: "string", required: true },
-    platform: { description: "Platform hint", type: "'x' | 'linkedin' | 'forum' | string" },
-    author: {
-      description: "Author info",
-      type: "{ name, handle?, avatarUrl? }",
-      required: true,
-    },
-    createdAt: { description: "ISO timestamp", type: "string", required: true },
-    body: { description: "Text content", type: "string", required: true },
-    meta: { description: "Metadata", type: "Record<string, string>" },
-    metrics: { description: "Engagement stats", type: "{ likes?, replies?, reposts?, views? }" },
-    actions: { description: "Action buttons", type: "Action[]" },
-    onAction: { description: "Click handler", type: "(id, post) => void" },
+    author: { description: "Author info", type: "{ name, handle, avatarUrl, verified? }", required: true },
+    text: { description: "Post content", type: "string" },
+    media: { description: "Attached media", type: "{ type, url, alt, aspectRatio? }[]" },
+    linkPreview: { description: "Link card", type: "{ url, title?, description?, imageUrl?, domain? }" },
+    quotedPost: { description: "Quoted tweet", type: "XPostData" },
+    stats: { description: "Engagement", type: "{ likes? }" },
+    createdAt: { description: "ISO timestamp", type: "string" },
+  }}
+/>
+
+### InstagramPostData
+
+<TypeTable
+  type={{
+    id: { description: "Unique identifier", type: "string", required: true },
+    author: { description: "Author info", type: "{ name, handle, avatarUrl, verified? }", required: true },
+    text: { description: "Caption", type: "string" },
+    media: { description: "Images/videos", type: "{ type, url, alt }[]" },
+    stats: { description: "Engagement", type: "{ likes? }" },
+    createdAt: { description: "ISO timestamp", type: "string" },
+  }}
+/>
+
+### LinkedInPostData
+
+<TypeTable
+  type={{
+    id: { description: "Unique identifier", type: "string", required: true },
+    author: { description: "Author info", type: "{ name, avatarUrl, headline? }", required: true },
+    text: { description: "Post content", type: "string" },
+    media: { description: "Attached media", type: "{ type, url, alt }[]" },
+    linkPreview: { description: "Link card", type: "{ url, title?, description?, imageUrl?, domain? }" },
+    stats: { description: "Engagement", type: "{ likes? }" },
+    createdAt: { description: "ISO timestamp", type: "string" },
   }}
 />
