@@ -1,13 +1,24 @@
 import { DocsHeader } from "../_components/docs-header";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { FlaskConical } from "lucide-react";
 
 <DocsHeader title="Overview" mdxPath="app/docs/overview/content.mdx" />
+
+<Alert className="my-6">
+  <FlaskConical />
+  <AlertTitle>Early Preview</AlertTitle>
+  <AlertDescription>
+    Tool UI is in active development. APIs may shift as we refine patterns for
+    conversation-native UIs—we'll do our best to document breaking changes.
+  </AlertDescription>
+</Alert>
 
 Tool UI is a React component framework for **conversation‑native** UIs inside AI chats.  
 Tools return **JSON**; Tool UI renders it as **inline, narrated, referenceable** surfaces.
 
 ## At a glance
 
-- **Conversation‑native components** that live *inside messages*, optimized for chat width and scroll.
+- **Conversation‑native components** that live _inside messages_, optimized for chat width and scroll.
 - **Schema‑first rendering**: every surface is driven by a serializable schema with stable IDs.
 - **Assistant‑anchored**: the assistant introduces, interprets, and closes each surface.
 - **Stack‑agnostic**: works with any LLM/provider and orchestration layer.
@@ -52,6 +63,7 @@ Assistant calls tool → JSON output → <Component {...props} /> → User inter
 **Server side:** Define a tool that returns schema-validated JSON.
 
 **What this demonstrates:**
+
 - `serializableMediaCardSchema` from `@tool-ui/media-card` ensures type-safe output
 - Actions are defined with both UI labels and canonical sentences for conversation coherence
 - The schema guarantees the frontend receives reconstructable, addressable data
@@ -95,6 +107,7 @@ export async function POST(req: Request) {
 **Client side:** Register the component and let assistant-ui handle rendering.
 
 **What this demonstrates:**
+
 - `makeAssistantToolUI` connects the tool name to a React component
 - The `result` object is automatically typed and validated against your schema
 - Simply mounting `<PreviewLinkUI />` registers it—no manual plumbing required
@@ -103,7 +116,11 @@ export async function POST(req: Request) {
 ```tsx title="Client — render with assistant-ui"
 "use client";
 import { AssistantRuntimeProvider } from "@assistant-ui/react";
-import { useChatRuntime, AssistantChatTransport, makeAssistantToolUI } from "@assistant-ui/react-ai-sdk";
+import {
+  useChatRuntime,
+  AssistantChatTransport,
+  makeAssistantToolUI,
+} from "@assistant-ui/react-ai-sdk";
 import { MediaCard } from "@tool-ui/media-card";
 
 const PreviewLinkUI = makeAssistantToolUI({
@@ -112,7 +129,9 @@ const PreviewLinkUI = makeAssistantToolUI({
 });
 
 export default function App() {
-  const runtime = useChatRuntime({ transport: new AssistantChatTransport({ api: "/api/chat" }) });
+  const runtime = useChatRuntime({
+    transport: new AssistantChatTransport({ api: "/api/chat" }),
+  });
   return (
     <AssistantRuntimeProvider runtime={runtime}>
       <PreviewLinkUI />
@@ -127,6 +146,7 @@ export default function App() {
 Every Tool UI surface is addressable and reconstructable. Here's the common schema structure:
 
 **What this shows:**
+
 - `surfaceId` makes the surface referenceable by the assistant ("the link preview above")
 - `role` declares the primary purpose (information, decision, control, state, or composite)
 - `actions` with `sentence` fields enable natural language interaction
@@ -146,7 +166,6 @@ Every Tool UI surface is addressable and reconstructable. Here's the common sche
   };
 }
 ```
-
 
 ## Next steps
 
