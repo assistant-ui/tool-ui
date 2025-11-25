@@ -205,7 +205,7 @@ export function MediaCard(props: MediaCardProps) {
               actions={normalizedFooterActions.items}
               align={normalizedFooterActions.align}
               confirmTimeout={normalizedFooterActions.confirmTimeout}
-              onAction={(id) => onFooterAction?.(id)}
+              onAction={(id: string) => onFooterAction?.(id)}
               onBeforeAction={onBeforeFooterAction}
             />
           </div>
