@@ -72,17 +72,18 @@ function ComponentDocsExamplesInner({
   };
 
   return (
-    <div className="bg-background scrollbar-subtle relative box-border flex h-full min-h-0 w-full flex-col overflow-auto overscroll-contain rounded-tl-lg border-t border-l">
+    <div className="bg-background relative box-border flex h-full min-h-0 w-full flex-col overflow-hidden rounded-tl-lg border-t border-l">
       <Tabs
         value={active}
         onValueChange={(value) =>
           handleTabChange((value as "docs" | "examples") ?? "docs")
         }
+        className="flex h-full min-h-0 flex-col gap-0"
       >
         {/* Sticky tablist */}
         <div
           className={cn(
-            "sticky top-0 z-20 flex items-center justify-center border-b px-3 py-2 sm:px-6 sm:py-3",
+            "z-20 flex shrink-0 items-center justify-center border-b px-3 py-2 sm:px-6 sm:py-3",
             "bg-background/95 supports-backdrop-filter:bg-background/60 backdrop-blur",
           )}
         >
@@ -96,16 +97,22 @@ function ComponentDocsExamplesInner({
         <div
           id="examples"
           ref={contentRef}
-          className="relative min-h-0 flex-1 scroll-mt-16"
+          className="relative flex min-h-0 flex-1 flex-col scroll-mt-16"
         >
-          <TabsContent value="docs">
+          <TabsContent
+            value="docs"
+            className="scrollbar-subtle h-full min-h-0 flex-1 overflow-auto"
+          >
             <div className="z-0 min-h-0 flex-1 p-6 sm:p-10 lg:p-12">
               <div className="prose dark:prose-invert mx-auto max-w-3xl">
                 {docs}
               </div>
             </div>
           </TabsContent>
-          <TabsContent value="examples" className="flex h-full min-h-0 flex-1">
+          <TabsContent
+            value="examples"
+            className="flex h-full min-h-0 flex-1 overflow-hidden"
+          >
             {examples}
           </TabsContent>
         </div>
@@ -118,7 +125,7 @@ export function ComponentDocsExamples(props: ComponentDocsExamplesProps) {
   return (
     <Suspense
       fallback={
-        <div className="bg-background scrollbar-subtle relative box-border flex h-full min-h-0 w-full flex-col overflow-auto overscroll-contain rounded-tl-lg border-t border-l" />
+        <div className="bg-background relative box-border flex h-full min-h-0 w-full flex-col overflow-hidden rounded-tl-lg border-t border-l" />
       }
     >
       <ComponentDocsExamplesInner {...props} />

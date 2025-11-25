@@ -8,6 +8,7 @@ import {
   type ReactNode,
 } from "react";
 import { useResizableViewport } from "@/app/components/builder/resizable-viewport-provider";
+import { cn } from "@/lib/ui/cn";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import { Button } from "@/components/ui/button";
 import { ButtonGroup } from "@/components/ui/button-group";
@@ -103,7 +104,7 @@ export function ComponentPreviewShell({
       </aside>
       <div className="relative flex min-h-0 min-w-0 flex-1 flex-col">
         {/* Header with status and tabs */}
-        <div className="absolute top-0 right-0 left-0 z-10 flex items-center justify-between px-6 py-3">
+        <div className="absolute top-0 right-0 left-0 z-20 flex items-center justify-between px-6 py-3">
           <div className="flex items-center gap-2">
             <Label htmlFor="preview-loading" className="text-sm">
               Loading
@@ -135,15 +136,16 @@ export function ComponentPreviewShell({
         </div>
 
         {/* Resizable preview area (outer container manages scroll) */}
-        <div className="relative flex flex-1 items-start justify-center overflow-y-scroll border-l px-2 py-6">
+        <div className="relative flex min-h-0 flex-1 flex-col overflow-hidden border-l">
           {activeTab === "ui" && (
             <div
-              className="bg-dot-grid bg-wash pointer-events-none absolute inset-0 opacity-60 dark:opacity-40"
+              className="bg-dot-grid bg-wash pointer-events-none absolute inset-0 z-0 opacity-60 dark:opacity-40"
               aria-hidden="true"
             />
           )}
-          {activeTab === "ui" ? (
-            <div className="relative h-fit w-full pt-12 lg:pt-16">
+          <div className="scrollbar-subtle relative z-10 flex min-h-0 flex-1 items-start justify-center overflow-y-auto px-2 py-6">
+            {activeTab === "ui" ? (
+              <div className="relative h-fit w-full pt-12 lg:pt-16">
               <PanelGroup
                 ref={horizontalPanelGroupRef}
                 direction="horizontal"
@@ -173,12 +175,13 @@ export function ComponentPreviewShell({
 
                 <Panel defaultSize={7.5} minSize={0} />
               </PanelGroup>
-            </div>
-          ) : (
-            <div className="relative h-full w-full">
-              {renderCodePanel(isLoading)}
-            </div>
-          )}
+              </div>
+            ) : (
+              <div className="relative h-full w-full">
+                {renderCodePanel(isLoading)}
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>

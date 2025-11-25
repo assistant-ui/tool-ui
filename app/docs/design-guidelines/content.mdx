@@ -75,12 +75,12 @@ The assistant contextualizes, interprets, and narrates. The surface provides str
 
 <MockThread caption="The triadic loop in action">
   <MockMessage role="user">
-    <p className="text-sm">Find auth libraries for React</p>
+    <span className="text-sm">Find auth libraries for React</span>
   </MockMessage>
   <MockMessage role="assistant">
-    <p className="text-foreground">
+    <span className="text-foreground">
       Found 8 repositories matching "auth". The top results by recent activity:
-    </p>
+    </span>
     <div className="mt-3">
       <DataTable
         rowIdKey="id"
@@ -134,14 +134,14 @@ The assistant contextualizes, interprets, and narrates. The surface provides str
     </div>
   </MockMessage>
   <MockMessage role="user">
-    <p className="text-sm">Which one would you recommend for a Next.js app?</p>
+    <span className="text-sm">Which one would you recommend for a Next.js app?</span>
   </MockMessage>
   <MockMessage role="assistant">
-    <p className="text-foreground">
+    <span className="text-foreground">
       I recommend <strong>next-auth</strong>. It's purpose-built for Next.js,
       has by far the most stars, and was updated most recently. Want me to show
       you setup instructions?
-    </p>
+    </span>
   </MockMessage>
 </MockThread>
 
