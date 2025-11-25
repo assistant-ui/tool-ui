@@ -5,6 +5,7 @@ import {
   ActionSchema,
   SerializableActionSchema,
   SerializableActionsConfigSchema,
+  SurfaceIdSchema,
 } from "../shared";
 
 export const OptionListOptionSchema = z.object({
@@ -16,6 +17,19 @@ export const OptionListOptionSchema = z.object({
 });
 
 export const OptionListPropsSchema = z.object({
+  /**
+   * Unique identifier for this surface instance in the conversation.
+   *
+   * Used for:
+   * - Assistant referencing ("the options above")
+   * - Receipt generation (linking selections to their source)
+   * - Narration context
+   *
+   * Should be stable across re-renders, meaningful, and unique within the conversation.
+   *
+   * @example "option-list-deploy-target", "format-selection"
+   */
+  surfaceId: SurfaceIdSchema,
   options: z.array(OptionListOptionSchema).min(1),
   selectionMode: z.enum(["multi", "single"]).optional(),
   value: z
@@ -40,6 +54,8 @@ export type OptionListProps = Omit<
   z.infer<typeof OptionListPropsSchema>,
   "value" | "defaultValue"
 > & {
+  /** @see OptionListPropsSchema.surfaceId */
+  surfaceId: string;
   value?: OptionListSelection;
   defaultValue?: OptionListSelection;
   onChange?: (value: OptionListSelection) => void;

@@ -79,7 +79,7 @@ export function MediaCard(props: MediaCardProps) {
   if (process.env.NODE_ENV !== "production" && cardPayload.kind === "image") {
     if (!(cardPayload.alt && cardPayload.alt.trim())) {
       console.warn(
-        `[MediaCard] Missing alt text for image card ${cardPayload.id}`,
+        `[MediaCard] Missing alt text for image card ${cardPayload.assetId}`,
       );
     }
   }

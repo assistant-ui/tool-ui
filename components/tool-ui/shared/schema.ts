@@ -1,6 +1,21 @@
 import { z } from "zod";
 import type { ReactNode } from "react";
 
+/**
+ * Schema for surface identity.
+ *
+ * Every Tool UI surface should have a unique identifier that:
+ * - Is stable across re-renders
+ * - Is meaningful (not auto-generated)
+ * - Is unique within the conversation
+ *
+ * Format recommendation: `{component-type}-{semantic-identifier}`
+ * Examples: "data-table-expenses-q3", "option-list-deploy-target"
+ */
+export const SurfaceIdSchema = z.string().min(1);
+
+export type SurfaceId = z.infer<typeof SurfaceIdSchema>;
+
 export const ActionSchema = z.object({
   id: z.string().min(1),
   label: z.string().min(1),
@@ -24,10 +39,9 @@ export const ActionButtonsPropsSchema = z.object({
 });
 
 export const SerializableActionSchema = ActionSchema.omit({ icon: true });
-export const SerializableActionsSchema =
-  ActionButtonsPropsSchema.extend({
-    actions: z.array(SerializableActionSchema),
-  }).omit({ className: true });
+export const SerializableActionsSchema = ActionButtonsPropsSchema.extend({
+  actions: z.array(SerializableActionSchema),
+}).omit({ className: true });
 
 export type ActionsConfig = {
   items: Action[];

@@ -6,7 +6,8 @@ export interface SocialPostConfig {
 
 export const sampleX: SocialPostConfig = {
   post: {
-    id: "x-post-1",
+    surfaceId: "social-post-preview-x",
+    postId: "x-post-1",
     platform: "x",
     author: {
       name: "Athia Zohra",
@@ -37,7 +38,8 @@ export const sampleX: SocialPostConfig = {
 
 const sampleXQuoted: SocialPostConfig = {
   post: {
-    id: "x-post-1",
+    surfaceId: "social-post-preview-x-quoted",
+    postId: "x-post-1",
     platform: "x",
     author: {
       name: "Athia Zohra",
@@ -52,7 +54,8 @@ const sampleXQuoted: SocialPostConfig = {
       mentions: [],
     },
     quotedPost: {
-      id: "x-post-quoted-1",
+      surfaceId: "social-post-preview-x-quoted-inner",
+      postId: "x-post-quoted-1",
       platform: "x",
       author: {
         name: "CHM Archives",
@@ -94,7 +97,8 @@ const sampleXQuoted: SocialPostConfig = {
 
 export const sampleInstagram: SocialPostConfig = {
   post: {
-    id: "ig-post-1",
+    surfaceId: "social-post-preview-instagram",
+    postId: "ig-post-1",
     platform: "instagram",
     author: {
       name: "Alex Rivera",
@@ -144,7 +148,8 @@ export const sampleInstagram: SocialPostConfig = {
 
 export const sampleLinkedIn: SocialPostConfig = {
   post: {
-    id: "linkedin-post-1",
+    surfaceId: "social-post-preview-linkedin",
+    postId: "linkedin-post-1",
     platform: "linkedin",
     author: {
       name: "Dr. Michael Thompson",

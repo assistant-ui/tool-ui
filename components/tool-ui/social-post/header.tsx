@@ -87,7 +87,7 @@ export function Header() {
           <div className="flex min-w-0 flex-col gap-1">
             <div className="flex items-center gap-1">
               <span
-                id={`post-${post.id}-author`}
+                id={`post-${post.postId}-author`}
                 className={cn("truncate", cfg.tokens.typography.name)}
               >
                 {post.author.name}
@@ -143,7 +143,7 @@ export function Header() {
           <>
             <div className="flex items-center gap-1">
               <span
-                id={`post-${post.id}-author`}
+                id={`post-${post.postId}-author`}
                 className={cn("truncate", cfg.tokens.typography.name)}
               >
                 {post.author.name}

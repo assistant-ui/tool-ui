@@ -113,7 +113,8 @@ export function CodePanel({
     const props: string[] = [];
 
     // Add the serializable props
-    props.push(`  id="${post.id}"`);
+    props.push(`  surfaceId="${post.surfaceId}"`);
+    props.push(`  postId="${post.postId}"`);
     props.push(`  platform="${post.platform}"`);
     props.push(
       `  author={${JSON.stringify(post.author, null, 4).replace(/\n/g, "\n  ")}}`,
@@ -175,7 +176,7 @@ export function CodePanel({
     const card = mediaCardConfig.card;
     const props: string[] = [];
 
-    props.push(`  id="${card.id}"`);
+    props.push(`  assetId="${card.assetId}"`);
     props.push(`  kind="${card.kind}"`);
 
     if (card.src) {

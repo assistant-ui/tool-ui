@@ -31,7 +31,7 @@ export function XRenderer() {
         <div className="flex min-w-0 flex-1 flex-col">
           <div className="flex min-w-0 items-center gap-2">
             <span
-              id={`post-${post.id}-author`}
+              id={`post-${post.postId}-author`}
               className={cn("truncate", cfg.tokens.typography.name)}
             >
               {post.author.name}

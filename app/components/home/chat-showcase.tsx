@@ -254,7 +254,8 @@ const TABLE_DATA: SupportTicket[] = (
 });
 
 const MEDIA_CARD: SerializableMediaCard = {
-  id: "rsc-guide",
+  surfaceId: "chat-showcase-media-card",
+  assetId: "rsc-guide",
   kind: "link",
   href: "https://react.dev/reference/rsc/server-components",
   src: "https://react.dev/reference/rsc/server-components",
@@ -280,7 +281,8 @@ const MEDIA_CARD: SerializableMediaCard = {
 };
 
 const SOCIAL_POST: SerializableSocialPost = {
-  id: "x-draft-oss",
+  surfaceId: "chat-showcase-social-post",
+  postId: "x-draft-oss",
   platform: "x",
   author: {
     name: "DevTools Team",
@@ -307,6 +309,7 @@ function createSceneConfigs(): SceneConfig[] {
       preamble: "Here are the most urgent tickets from this week",
       toolUI: (
         <DataTable<SupportTicket>
+          surfaceId="chat-showcase-data-table"
           rowIdKey="id"
           columns={TABLE_COLUMNS}
           data={TABLE_DATA}

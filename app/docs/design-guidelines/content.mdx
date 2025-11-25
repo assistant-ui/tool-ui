@@ -2,7 +2,10 @@ import { DocsHeader } from "../_components/docs-header";
 import { MockThread, MockMessage } from "../_components/mock-thread";
 import { DataTable } from "@/components/tool-ui/data-table";
 
-<DocsHeader title="UI Guidelines" mdxPath="app/docs/design-guidelines/content.mdx" />
+<DocsHeader
+  title="UI Guidelines"
+  mdxPath="app/docs/design-guidelines/content.mdx"
+/>
 
 Core principles for building conversation-native Tool UIs.
 
@@ -73,77 +76,82 @@ The assistant contextualizes, interprets, and narrates. The surface provides str
   </tbody>
 </table>
 
-<MockThread caption="The triadic loop in action">
-  <MockMessage role="user">
-    <span className="text-sm">Find auth libraries for React</span>
-  </MockMessage>
-  <MockMessage role="assistant">
-    <span className="text-foreground">
-      Found 8 repositories matching "auth". The top results by recent activity:
-    </span>
-    <div className="mt-3">
-      <DataTable
-        rowIdKey="id"
-        columns={[
-          { key: "name", label: "Repository", priority: "primary" },
-          {
-            key: "stars",
-            label: "Stars",
-            align: "right",
-            format: { kind: "number" },
-          },
-          {
-            key: "updated",
-            label: "Last Commit",
-            format: { kind: "date", dateFormat: "relative" },
-          },
-        ]}
-        data={[
-          {
-            id: "1",
-            name: "next-auth",
-            stars: 19420,
-            updated: "2025-01-18T10:00:00Z",
-          },
-          {
-            id: "2",
-            name: "passport",
-            stars: 847,
-            updated: "2025-01-15T14:30:00Z",
-          },
-          {
-            id: "3",
-            name: "auth0-react",
-            stars: 3210,
-            updated: "2025-01-12T09:00:00Z",
-          },
-          {
-            id: "4",
-            name: "firebase-auth",
-            stars: 562,
-            updated: "2025-01-10T16:45:00Z",
-          },
-          {
-            id: "5",
-            name: "clerk-sdk",
-            stars: 1580,
-            updated: "2025-01-08T11:20:00Z",
-          },
-        ]}
-      />
-    </div>
-  </MockMessage>
-  <MockMessage role="user">
-    <span className="text-sm">Which one would you recommend for a Next.js app?</span>
-  </MockMessage>
-  <MockMessage role="assistant">
-    <span className="text-foreground">
-      I recommend <strong>next-auth</strong>. It's purpose-built for Next.js,
-      has by far the most stars, and was updated most recently. Want me to show
-      you setup instructions?
-    </span>
-  </MockMessage>
-</MockThread>
+<div className="mx-auto max-w-2xl">
+  <MockThread caption="The triadic loop in action">
+    <MockMessage role="user">
+      <span className="text-sm">Find auth libraries for React</span>
+    </MockMessage>
+    <MockMessage role="assistant">
+      <span className="text-foreground">
+        Found 8 repositories matching "auth". The top results by recent
+        activity:
+      </span>
+      <div className="mt-3">
+        <DataTable
+          rowIdKey="id"
+          columns={[
+            { key: "name", label: "Repository", priority: "primary" },
+            {
+              key: "stars",
+              label: "Stars",
+              align: "right",
+              format: { kind: "number" },
+            },
+            {
+              key: "updated",
+              label: "Last Commit",
+              format: { kind: "date", dateFormat: "relative" },
+            },
+          ]}
+          data={[
+            {
+              id: "1",
+              name: "next-auth",
+              stars: 19420,
+              updated: "2025-01-18T10:00:00Z",
+            },
+            {
+              id: "2",
+              name: "passport",
+              stars: 847,
+              updated: "2025-01-15T14:30:00Z",
+            },
+            {
+              id: "3",
+              name: "auth0-react",
+              stars: 3210,
+              updated: "2025-01-12T09:00:00Z",
+            },
+            {
+              id: "4",
+              name: "firebase-auth",
+              stars: 562,
+              updated: "2025-01-10T16:45:00Z",
+            },
+            {
+              id: "5",
+              name: "clerk-sdk",
+              stars: 1580,
+              updated: "2025-01-08T11:20:00Z",
+            },
+          ]}
+        />
+      </div>
+    </MockMessage>
+    <MockMessage role="user">
+      <span className="text-sm">
+        Which one would you recommend for a Next.js app?
+      </span>
+    </MockMessage>
+    <MockMessage role="assistant">
+      <span className="text-foreground">
+        I recommend <strong>next-auth</strong>. It's purpose-built for Next.js,
+        has by far the most stars, and was updated most recently. Want me to
+        show you setup instructions?
+      </span>
+    </MockMessage>
+  </MockThread>
+</div>
 
 The assistant introduces the surface, the user scans it and asks a follow-up, and the assistant answers by referencing specific rows. The conversation is collaborative: user, surface, and assistant each contribute what the others can't.
 

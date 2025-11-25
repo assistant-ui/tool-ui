@@ -52,7 +52,7 @@ export function SocialPost(props: SocialPostProps) {
     serializable.media?.forEach((item, index) => {
       if (item.kind === "image" && (item.alt ?? "").trim() === "") {
         console.warn(
-          `[SocialPost] Missing alt text on media[${index}] for post ${serializable.id}`,
+          `[SocialPost] Missing alt text on media[${index}] for post ${serializable.postId}`,
         );
       }
     });
@@ -136,7 +136,7 @@ export function SocialPost(props: SocialPostProps) {
           variant === "inline" ? "rounded-none border-0 p-0" : "",
         )}
         role="article"
-        aria-labelledby={`post-${serializable.id}-author`}
+        aria-labelledby={`post-${serializable.postId}-author`}
         lang={serializable.language}
         dir={
           serializable.language?.startsWith("ar") ||

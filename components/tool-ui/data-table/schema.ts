@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { SurfaceIdSchema } from "../shared";
 import type { Action, Column, DataTableProps, RowData } from "./types";
 
 const alignEnum = z.enum(["left", "right", "center"]);
@@ -138,6 +139,7 @@ export const serializableActionSchema = z.object({
  * Zod schema for validating DataTable payloads from LLM tool calls.
  *
  * This schema validates the serializable parts of a DataTable:
+ * - surfaceId: Unique identifier for this surface in the conversation
  * - columns: Column definitions (keys, labels, formatting, etc.)
  * - data: Data rows (primitives only - no functions or class instances)
  * - actions: Action button definitions (ids, labels, variants)
@@ -150,11 +152,12 @@ export const serializableActionSchema = z.object({
  * ```ts
  * const result = serializableDataTableSchema.safeParse(llmResponse)
  * if (result.success) {
- *   // result.data contains validated columns, data, and actions
+ *   // result.data contains validated surfaceId, columns, data, and actions
  * }
  * ```
  */
 export const serializableDataTableSchema = z.object({
+  surfaceId: SurfaceIdSchema,
   columns: z.array(serializableColumnSchema),
   data: z.array(serializableDataSchema),
   actions: z.array(serializableActionSchema).optional(),
@@ -200,7 +203,7 @@ export type SerializableDataTable = z.infer<typeof serializableDataTableSchema>;
  * separately (onAction, onSortChange, isLoading, className).
  *
  * @param input - Unknown data to validate (typically from an LLM tool call)
- * @returns Validated and typed DataTable serializable props (columns, data, actions)
+ * @returns Validated and typed DataTable serializable props (surfaceId, columns, data, actions)
  * @throws Error with validation details if input is invalid
  *
  * @example
@@ -219,13 +222,14 @@ export type SerializableDataTable = z.infer<typeof serializableDataTableSchema>;
  */
 export function parseSerializableDataTable(
   input: unknown,
-): Pick<DataTableProps<RowData>, "columns" | "data" | "actions" | "layout"> {
+): Pick<DataTableProps<RowData>, "surfaceId" | "columns" | "data" | "actions" | "layout"> {
   const res = serializableDataTableSchema.safeParse(input);
   if (!res.success) {
     throw new Error(`Invalid DataTable payload: ${res.error.message}`);
   }
-  const { columns, data, actions, layout } = res.data;
+  const { surfaceId, columns, data, actions, layout } = res.data;
   return {
+    surfaceId,
     columns: columns as unknown as Column<RowData>[],
     data: data as RowData[],
     actions: actions as Action[] | undefined,

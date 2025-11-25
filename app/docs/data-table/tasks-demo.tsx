@@ -71,6 +71,7 @@ export function TasksDemo() {
   return (
     <div className="not-prose">
       <DataTable
+        surfaceId="data-table-tasks-demo"
         rowIdKey="id"
         columns={columns}
         data={rows ?? []}

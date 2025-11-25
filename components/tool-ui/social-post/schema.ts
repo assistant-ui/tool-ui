@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { SurfaceIdSchema } from "../shared";
 
 export const platformEnum = z.enum(["x", "instagram", "linkedin"]);
 export type Platform = z.infer<typeof platformEnum>;
@@ -77,7 +78,30 @@ export const actionSchema = z.object({
 export const serializableSocialPostSchema: z.ZodType<SerializableSocialPost> =
   z.lazy(() =>
     z.object({
-      id: z.string(),
+      /**
+       * Unique identifier for this surface instance in the conversation.
+       *
+       * Used for:
+       * - Assistant referencing ("the tweet above")
+       * - Receipt generation (linking engagement to their source)
+       * - Narration context
+       *
+       * Should be stable across re-renders, meaningful, and unique within the conversation.
+       *
+       * @example "social-post-tweet-123", "linkedin-post-announcement"
+       */
+      surfaceId: SurfaceIdSchema,
+      /**
+       * The post's identifier on the social platform (e.g., tweet ID, Instagram post ID).
+       *
+       * Used for:
+       * - API calls to the platform
+       * - Deep linking to the original post
+       * - Deduplication across multiple surfaces
+       *
+       * @example "1234567890" (Twitter), "CxYz123ABC" (Instagram)
+       */
+      postId: z.string(),
       platform: platformEnum,
       author: authorSchema,
       text: z.string().optional(),
@@ -94,12 +118,38 @@ export const serializableSocialPostSchema: z.ZodType<SerializableSocialPost> =
       language: z.string().optional(),
       locale: z.string().optional(),
       compact: z.boolean().optional(),
+      /**
+       * @deprecated Use `surfaceId` instead. This prop will be removed in a future version.
+       */
       messageId: z.string().optional(),
     }),
   );
 
 export interface SerializableSocialPost {
-  id: string;
+  /**
+   * Unique identifier for this surface instance in the conversation.
+   *
+   * Used for:
+   * - Assistant referencing ("the tweet above")
+   * - Receipt generation (linking engagement to their source)
+   * - Narration context
+   *
+   * Should be stable across re-renders, meaningful, and unique within the conversation.
+   *
+   * @example "social-post-tweet-123", "linkedin-post-announcement"
+   */
+  surfaceId: string;
+  /**
+   * The post's identifier on the social platform (e.g., tweet ID, Instagram post ID).
+   *
+   * Used for:
+   * - API calls to the platform
+   * - Deep linking to the original post
+   * - Deduplication across multiple surfaces
+   *
+   * @example "1234567890" (Twitter), "CxYz123ABC" (Instagram)
+   */
+  postId: string;
   platform: Platform;
   author: z.infer<typeof authorSchema>;
   text?: string;
@@ -116,6 +166,9 @@ export interface SerializableSocialPost {
   language?: string;
   locale?: string;
   compact?: boolean;
+  /**
+   * @deprecated Use `surfaceId` instead. This prop will be removed in a future version.
+   */
   messageId?: string;
 }
 

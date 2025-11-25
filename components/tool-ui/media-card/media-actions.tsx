@@ -134,7 +134,7 @@ export function Actions() {
         if (!card.src || typeof document === "undefined") break;
         const anchor = document.createElement("a");
         anchor.href = card.src;
-        anchor.download = card.title ?? card.id;
+        anchor.download = card.title ?? card.assetId;
         anchor.rel = "noopener";
         document.body.appendChild(anchor);
         anchor.click();

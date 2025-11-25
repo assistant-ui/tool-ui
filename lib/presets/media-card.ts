@@ -8,7 +8,8 @@ export type MediaCardPresetName = "image" | "video" | "audio" | "link";
 
 const imagePreset: MediaCardConfig = {
   card: {
-    id: "media-card-image",
+    surfaceId: "media-card-preview-image",
+    assetId: "media-card-image",
     kind: "image",
     src: "https://images.unsplash.com/photo-1504548840739-580b10ae7715?w=1200&auto=format&fit=crop",
     alt: "Vintage mainframe with blinking lights",
@@ -28,7 +29,8 @@ const imagePreset: MediaCardConfig = {
 
 const videoPreset: MediaCardConfig = {
   card: {
-    id: "media-card-video",
+    surfaceId: "media-card-preview-video",
+    assetId: "media-card-video",
     kind: "video",
     src: "https://samplelib.com/lib/preview/mp4/sample-5s.mp4",
     thumb:
@@ -49,7 +51,8 @@ const videoPreset: MediaCardConfig = {
 
 const audioPreset: MediaCardConfig = {
   card: {
-    id: "media-card-audio",
+    surfaceId: "media-card-preview-audio",
+    assetId: "media-card-audio",
     kind: "audio",
     src: "https://samplelib.com/lib/preview/mp3/sample-6s.mp3",
     title: "Bell Labs hallway recording",
@@ -69,7 +72,8 @@ const audioPreset: MediaCardConfig = {
 
 const linkPreset: MediaCardConfig = {
   card: {
-    id: "media-card-link",
+    surfaceId: "media-card-preview-link",
+    assetId: "media-card-link",
     kind: "link",
     href: "https://en.wikipedia.org/wiki/History_of_computing_hardware",
     src: "https://en.wikipedia.org/wiki/History_of_computing_hardware",

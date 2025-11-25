@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { SurfaceIdSchema } from "../shared";
 
 export const mediaKind = z.enum(["image", "video", "audio", "link"]);
 export type MediaCardKind = z.infer<typeof mediaKind>;
@@ -13,7 +14,30 @@ export type Fit = z.infer<typeof fit>;
 
 export const serializableMediaCardSchema = z
   .object({
-    id: z.string(),
+    /**
+     * Unique identifier for this surface instance in the conversation.
+     *
+     * Used for:
+     * - Assistant referencing ("the image above")
+     * - Receipt generation (linking actions to their source)
+     * - Narration context
+     *
+     * Should be stable across re-renders, meaningful, and unique within the conversation.
+     *
+     * @example "media-card-hero-image", "link-preview-article-123"
+     */
+    surfaceId: SurfaceIdSchema,
+    /**
+     * The media asset's persistent identifier (e.g., database ID, CDN asset ID, URL hash).
+     *
+     * Used for:
+     * - Caching and deduplication
+     * - Tracking the same asset across multiple surfaces
+     * - Backend references
+     *
+     * @example "asset-img-12345", "cdn-video-abc", "url-hash-xyz"
+     */
+    assetId: z.string(),
     kind: mediaKind,
     title: z.string().optional(),
     description: z.string().optional(),
