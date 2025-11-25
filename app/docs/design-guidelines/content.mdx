@@ -1,17 +1,18 @@
 import { DocsHeader } from "../_components/docs-header";
 import { MockThread, MockMessage } from "../_components/mock-thread";
 import { DataTable } from "@/components/tool-ui/data-table";
+import { OptionList } from "@/components/tool-ui/option-list";
 
 <DocsHeader
-  title="UI Guidelines"
+  title="Design Guidelines"
   mdxPath="app/docs/design-guidelines/content.mdx"
 />
 
-Core principles for building conversation-native Tool UIs.
+Principles for building Tool UIs that feel native to conversation.
 
 ## The Collaboration Model
 
-In AI chat, users interact with both the assistant and any UI surfaces it renders. Most tool UIs treat this as incidental. We treat it as foundational.
+In AI chat, users interact with both the assistant and any UI surfaces it renders. Most tool UIs treat this relationship as incidental: a surface appears, the user clicks something, done. We treat it as foundational. The assistant, the surface, and the user form a collaborative triad.
 
 <Mermaid chart={`
 flowchart LR
@@ -35,46 +36,7 @@ flowchart LR
 
 `} />
 
-The assistant contextualizes, interprets, and narrates. The surface provides structure the assistant can't match inline: interactive data, precise controls, rich media. They're complementary, each handling what the other does poorly.
-
-### Division of Labor
-
-<table>
-  <thead>
-    <tr>
-      <th>Capability</th>
-      <th>Surface</th>
-      <th>Assistant</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Display structured data</td>
-      <td>✓</td>
-      <td></td>
-    </tr>
-    <tr>
-      <td>Enable precise interaction</td>
-      <td>✓</td>
-      <td></td>
-    </tr>
-    <tr>
-      <td>Provide context and explanation</td>
-      <td></td>
-      <td>✓</td>
-    </tr>
-    <tr>
-      <td>Reference conversation history</td>
-      <td></td>
-      <td>✓</td>
-    </tr>
-    <tr>
-      <td>Execute side effects</td>
-      <td>✓ (triggers)</td>
-      <td>✓ (initiates)</td>
-    </tr>
-  </tbody>
-</table>
+The assistant contextualizes, interprets, and narrates. The surface provides structure that prose cannot: sortable tables, precise controls, rich media. Neither replaces the other.
 
 <div className="mx-auto max-w-2xl">
   <MockThread caption="The triadic loop in action">
@@ -153,351 +115,79 @@ The assistant contextualizes, interprets, and narrates. The surface provides str
   </MockThread>
 </div>
 
-The assistant introduces the surface, the user scans it and asks a follow-up, and the assistant answers by referencing specific rows. The conversation is collaborative: user, surface, and assistant each contribute what the others can't.
-
-## Fundamentals
-
-### One Intent per Surface
-
-Each instance does one primary job. A table that filters, exports, and schedules is three surfaces, not one.
-
-<table>
-  <thead>
-    <tr>
-      <th>Level</th>
-      <th>Definition</th>
-      <th>Example</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>
-        <strong>Atom</strong>
-      </td>
-      <td>Single role, single action</td>
-      <td>Confirmation prompt</td>
-    </tr>
-    <tr>
-      <td>
-        <strong>Molecule</strong>
-      </td>
-      <td>Primary role + supporting interactions</td>
-      <td>Table with row actions</td>
-    </tr>
-    <tr>
-      <td>
-        <strong>Organism</strong>
-      </td>
-      <td>Multiple competing intents</td>
-      <td>Avoid - split it up</td>
-    </tr>
-  </tbody>
-</table>
-
-### Schema-First & Addressable
-
-Components render from JSON with stable IDs (surface + key children) enabling references like _"the second row"_ or _"the card above"_.
-
-### Assistant-Anchored
-
-The assistant narrates every Tool UI:
-
-<table>
-  <thead>
-    <tr>
-      <th>Phase</th>
-      <th>Purpose</th>
-      <th>When</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>
-        <strong>Introduction</strong>
-      </td>
-      <td>Set context before surface appears</td>
-      <td>Always</td>
-    </tr>
-    <tr>
-      <td>
-        <strong>Annotation</strong>
-      </td>
-      <td>Explain patterns, anomalies</td>
-      <td>When helpful</td>
-    </tr>
-    <tr>
-      <td>
-        <strong>Guidance</strong>
-      </td>
-      <td>Suggest actions for decisions</td>
-      <td>For Decision surfaces</td>
-    </tr>
-    <tr>
-      <td>
-        <strong>Summary</strong>
-      </td>
-      <td>Recap outcomes</td>
-      <td>After side effects</td>
-    </tr>
-  </tbody>
-</table>
-
-### Temporal & Lifecycle Aware
-
-Surfaces move through explicit phases and show honest timestamps.
-
-**Lifecycle:** Pending → Ready → Committing → Committed → Stale
-
-**Supersession:** When data changes significantly, create a new surface and mark the old one superseded rather than silently updating.
+The assistant introduces the surface, the user scans it and asks a follow-up, the assistant answers by referencing specific rows. This is the triadic loop.
 
 ## Roles
 
-Every Tool UI declares its primary role:
+Every Tool UI has a primary role:
 
-<table>
-  <thead>
-    <tr>
-      <th>Role</th>
-      <th>Purpose</th>
-      <th>Examples</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>
-        <strong>Information</strong>
-      </td>
-      <td>Display data</td>
-      <td>DataTable, MediaCard</td>
-    </tr>
-    <tr>
-      <td>
-        <strong>Decision</strong>
-      </td>
-      <td>Capture consequential choices with receipts</td>
-      <td>Approve/reject, send/cancel</td>
-    </tr>
-    <tr>
-      <td>
-        <strong>Control</strong>
-      </td>
-      <td>Adjust parameters without commitment</td>
-      <td>Filters, sort, date ranges</td>
-    </tr>
-    <tr>
-      <td>
-        <strong>State</strong>
-      </td>
-      <td>Expose internal activity</td>
-      <td>Progress indicators, logs</td>
-    </tr>
-  </tbody>
-</table>
+- **Information:** Display data (tables, cards, charts). The focus is on comprehension rather than interaction.
 
-**Composite:** Primary + secondary (e.g., "information with control"). The primary role must dominate.
+- **Decision:** Capture consequential choices (approve/reject, send/cancel). These require clear options and receipts that prove what happened.
 
-## Design Laws
+- **Control:** Adjust parameters without commitment (filters, sort orders, date ranges). Changes are reversible.
 
-Physical and cognitive constraints for embedded UIs.
+- **State:** Expose internal activity (progress indicators, status logs, loading states).
 
-### Vertical Budget
+Some surfaces combine roles. A data table with row actions is "information with control." When combining, the primary role should dominate.
 
-Communicate purpose within **300px**. Maximum ~600px before requiring scroll/pagination.
+## Constraints
 
-### Width Tax
+Tool UIs live in chat: narrow widths, variable heights, mixed with prose.
 
-Everything competes for 400-600px. Prefer single column. Two columns OK for key-value. Three+ only for tables with scroll fallback.
-
-### Touch Targets
-
-Minimum **44×44px** for all interactive elements.
-
-### Choice Limits
-
-<table>
-  <thead>
-    <tr>
-      <th>Context</th>
-      <th>Maximum</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Primary actions</td>
-      <td>2-3</td>
-    </tr>
-    <tr>
-      <td>Option list items</td>
-      <td>5-7</td>
-    </tr>
-    <tr>
-      <td>Table rows (initial)</td>
-      <td>5-7</td>
-    </tr>
-  </tbody>
-</table>
-
-The assistant handles overflow.
-
-### Feedback Timing
-
-<table>
-  <thead>
-    <tr>
-      <th>Duration</th>
-      <th>Required Feedback</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>&lt; 100ms</td>
-      <td>State change (press, selection)</td>
-    </tr>
-    <tr>
-      <td>100ms - 1s</td>
-      <td>Loading indicator</td>
-    </tr>
-    <tr>
-      <td>1s - 10s</td>
-      <td>Progress indicator + status</td>
-    </tr>
-    <tr>
-      <td>&gt; 10s</td>
-      <td>Progress bar + cancel option</td>
-    </tr>
-  </tbody>
-</table>
-
-### Safety Friction
-
-Match friction to consequence:
-
-<table>
-  <thead>
-    <tr>
-      <th>Action Type</th>
-      <th>Friction</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Read-only / Reversible</td>
-      <td>None</td>
-    </tr>
-    <tr>
-      <td>Irreversible, low-stakes</td>
-      <td>Confirmation step</td>
-    </tr>
-    <tr>
-      <td>Irreversible, high-stakes</td>
-      <td>Two-step + summary</td>
-    </tr>
-  </tbody>
-</table>
-
-## Required Invariants
-
-### Core Contract
-
-- Single outcome & declared role
-- Fully serializable from schema (JSON-safe, reconstructable)
-- Stable IDs for surface and key children
-
-### Conversation Requirements
-
-- Every important action maps to a **canonical sentence**
-- Side effects produce **durable receipts** (outcome, summary, identifiers, timestamp)
-
-### Quality Floor
-
-- Keyboard navigable, screen-reader friendly, 4.5:1 contrast minimum
-- **No layout thrash during streaming** (skeleton matches final layout)
-- Errors as **first-class surfaces**, not toasts
-
-## Conversation Coherence
-
-Every UI action has a natural language equivalent:
-
-<table>
-  <thead>
-    <tr>
-      <th>Button</th>
-      <th>Sentence</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>"Confirm"</td>
-      <td>"Yes, go ahead"</td>
-    </tr>
-    <tr>
-      <td>"Filter to errors"</td>
-      <td>"Only show errors"</td>
-    </tr>
-    <tr>
-      <td>↻ (refresh)</td>
-      <td>"Refresh this"</td>
-    </tr>
-  </tbody>
-</table>
-
-If the assistant can't describe an action, the UI is too opaque.
-
-**The Triadic Loop:** User ⇄ Assistant ⇄ Surface. The assistant interprets all interactions.
+- **Vertical:** Communicate purpose within the first 300px or so.
+- **Horizontal:** Expect 400–600px. Prefer single-column layouts.
+- **Touch:** Interactive elements need at least 44×44px tap area.
+- **Choices:** Limit visible options to 5–7. The assistant can offer to show more.
 
 ## Receipts
 
-Any action with side effects must produce a receipt:
+When a user takes an action with consequences, the surface should transition to a receipt state that confirms what happened. This gives the user proof and gives the assistant something to reference later.
 
-```typescript
-interface Receipt {
-  outcome: "success" | "partial" | "failed" | "cancelled";
-  summary: string;
-  identifiers?: Record<string, string>;
-  at: string; // ISO timestamp
-}
-```
+<div className="mx-auto max-w-2xl">
+  <MockThread caption="A decision surface with receipt">
+    <MockMessage role="assistant">
+      <span className="text-foreground">
+        How would you like to handle the duplicate contacts?
+      </span>
+      <div className="mt-3">
+        <OptionList
+          selectionMode="single"
+          confirmed="merge"
+          options={[
+            {
+              id: "merge",
+              label: "Merge duplicates",
+              description: "Combine into single contacts, keeping all data",
+            },
+            {
+              id: "keep",
+              label: "Keep all",
+              description: "Leave duplicates as separate contacts",
+            },
+            {
+              id: "review",
+              label: "Review manually",
+              description: "I'll decide for each duplicate",
+            },
+          ]}
+        />
+      </div>
+    </MockMessage>
+    <MockMessage role="assistant">
+      <span className="text-foreground">
+        Done. I merged 12 duplicate contacts. You can undo this from Settings → Contact History if needed.
+      </span>
+    </MockMessage>
+  </MockThread>
+</div>
 
-Receipts provide proof. They let users verify outcomes, assistants reference past actions, and serve as audit trails.
+The receipt shows what the user chose. The assistant's follow-up confirms the outcome and offers a way to reverse it.
 
 ## Anti-Patterns
 
-- **Forms in chat:** Multi-field forms pretending to be Tool UIs
-- **Hidden mutations:** Side effects without receipts
-- **Kitchen sinks:** Dashboards crammed into messages
-- **Mini-apps:** Navigation flows inside Tool UIs
-- **Silent surfaces:** No assistant introduction
-- **Redundant narration:** Assistant describes exactly what surface shows
-
-## Design Checklist
-
-### Identity
-
-- Role declared (Information, Decision, Control, State)
-- Primary intent is clear
-- If composite, primary role dominates
-
-### Constraints
-
-- Primary value in first 300px
-- Works in 400-600px width
-- Touch targets 44px minimum
-- Choices limited to 5-7
-
-### Narration
-
-- Assistant can introduce it
-- Assistant can add insight (not just repeat data)
-- Assistant can reference it later
-
-### Actions
-
-- Every action is speakable
-- Friction matches stakes
-- Side effects produce receipts
-
-### Schema
-
-- Zod schema defined
-- Runtime props (callbacks) separated
-- Stable IDs for surface and children
+- **Forms in chat:** Multi-field forms don't belong in Tool UIs. Collect inputs through conversation or link to a dedicated form.
+- **Hidden mutations:** Actions that change state should produce visible receipts.
+- **Kitchen sinks:** If it needs tabs or navigation, consider breaking it into separate Tool UIs.
+- **Silent surfaces:** Always have the assistant introduce a Tool UI.
+- **Redundant narration:** The assistant shouldn't just describe what the surface already shows. It's more useful to add context or insight.
