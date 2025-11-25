@@ -1,4 +1,6 @@
 import { DocsHeader } from "../_components/docs-header";
+import { MockThread, MockMessage } from "../_components/mock-thread";
+import { DataTable } from "@/components/tool-ui/data-table";
 
 <DocsHeader title="UI Guidelines" />
 
@@ -27,9 +29,10 @@ flowchart LR
     linkStyle 1 stroke:#3b82f6,stroke-width:1px
     linkStyle 2 stroke:#10b981,stroke-width:2px
     linkStyle 3 stroke:#8b5cf6,stroke-width:1px
+
 `} />
 
-The assistant contextualizes, interprets, and narrates. The surface provides structure the assistant cannot render inline. They're complementary: surfaces shouldn't explain themselves, and assistants shouldn't render tables.
+The assistant contextualizes, interprets, and narrates. The surface provides structure the assistant can't match inline: interactive data, precise controls, rich media. They're complementary, each handling what the other does poorly.
 
 ### Division of Labor
 
@@ -70,6 +73,80 @@ The assistant contextualizes, interprets, and narrates. The surface provides str
   </tbody>
 </table>
 
+<MockThread caption="The triadic loop in action">
+  <MockMessage role="user">
+    <p className="text-sm">Find auth libraries for React</p>
+  </MockMessage>
+  <MockMessage role="assistant">
+    <p className="text-foreground">
+      Found 8 repositories matching "auth". The top results by recent activity:
+    </p>
+    <div className="mt-3">
+      <DataTable
+        rowIdKey="id"
+        columns={[
+          { key: "name", label: "Repository", priority: "primary" },
+          {
+            key: "stars",
+            label: "Stars",
+            align: "right",
+            format: { kind: "number" },
+          },
+          {
+            key: "updated",
+            label: "Last Commit",
+            format: { kind: "date", dateFormat: "relative" },
+          },
+        ]}
+        data={[
+          {
+            id: "1",
+            name: "next-auth",
+            stars: 19420,
+            updated: "2025-01-18T10:00:00Z",
+          },
+          {
+            id: "2",
+            name: "passport",
+            stars: 847,
+            updated: "2025-01-15T14:30:00Z",
+          },
+          {
+            id: "3",
+            name: "auth0-react",
+            stars: 3210,
+            updated: "2025-01-12T09:00:00Z",
+          },
+          {
+            id: "4",
+            name: "firebase-auth",
+            stars: 562,
+            updated: "2025-01-10T16:45:00Z",
+          },
+          {
+            id: "5",
+            name: "clerk-sdk",
+            stars: 1580,
+            updated: "2025-01-08T11:20:00Z",
+          },
+        ]}
+      />
+    </div>
+  </MockMessage>
+  <MockMessage role="user">
+    <p className="text-sm">Which one would you recommend for a Next.js app?</p>
+  </MockMessage>
+  <MockMessage role="assistant">
+    <p className="text-foreground">
+      I recommend <strong>next-auth</strong>. It's purpose-built for Next.js,
+      has by far the most stars, and was updated most recently. Want me to show
+      you setup instructions?
+    </p>
+  </MockMessage>
+</MockThread>
+
+The assistant introduces the surface, the user scans it and asks a follow-up, and the assistant answers by referencing specific rows. The conversation is collaborative: user, surface, and assistant each contribute what the others can't.
+
 ## Fundamentals
 
 ### One Intent per Surface
@@ -86,32 +163,32 @@ Each instance does one primary job. A table that filters, exports, and schedules
   </thead>
   <tbody>
     <tr>
-      <td><strong>Atom</strong></td>
+      <td>
+        <strong>Atom</strong>
+      </td>
       <td>Single role, single action</td>
       <td>Confirmation prompt</td>
     </tr>
     <tr>
-      <td><strong>Molecule</strong></td>
+      <td>
+        <strong>Molecule</strong>
+      </td>
       <td>Primary role + supporting interactions</td>
       <td>Table with row actions</td>
     </tr>
     <tr>
-      <td><strong>Organism</strong></td>
+      <td>
+        <strong>Organism</strong>
+      </td>
       <td>Multiple competing intents</td>
       <td>Avoid - split it up</td>
     </tr>
   </tbody>
 </table>
 
-**The test:** Remove secondary interactions. Does it still make sense?
-
-### Inline, Not Destination
-
-Tool UIs live inside messages. No fullscreen takeovers, no mini-apps. They support the conversation, not replace it.
-
 ### Schema-First & Addressable
 
-Components render from JSON with stable IDs (surface + key children) enabling references like _"the second row"_ or _"the card above"_. Include `asOf` when freshness matters.
+Components render from JSON with stable IDs (surface + key children) enabling references like _"the second row"_ or _"the card above"_.
 
 ### Assistant-Anchored
 
@@ -127,22 +204,30 @@ The assistant narrates every Tool UI:
   </thead>
   <tbody>
     <tr>
-      <td><strong>Introduction</strong></td>
+      <td>
+        <strong>Introduction</strong>
+      </td>
       <td>Set context before surface appears</td>
       <td>Always</td>
     </tr>
     <tr>
-      <td><strong>Annotation</strong></td>
+      <td>
+        <strong>Annotation</strong>
+      </td>
       <td>Explain patterns, anomalies</td>
       <td>When helpful</td>
     </tr>
     <tr>
-      <td><strong>Guidance</strong></td>
+      <td>
+        <strong>Guidance</strong>
+      </td>
       <td>Suggest actions for decisions</td>
       <td>For Decision surfaces</td>
     </tr>
     <tr>
-      <td><strong>Summary</strong></td>
+      <td>
+        <strong>Summary</strong>
+      </td>
       <td>Recap outcomes</td>
       <td>After side effects</td>
     </tr>
@@ -171,22 +256,30 @@ Every Tool UI declares its primary role:
   </thead>
   <tbody>
     <tr>
-      <td><strong>Information</strong></td>
+      <td>
+        <strong>Information</strong>
+      </td>
       <td>Display data</td>
       <td>DataTable, MediaCard</td>
     </tr>
     <tr>
-      <td><strong>Decision</strong></td>
+      <td>
+        <strong>Decision</strong>
+      </td>
       <td>Capture consequential choices with receipts</td>
       <td>Approve/reject, send/cancel</td>
     </tr>
     <tr>
-      <td><strong>Control</strong></td>
+      <td>
+        <strong>Control</strong>
+      </td>
       <td>Adjust parameters without commitment</td>
       <td>Filters, sort, date ranges</td>
     </tr>
     <tr>
-      <td><strong>State</strong></td>
+      <td>
+        <strong>State</strong>
+      </td>
       <td>Expose internal activity</td>
       <td>Progress indicators, logs</td>
     </tr>
