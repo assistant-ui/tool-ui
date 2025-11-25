@@ -2,89 +2,390 @@ import { DocsHeader } from "../_components/docs-header";
 
 <DocsHeader title="UI Guidelines" />
 
-Core principles for building conversation-native Tool UIs. This document will be tuned over time as we iterate and learn.
+Core principles for building conversation-native Tool UIs.
+
+## The Collaboration Model
+
+Traditional UI is two-party: **User ↔ Interface**. Tool UI introduces a third participant.
+
+```
+              User
+             ↙    ↘
+       controls    observes
+           ↓          ↓
+      Surface ←————→ Assistant
+             mediates
+```
+
+The assistant contextualizes, interprets, and narrates. The surface provides structure the assistant cannot render inline. They're complementary—don't make surfaces explain themselves, don't make assistants render tables.
+
+### Division of Labor
+
+<table>
+  <thead>
+    <tr>
+      <th>Capability</th>
+      <th>Surface</th>
+      <th>Assistant</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Display structured data</td>
+      <td>✓</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>Enable precise interaction</td>
+      <td>✓</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>Provide context and explanation</td>
+      <td></td>
+      <td>✓</td>
+    </tr>
+    <tr>
+      <td>Reference conversation history</td>
+      <td></td>
+      <td>✓</td>
+    </tr>
+    <tr>
+      <td>Execute side effects</td>
+      <td>✓ (triggers)</td>
+      <td>✓ (initiates)</td>
+    </tr>
+  </tbody>
+</table>
 
 ## Fundamentals
 
-Every Tool UI follows these 5 rules:
-
 ### One Intent per Surface
+
 Each instance does one primary job. A table that filters, exports, and schedules is three surfaces, not one.
 
+<table>
+  <thead>
+    <tr>
+      <th>Level</th>
+      <th>Definition</th>
+      <th>Example</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Atom</strong></td>
+      <td>Single role, single action</td>
+      <td>Confirmation prompt</td>
+    </tr>
+    <tr>
+      <td><strong>Molecule</strong></td>
+      <td>Primary role + supporting interactions</td>
+      <td>Table with row actions</td>
+    </tr>
+    <tr>
+      <td><strong>Organism</strong></td>
+      <td>Multiple competing intents</td>
+      <td>Avoid - split it up</td>
+    </tr>
+  </tbody>
+</table>
+
+**The test:** Remove secondary interactions. Does it still make sense?
+
 ### Inline, Not Destination
+
 Tool UIs live inside messages. No fullscreen takeovers, no mini-apps. They support the conversation, not replace it.
 
 ### Schema-First & Addressable
-Components render from JSON with stable IDs (surface + key children) enabling references like *"the second row"* or *"the card above"*. Include `asOf` when freshness matters.
+
+Components render from JSON with stable IDs (surface + key children) enabling references like _"the second row"_ or _"the card above"_. Include `asOf` when freshness matters.
 
 ### Assistant-Anchored
-The assistant narrates every Tool UI before, during, and after interaction. The UI never "speaks" silently.
+
+The assistant narrates every Tool UI:
+
+<table>
+  <thead>
+    <tr>
+      <th>Phase</th>
+      <th>Purpose</th>
+      <th>When</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Introduction</strong></td>
+      <td>Set context before surface appears</td>
+      <td>Always</td>
+    </tr>
+    <tr>
+      <td><strong>Annotation</strong></td>
+      <td>Explain patterns, anomalies</td>
+      <td>When helpful</td>
+    </tr>
+    <tr>
+      <td><strong>Guidance</strong></td>
+      <td>Suggest actions for decisions</td>
+      <td>For Decision surfaces</td>
+    </tr>
+    <tr>
+      <td><strong>Summary</strong></td>
+      <td>Recap outcomes</td>
+      <td>After side effects</td>
+    </tr>
+  </tbody>
+</table>
 
 ### Temporal & Lifecycle Aware
-Surfaces move through explicit phases and show honest timestamps. Canonical lifecycle:
-**invocation → output-pending → interactive → committing → receipt → errored**.
+
+Surfaces move through explicit phases and show honest timestamps.
+
+**Lifecycle:** Pending → Ready → Committing → Committed → Stale
+
+**Supersession:** When data changes significantly, create a new surface and mark the old one superseded rather than silently updating.
 
 ## Roles
 
 Every Tool UI declares its primary role:
 
-- **Information**: Display data (e.g., DataTable, MediaCard)
-- **Decision**: Capture consequential choices that require commitment and produce receipts (e.g., approve/reject prompts, send/cancel dialogs)
-- **Control**: Adjust parameters that modify behavior without commitment. Safe, iterative, no side effects (e.g., filters, sort, date ranges)
-- **State**: Expose internal tool/assistant activity (observability)
-- **Composite**: Primary + secondary (e.g., DataTable with actions = "information with control")
+<table>
+  <thead>
+    <tr>
+      <th>Role</th>
+      <th>Purpose</th>
+      <th>Examples</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Information</strong></td>
+      <td>Display data</td>
+      <td>DataTable, MediaCard</td>
+    </tr>
+    <tr>
+      <td><strong>Decision</strong></td>
+      <td>Capture consequential choices with receipts</td>
+      <td>Approve/reject, send/cancel</td>
+    </tr>
+    <tr>
+      <td><strong>Control</strong></td>
+      <td>Adjust parameters without commitment</td>
+      <td>Filters, sort, date ranges</td>
+    </tr>
+    <tr>
+      <td><strong>State</strong></td>
+      <td>Expose internal activity</td>
+      <td>Progress indicators, logs</td>
+    </tr>
+  </tbody>
+</table>
 
-## Lifecycle
+**Composite:** Primary + secondary (e.g., "information with control"). The primary role must dominate.
 
-Tool UIs follow predictable phases:
+## Design Laws
 
-**invocation → output-pending → interactive → committing → receipt → errored**
+Physical and cognitive constraints for embedded UIs.
 
-Temporal overlays: **fresh** | **active** | **stale** | **historical** | **superseded**.
+### Vertical Budget
 
-Significant changes or time gaps: create a new surface and mark the old one **superseded** rather than silently updating stale data.
+Communicate purpose within **300px**. Maximum ~600px before requiring scroll/pagination.
+
+### Width Tax
+
+Everything competes for 400-600px. Prefer single column. Two columns OK for key-value. Three+ only for tables with scroll fallback.
+
+### Touch Targets
+
+Minimum **44×44px** for all interactive elements.
+
+### Choice Limits
+
+<table>
+  <thead>
+    <tr>
+      <th>Context</th>
+      <th>Maximum</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Primary actions</td>
+      <td>2-3</td>
+    </tr>
+    <tr>
+      <td>Option list items</td>
+      <td>5-7</td>
+    </tr>
+    <tr>
+      <td>Table rows (initial)</td>
+      <td>5-7</td>
+    </tr>
+  </tbody>
+</table>
+
+The assistant handles overflow.
+
+### Feedback Timing
+
+<table>
+  <thead>
+    <tr>
+      <th>Duration</th>
+      <th>Required Feedback</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>&lt; 100ms</td>
+      <td>State change (press, selection)</td>
+    </tr>
+    <tr>
+      <td>100ms - 1s</td>
+      <td>Loading indicator</td>
+    </tr>
+    <tr>
+      <td>1s - 10s</td>
+      <td>Progress indicator + status</td>
+    </tr>
+    <tr>
+      <td>&gt; 10s</td>
+      <td>Progress bar + cancel option</td>
+    </tr>
+  </tbody>
+</table>
+
+### Safety Friction
+
+Match friction to consequence:
+
+<table>
+  <thead>
+    <tr>
+      <th>Action Type</th>
+      <th>Friction</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Read-only / Reversible</td>
+      <td>None</td>
+    </tr>
+    <tr>
+      <td>Irreversible, low-stakes</td>
+      <td>Confirmation step</td>
+    </tr>
+    <tr>
+      <td>Irreversible, high-stakes</td>
+      <td>Two-step + summary</td>
+    </tr>
+  </tbody>
+</table>
 
 ## Required Invariants
 
 ### Core Contract
+
 - Single outcome & declared role
 - Fully serializable from schema (JSON-safe, reconstructable)
 - Stable IDs for surface and key children
 
 ### Conversation Requirements
+
 - Every important action maps to a **canonical sentence**
-- Side effects produce **durable receipts** (status, summary, identifiers, timestamp)
+- Side effects produce **durable receipts** (outcome, summary, identifiers, timestamp)
 - **Temporal honesty** (show `asOf` and staleness/supersession behavior)
 
 ### Quality Floor
-- Keyboard navigable, screen-reader friendly, AA contrast
-- **No layout thrash during streaming** (skeleton matches final layout; no container resize)
-- Errors as **first-class surfaces**, not toasts
 
+- Keyboard navigable, screen-reader friendly, 4.5:1 contrast minimum
+- **No layout thrash during streaming** (skeleton matches final layout)
+- Errors as **first-class surfaces**, not toasts
 
 ## Conversation Coherence
 
 Every UI action has a natural language equivalent:
 
-**Example 1: Approving an action**
-- UI Action: Click "Approve"
-- Canonical Sentence: "Approve PR #42"
-- User: "yes, approve it"
-- Assistant: "Approved PR #42."
+<table>
+  <thead>
+    <tr>
+      <th>Button</th>
+      <th>Sentence</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>"Confirm"</td>
+      <td>"Yes, go ahead"</td>
+    </tr>
+    <tr>
+      <td>"Filter to errors"</td>
+      <td>"Only show errors"</td>
+    </tr>
+    <tr>
+      <td>↻ (refresh)</td>
+      <td>"Refresh this"</td>
+    </tr>
+  </tbody>
+</table>
 
-**Example 2: Selecting items**
-- UI Action: Select rows 2-4
-- Canonical Sentence: "Select items 2 through 4"
-- User: "those three"
-- Assistant: "Selected 3 items."
+If the assistant can't describe an action, the UI is too opaque.
 
-This enables the **Triadic Loop**: User ⇄ Assistant ⇄ Tool UI, where the assistant interprets all interactions.
+**The Triadic Loop:** User ⇄ Assistant ⇄ Surface. The assistant interprets all interactions.
+
+## Receipts
+
+Any action with side effects must produce a receipt:
+
+```typescript
+interface Receipt {
+  outcome: "success" | "partial" | "failed" | "cancelled";
+  summary: string;
+  identifiers?: Record<string, string>;
+  at: string; // ISO timestamp
+}
+```
+
+Receipts are proof—they let users verify, assistants reference, and provide audit trails.
 
 ## Anti-Patterns
 
-Don't build these:
+- **Forms in chat:** Multi-field forms pretending to be Tool UIs
+- **Hidden mutations:** Side effects without receipts
+- **Kitchen sinks:** Dashboards crammed into messages
+- **Mini-apps:** Navigation flows inside Tool UIs
+- **Silent surfaces:** No assistant introduction
+- **Redundant narration:** Assistant describes exactly what surface shows
 
-- **Forms in chat**: Multi-field forms pretending to be Tool UIs
-- **Hidden mutations**: Side effects without receipts
-- **Kitchen sinks**: Dashboards crammed into messages
-- **Mini-apps**: Navigation flows inside Tool UIs
+## Design Checklist
+
+### Identity
+
+- [ ] Role declared (Information, Decision, Control, State)?
+- [ ] Primary intent clear?
+- [ ] If composite, primary role dominates?
+
+### Constraints
+
+- [ ] Primary value in first 300px?
+- [ ] Works in 400-600px width?
+- [ ] Touch targets 44px+?
+- [ ] Choices limited to 5-7?
+
+### Narration
+
+- [ ] Assistant can introduce it?
+- [ ] Assistant can add insight (not just repeat data)?
+- [ ] Assistant can reference it later?
+
+### Actions
+
+- [ ] Every action speakable?
+- [ ] Friction matches stakes?
+- [ ] Side effects produce receipts?
+
+### Schema
+
+- [ ] Zod schema defined?
+- [ ] Runtime props (callbacks) separated?
+- [ ] Stable IDs for surface and children?
