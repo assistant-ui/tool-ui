@@ -10,6 +10,10 @@ import { OptionList } from "@/components/tool-ui/option-list";
 
 Principles for building Tool UIs that feel native to conversation.
 
+<span className="text-muted-foreground italic">
+  These guidelines are evolving as we learn what works.
+</span>
+
 ## The Collaboration Model
 
 In AI chat, users interact with both the assistant and any UI surfaces it renders. Most tool UIs treat this relationship as incidental: a surface appears, the user clicks something, done. We treat it as foundational. The assistant, the surface, and the user form a collaborative triad.
@@ -176,7 +180,8 @@ When a user takes an action with consequences, the surface should transition to 
     </MockMessage>
     <MockMessage role="assistant">
       <span className="text-foreground">
-        Done. I merged 12 duplicate contacts. You can undo this from Settings → Contact History if needed.
+        Done. I merged 12 duplicate contacts. You can undo this from Settings →
+        Contact History if needed.
       </span>
     </MockMessage>
   </MockThread>
