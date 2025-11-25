@@ -13,6 +13,7 @@ import { DynamicCodeBlock } from "fumadocs-ui/components/dynamic-codeblock";
 import { Files, File, Folder } from "fumadocs-ui/components/files";
 import * as React from "react";
 import { AutoLinkChildren, withAutoLink } from "@/lib/docs/auto-link";
+import { Mermaid } from "@/components/mdx/mermaid";
 
 export function useMDXComponents(components: MDXComponents): MDXComponents {
   // Wrap selected default components to auto-link Tool UI mentions
@@ -81,6 +82,7 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
     File,
     Folder,
     AutoLinkChildren,
+    Mermaid,
     ...components,
   };
 }

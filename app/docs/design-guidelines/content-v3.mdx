@@ -8,16 +8,23 @@ Core principles for building conversation-native Tool UIs.
 
 Traditional UI is two-party: **User ↔ Interface**. Tool UI introduces a third participant.
 
-```
-              User
-             ↙    ↘
-       controls    observes
-           ↓          ↓
-      Surface ←————→ Assistant
-             mediates
-```
+<Mermaid chart={`
+graph TD
+    User((User))
+    Surface[Surface]
+    Assistant((Assistant))
 
-The assistant contextualizes, interprets, and narrates. The surface provides structure the assistant cannot render inline. They're complementary—don't make surfaces explain themselves, don't make assistants render tables.
+    User -->|controls| Surface
+    User -->|observes| Surface
+    Surface <-->|mediates| Assistant
+    Assistant -->|narrates| User
+
+    style User fill:#3b82f6,stroke:#1d4ed8,color:#fff
+    style Surface fill:#10b981,stroke:#047857,color:#fff
+    style Assistant fill:#8b5cf6,stroke:#6d28d9,color:#fff
+`} />
+
+The assistant contextualizes, interprets, and narrates. The surface provides structure the assistant cannot render inline. They're complementary: surfaces shouldn't explain themselves, and assistants shouldn't render tables.
 
 ### Division of Labor
 
@@ -346,7 +353,7 @@ interface Receipt {
 }
 ```
 
-Receipts are proof—they let users verify, assistants reference, and provide audit trails.
+Receipts provide proof. They let users verify outcomes, assistants reference past actions, and serve as audit trails.
 
 ## Anti-Patterns
 
@@ -361,31 +368,31 @@ Receipts are proof—they let users verify, assistants reference, and provide au
 
 ### Identity
 
-- [ ] Role declared (Information, Decision, Control, State)?
-- [ ] Primary intent clear?
-- [ ] If composite, primary role dominates?
+- Role declared (Information, Decision, Control, State)
+- Primary intent is clear
+- If composite, primary role dominates
 
 ### Constraints
 
-- [ ] Primary value in first 300px?
-- [ ] Works in 400-600px width?
-- [ ] Touch targets 44px+?
-- [ ] Choices limited to 5-7?
+- Primary value in first 300px
+- Works in 400-600px width
+- Touch targets 44px minimum
+- Choices limited to 5-7
 
 ### Narration
 
-- [ ] Assistant can introduce it?
-- [ ] Assistant can add insight (not just repeat data)?
-- [ ] Assistant can reference it later?
+- Assistant can introduce it
+- Assistant can add insight (not just repeat data)
+- Assistant can reference it later
 
 ### Actions
 
-- [ ] Every action speakable?
-- [ ] Friction matches stakes?
-- [ ] Side effects produce receipts?
+- Every action is speakable
+- Friction matches stakes
+- Side effects produce receipts
 
 ### Schema
 
-- [ ] Zod schema defined?
-- [ ] Runtime props (callbacks) separated?
-- [ ] Stable IDs for surface and children?
+- Zod schema defined
+- Runtime props (callbacks) separated
+- Stable IDs for surface and children
