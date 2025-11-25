@@ -46,8 +46,66 @@ A decision surface for single or multi-select choices. Optimized for inline sele
       );
     }
     ```
+
   </Tab>
 </Tabs>
+
+## Receipt State
+
+When `confirmed` is set, the component renders in a read-only receipt state showing only the confirmed selection(s). This is useful for displaying the outcome of a decision in a conversation history.
+
+<Tabs items={["Preview", "Code"]}>
+  <Tab>
+    <div className="not-prose">
+      <OptionList
+        surfaceId="docs-receipt-example"
+        options={[
+          {
+            id: "walk",
+            label: "Walking",
+            description: "Sidewalk-friendly route",
+          },
+          { id: "drive", label: "Driving", description: "Fastest ETA" },
+          {
+            id: "transit",
+            label: "Transit",
+            description: "Use subway and buses",
+          },
+        ]}
+        selectionMode="single"
+        confirmed="drive"
+      />
+    </div>
+  </Tab>
+  <Tab>
+    ```tsx
+    <OptionList
+      surfaceId="route-selection"
+      options={[
+        {
+          id: "walk",
+          label: "Walking",
+          description: "Sidewalk-friendly route",
+        },
+        { id: "drive", label: "Driving", description: "Fastest ETA" },
+        {
+          id: "transit",
+          label: "Transit",
+          description: "Use subway and buses",
+        },
+      ]}
+      selectionMode="single"
+      confirmed="drive"
+    />
+    ```
+  </Tab>
+</Tabs>
+
+The receipt state:
+
+- Shows only the confirmed option(s) with a checkmark
+- Hides unselected options and footer actions
+- Is read-only (no interaction)
 
 ## When to Use Option List
 
@@ -91,65 +149,110 @@ Copy `components/option-list` into your project next to your shadcn/ui component
 
 ```tsx
 // Backend tool
-import { tool } from 'ai';
-import { z } from 'zod';
-import { serializableOptionListSchema } from '@tool-ui/option-list';
+import { tool } from "ai";
+import { z } from "zod";
+import { serializableOptionListSchema } from "@tool-ui/option-list";
 
 const selectFormat = tool({
-  description: 'Let user select export format(s)',
+  description: "Let user select export format(s)",
   inputSchema: z.object({ formats: z.array(z.string()) }),
   outputSchema: serializableOptionListSchema,
   async execute({ formats }) {
     return {
-      options: formats.map(f => ({ id: f, label: f.toUpperCase() })),
-      selectionMode: 'multi',
+      options: formats.map((f) => ({ id: f, label: f.toUpperCase() })),
+      selectionMode: "multi",
       maxSelections: 2,
     };
   },
 });
 
 // Frontend with assistant-ui
-import { makeAssistantToolUI } from '@assistant-ui/react';
-import { OptionList } from '@tool-ui/option-list';
+import { makeAssistantToolUI } from "@assistant-ui/react";
+import { OptionList } from "@tool-ui/option-list";
 
 export const SelectFormatUI = makeAssistantToolUI({
-  toolName: 'selectFormat',
-  render: ({ result }) => (
-    <OptionList
-      {...result}
-      onConfirm={(selection) => {
-        console.log('Selected formats:', selection);
-      }}
-    />
-  ),
+  toolName: "selectFormat",
+  render: ({ result, addResult }) => {
+    // Receipt state: user already confirmed
+    if (result.confirmed) {
+      return <OptionList {...result} />;
+    }
+    // Interactive state: awaiting selection
+    return (
+      <OptionList
+        {...result}
+        onConfirm={(selection) =>
+          addResult({ ...result, confirmed: selection })
+        }
+      />
+    );
+  },
 });
 ```
 
 ## Props
 
 <TypeTable
-type={{
-options: { description: "List of selectable options", type: "OptionListOption[]", required: true },
-selectionMode: { description: "Selection behavior", type: "'single' | 'multi'", default: "'multi'" },
-value: { description: "Controlled selection value", type: "string | string[] | null" },
-defaultValue: { description: "Initial selection (uncontrolled)", type: "string | string[] | null" },
-minSelections: { description: "Minimum required selections", type: "number", default: "1" },
-maxSelections: { description: "Maximum allowed selections", type: "number" },
-footerActions: { description: "Footer action buttons", type: "Action[] | ActionsConfig" },
-onChange: { description: "Selection change handler", type: "(value) => void" },
-onConfirm: { description: "Confirm button handler", type: "(value) => void | Promise<void>" },
-onCancel: { description: "Cancel/clear handler", type: "() => void" },
-}}
+  type={{
+    options: {
+      description: "List of selectable options",
+      type: "OptionListOption[]",
+      required: true,
+    },
+    selectionMode: {
+      description: "Selection behavior",
+      type: "'single' | 'multi'",
+      default: "'multi'",
+    },
+    value: {
+      description: "Controlled selection value",
+      type: "string | string[] | null",
+    },
+    defaultValue: {
+      description: "Initial selection (uncontrolled)",
+      type: "string | string[] | null",
+    },
+    confirmed: {
+      description: "Confirmed selection (renders receipt state)",
+      type: "string | string[] | null",
+    },
+    minSelections: {
+      description: "Minimum required selections",
+      type: "number",
+      default: "1",
+    },
+    maxSelections: {
+      description: "Maximum allowed selections",
+      type: "number",
+    },
+    footerActions: {
+      description: "Footer action buttons",
+      type: "Action[] | ActionsConfig",
+    },
+    onChange: {
+      description: "Selection change handler",
+      type: "(value) => void",
+    },
+    onConfirm: {
+      description: "Confirm button handler",
+      type: "(value) => void | Promise<void>",
+    },
+    onCancel: { description: "Cancel/clear handler", type: "() => void" },
+  }}
 />
 
 ## Option Schema
 
 <TypeTable
-type={{
-id: { description: "Unique option identifier", type: "string", required: true },
-label: { description: "Display text", type: "string", required: true },
-description: { description: "Secondary text", type: "string" },
-icon: { description: "Optional icon element", type: "ReactNode" },
-disabled: { description: "Disable this option", type: "boolean" },
-}}
+  type={{
+    id: {
+      description: "Unique option identifier",
+      type: "string",
+      required: true,
+    },
+    label: { description: "Display text", type: "string", required: true },
+    description: { description: "Secondary text", type: "string" },
+    icon: { description: "Optional icon element", type: "ReactNode" },
+    disabled: { description: "Disable this option", type: "boolean" },
+  }}
 />

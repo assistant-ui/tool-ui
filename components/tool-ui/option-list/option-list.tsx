@@ -157,7 +157,7 @@ function OptionListReceipt({
   return (
     <div
       className={cn(
-        "@container/option-list flex w-full flex-col",
+        "@container/option-list flex w-full max-w-md flex-col",
         "text-foreground",
         className,
       )}
@@ -174,16 +174,9 @@ function OptionListReceipt({
         {confirmedOptions.map((option, index) => (
           <Fragment key={option.id}>
             {index > 0 && <Separator orientation="horizontal" />}
-            <div className="flex min-h-[50px] items-start gap-3 py-2">
+            <div className="flex items-start gap-3 py-1">
               <span className="flex h-6 items-center">
-                <div
-                  className={cn(
-                    "flex size-4 shrink-0 items-center justify-center rounded border-2",
-                    "border-primary bg-primary text-primary-foreground",
-                  )}
-                >
-                  <Check className="size-3" />
-                </div>
+                <Check className="text-primary size-4 shrink-0" />
               </span>
               {option.icon && (
                 <span className="flex h-6 items-center">{option.icon}</span>
@@ -372,7 +365,7 @@ export function OptionList({
   return (
     <div
       className={cn(
-        "@container/option-list flex w-full flex-col gap-3",
+        "@container/option-list flex w-full max-w-md flex-col gap-3",
         "text-foreground",
         className,
       )}
