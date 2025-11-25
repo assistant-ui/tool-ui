@@ -3,6 +3,11 @@
 import * as React from "react";
 import { cn } from "./_cn";
 import { Badge } from "./_ui";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 type Tone = "success" | "warning" | "danger" | "info" | "neutral";
 
@@ -362,8 +367,10 @@ export function ArrayValue({ value, options }: ArrayValueProps) {
   const visible = items.slice(0, maxVisible);
   const remaining = items.length - maxVisible;
 
+  const hidden = items.slice(maxVisible);
+
   return (
-    <span className="inline-flex flex-wrap gap-1">
+    <span className="inline-flex flex-wrap items-center gap-1">
       {visible.map((item, i) => (
         <span
           key={i}
@@ -373,7 +380,16 @@ export function ArrayValue({ value, options }: ArrayValueProps) {
         </span>
       ))}
       {remaining > 0 && (
-        <span className="text-muted-foreground">+{remaining} more</span>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <span className="text-muted-foreground cursor-default">
+              +{remaining} more
+            </span>
+          </TooltipTrigger>
+          <TooltipContent>
+            {hidden.map((item) => (item === null ? "null" : String(item))).join(", ")}
+          </TooltipContent>
+        </Tooltip>
       )}
     </span>
   );

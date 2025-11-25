@@ -204,82 +204,6 @@ const sampleTasks: DataTableConfig = {
   rowIdKey: "title",
 };
 
-const metricColumns: Column<GenericRow>[] = [
-  { key: "endpoint", label: "Endpoint", priority: "primary" },
-  {
-    key: "p95",
-    label: "P95 Latency",
-    align: "right",
-    priority: "primary",
-    format: { kind: "number", decimals: 0, unit: " ms" },
-  },
-  {
-    key: "latencyDelta",
-    label: "Δ Latency",
-    align: "right",
-    priority: "primary",
-    format: {
-      kind: "delta",
-      decimals: 0,
-      upIsPositive: false,
-      showSign: true,
-    },
-  },
-  {
-    key: "errorRate",
-    label: "Error Rate",
-    align: "right",
-    priority: "secondary",
-    format: { kind: "percent", decimals: 2 },
-  },
-  {
-    key: "throughput",
-    label: "Throughput",
-    align: "right",
-    priority: "secondary",
-    format: { kind: "number", compact: true, unit: " req/s" },
-  },
-];
-
-const metricData: GenericRow[] = [
-  {
-    endpoint: "/api/eniac/program",
-    p95: 145,
-    latencyDelta: -15,
-    errorRate: 0.12,
-    throughput: 12500,
-  },
-  {
-    endpoint: "/api/arpanet/routing",
-    p95: 230,
-    latencyDelta: 25,
-    errorRate: 0.05,
-    throughput: 8200,
-  },
-  {
-    endpoint: "/api/unix/pipe",
-    p95: 180,
-    latencyDelta: -8,
-    errorRate: 0.08,
-    throughput: 6800,
-  },
-  {
-    endpoint: "/api/gui/wimp",
-    p95: 520,
-    latencyDelta: 35,
-    errorRate: 0.15,
-    throughput: 4200,
-  },
-];
-
-export const sampleMetrics: DataTableConfig = {
-  surfaceId: "data-table-preview-metrics",
-  columns: metricColumns,
-  data: metricData,
-  rowIdKey: "endpoint",
-  defaultSort: { by: "p95", direction: "desc" },
-};
-
 const resourceColumns: Column<GenericRow>[] = [
   { key: "name", label: "Resource", priority: "primary" },
   {
@@ -352,25 +276,6 @@ const sampleResources: DataTableConfig = {
   columns: resourceColumns,
   data: resourceData,
   rowIdKey: "name",
-};
-
-const sampleLocalized: DataTableConfig = {
-  surfaceId: "data-table-preview-localized",
-  columns: stockColumns,
-  data: stockData,
-  rowIdKey: "symbol",
-  locale: "de-DE",
-};
-
-const sampleEmpty: DataTableConfig = {
-  surfaceId: "data-table-preview-empty",
-  columns: [
-    { key: "id", label: "ID" },
-    { key: "name", label: "Name" },
-    { key: "value", label: "Value" },
-  ],
-  data: [],
-  emptyMessage: "No rows yet. Connect a data source.",
 };
 
 const actionsColumns: Column<GenericRow>[] = [
@@ -471,31 +376,18 @@ const sampleActions: DataTableConfig = {
   ],
 };
 
-export type PresetName =
-  | "stocks"
-  | "tasks"
-  | "metrics"
-  | "resources"
-  | "localized"
-  | "empty"
-  | "actions";
+export type PresetName = "stocks" | "tasks" | "resources" | "actions";
 
 export const presets: Record<PresetName, DataTableConfig> = {
   stocks: sampleStocks,
   tasks: sampleTasks,
-  metrics: sampleMetrics,
   resources: sampleResources,
-  localized: sampleLocalized,
-  empty: sampleEmpty,
   actions: sampleActions,
 };
 
 export const presetDescriptions: Record<PresetName, string> = {
   stocks: "Market data with currency, delta, and percent formatting",
   tasks: "Status pills, boolean badges, and date formatting",
-  metrics: "Numbers with units, inverted deltas, and default sorting",
-  resources: "Links, tag arrays, and relative dates",
-  localized: "German locale formatting for numbers and currency",
-  empty: "Empty state messaging with configurable text",
+  resources: "Links, tag arrays, badges, and relative dates",
   actions: "Support ticket queue with footer actions",
 };

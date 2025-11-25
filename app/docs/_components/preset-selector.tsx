@@ -5,10 +5,7 @@ import {
   ItemGroup,
   ItemTitle,
 } from "@/components/ui/item";
-import {
-  PresetName,
-  presetDescriptions,
-} from "@/lib/presets/data-table";
+import { PresetName, presetDescriptions } from "@/lib/presets/data-table";
 import {
   SocialPostPresetName,
   socialPostPresetDescriptions,
@@ -38,10 +35,7 @@ interface PresetSelectorProps {
 const dataTablePresetNames: PresetName[] = [
   "stocks",
   "tasks",
-  "metrics",
   "resources",
-  "localized",
-  "empty",
   "actions",
 ];
 
