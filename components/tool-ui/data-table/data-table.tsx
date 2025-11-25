@@ -216,7 +216,6 @@ export function DataTable<T extends object = RowData>({
         {/* Card view: visible below @md in auto mode */}
         <div
           className={cn(
-            "flex flex-col gap-2",
             layout === "cards"
               ? ""
               : layout === "table"
@@ -241,17 +240,20 @@ export function DataTable<T extends object = RowData>({
                 {emptyMessage}
               </div>
             ) : (
-              data.map((row, i) => {
-                const keyVal = rowIdKey ? row[rowIdKey] : undefined;
-                const rowKey = keyVal != null ? String(keyVal) : String(i);
-                return (
-                  <DataTableAccordionCard
-                    key={rowKey}
-                    row={row as unknown as DataTableRowData}
-                    index={i}
-                  />
-                );
-              })
+              <div className="bg-card flex flex-col overflow-hidden rounded-2xl border shadow-xs">
+                {data.map((row, i) => {
+                  const keyVal = rowIdKey ? row[rowIdKey] : undefined;
+                  const rowKey = keyVal != null ? String(keyVal) : String(i);
+                  return (
+                    <DataTableAccordionCard
+                      key={rowKey}
+                      row={row as unknown as DataTableRowData}
+                      index={i}
+                      isFirst={i === 0}
+                    />
+                  );
+                })}
+              </div>
             )}
           </DataTableErrorBoundary>
         </div>

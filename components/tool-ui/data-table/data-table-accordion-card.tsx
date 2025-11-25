@@ -14,6 +14,7 @@ import { getRowIdentifier } from "./utilities";
 interface DataTableAccordionCardProps {
   row: DataTableRowData;
   index: number;
+  isFirst?: boolean;
 }
 
 function categorizeColumns(columns: Column[]) {
@@ -46,13 +47,14 @@ function categorizeColumns(columns: Column[]) {
 export function DataTableAccordionCard({
   row,
   index,
+  isFirst = false,
 }: DataTableAccordionCardProps) {
   const { columns, locale, rowIdKey } = useDataTable();
 
   const { primary, secondary } = categorizeColumns(columns);
 
   if (secondary.length === 0) {
-    return <SimpleCard row={row} columns={primary} index={index} />;
+    return <SimpleCard row={row} columns={primary} index={index} isFirst={isFirst} />;
   }
 
   const primaryColumn = primary[0];
@@ -78,13 +80,13 @@ export function DataTableAccordionCard({
     <Accordion
       type="single"
       collapsible
-      className="overflow-clip rounded-lg border"
+      className={cn(!isFirst && "border-t")}
       role="listitem"
       aria-label={rowLabel}
     >
       <AccordionItem value={itemValue} className="group border-0">
         <AccordionTrigger
-          className="group-data-[state=closed]:hover:bg-accent/50 bg-card active:bg-accent/50 group-data-[state=open]:bg-muted w-full rounded-none px-4 py-3 hover:no-underline"
+          className="group-data-[state=closed]:hover:bg-accent/50 active:bg-accent/50 group-data-[state=open]:bg-muted w-full rounded-none px-4 py-3 hover:no-underline"
           aria-controls={detailsId}
           aria-label={`${rowLabel}. ${secondary.length > 0 ? "Expand for details" : ""}`}
         >
@@ -140,7 +142,7 @@ export function DataTableAccordionCard({
         </AccordionTrigger>
 
         <AccordionContent
-          className={cn("bg-card flex flex-col gap-4", "px-4 pb-4")}
+          className={cn("flex flex-col gap-4", "px-4 pb-4")}
           id={detailsId}
           role="region"
           aria-labelledby={headingId}
@@ -204,10 +206,12 @@ function SimpleCard({
   row,
   columns,
   index,
+  isFirst = false,
 }: {
   row: DataTableRowData;
   columns: Column[];
   index: number;
+  isFirst?: boolean;
 }) {
   const { locale, rowIdKey } = useDataTable();
   const primaryColumn = columns[0];
@@ -224,7 +228,7 @@ function SimpleCard({
 
   return (
     <div
-      className="flex flex-col gap-2 rounded-lg border p-4"
+      className={cn("flex flex-col gap-2 p-4", !isFirst && "border-t")}
       role="listitem"
       aria-label={rowLabel}
     >
