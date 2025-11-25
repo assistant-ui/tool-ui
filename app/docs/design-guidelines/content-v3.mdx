@@ -6,22 +6,27 @@ Core principles for building conversation-native Tool UIs.
 
 ## The Collaboration Model
 
-Traditional UI is two-party: **User ↔ Interface**. Tool UI introduces a third participant.
+In AI chat, users interact with both the assistant and any UI surfaces it renders. Most tool UIs treat this as incidental. We treat it as foundational.
 
 <Mermaid chart={`
-graph TD
-    User((User))
-    Surface[Surface]
-    Assistant((Assistant))
+flowchart LR
+    U(("  User  "))
+    S["Surface"]
+    A(("Assistant"))
 
-    User -->|controls| Surface
-    User -->|observes| Surface
-    Surface <-->|mediates| Assistant
-    Assistant -->|narrates| User
+    U -- controls --> S
+    U -. observes .-> S
+    S <-- mediates --> A
+    A -. narrates .-> U
 
-    style User fill:#3b82f6,stroke:#1d4ed8,color:#fff
-    style Surface fill:#10b981,stroke:#047857,color:#fff
-    style Assistant fill:#8b5cf6,stroke:#6d28d9,color:#fff
+    style U fill:#3b82f6,stroke:#2563eb,stroke-width:2px,color:#fff
+    style S fill:#10b981,stroke:#059669,stroke-width:2px,color:#fff
+    style A fill:#8b5cf6,stroke:#7c3aed,stroke-width:2px,color:#fff
+
+    linkStyle 0 stroke:#3b82f6,stroke-width:2px
+    linkStyle 1 stroke:#3b82f6,stroke-width:1px
+    linkStyle 2 stroke:#10b981,stroke-width:2px
+    linkStyle 3 stroke:#8b5cf6,stroke-width:1px
 `} />
 
 The assistant contextualizes, interprets, and narrates. The surface provides structure the assistant cannot render inline. They're complementary: surfaces shouldn't explain themselves, and assistants shouldn't render tables.
