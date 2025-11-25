@@ -17,6 +17,12 @@
   .prose blockquote p::after {
     content: none !important;
   }
+
+}
+
+/* Center component previews in Tabs (outside @layer for higher specificity) */
+[data-state][role="tabpanel"] > .not-prose {
+  margin-inline: auto;
 }
 
 @theme {

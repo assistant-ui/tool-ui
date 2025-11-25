@@ -1,6 +1,5 @@
 "use client";
 import * as React from "react";
-import type { ReactNode } from "react";
 import type { SerializableSocialPost } from "./schema";
 import type { PlatformConfig } from "./platform";
 import type { ActionsProp } from "../shared";
@@ -14,23 +13,12 @@ export interface SocialPostState {
   muted?: boolean;
 }
 
-export interface SocialPostActionOverride {
-  id: string;
-  label?: string;
-  variant?: "default" | "secondary" | "ghost" | "destructive";
-  icon?: ReactNode;
-  srLabel?: string;
-  hotkey?: string;
-  onClick?: (post: SerializableSocialPost) => void;
-}
-
 export interface SocialPostClientProps {
   isLoading?: boolean;
   className?: string;
   variant?: "card" | "inline";
   maxWidth?: string;
   allowExternalNavigation?: boolean;
-  actionOverrides?: SocialPostActionOverride[];
   defaultState?: SocialPostState;
   state?: SocialPostState;
   onStateChange?: (next: SocialPostState) => void;
@@ -68,7 +56,6 @@ export interface SocialPostContextValue {
   locale: string;
   state: SocialPostState;
   allowExternalNavigation: boolean;
-  actionOverrides: SocialPostActionOverride[];
   setState: (patch: Partial<SocialPostState>) => void;
   handlers: Pick<
     SocialPostClientProps,

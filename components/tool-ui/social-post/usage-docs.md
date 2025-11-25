@@ -71,6 +71,7 @@ export default function Example() {
 - **Accessible & keyboard-friendly** – actions are buttons with aria labels, media is focusable, entity links are reachable without a mouse.
 - **Stateful but controllable** – like/bookmark/follow toggles can be controlled externally or left to internal state.
 - **Hookable** – respond to entity clicks, media events, and navigation from the host app without forking the component.
+- **Footer actions** – add custom actions below the post via `footerActions` prop, separate from platform-specific actions.
 
 ---
 
@@ -186,7 +187,9 @@ interface SerializableSocialPost {
 | `variant`                 | `"card" \| "inline"`                                           | `"card"` | `inline` removes padding/border so you can compose inside your own card stack.                       |
 | `maxWidth`                | `string`                                                       | —        | Applies `style={{ maxWidth }}` to the root `<article>`.                                              |
 | `allowExternalNavigation` | `boolean`                                                      | `true`   | When `false`, links omit `target="_blank"` so hosts can intercept navigation.                        |
-| `actionOverrides`         | `SocialPostActionOverride[]`                                   | `[]`     | Replace labels/icons/variants for existing actions or inject new ones.                               |
+| `footerActions`           | `ActionsProp`                                                  | —        | Custom actions displayed below the post (separate from platform actions like/share/etc.).            |
+| `onFooterAction`          | `(actionId: string) => void`                                   | —        | Called when a footer action is triggered.                                                            |
+| `onBeforeFooterAction`    | `(actionId: string) => boolean \| Promise<boolean>`            | —        | Return `false` to cancel a footer action.                                                            |
 | `defaultState`            | `SocialPostState`                                              | `{}`     | Initial uncontrolled toggle state (liked, saved, etc.).                                              |
 | `state`                   | `SocialPostState`                                              | —        | Controlled state. Provide `onStateChange` to listen for updates.                                     |
 | `onStateChange`           | `(next) => void`                                               | —        | Called whenever toggles change (both controlled/uncontrolled).                                       |
@@ -205,16 +208,6 @@ type SocialPostState = {
   expanded?: boolean;
   muted?: boolean;
 };
-
-interface SocialPostActionOverride {
-  id: string;
-  label?: string;
-  variant?: "default" | "secondary" | "ghost" | "destructive";
-  icon?: React.ReactNode;
-  srLabel?: string;
-  hotkey?: string;
-  onClick?: (post: SerializableSocialPost) => void; // client-side action in addition to handlers
-}
 ```
 
 ### Actions & state model
@@ -353,7 +346,7 @@ Use these for Storybook stories, integration tests, or quick demos.
 
 ## Extending the component
 
-- **Custom actions**: supply `actionOverrides` to add share sheets or route to deep links.
+- **Custom actions**: use `footerActions` to add share sheets, "View in app", or route to deep links. These appear below the post, separate from platform-specific actions.
 - **Custom platform**: clone an entry in `platform.ts`, add a renderer under `components/social-post/renderers`, and register it in `RENDERERS` inside `social-post.tsx`.
 - **Analytics**: combine `onAction`, `onNavigate`, and `onMediaEvent` to emit telemetry without mutating the core component.
 - **Host cards**: switch to `variant="inline"` and wrap `<SocialPost />` inside your own container to blend with existing card systems.

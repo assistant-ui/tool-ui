@@ -7,7 +7,7 @@ An information + action surface for user-generated content: posts, comments, not
 
 <Tabs items={["Preview", "Code"]}>
   <Tab>
-    <div className="not-prose">
+    <div className="not-prose w-[540px]">
       <SocialPost
         id="post-1"
         platform="x"
@@ -49,6 +49,7 @@ An information + action surface for user-generated content: posts, comments, not
             { id: "reply", label: "Reply", variant: "ghost" },
             { id: "open", label: "Open in app", variant: "ghost" },
           ]}
+          maxWidth="540px"
         />
       );
     }

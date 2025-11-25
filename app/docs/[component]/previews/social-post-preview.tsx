@@ -75,9 +75,14 @@ export function SocialPostPreview({
           <SocialPost
             {...currentConfig.post}
             isLoading={loading}
-            onAction={(actionId) => {
-              console.log("Action:", actionId);
-              alert(`Action: ${actionId}`);
+            footerActions={currentConfig.footerActions}
+            onPostAction={(actionId) => {
+              console.log("Post Action:", actionId);
+              alert(`Post Action: ${actionId}`);
+            }}
+            onFooterAction={(actionId) => {
+              console.log("Footer Action:", actionId);
+              alert(`Footer Action: ${actionId}`);
             }}
           />
         </div>

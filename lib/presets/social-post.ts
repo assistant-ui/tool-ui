@@ -1,7 +1,9 @@
 import type { SerializableSocialPost } from "@/components/tool-ui/social-post";
+import type { ActionsProp } from "@/components/tool-ui/shared";
 
 export interface SocialPostConfig {
   post: SerializableSocialPost;
+  footerActions?: ActionsProp;
 }
 
 export const sampleX: SocialPostConfig = {
@@ -209,10 +211,13 @@ const sampleActions: SocialPostConfig = {
     actions: [
       { id: "like", label: "Like", variant: "ghost" },
       { id: "bookmark", label: "Bookmark", variant: "ghost" },
-      { id: "share", label: "Share", variant: "secondary" },
-      { id: "report", label: "Report", variant: "destructive" },
+      { id: "share", label: "Share", variant: "ghost" },
     ],
   },
+  footerActions: [
+    { id: "view-templates", label: "View Templates" },
+    { id: "report", label: "Report", variant: "destructive" },
+  ],
 };
 
 export type SocialPostPresetName = "x" | "instagram" | "linkedin" | "actions";
@@ -232,5 +237,5 @@ export const socialPostPresetDescriptions: Record<
   x: "X with quoted post and verified badge",
   instagram: "Instagram post with multiple images",
   linkedin: "LinkedIn post with link preview",
-  actions: "Post with multiple action button variants",
+  actions: "Post with platform actions and footer actions",
 };

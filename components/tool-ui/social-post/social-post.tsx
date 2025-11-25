@@ -40,7 +40,6 @@ export function SocialPost(props: SocialPostProps) {
     onMediaEvent,
     onNavigate,
     allowExternalNavigation = true,
-    actionOverrides = [],
     locale: explicitLocale,
     ...serializable
   } = props;
@@ -108,7 +107,6 @@ export function SocialPost(props: SocialPostProps) {
     locale,
     state: effectiveState,
     allowExternalNavigation,
-    actionOverrides,
     setState: updateState,
     handlers: {
       onBeforePostAction,
