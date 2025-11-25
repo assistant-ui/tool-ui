@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Heart, Share } from "lucide-react";
+import { ThumbsUp, Share, MoreHorizontal } from "lucide-react";
 import { cn } from "@/lib/ui/cn";
 import { Button } from "@/components/ui/button";
 import {
@@ -64,6 +64,28 @@ function getDomain(url: string): string {
 // Sub-components
 // ============================================================================
 
+function LinkedinLogo({ className }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 72 72"
+      className={className}
+      role="img"
+      aria-label="LinkedIn logo"
+    >
+      <g fill="none" fillRule="evenodd">
+        <path
+          d="M8 72h56c4.42 0 8-3.58 8-8V8c0-4.42-3.58-8-8-8H8C3.58 0 0 3.58 0 8v56c0 4.42 3.58 8 8 8z"
+          fill="currentColor"
+        />
+        <path
+          d="M62 62H51.3V43.8c0-4.98-1.9-7.78-5.83-7.78-4.3 0-6.54 2.9-6.54 7.78V62H28.63V27.33h10.3v4.67c0 0 3.1-5.73 10.45-5.73 7.36 0 12.62 4.5 12.62 13.8V62zM16.35 22.8c-3.5 0-6.35-2.86-6.35-6.4 0-3.52 2.85-6.4 6.35-6.4 3.5 0 6.35 2.88 6.35 6.4 0 3.54-2.85 6.4-6.35 6.4zM11.03 62h10.74V27.33H11.03V62z"
+          fill="#FFF"
+        />
+      </g>
+    </svg>
+  );
+}
+
 function Header({
   author,
   createdAt,
@@ -77,21 +99,24 @@ function Header({
       <img
         src={author.avatarUrl}
         alt={`${author.name} avatar`}
-        className="size-12 rounded-md object-cover"
+        className="size-10 rounded-full object-cover"
       />
-      <div className="flex min-w-0 flex-1 flex-col">
-        <span className="font-semibold">{author.name}</span>
+      <div className="flex min-w-0 flex-1 flex-col leading-tight">
+        <span className="text-sm font-semibold">{author.name}</span>
         {author.headline && (
           <span className="text-muted-foreground line-clamp-1 text-xs">
             {author.headline}
           </span>
         )}
         {createdAt && (
-          <span className="text-muted-foreground text-xs">
-            {formatRelativeTime(createdAt)}
-          </span>
+          <div className="text-muted-foreground mt-0.5 flex items-center gap-1 text-xs">
+            <span>{formatRelativeTime(createdAt)}</span>
+            <span>•</span>
+            <span>Edited</span>
+          </div>
         )}
       </div>
+      <LinkedinLogo className="size-5 text-[#0077b5]" />
     </header>
   );
 }
@@ -99,7 +124,7 @@ function Header({
 function PostBody({ text }: { text?: string }) {
   if (!text) return null;
   return (
-    <p className="mt-3 text-sm leading-relaxed break-words whitespace-pre-wrap">
+    <p className="mt-3 text-sm leading-relaxed wrap-break-word whitespace-pre-wrap">
       {text}
     </p>
   );
@@ -223,14 +248,13 @@ function PostActions({
 
   return (
     <TooltipProvider delayDuration={300}>
-      <div className="mt-3 flex items-center gap-1 border-t pt-2">
+      <div className="mt-2 flex items-center gap-1 border-t pt-1.5">
         <ActionButton
-          icon={Heart}
+          icon={ThumbsUp}
           label="Like"
-          count={stats?.likes}
           active={liked}
-          hoverColor="hover:bg-blue-500/10 hover:text-blue-600"
-          activeColor="text-blue-600"
+          hoverColor="hover:bg-muted"
+          activeColor="text-blue-600 fill-blue-600"
           onClick={() => {
             setLiked(!liked);
             onAction("like");
@@ -239,7 +263,7 @@ function PostActions({
         <ActionButton
           icon={Share}
           label="Share"
-          hoverColor="hover:bg-blue-500/10 hover:text-blue-600"
+          hoverColor="hover:bg-muted"
           onClick={() => onAction("share")}
         />
       </div>

@@ -15,18 +15,17 @@ A family of platform-specific components for rendering social media content: `XP
         post={{
           id: "post-1",
           author: {
-            name: "Ada Lovelace",
-            handle: "ada",
-            avatarUrl: "https://api.dicebear.com/7.x/adventurer/svg?seed=Ada",
+            name: "Athia Zohra",
+            handle: "athiazohra",
+            avatarUrl:
+              "https://images.unsplash.com/photo-1740510294141-33ebf26e0809?q=80&w=987&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
             verified: true,
           },
           text: "Thinking about how to make Tool UIs feel more like collaboration than chrome.",
           stats: { likes: 12 },
           createdAt: "2025-01-05T12:00:00.000Z",
         }}
-        footerActions={[
-          { id: "open", label: "Open in app" },
-        ]}
+        footerActions={[{ id: "open", label: "Open in app" }]}
       />
     </div>
   </Tab>
@@ -36,17 +35,20 @@ A family of platform-specific components for rendering social media content: `XP
         post={{
           id: "post-2",
           author: {
-            name: "Ada Lovelace",
-            handle: "ada",
-            avatarUrl: "https://api.dicebear.com/7.x/adventurer/svg?seed=Ada",
+            name: "Athia Zohra",
+            handle: "athiazohra",
+            avatarUrl:
+              "https://images.unsplash.com/photo-1740510294141-33ebf26e0809?q=80&w=987&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
             verified: true,
           },
           text: "Golden hour vibes",
-          media: [{
-            type: "image",
-            url: "https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?w=800&h=800&fit=crop",
-            alt: "City skyline",
-          }],
+          media: [
+            {
+              type: "image",
+              url: "https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?w=800&h=800&fit=crop",
+              alt: "City skyline",
+            },
+          ],
           stats: { likes: 842 },
           createdAt: "2025-01-05T18:00:00.000Z",
         }}
@@ -59,8 +61,9 @@ A family of platform-specific components for rendering social media content: `XP
         post={{
           id: "post-3",
           author: {
-            name: "Ada Lovelace",
-            avatarUrl: "https://api.dicebear.com/7.x/adventurer/svg?seed=Ada",
+            name: "Athia Zohra",
+            avatarUrl:
+              "https://images.unsplash.com/photo-1740510294141-33ebf26e0809?q=80&w=987&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
             headline: "Engineering Lead | Building the future",
           },
           text: "Excited to share that our team shipped a major update today. Six months of hard work paid off!",
@@ -76,20 +79,19 @@ A family of platform-specific components for rendering social media content: `XP
 
 This is a collection of three separate, platform-specific components:
 
-<div className="not-prose my-6">
-  <DataTable
-    columns={[
-      { key: "component", label: "Component" },
-      { key: "import", label: "Import" },
-      { key: "useCase", label: "Use Case" },
-    ]}
-    data={[
-      { component: "XPost", import: "@/components/tool-ui/x-post", useCase: "Twitter/X posts, quoted tweets" },
-      { component: "InstagramPost", import: "@/components/tool-ui/instagram-post", useCase: "Instagram posts, image carousels" },
-      { component: "LinkedInPost", import: "@/components/tool-ui/linkedin-post", useCase: "LinkedIn posts, professional content" },
-    ]}
-  />
-</div>
+- **XPost**: For Twitter/X posts and quoted tweets
+  - Verified badges
+  - Quoted tweets
+  - Media attachments (images/video)
+  - Link previews
+- **InstagramPost**: For Instagram posts and image carousels
+  - Multi-image carousels
+  - Verified badges
+  - Image/video media
+- **LinkedInPost**: For LinkedIn posts and professional content
+  - Link previews
+  - Media attachments
+  - Professional header layout
 
 Each component is independent and can be imported separately, allowing for tree-shaking when you only need one platform.
 
@@ -107,12 +109,20 @@ Each component is independent and can be imported separately, allowing for tree-
 
 ## Source and Install
 
-Copy the platform component(s) you need into your project:
+Copy the component(s) you need into your project. The `shared` folder is required for all components.
 
 <Files>
   <Folder name="components" defaultOpen>
     <Folder name="tool-ui" defaultOpen>
-      <Folder name="x-post">
+      <Folder name="shared" defaultOpen>
+        <File name="action-buttons.tsx" />
+        <File name="schema.ts" />
+        <File name="use-action-buttons.ts" />
+        <File name="_cn.ts" />
+        <File name="_ui.tsx" />
+        <File name="index.ts" />
+      </Folder>
+      <Folder name="x-post" defaultOpen>
         <File name="x-post.tsx" />
         <File name="schema.ts" />
         <File name="index.ts" />
@@ -130,6 +140,13 @@ Copy the platform component(s) you need into your project:
     </Folder>
   </Folder>
 </Files>
+
+### Download
+
+- [**Shared Dependencies (GitHub)**](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/shared) ([ZIP](https://download-directory.github.io/?url=https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/shared))
+- [**X Post (GitHub)**](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/x-post) ([ZIP](https://download-directory.github.io/?url=https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/x-post))
+- [**Instagram Post (GitHub)**](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/instagram-post) ([ZIP](https://download-directory.github.io/?url=https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/instagram-post))
+- [**LinkedIn Post (GitHub)**](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/linkedin-post) ([ZIP](https://download-directory.github.io/?url=https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/linkedin-post))
 
 ## Usage
 
@@ -181,11 +198,24 @@ All three components share the same prop pattern:
 
 <TypeTable
   type={{
-    post: { description: "Platform-specific post data", type: "XPostData | InstagramPostData | LinkedInPostData", required: true },
+    post: {
+      description: "Platform-specific post data",
+      type: "XPostData | InstagramPostData | LinkedInPostData",
+      required: true,
+    },
     className: { description: "Additional CSS classes", type: "string" },
-    onAction: { description: "Called when like/share clicked", type: "(action: string, post) => void" },
-    footerActions: { description: "Custom actions below the post", type: "Action[]" },
-    onFooterAction: { description: "Called when footer action clicked", type: "(actionId: string) => void" },
+    onAction: {
+      description: "Called when like/share clicked",
+      type: "(action: string, post) => void",
+    },
+    footerActions: {
+      description: "Custom actions below the post",
+      type: "Action[]",
+    },
+    onFooterAction: {
+      description: "Called when footer action clicked",
+      type: "(actionId: string) => void",
+    },
   }}
 />
 
@@ -194,10 +224,20 @@ All three components share the same prop pattern:
 <TypeTable
   type={{
     id: { description: "Unique identifier", type: "string", required: true },
-    author: { description: "Author info", type: "{ name, handle, avatarUrl, verified? }", required: true },
+    author: {
+      description: "Author info",
+      type: "{ name, handle, avatarUrl, verified? }",
+      required: true,
+    },
     text: { description: "Post content", type: "string" },
-    media: { description: "Attached media", type: "{ type, url, alt, aspectRatio? }[]" },
-    linkPreview: { description: "Link card", type: "{ url, title?, description?, imageUrl?, domain? }" },
+    media: {
+      description: "Attached media",
+      type: "{ type, url, alt, aspectRatio? }[]",
+    },
+    linkPreview: {
+      description: "Link card",
+      type: "{ url, title?, description?, imageUrl?, domain? }",
+    },
     quotedPost: { description: "Quoted tweet", type: "XPostData" },
     stats: { description: "Engagement", type: "{ likes? }" },
     createdAt: { description: "ISO timestamp", type: "string" },
@@ -209,7 +249,11 @@ All three components share the same prop pattern:
 <TypeTable
   type={{
     id: { description: "Unique identifier", type: "string", required: true },
-    author: { description: "Author info", type: "{ name, handle, avatarUrl, verified? }", required: true },
+    author: {
+      description: "Author info",
+      type: "{ name, handle, avatarUrl, verified? }",
+      required: true,
+    },
     text: { description: "Caption", type: "string" },
     media: { description: "Images/videos", type: "{ type, url, alt }[]" },
     stats: { description: "Engagement", type: "{ likes? }" },
@@ -222,10 +266,17 @@ All three components share the same prop pattern:
 <TypeTable
   type={{
     id: { description: "Unique identifier", type: "string", required: true },
-    author: { description: "Author info", type: "{ name, avatarUrl, headline? }", required: true },
+    author: {
+      description: "Author info",
+      type: "{ name, avatarUrl, headline? }",
+      required: true,
+    },
     text: { description: "Post content", type: "string" },
     media: { description: "Attached media", type: "{ type, url, alt }[]" },
-    linkPreview: { description: "Link card", type: "{ url, title?, description?, imageUrl?, domain? }" },
+    linkPreview: {
+      description: "Link card",
+      type: "{ url, title?, description?, imageUrl?, domain? }",
+    },
     stats: { description: "Engagement", type: "{ likes? }" },
     createdAt: { description: "ISO timestamp", type: "string" },
   }}
