@@ -6,35 +6,20 @@ import { DestinationPicker } from "../components";
 import type { SelectDestinationResult } from "../types";
 
 /**
- * Hybrid Tool Pattern:
+ * Selection Tool - Destination Picker
  *
- * This tool supports two interaction modes:
- * 1. User-driven: No destinationId → shows interactive picker, user clicks to select
- * 2. Assistant-driven: With destinationId → shows receipt confirming the selection
- *
- * Use assistant-driven when user expresses destination in text (e.g., "take me home").
- * Use user-driven when destination is unknown (e.g., "I need a ride").
+ * Only use when destination is unknown. If user already specified where
+ * they want to go ("take me home"), skip this and call get_ride_quote directly.
+ * The quote UI shows the destination, so a separate picker would be redundant.
  */
 export const SelectDestinationTool = makeAssistantTool<
-  { destinationId?: string },
+  Record<string, never>,
   SelectDestinationResult
 >({
   toolName: "select_destination",
-  description: `Show destination selection UI. Supports two modes:
-- WITHOUT destinationId: Shows interactive picker for user to choose (use when destination unknown)
-- WITH destinationId: Shows confirmation receipt (use when user already specified destination in text, e.g., "take me home" → destinationId: "home")
-
-Valid destinationIds: "home", "work", "ferry-building"
-
-Always call this tool to establish destination - it provides visual confirmation whether user clicks or types.`,
-  parameters: z.object({
-    destinationId: z
-      .string()
-      .optional()
-      .describe(
-        "Pre-select a destination when user specified it in text. Omit to show interactive picker."
-      ),
-  }),
+  description:
+    "Show destination picker with saved locations (Home, Work) and recents. Only use when destination is unknown. If user already said where ('take me home'), skip this and call get_ride_quote directly.",
+  parameters: z.object({}),
   type: "human",
   render: (props) => <DestinationPicker {...props} />,
 });

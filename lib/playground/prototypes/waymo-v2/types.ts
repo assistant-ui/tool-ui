@@ -33,14 +33,12 @@ export interface Vehicle {
 
 // ============================================================================
 // Tool: select_destination
-// Pattern: Hybrid Selection
+// Pattern: Selection
 // ============================================================================
 
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface SelectDestinationArgs {
-  // Optional: pre-select a destination (assistant-driven mode)
-  // When provided, the UI auto-confirms this selection
-  // When omitted, shows interactive picker (user-driven mode)
-  destinationId?: string;
+  // No args - only used when destination is unknown
 }
 
 export interface SelectDestinationResult {

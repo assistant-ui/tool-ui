@@ -23,6 +23,7 @@ This prototype and the [Design Guidelines](/docs/design-guidelines) evolve toget
 | Assistant said "Where to?" and UI had "Where to?" header | Expanded "Redundant narration" to be bidirectional — neither assistant nor surface should echo the other |
 | Pickup location change needed dedicated UI, not inline edit | Secondary actions that require selection should spawn new Tool UIs rather than inline editing |
 | Changing a term of a "contract" UI (like RideQuote) invalidates it | New pattern: **Contract with Revocation**. Some Tool UIs represent a contract (offer with specific terms). Changing any term revokes the contract and requires a fresh one. The revoked UI shows "superseded" state, a new Tool UI appears with updated terms. |
+| User can type "take me home" instead of clicking the picker | Design decision: **Skip redundant selection UIs**. When destination is implicit in user's message, skip the picker and go straight to the quote. The quote shows the destination anyway, so a separate confirmation is redundant. Selection UIs are for clarification, not confirmation. |
 
 ---
 
@@ -197,6 +198,18 @@ This prototype exercises three fundamental patterns that generalize across domai
 - `addResult()` for capturing user choice
 - Receipt state detection from result data
 - Option rendering primitives
+
+#### When to Skip Selection UIs
+
+Selection tools are for **clarification**, not confirmation. If the user's intent is already clear from their message, skip the selection UI and proceed to the next step.
+
+```
+User: "I need a ride"           → Show DestinationPicker (need clarification)
+User: "Take me home"            → Skip picker, go to RideQuote (destination clear)
+User: "How much to the Ferry?"  → Skip picker, go to RideQuote (destination clear)
+```
+
+The key insight: Don't show a UI that asks a question the user already answered. If the downstream UI (RideQuote) displays the destination anyway, a separate selection receipt is redundant.
 
 ---
 
