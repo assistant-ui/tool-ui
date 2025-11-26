@@ -77,6 +77,7 @@ export function OptionListPreview({
         <div className="mx-auto" style={{ maxWidth: "420px" }}>
           <OptionList
             {...currentConfig.optionList}
+            surfaceId="option-list-preview"
             value={selection}
             onChange={setSelection}
             onConfirm={(sel) => {
