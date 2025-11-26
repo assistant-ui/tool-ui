@@ -11,7 +11,7 @@ import type { ToolCallMessagePartProps } from "@assistant-ui/react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Navigation, Home, Briefcase, MapPin, CheckCircle2 } from "lucide-react";
-import type { Location, SelectPickupResult } from "../types";
+import type { SelectPickupResult } from "../types";
 import { MOCK_LOCATIONS, MOCK_PICKUP } from "../types";
 
 interface PickupOption {
@@ -74,11 +74,7 @@ export function PickupPicker({
           <div className="flex-1">
             <div className="mb-1 flex items-center gap-2">
               <div className="text-muted-foreground">
-                {selected.type === "current" ? (
-                  <Navigation className="h-4 w-4" />
-                ) : (
-                  <MapPin className="h-4 w-4" />
-                )}
+                {getOptionIcon(selected)}
               </div>
               <span className="font-semibold">{selected.label}</span>
             </div>
@@ -100,28 +96,72 @@ export function PickupPicker({
     });
   };
 
+  const currentLocation = options.filter((opt) => opt.type === "current");
+  const savedPlaces = options.filter((opt) => opt.type === "saved");
+
   return (
-    <Card className="max-w-md space-y-2 p-4">
-      {options.map((option) => (
-        <Button
-          key={option.id}
-          variant="outline"
-          className="hover:bg-accent h-auto w-full justify-start px-4 py-3 text-left"
-          onClick={() => handleSelect(option)}
-        >
-          <div className="flex w-full items-start gap-3">
-            <div className="text-muted-foreground mt-0.5">
-              {getOptionIcon(option)}
-            </div>
-            <div className="min-w-0 flex-1">
-              <div className="font-medium">{option.label}</div>
-              <div className="text-muted-foreground truncate text-sm">
-                {option.address}
-              </div>
-            </div>
+    <Card className="max-w-md space-y-4 p-4">
+      {currentLocation.length > 0 && (
+        <div className="space-y-2">
+          <div className="text-muted-foreground flex items-center gap-2 text-sm font-medium">
+            <Navigation className="h-3.5 w-3.5" />
+            <span>Current Location</span>
           </div>
-        </Button>
-      ))}
+          <div className="space-y-2">
+            {currentLocation.map((option) => (
+              <Button
+                key={option.id}
+                variant="outline"
+                className="hover:bg-accent h-auto w-full justify-start px-4 py-3 text-left"
+                onClick={() => handleSelect(option)}
+              >
+                <div className="flex w-full items-start gap-3">
+                  <div className="text-muted-foreground mt-0.5">
+                    {getOptionIcon(option)}
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <div className="font-medium">{option.label}</div>
+                    <div className="text-muted-foreground truncate text-sm">
+                      {option.address}
+                    </div>
+                  </div>
+                </div>
+              </Button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {savedPlaces.length > 0 && (
+        <div className="space-y-2">
+          <div className="text-muted-foreground flex items-center gap-2 text-sm font-medium">
+            <MapPin className="h-3.5 w-3.5" />
+            <span>Saved Places</span>
+          </div>
+          <div className="space-y-2">
+            {savedPlaces.map((option) => (
+              <Button
+                key={option.id}
+                variant="outline"
+                className="hover:bg-accent h-auto w-full justify-start px-4 py-3 text-left"
+                onClick={() => handleSelect(option)}
+              >
+                <div className="flex w-full items-start gap-3">
+                  <div className="text-muted-foreground mt-0.5">
+                    {getOptionIcon(option)}
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <div className="font-medium">{option.label}</div>
+                    <div className="text-muted-foreground truncate text-sm">
+                      {option.address}
+                    </div>
+                  </div>
+                </div>
+              </Button>
+            ))}
+          </div>
+        </div>
+      )}
     </Card>
   );
 }

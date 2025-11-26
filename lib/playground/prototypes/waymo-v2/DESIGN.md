@@ -21,7 +21,8 @@ This prototype and the [Design Guidelines](/docs/design-guidelines) evolve toget
 | Discovery | Guideline Update |
 |-----------|------------------|
 | Assistant said "Where to?" and UI had "Where to?" header | Expanded "Redundant narration" to be bidirectional — neither assistant nor surface should echo the other |
-| Pickup location change needed dedicated UI, not inline edit | Secondary actions that require selection should spawn new Tool UIs rather than inline editing. Simpler pattern: "Change pickup location" button → new PickupPicker tool |
+| Pickup location change needed dedicated UI, not inline edit | Secondary actions that require selection should spawn new Tool UIs rather than inline editing |
+| Changing a term of a "contract" UI (like RideQuote) invalidates it | New pattern: **Contract with Revocation**. Some Tool UIs represent a contract (offer with specific terms). Changing any term revokes the contract and requires a fresh one. The revoked UI shows "superseded" state, a new Tool UI appears with updated terms. |
 
 ---
 
@@ -199,23 +200,32 @@ This prototype exercises three fundamental patterns that generalize across domai
 
 ---
 
-### 2. Confirmation Pattern (RideQuote)
+### 2. Confirmation / Contract Pattern (RideQuote)
 
-**Purpose:** Review structured data and approve
+**Purpose:** Present a contract (offer with specific terms) for user approval
 
 **Behavior:**
 - Shows key details in scannable format
-- Single primary action (Confirm)
-- Loading state during action processing
-- Transforms to receipt on completion
+- Primary action: Accept (Confirm)
+- Secondary actions: Modify terms (e.g., "Change pickup location")
+- **If terms change → contract is revoked**, UI transitions to "superseded" state
+- New contract must be presented with updated terms
+- Transforms to receipt on acceptance
 
-**Generalizes to:** Order summaries, booking confirmations, transaction approvals, any review-before-commit flow
+**States:**
+- `interactive` → User reviewing the contract
+- `revoked` → User changed a term, contract superseded (dimmed, shows "Quote updated")
+- `confirmed` → User accepted, contract fulfilled (receipt)
+
+**Generalizes to:** Order summaries, booking confirmations, transaction approvals, pricing quotes, any offer that can be modified before acceptance
+
+**Key insight:** A contract is a snapshot of specific terms. You can't "edit" a contract in place—you revoke and replace it. This maps naturally to conversation flow where each Tool UI is a discrete event.
 
 **Library needs:**
 - Structured card layouts
-- Action buttons that trigger tool completion
-- Loading states during async actions
-- Error handling with retry
+- Primary + secondary action buttons
+- Revoked/superseded state styling
+- Receipt state for accepted contracts
 
 ---
 
@@ -245,8 +255,8 @@ This prototype exercises three fundamental patterns that generalize across domai
 |-----------|---------|--------|
 | **DestinationPicker** | Selection | interactive → receipt |
 | **PickupPicker** | Selection | interactive → receipt |
-| **RideQuote** | Confirmation | interactive → (change pickup handoff) → receipt |
-| **TripStatus** | Progress | loading → live (multiple states) → completed |
+| **RideQuote** | Contract | interactive → revoked \| confirmed |
+| **TripStatus** | Progress | live (multiple phases) → completed \| cancelled |
 
 ---
 

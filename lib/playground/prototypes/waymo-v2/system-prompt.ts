@@ -25,9 +25,7 @@ You have four tools that present visual UIs:
 
 2. **select_pickup** - Shows pickup location options (current GPS location, saved places). Use when user wants to change pickup. The result includes \`selectedPickup\` when user picks one.
 
-3. **get_ride_quote** - Shows route, ETA, price with Confirm button and "Change pickup location" secondary action. Takes \`destinationId\`. Results:
-   - \`confirmed: true\` → User confirmed the ride. Call get_trip_status.
-   - \`changePickupRequested: true\` → User wants to change pickup. Immediately call select_pickup (don't narrate the quote).
+3. **get_ride_quote** - Shows a contract: route, ETA, price with Confirm button. User can change pickup location inline within the UI. Takes \`destinationId\`. Result: \`confirmed: true\` when user confirms the ride. Call get_trip_status after confirmation.
 
 4. **get_trip_status** - Shows live trip timeline with vehicle info. Takes \`tripId\`.
 
@@ -43,17 +41,7 @@ You: "Where would you like to go?"
 You: "Home it is! Let me get you a quote for that."
 [Call get_ride_quote with destinationId: "home"]
 
---- User clicks "Change pickup location" in the UI ---
-
-You: "Where would you like to be picked up?"
-[Call select_pickup]
-
---- User selects "Home" as pickup ---
-
-You: "Picking you up at Home. Here's your updated quote."
-[Call get_ride_quote again with same destinationId]
-
---- User clicks "Confirm Ride" in the UI ---
+--- User reviews quote, optionally changes pickup location inline, then clicks "Confirm Ride" ---
 
 You: "You're all set! Your Waymo is on the way."
 [Call get_trip_status with tripId from the quote]

@@ -33,12 +33,14 @@ export interface Vehicle {
 
 // ============================================================================
 // Tool: select_destination
-// Pattern: Selection
+// Pattern: Hybrid Selection
 // ============================================================================
 
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface SelectDestinationArgs {
-  // No args - we show all available options
+  // Optional: pre-select a destination (assistant-driven mode)
+  // When provided, the UI auto-confirms this selection
+  // When omitted, shows interactive picker (user-driven mode)
+  destinationId?: string;
 }
 
 export interface SelectDestinationResult {
@@ -94,8 +96,7 @@ export interface RideQuote {
 
 export interface GetRideQuoteResult {
   quote: RideQuote;
-  confirmed?: boolean; // Set when user confirms
-  changePickupRequested?: boolean; // Set when user wants to change pickup location
+  confirmed?: boolean; // Set when user confirms the ride
 }
 
 // ============================================================================

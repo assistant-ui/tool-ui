@@ -1,10 +1,10 @@
 "use client";
 
 /**
- * RideQuote - Confirmation Pattern
+ * RideQuote - Confirmation Pattern with Inline Pickup Selection
  *
  * Shows ride details (route, ETA, price) with a Confirm button.
- * Includes secondary action to change pickup location.
+ * Handles pickup location changes inline without requiring a separate tool call.
  *
  * Transforms to receipt state after confirmation.
  */
@@ -19,10 +19,22 @@ import {
   Car,
   CheckCircle2,
   Loader2,
+  Navigation,
+  Home,
+  Briefcase,
+  ArrowLeft,
 } from "lucide-react";
-import { useState, useMemo } from "react";
+import { useState, useEffect, useCallback } from "react";
 import type { GetRideQuoteResult, RideQuote as RideQuoteType } from "../types";
 import { MOCK_LOCATIONS, MOCK_PICKUP } from "../types";
+
+// Pickup option for inline selection
+interface PickupOption {
+  id: string;
+  label: string;
+  address: string;
+  type: "current" | "saved";
+}
 
 const formatPrice = (amount: number, currency: string) => {
   if (currency === "USD") {
@@ -31,8 +43,47 @@ const formatPrice = (amount: number, currency: string) => {
   return `${amount} ${currency}`;
 };
 
-// Generate a mock quote based on destination
-const generateQuote = (destinationId: string): RideQuoteType => {
+// Build pickup options for inline selection
+const buildPickupOptions = (): PickupOption[] => {
+  const options: PickupOption[] = [
+    {
+      id: "current",
+      label: MOCK_PICKUP.label,
+      address: MOCK_PICKUP.address,
+      type: "current",
+    },
+  ];
+
+  for (const loc of MOCK_LOCATIONS.filter((l) => l.type === "favorite")) {
+    options.push({
+      id: loc.id,
+      label: loc.label,
+      address: loc.address,
+      type: "saved",
+    });
+  }
+
+  return options;
+};
+
+const getPickupIcon = (option: PickupOption) => {
+  if (option.type === "current") {
+    return <Navigation className="h-5 w-5" />;
+  }
+  if (option.label.toLowerCase() === "home") {
+    return <Home className="h-5 w-5" />;
+  }
+  if (option.label.toLowerCase() === "work") {
+    return <Briefcase className="h-5 w-5" />;
+  }
+  return <MapPin className="h-5 w-5" />;
+};
+
+// Generate a mock quote based on destination and pickup
+const generateQuote = (
+  destinationId: string,
+  pickupOverride?: { label: string; address: string }
+): RideQuoteType => {
   const destination = MOCK_LOCATIONS.find((loc) => loc.id === destinationId);
 
   const destInfo = destination ?? {
@@ -40,28 +91,33 @@ const generateQuote = (destinationId: string): RideQuoteType => {
     address: "Unknown address",
   };
 
-  const prices: Record<string, number> = {
+  // Base prices - adjust slightly based on pickup location
+  const basePrices: Record<string, number> = {
     home: 12.5,
     work: 18.75,
     "ferry-building": 15.0,
   };
 
-  const etas: Record<string, number> = {
+  const baseEtas: Record<string, number> = {
     home: 5,
     work: 8,
     "ferry-building": 6,
   };
 
+  // Slight variation if pickup is not current location
+  const priceMultiplier = pickupOverride ? 1.1 : 1.0;
+  const etaAddition = pickupOverride ? 2 : 0;
+
   return {
     quoteId: `quote_${Date.now()}`,
-    pickup: MOCK_PICKUP,
+    pickup: pickupOverride ?? MOCK_PICKUP,
     destination: {
       label: destInfo.label,
       address: destInfo.address,
     },
-    etaMinutes: etas[destinationId] ?? 7,
+    etaMinutes: (baseEtas[destinationId] ?? 7) + etaAddition,
     price: {
-      amount: prices[destinationId] ?? 14.0,
+      amount: (basePrices[destinationId] ?? 14.0) * priceMultiplier,
       currency: "USD",
     },
     vehicle: {
@@ -80,39 +136,40 @@ export function RideQuote({
   addResult,
 }: ToolCallMessagePartProps<{ destinationId: string }, GetRideQuoteResult>) {
   const [isConfirming, setIsConfirming] = useState(false);
+  const [isPriceLoading, setIsPriceLoading] = useState(true);
+  const [mode, setMode] = useState<"quote" | "selecting-pickup">("quote");
+  const [currentPickup, setCurrentPickup] = useState<{
+    label: string;
+    address: string;
+  } | null>(null);
 
-  // Generate quote from args
-  const quote = useMemo(
-    () => result?.quote ?? generateQuote(args.destinationId),
-    [args.destinationId, result?.quote]
+  // Generate quote based on current pickup
+  const quote = result?.quote ?? generateQuote(
+    args.destinationId,
+    currentPickup ?? undefined
   );
 
-  // Change pickup - hand back to assistant
-  const handleChangePickup = () => {
-    addResult({
-      quote,
-      changePickupRequested: true,
-    });
-  };
+  // Simulate async price/ETA calculation
+  useEffect(() => {
+    // Skip loading simulation if we already have a result
+    if (result) {
+      setIsPriceLoading(false);
+      return;
+    }
 
-  // Change pickup requested - show brief state while assistant responds
-  if (result?.changePickupRequested) {
-    return (
-      <Card className="max-w-md p-4">
-        <div className="flex items-start gap-3">
-          <div className="mt-0.5 text-green-600">
-            <CheckCircle2 className="h-5 w-5" />
-          </div>
-          <div className="flex-1">
-            <div className="font-medium">{quote.destination.label}</div>
-            <div className="text-muted-foreground text-sm">
-              Updating pickup location...
-            </div>
-          </div>
-        </div>
-      </Card>
-    );
-  }
+    setIsPriceLoading(true);
+    const timer = setTimeout(() => {
+      setIsPriceLoading(false);
+    }, 800);
+
+    return () => clearTimeout(timer);
+  }, [result, currentPickup]); // Re-run when pickup changes
+
+  // Handle pickup selection
+  const handleSelectPickup = useCallback((option: PickupOption) => {
+    setCurrentPickup({ label: option.label, address: option.address });
+    setMode("quote");
+  }, []);
 
   // Receipt state - show confirmation
   if (result?.confirmed) {
@@ -147,6 +204,90 @@ export function RideQuote({
       });
     }, 800);
   };
+
+  // Pickup selection mode
+  if (mode === "selecting-pickup") {
+    const pickupOptions = buildPickupOptions();
+    const currentOptions = pickupOptions.filter((o) => o.type === "current");
+    const savedOptions = pickupOptions.filter((o) => o.type === "saved");
+
+    return (
+      <Card className="max-w-md p-4">
+        {/* Header with back button */}
+        <div className="mb-4 flex items-center gap-2">
+          <Button
+            variant="ghost"
+            size="sm"
+            className="text-muted-foreground -ml-2 h-8 w-8 p-0"
+            onClick={() => setMode("quote")}
+          >
+            <ArrowLeft className="h-4 w-4" />
+          </Button>
+          <span className="text-sm font-medium">Select pickup location</span>
+        </div>
+
+        {/* Current Location */}
+        {currentOptions.length > 0 && (
+          <div className="mb-3 space-y-2">
+            <div className="text-muted-foreground flex items-center gap-2 text-xs font-medium">
+              <Navigation className="h-3.5 w-3.5" />
+              <span>Current Location</span>
+            </div>
+            {currentOptions.map((option) => (
+              <Button
+                key={option.id}
+                variant="outline"
+                className="hover:bg-accent h-auto w-full justify-start px-3 py-2.5 text-left"
+                onClick={() => handleSelectPickup(option)}
+              >
+                <div className="flex w-full items-start gap-3">
+                  <div className="text-muted-foreground mt-0.5">
+                    {getPickupIcon(option)}
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <div className="text-sm font-medium">{option.label}</div>
+                    <div className="text-muted-foreground truncate text-xs">
+                      {option.address}
+                    </div>
+                  </div>
+                </div>
+              </Button>
+            ))}
+          </div>
+        )}
+
+        {/* Saved Places */}
+        {savedOptions.length > 0 && (
+          <div className="space-y-2">
+            <div className="text-muted-foreground flex items-center gap-2 text-xs font-medium">
+              <MapPin className="h-3.5 w-3.5" />
+              <span>Saved Places</span>
+            </div>
+            {savedOptions.map((option) => (
+              <Button
+                key={option.id}
+                variant="outline"
+                className="hover:bg-accent h-auto w-full justify-start px-3 py-2.5 text-left"
+                onClick={() => handleSelectPickup(option)}
+              >
+                <div className="flex w-full items-start gap-3">
+                  <div className="text-muted-foreground mt-0.5">
+                    {getPickupIcon(option)}
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <div className="text-sm font-medium">{option.label}</div>
+                    <div className="text-muted-foreground truncate text-xs">
+                      {option.address}
+                    </div>
+                  </div>
+                </div>
+              </Button>
+            ))}
+          </div>
+        )}
+      </Card>
+    );
+  }
 
   return (
     <Card className="max-w-md p-5">
@@ -191,15 +332,24 @@ export function RideQuote({
       <div className="bg-muted/50 mb-4 rounded-lg p-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2">
-              <Clock className="text-muted-foreground h-4 w-4" />
-              <span className="font-medium">{quote.etaMinutes} min</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="text-lg font-semibold">
-                {formatPrice(quote.price.amount, quote.price.currency)}
-              </span>
-            </div>
+            {isPriceLoading ? (
+              <>
+                <div className="bg-muted-foreground/20 h-5 w-16 animate-pulse rounded" />
+                <div className="bg-muted-foreground/20 h-6 w-20 animate-pulse rounded" />
+              </>
+            ) : (
+              <>
+                <div className="flex items-center gap-2">
+                  <Clock className="text-muted-foreground h-4 w-4" />
+                  <span className="font-medium">{quote.etaMinutes} min</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-lg font-semibold">
+                    {formatPrice(quote.price.amount, quote.price.currency)}
+                  </span>
+                </div>
+              </>
+            )}
           </div>
         </div>
         <div className="text-muted-foreground mt-2 flex items-center gap-2 text-sm">
@@ -221,11 +371,16 @@ export function RideQuote({
       <div className="space-y-2">
         <Button
           onClick={handleConfirm}
-          disabled={isConfirming}
+          disabled={isPriceLoading || isConfirming}
           className="w-full"
           size="lg"
         >
-          {isConfirming ? (
+          {isPriceLoading ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Calculating...
+            </>
+          ) : isConfirming ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               Confirming...
@@ -236,8 +391,8 @@ export function RideQuote({
         </Button>
         <Button
           variant="ghost"
-          onClick={handleChangePickup}
-          disabled={isConfirming}
+          onClick={() => setMode("selecting-pickup")}
+          disabled={isPriceLoading || isConfirming}
           className="text-muted-foreground w-full"
           size="sm"
         >

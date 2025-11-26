@@ -1,16 +1,20 @@
 "use client";
 
 /**
- * DestinationPicker - Selection Pattern
+ * DestinationPicker - Hybrid Selection Pattern
  *
- * Shows user's saved locations and lets them pick one.
- * Transforms to receipt state showing what was selected.
+ * Supports two interaction modes:
+ * 1. User-driven: No args.destinationId → shows interactive picker
+ * 2. Assistant-driven: With args.destinationId → auto-selects and shows receipt
+ *
+ * This enables both clicking the UI and typing in chat to work seamlessly.
  */
 
 import type { ToolCallMessagePartProps } from "@assistant-ui/react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Home, Briefcase, MapPin, Clock, CheckCircle2 } from "lucide-react";
+import { useEffect } from "react";
 import type { Location, SelectDestinationResult } from "../types";
 import { MOCK_LOCATIONS } from "../types";
 
@@ -32,13 +36,29 @@ const getCategoryIcon = (type: Location["type"]) => {
 };
 
 export function DestinationPicker({
+  args,
   result,
   addResult,
 }: ToolCallMessagePartProps<
-  Record<string, never>,
+  { destinationId?: string },
   SelectDestinationResult
 >) {
-  // Receipt state - show what was selected
+  const locations = MOCK_LOCATIONS;
+
+  // Assistant-driven: auto-select when destinationId is provided
+  useEffect(() => {
+    if (args.destinationId && !result) {
+      const location = locations.find((loc) => loc.id === args.destinationId);
+      if (location) {
+        addResult({
+          locations,
+          selectedLocation: location,
+        });
+      }
+    }
+  }, [args.destinationId, result, locations, addResult]);
+
+  // Receipt state - show what was selected (either by user click or assistant)
   if (result?.selectedLocation) {
     const selected = result.selectedLocation;
     return (
@@ -63,9 +83,19 @@ export function DestinationPicker({
     );
   }
 
-  // Interactive state - show picker
-  // For human-in-the-loop tools, result starts undefined so we use mock data
-  const locations = MOCK_LOCATIONS;
+  // If destinationId was provided but location not found, show error state
+  if (args.destinationId) {
+    return (
+      <Card className="max-w-md p-4">
+        <div className="text-muted-foreground text-sm">
+          Location &quot;{args.destinationId}&quot; not found. Please select from
+          the options below.
+        </div>
+      </Card>
+    );
+  }
+
+  // Interactive state - show picker (user-driven mode)
   const favorites = locations.filter((loc) => loc.type === "favorite");
   const recents = locations.filter((loc) => loc.type === "recent");
 
