@@ -94,8 +94,8 @@ export function ComponentPreviewShell({
   }, [viewport]);
 
   const Shell = (
-    <div className="flex h-full min-h-0 w-full flex-1 overflow-clip">
-      <aside className="bg-background scrollbar-subtle flex h-full w-72 shrink-0 flex-col overflow-x-hidden overflow-y-auto overscroll-contain">
+    <div className="flex h-full min-h-0 w-full flex-1 flex-col overflow-clip lg:flex-row">
+      <aside className="bg-background scrollbar-subtle hidden h-full w-72 shrink-0 flex-col overflow-x-hidden overflow-y-auto overscroll-contain lg:flex">
         <div className="flex h-full flex-col">
           <div className="flex min-h-0 flex-1 flex-col gap-4 px-4 pt-4 pb-24">
             {presetSelector}
@@ -104,7 +104,7 @@ export function ComponentPreviewShell({
       </aside>
       <div className="relative flex min-h-0 min-w-0 flex-1 flex-col">
         {/* Header with status and tabs */}
-        <div className="absolute top-0 right-0 left-0 z-20 flex items-center justify-between px-6 py-3">
+        <div className="absolute top-0 right-0 left-0 z-20 flex items-center justify-between px-4 py-3 lg:px-6">
           <div className="flex items-center gap-2">
             <Label htmlFor="preview-loading" className="text-sm">
               Loading
@@ -135,17 +135,21 @@ export function ComponentPreviewShell({
           </ButtonGroup>
         </div>
 
+        <div className="scrollbar-subtle overflow-x-auto border-b px-4 pt-14 pb-3 lg:hidden">
+          {presetSelector}
+        </div>
+
         {/* Resizable preview area (outer container manages scroll) */}
-        <div className="relative flex min-h-0 flex-1 flex-col overflow-hidden border-l">
+        <div className="relative flex min-h-0 flex-1 flex-col overflow-hidden lg:border-l">
           {activeTab === "ui" && (
             <div
               className="bg-dot-grid bg-wash pointer-events-none absolute inset-0 z-0 opacity-60 dark:opacity-40"
               aria-hidden="true"
             />
           )}
-          <div className="scrollbar-subtle relative z-10 flex min-h-0 flex-1 items-start justify-center overflow-y-auto px-2 py-6">
+          <div className="scrollbar-subtle relative z-10 flex min-h-0 flex-1 items-start justify-center overflow-y-auto">
             {activeTab === "ui" ? (
-              <div className="relative h-fit w-full pt-12 lg:pt-16">
+              <div className="relative h-fit w-full p-4 pt-16">
               <PanelGroup
                 ref={horizontalPanelGroupRef}
                 direction="horizontal"
