@@ -8,7 +8,6 @@ import {
   type ReactNode,
 } from "react";
 import { useResizableViewport } from "@/app/components/builder/resizable-viewport-provider";
-import { cn } from "@/lib/ui/cn";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import { Button } from "@/components/ui/button";
 import { ButtonGroup } from "@/components/ui/button-group";
