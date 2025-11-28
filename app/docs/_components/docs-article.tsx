@@ -12,7 +12,7 @@ export function DocsArticle({
 }) {
   return (
     <DocsBorderedShell>
-      <div className="z-10 min-h-0 flex-1 overflow-auto overscroll-contain p-6 pb-24 sm:p-10 lg:p-12 lg:pt-16">
+      <div className="scrollbar-subtle z-10 min-h-0 flex-1 overflow-y-auto overscroll-contain p-6 pb-24 sm:p-10 lg:p-12 lg:pt-16">
         <div
           className={cn(
             "prose dark:prose-invert mx-auto",

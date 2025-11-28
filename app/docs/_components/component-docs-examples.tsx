@@ -72,7 +72,7 @@ function ComponentDocsExamplesInner({
   };
 
   return (
-    <div className="bg-background relative box-border flex h-full min-h-0 w-full flex-col overflow-hidden rounded-tl-lg border-t border-l">
+    <div className="bg-background relative box-border flex h-full min-h-0 w-full flex-col overflow-hidden rounded-t-lg border">
       <Tabs
         value={active}
         onValueChange={(value) =>
@@ -101,7 +101,7 @@ function ComponentDocsExamplesInner({
         >
           <TabsContent
             value="docs"
-            className="scrollbar-subtle h-full min-h-0 flex-1 overflow-auto"
+            className="scrollbar-subtle h-full min-h-0 flex-1 overflow-y-auto"
           >
             <div className="z-0 min-h-0 flex-1 p-6 sm:p-10 lg:p-12">
               <div className="prose dark:prose-invert mx-auto max-w-3xl">
@@ -125,7 +125,7 @@ export function ComponentDocsExamples(props: ComponentDocsExamplesProps) {
   return (
     <Suspense
       fallback={
-        <div className="bg-background relative box-border flex h-full min-h-0 w-full flex-col overflow-hidden rounded-tl-lg border-t border-l" />
+        <div className="bg-background relative box-border flex h-full min-h-0 w-full flex-col overflow-hidden rounded-t-lg border" />
       }
     >
       <ComponentDocsExamplesInner {...props} />

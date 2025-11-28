@@ -13,7 +13,7 @@ export function HeaderFrame({
   background,
 }: HeaderFrameProps) {
   return (
-    <div className="relative flex h-screen flex-col items-center">
+    <div className="relative flex h-screen flex-col items-center overflow-hidden">
       {background ? (
         <div className="pointer-events-none absolute inset-0 z-0">
           {background}

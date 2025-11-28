@@ -188,7 +188,7 @@ export function ComponentPreviewShell({
   );
 
   if (withContainer) {
-    return <div className="rounded-tl-lg border-t border-l">{Shell}</div>;
+    return <div className="rounded-t-lg border">{Shell}</div>;
   }
 
   return Shell;
