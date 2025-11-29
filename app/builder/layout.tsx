@@ -8,7 +8,7 @@ export default function BuilderLayout({ children }: { children: ReactNode }) {
   return (
     <ResizableViewportProvider>
       <HeaderFrame rightContent={<BuilderHeaderControls />}>
-        <ContentLayout noScroll>{children}</ContentLayout>
+        <ContentLayout>{children}</ContentLayout>
       </HeaderFrame>
     </ResizableViewportProvider>
   );

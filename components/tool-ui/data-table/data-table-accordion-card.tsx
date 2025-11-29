@@ -90,8 +90,7 @@ export function DataTableAccordionCard({
           aria-controls={detailsId}
           aria-label={`${rowLabel}. ${secondary.length > 0 ? "Expand for details" : ""}`}
         >
-          <div className="flex w-full items-start justify-between">
-            <div className="flex min-w-0 flex-1 flex-col gap-2">
+          <div className="flex min-w-0 flex-1 flex-col gap-2">
               {primaryColumn && (
                 <div
                   id={headingId}
@@ -137,7 +136,6 @@ export function DataTableAccordionCard({
                   ))}
                 </div>
               )}
-            </div>
           </div>
         </AccordionTrigger>
 

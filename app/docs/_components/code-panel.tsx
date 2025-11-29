@@ -310,15 +310,13 @@ export function CodePanel({
   const code = generateCode();
 
   return (
-    <div className="relative mx-4 mt-12">
-      <DynamicCodeBlock
-        lang="tsx"
-        code={code}
-        codeblock={{
-          "data-line-numbers": true,
-          "data-line-numbers-start": 1,
-        }}
-      />
-    </div>
+    <DynamicCodeBlock
+      lang="tsx"
+      code={code}
+      codeblock={{
+        "data-line-numbers": true,
+        "data-line-numbers-start": 1,
+      }}
+    />
   );
 }

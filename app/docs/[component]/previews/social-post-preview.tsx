@@ -150,7 +150,7 @@ function PresetSelector({
           size="sm"
           data-selected={currentPreset === preset}
           className={cn(
-            "group/item relative",
+            "group/item relative [padding-top:2px] [padding-bottom:2px] lg:!py-3",
             currentPreset === preset
               ? "bg-muted cursor-pointer border-transparent shadow-xs"
               : "hover:bg-primary/5 active:bg-primary/10 cursor-pointer transition-[colors,shadow,border,background] duration-150 ease-out",
@@ -159,7 +159,7 @@ function PresetSelector({
         >
           <ItemContent className="transform-gpu transition-transform duration-300 ease-[cubic-bezier(0.3,-0.55,0.27,1.55)] will-change-transform group-active/item:scale-[0.98] group-active/item:duration-100 group-active/item:ease-out">
             <div className="relative flex items-start justify-between">
-              <div className="flex flex-1 flex-col gap-1">
+              <div className="flex flex-1 flex-col gap-0 lg:gap-1">
                 <ItemTitle className="flex w-full items-center justify-between capitalize">
                   <span className="text-foreground">
                     {preset.replace("-", " ").replace("_", " ")}

@@ -622,7 +622,7 @@ export default function BuilderPage() {
 
           {/* Main Thread Area */}
           <div
-            className="overflow-hidden border-t md:rounded-tl-lg md:border-l"
+            className="overflow-hidden border md:rounded-t-lg"
             style={{ width: repoId ? `${100 - webviewWidth}%` : "100%" }}
           >
             <Thread />
