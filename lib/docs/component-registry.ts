@@ -25,6 +25,11 @@ export const componentsRegistry: ComponentMeta[] = [
     label: "Social Posts",
     path: "/docs/social-post",
   },
+  {
+    id: "weather-widget",
+    label: "Weather Widget",
+    path: "/docs/weather-widget",
+  },
 ];
 
 export function getComponentById(id: string): ComponentMeta | undefined {

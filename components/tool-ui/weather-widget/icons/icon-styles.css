@@ -1,0 +1,192 @@
+/* ==========================================================================
+   Animated Weather Icons - CSS Animations
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   Sun Icon
+   -------------------------------------------------------------------------- */
+
+@keyframes icon-sun-rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes icon-sun-pulse {
+  0%, 100% {
+    opacity: 0.9;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+}
+
+.icon-sun-rays {
+  transform-origin: center;
+  animation: icon-sun-rotate 20s linear infinite;
+}
+
+.icon-sun-core {
+  animation: icon-sun-pulse 3s ease-in-out infinite;
+}
+
+/* --------------------------------------------------------------------------
+   Rain Icon
+   -------------------------------------------------------------------------- */
+
+@keyframes icon-rain-drop {
+  0% {
+    transform: translateY(-2px);
+    opacity: 0;
+  }
+  20% {
+    opacity: 1;
+  }
+  80% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(8px);
+    opacity: 0;
+  }
+}
+
+.icon-rain-drop {
+  animation: icon-rain-drop 0.8s ease-in infinite;
+}
+
+.icon-rain-drop:nth-child(1) {
+  animation-delay: 0s;
+}
+
+.icon-rain-drop:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.icon-rain-drop:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+/* --------------------------------------------------------------------------
+   Snow Icon
+   -------------------------------------------------------------------------- */
+
+@keyframes icon-snow-fall {
+  0% {
+    transform: translateY(-3px) rotate(0deg);
+    opacity: 0;
+  }
+  20% {
+    opacity: 1;
+  }
+  50% {
+    transform: translateY(3px) rotate(180deg);
+  }
+  80% {
+    opacity: 0.8;
+  }
+  100% {
+    transform: translateY(8px) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+@keyframes icon-snow-sway {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(2px);
+  }
+}
+
+.icon-snow-flake {
+  animation:
+    icon-snow-fall 2.5s ease-in infinite,
+    icon-snow-sway 1.5s ease-in-out infinite;
+}
+
+.icon-snow-flake:nth-child(1) {
+  animation-delay: 0s;
+}
+
+.icon-snow-flake:nth-child(2) {
+  animation-delay: 0.6s;
+}
+
+.icon-snow-flake:nth-child(3) {
+  animation-delay: 1.2s;
+}
+
+/* --------------------------------------------------------------------------
+   Cloud Icon
+   -------------------------------------------------------------------------- */
+
+@keyframes icon-cloud-drift {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(2px);
+  }
+}
+
+.icon-cloud {
+  animation: icon-cloud-drift 4s ease-in-out infinite;
+}
+
+/* --------------------------------------------------------------------------
+   Thunder Icon (Lightning Flash)
+   -------------------------------------------------------------------------- */
+
+@keyframes icon-lightning-flash {
+  0%, 90%, 100% {
+    opacity: 0;
+  }
+  92%, 94% {
+    opacity: 1;
+  }
+  93% {
+    opacity: 0.3;
+  }
+}
+
+.icon-lightning {
+  animation: icon-lightning-flash 4s ease-in-out infinite;
+}
+
+/* --------------------------------------------------------------------------
+   Fog Icon (Drifting Lines)
+   -------------------------------------------------------------------------- */
+
+@keyframes icon-fog-drift {
+  0%, 100% {
+    transform: translateX(0);
+    opacity: 0.6;
+  }
+  50% {
+    transform: translateX(3px);
+    opacity: 0.8;
+  }
+}
+
+.icon-fog-line {
+  animation: icon-fog-drift 3s ease-in-out infinite;
+}
+
+.icon-fog-line:nth-child(1) {
+  animation-delay: 0s;
+}
+
+.icon-fog-line:nth-child(2) {
+  animation-delay: 0.5s;
+}
+
+.icon-fog-line:nth-child(3) {
+  animation-delay: 1s;
+}

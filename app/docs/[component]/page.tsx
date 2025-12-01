@@ -4,6 +4,7 @@ import { DataTablePreview } from "./previews/data-table-preview";
 import { SocialPostPreview } from "./previews/social-post-preview";
 import { MediaCardPreview } from "./previews/media-card-preview";
 import { OptionListPreview } from "./previews/option-list-preview";
+import { WeatherWidgetPreview } from "./previews/weather-widget-preview";
 
 export default async function ComponentPage({
   params,
@@ -26,6 +27,8 @@ export default async function ComponentPage({
       return <MediaCardPreview />;
     case "option-list":
       return <OptionListPreview />;
+    case "weather-widget":
+      return <WeatherWidgetPreview />;
     default:
       notFound();
   }
