@@ -75,7 +75,7 @@ export function PresetSelector({
           size="sm"
           data-selected={currentPreset === preset}
           className={cn(
-            "group/item relative [padding-top:2px] [padding-bottom:2px] lg:!py-3",
+            "group/item relative py-[2px] pb-[2px] lg:py-3!",
             currentPreset === preset
               ? "bg-muted cursor-pointer border-transparent shadow-xs"
               : "hover:bg-primary/5 active:bg-primary/10 cursor-pointer transition-[colors,shadow,border,background] duration-150 ease-out",

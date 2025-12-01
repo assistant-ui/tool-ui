@@ -14,6 +14,7 @@ import { Files, File, Folder } from "fumadocs-ui/components/files";
 import * as React from "react";
 import { AutoLinkChildren, withAutoLink } from "@/lib/docs/auto-link";
 import { Mermaid } from "@/app/components/mdx/mermaid";
+import { OptionListPresetExample } from "@/app/docs/_components/preset-example";
 
 export function useMDXComponents(components: MDXComponents): MDXComponents {
   // Wrap selected default components to auto-link Tool UI mentions
@@ -83,6 +84,7 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
     Folder,
     AutoLinkChildren,
     Mermaid,
+    OptionListPresetExample,
     ...components,
   };
 }

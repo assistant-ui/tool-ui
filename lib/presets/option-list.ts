@@ -4,7 +4,12 @@ export interface OptionListConfig {
   optionList: SerializableOptionList;
 }
 
-export type OptionListPresetName = "export" | "travel" | "notifications" | "receipt" | "actions";
+export type OptionListPresetName =
+  | "export"
+  | "travel"
+  | "notifications"
+  | "receipt"
+  | "actions";
 
 const exportPreset: OptionListConfig = {
   optionList: {
@@ -18,7 +23,7 @@ const exportPreset: OptionListConfig = {
     minSelections: 1,
     maxSelections: 2,
     footerActions: [
-      { id: "cancel", label: "Reset", variant: "ghost" },
+      { id: "cancel", label: "Reset", variant: "secondary" },
       { id: "confirm", label: "Confirm", variant: "default" },
     ],
   },

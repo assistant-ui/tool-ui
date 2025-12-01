@@ -1,105 +1,16 @@
 import { DocsHeader } from "../_components/docs-header";
-import { OptionList } from "@/components/tool-ui/option-list";
 
 <DocsHeader title="Option List" mdxPath="app/docs/option-list/content.mdx" />
 
 A decision surface for single or multi-select choices. Optimized for inline selection prompts in chat.
 
-<Tabs items={["Preview", "Code"]}>
-  <Tab>
-    <div className="not-prose">
-      <OptionList
-        options={[
-          { id: "good", label: "Good", description: "High quality work" },
-          { id: "fast", label: "Fast", description: "Quick turnaround" },
-          { id: "cheap", label: "Cheap", description: "Low cost" },
-        ]}
-        selectionMode="multi"
-        maxSelections={2}
-        footerActions={[
-          { id: "cancel", label: "Reset", variant: "ghost" },
-          { id: "confirm", label: "Confirm", variant: "default" },
-        ]}
-      />
-    </div>
-  </Tab>
-  <Tab>
-    ```tsx
-    import { OptionList } from "@/components/tool-ui/option-list";
-
-    export function Example() {
-      return (
-        <OptionList
-          options={[
-            { id: "good", label: "Good", description: "High quality work" },
-            { id: "fast", label: "Fast", description: "Quick turnaround" },
-            { id: "cheap", label: "Cheap", description: "Low cost" },
-          ]}
-          selectionMode="multi"
-          maxSelections={2}
-          footerActions={[
-            { id: "cancel", label: "Reset", variant: "ghost" },
-            { id: "confirm", label: "Confirm", variant: "default" },
-          ]}
-          onConfirm={(selection) => console.log(selection)}
-        />
-      );
-    }
-    ```
-
-  </Tab>
-</Tabs>
+<OptionListPresetExample preset="export" />
 
 ## Receipt State
 
 When `confirmed` is set, the component renders in a read-only receipt state showing only the confirmed selection(s). This is useful for displaying the outcome of a decision in a conversation history.
 
-<Tabs items={["Preview", "Code"]}>
-  <Tab>
-    <div className="not-prose">
-      <OptionList
-        surfaceId="docs-receipt-example"
-        options={[
-          {
-            id: "walk",
-            label: "Walking",
-            description: "Sidewalk-friendly route",
-          },
-          { id: "drive", label: "Driving", description: "Fastest ETA" },
-          {
-            id: "transit",
-            label: "Transit",
-            description: "Use subway and buses",
-          },
-        ]}
-        selectionMode="single"
-        confirmed="drive"
-      />
-    </div>
-  </Tab>
-  <Tab>
-    ```tsx
-    <OptionList
-      surfaceId="route-selection"
-      options={[
-        {
-          id: "walk",
-          label: "Walking",
-          description: "Sidewalk-friendly route",
-        },
-        { id: "drive", label: "Driving", description: "Fastest ETA" },
-        {
-          id: "transit",
-          label: "Transit",
-          description: "Use subway and buses",
-        },
-      ]}
-      selectionMode="single"
-      confirmed="drive"
-    />
-    ```
-  </Tab>
-</Tabs>
+<OptionListPresetExample preset="receipt" />
 
 The receipt state:
 
