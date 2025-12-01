@@ -37,6 +37,7 @@ import {
   RefreshCwIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
+  ConstructionIcon,
 } from "lucide-react";
 import { MCPIcon } from "@/app/components/builder/mcp-icon";
 import { Button } from "@/components/ui/button";
@@ -473,6 +474,13 @@ const Composer: FC = () => {
             </div>
           </div>
         </ComposerPrimitive.Root>
+        <div className="flex items-center justify-center gap-2 text-center text-xs text-amber-700 dark:text-amber-400">
+          <ConstructionIcon className="size-3.5 shrink-0" />
+          <span>
+            This builder is under heavy construction and may not always work as
+            expected.
+          </span>
+        </div>
       </div>
     </>
   );
