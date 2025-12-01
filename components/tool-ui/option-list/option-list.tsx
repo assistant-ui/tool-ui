@@ -393,7 +393,7 @@ export function OptionList({
             <Fragment key={option.id}>
               {index > 0 && (
                 <Separator
-                  className="[&:has(+_:hover)]:opacity-0 [.peer:hover+&]:opacity-0"
+                  className="[@media(hover:hover)]:[&:has(+_:hover)]:opacity-0 [@media(hover:hover)]:[.peer:hover+&]:opacity-0"
                   orientation="horizontal"
                 />
               )}
