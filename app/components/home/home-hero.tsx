@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-import { HomeHypercube } from "./home-hypercube";
+import { HomeAsciiScene } from "./home-ascii-scene";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
@@ -8,7 +8,7 @@ export function HomeHero() {
   return (
     <div className="flex flex-col gap-7">
       <div className="-mb-4 -ml-4 flex items-end justify-start">
-        <HomeHypercube />
+        <HomeAsciiScene />
       </div>
       <div className="flex flex-col gap-3">
         <div className="flex flex-col gap-3">
