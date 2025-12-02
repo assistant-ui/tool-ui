@@ -55,10 +55,20 @@ function AccordionContent({
   return (
     <AccordionPrimitive.Content
       data-slot="accordion-content"
-      className="data-[state=closed]:animate-accordion-up data-[state=closed]:fade-out data-[state=open]:animate-accordion-down data-[state=open]:fade-in overflow-hidden text-sm"
+      className="group data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down overflow-hidden text-sm"
       {...props}
     >
-      <div className={cn("pt-0 pb-4", className)}>{children}</div>
+      <div
+        className={cn(
+          "pt-0 pb-4",
+          "group-data-[state=open]:animate-in group-data-[state=open]:fade-in-0",
+          "group-data-[state=closed]:animate-out group-data-[state=closed]:fade-out-0",
+          "duration-200",
+          className,
+        )}
+      >
+        {children}
+      </div>
     </AccordionPrimitive.Content>
   );
 }

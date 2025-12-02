@@ -45,8 +45,15 @@
   --color-chart-3: hsl(var(--chart-3));
   --color-chart-4: hsl(var(--chart-4));
   --color-chart-5: hsl(var(--chart-5));
-  --shadow-border: 0px 1px 0px -1px var(--tw-shadow-color), 0px 1px 1px -1px var(--tw-shadow-color), 0px 1px 2px -1px var(--tw-shadow-color), 0px 2px 4px -2px var(--tw-shadow-color), 0px 3px 6px -3px var(--tw-shadow-color);
-  --shadow-highlight: inset 0px 0px 0px 1px var(--tw-shadow-color), inset 0px 1px 0px var(--tw-shadow-color);
+  --shadow-border:
+    0px 1px 0px -1px var(--tw-shadow-color),
+    0px 1px 1px -1px var(--tw-shadow-color),
+    0px 1px 2px -1px var(--tw-shadow-color),
+    0px 2px 4px -2px var(--tw-shadow-color),
+    0px 3px 6px -3px var(--tw-shadow-color);
+  --shadow-highlight:
+    inset 0px 0px 0px 1px var(--tw-shadow-color),
+    inset 0px 1px 0px var(--tw-shadow-color);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -55,13 +62,14 @@
   --color-sidebar-primary: var(--sidebar-primary);
   --color-sidebar-foreground: var(--sidebar-foreground);
   --color-sidebar: var(--sidebar);
-  --animate-shimmer: shimmer-sweep var(--shimmer-duration, 1000ms) linear infinite both;
+  --animate-shimmer: shimmer-sweep var(--shimmer-duration, 1000ms) linear
+    infinite both;
   @keyframes shimmer-sweep {
-  from {
-    background-position: 150% 0;
+    from {
+      background-position: 150% 0;
     }
-  to {
-    background-position: -100% 0;
+    to {
+      background-position: -100% 0;
     }
   }
 }
@@ -191,9 +199,39 @@
   --ring: 240 4.9% 83.9%;
 }
 
+@keyframes accordion-down {
+  from {
+    height: 0;
+  }
+  to {
+    height: var(--radix-accordion-content-height);
+  }
+}
+
+@keyframes accordion-up {
+  from {
+    height: var(--radix-accordion-content-height);
+  }
+  to {
+    height: 0;
+  }
+}
+
 @layer utilities {
+  .animate-accordion-down {
+    animation: accordion-down 200ms ease-out;
+  }
+
+  .animate-accordion-up {
+    animation: accordion-up 200ms ease-out;
+  }
+
   .bg-dot-grid {
-    background-image: radial-gradient(circle, hsl(var(--dot-grid-color)) 1px, transparent 1px);
+    background-image: radial-gradient(
+      circle,
+      hsl(var(--dot-grid-color)) 1px,
+      transparent 1px
+    );
     background-size: 20px 20px;
   }
 
@@ -212,7 +250,7 @@
       0px 3px 6px -3px oklch(0 0 0 / 0.1);
 
     &::after {
-      content: '';
+      content: "";
       pointer-events: none;
       position: absolute;
       inset: 0;
@@ -271,7 +309,6 @@
   .dark .scrollbar-subtle:hover::-webkit-scrollbar-thumb {
     background-color: oklch(0 0 0 / 0.55);
   }
-
 }
 
 @layer base {
@@ -298,7 +335,7 @@
   }
   ::view-transition-new(root) {
     mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3Cfilter id='blur' x='-100%25' y='-100%25' width='400%25' height='400%25'%3E%3CfeGaussianBlur stdDeviation='4'/%3E%3C/filter%3E%3C/defs%3E%3Ccircle cx='100' cy='0' r='40' fill='white' filter='url(%23blur)'/%3E%3C/svg%3E")
-     calc(100% + 10px) top / 0% no-repeat;
+      calc(100% + 10px) top / 0% no-repeat;
     mask-origin: content-box;
     animation: scale 0.6s ease-in-out;
     animation-fill-mode: forwards;
