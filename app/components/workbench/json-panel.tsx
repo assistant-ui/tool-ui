@@ -122,6 +122,7 @@ export function JsonPanel() {
       {/* JSON Editor */}
       <div className="scrollbar-subtle flex-1 overflow-y-auto p-4">
         <JsonEditor
+          key={activeJsonTab}
           label={tabLabels[activeJsonTab]}
           value={getActiveData()}
           onChange={handleChange}

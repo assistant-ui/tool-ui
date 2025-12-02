@@ -28,6 +28,12 @@ import {
   AccordionContent,
 } from "@/components/ui/accordion";
 import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput,
+  InputGroupText,
+} from "@/components/ui/input-group";
+import {
   Monitor,
   Tablet,
   Smartphone,
@@ -373,82 +379,75 @@ export function ConfigPanel({ isCollapsed, onToggleCollapse }: { isCollapsed?: b
           <div className="space-y-2">
             <Label className="text-xs">Safe Area Insets</Label>
             <div className="grid grid-cols-2 gap-2">
-              <div className="space-y-1">
-                <Label
-                  htmlFor="inset-top"
-                  className="text-muted-foreground text-xs"
-                >
-                  Top
-                </Label>
-                <input
-                  id="inset-top"
-                  type="number"
-                  value={safeAreaInsets.top}
-                  onChange={(e) =>
-                    store.setSafeAreaInsets({ top: Number(e.target.value) })
-                  }
-                  className="bg-background border-input ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring flex h-8 w-full rounded-md border px-2 py-1 text-sm shadow-sm transition-colors focus-visible:ring-1 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
-                  min={0}
-                  max={100}
-                />
-              </div>
-              <div className="space-y-1">
-                <Label
-                  htmlFor="inset-bottom"
-                  className="text-muted-foreground text-xs"
-                >
-                  Bottom
-                </Label>
-                <input
-                  id="inset-bottom"
-                  type="number"
-                  value={safeAreaInsets.bottom}
-                  onChange={(e) =>
-                    store.setSafeAreaInsets({ bottom: Number(e.target.value) })
-                  }
-                  className="bg-background border-input ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring flex h-8 w-full rounded-md border px-2 py-1 text-sm shadow-sm transition-colors focus-visible:ring-1 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
-                  min={0}
-                  max={100}
-                />
-              </div>
-              <div className="space-y-1">
-                <Label
-                  htmlFor="inset-left"
-                  className="text-muted-foreground text-xs"
-                >
-                  Left
-                </Label>
-                <input
+              {/* Top Row: Left, Top */}
+              <InputGroup>
+                <InputGroupAddon>
+                  <InputGroupText>←</InputGroupText>
+                </InputGroupAddon>
+                <InputGroupInput
                   id="inset-left"
                   type="number"
                   value={safeAreaInsets.left}
                   onChange={(e) =>
                     store.setSafeAreaInsets({ left: Number(e.target.value) })
                   }
-                  className="bg-background border-input ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring flex h-8 w-full rounded-md border px-2 py-1 text-sm shadow-sm transition-colors focus-visible:ring-1 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
                   min={0}
                   max={100}
+                  aria-label="Left inset"
                 />
-              </div>
-              <div className="space-y-1">
-                <Label
-                  htmlFor="inset-right"
-                  className="text-muted-foreground text-xs"
-                >
-                  Right
-                </Label>
-                <input
+              </InputGroup>
+
+              <InputGroup>
+                <InputGroupAddon>
+                  <InputGroupText>↑</InputGroupText>
+                </InputGroupAddon>
+                <InputGroupInput
+                  id="inset-top"
+                  type="number"
+                  value={safeAreaInsets.top}
+                  onChange={(e) =>
+                    store.setSafeAreaInsets({ top: Number(e.target.value) })
+                  }
+                  min={0}
+                  max={100}
+                  aria-label="Top inset"
+                />
+              </InputGroup>
+
+              {/* Bottom Row: Right, Bottom */}
+              <InputGroup>
+                <InputGroupAddon>
+                  <InputGroupText>→</InputGroupText>
+                </InputGroupAddon>
+                <InputGroupInput
                   id="inset-right"
                   type="number"
                   value={safeAreaInsets.right}
                   onChange={(e) =>
                     store.setSafeAreaInsets({ right: Number(e.target.value) })
                   }
-                  className="bg-background border-input ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring flex h-8 w-full rounded-md border px-2 py-1 text-sm shadow-sm transition-colors focus-visible:ring-1 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
                   min={0}
                   max={100}
+                  aria-label="Right inset"
                 />
-              </div>
+              </InputGroup>
+
+              <InputGroup>
+                <InputGroupAddon>
+                  <InputGroupText>↓</InputGroupText>
+                </InputGroupAddon>
+                <InputGroupInput
+                  id="inset-bottom"
+                  type="number"
+                  value={safeAreaInsets.bottom}
+                  onChange={(e) =>
+                    store.setSafeAreaInsets({ bottom: Number(e.target.value) })
+                  }
+                  min={0}
+                  max={100}
+                  aria-label="Bottom inset"
+                />
+              </InputGroup>
             </div>
           </div>
 
