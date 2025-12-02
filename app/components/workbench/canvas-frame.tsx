@@ -167,12 +167,38 @@ function ComponentRenderer() {
   return <Component {...props} />;
 }
 
-export function CanvasFrame() {
-  const displayMode = useDisplayMode();
+// ─────────────────────────────────────────────────────────────────────────────
+// Shared Component Content Wrapper
+// ─────────────────────────────────────────────────────────────────────────────
+
+function ComponentContent({ className }: { className?: string }) {
+  const toolInput = useToolInput();
+  const theme = useWorkbenchStore((s) => s.theme);
+
+  return (
+    <div
+      className={cn(
+        "flex min-h-full items-center justify-center p-4",
+        theme === "dark" && "dark",
+        className,
+      )}
+    >
+      <OpenAIProvider>
+        <ComponentErrorBoundary toolInput={toolInput}>
+          <ComponentRenderer />
+        </ComponentErrorBoundary>
+      </OpenAIProvider>
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Inline View - Resizable panels with device simulation
+// ─────────────────────────────────────────────────────────────────────────────
+
+function InlineView() {
   const deviceType = useDeviceType();
   const theme = useWorkbenchStore((s) => s.theme);
-  const toolInput = useToolInput();
-  const setDisplayMode = useWorkbenchStore((s) => s.setDisplayMode);
 
   // Ref for programmatic panel control
   const panelGroupRef = useRef<ImperativePanelGroupHandle>(null);
@@ -196,7 +222,6 @@ export function CanvasFrame() {
       return;
     }
 
-    // Maintain symmetry: if center panel changes, adjust spacers equally
     if (panelGroupRef.current && sizes.length === 3) {
       const centerSize = sizes[1];
       const spacing = Math.max(0, (100 - centerSize) / 2);
@@ -211,7 +236,108 @@ export function CanvasFrame() {
     }
   };
 
-  // Handle close for fullscreen/pip modes
+  return (
+    <PanelGroup
+      ref={panelGroupRef}
+      direction="horizontal"
+      onLayout={handleLayout}
+      className="h-full py-4"
+    >
+      <Panel defaultSize={5} minSize={0} />
+
+      <PanelResizeHandle className="group relative w-4">
+        <div className="absolute top-1/2 left-1/2 h-12 w-1 -translate-x-1/2 -translate-y-1/2 rounded-full bg-gray-300 opacity-40 transition-all group-hover:bg-gray-400 group-hover:opacity-100 group-data-resize-handle-active:bg-gray-500 group-data-resize-handle-active:opacity-100 dark:bg-gray-600 dark:group-hover:bg-gray-500 dark:group-data-resize-handle-active:bg-gray-400" />
+      </PanelResizeHandle>
+
+      <Panel defaultSize={90} minSize={30} maxSize={100}>
+        <div
+          className={cn(
+            "h-full overflow-auto rounded-xl border-2 border-dashed transition-all",
+            "border-border bg-transparent",
+            theme === "dark" && "dark",
+          )}
+        >
+          <ComponentContent />
+        </div>
+      </Panel>
+
+      <PanelResizeHandle className="group relative w-4">
+        <div className="absolute top-1/2 left-1/2 h-12 w-1 -translate-x-1/2 -translate-y-1/2 rounded-full bg-gray-300 opacity-40 transition-all group-hover:bg-gray-400 group-hover:opacity-100 group-data-resize-handle-active:bg-gray-500 group-data-resize-handle-active:opacity-100 dark:bg-gray-600 dark:group-hover:bg-gray-500 dark:group-data-resize-handle-active:bg-gray-400" />
+      </PanelResizeHandle>
+
+      <Panel defaultSize={5} minSize={0} />
+    </PanelGroup>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// PiP View - Small floating window
+// ─────────────────────────────────────────────────────────────────────────────
+
+function PipView({ onClose }: { onClose: () => void }) {
+  const theme = useWorkbenchStore((s) => s.theme);
+
+  return (
+    <div className="absolute inset-0 flex items-center justify-center">
+      <div
+        className={cn(
+          "relative h-80 w-96 overflow-auto rounded-xl border shadow-2xl",
+          "bg-background",
+          theme === "dark" && "dark",
+        )}
+      >
+        <Button
+          variant="ghost"
+          size="icon"
+          className="absolute top-2 right-2 z-10 size-6"
+          onClick={onClose}
+        >
+          <X className="size-3" />
+        </Button>
+        <ComponentContent />
+      </div>
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Fullscreen View - Full coverage
+// ─────────────────────────────────────────────────────────────────────────────
+
+function FullscreenView({ onClose }: { onClose: () => void }) {
+  const theme = useWorkbenchStore((s) => s.theme);
+
+  return (
+    <div
+      className={cn(
+        "absolute inset-0 overflow-auto",
+        "bg-background",
+        theme === "dark" && "dark",
+      )}
+    >
+      <Button
+        variant="ghost"
+        size="icon"
+        className="absolute top-3 right-3 z-10 size-8"
+        onClick={onClose}
+      >
+        <X className="size-4" />
+      </Button>
+      <ComponentContent className="h-full" />
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Main Canvas Frame
+// ─────────────────────────────────────────────────────────────────────────────
+
+export function CanvasFrame() {
+  const displayMode = useDisplayMode();
+  const deviceType = useDeviceType();
+  const theme = useWorkbenchStore((s) => s.theme);
+  const setDisplayMode = useWorkbenchStore((s) => s.setDisplayMode);
+
   const handleClose = () => {
     setDisplayMode("inline");
   };
@@ -224,65 +350,14 @@ export function CanvasFrame() {
         aria-hidden="true"
       />
 
-      {/* Resizable panel layout for device simulation */}
-      <PanelGroup
-        ref={panelGroupRef}
-        direction="horizontal"
-        onLayout={handleLayout}
-        className="h-full py-4"
-      >
-        {/* Left spacer panel */}
-        <Panel defaultSize={5} minSize={0} />
-
-        {/* Left resize handle */}
-        <PanelResizeHandle className="group relative w-4">
-          <div className="absolute top-1/2 left-1/2 h-12 w-1 -translate-x-1/2 -translate-y-1/2 rounded-full bg-gray-300 opacity-40 transition-all group-hover:bg-gray-400 group-hover:opacity-100 group-data-[resize-handle-active]:bg-gray-500 group-data-[resize-handle-active]:opacity-100 dark:bg-gray-600 dark:group-hover:bg-gray-500 dark:group-data-[resize-handle-active]:bg-gray-400" />
-        </PanelResizeHandle>
-
-        {/* Center content panel */}
-        <Panel defaultSize={90} minSize={30} maxSize={100}>
-          <div
-            className={cn(
-              "h-full overflow-auto rounded-xl border-2 border-dashed transition-all",
-              "border-border bg-transparent",
-              theme === "dark" && "dark",
-            )}
-          >
-            {/* Close button for pip/fullscreen */}
-            {displayMode !== "inline" && (
-              <Button
-                variant="ghost"
-                size="icon"
-                className="absolute top-2 right-2 z-10 size-8"
-                onClick={handleClose}
-              >
-                <X className="size-4" />
-              </Button>
-            )}
-
-            {/* Component wrapped in error boundary and OpenAI context */}
-            <div className="flex min-h-full items-center justify-center p-4">
-              <OpenAIProvider>
-                <ComponentErrorBoundary toolInput={toolInput}>
-                  <ComponentRenderer />
-                </ComponentErrorBoundary>
-              </OpenAIProvider>
-            </div>
-          </div>
-        </Panel>
-
-        {/* Right resize handle */}
-        <PanelResizeHandle className="group relative w-4">
-          <div className="absolute top-1/2 left-1/2 h-12 w-1 -translate-x-1/2 -translate-y-1/2 rounded-full bg-gray-300 opacity-40 transition-all group-hover:bg-gray-400 group-hover:opacity-100 group-data-[resize-handle-active]:bg-gray-500 group-data-[resize-handle-active]:opacity-100 dark:bg-gray-600 dark:group-hover:bg-gray-500 dark:group-data-[resize-handle-active]:bg-gray-400" />
-        </PanelResizeHandle>
-
-        {/* Right spacer panel */}
-        <Panel defaultSize={5} minSize={0} />
-      </PanelGroup>
+      {/* Render based on display mode */}
+      {displayMode === "inline" && <InlineView />}
+      {displayMode === "pip" && <PipView onClose={handleClose} />}
+      {displayMode === "fullscreen" && <FullscreenView onClose={handleClose} />}
 
       {/* Display mode indicator */}
       <div className="bg-background/80 text-muted-foreground absolute bottom-2 left-2 z-10 rounded px-2 py-1 text-xs backdrop-blur-sm">
-        {deviceType} • {theme}
+        {displayMode === "inline" ? deviceType : displayMode} • {theme}
       </div>
     </div>
   );
