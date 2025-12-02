@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   useWorkbenchStore,
   useSelectedComponent,
@@ -75,6 +75,12 @@ function JsonEditor({
 }) {
   const [text, setText] = useState(() => JSON.stringify(value, null, 2));
   const [error, setError] = useState<string | null>(null);
+
+  // Sync text state when value prop changes (e.g., switching components)
+  useEffect(() => {
+    setText(JSON.stringify(value, null, 2));
+    setError(null);
+  }, [value]);
 
   const handleChange = (newText: string) => {
     setText(newText);
