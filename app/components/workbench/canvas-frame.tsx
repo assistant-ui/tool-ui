@@ -168,18 +168,66 @@ function ComponentRenderer() {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// Isolated Theme Wrapper
+// Uses data-theme attribute + inline CSS variables to fully isolate from global theme
+// ─────────────────────────────────────────────────────────────────────────────
+
+const LIGHT_THEME_VARS: React.CSSProperties = {
+  "--background": "0 0% 100%",
+  "--foreground": "240 10% 3.9%",
+  "--card": "0 0% 100%",
+  "--card-foreground": "240 10% 3.9%",
+  "--primary": "240 5.9% 10%",
+  "--primary-foreground": "0 0% 98%",
+  "--muted": "240 4.8% 95.9%",
+  "--muted-foreground": "240 3.8% 46.1%",
+  "--border": "240 5.9% 90%",
+} as React.CSSProperties;
+
+const DARK_THEME_VARS: React.CSSProperties = {
+  "--background": "240 10% 3.9%",
+  "--foreground": "0 0% 98%",
+  "--card": "240 10% 3.9%",
+  "--card-foreground": "0 0% 98%",
+  "--primary": "0 0% 98%",
+  "--primary-foreground": "240 5.9% 10%",
+  "--muted": "240 3.7% 15.9%",
+  "--muted-foreground": "240 5% 64.9%",
+  "--border": "240 3.7% 15.9%",
+} as React.CSSProperties;
+
+function IsolatedThemeWrapper({
+  children,
+  className,
+}: {
+  children: ReactNode;
+  className?: string;
+}) {
+  const theme = useWorkbenchStore((s) => s.theme);
+  const themeVars = theme === "dark" ? DARK_THEME_VARS : LIGHT_THEME_VARS;
+
+  return (
+    <div
+      data-theme={theme}
+      className={cn("bg-background text-foreground", className)}
+      style={{ colorScheme: theme, ...themeVars }}
+    >
+      {children}
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // Shared Component Content Wrapper
 // ─────────────────────────────────────────────────────────────────────────────
 
 function ComponentContent({ className }: { className?: string }) {
   const toolInput = useToolInput();
-  const theme = useWorkbenchStore((s) => s.theme);
 
   return (
-    <div
+    <IsolatedThemeWrapper
       className={cn(
         "flex min-h-full items-center justify-center p-4",
-        theme === "dark" && "dark",
         className,
       )}
     >
@@ -188,7 +236,7 @@ function ComponentContent({ className }: { className?: string }) {
           <ComponentRenderer />
         </ComponentErrorBoundary>
       </OpenAIProvider>
-    </div>
+    </IsolatedThemeWrapper>
   );
 }
 
@@ -198,7 +246,6 @@ function ComponentContent({ className }: { className?: string }) {
 
 function InlineView() {
   const deviceType = useDeviceType();
-  const theme = useWorkbenchStore((s) => s.theme);
 
   // Ref for programmatic panel control
   const panelGroupRef = useRef<ImperativePanelGroupHandle>(null);
@@ -250,14 +297,8 @@ function InlineView() {
       </PanelResizeHandle>
 
       <Panel defaultSize={90} minSize={30} maxSize={100}>
-        <div
-          className={cn(
-            "h-full overflow-auto rounded-xl border-2 border-dashed transition-all",
-            "border-border bg-transparent",
-            theme === "dark" && "dark",
-          )}
-        >
-          <ComponentContent />
+        <div className="border-border h-full overflow-auto rounded-xl border-2 border-dashed transition-all">
+          <ComponentContent className="h-full" />
         </div>
       </Panel>
 
@@ -275,17 +316,9 @@ function InlineView() {
 // ─────────────────────────────────────────────────────────────────────────────
 
 function PipView({ onClose }: { onClose: () => void }) {
-  const theme = useWorkbenchStore((s) => s.theme);
-
   return (
     <div className="absolute inset-0 flex items-center justify-center">
-      <div
-        className={cn(
-          "relative h-80 w-96 overflow-auto rounded-xl border shadow-2xl",
-          "bg-background",
-          theme === "dark" && "dark",
-        )}
-      >
+      <div className="relative h-80 w-96 overflow-hidden rounded-xl border shadow-2xl">
         <Button
           variant="ghost"
           size="icon"
@@ -294,7 +327,7 @@ function PipView({ onClose }: { onClose: () => void }) {
         >
           <X className="size-3" />
         </Button>
-        <ComponentContent />
+        <ComponentContent className="h-full" />
       </div>
     </div>
   );
@@ -305,16 +338,8 @@ function PipView({ onClose }: { onClose: () => void }) {
 // ─────────────────────────────────────────────────────────────────────────────
 
 function FullscreenView({ onClose }: { onClose: () => void }) {
-  const theme = useWorkbenchStore((s) => s.theme);
-
   return (
-    <div
-      className={cn(
-        "absolute inset-0 overflow-auto",
-        "bg-background",
-        theme === "dark" && "dark",
-      )}
-    >
+    <div className="absolute inset-0 overflow-hidden">
       <Button
         variant="ghost"
         size="icon"

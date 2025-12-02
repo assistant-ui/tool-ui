@@ -116,6 +116,10 @@ export function ConfigPanel() {
   const toolOutput = useToolOutput();
 
   const store = useWorkbenchStore();
+  const widgetState = store.widgetState;
+  const maxHeight = store.maxHeight;
+  const toolResponseMetadata = store.toolResponseMetadata;
+  const safeAreaInsets = store.safeAreaInsets;
 
   // Handle component selection with default props
   const handleComponentChange = (componentId: string) => {
@@ -274,6 +278,134 @@ export function ConfigPanel() {
             value={toolOutput}
             onChange={store.setToolOutput}
           />
+          <JsonEditor
+            label="widgetState"
+            value={widgetState}
+            onChange={store.setWidgetState}
+          />
+          <JsonEditor
+            label="toolResponseMetadata"
+            value={toolResponseMetadata ?? {}}
+            onChange={(value) =>
+              store.setToolResponseMetadata(
+                Object.keys(value).length > 0 ? value : null
+              )
+            }
+          />
+        </div>
+      </CollapsibleSection>
+
+      {/* Advanced Settings */}
+      <CollapsibleSection title="Advanced">
+        <div className="space-y-4">
+          {/* Max Height */}
+          <div className="space-y-2">
+            <Label htmlFor="max-height" className="text-xs">
+              maxHeight (px)
+            </Label>
+            <input
+              id="max-height"
+              type="number"
+              value={maxHeight}
+              onChange={(e) => store.setMaxHeight(Number(e.target.value))}
+              className="bg-background border-input ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring flex h-9 w-full rounded-md border px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 disabled:cursor-not-allowed disabled:opacity-50"
+              min={100}
+              max={2000}
+            />
+          </div>
+
+          {/* Safe Area Insets */}
+          <div className="space-y-2">
+            <Label className="text-xs">Safe Area Insets</Label>
+            <div className="grid grid-cols-2 gap-2">
+              <div className="space-y-1">
+                <Label htmlFor="inset-top" className="text-xs text-muted-foreground">
+                  Top
+                </Label>
+                <input
+                  id="inset-top"
+                  type="number"
+                  value={safeAreaInsets.top}
+                  onChange={(e) =>
+                    store.setSafeAreaInsets({ top: Number(e.target.value) })
+                  }
+                  className="bg-background border-input ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring flex h-8 w-full rounded-md border px-2 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 disabled:cursor-not-allowed disabled:opacity-50"
+                  min={0}
+                  max={100}
+                />
+              </div>
+              <div className="space-y-1">
+                <Label htmlFor="inset-bottom" className="text-xs text-muted-foreground">
+                  Bottom
+                </Label>
+                <input
+                  id="inset-bottom"
+                  type="number"
+                  value={safeAreaInsets.bottom}
+                  onChange={(e) =>
+                    store.setSafeAreaInsets({ bottom: Number(e.target.value) })
+                  }
+                  className="bg-background border-input ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring flex h-8 w-full rounded-md border px-2 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 disabled:cursor-not-allowed disabled:opacity-50"
+                  min={0}
+                  max={100}
+                />
+              </div>
+              <div className="space-y-1">
+                <Label htmlFor="inset-left" className="text-xs text-muted-foreground">
+                  Left
+                </Label>
+                <input
+                  id="inset-left"
+                  type="number"
+                  value={safeAreaInsets.left}
+                  onChange={(e) =>
+                    store.setSafeAreaInsets({ left: Number(e.target.value) })
+                  }
+                  className="bg-background border-input ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring flex h-8 w-full rounded-md border px-2 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 disabled:cursor-not-allowed disabled:opacity-50"
+                  min={0}
+                  max={100}
+                />
+              </div>
+              <div className="space-y-1">
+                <Label htmlFor="inset-right" className="text-xs text-muted-foreground">
+                  Right
+                </Label>
+                <input
+                  id="inset-right"
+                  type="number"
+                  value={safeAreaInsets.right}
+                  onChange={(e) =>
+                    store.setSafeAreaInsets({ right: Number(e.target.value) })
+                  }
+                  className="bg-background border-input ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring flex h-8 w-full rounded-md border px-2 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 disabled:cursor-not-allowed disabled:opacity-50"
+                  min={0}
+                  max={100}
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* User Agent (Read-only, computed from device) */}
+          <div className="space-y-2">
+            <Label className="text-xs">User Agent</Label>
+            <div className="bg-muted text-muted-foreground rounded-md border p-2 text-xs">
+              <div>
+                Device: <span className="font-mono">{deviceType}</span>
+              </div>
+              <div>
+                Hover:{" "}
+                <span className="font-mono">
+                  {deviceType === "desktop" ? "true" : "false"}
+                </span>
+              </div>
+              <div>
+                Touch:{" "}
+                <span className="font-mono">
+                  {deviceType !== "desktop" ? "true" : "false"}
+                </span>
+              </div>
+            </div>
+          </div>
         </div>
       </CollapsibleSection>
     </div>
