@@ -1,7 +1,5 @@
 import type { ReactNode } from "react";
 import type { Metadata } from "next";
-import ContentLayout from "@/app/components/layout/page-shell";
-import { HeaderFrame } from "@/app/components/layout/app-shell";
 
 export const metadata: Metadata = {
   title: "Workbench | Tool UI",
@@ -10,8 +8,8 @@ export const metadata: Metadata = {
 
 export default function WorkbenchLayout({ children }: { children: ReactNode }) {
   return (
-    <HeaderFrame>
-      <ContentLayout>{children}</ContentLayout>
-    </HeaderFrame>
+    <div className="flex h-screen w-screen overflow-hidden">
+      {children}
+    </div>
   );
 }

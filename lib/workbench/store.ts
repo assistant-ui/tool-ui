@@ -17,6 +17,16 @@ import { workbenchComponents } from "./component-registry";
 const defaultComponent = workbenchComponents[0];
 
 // ─────────────────────────────────────────────────────────────────────────────
+// Active JSON Tab Type
+// ─────────────────────────────────────────────────────────────────────────────
+
+export type ActiveJsonTab =
+  | "toolInput"
+  | "toolOutput"
+  | "widgetState"
+  | "toolResponseMetadata";
+
+// ─────────────────────────────────────────────────────────────────────────────
 // Store Interface
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -28,8 +38,8 @@ interface WorkbenchState {
   locale: string;
   deviceType: DeviceType;
   toolInput: Record<string, unknown>;
-  toolOutput: Record<string, unknown>;
-  widgetState: Record<string, unknown>;
+  toolOutput: Record<string, unknown> | null;
+  widgetState: Record<string, unknown> | null;
   maxHeight: number;
   toolResponseMetadata: Record<string, unknown> | null;
   safeAreaInsets: SafeAreaInsets;
@@ -40,6 +50,9 @@ interface WorkbenchState {
   // Config panel collapsed sections
   collapsedSections: Record<string, boolean>;
 
+  // Active JSON tab in the JSON panel
+  activeJsonTab: ActiveJsonTab;
+
   // Actions - Configuration
   setSelectedComponent: (id: string) => void;
   setDisplayMode: (mode: DisplayMode) => void;
@@ -47,8 +60,8 @@ interface WorkbenchState {
   setLocale: (locale: string) => void;
   setDeviceType: (type: DeviceType) => void;
   setToolInput: (input: Record<string, unknown>) => void;
-  setToolOutput: (output: Record<string, unknown>) => void;
-  setWidgetState: (state: Record<string, unknown>) => void;
+  setToolOutput: (output: Record<string, unknown> | null) => void;
+  setWidgetState: (state: Record<string, unknown> | null) => void;
   updateWidgetState: (state: Record<string, unknown>) => void;
   setMaxHeight: (height: number) => void;
   setToolResponseMetadata: (metadata: Record<string, unknown> | null) => void;
@@ -65,6 +78,7 @@ interface WorkbenchState {
 
   // Actions - UI
   toggleSection: (section: string) => void;
+  setActiveJsonTab: (tab: ActiveJsonTab) => void;
 
   // Computed
   getOpenAIGlobals: () => OpenAIGlobals;
@@ -82,20 +96,21 @@ export const useWorkbenchStore = create<WorkbenchState>((set, get) => ({
   locale: "en-US",
   deviceType: "desktop",
   toolInput: defaultComponent?.defaultProps ?? {},
-  toolOutput: {},
-  widgetState: {},
+  toolOutput: null,
+  widgetState: null,
   maxHeight: 800,
   toolResponseMetadata: null,
   safeAreaInsets: { top: 0, bottom: 0, left: 0, right: 0 },
   consoleLogs: [],
   collapsedSections: {},
+  activeJsonTab: "toolInput",
 
   // Configuration actions
   setSelectedComponent: (id) =>
     set(() => ({
       selectedComponent: id,
       // Reset widget state when switching components
-      widgetState: {},
+      widgetState: null,
     })),
 
   setDisplayMode: (mode) => set(() => ({ displayMode: mode })),
@@ -118,12 +133,13 @@ export const useWorkbenchStore = create<WorkbenchState>((set, get) => ({
 
   updateWidgetState: (state) =>
     set((prev) => ({
-      widgetState: { ...prev.widgetState, ...state },
+      widgetState: { ...(prev.widgetState ?? {}), ...state },
     })),
 
   setMaxHeight: (height) => set(() => ({ maxHeight: height })),
 
-  setToolResponseMetadata: (metadata) => set(() => ({ toolResponseMetadata: metadata })),
+  setToolResponseMetadata: (metadata) =>
+    set(() => ({ toolResponseMetadata: metadata })),
 
   setSafeAreaInsets: (insets) =>
     set((prev) => ({
@@ -154,6 +170,8 @@ export const useWorkbenchStore = create<WorkbenchState>((set, get) => ({
       },
     })),
 
+  setActiveJsonTab: (tab) => set(() => ({ activeJsonTab: tab })),
+
   // Computed - builds the OpenAI globals object for the iframe
   getOpenAIGlobals: () => {
     const state = get();
@@ -165,9 +183,9 @@ export const useWorkbenchStore = create<WorkbenchState>((set, get) => ({
       displayMode: state.displayMode,
       maxHeight: state.maxHeight,
       toolInput: state.toolInput,
-      toolOutput: Object.keys(state.toolOutput).length > 0 ? state.toolOutput : null,
+      toolOutput: state.toolOutput,
       toolResponseMetadata: state.toolResponseMetadata,
-      widgetState: Object.keys(state.widgetState).length > 0 ? state.widgetState : null,
+      widgetState: state.widgetState,
       userAgent: preset.userAgent,
       safeArea: {
         insets: state.safeAreaInsets,
@@ -183,20 +201,16 @@ export const useWorkbenchStore = create<WorkbenchState>((set, get) => ({
 export const useSelectedComponent = () =>
   useWorkbenchStore((s) => s.selectedComponent);
 
-export const useDisplayMode = () =>
-  useWorkbenchStore((s) => s.displayMode);
+export const useDisplayMode = () => useWorkbenchStore((s) => s.displayMode);
 
-export const useWorkbenchTheme = () =>
-  useWorkbenchStore((s) => s.theme);
+export const useWorkbenchTheme = () => useWorkbenchStore((s) => s.theme);
 
-export const useDeviceType = () =>
-  useWorkbenchStore((s) => s.deviceType);
+export const useDeviceType = () => useWorkbenchStore((s) => s.deviceType);
 
-export const useConsoleLogs = () =>
-  useWorkbenchStore((s) => s.consoleLogs);
+export const useConsoleLogs = () => useWorkbenchStore((s) => s.consoleLogs);
 
-export const useToolInput = () =>
-  useWorkbenchStore((s) => s.toolInput);
+export const useToolInput = () => useWorkbenchStore((s) => s.toolInput);
 
-export const useToolOutput = () =>
-  useWorkbenchStore((s) => s.toolOutput);
+export const useToolOutput = () => useWorkbenchStore((s) => s.toolOutput);
+
+export const useActiveJsonTab = () => useWorkbenchStore((s) => s.activeJsonTab);

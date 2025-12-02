@@ -1,17 +1,17 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import {
   useWorkbenchStore,
   useSelectedComponent,
   useDisplayMode,
   useWorkbenchTheme,
   useDeviceType,
-  useToolInput,
-  useToolOutput,
 } from "@/lib/workbench/store";
 import { LOCALE_OPTIONS } from "@/lib/workbench/types";
-import { workbenchComponents, getComponent } from "@/lib/workbench/component-registry";
+import {
+  workbenchComponents,
+  getComponent,
+} from "@/lib/workbench/component-registry";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
@@ -23,7 +23,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
+import {
+  Accordion,
+  AccordionItem,
+  AccordionTrigger,
+  AccordionContent,
+} from "@/components/ui/accordion";
 import {
   Monitor,
   Tablet,
@@ -32,93 +37,21 @@ import {
   Square,
   PictureInPicture2,
   Import,
-  ChevronDown,
-  ChevronRight,
+  Box,
+  Palette,
+  Settings,
+  PanelLeftClose,
+  PanelLeft,
 } from "lucide-react";
 
-interface CollapsibleSectionProps {
-  title: string;
-  children: React.ReactNode;
-  defaultOpen?: boolean;
-}
-
-function CollapsibleSection({ title, children, defaultOpen = true }: CollapsibleSectionProps) {
-  const [isOpen, setIsOpen] = useState(defaultOpen);
-
-  return (
-    <div className="border-b">
-      <button
-        type="button"
-        onClick={() => setIsOpen(!isOpen)}
-        className="hover:bg-muted/50 flex w-full items-center justify-between px-4 py-3 text-left text-sm font-medium transition-colors"
-      >
-        {title}
-        {isOpen ? (
-          <ChevronDown className="text-muted-foreground size-4" />
-        ) : (
-          <ChevronRight className="text-muted-foreground size-4" />
-        )}
-      </button>
-      {isOpen && <div className="space-y-4 px-4 pb-4">{children}</div>}
-    </div>
-  );
-}
-
-function JsonEditor({
-  label,
-  value,
-  onChange,
-}: {
-  label: string;
-  value: Record<string, unknown>;
-  onChange: (value: Record<string, unknown>) => void;
-}) {
-  const [text, setText] = useState(() => JSON.stringify(value, null, 2));
-  const [error, setError] = useState<string | null>(null);
-
-  // Sync text state when value prop changes (e.g., switching components)
-  useEffect(() => {
-    setText(JSON.stringify(value, null, 2));
-    setError(null);
-  }, [value]);
-
-  const handleChange = (newText: string) => {
-    setText(newText);
-    try {
-      const parsed = JSON.parse(newText);
-      setError(null);
-      onChange(parsed);
-    } catch {
-      setError("Invalid JSON");
-    }
-  };
-
-  return (
-    <div className="space-y-2">
-      <Label className="text-xs">{label}</Label>
-      <Textarea
-        value={text}
-        onChange={(e) => handleChange(e.target.value)}
-        className="font-mono text-xs"
-        rows={6}
-      />
-      {error && <span className="text-destructive text-xs">{error}</span>}
-    </div>
-  );
-}
-
-export function ConfigPanel() {
+export function ConfigPanel({ isCollapsed, onToggleCollapse }: { isCollapsed?: boolean; onToggleCollapse?: () => void }) {
   const selectedComponent = useSelectedComponent();
   const displayMode = useDisplayMode();
   const theme = useWorkbenchTheme();
   const deviceType = useDeviceType();
-  const toolInput = useToolInput();
-  const toolOutput = useToolOutput();
 
   const store = useWorkbenchStore();
-  const widgetState = store.widgetState;
   const maxHeight = store.maxHeight;
-  const toolResponseMetadata = store.toolResponseMetadata;
   const safeAreaInsets = store.safeAreaInsets;
 
   // Handle component selection with default props
@@ -126,23 +59,54 @@ export function ConfigPanel() {
     const component = getComponent(componentId);
     if (component) {
       store.setToolInput(component.defaultProps);
-      store.setToolOutput({});
+      store.setToolOutput(null);
     }
     store.setSelectedComponent(componentId);
   };
 
+  // Show collapsed state
+  if (isCollapsed) {
+    return (
+      <div className="flex h-full w-12 flex-col items-center py-3">
+        <button
+          onClick={onToggleCollapse}
+          className="text-muted-foreground hover:text-foreground hover:bg-muted rounded-md p-2 transition-colors"
+          aria-label="Expand sidebar"
+        >
+          <PanelLeft className="size-4" />
+        </button>
+      </div>
+    );
+  }
+
   return (
-    <div className="scrollbar-subtle flex h-full flex-col overflow-y-auto">
-      {/* Header */}
-      <div className="border-b px-4 py-3">
-        <h2 className="text-lg font-semibold">Workbench</h2>
-        <p className="text-muted-foreground text-xs">Test Tool UI components</p>
+    <div className="scrollbar-subtle flex h-full min-w-80 flex-col overflow-y-auto">
+      {/* Header with collapse button */}
+      <div className="flex items-center justify-end border-b px-2 py-2">
+        <button
+          onClick={onToggleCollapse}
+          className="text-muted-foreground hover:text-foreground hover:bg-muted rounded-md p-1.5 transition-colors"
+          aria-label="Collapse sidebar"
+        >
+          <PanelLeftClose className="size-4" />
+        </button>
       </div>
 
-      {/* Component Selection */}
-      <CollapsibleSection title="Component">
+      <Accordion type="multiple" defaultValue={["component", "display", "advanced"]}>
+        {/* Component Selection */}
+        <AccordionItem value="component">
+          <AccordionTrigger className="px-4">
+            <div className="flex items-center gap-2">
+              <Box className="size-4" />
+              <span>Component</span>
+            </div>
+          </AccordionTrigger>
+          <AccordionContent className="px-4">
         <div className="space-y-3">
-          <Select value={selectedComponent} onValueChange={handleComponentChange}>
+          <Select
+            value={selectedComponent}
+            onValueChange={handleComponentChange}
+          >
             <SelectTrigger>
               <SelectValue placeholder="Select component" />
             </SelectTrigger>
@@ -161,10 +125,18 @@ export function ConfigPanel() {
             Import (coming soon)
           </Button>
         </div>
-      </CollapsibleSection>
+          </AccordionContent>
+        </AccordionItem>
 
-      {/* Display Settings */}
-      <CollapsibleSection title="Display">
+        {/* Display Settings */}
+        <AccordionItem value="display">
+          <AccordionTrigger className="px-4">
+            <div className="flex items-center gap-2">
+              <Palette className="size-4" />
+              <span>Display</span>
+            </div>
+          </AccordionTrigger>
+          <AccordionContent className="px-4">
         <div className="space-y-4">
           {/* Display Mode */}
           <div className="space-y-2">
@@ -242,7 +214,9 @@ export function ConfigPanel() {
             <Switch
               id="theme-toggle"
               checked={theme === "dark"}
-              onCheckedChange={(checked) => store.setTheme(checked ? "dark" : "light")}
+              onCheckedChange={(checked) =>
+                store.setTheme(checked ? "dark" : "light")
+              }
             />
           </div>
 
@@ -263,40 +237,18 @@ export function ConfigPanel() {
             </Select>
           </div>
         </div>
-      </CollapsibleSection>
+          </AccordionContent>
+        </AccordionItem>
 
-      {/* Tool Data */}
-      <CollapsibleSection title="Tool Data">
-        <div className="space-y-4">
-          <JsonEditor
-            label="toolInput"
-            value={toolInput}
-            onChange={store.setToolInput}
-          />
-          <JsonEditor
-            label="toolOutput"
-            value={toolOutput}
-            onChange={store.setToolOutput}
-          />
-          <JsonEditor
-            label="widgetState"
-            value={widgetState}
-            onChange={store.setWidgetState}
-          />
-          <JsonEditor
-            label="toolResponseMetadata"
-            value={toolResponseMetadata ?? {}}
-            onChange={(value) =>
-              store.setToolResponseMetadata(
-                Object.keys(value).length > 0 ? value : null
-              )
-            }
-          />
-        </div>
-      </CollapsibleSection>
-
-      {/* Advanced Settings */}
-      <CollapsibleSection title="Advanced">
+        {/* Advanced Settings */}
+        <AccordionItem value="advanced">
+          <AccordionTrigger className="px-4">
+            <div className="flex items-center gap-2">
+              <Settings className="size-4" />
+              <span>Advanced</span>
+            </div>
+          </AccordionTrigger>
+          <AccordionContent className="px-4">
         <div className="space-y-4">
           {/* Max Height */}
           <div className="space-y-2">
@@ -308,7 +260,7 @@ export function ConfigPanel() {
               type="number"
               value={maxHeight}
               onChange={(e) => store.setMaxHeight(Number(e.target.value))}
-              className="bg-background border-input ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring flex h-9 w-full rounded-md border px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 disabled:cursor-not-allowed disabled:opacity-50"
+              className="bg-background border-input ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring flex h-9 w-full rounded-md border px-3 py-1 text-sm shadow-sm transition-colors focus-visible:ring-1 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
               min={100}
               max={2000}
             />
@@ -319,7 +271,10 @@ export function ConfigPanel() {
             <Label className="text-xs">Safe Area Insets</Label>
             <div className="grid grid-cols-2 gap-2">
               <div className="space-y-1">
-                <Label htmlFor="inset-top" className="text-xs text-muted-foreground">
+                <Label
+                  htmlFor="inset-top"
+                  className="text-muted-foreground text-xs"
+                >
                   Top
                 </Label>
                 <input
@@ -329,13 +284,16 @@ export function ConfigPanel() {
                   onChange={(e) =>
                     store.setSafeAreaInsets({ top: Number(e.target.value) })
                   }
-                  className="bg-background border-input ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring flex h-8 w-full rounded-md border px-2 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 disabled:cursor-not-allowed disabled:opacity-50"
+                  className="bg-background border-input ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring flex h-8 w-full rounded-md border px-2 py-1 text-sm shadow-sm transition-colors focus-visible:ring-1 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
                   min={0}
                   max={100}
                 />
               </div>
               <div className="space-y-1">
-                <Label htmlFor="inset-bottom" className="text-xs text-muted-foreground">
+                <Label
+                  htmlFor="inset-bottom"
+                  className="text-muted-foreground text-xs"
+                >
                   Bottom
                 </Label>
                 <input
@@ -345,13 +303,16 @@ export function ConfigPanel() {
                   onChange={(e) =>
                     store.setSafeAreaInsets({ bottom: Number(e.target.value) })
                   }
-                  className="bg-background border-input ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring flex h-8 w-full rounded-md border px-2 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 disabled:cursor-not-allowed disabled:opacity-50"
+                  className="bg-background border-input ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring flex h-8 w-full rounded-md border px-2 py-1 text-sm shadow-sm transition-colors focus-visible:ring-1 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
                   min={0}
                   max={100}
                 />
               </div>
               <div className="space-y-1">
-                <Label htmlFor="inset-left" className="text-xs text-muted-foreground">
+                <Label
+                  htmlFor="inset-left"
+                  className="text-muted-foreground text-xs"
+                >
                   Left
                 </Label>
                 <input
@@ -361,13 +322,16 @@ export function ConfigPanel() {
                   onChange={(e) =>
                     store.setSafeAreaInsets({ left: Number(e.target.value) })
                   }
-                  className="bg-background border-input ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring flex h-8 w-full rounded-md border px-2 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 disabled:cursor-not-allowed disabled:opacity-50"
+                  className="bg-background border-input ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring flex h-8 w-full rounded-md border px-2 py-1 text-sm shadow-sm transition-colors focus-visible:ring-1 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
                   min={0}
                   max={100}
                 />
               </div>
               <div className="space-y-1">
-                <Label htmlFor="inset-right" className="text-xs text-muted-foreground">
+                <Label
+                  htmlFor="inset-right"
+                  className="text-muted-foreground text-xs"
+                >
                   Right
                 </Label>
                 <input
@@ -377,7 +341,7 @@ export function ConfigPanel() {
                   onChange={(e) =>
                     store.setSafeAreaInsets({ right: Number(e.target.value) })
                   }
-                  className="bg-background border-input ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring flex h-8 w-full rounded-md border px-2 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 disabled:cursor-not-allowed disabled:opacity-50"
+                  className="bg-background border-input ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring flex h-8 w-full rounded-md border px-2 py-1 text-sm shadow-sm transition-colors focus-visible:ring-1 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
                   min={0}
                   max={100}
                 />
@@ -407,7 +371,9 @@ export function ConfigPanel() {
             </div>
           </div>
         </div>
-      </CollapsibleSection>
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
     </div>
   );
 }
