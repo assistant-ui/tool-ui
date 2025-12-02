@@ -1,18 +1,35 @@
 "use client";
 
-import { useMemo, Component, type ReactNode } from "react";
+import { useMemo, useEffect, useRef, Component, type ReactNode } from "react";
+import {
+  Panel,
+  PanelGroup,
+  PanelResizeHandle,
+  type ImperativePanelGroupHandle,
+} from "react-resizable-panels";
 import {
   useWorkbenchStore,
   useDisplayMode,
   useSelectedComponent,
   useToolInput,
+  useDeviceType,
 } from "@/lib/workbench/store";
 import { getComponent } from "@/lib/workbench/component-registry";
 import { OpenAIProvider } from "@/lib/workbench/openai-context";
-import type { DisplayMode } from "@/lib/workbench/types";
+import type { DeviceType } from "@/lib/workbench/types";
 import { cn } from "@/lib/ui/cn";
 import { X, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Device Viewport Sizes (percentage of available width)
+// ─────────────────────────────────────────────────────────────────────────────
+
+const DEVICE_VIEWPORT_SIZES: Record<DeviceType, number> = {
+  mobile: 40, // ~375px equivalent
+  tablet: 65, // ~768px equivalent
+  desktop: 90, // Full width
+};
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Error Boundary for Component Rendering
@@ -28,7 +45,10 @@ interface ErrorBoundaryState {
   error: Error | null;
 }
 
-class ComponentErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
+class ComponentErrorBoundary extends Component<
+  ErrorBoundaryProps,
+  ErrorBoundaryState
+> {
   constructor(props: ErrorBoundaryProps) {
     super(props);
     this.state = { hasError: false, error: null };
@@ -65,8 +85,9 @@ function ErrorDisplay({ error }: { error: Error | null }) {
       const parsed = JSON.parse(jsonPart);
       if (Array.isArray(parsed)) {
         formattedError = parsed
-          .map((e: { path?: string[]; message?: string }) =>
-            `${e.path?.join(".") ?? "root"}: ${e.message ?? "invalid"}`
+          .map(
+            (e: { path?: string[]; message?: string }) =>
+              `${e.path?.join(".") ?? "root"}: ${e.message ?? "invalid"}`,
           )
           .join("\n");
       }
@@ -84,7 +105,7 @@ function ErrorDisplay({ error }: { error: Error | null }) {
             <div className="text-sm font-medium text-amber-800 dark:text-amber-200">
               Invalid Props
             </div>
-            <pre className="whitespace-pre-wrap text-xs text-amber-700 dark:text-amber-300">
+            <pre className="text-xs whitespace-pre-wrap text-amber-700 dark:text-amber-300">
               {formattedError}
             </pre>
             <div className="text-xs text-amber-600 dark:text-amber-400">
@@ -96,15 +117,6 @@ function ErrorDisplay({ error }: { error: Error | null }) {
     </div>
   );
 }
-
-/**
- * Display mode styles for the component container
- */
-const displayModeStyles: Record<DisplayMode, string> = {
-  inline: "relative h-full w-full",
-  pip: "absolute bottom-4 right-4 h-64 w-96 rounded-lg shadow-2xl ring-1 ring-black/10 z-50",
-  fullscreen: "absolute inset-0 z-50",
-};
 
 /**
  * Fallback component when the selected component isn't found
@@ -134,7 +146,7 @@ function ComponentRenderer() {
   // Get the component from registry
   const entry = useMemo(
     () => getComponent(selectedComponent),
-    [selectedComponent]
+    [selectedComponent],
   );
 
   // Merge default props with current toolInput
@@ -143,7 +155,7 @@ function ComponentRenderer() {
       ...(entry?.defaultProps ?? {}),
       ...toolInput,
     }),
-    [entry?.defaultProps, toolInput]
+    [entry?.defaultProps, toolInput],
   );
 
   if (!entry) {
@@ -157,9 +169,47 @@ function ComponentRenderer() {
 
 export function CanvasFrame() {
   const displayMode = useDisplayMode();
+  const deviceType = useDeviceType();
   const theme = useWorkbenchStore((s) => s.theme);
   const toolInput = useToolInput();
   const setDisplayMode = useWorkbenchStore((s) => s.setDisplayMode);
+
+  // Ref for programmatic panel control
+  const panelGroupRef = useRef<ImperativePanelGroupHandle>(null);
+  const isSyncingLayout = useRef(false);
+
+  // Update panel layout when device type changes
+  useEffect(() => {
+    if (!panelGroupRef.current) return;
+
+    const targetSize = DEVICE_VIEWPORT_SIZES[deviceType];
+    const spacing = Math.max(0, (100 - targetSize) / 2);
+
+    isSyncingLayout.current = true;
+    panelGroupRef.current.setLayout([spacing, targetSize, spacing]);
+  }, [deviceType]);
+
+  // Keep panels symmetrical when user resizes manually
+  const handleLayout = (sizes: number[]) => {
+    if (isSyncingLayout.current) {
+      isSyncingLayout.current = false;
+      return;
+    }
+
+    // Maintain symmetry: if center panel changes, adjust spacers equally
+    if (panelGroupRef.current && sizes.length === 3) {
+      const centerSize = sizes[1];
+      const spacing = Math.max(0, (100 - centerSize) / 2);
+
+      if (
+        Math.abs(sizes[0] - spacing) > 0.5 ||
+        Math.abs(sizes[2] - spacing) > 0.5
+      ) {
+        isSyncingLayout.current = true;
+        panelGroupRef.current.setLayout([spacing, centerSize, spacing]);
+      }
+    }
+  };
 
   // Handle close for fullscreen/pip modes
   const handleClose = () => {
@@ -174,39 +224,65 @@ export function CanvasFrame() {
         aria-hidden="true"
       />
 
-      {/* Component container with display mode styling */}
-      <div
-        className={cn(
-          displayModeStyles[displayMode],
-          "overflow-auto",
-          theme === "dark" ? "dark bg-gray-900" : "bg-white"
-        )}
+      {/* Resizable panel layout for device simulation */}
+      <PanelGroup
+        ref={panelGroupRef}
+        direction="horizontal"
+        onLayout={handleLayout}
+        className="h-full py-4"
       >
-        {/* Close button for pip/fullscreen */}
-        {displayMode !== "inline" && (
-          <Button
-            variant="ghost"
-            size="icon"
-            className="absolute top-2 right-2 z-10 size-8"
-            onClick={handleClose}
-          >
-            <X className="size-4" />
-          </Button>
-        )}
+        {/* Left spacer panel */}
+        <Panel defaultSize={5} minSize={0} />
 
-        {/* Component wrapped in error boundary and OpenAI context */}
-        <div className="p-4">
-          <OpenAIProvider>
-            <ComponentErrorBoundary toolInput={toolInput}>
-              <ComponentRenderer />
-            </ComponentErrorBoundary>
-          </OpenAIProvider>
-        </div>
-      </div>
+        {/* Left resize handle */}
+        <PanelResizeHandle className="group relative w-4">
+          <div className="absolute top-1/2 left-1/2 h-12 w-1 -translate-x-1/2 -translate-y-1/2 rounded-full bg-gray-300 opacity-40 transition-all group-hover:bg-gray-400 group-hover:opacity-100 group-data-[resize-handle-active]:bg-gray-500 group-data-[resize-handle-active]:opacity-100 dark:bg-gray-600 dark:group-hover:bg-gray-500 dark:group-data-[resize-handle-active]:bg-gray-400" />
+        </PanelResizeHandle>
+
+        {/* Center content panel */}
+        <Panel defaultSize={90} minSize={30} maxSize={100}>
+          <div
+            className={cn(
+              "h-full overflow-auto rounded-xl border-2 border-dashed transition-all",
+              "border-border bg-transparent",
+              theme === "dark" && "dark",
+            )}
+          >
+            {/* Close button for pip/fullscreen */}
+            {displayMode !== "inline" && (
+              <Button
+                variant="ghost"
+                size="icon"
+                className="absolute top-2 right-2 z-10 size-8"
+                onClick={handleClose}
+              >
+                <X className="size-4" />
+              </Button>
+            )}
+
+            {/* Component wrapped in error boundary and OpenAI context */}
+            <div className="flex min-h-full items-center justify-center p-4">
+              <OpenAIProvider>
+                <ComponentErrorBoundary toolInput={toolInput}>
+                  <ComponentRenderer />
+                </ComponentErrorBoundary>
+              </OpenAIProvider>
+            </div>
+          </div>
+        </Panel>
+
+        {/* Right resize handle */}
+        <PanelResizeHandle className="group relative w-4">
+          <div className="absolute top-1/2 left-1/2 h-12 w-1 -translate-x-1/2 -translate-y-1/2 rounded-full bg-gray-300 opacity-40 transition-all group-hover:bg-gray-400 group-hover:opacity-100 group-data-[resize-handle-active]:bg-gray-500 group-data-[resize-handle-active]:opacity-100 dark:bg-gray-600 dark:group-hover:bg-gray-500 dark:group-data-[resize-handle-active]:bg-gray-400" />
+        </PanelResizeHandle>
+
+        {/* Right spacer panel */}
+        <Panel defaultSize={5} minSize={0} />
+      </PanelGroup>
 
       {/* Display mode indicator */}
       <div className="bg-background/80 text-muted-foreground absolute bottom-2 left-2 z-10 rounded px-2 py-1 text-xs backdrop-blur-sm">
-        {displayMode} • {theme}
+        {deviceType} • {theme}
       </div>
     </div>
   );
