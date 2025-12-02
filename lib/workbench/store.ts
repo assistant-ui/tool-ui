@@ -14,12 +14,7 @@ import type {
 import { DEVICE_PRESETS } from "./types";
 import { workbenchComponents } from "./component-registry";
 
-// Get defaults from the first component in registry
 const defaultComponent = workbenchComponents[0];
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Active JSON Tab Type
-// ─────────────────────────────────────────────────────────────────────────────
 
 export type ActiveJsonTab =
   | "toolInput"
@@ -27,12 +22,7 @@ export type ActiveJsonTab =
   | "widgetState"
   | "toolResponseMetadata";
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Store Interface
-// ─────────────────────────────────────────────────────────────────────────────
-
 interface WorkbenchState {
-  // Configuration
   selectedComponent: string;
   displayMode: DisplayMode;
   theme: Theme;
@@ -44,17 +34,10 @@ interface WorkbenchState {
   maxHeight: number;
   toolResponseMetadata: Record<string, unknown> | null;
   safeAreaInsets: SafeAreaInsets;
-
-  // Console logs
   consoleLogs: ConsoleEntry[];
-
-  // Config panel collapsed sections
   collapsedSections: Record<string, boolean>;
-
-  // Active JSON tab in the JSON panel
   activeJsonTab: ActiveJsonTab;
 
-  // Actions - Configuration
   setSelectedComponent: (id: string) => void;
   setDisplayMode: (mode: DisplayMode) => void;
   setTheme: (theme: Theme) => void;
@@ -67,8 +50,6 @@ interface WorkbenchState {
   setMaxHeight: (height: number) => void;
   setToolResponseMetadata: (metadata: Record<string, unknown> | null) => void;
   setSafeAreaInsets: (insets: Partial<SafeAreaInsets>) => void;
-
-  // Actions - Console
   addConsoleEntry: (entry: {
     type: ConsoleEntryType;
     method: string;
@@ -76,21 +57,49 @@ interface WorkbenchState {
     result?: unknown;
   }) => void;
   clearConsole: () => void;
-
-  // Actions - UI
   toggleSection: (section: string) => void;
   setActiveJsonTab: (tab: ActiveJsonTab) => void;
-
-  // Computed
   getOpenAIGlobals: () => OpenAIGlobals;
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Store Implementation
-// ─────────────────────────────────────────────────────────────────────────────
+/**
+ * Pure helper to build OpenAIGlobals object from workbench state.
+ * Used by both getOpenAIGlobals and useOpenAIGlobals to ensure consistency.
+ */
+function buildOpenAIGlobals(
+  state: Pick<
+    WorkbenchState,
+    | "theme"
+    | "locale"
+    | "displayMode"
+    | "maxHeight"
+    | "toolInput"
+    | "toolOutput"
+    | "toolResponseMetadata"
+    | "widgetState"
+    | "deviceType"
+    | "safeAreaInsets"
+  >,
+): OpenAIGlobals {
+  const preset = DEVICE_PRESETS[state.deviceType];
+
+  return {
+    theme: state.theme,
+    locale: state.locale,
+    displayMode: state.displayMode,
+    maxHeight: state.maxHeight,
+    toolInput: state.toolInput,
+    toolOutput: state.toolOutput,
+    toolResponseMetadata: state.toolResponseMetadata,
+    widgetState: state.widgetState,
+    userAgent: preset.userAgent,
+    safeArea: {
+      insets: state.safeAreaInsets,
+    },
+  };
+}
 
 export const useWorkbenchStore = create<WorkbenchState>((set, get) => ({
-  // Initial state - use defaults from first component in registry
   selectedComponent: defaultComponent?.id ?? "media-card",
   displayMode: "inline",
   theme: "light",
@@ -106,7 +115,6 @@ export const useWorkbenchStore = create<WorkbenchState>((set, get) => ({
   collapsedSections: {},
   activeJsonTab: "toolInput",
 
-  // Configuration actions
   setSelectedComponent: (id) =>
     set(() => {
       const entry = workbenchComponents.find((comp) => comp.id === id) ?? null;
@@ -154,7 +162,6 @@ export const useWorkbenchStore = create<WorkbenchState>((set, get) => ({
       safeAreaInsets: { ...prev.safeAreaInsets, ...insets },
     })),
 
-  // Console actions
   addConsoleEntry: (entry) =>
     set((state) => ({
       consoleLogs: [
@@ -169,7 +176,6 @@ export const useWorkbenchStore = create<WorkbenchState>((set, get) => ({
 
   clearConsole: () => set(() => ({ consoleLogs: [] })),
 
-  // UI actions
   toggleSection: (section) =>
     set((state) => ({
       collapsedSections: {
@@ -180,31 +186,11 @@ export const useWorkbenchStore = create<WorkbenchState>((set, get) => ({
 
   setActiveJsonTab: (tab) => set(() => ({ activeJsonTab: tab })),
 
-  // Computed - builds the OpenAI globals object for the iframe
   getOpenAIGlobals: () => {
     const state = get();
-    const preset = DEVICE_PRESETS[state.deviceType];
-
-    return {
-      theme: state.theme,
-      locale: state.locale,
-      displayMode: state.displayMode,
-      maxHeight: state.maxHeight,
-      toolInput: state.toolInput,
-      toolOutput: state.toolOutput,
-      toolResponseMetadata: state.toolResponseMetadata,
-      widgetState: state.widgetState,
-      userAgent: preset.userAgent,
-      safeArea: {
-        insets: state.safeAreaInsets,
-      },
-    };
+    return buildOpenAIGlobals(state);
   },
 }));
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Selector Hooks (for optimized re-renders)
-// ─────────────────────────────────────────────────────────────────────────────
 
 export const useSelectedComponent = () =>
   useWorkbenchStore((s) => s.selectedComponent);
@@ -224,7 +210,6 @@ export const useToolOutput = () => useWorkbenchStore((s) => s.toolOutput);
 export const useActiveJsonTab = () => useWorkbenchStore((s) => s.activeJsonTab);
 
 export const useOpenAIGlobals = (): OpenAIGlobals => {
-  // Select individual state values to ensure proper reactivity
   const theme = useWorkbenchStore((s) => s.theme);
   const locale = useWorkbenchStore((s) => s.locale);
   const displayMode = useWorkbenchStore((s) => s.displayMode);
@@ -236,10 +221,21 @@ export const useOpenAIGlobals = (): OpenAIGlobals => {
   const deviceType = useWorkbenchStore((s) => s.deviceType);
   const safeAreaInsets = useWorkbenchStore((s) => s.safeAreaInsets);
 
-  // Use useMemo to construct the globals object only when dependencies change
-  return useMemo(() => {
-    const preset = DEVICE_PRESETS[deviceType];
-    return {
+  return useMemo(
+    () =>
+      buildOpenAIGlobals({
+        theme,
+        locale,
+        displayMode,
+        maxHeight,
+        toolInput,
+        toolOutput,
+        toolResponseMetadata,
+        widgetState,
+        deviceType,
+        safeAreaInsets,
+      }),
+    [
       theme,
       locale,
       displayMode,
@@ -248,21 +244,8 @@ export const useOpenAIGlobals = (): OpenAIGlobals => {
       toolOutput,
       toolResponseMetadata,
       widgetState,
-      userAgent: preset.userAgent,
-      safeArea: {
-        insets: safeAreaInsets,
-      },
-    };
-  }, [
-    theme,
-    locale,
-    displayMode,
-    maxHeight,
-    toolInput,
-    toolOutput,
-    toolResponseMetadata,
-    widgetState,
-    deviceType,
-    safeAreaInsets,
-  ]);
+      deviceType,
+      safeAreaInsets,
+    ],
+  );
 };

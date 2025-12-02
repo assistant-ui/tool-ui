@@ -1,5 +1,6 @@
 "use client";
 
+import { useShallow } from "zustand/react/shallow";
 import {
   useWorkbenchStore,
   useActiveJsonTab,
@@ -19,18 +20,31 @@ import { RotateCcw } from "lucide-react";
 export function JsonPanel() {
   const activeJsonTab = useActiveJsonTab();
   const selectedComponent = useSelectedComponent();
-  const store = useWorkbenchStore();
 
-  const { toolInput, toolOutput, widgetState, toolResponseMetadata } = store;
   const {
+    toolInput,
+    toolOutput,
+    widgetState,
+    toolResponseMetadata,
     setToolInput,
     setToolOutput,
     setWidgetState,
     setToolResponseMetadata,
     setActiveJsonTab,
-  } = store;
+  } = useWorkbenchStore(
+    useShallow((s) => ({
+      toolInput: s.toolInput,
+      toolOutput: s.toolOutput,
+      widgetState: s.widgetState,
+      toolResponseMetadata: s.toolResponseMetadata,
+      setToolInput: s.setToolInput,
+      setToolOutput: s.setToolOutput,
+      setWidgetState: s.setWidgetState,
+      setToolResponseMetadata: s.setToolResponseMetadata,
+      setActiveJsonTab: s.setActiveJsonTab,
+    })),
+  );
 
-  // Get the active value and setter based on current tab
   const getActiveData = (): Record<string, unknown> => {
     switch (activeJsonTab) {
       case "toolInput":
@@ -94,7 +108,6 @@ export function JsonPanel() {
 
   return (
     <div className="bg-background flex h-full flex-col">
-      {/* Header with tabs and reset button */}
       <div className="flex shrink-0 items-center justify-between border-b px-3 py-2">
         <Tabs
           value={activeJsonTab}
@@ -119,7 +132,6 @@ export function JsonPanel() {
         </Button>
       </div>
 
-      {/* JSON Editor */}
       <div className="scrollbar-subtle flex-1 overflow-y-auto p-4">
         <JsonEditor
           key={activeJsonTab}

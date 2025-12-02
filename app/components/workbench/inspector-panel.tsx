@@ -17,7 +17,6 @@ export function InspectorPanel() {
 
   return (
     <div className="bg-background flex h-full flex-col">
-      {/* Tab header */}
       <div className="shrink-0 border-b px-3 py-2">
         <Tabs
           value={activeTab}
@@ -36,7 +35,6 @@ export function InspectorPanel() {
         </Tabs>
       </div>
 
-      {/* Tab content */}
       <div className="flex-1 overflow-hidden">
         {activeTab === "console" && <EventConsole />}
         {activeTab === "globals" && <GlobalsView globals={globals} />}

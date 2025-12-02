@@ -1,5 +1,6 @@
 "use client";
 
+import { useShallow } from "zustand/react/shallow";
 import {
   useWorkbenchStore,
   useSelectedComponent,
@@ -54,24 +55,55 @@ export function ConfigPanel({ isCollapsed, onToggleCollapse }: { isCollapsed?: b
   const displayMode = useDisplayMode();
   const theme = useWorkbenchTheme();
   const deviceType = useDeviceType();
-
-  const store = useWorkbenchStore();
-  const maxHeight = store.maxHeight;
-  const safeAreaInsets = store.safeAreaInsets;
   const activeJsonTab = useActiveJsonTab();
 
-  // Get JSON blob state for Tool Data section
-  const toolInput = store.toolInput;
-  const toolOutput = store.toolOutput;
-  const widgetState = store.widgetState;
-  const toolResponseMetadata = store.toolResponseMetadata;
+  const {
+    locale,
+    maxHeight,
+    safeAreaInsets,
+    toolInput,
+    toolOutput,
+    widgetState,
+    toolResponseMetadata,
+    setSelectedComponent,
+    setDisplayMode,
+    setDeviceType,
+    setTheme,
+    setLocale,
+    setMaxHeight,
+    setSafeAreaInsets,
+    setActiveJsonTab,
+  } = useWorkbenchStore(
+    useShallow((s) => ({
+      locale: s.locale,
+      maxHeight: s.maxHeight,
+      safeAreaInsets: s.safeAreaInsets,
+      toolInput: s.toolInput,
+      toolOutput: s.toolOutput,
+      widgetState: s.widgetState,
+      toolResponseMetadata: s.toolResponseMetadata,
+      setSelectedComponent: s.setSelectedComponent,
+      setDisplayMode: s.setDisplayMode,
+      setDeviceType: s.setDeviceType,
+      setTheme: s.setTheme,
+      setLocale: s.setLocale,
+      setMaxHeight: s.setMaxHeight,
+      setSafeAreaInsets: s.setSafeAreaInsets,
+      setActiveJsonTab: s.setActiveJsonTab,
+    })),
+  );
 
-  // Handle component selection (resets are centralized in store)
   const handleComponentChange = (componentId: string) => {
-    store.setSelectedComponent(componentId);
+    setSelectedComponent(componentId);
   };
 
-  // Helper to summarize JSON blobs
+  const clamp = (value: number, min: number, max: number) => {
+    if (!Number.isFinite(value)) return min;
+    if (value < min) return min;
+    if (value > max) return max;
+    return value;
+  };
+
   const summarize = (obj: Record<string, unknown> | null | undefined): string => {
     if (!obj) return "empty";
     const keys = Object.keys(obj);
@@ -80,7 +112,6 @@ export function ConfigPanel({ isCollapsed, onToggleCollapse }: { isCollapsed?: b
     return `${keys.length} key${keys.length === 1 ? "" : "s"}${preview ? ` · ${preview}` : ""}`;
   };
 
-  // Show collapsed state
   if (isCollapsed) {
     return (
       <div className="flex h-full w-12 flex-col items-center py-3">
@@ -97,7 +128,6 @@ export function ConfigPanel({ isCollapsed, onToggleCollapse }: { isCollapsed?: b
 
   return (
     <div className="scrollbar-subtle flex h-full min-w-80 flex-col overflow-y-auto">
-      {/* Header with collapse button */}
       <div className="flex items-center justify-end border-b px-2 py-2">
         <button
           onClick={onToggleCollapse}
@@ -109,7 +139,6 @@ export function ConfigPanel({ isCollapsed, onToggleCollapse }: { isCollapsed?: b
       </div>
 
       <Accordion type="multiple" defaultValue={["component", "display", "tool-data", "advanced"]}>
-        {/* Component Selection */}
         <AccordionItem value="component">
           <AccordionTrigger className="px-4">
             <div className="flex items-center gap-2">
@@ -144,7 +173,6 @@ export function ConfigPanel({ isCollapsed, onToggleCollapse }: { isCollapsed?: b
           </AccordionContent>
         </AccordionItem>
 
-        {/* Display Settings */}
         <AccordionItem value="display">
           <AccordionTrigger className="px-4">
             <div className="flex items-center gap-2">
@@ -154,7 +182,6 @@ export function ConfigPanel({ isCollapsed, onToggleCollapse }: { isCollapsed?: b
           </AccordionTrigger>
           <AccordionContent className="px-4">
         <div className="space-y-4">
-          {/* Display Mode */}
           <div className="space-y-2">
             <Label className="text-xs">Display Mode</Label>
             <ButtonGroup className="w-full">
@@ -162,7 +189,7 @@ export function ConfigPanel({ isCollapsed, onToggleCollapse }: { isCollapsed?: b
                 variant={displayMode === "inline" ? "secondary" : "outline"}
                 size="sm"
                 className="flex-1 gap-1"
-                onClick={() => store.setDisplayMode("inline")}
+                onClick={() => setDisplayMode("inline")}
               >
                 <Square className="size-3" />
                 Inline
@@ -171,7 +198,7 @@ export function ConfigPanel({ isCollapsed, onToggleCollapse }: { isCollapsed?: b
                 variant={displayMode === "pip" ? "secondary" : "outline"}
                 size="sm"
                 className="flex-1 gap-1"
-                onClick={() => store.setDisplayMode("pip")}
+                onClick={() => setDisplayMode("pip")}
               >
                 <PictureInPicture2 className="size-3" />
                 PiP
@@ -180,7 +207,7 @@ export function ConfigPanel({ isCollapsed, onToggleCollapse }: { isCollapsed?: b
                 variant={displayMode === "fullscreen" ? "secondary" : "outline"}
                 size="sm"
                 className="flex-1 gap-1"
-                onClick={() => store.setDisplayMode("fullscreen")}
+                onClick={() => setDisplayMode("fullscreen")}
               >
                 <Maximize2 className="size-3" />
                 Full
@@ -188,7 +215,6 @@ export function ConfigPanel({ isCollapsed, onToggleCollapse }: { isCollapsed?: b
             </ButtonGroup>
           </div>
 
-          {/* Device Type */}
           <div className="space-y-2">
             <Label className="text-xs">Device</Label>
             <ButtonGroup className="w-full">
@@ -196,7 +222,7 @@ export function ConfigPanel({ isCollapsed, onToggleCollapse }: { isCollapsed?: b
                 variant={deviceType === "desktop" ? "secondary" : "outline"}
                 size="sm"
                 className="flex-1 gap-1"
-                onClick={() => store.setDeviceType("desktop")}
+                onClick={() => setDeviceType("desktop")}
               >
                 <Monitor className="size-3" />
                 Desktop
@@ -205,7 +231,7 @@ export function ConfigPanel({ isCollapsed, onToggleCollapse }: { isCollapsed?: b
                 variant={deviceType === "tablet" ? "secondary" : "outline"}
                 size="sm"
                 className="flex-1 gap-1"
-                onClick={() => store.setDeviceType("tablet")}
+                onClick={() => setDeviceType("tablet")}
               >
                 <Tablet className="size-3" />
                 Tablet
@@ -214,7 +240,7 @@ export function ConfigPanel({ isCollapsed, onToggleCollapse }: { isCollapsed?: b
                 variant={deviceType === "mobile" ? "secondary" : "outline"}
                 size="sm"
                 className="flex-1 gap-1"
-                onClick={() => store.setDeviceType("mobile")}
+                onClick={() => setDeviceType("mobile")}
               >
                 <Smartphone className="size-3" />
                 Mobile
@@ -222,7 +248,6 @@ export function ConfigPanel({ isCollapsed, onToggleCollapse }: { isCollapsed?: b
             </ButtonGroup>
           </div>
 
-          {/* Theme */}
           <div className="flex items-center justify-between">
             <Label htmlFor="theme-toggle" className="text-xs">
               Dark Mode
@@ -231,15 +256,14 @@ export function ConfigPanel({ isCollapsed, onToggleCollapse }: { isCollapsed?: b
               id="theme-toggle"
               checked={theme === "dark"}
               onCheckedChange={(checked) =>
-                store.setTheme(checked ? "dark" : "light")
+                setTheme(checked ? "dark" : "light")
               }
             />
           </div>
 
-          {/* Locale */}
           <div className="space-y-2">
             <Label className="text-xs">Locale</Label>
-            <Select value={store.locale} onValueChange={store.setLocale}>
+            <Select value={locale} onValueChange={setLocale}>
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
@@ -256,7 +280,6 @@ export function ConfigPanel({ isCollapsed, onToggleCollapse }: { isCollapsed?: b
           </AccordionContent>
         </AccordionItem>
 
-        {/* Tool Data */}
         <AccordionItem value="tool-data">
           <AccordionTrigger className="px-4">
             <div className="flex items-center gap-2">
@@ -266,7 +289,6 @@ export function ConfigPanel({ isCollapsed, onToggleCollapse }: { isCollapsed?: b
           </AccordionTrigger>
           <AccordionContent className="px-4">
             <div className="space-y-3">
-              {/* Tool Input */}
               <div className={`flex items-center justify-between rounded-md border p-2 transition-colors ${
                 activeJsonTab === "toolInput" ? "bg-muted" : ""
               }`}>
@@ -280,13 +302,12 @@ export function ConfigPanel({ isCollapsed, onToggleCollapse }: { isCollapsed?: b
                   variant="outline"
                   size="sm"
                   className="h-7 px-2 text-xs"
-                  onClick={() => store.setActiveJsonTab("toolInput")}
+                  onClick={() => setActiveJsonTab("toolInput")}
                 >
                   Edit
                 </Button>
               </div>
 
-              {/* Tool Output */}
               <div className={`flex items-center justify-between rounded-md border p-2 transition-colors ${
                 activeJsonTab === "toolOutput" ? "bg-muted" : ""
               }`}>
@@ -300,13 +321,12 @@ export function ConfigPanel({ isCollapsed, onToggleCollapse }: { isCollapsed?: b
                   variant="outline"
                   size="sm"
                   className="h-7 px-2 text-xs"
-                  onClick={() => store.setActiveJsonTab("toolOutput")}
+                  onClick={() => setActiveJsonTab("toolOutput")}
                 >
                   Edit
                 </Button>
               </div>
 
-              {/* Widget State */}
               <div className={`flex items-center justify-between rounded-md border p-2 transition-colors ${
                 activeJsonTab === "widgetState" ? "bg-muted" : ""
               }`}>
@@ -320,13 +340,12 @@ export function ConfigPanel({ isCollapsed, onToggleCollapse }: { isCollapsed?: b
                   variant="outline"
                   size="sm"
                   className="h-7 px-2 text-xs"
-                  onClick={() => store.setActiveJsonTab("widgetState")}
+                  onClick={() => setActiveJsonTab("widgetState")}
                 >
                   Edit
                 </Button>
               </div>
 
-              {/* Metadata */}
               <div className={`flex items-center justify-between rounded-md border p-2 transition-colors ${
                 activeJsonTab === "toolResponseMetadata" ? "bg-muted" : ""
               }`}>
@@ -340,7 +359,7 @@ export function ConfigPanel({ isCollapsed, onToggleCollapse }: { isCollapsed?: b
                   variant="outline"
                   size="sm"
                   className="h-7 px-2 text-xs"
-                  onClick={() => store.setActiveJsonTab("toolResponseMetadata")}
+                  onClick={() => setActiveJsonTab("toolResponseMetadata")}
                 >
                   Edit
                 </Button>
@@ -349,7 +368,6 @@ export function ConfigPanel({ isCollapsed, onToggleCollapse }: { isCollapsed?: b
           </AccordionContent>
         </AccordionItem>
 
-        {/* Advanced Settings */}
         <AccordionItem value="advanced">
           <AccordionTrigger className="px-4">
             <div className="flex items-center gap-2">
@@ -359,7 +377,6 @@ export function ConfigPanel({ isCollapsed, onToggleCollapse }: { isCollapsed?: b
           </AccordionTrigger>
           <AccordionContent className="px-4">
         <div className="space-y-4">
-          {/* Max Height */}
           <div className="space-y-2">
             <Label htmlFor="max-height" className="text-xs">
               maxHeight (px)
@@ -368,18 +385,20 @@ export function ConfigPanel({ isCollapsed, onToggleCollapse }: { isCollapsed?: b
               id="max-height"
               type="number"
               value={maxHeight}
-              onChange={(e) => store.setMaxHeight(Number(e.target.value))}
+              onChange={(e) => {
+                const raw = Number(e.target.value);
+                const clamped = clamp(raw, 100, 2000);
+                setMaxHeight(clamped);
+              }}
               className="bg-background border-input ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring flex h-9 w-full rounded-md border px-3 py-1 text-sm shadow-sm transition-colors focus-visible:ring-1 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
               min={100}
               max={2000}
             />
           </div>
 
-          {/* Safe Area Insets */}
           <div className="space-y-2">
             <Label className="text-xs">Safe Area Insets</Label>
             <div className="grid grid-cols-2 gap-2">
-              {/* Top Row: Left, Top */}
               <InputGroup>
                 <InputGroupAddon>
                   <InputGroupText>←</InputGroupText>
@@ -388,9 +407,11 @@ export function ConfigPanel({ isCollapsed, onToggleCollapse }: { isCollapsed?: b
                   id="inset-left"
                   type="number"
                   value={safeAreaInsets.left}
-                  onChange={(e) =>
-                    store.setSafeAreaInsets({ left: Number(e.target.value) })
-                  }
+                  onChange={(e) => {
+                    const raw = Number(e.target.value);
+                    const clamped = clamp(raw, 0, 100);
+                    setSafeAreaInsets({ left: clamped });
+                  }}
                   min={0}
                   max={100}
                   aria-label="Left inset"
@@ -405,16 +426,17 @@ export function ConfigPanel({ isCollapsed, onToggleCollapse }: { isCollapsed?: b
                   id="inset-top"
                   type="number"
                   value={safeAreaInsets.top}
-                  onChange={(e) =>
-                    store.setSafeAreaInsets({ top: Number(e.target.value) })
-                  }
+                  onChange={(e) => {
+                    const raw = Number(e.target.value);
+                    const clamped = clamp(raw, 0, 100);
+                    setSafeAreaInsets({ top: clamped });
+                  }}
                   min={0}
                   max={100}
                   aria-label="Top inset"
                 />
               </InputGroup>
 
-              {/* Bottom Row: Right, Bottom */}
               <InputGroup>
                 <InputGroupAddon>
                   <InputGroupText>→</InputGroupText>
@@ -423,9 +445,11 @@ export function ConfigPanel({ isCollapsed, onToggleCollapse }: { isCollapsed?: b
                   id="inset-right"
                   type="number"
                   value={safeAreaInsets.right}
-                  onChange={(e) =>
-                    store.setSafeAreaInsets({ right: Number(e.target.value) })
-                  }
+                  onChange={(e) => {
+                    const raw = Number(e.target.value);
+                    const clamped = clamp(raw, 0, 100);
+                    setSafeAreaInsets({ right: clamped });
+                  }}
                   min={0}
                   max={100}
                   aria-label="Right inset"
@@ -440,9 +464,11 @@ export function ConfigPanel({ isCollapsed, onToggleCollapse }: { isCollapsed?: b
                   id="inset-bottom"
                   type="number"
                   value={safeAreaInsets.bottom}
-                  onChange={(e) =>
-                    store.setSafeAreaInsets({ bottom: Number(e.target.value) })
-                  }
+                  onChange={(e) => {
+                    const raw = Number(e.target.value);
+                    const clamped = clamp(raw, 0, 100);
+                    setSafeAreaInsets({ bottom: clamped });
+                  }}
                   min={0}
                   max={100}
                   aria-label="Bottom inset"
