@@ -107,32 +107,36 @@ export function JsonPanel() {
   };
 
   return (
-    <div className="bg-background flex h-full flex-col">
-      <div className="flex shrink-0 items-center justify-between border-b px-3 py-2">
-        <Tabs
-          value={activeJsonTab}
-          onValueChange={(v) => setActiveJsonTab(v as ActiveJsonTab)}
-        >
-          <TabsList>
-            <TabsTrigger value="toolInput">Tool Input</TabsTrigger>
-            <TabsTrigger value="toolOutput">Output</TabsTrigger>
-            <TabsTrigger value="widgetState">State</TabsTrigger>
-            <TabsTrigger value="toolResponseMetadata">Metadata</TabsTrigger>
-          </TabsList>
-        </Tabs>
+    <div className="bg-background relative isolate h-full">
+      <div className="h-full overflow-y-auto bg-white dark:bg-[#0d1117]">
+        <div
+          className="pointer-events-none absolute top-0 z-10 h-20 w-full bg-linear-to-b from-white via-white to-transparent dark:from-[#0d1117] dark:via-[#0d1117]"
+          aria-hidden="true"
+        ></div>
+        <div className="sticky top-0 z-20 flex items-center justify-between px-4 py-3">
+          <Tabs
+            value={activeJsonTab}
+            onValueChange={(v) => setActiveJsonTab(v as ActiveJsonTab)}
+          >
+            <TabsList>
+              <TabsTrigger value="toolInput">Tool Input</TabsTrigger>
+              <TabsTrigger value="toolOutput">Output</TabsTrigger>
+              <TabsTrigger value="widgetState">State</TabsTrigger>
+              <TabsTrigger value="toolResponseMetadata">Metadata</TabsTrigger>
+            </TabsList>
+          </Tabs>
 
-        <Button
-          variant="ghost"
-          size="sm"
-          className="h-7 gap-1 px-2 text-xs"
-          onClick={handleReset}
-        >
-          <RotateCcw className="size-3" />
-          Reset
-        </Button>
-      </div>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-7 gap-1 px-2 text-xs"
+            onClick={handleReset}
+          >
+            <RotateCcw className="size-3" />
+            Reset
+          </Button>
+        </div>
 
-      <div className="scrollbar-subtle flex-1 overflow-y-auto p-4">
         <JsonEditor
           key={activeJsonTab}
           label={tabLabels[activeJsonTab]}

@@ -1,8 +1,11 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+import { useState, useEffect, useRef, useMemo } from "react";
+import CodeMirror from "@uiw/react-codemirror";
+import { json } from "@codemirror/lang-json";
+import { EditorView } from "@codemirror/view";
+import { githubLight, githubDark } from "@uiw/codemirror-theme-github";
+import { useTheme } from "next-themes";
 
 interface JsonEditorProps {
   label: string;
@@ -10,34 +13,60 @@ interface JsonEditorProps {
   onChange: (value: Record<string, unknown>) => void;
 }
 
+const customEditorStyle = EditorView.theme(
+  {
+    "&": {
+      fontSize: "14px",
+      fontFamily: "ui-monospace, monospace",
+    },
+    ".cm-content": {
+      padding: "16px",
+    },
+    ".cm-gutters": {
+      backgroundColor: "transparent",
+    },
+    ".cm-line": {
+      padding: "0",
+    },
+    "&.cm-focused": {
+      outline: "none",
+    },
+  },
+  { dark: false },
+);
+
 /**
- * Standalone JSON editor component with live validation.
- * Updates internal text state on value changes and calls onChange only when valid JSON is entered.
- * Empty/null values show as empty textarea with "null" placeholder.
+ * JSON editor with CodeMirror syntax highlighting.
+ * Provides proper editing experience with built-in cursor management.
  */
-export function JsonEditor({ label, value, onChange }: JsonEditorProps) {
+export function JsonEditor({
+  label: _label,
+  value,
+  onChange,
+}: JsonEditorProps) {
   const [text, setText] = useState(() => {
-    // Empty string for empty objects (null state) - only on initial render
     if (Object.keys(value).length === 0) {
       return "";
     }
     return JSON.stringify(value, null, 2);
   });
   const [error, setError] = useState<string | null>(null);
-
-  // Track the last value we sent via onChange to prevent circular updates
   const lastSentValueRef = useRef<string>("");
+  const { theme } = useTheme();
+
+  const extensions = useMemo(
+    () => [json(), EditorView.lineWrapping, customEditorStyle],
+    [],
+  );
 
   // Sync text state when value prop changes (e.g., switching components/tabs)
   useEffect(() => {
     const newValueStr = JSON.stringify(value);
 
-    // Don't update if this is the same value we just sent via onChange
     if (newValueStr === lastSentValueRef.current) {
       return;
     }
 
-    // Update text to match the new value
     if (Object.keys(value).length === 0) {
       setText("");
     } else {
@@ -49,7 +78,6 @@ export function JsonEditor({ label, value, onChange }: JsonEditorProps) {
   const handleChange = (newText: string) => {
     setText(newText);
 
-    // Treat empty string or whitespace-only as null
     const trimmed = newText.trim();
     if (trimmed === "" || trimmed === "null") {
       setError(null);
@@ -70,15 +98,26 @@ export function JsonEditor({ label, value, onChange }: JsonEditorProps) {
   };
 
   return (
-    <div className="flex h-full flex-col space-y-2">
-      <Label className="text-xs">{label}</Label>
-      <Textarea
+    <div className="relative bg-white dark:bg-[#0d1117]">
+      <CodeMirror
         value={text}
-        onChange={(e) => handleChange(e.target.value)}
-        className="flex-1 font-mono text-xs"
-        placeholder="null"
+        height="100%"
+        extensions={extensions}
+        onChange={handleChange}
+        theme={theme === "dark" ? githubDark : githubLight}
+        basicSetup={{
+          lineNumbers: true,
+          foldGutter: false,
+          highlightActiveLineGutter: false,
+          highlightActiveLine: false,
+        }}
+        className="h-full [&_.cm-editor]:h-full [&_.cm-scroller]:h-full"
       />
-      {error && <span className="text-destructive text-xs">{error}</span>}
+      {error && (
+        <div className="text-destructive bg-background/90 pointer-events-none absolute bottom-2 left-2 z-20 rounded px-2 py-1 text-xs">
+          {error}
+        </div>
+      )}
     </div>
   );
 }
