@@ -62,10 +62,6 @@ interface WorkbenchState {
   getOpenAIGlobals: () => OpenAIGlobals;
 }
 
-/**
- * Pure helper to build OpenAIGlobals object from workbench state.
- * Used by both getOpenAIGlobals and useOpenAIGlobals to ensure consistency.
- */
 function buildOpenAIGlobals(
   state: Pick<
     WorkbenchState,
@@ -114,7 +110,6 @@ export const useWorkbenchStore = create<WorkbenchState>((set, get) => ({
   consoleLogs: [],
   collapsedSections: {},
   activeJsonTab: "toolInput",
-
   setSelectedComponent: (id) =>
     set(() => {
       const entry = workbenchComponents.find((comp) => comp.id === id) ?? null;
@@ -128,40 +123,28 @@ export const useWorkbenchStore = create<WorkbenchState>((set, get) => ({
         activeJsonTab: "toolInput",
       };
     }),
-
   setDisplayMode: (mode) => set(() => ({ displayMode: mode })),
-
   setTheme: (theme) => set(() => ({ theme })),
-
   setLocale: (locale) => set(() => ({ locale })),
-
   setDeviceType: (type) => {
     const preset = DEVICE_PRESETS[type];
     const maxHeight = typeof preset.height === "number" ? preset.height : 800;
     set(() => ({ deviceType: type, maxHeight }));
   },
-
   setToolInput: (input) => set(() => ({ toolInput: input })),
-
   setToolOutput: (output) => set(() => ({ toolOutput: output })),
-
   setWidgetState: (state) => set(() => ({ widgetState: state })),
-
   updateWidgetState: (state) =>
     set((prev) => ({
       widgetState: { ...(prev.widgetState ?? {}), ...state },
     })),
-
   setMaxHeight: (height) => set(() => ({ maxHeight: height })),
-
   setToolResponseMetadata: (metadata) =>
     set(() => ({ toolResponseMetadata: metadata })),
-
   setSafeAreaInsets: (insets) =>
     set((prev) => ({
       safeAreaInsets: { ...prev.safeAreaInsets, ...insets },
     })),
-
   addConsoleEntry: (entry) =>
     set((state) => ({
       consoleLogs: [
@@ -173,9 +156,7 @@ export const useWorkbenchStore = create<WorkbenchState>((set, get) => ({
         },
       ],
     })),
-
   clearConsole: () => set(() => ({ consoleLogs: [] })),
-
   toggleSection: (section) =>
     set((state) => ({
       collapsedSections: {
@@ -183,9 +164,7 @@ export const useWorkbenchStore = create<WorkbenchState>((set, get) => ({
         [section]: !state.collapsedSections[section],
       },
     })),
-
   setActiveJsonTab: (tab) => set(() => ({ activeJsonTab: tab })),
-
   getOpenAIGlobals: () => {
     const state = get();
     return buildOpenAIGlobals(state);
@@ -194,19 +173,12 @@ export const useWorkbenchStore = create<WorkbenchState>((set, get) => ({
 
 export const useSelectedComponent = () =>
   useWorkbenchStore((s) => s.selectedComponent);
-
 export const useDisplayMode = () => useWorkbenchStore((s) => s.displayMode);
-
 export const useWorkbenchTheme = () => useWorkbenchStore((s) => s.theme);
-
 export const useDeviceType = () => useWorkbenchStore((s) => s.deviceType);
-
 export const useConsoleLogs = () => useWorkbenchStore((s) => s.consoleLogs);
-
 export const useToolInput = () => useWorkbenchStore((s) => s.toolInput);
-
 export const useToolOutput = () => useWorkbenchStore((s) => s.toolOutput);
-
 export const useActiveJsonTab = () => useWorkbenchStore((s) => s.activeJsonTab);
 
 export const useOpenAIGlobals = (): OpenAIGlobals => {
