@@ -69,7 +69,7 @@ export function ActionButtons({
         // Mobile: full-width stacked buttons (iOS-like), reversed for thumb reach
         "flex flex-col-reverse gap-3",
         // Desktop: inline row reversed so primary/default ends up on right
-        "@sm/actions:flex-row-reverse @sm/actions:gap-2 @sm/actions:flex-wrap @sm/actions:items-center",
+        "@sm/actions:flex-row-reverse @sm/actions:flex-wrap @sm/actions:items-center @sm/actions:gap-2",
         align === "left" && "@sm/actions:justify-end",
         align === "center" && "@sm/actions:justify-center",
         align === "right" && "@sm/actions:justify-start",
@@ -81,8 +81,7 @@ export function ActionButtons({
         const variant = action.variant || "default";
 
         // Add top margin to first destructive action on mobile for visual separation
-        const isFirstDestructive =
-          hasDestructive && index === destructiveIndex;
+        const isFirstDestructive = hasDestructive && index === destructiveIndex;
 
         return (
           <Button
@@ -94,6 +93,7 @@ export function ActionButtons({
             className={cn(
               "rounded-full",
               "justify-center",
+              "min-w-24",
               // Mobile: full width, larger touch target, min 44px height
               "min-h-11 w-full text-base",
               // Desktop: fit content, smaller
