@@ -1,6 +1,7 @@
 "use client";
 
 import { create } from "zustand";
+import { useMemo } from "react";
 import type {
   DisplayMode,
   Theme,
@@ -107,11 +108,18 @@ export const useWorkbenchStore = create<WorkbenchState>((set, get) => ({
 
   // Configuration actions
   setSelectedComponent: (id) =>
-    set(() => ({
-      selectedComponent: id,
-      // Reset widget state when switching components
-      widgetState: null,
-    })),
+    set(() => {
+      const entry = workbenchComponents.find((comp) => comp.id === id) ?? null;
+
+      return {
+        selectedComponent: id,
+        toolInput: entry?.defaultProps ?? {},
+        toolOutput: null,
+        widgetState: null,
+        toolResponseMetadata: null,
+        activeJsonTab: "toolInput",
+      };
+    }),
 
   setDisplayMode: (mode) => set(() => ({ displayMode: mode })),
 
@@ -214,3 +222,47 @@ export const useToolInput = () => useWorkbenchStore((s) => s.toolInput);
 export const useToolOutput = () => useWorkbenchStore((s) => s.toolOutput);
 
 export const useActiveJsonTab = () => useWorkbenchStore((s) => s.activeJsonTab);
+
+export const useOpenAIGlobals = (): OpenAIGlobals => {
+  // Select individual state values to ensure proper reactivity
+  const theme = useWorkbenchStore((s) => s.theme);
+  const locale = useWorkbenchStore((s) => s.locale);
+  const displayMode = useWorkbenchStore((s) => s.displayMode);
+  const maxHeight = useWorkbenchStore((s) => s.maxHeight);
+  const toolInput = useWorkbenchStore((s) => s.toolInput);
+  const toolOutput = useWorkbenchStore((s) => s.toolOutput);
+  const toolResponseMetadata = useWorkbenchStore((s) => s.toolResponseMetadata);
+  const widgetState = useWorkbenchStore((s) => s.widgetState);
+  const deviceType = useWorkbenchStore((s) => s.deviceType);
+  const safeAreaInsets = useWorkbenchStore((s) => s.safeAreaInsets);
+
+  // Use useMemo to construct the globals object only when dependencies change
+  return useMemo(() => {
+    const preset = DEVICE_PRESETS[deviceType];
+    return {
+      theme,
+      locale,
+      displayMode,
+      maxHeight,
+      toolInput,
+      toolOutput,
+      toolResponseMetadata,
+      widgetState,
+      userAgent: preset.userAgent,
+      safeArea: {
+        insets: safeAreaInsets,
+      },
+    };
+  }, [
+    theme,
+    locale,
+    displayMode,
+    maxHeight,
+    toolInput,
+    toolOutput,
+    toolResponseMetadata,
+    widgetState,
+    deviceType,
+    safeAreaInsets,
+  ]);
+};

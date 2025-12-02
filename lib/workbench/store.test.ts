@@ -1,0 +1,308 @@
+import { describe, it, expect, beforeEach } from "vitest";
+import { useWorkbenchStore } from "./store";
+import { workbenchComponents } from "./component-registry";
+
+describe("Workbench Store", () => {
+  // Reset store before each test
+  beforeEach(() => {
+    const store = useWorkbenchStore.getState();
+    // Reset to initial state by selecting the first component
+    const defaultComponent = workbenchComponents[0];
+    store.setSelectedComponent(defaultComponent?.id ?? "media-card");
+  });
+
+  describe("setSelectedComponent", () => {
+    it("should update selectedComponent to the given id", () => {
+      const store = useWorkbenchStore.getState();
+      const targetComponent = workbenchComponents[1]; // Pick second component
+
+      if (!targetComponent) {
+        throw new Error("Test requires at least 2 components in registry");
+      }
+
+      store.setSelectedComponent(targetComponent.id);
+
+      expect(useWorkbenchStore.getState().selectedComponent).toBe(targetComponent.id);
+    });
+
+    it("should reset toolInput to component's defaultProps", () => {
+      const store = useWorkbenchStore.getState();
+      const targetComponent = workbenchComponents[1];
+
+      if (!targetComponent) {
+        throw new Error("Test requires at least 2 components in registry");
+      }
+
+      store.setSelectedComponent(targetComponent.id);
+
+      expect(useWorkbenchStore.getState().toolInput).toEqual(targetComponent.defaultProps);
+    });
+
+    it("should reset toolOutput to null", () => {
+      const store = useWorkbenchStore.getState();
+
+      // First set toolOutput to something non-null
+      store.setToolOutput({ someKey: "someValue" });
+      expect(useWorkbenchStore.getState().toolOutput).not.toBeNull();
+
+      // Switch component - should reset to null
+      const targetComponent = workbenchComponents[0];
+      if (!targetComponent) {
+        throw new Error("Test requires at least 1 component in registry");
+      }
+
+      store.setSelectedComponent(targetComponent.id);
+
+      expect(useWorkbenchStore.getState().toolOutput).toBeNull();
+    });
+
+    it("should reset widgetState to null", () => {
+      const store = useWorkbenchStore.getState();
+
+      // First set widgetState to something non-null
+      store.setWidgetState({ someKey: "someValue" });
+      expect(useWorkbenchStore.getState().widgetState).not.toBeNull();
+
+      // Switch component - should reset to null
+      const targetComponent = workbenchComponents[0];
+      if (!targetComponent) {
+        throw new Error("Test requires at least 1 component in registry");
+      }
+
+      store.setSelectedComponent(targetComponent.id);
+
+      expect(useWorkbenchStore.getState().widgetState).toBeNull();
+    });
+
+    it("should reset toolResponseMetadata to null", () => {
+      const store = useWorkbenchStore.getState();
+
+      // First set toolResponseMetadata to something non-null
+      store.setToolResponseMetadata({ someKey: "someValue" });
+      expect(useWorkbenchStore.getState().toolResponseMetadata).not.toBeNull();
+
+      // Switch component - should reset to null
+      const targetComponent = workbenchComponents[0];
+      if (!targetComponent) {
+        throw new Error("Test requires at least 1 component in registry");
+      }
+
+      store.setSelectedComponent(targetComponent.id);
+
+      expect(useWorkbenchStore.getState().toolResponseMetadata).toBeNull();
+    });
+
+    it("should reset activeJsonTab to 'toolInput'", () => {
+      const store = useWorkbenchStore.getState();
+
+      // First set activeJsonTab to something else
+      store.setActiveJsonTab("toolOutput");
+      expect(useWorkbenchStore.getState().activeJsonTab).toBe("toolOutput");
+
+      // Switch component - should reset to toolInput
+      const targetComponent = workbenchComponents[0];
+      if (!targetComponent) {
+        throw new Error("Test requires at least 1 component in registry");
+      }
+
+      store.setSelectedComponent(targetComponent.id);
+
+      expect(useWorkbenchStore.getState().activeJsonTab).toBe("toolInput");
+    });
+
+    it("should handle non-existent component gracefully", () => {
+      const store = useWorkbenchStore.getState();
+
+      store.setSelectedComponent("non-existent-component-id");
+
+      expect(useWorkbenchStore.getState().selectedComponent).toBe("non-existent-component-id");
+      expect(useWorkbenchStore.getState().toolInput).toEqual({});
+      expect(useWorkbenchStore.getState().toolOutput).toBeNull();
+      expect(useWorkbenchStore.getState().widgetState).toBeNull();
+      expect(useWorkbenchStore.getState().toolResponseMetadata).toBeNull();
+    });
+  });
+
+  describe("getOpenAIGlobals", () => {
+    it("should return correct theme", () => {
+      const store = useWorkbenchStore.getState();
+
+      store.setTheme("dark");
+      const globals = store.getOpenAIGlobals();
+
+      expect(globals.theme).toBe("dark");
+    });
+
+    it("should return correct locale", () => {
+      const store = useWorkbenchStore.getState();
+
+      store.setLocale("es-ES");
+      const globals = store.getOpenAIGlobals();
+
+      expect(globals.locale).toBe("es-ES");
+    });
+
+    it("should return correct displayMode", () => {
+      const store = useWorkbenchStore.getState();
+
+      store.setDisplayMode("fullscreen");
+      const globals = store.getOpenAIGlobals();
+
+      expect(globals.displayMode).toBe("fullscreen");
+    });
+
+    it("should return correct maxHeight", () => {
+      const store = useWorkbenchStore.getState();
+
+      store.setMaxHeight(1200);
+      const globals = store.getOpenAIGlobals();
+
+      expect(globals.maxHeight).toBe(1200);
+    });
+
+    it("should include toolInput", () => {
+      const store = useWorkbenchStore.getState();
+      const testInput = { testKey: "testValue" };
+
+      store.setToolInput(testInput);
+      const globals = store.getOpenAIGlobals();
+
+      expect(globals.toolInput).toEqual(testInput);
+    });
+
+    it("should include toolOutput (null when unset)", () => {
+      const store = useWorkbenchStore.getState();
+
+      store.setToolOutput(null);
+      const globals = store.getOpenAIGlobals();
+
+      expect(globals.toolOutput).toBeNull();
+    });
+
+    it("should include toolOutput (object when set)", () => {
+      const store = useWorkbenchStore.getState();
+      const testOutput = { resultKey: "resultValue" };
+
+      store.setToolOutput(testOutput);
+      const globals = store.getOpenAIGlobals();
+
+      expect(globals.toolOutput).toEqual(testOutput);
+    });
+
+    it("should include widgetState", () => {
+      const store = useWorkbenchStore.getState();
+      const testState = { stateKey: "stateValue" };
+
+      store.setWidgetState(testState);
+      const globals = store.getOpenAIGlobals();
+
+      expect(globals.widgetState).toEqual(testState);
+    });
+
+    it("should include toolResponseMetadata", () => {
+      const store = useWorkbenchStore.getState();
+      const testMetadata = { metaKey: "metaValue" };
+
+      store.setToolResponseMetadata(testMetadata);
+      const globals = store.getOpenAIGlobals();
+
+      expect(globals.toolResponseMetadata).toEqual(testMetadata);
+    });
+
+    it("should include safeAreaInsets", () => {
+      const store = useWorkbenchStore.getState();
+      const testInsets = { top: 10, bottom: 20, left: 5, right: 5 };
+
+      store.setSafeAreaInsets(testInsets);
+      const globals = store.getOpenAIGlobals();
+
+      expect(globals.safeArea.insets).toEqual(testInsets);
+    });
+
+    it("should include userAgent with device type", () => {
+      const store = useWorkbenchStore.getState();
+
+      store.setDeviceType("mobile");
+      const globals = store.getOpenAIGlobals();
+
+      expect(globals.userAgent.device.type).toBe("mobile");
+    });
+
+    it("should include userAgent capabilities for mobile (no hover, touch)", () => {
+      const store = useWorkbenchStore.getState();
+
+      store.setDeviceType("mobile");
+      const globals = store.getOpenAIGlobals();
+
+      expect(globals.userAgent.capabilities.hover).toBe(false);
+      expect(globals.userAgent.capabilities.touch).toBe(true);
+    });
+
+    it("should include userAgent capabilities for desktop (hover, no touch)", () => {
+      const store = useWorkbenchStore.getState();
+
+      store.setDeviceType("desktop");
+      const globals = store.getOpenAIGlobals();
+
+      expect(globals.userAgent.capabilities.hover).toBe(true);
+      expect(globals.userAgent.capabilities.touch).toBe(false);
+    });
+  });
+
+  describe("activeJsonTab", () => {
+    it("should default to 'toolInput'", () => {
+      const state = useWorkbenchStore.getState();
+
+      expect(state.activeJsonTab).toBe("toolInput");
+    });
+
+    it("should update when setActiveJsonTab is called", () => {
+      const store = useWorkbenchStore.getState();
+
+      store.setActiveJsonTab("toolOutput");
+      expect(useWorkbenchStore.getState().activeJsonTab).toBe("toolOutput");
+
+      store.setActiveJsonTab("widgetState");
+      expect(useWorkbenchStore.getState().activeJsonTab).toBe("widgetState");
+
+      store.setActiveJsonTab("toolResponseMetadata");
+      expect(useWorkbenchStore.getState().activeJsonTab).toBe("toolResponseMetadata");
+
+      store.setActiveJsonTab("toolInput");
+      expect(useWorkbenchStore.getState().activeJsonTab).toBe("toolInput");
+    });
+  });
+
+  describe("setDeviceType", () => {
+    it("should update deviceType and maxHeight for mobile", () => {
+      const store = useWorkbenchStore.getState();
+
+      store.setDeviceType("mobile");
+      const state = useWorkbenchStore.getState();
+
+      expect(state.deviceType).toBe("mobile");
+      expect(state.maxHeight).toBe(667); // Mobile preset height
+    });
+
+    it("should update deviceType and maxHeight for tablet", () => {
+      const store = useWorkbenchStore.getState();
+
+      store.setDeviceType("tablet");
+      const state = useWorkbenchStore.getState();
+
+      expect(state.deviceType).toBe("tablet");
+      expect(state.maxHeight).toBe(1024); // Tablet preset height
+    });
+
+    it("should update deviceType and keep maxHeight at 800 for desktop (100% preset)", () => {
+      const store = useWorkbenchStore.getState();
+
+      store.setDeviceType("desktop");
+      const state = useWorkbenchStore.getState();
+
+      expect(state.deviceType).toBe("desktop");
+      // Desktop has "100%" height, so maxHeight defaults to 800
+      expect(state.maxHeight).toBe(800);
+    });
+  });
+});

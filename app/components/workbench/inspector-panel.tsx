@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { EventConsole } from "./event-console";
-import { useWorkbenchStore } from "@/lib/workbench/store";
+import { useOpenAIGlobals } from "@/lib/workbench/store";
 import type { OpenAIGlobals } from "@/lib/workbench/types";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Terminal, Globe } from "lucide-react";
@@ -13,13 +13,16 @@ import { Terminal, Globe } from "lucide-react";
  */
 export function InspectorPanel() {
   const [activeTab, setActiveTab] = useState<"console" | "globals">("console");
-  const getOpenAIGlobals = useWorkbenchStore((s) => s.getOpenAIGlobals);
+  const globals = useOpenAIGlobals();
 
   return (
     <div className="bg-background flex h-full flex-col">
       {/* Tab header */}
       <div className="shrink-0 border-b px-3 py-2">
-        <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as "console" | "globals")}>
+        <Tabs
+          value={activeTab}
+          onValueChange={(v) => setActiveTab(v as "console" | "globals")}
+        >
           <TabsList>
             <TabsTrigger value="console" className="gap-1.5">
               <Terminal className="size-3.5" />
@@ -36,7 +39,7 @@ export function InspectorPanel() {
       {/* Tab content */}
       <div className="flex-1 overflow-hidden">
         {activeTab === "console" && <EventConsole />}
-        {activeTab === "globals" && <GlobalsView globals={getOpenAIGlobals()} />}
+        {activeTab === "globals" && <GlobalsView globals={globals} />}
       </div>
     </div>
   );

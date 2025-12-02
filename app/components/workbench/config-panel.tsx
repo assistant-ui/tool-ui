@@ -6,12 +6,10 @@ import {
   useDisplayMode,
   useWorkbenchTheme,
   useDeviceType,
+  useActiveJsonTab,
 } from "@/lib/workbench/store";
 import { LOCALE_OPTIONS } from "@/lib/workbench/types";
-import {
-  workbenchComponents,
-  getComponent,
-} from "@/lib/workbench/component-registry";
+import { workbenchComponents } from "@/lib/workbench/component-registry";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
@@ -42,6 +40,7 @@ import {
   Settings,
   PanelLeftClose,
   PanelLeft,
+  Database,
 } from "lucide-react";
 
 export function ConfigPanel({ isCollapsed, onToggleCollapse }: { isCollapsed?: boolean; onToggleCollapse?: () => void }) {
@@ -53,15 +52,26 @@ export function ConfigPanel({ isCollapsed, onToggleCollapse }: { isCollapsed?: b
   const store = useWorkbenchStore();
   const maxHeight = store.maxHeight;
   const safeAreaInsets = store.safeAreaInsets;
+  const activeJsonTab = useActiveJsonTab();
 
-  // Handle component selection with default props
+  // Get JSON blob state for Tool Data section
+  const toolInput = store.toolInput;
+  const toolOutput = store.toolOutput;
+  const widgetState = store.widgetState;
+  const toolResponseMetadata = store.toolResponseMetadata;
+
+  // Handle component selection (resets are centralized in store)
   const handleComponentChange = (componentId: string) => {
-    const component = getComponent(componentId);
-    if (component) {
-      store.setToolInput(component.defaultProps);
-      store.setToolOutput(null);
-    }
     store.setSelectedComponent(componentId);
+  };
+
+  // Helper to summarize JSON blobs
+  const summarize = (obj: Record<string, unknown> | null | undefined): string => {
+    if (!obj) return "empty";
+    const keys = Object.keys(obj);
+    if (keys.length === 0) return "empty";
+    const preview = keys.slice(0, 3).join(", ");
+    return `${keys.length} key${keys.length === 1 ? "" : "s"}${preview ? ` · ${preview}` : ""}`;
   };
 
   // Show collapsed state
@@ -92,7 +102,7 @@ export function ConfigPanel({ isCollapsed, onToggleCollapse }: { isCollapsed?: b
         </button>
       </div>
 
-      <Accordion type="multiple" defaultValue={["component", "display", "advanced"]}>
+      <Accordion type="multiple" defaultValue={["component", "display", "tool-data", "advanced"]}>
         {/* Component Selection */}
         <AccordionItem value="component">
           <AccordionTrigger className="px-4">
@@ -237,6 +247,99 @@ export function ConfigPanel({ isCollapsed, onToggleCollapse }: { isCollapsed?: b
             </Select>
           </div>
         </div>
+          </AccordionContent>
+        </AccordionItem>
+
+        {/* Tool Data */}
+        <AccordionItem value="tool-data">
+          <AccordionTrigger className="px-4">
+            <div className="flex items-center gap-2">
+              <Database className="size-4" />
+              <span>Tool Data</span>
+            </div>
+          </AccordionTrigger>
+          <AccordionContent className="px-4">
+            <div className="space-y-3">
+              {/* Tool Input */}
+              <div className={`flex items-center justify-between rounded-md border p-2 transition-colors ${
+                activeJsonTab === "toolInput" ? "bg-muted" : ""
+              }`}>
+                <div className="flex flex-col gap-0.5">
+                  <span className="text-xs font-medium">Tool Input</span>
+                  <span className="text-muted-foreground text-xs">
+                    {summarize(toolInput)}
+                  </span>
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="h-7 px-2 text-xs"
+                  onClick={() => store.setActiveJsonTab("toolInput")}
+                >
+                  Edit
+                </Button>
+              </div>
+
+              {/* Tool Output */}
+              <div className={`flex items-center justify-between rounded-md border p-2 transition-colors ${
+                activeJsonTab === "toolOutput" ? "bg-muted" : ""
+              }`}>
+                <div className="flex flex-col gap-0.5">
+                  <span className="text-xs font-medium">Tool Output</span>
+                  <span className="text-muted-foreground text-xs">
+                    {summarize(toolOutput)}
+                  </span>
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="h-7 px-2 text-xs"
+                  onClick={() => store.setActiveJsonTab("toolOutput")}
+                >
+                  Edit
+                </Button>
+              </div>
+
+              {/* Widget State */}
+              <div className={`flex items-center justify-between rounded-md border p-2 transition-colors ${
+                activeJsonTab === "widgetState" ? "bg-muted" : ""
+              }`}>
+                <div className="flex flex-col gap-0.5">
+                  <span className="text-xs font-medium">Widget State</span>
+                  <span className="text-muted-foreground text-xs">
+                    {summarize(widgetState)}
+                  </span>
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="h-7 px-2 text-xs"
+                  onClick={() => store.setActiveJsonTab("widgetState")}
+                >
+                  Edit
+                </Button>
+              </div>
+
+              {/* Metadata */}
+              <div className={`flex items-center justify-between rounded-md border p-2 transition-colors ${
+                activeJsonTab === "toolResponseMetadata" ? "bg-muted" : ""
+              }`}>
+                <div className="flex flex-col gap-0.5">
+                  <span className="text-xs font-medium">Metadata</span>
+                  <span className="text-muted-foreground text-xs">
+                    {summarize(toolResponseMetadata)}
+                  </span>
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="h-7 px-2 text-xs"
+                  onClick={() => store.setActiveJsonTab("toolResponseMetadata")}
+                >
+                  Edit
+                </Button>
+              </div>
+            </div>
           </AccordionContent>
         </AccordionItem>
 
