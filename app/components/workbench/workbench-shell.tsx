@@ -9,7 +9,7 @@ import { InspectorPanel } from "./inspector-panel";
 import { LogoMark } from "@/components/ui/logo";
 import { ArrowLeft } from "lucide-react";
 
-const WORKSPACE_MIN_SIZE = 40;
+const WORKSPACE_MIN_SIZE = 50;
 const CONSOLE_DEFAULT_SIZE = 25;
 const CONSOLE_MIN_SIZE = 10;
 
@@ -22,12 +22,11 @@ export function WorkbenchShell() {
     setTimeout(() => {
       setIsPanelCollapsed(!isPanelCollapsed);
       setIsFading(false);
-    }, 150); // Match the fade-out duration
+    }, 150);
   };
 
   return (
     <div className="flex h-full w-full flex-col overflow-hidden">
-      {/* Title bar */}
       <div className="bg-background flex h-10 shrink-0 items-center gap-3 border-b px-4">
         <Link
           href="/"
@@ -44,7 +43,7 @@ export function WorkbenchShell() {
       <div className="flex min-h-0 flex-1 overflow-hidden">
         {/* Left: Config Panel (collapsible) */}
         <aside
-          className={`bg-background scrollbar-subtle flex h-full shrink-0 flex-col overflow-hidden border-r transition-[width] duration-200 ease-in-out ${
+          className={`scrollbar-subtle flex h-full shrink-0 flex-col overflow-hidden border-r transition-[width] duration-200 ease-in-out ${
             isPanelCollapsed ? "w-12" : "w-80"
           }`}
         >
