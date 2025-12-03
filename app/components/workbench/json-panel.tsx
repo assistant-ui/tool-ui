@@ -113,7 +113,7 @@ export function JsonPanel() {
           className="pointer-events-none absolute top-0 z-10 h-20 w-full bg-linear-to-b from-white via-white to-transparent dark:from-[#0d1117] dark:via-[#0d1117]"
           aria-hidden="true"
         ></div>
-        <div className="sticky top-0 z-20 flex items-center justify-between px-4 py-3">
+        <div className="sticky top-0 z-20 flex items-center justify-between px-3 py-3">
           <Tabs
             value={activeJsonTab}
             onValueChange={(v) => setActiveJsonTab(v as ActiveJsonTab)}
