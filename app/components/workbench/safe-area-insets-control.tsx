@@ -18,8 +18,10 @@ import {
 } from "@/components/ui/input-group";
 import type { SafeAreaInsets } from "@/lib/workbench/types";
 import {
+  CONTROL_BG_CLASSES,
+  INPUT_GROUP_CLASSES,
   INPUT_CLASSES,
-  COMPACT_SMALL_TEXT_CLASSES,
+  COMPACT_ADDON_CLASSES,
   COMPACT_LABEL_CLASSES,
 } from "./styles";
 
@@ -104,7 +106,7 @@ export function SafeAreaInsetsControl({
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <button
-          className="bg-accent hover:bg-accent/80 flex items-center gap-2 rounded-md px-2 py-1.5 text-xs transition-colors"
+          className={`${CONTROL_BG_CLASSES} flex items-center gap-2 rounded-md px-2 py-1.5 text-xs`}
           aria-label="Edit safe area insets"
         >
           <span className="font-mono">
@@ -136,7 +138,7 @@ export function SafeAreaInsetsControl({
 
         <div className="flex items-center gap-3">
           <Label className={`${COMPACT_LABEL_CLASSES} w-8 shrink-0`}>All</Label>
-          <InputGroup className="flex-1 border-none">
+          <InputGroup className={`${INPUT_GROUP_CLASSES} flex-1`}>
             <InputGroupInput
               type="number"
               value={allInputValue}
@@ -147,7 +149,7 @@ export function SafeAreaInsetsControl({
               className={INPUT_CLASSES}
               aria-label="All insets"
             />
-            <InputGroupAddon align="inline-end" className={COMPACT_SMALL_TEXT_CLASSES}>
+            <InputGroupAddon align="inline-end" className={COMPACT_ADDON_CLASSES}>
               px
             </InputGroupAddon>
           </InputGroup>
@@ -167,8 +169,8 @@ export function SafeAreaInsetsControl({
         {customizeSides && (
           <div className="grid grid-cols-2 gap-2">
             {INSET_KEYS.map(({ key, symbol, label }) => (
-              <InputGroup key={key} className="border-none">
-                <InputGroupAddon className={COMPACT_SMALL_TEXT_CLASSES}>
+              <InputGroup key={key} className={INPUT_GROUP_CLASSES}>
+                <InputGroupAddon className={COMPACT_ADDON_CLASSES}>
                   <InputGroupText>{symbol}</InputGroupText>
                 </InputGroupAddon>
                 <InputGroupInput

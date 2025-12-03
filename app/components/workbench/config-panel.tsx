@@ -49,11 +49,15 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import {
+  INPUT_GROUP_CLASSES,
   INPUT_CLASSES,
+  ADDON_CLASSES,
   SMALL_TEXT_CLASSES,
   LABEL_CLASSES,
   SELECT_CLASSES,
   TOGGLE_BUTTON_CLASSES,
+  TOGGLE_BUTTON_ACTIVE_CLASSES,
+  INFO_BOX_CLASSES,
   SECTION_HEADER_CLASSES,
   SECTION_CONTENT_CLASSES,
   PANEL_TOGGLE_CLASSES,
@@ -134,7 +138,7 @@ function UserAgentInfo({ deviceType }: { deviceType: DeviceType }) {
   const isDesktop = deviceType === "desktop";
 
   return (
-    <div className="bg-muted text-muted-foreground rounded-md border p-2 text-xs">
+    <div className={INFO_BOX_CLASSES}>
       <div>
         Device: <span className="font-mono">{deviceType}</span>
       </div>
@@ -240,12 +244,16 @@ export function ConfigPanel({
                 {DISPLAY_MODES.map(({ id, label, icon: Icon }) => (
                   <Button
                     key={id}
-                    variant={displayMode === id ? "secondary" : "outline"}
+                    variant="ghost"
                     size="sm"
-                    className={TOGGLE_BUTTON_CLASSES}
+                    className={
+                      displayMode === id
+                        ? TOGGLE_BUTTON_ACTIVE_CLASSES
+                        : TOGGLE_BUTTON_CLASSES
+                    }
                     onClick={() => setDisplayMode(id)}
                   >
-                    <Icon className="text-yellow size-3" />
+                    <Icon className="size-3" />
                     {label}
                   </Button>
                 ))}
@@ -257,12 +265,16 @@ export function ConfigPanel({
                 {DEVICE_TYPES.map(({ id, icon: Icon }) => (
                   <Button
                     key={id}
-                    variant={deviceType === id ? "secondary" : "outline"}
+                    variant="ghost"
                     size="sm"
-                    className={TOGGLE_BUTTON_CLASSES}
+                    className={
+                      deviceType === id
+                        ? TOGGLE_BUTTON_ACTIVE_CLASSES
+                        : TOGGLE_BUTTON_CLASSES
+                    }
                     onClick={() => setDeviceType(id)}
                   >
-                    <Icon className="text-yellow size-3" />
+                    <Icon className="size-3" />
                   </Button>
                 ))}
               </ButtonGroup>
@@ -304,7 +316,7 @@ export function ConfigPanel({
 
           <ConfigSection value="advanced" title="Advanced">
             <SettingRow label="Max height" htmlFor="max-height">
-              <InputGroup className="w-fit border-none">
+              <InputGroup className={INPUT_GROUP_CLASSES}>
                 <InputGroupInput
                   id="max-height"
                   type="number"
@@ -317,10 +329,7 @@ export function ConfigPanel({
                   max={2000}
                   className={INPUT_CLASSES}
                 />
-                <InputGroupAddon
-                  align="inline-end"
-                  className={SMALL_TEXT_CLASSES}
-                >
+                <InputGroupAddon align="inline-end" className={ADDON_CLASSES}>
                   px
                 </InputGroupAddon>
               </InputGroup>

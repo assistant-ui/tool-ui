@@ -1,7 +1,23 @@
-// Experimenting with different styles for the workbench...
+export const CONTROL_BG_CLASSES =
+  "bg-input/70! hover:bg-input/80! dark:bg-input/70! dark:hover:bg-input/80!";
+
+export const INPUT_GROUP_CLASSES = `${CONTROL_BG_CLASSES} w-fit border-none! shadow-none!`;
 
 export const INPUT_CLASSES =
-  "bg-accent hover:bg-accent/80 focus:ring-ring border-0! transition-colors focus:ring-2 border-none! [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none";
+  "bg-transparent! dark:bg-transparent! focus:ring-0! border-0! border-none! [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none";
+
+export const ADDON_CLASSES = "bg-transparent! text-sm font-normal";
+
+export const COMPACT_ADDON_CLASSES = "bg-transparent! text-xs font-normal";
+
+export const SELECT_CLASSES = `${CONTROL_BG_CLASSES} w-fit text-xs border-none!`;
+
+export const TOGGLE_BUTTON_CLASSES = `${CONTROL_BG_CLASSES} flex-1 gap-2 border-none text-xs font-light`;
+
+export const TOGGLE_BUTTON_ACTIVE_CLASSES =
+  "bg-primary/20 hover:bg-primary/20! flex-1 gap-2 border-none text-xs font-light";
+
+export const INFO_BOX_CLASSES = `${CONTROL_BG_CLASSES} text-muted-foreground rounded-md p-2 text-xs`;
 
 export const SMALL_TEXT_CLASSES = "text-sm font-normal";
 
@@ -12,11 +28,6 @@ export const COMPACT_SMALL_TEXT_CLASSES = "text-xs font-normal";
 
 export const COMPACT_LABEL_CLASSES =
   "text-xs font-normal text-neutral-800 dark:text-neutral-400";
-
-export const SELECT_CLASSES = `${INPUT_CLASSES} w-fit text-xs border-none!`;
-
-export const TOGGLE_BUTTON_CLASSES =
-  "flex-1 gap-2 border-none text-xs font-light";
 
 export const SECTION_HEADER_CLASSES = "px-4 text-sm font-normal";
 
