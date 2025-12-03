@@ -23,6 +23,7 @@ import {
   INPUT_CLASSES,
   COMPACT_ADDON_CLASSES,
   COMPACT_LABEL_CLASSES,
+  LABEL_CLASSES,
 } from "./styles";
 
 const INSET_KEYS = [
@@ -106,7 +107,7 @@ export function SafeAreaInsetsControl({
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <button
-          className={`${CONTROL_BG_CLASSES} flex items-center gap-2 rounded-md px-2 py-1.5 text-xs`}
+          className={`${CONTROL_BG_CLASSES} flex h-9 items-center gap-2 rounded-md px-2 text-xs`}
           aria-label="Edit safe area insets"
         >
           <span className="font-mono">
@@ -138,7 +139,7 @@ export function SafeAreaInsetsControl({
 
         <div className="flex items-center gap-3">
           <Label className={`${COMPACT_LABEL_CLASSES} w-8 shrink-0`}>All</Label>
-          <InputGroup className={`${INPUT_GROUP_CLASSES} flex-1`}>
+          <InputGroup className={`${INPUT_GROUP_CLASSES} w-22`}>
             <InputGroupInput
               type="number"
               value={allInputValue}
@@ -149,14 +150,17 @@ export function SafeAreaInsetsControl({
               className={INPUT_CLASSES}
               aria-label="All insets"
             />
-            <InputGroupAddon align="inline-end" className={COMPACT_ADDON_CLASSES}>
+            <InputGroupAddon
+              align="inline-end"
+              className={COMPACT_ADDON_CLASSES}
+            >
               px
             </InputGroupAddon>
           </InputGroup>
         </div>
 
         <div className="flex items-center justify-between">
-          <Label htmlFor="customize-sides" className={COMPACT_LABEL_CLASSES}>
+          <Label htmlFor="customize-sides" className={LABEL_CLASSES}>
             Customize sides
           </Label>
           <Switch
@@ -167,7 +171,7 @@ export function SafeAreaInsetsControl({
         </div>
 
         {customizeSides && (
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid w-fit grid-cols-2 gap-2">
             {INSET_KEYS.map(({ key, symbol, label }) => (
               <InputGroup key={key} className={INPUT_GROUP_CLASSES}>
                 <InputGroupAddon className={COMPACT_ADDON_CLASSES}>

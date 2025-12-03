@@ -1,5 +1,5 @@
 export const CONTROL_BG_CLASSES =
-  "bg-input/70! hover:bg-input/80! dark:bg-input/70! dark:hover:bg-input/80!";
+  "bg-input/70 hover:bg-input/80 dark:bg-input/70! dark:hover:bg-input/80! border-none!";
 
 export const INPUT_GROUP_CLASSES = `${CONTROL_BG_CLASSES} w-fit border-none! shadow-none!`;
 
@@ -10,7 +10,7 @@ export const ADDON_CLASSES = "bg-transparent! text-sm font-normal";
 
 export const COMPACT_ADDON_CLASSES = "bg-transparent! text-xs font-normal";
 
-export const SELECT_CLASSES = `${CONTROL_BG_CLASSES} w-fit text-xs border-none!`;
+export const SELECT_CLASSES = `${CONTROL_BG_CLASSES} w-fit text-xs`;
 
 export const TOGGLE_BUTTON_CLASSES = `${CONTROL_BG_CLASSES} flex-1 gap-2 border-none text-xs font-light`;
 
