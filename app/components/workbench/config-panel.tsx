@@ -49,17 +49,17 @@ import {
   type LucideIcon,
 } from "lucide-react";
 
-// Workbench-specific input styling constants
-const WORKBENCH_INPUT_CLASSES =
+const SMALL_TEXT_CLASSES = "text-xs font-normal";
+const INPUT_CLASSES =
   "bg-accent hover:bg-accent/80 focus:ring-ring border-0! transition-colors focus:ring-2 border-none!";
+const SELECT_CLASSES = `${INPUT_CLASSES} w-fit text-xs border-none!`;
+const TOGGLE_BUTTON_CLASSES = "flex-1 gap-2 border-none text-xs font-light";
+const SECTION_HEADER_CLASSES =
+  "text-muted-foreground/80 px-5 text-xs font-medium tracking-wide";
+const SECTION_CONTENT_CLASSES = "px-5 pt-2 pb-4";
+const PANEL_TOGGLE_CLASSES =
+  "text-muted-foreground hover:text-foreground hover:bg-muted rounded-md transition-colors";
 
-const WORKBENCH_SELECT_CLASSES = `${WORKBENCH_INPUT_CLASSES} w-fit text-xs border-none!`;
-
-const WORKBENCH_LABEL_CLASSES = "text-xs font-normal";
-
-const WORKBENCH_ADDON_CLASSES = "text-xs font-normal";
-
-// Configuration for display mode buttons
 const DISPLAY_MODES: ReadonlyArray<{
   id: DisplayMode;
   label: string;
@@ -70,7 +70,6 @@ const DISPLAY_MODES: ReadonlyArray<{
   { id: "fullscreen", label: "Full", icon: Maximize2 },
 ];
 
-// Configuration for device type buttons
 const DEVICE_TYPES: ReadonlyArray<{
   id: DeviceType;
   label: string;
@@ -81,7 +80,6 @@ const DEVICE_TYPES: ReadonlyArray<{
   { id: "mobile", label: "Mobile", icon: Smartphone },
 ];
 
-// Configuration for safe area insets
 const SAFE_AREA_INSETS = [
   { key: "left" as const, symbol: "←", ariaLabel: "Left inset" },
   { key: "top" as const, symbol: "↑", ariaLabel: "Top inset" },
@@ -89,9 +87,24 @@ const SAFE_AREA_INSETS = [
   { key: "bottom" as const, symbol: "↓", ariaLabel: "Bottom inset" },
 ] as const;
 
-/**
- * Clamps a number between min and max values
- */
+interface ConfigPanelProps {
+  isCollapsed?: boolean;
+  onToggleCollapse?: () => void;
+}
+
+interface SettingRowProps {
+  label: string;
+  htmlFor?: string;
+  className?: string;
+  children: React.ReactNode;
+}
+
+interface ConfigSectionProps {
+  value: string;
+  title: string;
+  children: React.ReactNode;
+}
+
 function clamp(value: number, min: number, max: number): number {
   if (!Number.isFinite(value)) return min;
   if (value < min) return min;
@@ -99,13 +112,53 @@ function clamp(value: number, min: number, max: number): number {
   return value;
 }
 
+function SettingRow({ label, htmlFor, className, children }: SettingRowProps) {
+  return (
+    <div className={`flex items-center justify-between ${className ?? ""}`}>
+      <Label htmlFor={htmlFor} className={SMALL_TEXT_CLASSES}>
+        {label}
+      </Label>
+      {children}
+    </div>
+  );
+}
+
+function ConfigSection({ value, title, children }: ConfigSectionProps) {
+  return (
+    <AccordionItem value={value}>
+      <AccordionTrigger className={SECTION_HEADER_CLASSES}>
+        <span>{title}</span>
+      </AccordionTrigger>
+      <AccordionContent className={SECTION_CONTENT_CLASSES}>
+        <div className="space-y-4">{children}</div>
+      </AccordionContent>
+    </AccordionItem>
+  );
+}
+
+function UserAgentInfo({ deviceType }: { deviceType: DeviceType }) {
+  const isDesktop = deviceType === "desktop";
+
+  return (
+    <div className="bg-muted text-muted-foreground rounded-md border p-2 text-xs">
+      <div>
+        Device: <span className="font-mono">{deviceType}</span>
+      </div>
+      <div>
+        Hover: <span className="font-mono">{isDesktop ? "true" : "false"}</span>
+      </div>
+      <div>
+        Touch:{" "}
+        <span className="font-mono">{!isDesktop ? "true" : "false"}</span>
+      </div>
+    </div>
+  );
+}
+
 export function ConfigPanel({
   isCollapsed,
   onToggleCollapse,
-}: {
-  isCollapsed?: boolean;
-  onToggleCollapse?: () => void;
-}) {
+}: ConfigPanelProps) {
   const selectedComponent = useSelectedComponent();
   const displayMode = useDisplayMode();
   const theme = useWorkbenchTheme();
@@ -137,13 +190,12 @@ export function ConfigPanel({
     })),
   );
 
-  // Collapsed state view
   if (isCollapsed) {
     return (
       <div className="flex h-full w-12 flex-col items-center py-3">
         <button
           onClick={onToggleCollapse}
-          className="text-muted-foreground hover:text-foreground hover:bg-muted rounded-md p-2 transition-colors"
+          className={`${PANEL_TOGGLE_CLASSES} p-2`}
           aria-label="Expand sidebar"
         >
           <PanelLeft className="size-4" />
@@ -154,11 +206,10 @@ export function ConfigPanel({
 
   return (
     <div className="scrollbar-subtle flex h-full min-w-80 flex-col overflow-y-auto">
-      {/* Collapse button */}
       <div className="flex items-center justify-end px-2 py-2">
         <button
           onClick={onToggleCollapse}
-          className="text-muted-foreground hover:text-foreground hover:bg-muted rounded-md p-1.5 transition-colors"
+          className={`${PANEL_TOGGLE_CLASSES} p-1.5`}
           aria-label="Collapse sidebar"
         >
           <PanelLeftClose className="size-4" />
@@ -169,18 +220,17 @@ export function ConfigPanel({
         type="multiple"
         defaultValue={["component", "display", "advanced"]}
       >
-        {/* Component Selection */}
         <AccordionItem value="component">
-          <AccordionTrigger className="text-muted-foreground/80 px-5 text-xs font-medium tracking-wide">
+          <AccordionTrigger className={SECTION_HEADER_CLASSES}>
             <span>Component</span>
           </AccordionTrigger>
-          <AccordionContent className="px-5 pt-2 pb-4">
+          <AccordionContent className={SECTION_CONTENT_CLASSES}>
             <div className="space-y-3">
               <Select
                 value={selectedComponent}
                 onValueChange={setSelectedComponent}
               >
-                <SelectTrigger className={WORKBENCH_SELECT_CLASSES}>
+                <SelectTrigger className={SELECT_CLASSES}>
                   <SelectValue placeholder="Select component" />
                 </SelectTrigger>
                 <SelectContent>
@@ -199,175 +249,127 @@ export function ConfigPanel({
           </AccordionContent>
         </AccordionItem>
 
-        {/* Display Settings */}
-        <AccordionItem value="display">
-          <AccordionTrigger className="text-muted-foreground/80 px-5 text-xs font-medium tracking-wide">
-            <span>Display</span>
-          </AccordionTrigger>
-          <AccordionContent className="px-5 pt-2 pb-4">
-            <div className="space-y-4">
-              <div className="flex flex-row items-center justify-between">
-                <Label className={`${WORKBENCH_LABEL_CLASSES} tracking-wide`}>
-                  Mode
-                </Label>
-                <ButtonGroup>
-                  {DISPLAY_MODES.map(({ id, label, icon: Icon }) => (
-                    <Button
-                      key={id}
-                      variant={displayMode === id ? "secondary" : "outline"}
-                      size="sm"
-                      className="flex-1 gap-2 border-none text-xs font-light"
-                      onClick={() => setDisplayMode(id)}
-                    >
-                      <Icon className="text-yellow size-3" />
-                      {label}
-                    </Button>
-                  ))}
-                </ButtonGroup>
-              </div>
-
-              <div className="flex items-center justify-between">
-                <Label className={WORKBENCH_LABEL_CLASSES}>Device</Label>
-                <ButtonGroup>
-                  {DEVICE_TYPES.map(({ id, icon: Icon }) => (
-                    <Button
-                      key={id}
-                      variant={deviceType === id ? "secondary" : "outline"}
-                      size="sm"
-                      className="flex-1 gap-2 border-none text-xs font-light"
-                      onClick={() => setDeviceType(id)}
-                    >
-                      <Icon className="text-yellow size-3" />
-                    </Button>
-                  ))}
-                </ButtonGroup>
-              </div>
-
-              <div className="flex h-9 items-center justify-between">
-                <Label
-                  htmlFor="theme-toggle"
-                  className={WORKBENCH_LABEL_CLASSES}
+        <ConfigSection value="display" title="Display">
+          <SettingRow label="Mode">
+            <ButtonGroup>
+              {DISPLAY_MODES.map(({ id, label, icon: Icon }) => (
+                <Button
+                  key={id}
+                  variant={displayMode === id ? "secondary" : "outline"}
+                  size="sm"
+                  className={TOGGLE_BUTTON_CLASSES}
+                  onClick={() => setDisplayMode(id)}
                 >
-                  Dark Theme
-                </Label>
-                <Switch
-                  id="theme-toggle"
-                  checked={theme === "dark"}
-                  onCheckedChange={(checked) =>
-                    setTheme(checked ? "dark" : "light")
-                  }
-                />
-              </div>
+                  <Icon className="text-yellow size-3" />
+                  {label}
+                </Button>
+              ))}
+            </ButtonGroup>
+          </SettingRow>
 
-              <div className="flex items-center justify-between">
-                <Label className={WORKBENCH_LABEL_CLASSES}>Locale</Label>
-                <Select value={locale} onValueChange={setLocale}>
-                  <SelectTrigger className={WORKBENCH_SELECT_CLASSES}>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {LOCALE_OPTIONS.map((opt) => (
-                      <SelectItem
-                        key={opt.value}
-                        value={opt.value}
-                        className="text-xs"
-                      >
-                        {opt.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-          </AccordionContent>
-        </AccordionItem>
+          <SettingRow label="Device">
+            <ButtonGroup>
+              {DEVICE_TYPES.map(({ id, icon: Icon }) => (
+                <Button
+                  key={id}
+                  variant={deviceType === id ? "secondary" : "outline"}
+                  size="sm"
+                  className={TOGGLE_BUTTON_CLASSES}
+                  onClick={() => setDeviceType(id)}
+                >
+                  <Icon className="text-yellow size-3" />
+                </Button>
+              ))}
+            </ButtonGroup>
+          </SettingRow>
 
-        {/* Advanced Settings */}
-        <AccordionItem value="advanced">
-          <AccordionTrigger className="text-muted-foreground/80 px-5 text-xs font-medium tracking-wide">
-            <span>Advanced</span>
-          </AccordionTrigger>
-          <AccordionContent className="px-5 pt-2 pb-4">
-            <div className="space-y-4">
-              {/* Max Height */}
-              <div className="space-y-2">
-                <Label htmlFor="max-height" className={WORKBENCH_LABEL_CLASSES}>
-                  Max Height
-                </Label>
-                <InputGroup className="w-fit border-none">
-                  <InputGroupInput
-                    id="max-height"
-                    type="number"
-                    value={maxHeight}
-                    onChange={(e) => {
-                      const clamped = clamp(Number(e.target.value), 100, 2000);
-                      setMaxHeight(clamped);
-                    }}
-                    min={100}
-                    max={2000}
-                  />
-                  <InputGroupAddon
-                    align="inline-end"
-                    className={WORKBENCH_ADDON_CLASSES}
+          <SettingRow label="Dark Theme" htmlFor="theme-toggle" className="h-9">
+            <Switch
+              id="theme-toggle"
+              checked={theme === "dark"}
+              onCheckedChange={(checked) =>
+                setTheme(checked ? "dark" : "light")
+              }
+            />
+          </SettingRow>
+
+          <SettingRow label="Locale">
+            <Select value={locale} onValueChange={setLocale}>
+              <SelectTrigger className={SELECT_CLASSES}>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {LOCALE_OPTIONS.map((opt) => (
+                  <SelectItem
+                    key={opt.value}
+                    value={opt.value}
+                    className="text-xs"
                   >
-                    px
+                    {opt.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </SettingRow>
+        </ConfigSection>
+
+        <ConfigSection value="advanced" title="Advanced">
+          <div className="space-y-2">
+            <Label htmlFor="max-height" className={SMALL_TEXT_CLASSES}>
+              Max Height
+            </Label>
+            <InputGroup className="w-fit border-none">
+              <InputGroupInput
+                id="max-height"
+                type="number"
+                value={maxHeight}
+                onChange={(e) => {
+                  const clamped = clamp(Number(e.target.value), 100, 2000);
+                  setMaxHeight(clamped);
+                }}
+                min={100}
+                max={2000}
+              />
+              <InputGroupAddon
+                align="inline-end"
+                className={SMALL_TEXT_CLASSES}
+              >
+                px
+              </InputGroupAddon>
+            </InputGroup>
+          </div>
+
+          <div className="space-y-2">
+            <Label className={SMALL_TEXT_CLASSES}>Safe Area Insets</Label>
+            <div className="grid max-w-48 grid-cols-2 gap-2">
+              {SAFE_AREA_INSETS.map(({ key, symbol, ariaLabel }) => (
+                <InputGroup key={key} className="border-none">
+                  <InputGroupAddon className={SMALL_TEXT_CLASSES}>
+                    <InputGroupText>{symbol}</InputGroupText>
                   </InputGroupAddon>
+                  <InputGroupInput
+                    id={`inset-${key}`}
+                    type="number"
+                    value={safeAreaInsets[key]}
+                    onChange={(e) => {
+                      const clamped = clamp(Number(e.target.value), 0, 100);
+                      setSafeAreaInsets({ [key]: clamped });
+                    }}
+                    min={0}
+                    max={100}
+                    aria-label={ariaLabel}
+                    className={INPUT_CLASSES}
+                  />
                 </InputGroup>
-              </div>
-
-              {/* Safe Area Insets */}
-              <div className="space-y-2">
-                <Label className={WORKBENCH_LABEL_CLASSES}>
-                  Safe Area Insets
-                </Label>
-                <div className="grid max-w-48 grid-cols-2 gap-2">
-                  {SAFE_AREA_INSETS.map(({ key, symbol, ariaLabel }) => (
-                    <InputGroup key={key} className="border-none">
-                      <InputGroupAddon className={WORKBENCH_ADDON_CLASSES}>
-                        <InputGroupText>{symbol}</InputGroupText>
-                      </InputGroupAddon>
-                      <InputGroupInput
-                        id={`inset-${key}`}
-                        type="number"
-                        value={safeAreaInsets[key]}
-                        onChange={(e) => {
-                          const clamped = clamp(Number(e.target.value), 0, 100);
-                          setSafeAreaInsets({ [key]: clamped });
-                        }}
-                        min={0}
-                        max={100}
-                        aria-label={ariaLabel}
-                        className={WORKBENCH_INPUT_CLASSES}
-                      />
-                    </InputGroup>
-                  ))}
-                </div>
-              </div>
-
-              {/* User Agent Info (Read-only) */}
-              <div className="space-y-2">
-                <Label className={WORKBENCH_LABEL_CLASSES}>User Agent</Label>
-                <div className="bg-muted text-muted-foreground rounded-md border p-2 text-xs">
-                  <div>
-                    Device: <span className="font-mono">{deviceType}</span>
-                  </div>
-                  <div>
-                    Hover:{" "}
-                    <span className="font-mono">
-                      {deviceType === "desktop" ? "true" : "false"}
-                    </span>
-                  </div>
-                  <div>
-                    Touch:{" "}
-                    <span className="font-mono">
-                      {deviceType !== "desktop" ? "true" : "false"}
-                    </span>
-                  </div>
-                </div>
-              </div>
+              ))}
             </div>
-          </AccordionContent>
-        </AccordionItem>
+          </div>
+
+          <div className="space-y-2">
+            <Label className={SMALL_TEXT_CLASSES}>User Agent</Label>
+            <UserAgentInfo deviceType={deviceType} />
+          </div>
+        </ConfigSection>
       </Accordion>
     </div>
   );
