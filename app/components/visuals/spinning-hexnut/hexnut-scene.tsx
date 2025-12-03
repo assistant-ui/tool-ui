@@ -8,16 +8,6 @@ import * as THREE from "three";
 import { Mesh, Shape, Path, ExtrudeGeometry } from "three";
 import { useTheme } from "next-themes";
 
-// CSS for smooth color transitions with soft glow
-const asciiTransitionStyles = `
-  .ascii-scene table {
-    text-shadow: 0 0 10px currentColor;
-  }
-  .ascii-scene table td {
-
-  }
-`;
-
 function createHexnutGeometry(
   outerRadius = 1,
   innerRadius = 0.5,
@@ -108,7 +98,7 @@ interface PostFXOptions {
   noiseOpacity?: number;
 }
 
-interface AsciiSceneProps {
+interface HexnutSceneProps {
   width?: string | number;
   height?: string | number;
   className?: string;
@@ -116,13 +106,13 @@ interface AsciiSceneProps {
   debug?: boolean;
 }
 
-export function AsciiScene({
+export function HexnutScene({
   width = "100%",
   height = "100%",
   className,
   postfx = {},
   debug = false,
-}: AsciiSceneProps) {
+}: HexnutSceneProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [mounted, setMounted] = useState(false);
   const { resolvedTheme } = useTheme();
@@ -219,7 +209,7 @@ export function AsciiScene({
   return (
     <div
       ref={containerRef}
-      className={`ascii-scene ${className || ""}`}
+      className={`hexnut-scene ${className || ""}`}
       style={{
         width,
         height,
@@ -229,7 +219,6 @@ export function AsciiScene({
         transition: "opacity 0.6s ease-in-out",
       }}
     >
-      <style>{asciiTransitionStyles}</style>
       <Canvas
         camera={{ position: [0, 0, cameraZ], fov: 50 }}
         gl={{ alpha: true, antialias: true }}

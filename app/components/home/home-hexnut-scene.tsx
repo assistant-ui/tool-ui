@@ -3,10 +3,10 @@
 import dynamic from "next/dynamic";
 
 // Dynamic import with SSR disabled for Three.js components
-const AsciiSceneCanvas = dynamic(
+const HexnutSceneCanvas = dynamic(
   () =>
-    import("@/app/components/visuals/spinning-hexnut/ascii-scene").then(
-      (mod) => mod.AsciiScene,
+    import("@/app/components/visuals/spinning-hexnut/hexnut-scene").then(
+      (mod) => mod.HexnutScene,
     ),
   {
     ssr: false,
@@ -22,6 +22,6 @@ const AsciiSceneCanvas = dynamic(
   },
 );
 
-export function HomeAsciiScene() {
-  return <AsciiSceneCanvas width={200} height={200} />;
+export function HomeHexnutScene() {
+  return <HexnutSceneCanvas width={200} height={200} />;
 }
