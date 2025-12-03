@@ -2,11 +2,7 @@
 
 import { useMemo, Component, type ReactNode } from "react";
 import { useShallow } from "zustand/react/shallow";
-import {
-  Panel,
-  PanelGroup,
-  PanelResizeHandle,
-} from "react-resizable-panels";
+import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import {
   useWorkbenchStore,
   useActiveJsonTab,
@@ -232,7 +228,7 @@ function ComponentContent({ className }: { className?: string }) {
 function InlineView() {
   return (
     <div className="h-full py-4">
-      <div className="border-border h-full overflow-auto rounded-xl border-2 border-dashed transition-all">
+      <div className="border-border h-full overflow-auto rounded-xl border transition-all">
         <ComponentContent className="h-full" />
       </div>
     </div>
@@ -397,7 +393,7 @@ export function UnifiedWorkspace() {
             />
 
             {/* Sticky header with tabs */}
-            <div className="sticky top-0 z-20 flex items-center justify-between px-3 py-3">
+            <div className="sticky top-0 z-20 flex items-center gap-2 px-3 py-3">
               <Tabs
                 value={activeJsonTab}
                 onValueChange={(v) => setActiveJsonTab(v as ActiveJsonTab)}
@@ -415,15 +411,13 @@ export function UnifiedWorkspace() {
               <Button
                 variant="ghost"
                 size="sm"
-                className="h-7 gap-1 px-2 text-xs"
+                className="h-9 gap-1 px-2"
                 onClick={handleReset}
               >
-                <RotateCcw className="size-3" />
-                Reset
+                <RotateCcw className="size-4" />
               </Button>
             </div>
 
-            {/* CodeMirror Editor */}
             <JsonEditor
               key={activeJsonTab}
               label={tabLabels[activeJsonTab]}
@@ -436,12 +430,12 @@ export function UnifiedWorkspace() {
 
       {/* Unified resize handle - code/canvas divider = viewport left edge */}
       <PanelResizeHandle className="group relative w-2 shrink-0 bg-white dark:bg-[#0d1117]">
-        <div className="absolute left-1/2 top-1/2 h-12 w-1 -translate-x-1/2 -translate-y-1/2 rounded-full bg-gray-300 opacity-40 transition-all group-hover:bg-gray-400 group-hover:opacity-100 group-data-[resize-handle-active]:bg-gray-500 group-data-[resize-handle-active]:opacity-100 dark:bg-gray-600 dark:group-hover:bg-gray-500 dark:group-data-[resize-handle-active]:bg-gray-400" />
+        <div className="absolute top-1/2 left-1/2 h-12 w-1 -translate-x-1/2 -translate-y-1/2 rounded-full bg-gray-300 opacity-40 transition-all group-hover:bg-gray-400 group-hover:opacity-100 group-data-resize-handle-active:bg-gray-500 group-data-resize-handle-active:opacity-100 dark:bg-gray-600 dark:group-hover:bg-gray-500 dark:group-data-resize-handle-active:bg-gray-400" />
       </PanelResizeHandle>
 
       {/* Canvas Panel - flexible */}
       <Panel defaultSize={60} minSize={20}>
-        <div className="relative flex h-full flex-col overflow-hidden bg-white dark:bg-[#0d1117]">
+        <div className="relative flex h-full flex-col overflow-hidden bg-white pr-4 dark:bg-[#0d1117]">
           {/* Render based on display mode */}
           {displayMode === "inline" && <InlineView />}
           {displayMode === "pip" && <PipView onClose={handleClose} />}

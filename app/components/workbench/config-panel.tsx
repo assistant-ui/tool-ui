@@ -44,7 +44,6 @@ import {
   Maximize2,
   Square,
   PictureInPicture2,
-  Import,
   PanelLeftClose,
   PanelLeft,
   type LucideIcon,
@@ -52,9 +51,13 @@ import {
 
 // Workbench-specific input styling constants
 const WORKBENCH_INPUT_CLASSES =
-  "bg-accent hover:bg-accent/80 focus:ring-ring border-0 transition-colors focus:ring-2";
+  "bg-accent hover:bg-accent/80 focus:ring-ring border-0! transition-colors focus:ring-2 border-none!";
 
-const WORKBENCH_SELECT_CLASSES = `${WORKBENCH_INPUT_CLASSES} w-full text-xs`;
+const WORKBENCH_SELECT_CLASSES = `${WORKBENCH_INPUT_CLASSES} w-fit text-xs border-none!`;
+
+const WORKBENCH_LABEL_CLASSES = "text-xs font-normal";
+
+const WORKBENCH_ADDON_CLASSES = "text-xs font-normal";
 
 // Configuration for display mode buttons
 const DISPLAY_MODES: ReadonlyArray<{
@@ -192,17 +195,6 @@ export function ConfigPanel({
                   ))}
                 </SelectContent>
               </Select>
-
-              {/* Import placeholder */}
-              <Button
-                variant="outline"
-                size="sm"
-                className="w-full gap-2"
-                disabled
-              >
-                <Import className="size-4" />
-                Import (coming soon)
-              </Button>
             </div>
           </AccordionContent>
         </AccordionItem>
@@ -214,18 +206,17 @@ export function ConfigPanel({
           </AccordionTrigger>
           <AccordionContent className="px-5 pt-2 pb-4">
             <div className="space-y-4">
-              {/* Display Mode */}
-              <div className="space-y-2">
-                <Label className="text-xs font-normal tracking-wide">
+              <div className="flex flex-row items-center justify-between">
+                <Label className={`${WORKBENCH_LABEL_CLASSES} tracking-wide`}>
                   Mode
                 </Label>
-                <ButtonGroup className="w-full">
+                <ButtonGroup>
                   {DISPLAY_MODES.map(({ id, label, icon: Icon }) => (
                     <Button
                       key={id}
                       variant={displayMode === id ? "secondary" : "outline"}
                       size="sm"
-                      className="flex-1 gap-2 text-xs font-light"
+                      className="flex-1 gap-2 border-none text-xs font-light"
                       onClick={() => setDisplayMode(id)}
                     >
                       <Icon className="text-yellow size-3" />
@@ -235,28 +226,28 @@ export function ConfigPanel({
                 </ButtonGroup>
               </div>
 
-              {/* Device Type */}
-              <div className="space-y-2">
-                <Label className="text-xs">Device</Label>
-                <ButtonGroup className="w-full">
-                  {DEVICE_TYPES.map(({ id, label, icon: Icon }) => (
+              <div className="flex items-center justify-between">
+                <Label className={WORKBENCH_LABEL_CLASSES}>Device</Label>
+                <ButtonGroup>
+                  {DEVICE_TYPES.map(({ id, icon: Icon }) => (
                     <Button
                       key={id}
                       variant={deviceType === id ? "secondary" : "outline"}
                       size="sm"
-                      className="flex-1 gap-2 text-xs font-light"
+                      className="flex-1 gap-2 border-none text-xs font-light"
                       onClick={() => setDeviceType(id)}
                     >
                       <Icon className="text-yellow size-3" />
-                      {label}
                     </Button>
                   ))}
                 </ButtonGroup>
               </div>
 
-              {/* Theme Toggle */}
-              <div className="flex items-center justify-between">
-                <Label htmlFor="theme-toggle" className="text-xs">
+              <div className="flex h-9 items-center justify-between">
+                <Label
+                  htmlFor="theme-toggle"
+                  className={WORKBENCH_LABEL_CLASSES}
+                >
                   Dark Theme
                 </Label>
                 <Switch
@@ -268,9 +259,8 @@ export function ConfigPanel({
                 />
               </div>
 
-              {/* Locale Selection */}
-              <div className="space-y-2">
-                <Label className="text-xs">Locale</Label>
+              <div className="flex items-center justify-between">
+                <Label className={WORKBENCH_LABEL_CLASSES}>Locale</Label>
                 <Select value={locale} onValueChange={setLocale}>
                   <SelectTrigger className={WORKBENCH_SELECT_CLASSES}>
                     <SelectValue />
@@ -301,10 +291,10 @@ export function ConfigPanel({
             <div className="space-y-4">
               {/* Max Height */}
               <div className="space-y-2">
-                <Label htmlFor="max-height" className="text-xs">
+                <Label htmlFor="max-height" className={WORKBENCH_LABEL_CLASSES}>
                   Max Height
                 </Label>
-                <InputGroup>
+                <InputGroup className="w-fit border-none">
                   <InputGroupInput
                     id="max-height"
                     type="number"
@@ -313,20 +303,27 @@ export function ConfigPanel({
                       const clamped = clamp(Number(e.target.value), 100, 2000);
                       setMaxHeight(clamped);
                     }}
-                    className="bg-accent hover:bg-accent/80 placeholder:text-muted-foreground focus-visible:ring-ring disabled:text-yellow flex h-9 w-full rounded-md border-0 px-3 py-1 text-xs transition-colors focus-visible:ring-2 focus-visible:outline-none disabled:cursor-not-allowed"
                     min={100}
                     max={2000}
                   />
+                  <InputGroupAddon
+                    align="inline-end"
+                    className={WORKBENCH_ADDON_CLASSES}
+                  >
+                    px
+                  </InputGroupAddon>
                 </InputGroup>
               </div>
 
               {/* Safe Area Insets */}
               <div className="space-y-2">
-                <Label className="text-xs">Safe Area Insets</Label>
+                <Label className={WORKBENCH_LABEL_CLASSES}>
+                  Safe Area Insets
+                </Label>
                 <div className="grid max-w-48 grid-cols-2 gap-2">
                   {SAFE_AREA_INSETS.map(({ key, symbol, ariaLabel }) => (
-                    <InputGroup key={key}>
-                      <InputGroupAddon>
+                    <InputGroup key={key} className="border-none">
+                      <InputGroupAddon className={WORKBENCH_ADDON_CLASSES}>
                         <InputGroupText>{symbol}</InputGroupText>
                       </InputGroupAddon>
                       <InputGroupInput
@@ -349,7 +346,7 @@ export function ConfigPanel({
 
               {/* User Agent Info (Read-only) */}
               <div className="space-y-2">
-                <Label className="text-xs">User Agent</Label>
+                <Label className={WORKBENCH_LABEL_CLASSES}>User Agent</Label>
                 <div className="bg-muted text-muted-foreground rounded-md border p-2 text-xs">
                   <div>
                     Device: <span className="font-mono">{deviceType}</span>
