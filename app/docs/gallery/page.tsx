@@ -4,7 +4,6 @@ import { DataTable } from "@/components/tool-ui/data-table";
 import { MediaCard } from "@/components/tool-ui/media-card";
 import { SocialPost } from "@/components/tool-ui/social-post";
 import { OptionList } from "@/components/tool-ui/option-list";
-import { ZenField } from "@/app/components/visuals/zen-field";
 import { presets } from "@/lib/presets/data-table";
 import { mediaCardPresets } from "@/lib/presets/media-card";
 import {
@@ -18,9 +17,8 @@ import { ArrowRightIcon } from "lucide-react";
 export default function ComponentsGalleryPage() {
   return (
     <DocsBorderedShell>
-      <ZenField className="z-0 dark:opacity-10 dark:contrast-200" />
       <div className="scrollbar-subtle z-10 min-h-0 flex-1 overflow-y-auto overscroll-contain p-6 sm:p-10 lg:p-12">
-        <div className="mx-auto columns-1 gap-5 pb-20 [column-fill:_balance] md:columns-2 2xl:columns-3 2xl:gap-5">
+        <div className="mx-auto columns-1 gap-5 pb-20 [column-fill:balance] md:columns-2 2xl:columns-3 2xl:gap-5">
           <div className="mb-5 [column-span:all] 2xl:mb-5">
             <DataTable {...presets.stocks} />
           </div>
