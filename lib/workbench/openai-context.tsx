@@ -26,11 +26,8 @@ interface OpenAIProviderProps {
 
 export function OpenAIProvider({ children }: OpenAIProviderProps) {
   const store = useWorkbenchStore();
-
-  // Get current globals from store
   const globals = store.getOpenAIGlobals();
 
-  // API Methods
   const callTool = useCallback(
     async (name: string, args: Record<string, unknown>): Promise<CallToolResponse> => {
       store.addConsoleEntry({
@@ -84,7 +81,6 @@ export function OpenAIProvider({ children }: OpenAIProviderProps) {
         method: "sendFollowUpMessage",
         args,
       });
-      // In workbench, we just log this
     },
     [store]
   );
@@ -94,7 +90,6 @@ export function OpenAIProvider({ children }: OpenAIProviderProps) {
       type: "requestClose",
       method: "requestClose",
     });
-    // In workbench, we just log this
   }, [store]);
 
   const openExternal = useCallback(
@@ -104,15 +99,12 @@ export function OpenAIProvider({ children }: OpenAIProviderProps) {
         method: `openExternal("${payload.href}")`,
         args: payload,
       });
-      // In workbench, we just log this
     },
     [store]
   );
 
-  // Combine globals and API methods
   const value = useMemo<OpenAIContextValue>(
     () => ({
-      // Globals
       theme: globals.theme,
       locale: globals.locale,
       displayMode: globals.displayMode,
@@ -123,8 +115,6 @@ export function OpenAIProvider({ children }: OpenAIProviderProps) {
       widgetState: globals.widgetState,
       userAgent: globals.userAgent,
       safeArea: globals.safeArea,
-
-      // API Methods
       callTool,
       setWidgetState,
       requestDisplayMode,

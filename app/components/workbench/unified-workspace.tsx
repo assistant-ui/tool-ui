@@ -73,9 +73,7 @@ function ErrorDisplay({ error }: { error: Error | null }) {
           )
           .join("\n");
       }
-    } catch {
-      // Keep original if parsing fails
-    }
+    } catch {}
   }
 
   return (
@@ -316,7 +314,6 @@ export function UnifiedWorkspace() {
   const handleReset = () => {
     switch (activeJsonTab) {
       case "toolInput": {
-        // Reset to component's default props
         const component = getComponent(selectedComponent);
         setToolInput(component?.defaultProps ?? {});
         break;

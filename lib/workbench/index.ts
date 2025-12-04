@@ -1,14 +1,5 @@
-/**
- * Workbench Library
- *
- * Exports all workbench-related utilities for testing Tool UIs
- * with the OpenAI Apps SDK interface.
- */
-
-// Types
 export * from "./types";
 
-// Store
 export { useWorkbenchStore } from "./store";
 export {
   useSelectedComponent,
@@ -20,10 +11,8 @@ export {
   useToolOutput as useWorkbenchToolOutput,
 } from "./store";
 
-// Bridge
 export { generateBridgeScript, generateComponentBundle } from "./openai-bridge";
 
-// Component Registry
 export {
   workbenchComponents,
   getComponent,
@@ -32,7 +21,6 @@ export {
   type ComponentCategory,
 } from "./component-registry";
 
-// OpenAI Context
 export {
   OpenAIProvider,
   useOpenAI,
@@ -48,7 +36,6 @@ export {
   useSendFollowUpMessage,
 } from "./openai-context";
 
-// Mock Responses
 export {
   handleMockToolCall,
   registerMockHandler,

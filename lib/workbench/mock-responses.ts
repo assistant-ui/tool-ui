@@ -1,20 +1,8 @@
-/**
- * Mock Tool Responses
- *
- * Provides simulated responses for callTool requests in the Workbench.
- * These allow testing component behavior without a real MCP server.
- */
-
 import type { CallToolResponse } from "./types";
 
 type MockHandler = (args: Record<string, unknown>) => Promise<CallToolResponse>;
 
-/**
- * Registry of mock tool handlers.
- * Add handlers here to simulate specific tool behaviors.
- */
 const mockHandlers: Record<string, MockHandler> = {
-  // Example: Search handler
   search: async (args) => {
     await simulateDelay(500);
     return {
@@ -29,7 +17,6 @@ const mockHandlers: Record<string, MockHandler> = {
     };
   },
 
-  // Example: Weather handler
   get_weather: async (args) => {
     await simulateDelay(300);
     const location = (args.location as string) || "San Francisco";
@@ -47,7 +34,6 @@ const mockHandlers: Record<string, MockHandler> = {
     };
   },
 
-  // Example: Create/update handler
   create_item: async (args) => {
     await simulateDelay(400);
     return {
@@ -60,7 +46,6 @@ const mockHandlers: Record<string, MockHandler> = {
     };
   },
 
-  // Example: Delete handler
   delete_item: async (args) => {
     await simulateDelay(200);
     return {
@@ -71,7 +56,6 @@ const mockHandlers: Record<string, MockHandler> = {
     };
   },
 
-  // Example: List handler
   list_items: async () => {
     await simulateDelay(350);
     return {
@@ -87,7 +71,6 @@ const mockHandlers: Record<string, MockHandler> = {
     };
   },
 
-  // Example: Refresh/sync handler
   refresh: async () => {
     await simulateDelay(600);
     return {
@@ -99,10 +82,6 @@ const mockHandlers: Record<string, MockHandler> = {
   },
 };
 
-/**
- * Default handler for unknown tools.
- * Returns a generic success response with the provided args echoed back.
- */
 const defaultHandler: MockHandler = async (args) => {
   await simulateDelay(300);
   return {
@@ -115,20 +94,10 @@ const defaultHandler: MockHandler = async (args) => {
   };
 };
 
-/**
- * Simulate network delay for realism.
- */
 function simulateDelay(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-/**
- * Handle a mock tool call.
- *
- * @param toolName - The name of the tool being called
- * @param args - The arguments passed to the tool
- * @returns A promise resolving to the mock response
- */
 export async function handleMockToolCall(
   toolName: string,
   args: Record<string, unknown>
@@ -137,10 +106,6 @@ export async function handleMockToolCall(
   return handler(args);
 }
 
-/**
- * Register a custom mock handler.
- * Useful for testing specific tool behaviors.
- */
 export function registerMockHandler(
   toolName: string,
   handler: MockHandler
@@ -148,9 +113,6 @@ export function registerMockHandler(
   mockHandlers[toolName] = handler;
 }
 
-/**
- * Get list of available mock tool names.
- */
 export function getAvailableMockTools(): string[] {
   return Object.keys(mockHandlers);
 }

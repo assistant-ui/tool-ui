@@ -35,10 +35,6 @@ const customEditorStyle = EditorView.theme(
   { dark: false },
 );
 
-/**
- * JSON editor with CodeMirror syntax highlighting.
- * Provides proper editing experience with built-in cursor management.
- */
 export function JsonEditor({
   label: _label,
   value,
@@ -59,7 +55,6 @@ export function JsonEditor({
     [],
   );
 
-  // Sync text state when value prop changes (e.g., switching components/tabs)
   useEffect(() => {
     const newValueStr = JSON.stringify(value);
 

@@ -7,10 +7,6 @@ import type { OpenAIGlobals } from "@/lib/workbench/types";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Terminal, Globe } from "lucide-react";
 
-/**
- * Inspector Panel - hosts console logs and global state inspection.
- * Future tabs can be added here for other inspector views.
- */
 export function InspectorPanel() {
   const [activeTab, setActiveTab] = useState<"console" | "globals">("console");
   const globals = useOpenAIGlobals();
@@ -43,9 +39,6 @@ export function InspectorPanel() {
   );
 }
 
-/**
- * Read-only display of the current OpenAI globals
- */
 function GlobalsView({ globals }: { globals: OpenAIGlobals }) {
   const globalsJson = JSON.stringify(globals, null, 2);
 
