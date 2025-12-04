@@ -344,13 +344,13 @@ export function UnifiedWorkspace() {
   return (
     <PanelGroup
       direction="horizontal"
-      className="flex h-full w-full flex-row bg-gray-100 dark:bg-neutral-950"
+      className="flex h-full w-full flex-row bg-neutral-100 dark:bg-neutral-950"
     >
       <Panel defaultSize={40} minSize={20} maxSize={80}>
         <div className="relative isolate flex h-full flex-col bg-transparent">
           <div className="scrollbar-subtle h-full overflow-y-auto">
             <div
-              className="pointer-events-none absolute top-0 z-10 h-22 w-full bg-linear-to-b from-gray-100 via-gray-100 to-transparent dark:from-neutral-950 dark:via-neutral-950"
+              className="pointer-events-none absolute top-0 z-10 h-22 w-full bg-linear-to-b from-neutral-100 via-neutral-100 to-transparent dark:from-neutral-950 dark:via-neutral-950"
               aria-hidden="true"
             />
 
@@ -387,8 +387,8 @@ export function UnifiedWorkspace() {
         </div>
       </Panel>
 
-      <PanelResizeHandle className="group relative z-10 w-3 -ml-3 shrink-0 cursor-col-resize">
-        <div className="absolute inset-y-0 right-0 w-px bg-border transition-colors group-hover:bg-gray-400 group-data-[resize-handle-active]:bg-gray-500 dark:group-hover:bg-gray-500 dark:group-data-[resize-handle-active]:bg-gray-400" />
+      <PanelResizeHandle className="group relative z-10 -ml-3 w-3 shrink-0 cursor-col-resize">
+        <div className="bg-border absolute inset-y-0 right-0 w-px transition-colors group-hover:bg-neutral-400 group-data-resize-handle-active:bg-neutral-500 dark:group-hover:bg-neutral-500 dark:group-data-resize-handle-active:bg-neutral-400" />
       </PanelResizeHandle>
 
       <Panel defaultSize={60} minSize={20}>
