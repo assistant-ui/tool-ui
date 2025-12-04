@@ -78,7 +78,7 @@ export function WorkbenchShell() {
             value={selectedComponent}
             onValueChange={setSelectedComponent}
           >
-            <SelectTrigger className={`${SELECT_CLASSES} text-sm`}>
+            <SelectTrigger className={`${SELECT_CLASSES} text-sm font-medium`}>
               <SelectValue placeholder="Select component" />
             </SelectTrigger>
             <SelectContent>
@@ -96,6 +96,13 @@ export function WorkbenchShell() {
         </div>
 
         <div className="flex items-center gap-3">
+          <div className="pointer-events-none invisible flex items-center gap-3">
+            <div className="-ml-1.5 p-1.5">
+              <ArrowLeft className="size-4" />
+            </div>
+            <LogoMark className="size-5 shrink-0" />
+            <span className="font-mono font-medium select-none">Workbench</span>
+          </div>
           <Button
             variant="ghost"
             size="icon"
