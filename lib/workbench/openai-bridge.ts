@@ -1,23 +1,5 @@
-/**
- * OpenAI Bridge Script Generator
- *
- * Generates the JavaScript code that gets injected into component iframes
- * to create the `window.openai` API. This simulates the ChatGPT host environment.
- */
-
 import type { OpenAIGlobals } from "./types";
 
-/**
- * Generates the bridge script that creates window.openai in the iframe.
- *
- * The script:
- * 1. Stores current globals state
- * 2. Provides getters for all read-only properties
- * 3. Implements API methods that postMessage to parent
- * 4. Tracks pending async calls with promises
- * 5. Listens for responses and globals updates from parent
- * 6. Dispatches 'openai:set_globals' CustomEvent when globals change
- */
 export function generateBridgeScript(initialGlobals: OpenAIGlobals): string {
   const globalsJson = JSON.stringify(initialGlobals);
 
@@ -25,17 +7,9 @@ export function generateBridgeScript(initialGlobals: OpenAIGlobals): string {
 (function() {
   'use strict';
 
-  // ─────────────────────────────────────────────────────────────────────────
-  // State
-  // ─────────────────────────────────────────────────────────────────────────
-
   let globals = ${globalsJson};
   const pendingCalls = new Map();
   let callIdCounter = 0;
-
-  // ─────────────────────────────────────────────────────────────────────────
-  // PostMessage Communication
-  // ─────────────────────────────────────────────────────────────────────────
 
   function sendMethodCall(method, args) {
     return new Promise((resolve, reject) => {
@@ -58,10 +32,6 @@ export function generateBridgeScript(initialGlobals: OpenAIGlobals): string {
       }, 30000);
     });
   }
-
-  // ─────────────────────────────────────────────────────────────────────────
-  // Message Handler
-  // ─────────────────────────────────────────────────────────────────────────
 
   window.addEventListener('message', function(event) {
     const data = event.data;
@@ -103,10 +73,6 @@ export function generateBridgeScript(initialGlobals: OpenAIGlobals): string {
       }
     }
   }, false);
-
-  // ─────────────────────────────────────────────────────────────────────────
-  // window.openai API
-  // ─────────────────────────────────────────────────────────────────────────
 
   window.openai = {
     // Read-only globals (via getters)
@@ -162,9 +128,6 @@ export function generateBridgeScript(initialGlobals: OpenAIGlobals): string {
 `;
 }
 
-/**
- * Generates a complete HTML document with the bridge script and component code.
- */
 export function generateComponentBundle(
   bridgeScript: string,
   componentHtml: string,

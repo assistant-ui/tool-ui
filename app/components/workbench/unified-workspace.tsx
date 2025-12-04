@@ -19,10 +19,6 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/ui/cn";
 import { RotateCcw, X, AlertTriangle } from "lucide-react";
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Error Boundary for Component Rendering
-// ─────────────────────────────────────────────────────────────────────────────
-
 interface ErrorBoundaryProps {
   children: ReactNode;
   toolInput: Record<string, unknown>;
@@ -47,7 +43,6 @@ class ComponentErrorBoundary extends Component<
   }
 
   componentDidUpdate(prevProps: ErrorBoundaryProps) {
-    // Reset error state when toolInput changes (user fixed the JSON)
     if (this.state.hasError && prevProps.toolInput !== this.props.toolInput) {
       this.setState({ hasError: false, error: null });
     }
@@ -64,7 +59,6 @@ class ComponentErrorBoundary extends Component<
 function ErrorDisplay({ error }: { error: Error | null }) {
   const message = error?.message ?? "Unknown error";
 
-  // Try to parse Zod-style error messages for better display
   let formattedError = message;
   if (message.includes("Invalid") && message.includes("[")) {
     try {
@@ -80,7 +74,7 @@ function ErrorDisplay({ error }: { error: Error | null }) {
           .join("\n");
       }
     } catch {
-      // Keep original message if parsing fails
+      // Keep original if parsing fails
     }
   }
 
@@ -106,10 +100,6 @@ function ErrorDisplay({ error }: { error: Error | null }) {
   );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Fallback & Component Renderer
-// ─────────────────────────────────────────────────────────────────────────────
-
 function FallbackComponent({ componentId }: { componentId: string }) {
   return (
     <div className="flex h-full items-center justify-center p-8">
@@ -129,13 +119,11 @@ function ComponentRenderer() {
   const selectedComponent = useSelectedComponent();
   const toolInput = useToolInput();
 
-  // Get the component from registry
   const entry = useMemo(
     () => getComponent(selectedComponent),
     [selectedComponent],
   );
 
-  // Merge default props with current toolInput
   const props = useMemo(
     () => ({
       ...(entry?.defaultProps ?? {}),
@@ -152,10 +140,6 @@ function ComponentRenderer() {
 
   return <Component {...props} />;
 }
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Isolated Theme Wrapper
-// ─────────────────────────────────────────────────────────────────────────────
 
 const LIGHT_THEME_VARS: React.CSSProperties = {
   "--background": "0 0% 100%",
@@ -221,10 +205,6 @@ function ComponentContent({ className }: { className?: string }) {
   );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Inline View - Resizable panels with device simulation
-// ─────────────────────────────────────────────────────────────────────────────
-
 function InlineView() {
   return (
     <div className="h-full py-4">
@@ -234,10 +214,6 @@ function InlineView() {
     </div>
   );
 }
-
-// ─────────────────────────────────────────────────────────────────────────────
-// PiP View - Small floating window
-// ─────────────────────────────────────────────────────────────────────────────
 
 function PipView({ onClose }: { onClose: () => void }) {
   return (
@@ -257,10 +233,6 @@ function PipView({ onClose }: { onClose: () => void }) {
   );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Fullscreen View - Full coverage
-// ─────────────────────────────────────────────────────────────────────────────
-
 function FullscreenView({ onClose }: { onClose: () => void }) {
   return (
     <div className="absolute inset-0 overflow-hidden">
@@ -276,10 +248,6 @@ function FullscreenView({ onClose }: { onClose: () => void }) {
     </div>
   );
 }
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Unified Workspace - Merges code and canvas into single surface
-// ─────────────────────────────────────────────────────────────────────────────
 
 export function UnifiedWorkspace() {
   const activeJsonTab = useActiveJsonTab();
@@ -311,7 +279,6 @@ export function UnifiedWorkspace() {
     })),
   );
 
-  // JSON editing logic
   const getActiveData = (): Record<string, unknown> => {
     switch (activeJsonTab) {
       case "toolInput":
@@ -382,17 +349,14 @@ export function UnifiedWorkspace() {
       direction="horizontal"
       className="bg-background flex h-full w-full flex-row"
     >
-      {/* Code Panel - resizable */}
       <Panel defaultSize={40} minSize={20} maxSize={80}>
         <div className="relative isolate flex h-full flex-col">
           <div className="h-full overflow-y-auto bg-white dark:bg-[#0d1117]">
-            {/* Gradient fade for sticky header */}
             <div
               className="pointer-events-none absolute top-0 z-10 h-20 w-full bg-linear-to-b from-white via-white to-transparent dark:from-[#0d1117] dark:via-[#0d1117]"
               aria-hidden="true"
             />
 
-            {/* Sticky header with tabs */}
             <div className="sticky top-0 z-20 flex items-center gap-2 px-3 py-3">
               <Tabs
                 value={activeJsonTab}
@@ -428,15 +392,12 @@ export function UnifiedWorkspace() {
         </div>
       </Panel>
 
-      {/* Unified resize handle - code/canvas divider = viewport left edge */}
       <PanelResizeHandle className="group relative w-2 shrink-0 bg-white dark:bg-[#0d1117]">
         <div className="absolute top-1/2 left-1/2 h-12 w-1 -translate-x-1/2 -translate-y-1/2 rounded-full bg-gray-300 opacity-40 transition-all group-hover:bg-gray-400 group-hover:opacity-100 group-data-resize-handle-active:bg-gray-500 group-data-resize-handle-active:opacity-100 dark:bg-gray-600 dark:group-hover:bg-gray-500 dark:group-data-resize-handle-active:bg-gray-400" />
       </PanelResizeHandle>
 
-      {/* Canvas Panel - flexible */}
       <Panel defaultSize={60} minSize={20}>
         <div className="relative flex h-full flex-col overflow-hidden bg-white pr-4 dark:bg-[#0d1117]">
-          {/* Render based on display mode */}
           {displayMode === "inline" && <InlineView />}
           {displayMode === "pip" && <PipView onClose={handleClose} />}
           {displayMode === "fullscreen" && (

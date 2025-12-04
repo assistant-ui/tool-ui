@@ -16,17 +16,9 @@ import type {
   CallToolResponse,
 } from "./types";
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Context Types
-// ─────────────────────────────────────────────────────────────────────────────
-
 interface OpenAIContextValue extends OpenAIGlobals, OpenAIAPI {}
 
 const OpenAIContext = createContext<OpenAIContextValue | null>(null);
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Provider Component
-// ─────────────────────────────────────────────────────────────────────────────
 
 interface OpenAIProviderProps {
   children: ReactNode;
@@ -156,14 +148,6 @@ export function OpenAIProvider({ children }: OpenAIProviderProps) {
   );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Hooks (matching OpenAI Apps SDK patterns)
-// ─────────────────────────────────────────────────────────────────────────────
-
-/**
- * Access the full OpenAI context (globals + API).
- * Throws if used outside of OpenAIProvider.
- */
 export function useOpenAI(): OpenAIContextValue {
   const context = useContext(OpenAIContext);
   if (!context) {
@@ -172,10 +156,6 @@ export function useOpenAI(): OpenAIContextValue {
   return context;
 }
 
-/**
- * Access a specific global value.
- * Matches the useOpenAiGlobal pattern from OpenAI Apps SDK.
- */
 export function useOpenAiGlobal<K extends keyof OpenAIGlobals>(
   key: K
 ): OpenAIGlobals[K] {
@@ -183,45 +163,26 @@ export function useOpenAiGlobal<K extends keyof OpenAIGlobals>(
   return context[key];
 }
 
-/**
- * Get the tool input passed to the component.
- */
 export function useToolInput<T = Record<string, unknown>>(): T {
   return useOpenAiGlobal("toolInput") as T;
 }
 
-/**
- * Get the tool output/result.
- */
 export function useToolOutput<T = Record<string, unknown>>(): T | null {
   return useOpenAiGlobal("toolOutput") as T | null;
 }
 
-/**
- * Get the current theme.
- */
 export function useTheme(): "light" | "dark" {
   return useOpenAiGlobal("theme");
 }
 
-/**
- * Get the current display mode.
- */
 export function useDisplayMode(): DisplayMode {
   return useOpenAiGlobal("displayMode");
 }
 
-/**
- * Get the current locale.
- */
 export function useLocale(): string {
   return useOpenAiGlobal("locale");
 }
 
-/**
- * Access and update widget state.
- * Returns [state, setState] tuple similar to useState.
- */
 export function useWidgetState<T extends Record<string, unknown>>(
   defaultState?: T
 ): readonly [T | null, (state: T | ((prev: T | null) => T)) => void] {
@@ -242,25 +203,16 @@ export function useWidgetState<T extends Record<string, unknown>>(
   return [currentState, setState] as const;
 }
 
-/**
- * Get the callTool function.
- */
 export function useCallTool() {
   const context = useOpenAI();
   return context.callTool;
 }
 
-/**
- * Get the requestDisplayMode function.
- */
 export function useRequestDisplayMode() {
   const context = useOpenAI();
   return context.requestDisplayMode;
 }
 
-/**
- * Get the sendFollowUpMessage function.
- */
 export function useSendFollowUpMessage() {
   const context = useOpenAI();
   return context.sendFollowUpMessage;

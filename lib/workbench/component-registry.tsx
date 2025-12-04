@@ -1,12 +1,5 @@
 "use client";
 
-/**
- * Component Registry
- *
- * Registry of built-in Tool UI components available for testing in the Workbench.
- * Each entry maps to an actual React component from the tool-ui library.
- */
-
 import type { ComponentType } from "react";
 import { MediaCard } from "@/components/tool-ui/media-card";
 import {
@@ -14,43 +7,24 @@ import {
   parseSerializableOptionList,
 } from "@/components/tool-ui/option-list";
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Types
-// ─────────────────────────────────────────────────────────────────────────────
-
 export type ComponentCategory = "cards" | "lists" | "forms" | "data";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type AnyComponent = ComponentType<any>;
 
 export interface WorkbenchComponentEntry {
-  /** Unique identifier */
   id: string;
-  /** Display label */
   label: string;
-  /** Brief description */
   description: string;
-  /** Category for grouping */
   category: ComponentCategory;
-  /** The actual React component */
   component: AnyComponent;
-  /** Default props/toolInput */
   defaultProps: Record<string, unknown>;
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Component Wrapper for OptionList (handles parsing)
-// ─────────────────────────────────────────────────────────────────────────────
-
 function OptionListWrapper(props: Record<string, unknown>) {
-  // Parse the serializable data into the expected format
   const parsed = parseSerializableOptionList(props);
   return <OptionList {...parsed} />;
 }
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Registry
-// ─────────────────────────────────────────────────────────────────────────────
 
 export const workbenchComponents: WorkbenchComponentEntry[] = [
   {
@@ -110,8 +84,6 @@ export const workbenchComponents: WorkbenchComponentEntry[] = [
       },
     },
   },
-
-  // Placeholder entries for components not yet integrated
   {
     id: "social-post",
     label: "Social Post (Coming Soon)",
@@ -133,10 +105,6 @@ export const workbenchComponents: WorkbenchComponentEntry[] = [
     },
   },
 ];
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Placeholder Component
-// ─────────────────────────────────────────────────────────────────────────────
 
 function PlaceholderComponent({ message }: { message?: string }) {
   return (
