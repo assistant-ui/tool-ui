@@ -9,7 +9,10 @@
 
 import type { ComponentType } from "react";
 import { MediaCard } from "@/components/tool-ui/media-card";
-import { OptionList, parseSerializableOptionList } from "@/components/tool-ui/option-list";
+import {
+  OptionList,
+  parseSerializableOptionList,
+} from "@/components/tool-ui/option-list";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Types
@@ -51,29 +54,6 @@ function OptionListWrapper(props: Record<string, unknown>) {
 
 export const workbenchComponents: WorkbenchComponentEntry[] = [
   {
-    id: "media-card",
-    label: "Media Card",
-    description: "Rich media display with image, video, audio, or link content",
-    category: "cards",
-    component: MediaCard,
-    defaultProps: {
-      surfaceId: "workbench-media-card",
-      assetId: "workbench-asset",
-      kind: "image",
-      src: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&auto=format&fit=crop",
-      alt: "Mountain sunrise with golden light",
-      title: "Mountain Sunrise",
-      description: "A beautiful sunrise illuminates the mountain peaks with golden light.",
-      ratio: "16:9",
-      domain: "unsplash.com",
-      createdAtISO: new Date().toISOString(),
-      source: {
-        label: "Nature Photography",
-        iconUrl: "https://api.dicebear.com/7.x/shapes/svg?seed=nature",
-      },
-    },
-  },
-  {
     id: "option-list",
     label: "Option List",
     description: "Interactive selection list with icons and descriptions",
@@ -106,6 +86,31 @@ export const workbenchComponents: WorkbenchComponentEntry[] = [
       selectionMode: "single",
     },
   },
+  {
+    id: "media-card",
+    label: "Media Card",
+    description: "Rich media display with image, video, audio, or link content",
+    category: "cards",
+    component: MediaCard,
+    defaultProps: {
+      surfaceId: "workbench-media-card",
+      assetId: "workbench-asset",
+      kind: "image",
+      src: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&auto=format&fit=crop",
+      alt: "Mountain sunrise with golden light",
+      title: "Mountain Sunrise",
+      description:
+        "A beautiful sunrise illuminates the mountain peaks with golden light.",
+      ratio: "16:9",
+      domain: "unsplash.com",
+      createdAtISO: new Date().toISOString(),
+      source: {
+        label: "Nature Photography",
+        iconUrl: "https://api.dicebear.com/7.x/shapes/svg?seed=nature",
+      },
+    },
+  },
+
   // Placeholder entries for components not yet integrated
   {
     id: "social-post",
@@ -143,20 +148,10 @@ function PlaceholderComponent({ message }: { message?: string }) {
   );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Utility Functions
-// ─────────────────────────────────────────────────────────────────────────────
-
-/**
- * Get a component entry by ID.
- */
 export function getComponent(id: string): WorkbenchComponentEntry | undefined {
   return workbenchComponents.find((c) => c.id === id);
 }
 
-/**
- * Get all component IDs.
- */
 export function getComponentIds(): string[] {
   return workbenchComponents.map((c) => c.id);
 }
