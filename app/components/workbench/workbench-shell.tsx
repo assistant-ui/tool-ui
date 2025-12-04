@@ -27,7 +27,7 @@ export function WorkbenchShell() {
 
   return (
     <div className="flex h-full w-full flex-col overflow-hidden">
-      <div className="bg-background flex h-10 shrink-0 items-center gap-3 border-b px-4">
+      <div className="bg-background flex h-12 shrink-0 items-center gap-3 px-4">
         <Link
           href="/"
           className="text-muted-foreground hover:text-foreground -ml-1 rounded-md p-1 transition-colors"
@@ -36,17 +36,17 @@ export function WorkbenchShell() {
           <ArrowLeft className="size-4" />
         </Link>
         <LogoMark className="size-5 shrink-0" />
-        <span className="text-sm font-medium">Workbench</span>
+        <span className="-mb-0.5 font-mono text-sm font-medium">Workbench</span>
       </div>
 
       <div className="flex min-h-0 flex-1 overflow-hidden">
         <aside
-          className={`scrollbar-subtle flex h-full shrink-0 flex-col overflow-hidden border-r transition-[width] duration-200 ease-in-out ${
+          className={`scrollbar-subtle flex h-full shrink-0 flex-col overflow-hidden transition-[width] duration-200 ease-in-out ${
             isPanelCollapsed ? "w-12" : "w-80"
           }`}
         >
           <div
-            className={`h-full transition-opacity duration-150 ${
+            className={`h-full pt-4 transition-opacity duration-150 ${
               isFading ? "opacity-0" : "opacity-100"
             }`}
           >
@@ -58,7 +58,7 @@ export function WorkbenchShell() {
           </div>
         </aside>
 
-        <div className="flex min-w-0 flex-1 flex-col">
+        <div className="flex min-w-0 flex-1 flex-col overflow-clip rounded-tl-lg border-t border-l">
           <PanelGroup direction="vertical">
             <Panel
               defaultSize={100 - CONSOLE_DEFAULT_SIZE}

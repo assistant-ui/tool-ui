@@ -52,7 +52,6 @@ import {
   INPUT_GROUP_CLASSES,
   INPUT_CLASSES,
   ADDON_CLASSES,
-  SMALL_TEXT_CLASSES,
   LABEL_CLASSES,
   SELECT_CLASSES,
   TOGGLE_BUTTON_CLASSES,
@@ -60,6 +59,7 @@ import {
   SECTION_HEADER_CLASSES,
   SECTION_CONTENT_CLASSES,
   PANEL_TOGGLE_CLASSES,
+  COMPACT_SMALL_TEXT_CLASSES,
 } from "./styles";
 
 const DISPLAY_MODES: ReadonlyArray<{
@@ -213,27 +213,25 @@ export function ConfigPanel({
               <span>Component</span>
             </AccordionTrigger>
             <AccordionContent className={SECTION_CONTENT_CLASSES}>
-              <div className="space-y-3">
-                <Select
-                  value={selectedComponent}
-                  onValueChange={setSelectedComponent}
-                >
-                  <SelectTrigger className={SELECT_CLASSES}>
-                    <SelectValue placeholder="Select component" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {workbenchComponents.map((comp) => (
-                      <SelectItem
-                        className={SMALL_TEXT_CLASSES}
-                        key={comp.id}
-                        value={comp.id}
-                      >
-                        {comp.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+              <Select
+                value={selectedComponent}
+                onValueChange={setSelectedComponent}
+              >
+                <SelectTrigger className={SELECT_CLASSES}>
+                  <SelectValue placeholder="Select component" />
+                </SelectTrigger>
+                <SelectContent>
+                  {workbenchComponents.map((comp) => (
+                    <SelectItem
+                      className={COMPACT_SMALL_TEXT_CLASSES}
+                      key={comp.id}
+                      value={comp.id}
+                    >
+                      {comp.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </AccordionContent>
           </AccordionItem>
 

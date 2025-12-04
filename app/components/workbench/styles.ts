@@ -19,8 +19,6 @@ export const TOGGLE_BUTTON_ACTIVE_CLASSES =
 
 export const INFO_BOX_CLASSES = `${CONTROL_BG_CLASSES} text-muted-foreground rounded-md p-2 text-xs`;
 
-export const SMALL_TEXT_CLASSES = "text-sm font-normal";
-
 export const LABEL_CLASSES =
   "text-sm font-normal text-neutral-500 dark:text-neutral-400";
 
@@ -29,9 +27,9 @@ export const COMPACT_SMALL_TEXT_CLASSES = "text-xs font-normal";
 export const COMPACT_LABEL_CLASSES =
   "text-xs font-normal text-neutral-500 dark:text-neutral-400";
 
-export const SECTION_HEADER_CLASSES = "px-4  text-sm font-normal";
+export const SECTION_HEADER_CLASSES = "px-4 py-3 text-sm font-normal";
 
-export const SECTION_CONTENT_CLASSES = " px-4 pb-4";
+export const SECTION_CONTENT_CLASSES = "pt-1 px-4 pb-4";
 
 export const PANEL_TOGGLE_CLASSES =
   "text-muted-foreground hover:text-foreground hover:bg-muted rounded-md transition-colors";
