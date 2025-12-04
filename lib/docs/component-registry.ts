@@ -11,14 +11,14 @@ export const componentsRegistry: ComponentMeta[] = [
     path: "/docs/chart",
   },
   {
+    id: "code-block",
+    label: "Code Block",
+    path: "/docs/code-block",
+  },
+  {
     id: "data-table",
     label: "Data Table",
     path: "/docs/data-table",
-  },
-  {
-    id: "option-list",
-    label: "Option List",
-    path: "/docs/option-list",
   },
   {
     id: "media-card",
@@ -26,9 +26,19 @@ export const componentsRegistry: ComponentMeta[] = [
     path: "/docs/media-card",
   },
   {
+    id: "option-list",
+    label: "Option List",
+    path: "/docs/option-list",
+  },
+  {
     id: "social-post",
     label: "Social Posts",
     path: "/docs/social-post",
+  },
+  {
+    id: "terminal",
+    label: "Terminal",
+    path: "/docs/terminal",
   },
 ];
 

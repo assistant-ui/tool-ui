@@ -1,0 +1,13 @@
+import Content from "./content.mdx";
+import { ComponentDocsExamples } from "../_components/component-docs-examples";
+import { CodeBlockPreview } from "../[component]/previews/code-block-preview";
+
+export default function CodeBlockDocsPage() {
+  return (
+    <ComponentDocsExamples
+      docs={<Content />}
+      examples={<CodeBlockPreview withContainer={false} />}
+      defaultTab="docs"
+    />
+  );
+}

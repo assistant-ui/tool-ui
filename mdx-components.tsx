@@ -17,6 +17,8 @@ import { Mermaid } from "@/app/components/mdx/mermaid";
 import {
   ChartPresetExample,
   OptionListPresetExample,
+  CodeBlockPresetExample,
+  TerminalPresetExample,
 } from "@/app/docs/_components/preset-example";
 
 export function useMDXComponents(components: MDXComponents): MDXComponents {
@@ -89,6 +91,8 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
     Mermaid,
     ChartPresetExample,
     OptionListPresetExample,
+    CodeBlockPresetExample,
+    TerminalPresetExample,
     ...components,
   };
 }
