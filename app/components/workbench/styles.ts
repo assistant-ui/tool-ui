@@ -1,7 +1,7 @@
 export const CONTROL_BG_CLASSES =
-  "bg-input/70 hover:bg-input/80 dark:bg-input/70! dark:hover:bg-input/80! border-none!";
+  "bg-input/70 hover:bg-input/80 dark:bg-input/70! dark:hover:bg-input/80!";
 
-export const INPUT_GROUP_CLASSES = `${CONTROL_BG_CLASSES} w-fit border-none! shadow-none!`;
+export const INPUT_GROUP_CLASSES = `${CONTROL_BG_CLASSES} w-fit border-none! shadow-none! max-h-8`;
 
 export const INPUT_CLASSES =
   "bg-transparent! dark:bg-transparent! focus:ring-0! border-0! border-none! [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none";
@@ -10,7 +10,7 @@ export const ADDON_CLASSES = "bg-transparent! text-sm font-normal";
 
 export const COMPACT_ADDON_CLASSES = "bg-transparent! text-xs font-normal";
 
-export const SELECT_CLASSES = `${CONTROL_BG_CLASSES} w-fit text-xs`;
+export const SELECT_CLASSES = `${CONTROL_BG_CLASSES} w-fit text-xs shadow-none max-h-8 border-none`;
 
 export const TOGGLE_BUTTON_CLASSES = `${CONTROL_BG_CLASSES} flex-1 gap-2 border-none text-xs font-light`;
 

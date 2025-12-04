@@ -344,17 +344,17 @@ export function UnifiedWorkspace() {
   return (
     <PanelGroup
       direction="horizontal"
-      className="bg-background flex h-full w-full flex-row"
+      className="flex h-full w-full flex-row bg-gray-100 dark:bg-[#0d1117]"
     >
       <Panel defaultSize={40} minSize={20} maxSize={80}>
-        <div className="relative isolate flex h-full flex-col">
-          <div className="h-full overflow-y-auto bg-white dark:bg-[#0d1117]">
+        <div className="relative isolate flex h-full flex-col bg-transparent">
+          <div className="scrollbar-subtle h-full overflow-y-auto">
             <div
-              className="pointer-events-none absolute top-0 z-10 h-20 w-full bg-linear-to-b from-white via-white to-transparent dark:from-[#0d1117] dark:via-[#0d1117]"
+              className="pointer-events-none absolute top-0 z-10 h-24 w-full bg-linear-to-b from-gray-100 via-gray-100 to-transparent dark:from-[#0d1117] dark:via-[#0d1117]"
               aria-hidden="true"
             />
 
-            <div className="sticky top-0 z-20 flex items-center gap-2 px-3 py-3">
+            <div className="sticky top-0 z-20 flex items-center gap-2 px-3 pt-2 pb-3">
               <Tabs
                 value={activeJsonTab}
                 onValueChange={(v) => setActiveJsonTab(v as ActiveJsonTab)}
@@ -389,12 +389,12 @@ export function UnifiedWorkspace() {
         </div>
       </Panel>
 
-      <PanelResizeHandle className="group relative w-2 shrink-0 bg-white dark:bg-[#0d1117]">
-        <div className="absolute top-1/2 left-1/2 h-12 w-1 -translate-x-1/2 -translate-y-1/2 rounded-full bg-gray-300 opacity-40 transition-all group-hover:bg-gray-400 group-hover:opacity-100 group-data-resize-handle-active:bg-gray-500 group-data-resize-handle-active:opacity-100 dark:bg-gray-600 dark:group-hover:bg-gray-500 dark:group-data-resize-handle-active:bg-gray-400" />
+      <PanelResizeHandle className="group relative w-2 shrink-0">
+        <div className="absolute top-1/2 left-1/2 h-12 w-1 -translate-x-1/2 -translate-y-1/2 rounded-full bg-transparent opacity-40 transition-all group-hover:bg-gray-400 group-hover:opacity-100 group-data-resize-handle-active:bg-gray-500 group-data-resize-handle-active:opacity-100 dark:bg-gray-600 dark:group-hover:bg-gray-500 dark:group-data-resize-handle-active:bg-gray-400" />
       </PanelResizeHandle>
 
       <Panel defaultSize={60} minSize={20}>
-        <div className="relative flex h-full flex-col overflow-hidden bg-white pr-4 dark:bg-[#0d1117]">
+        <div className="relative flex h-full flex-col overflow-hidden pr-4">
           {displayMode === "inline" && <InlineView />}
           {displayMode === "pip" && <PipView onClose={handleClose} />}
           {displayMode === "fullscreen" && (

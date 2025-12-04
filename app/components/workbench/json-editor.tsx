@@ -13,7 +13,7 @@ interface JsonEditorProps {
   onChange: (value: Record<string, unknown>) => void;
 }
 
-const customEditorStyle = EditorView.theme(
+const customEditorStyleLight = EditorView.theme(
   {
     "&": {
       fontSize: "14px",
@@ -24,6 +24,10 @@ const customEditorStyle = EditorView.theme(
     },
     ".cm-gutters": {
       backgroundColor: "transparent",
+      borderRight: "none",
+      marginLeft: "8px",
+      userSelect: "none",
+      pointerEvents: "none",
     },
     ".cm-line": {
       padding: "0",
@@ -31,8 +35,49 @@ const customEditorStyle = EditorView.theme(
     "&.cm-focused": {
       outline: "none",
     },
+    ".cm-activeLine": {
+      backgroundColor: "rgba(0, 0, 0, 0.05)",
+    },
+    ".cm-activeLineGutter": {
+      backgroundColor: "transparent",
+      color: "rgba(0, 0, 0, 0.8)",
+    },
   },
   { dark: false },
+);
+
+const customEditorStyleDark = EditorView.theme(
+  {
+    "&": {
+      fontSize: "14px",
+      fontFamily: "ui-monospace, monospace",
+    },
+    ".cm-content": {
+      padding: "16px",
+    },
+    ".cm-gutters": {
+      backgroundColor: "transparent",
+      borderRight: "none",
+      marginLeft: "8px",
+      color: "rgba(255, 255, 255, 0.35)",
+      userSelect: "none",
+      pointerEvents: "none",
+    },
+    ".cm-line": {
+      padding: "0",
+    },
+    "&.cm-focused": {
+      outline: "none",
+    },
+    ".cm-activeLine": {
+      backgroundColor: "rgba(255, 255, 255, 0.06)",
+    },
+    ".cm-activeLineGutter": {
+      backgroundColor: "transparent",
+      color: "rgba(255, 255, 255, 0.8)",
+    },
+  },
+  { dark: true },
 );
 
 export function JsonEditor({
@@ -51,8 +96,12 @@ export function JsonEditor({
   const { theme } = useTheme();
 
   const extensions = useMemo(
-    () => [json(), EditorView.lineWrapping, customEditorStyle],
-    [],
+    () => [
+      json(),
+      EditorView.lineWrapping,
+      theme === "dark" ? customEditorStyleDark : customEditorStyleLight,
+    ],
+    [theme],
   );
 
   useEffect(() => {
@@ -93,7 +142,7 @@ export function JsonEditor({
   };
 
   return (
-    <div className="relative bg-white dark:bg-[#0d1117]">
+    <div className="relative">
       <CodeMirror
         value={text}
         height="100%"
@@ -103,13 +152,13 @@ export function JsonEditor({
         basicSetup={{
           lineNumbers: true,
           foldGutter: false,
-          highlightActiveLineGutter: false,
-          highlightActiveLine: false,
+          highlightActiveLineGutter: true,
+          highlightActiveLine: true,
         }}
-        className="h-full [&_.cm-editor]:h-full [&_.cm-scroller]:h-full"
+        className="h-full [&_.cm-activeLineGutter]:text-[rgba(0,0,0,0.8)]! dark:[&_.cm-activeLineGutter]:text-[rgba(255,255,255,0.8)]! [&_.cm-editor]:h-full [&_.cm-editor]:bg-transparent! [&_.cm-gutters]:bg-transparent! [&_.cm-lineNumbers]:text-[rgba(0,0,0,0.25)]! dark:[&_.cm-lineNumbers]:text-[rgba(255,255,255,0.35)]! [&_.cm-matchingBracket]:bg-[rgba(0,0,0,0.1)]! dark:[&_.cm-matchingBracket]:bg-[rgba(255,255,255,0.15)]! [&_.cm-scroller]:h-full"
       />
       {error && (
-        <div className="text-destructive bg-background/90 pointer-events-none absolute bottom-2 left-2 z-20 rounded px-2 py-1 text-xs">
+        <div className="text-destructive pointer-events-none absolute bottom-2 left-2 z-20 rounded px-2 py-1 text-xs">
           {error}
         </div>
       )}
