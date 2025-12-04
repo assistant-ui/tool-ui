@@ -113,6 +113,14 @@ export function generateBridgeScript(initialGlobals: OpenAIGlobals): string {
 
     openExternal: function(opts) {
       sendMethodCall('openExternal', [opts]).catch(function() {});
+    },
+
+    notifyIntrinsicHeight: function(height) {
+      sendMethodCall('notifyIntrinsicHeight', [height]).catch(function() {});
+    },
+
+    requestModal: function(opts) {
+      return sendMethodCall('requestModal', [opts]);
     }
   };
 
@@ -131,7 +139,7 @@ export function generateBridgeScript(initialGlobals: OpenAIGlobals): string {
 export function generateComponentBundle(
   bridgeScript: string,
   componentHtml: string,
-  theme: "light" | "dark" = "light"
+  theme: "light" | "dark" = "light",
 ): string {
   const themeClass = theme === "dark" ? "dark" : "";
 

@@ -14,6 +14,8 @@ const typeColors: Record<ConsoleEntryType, string> = {
   sendFollowUpMessage: "text-orange-600 dark:text-orange-400",
   requestClose: "text-gray-500 dark:text-gray-400",
   openExternal: "text-gray-500 dark:text-gray-400",
+  notifyIntrinsicHeight: "text-teal-600 dark:text-teal-400",
+  requestModal: "text-pink-600 dark:text-pink-400",
   event: "text-cyan-600 dark:text-cyan-400",
 };
 
@@ -56,7 +58,8 @@ export function EventConsole() {
           <Terminal className="text-muted-foreground size-4" />
           <span className="text-sm font-medium">Console</span>
           <span className="text-muted-foreground text-xs">
-            ({consoleLogs.length} {consoleLogs.length === 1 ? "event" : "events"})
+            ({consoleLogs.length}{" "}
+            {consoleLogs.length === 1 ? "event" : "events"})
           </span>
         </div>
         <Button
@@ -77,7 +80,8 @@ export function EventConsole() {
       >
         {consoleLogs.length === 0 ? (
           <div className="text-muted-foreground flex h-full items-center justify-center">
-            Events will appear here when the component calls window.openai methods
+            Events will appear here when the component calls window.openai
+            methods
           </div>
         ) : (
           <div className="divide-y">
@@ -90,7 +94,12 @@ export function EventConsole() {
                   [{formatTimestamp(entry.timestamp)}]
                 </span>
 
-                <span className={cn("shrink-0 font-semibold", typeColors[entry.type])}>
+                <span
+                  className={cn(
+                    "shrink-0 font-semibold",
+                    typeColors[entry.type],
+                  )}
+                >
                   {entry.method}
                 </span>
 
@@ -100,7 +109,7 @@ export function EventConsole() {
                   </span>
                 )}
                 {entry.result !== undefined && (
-                  <span className="text-emerald-600 dark:text-emerald-400 truncate">
+                  <span className="truncate text-emerald-600 dark:text-emerald-400">
                     → {formatValue(entry.result)}
                   </span>
                 )}

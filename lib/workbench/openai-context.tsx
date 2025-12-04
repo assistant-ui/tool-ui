@@ -14,6 +14,7 @@ import type {
   OpenAIAPI,
   DisplayMode,
   CallToolResponse,
+  ModalOptions,
 } from "./types";
 
 interface OpenAIContextValue extends OpenAIGlobals, OpenAIAPI {}
@@ -29,7 +30,10 @@ export function OpenAIProvider({ children }: OpenAIProviderProps) {
   const globals = store.getOpenAIGlobals();
 
   const callTool = useCallback(
-    async (name: string, args: Record<string, unknown>): Promise<CallToolResponse> => {
+    async (
+      name: string,
+      args: Record<string, unknown>,
+    ): Promise<CallToolResponse> => {
       store.addConsoleEntry({
         type: "callTool",
         method: `callTool("${name}")`,
@@ -46,11 +50,11 @@ export function OpenAIProvider({ children }: OpenAIProviderProps) {
 
       return result;
     },
-    [store]
+    [store],
   );
 
   const setWidgetState = useCallback(
-    (state: Record<string, unknown>) => {
+    async (state: Record<string, unknown>): Promise<void> => {
       store.addConsoleEntry({
         type: "setWidgetState",
         method: "setWidgetState",
@@ -58,7 +62,7 @@ export function OpenAIProvider({ children }: OpenAIProviderProps) {
       });
       store.updateWidgetState(state);
     },
-    [store]
+    [store],
   );
 
   const requestDisplayMode = useCallback(
@@ -71,7 +75,7 @@ export function OpenAIProvider({ children }: OpenAIProviderProps) {
       store.setDisplayMode(args.mode);
       return { mode: args.mode };
     },
-    [store]
+    [store],
   );
 
   const sendFollowUpMessage = useCallback(
@@ -82,7 +86,7 @@ export function OpenAIProvider({ children }: OpenAIProviderProps) {
         args,
       });
     },
-    [store]
+    [store],
   );
 
   const requestClose = useCallback(() => {
@@ -100,7 +104,29 @@ export function OpenAIProvider({ children }: OpenAIProviderProps) {
         args: payload,
       });
     },
-    [store]
+    [store],
+  );
+
+  const notifyIntrinsicHeight = useCallback(
+    (height: number) => {
+      store.addConsoleEntry({
+        type: "notifyIntrinsicHeight",
+        method: `notifyIntrinsicHeight(${height})`,
+        args: { height },
+      });
+    },
+    [store],
+  );
+
+  const requestModal = useCallback(
+    async (options: ModalOptions): Promise<void> => {
+      store.addConsoleEntry({
+        type: "requestModal",
+        method: "requestModal",
+        args: options,
+      });
+    },
+    [store],
   );
 
   const value = useMemo<OpenAIContextValue>(
@@ -121,6 +147,8 @@ export function OpenAIProvider({ children }: OpenAIProviderProps) {
       sendFollowUpMessage,
       requestClose,
       openExternal,
+      notifyIntrinsicHeight,
+      requestModal,
     }),
     [
       globals,
@@ -130,7 +158,9 @@ export function OpenAIProvider({ children }: OpenAIProviderProps) {
       sendFollowUpMessage,
       requestClose,
       openExternal,
-    ]
+      notifyIntrinsicHeight,
+      requestModal,
+    ],
   );
 
   return (
@@ -147,7 +177,7 @@ export function useOpenAI(): OpenAIContextValue {
 }
 
 export function useOpenAiGlobal<K extends keyof OpenAIGlobals>(
-  key: K
+  key: K,
 ): OpenAIGlobals[K] {
   const context = useOpenAI();
   return context[key];
@@ -174,10 +204,11 @@ export function useLocale(): string {
 }
 
 export function useWidgetState<T extends Record<string, unknown>>(
-  defaultState?: T
+  defaultState?: T,
 ): readonly [T | null, (state: T | ((prev: T | null) => T)) => void] {
   const context = useOpenAI();
-  const currentState = (context.widgetState as T | null) ?? defaultState ?? null;
+  const currentState =
+    (context.widgetState as T | null) ?? defaultState ?? null;
 
   const setState = useCallback(
     (stateOrUpdater: T | ((prev: T | null) => T)) => {
@@ -187,7 +218,7 @@ export function useWidgetState<T extends Record<string, unknown>>(
           : stateOrUpdater;
       context.setWidgetState(newState);
     },
-    [context, currentState]
+    [context, currentState],
   );
 
   return [currentState, setState] as const;

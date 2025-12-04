@@ -44,12 +44,18 @@ export interface CallToolResponse {
   structuredContent?: Record<string, unknown>;
   content?: string | Array<{ type: string; text?: string }>;
   _meta?: Record<string, unknown>;
+  isError?: boolean;
+}
+
+export interface ModalOptions {
+  anchorRef?: { current: HTMLElement | null };
+  content?: string;
 }
 
 export interface OpenAIAPI {
   callTool: (
     name: string,
-    args: Record<string, unknown>
+    args: Record<string, unknown>,
   ) => Promise<CallToolResponse>;
   requestClose: () => void;
   sendFollowUpMessage: (args: { prompt: string }) => Promise<void>;
@@ -57,7 +63,9 @@ export interface OpenAIAPI {
   requestDisplayMode: (args: { mode: DisplayMode }) => Promise<{
     mode: DisplayMode;
   }>;
-  setWidgetState: (state: Record<string, unknown>) => void;
+  setWidgetState: (state: Record<string, unknown>) => Promise<void>;
+  notifyIntrinsicHeight: (height: number) => void;
+  requestModal: (options: ModalOptions) => Promise<void>;
 }
 
 export type WindowOpenAI = OpenAIGlobals & OpenAIAPI;
@@ -70,7 +78,12 @@ export interface SetGlobalsEventDetail {
 
 export type ParentToIframeMessage =
   | { type: "OPENAI_SET_GLOBALS"; globals: OpenAIGlobals }
-  | { type: "OPENAI_METHOD_RESPONSE"; id: string; result?: unknown; error?: string };
+  | {
+      type: "OPENAI_METHOD_RESPONSE";
+      id: string;
+      result?: unknown;
+      error?: string;
+    };
 
 export interface IframeToParentMessage {
   type: "OPENAI_METHOD_CALL";
@@ -86,6 +99,8 @@ export type ConsoleEntryType =
   | "sendFollowUpMessage"
   | "requestClose"
   | "openExternal"
+  | "notifyIntrinsicHeight"
+  | "requestModal"
   | "event";
 
 export interface ConsoleEntry {
