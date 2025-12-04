@@ -107,7 +107,7 @@ export function SafeAreaInsetsControl({
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <button
-          className={`${CONTROL_BG_CLASSES} flex h-7 items-center gap-2 rounded-md px-2 text-xs`}
+          className={`${CONTROL_BG_CLASSES} flex h-7 items-center gap-2 rounded-md px-2 text-xs select-none`}
           aria-label="Edit safe area insets"
         >
           <span className="tabular-nums">
