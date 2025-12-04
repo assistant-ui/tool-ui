@@ -29,7 +29,7 @@ export const COMPACT_SMALL_TEXT_CLASSES = "text-xs font-normal";
 export const COMPACT_LABEL_CLASSES =
   "text-xs font-normal text-neutral-500 dark:text-neutral-400";
 
-export const SECTION_HEADER_CLASSES = "px-4 pt-3 text-sm font-normal";
+export const SECTION_HEADER_CLASSES = "px-4  text-sm font-normal";
 
 export const SECTION_CONTENT_CLASSES = " px-4 pb-4";
 

@@ -57,7 +57,6 @@ import {
   SELECT_CLASSES,
   TOGGLE_BUTTON_CLASSES,
   TOGGLE_BUTTON_ACTIVE_CLASSES,
-  INFO_BOX_CLASSES,
   SECTION_HEADER_CLASSES,
   SECTION_CONTENT_CLASSES,
   PANEL_TOGGLE_CLASSES,
@@ -134,24 +133,24 @@ function ConfigSection({ value, title, children }: ConfigSectionProps) {
   );
 }
 
-function UserAgentInfo({ deviceType }: { deviceType: DeviceType }) {
-  const isDesktop = deviceType === "desktop";
+// function UserAgentInfo({ deviceType }: { deviceType: DeviceType }) {
+//   const isDesktop = deviceType === "desktop";
 
-  return (
-    <div className={INFO_BOX_CLASSES}>
-      <div>
-        Device: <span className="font-mono">{deviceType}</span>
-      </div>
-      <div>
-        Hover: <span className="font-mono">{isDesktop ? "true" : "false"}</span>
-      </div>
-      <div>
-        Touch:{" "}
-        <span className="font-mono">{!isDesktop ? "true" : "false"}</span>
-      </div>
-    </div>
-  );
-}
+//   return (
+//     <div className={INFO_BOX_CLASSES}>
+//       <div>
+//         Device: <span className="font-mono">{deviceType}</span>
+//       </div>
+//       <div>
+//         Hover: <span className="font-mono">{isDesktop ? "true" : "false"}</span>
+//       </div>
+//       <div>
+//         Touch:{" "}
+//         <span className="font-mono">{!isDesktop ? "true" : "false"}</span>
+//       </div>
+//     </div>
+//   );
+// }
 
 export function ConfigPanel({
   isCollapsed,
@@ -341,11 +340,6 @@ export function ConfigPanel({
                 onChange={setSafeAreaInsets}
               />
             </SettingRow>
-
-            <div className="space-y-2">
-              <Label className={LABEL_CLASSES}>User agent</Label>
-              <UserAgentInfo deviceType={deviceType} />
-            </div>
           </ConfigSection>
         </Accordion>
       </div>
