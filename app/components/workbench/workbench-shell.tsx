@@ -7,7 +7,20 @@ import { ConfigPanel } from "./config-panel";
 import { UnifiedWorkspace } from "./unified-workspace";
 import { InspectorPanel } from "./inspector-panel";
 import { LogoMark } from "@/components/ui/logo";
-import { ArrowLeft } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { useSelectedComponent, useWorkbenchStore } from "@/lib/workbench/store";
+import { workbenchComponents } from "@/lib/workbench/component-registry";
+import { SELECT_CLASSES, COMPACT_SMALL_TEXT_CLASSES } from "./styles";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/ui/cn";
+import { useTheme } from "next-themes";
+import { ArrowLeft, Moon, Sun } from "lucide-react";
 
 const WORKSPACE_MIN_SIZE = 50;
 const CONSOLE_DEFAULT_SIZE = 25;
@@ -16,6 +29,26 @@ const CONSOLE_MIN_SIZE = 10;
 export function WorkbenchShell() {
   const [isPanelCollapsed, setIsPanelCollapsed] = React.useState(false);
   const [isFading, setIsFading] = React.useState(false);
+  const [mounted, setMounted] = React.useState(false);
+  const selectedComponent = useSelectedComponent();
+  const setSelectedComponent = useWorkbenchStore((s) => s.setSelectedComponent);
+  const { setTheme, resolvedTheme } = useTheme();
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const isDark = mounted && resolvedTheme === "dark";
+
+  const toggleTheme = () => {
+    if (!document.startViewTransition) {
+      setTheme(isDark ? "light" : "dark");
+      return;
+    }
+    document.startViewTransition(() => {
+      setTheme(isDark ? "light" : "dark");
+    });
+  };
 
   const handleToggleCollapse = () => {
     setIsFading(true);
@@ -27,16 +60,64 @@ export function WorkbenchShell() {
 
   return (
     <div className="flex h-full w-full flex-col overflow-hidden">
-      <div className="flex shrink-0 items-center gap-3 px-4 pt-3 pb-2">
-        <Link
-          href="/"
-          className="text-muted-foreground hover:text-foreground hover:bg-muted -ml-1.5 rounded-md p-1.5 transition-colors"
-          aria-label="Back to home"
-        >
-          <ArrowLeft className="size-4" />
-        </Link>
-        <LogoMark className="size-5 shrink-0" />
-        <span className="font-mono font-medium select-none">Workbench</span>
+      <div className="flex shrink-0 items-center px-4 pt-3 pb-2">
+        <div className="flex items-center gap-3">
+          <Link
+            href="/"
+            className="text-muted-foreground hover:text-foreground hover:bg-muted -ml-1.5 rounded-md p-1.5 transition-colors"
+            aria-label="Back to home"
+          >
+            <ArrowLeft className="size-4" />
+          </Link>
+          <LogoMark className="size-5 shrink-0" />
+          <span className="font-mono font-medium select-none">Workbench</span>
+        </div>
+
+        <div className="flex flex-1 justify-center">
+          <Select
+            value={selectedComponent}
+            onValueChange={setSelectedComponent}
+          >
+            <SelectTrigger className={`${SELECT_CLASSES} text-sm`}>
+              <SelectValue placeholder="Select component" />
+            </SelectTrigger>
+            <SelectContent>
+              {workbenchComponents.map((comp) => (
+                <SelectItem
+                  className={`${COMPACT_SMALL_TEXT_CLASSES} text-sm`}
+                  key={comp.id}
+                  value={comp.id}
+                >
+                  {comp.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="flex items-center gap-3">
+          <Button
+            variant="ghost"
+            size="icon"
+            aria-label="Toggle theme"
+            aria-pressed={isDark}
+            className="text-muted-foreground hover:text-foreground hover:bg-muted relative size-7 rounded-md transition-colors"
+            onClick={toggleTheme}
+          >
+            <Sun
+              className={cn(
+                "size-4 transition-all",
+                isDark ? "scale-0 rotate-90" : "scale-100 rotate-0",
+              )}
+            />
+            <Moon
+              className={cn(
+                "absolute size-4 transition-all",
+                isDark ? "scale-100 rotate-0" : "scale-0 -rotate-90",
+              )}
+            />
+          </Button>
+        </div>
       </div>
 
       <div className="flex min-h-0 flex-1 overflow-hidden">

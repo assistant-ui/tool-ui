@@ -3,7 +3,6 @@
 import { useShallow } from "zustand/react/shallow";
 import {
   useWorkbenchStore,
-  useSelectedComponent,
   useDisplayMode,
   useWorkbenchTheme,
   useDeviceType,
@@ -13,7 +12,6 @@ import {
   type DisplayMode,
   type DeviceType,
 } from "@/lib/workbench/types";
-import { workbenchComponents } from "@/lib/workbench/component-registry";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
@@ -51,7 +49,6 @@ import {
   TOGGLE_BUTTON_CLASSES,
   TOGGLE_BUTTON_ACTIVE_CLASSES,
   PANEL_TOGGLE_CLASSES,
-  COMPACT_SMALL_TEXT_CLASSES,
 } from "./styles";
 
 const DISPLAY_MODES: ReadonlyArray<{
@@ -106,15 +103,10 @@ function SettingRow({ label, htmlFor, className, children }: SettingRowProps) {
   );
 }
 
-function Separator() {
-  return <div className="border-border/50 my-2 border-t" />;
-}
-
 export function ConfigPanel({
   isCollapsed,
   onToggleCollapse,
 }: ConfigPanelProps) {
-  const selectedComponent = useSelectedComponent();
   const displayMode = useDisplayMode();
   const theme = useWorkbenchTheme();
   const deviceType = useDeviceType();
@@ -123,7 +115,6 @@ export function ConfigPanel({
     locale,
     maxHeight,
     safeAreaInsets,
-    setSelectedComponent,
     setDisplayMode,
     setDeviceType,
     setTheme,
@@ -135,7 +126,6 @@ export function ConfigPanel({
       locale: s.locale,
       maxHeight: s.maxHeight,
       safeAreaInsets: s.safeAreaInsets,
-      setSelectedComponent: s.setSelectedComponent,
       setDisplayMode: s.setDisplayMode,
       setDeviceType: s.setDeviceType,
       setTheme: s.setTheme,
@@ -162,30 +152,6 @@ export function ConfigPanel({
   return (
     <div className="flex h-full min-w-80 flex-col">
       <div className="scrollbar-subtle flex-1 space-y-2 overflow-y-auto px-4">
-        <SettingRow label="Component">
-          <Select
-            value={selectedComponent}
-            onValueChange={setSelectedComponent}
-          >
-            <SelectTrigger className={SELECT_CLASSES}>
-              <SelectValue placeholder="Select component" />
-            </SelectTrigger>
-            <SelectContent>
-              {workbenchComponents.map((comp) => (
-                <SelectItem
-                  className={COMPACT_SMALL_TEXT_CLASSES}
-                  key={comp.id}
-                  value={comp.id}
-                >
-                  {comp.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </SettingRow>
-
-        <Separator />
-
         <SettingRow label="Mode">
           <ButtonGroup>
             {DISPLAY_MODES.map(({ id, label, icon: Icon }) => (
