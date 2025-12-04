@@ -4,6 +4,8 @@ import { DataTableConfig } from "@/lib/presets/data-table";
 import { SocialPostConfig } from "@/lib/presets/social-post";
 import { MediaCardConfig } from "@/lib/presets/media-card";
 import { OptionListConfig } from "@/lib/presets/option-list";
+import { CodeBlockConfig } from "@/lib/presets/code-block";
+import { TerminalConfig } from "@/lib/presets/terminal";
 import { DynamicCodeBlock } from "fumadocs-ui/components/dynamic-codeblock";
 
 interface CodePanelProps {
@@ -12,6 +14,8 @@ interface CodePanelProps {
   socialPostConfig?: SocialPostConfig;
   mediaCardConfig?: MediaCardConfig;
   optionListConfig?: OptionListConfig;
+  codeBlockConfig?: CodeBlockConfig;
+  terminalConfig?: TerminalConfig;
   optionListSelection?: string[] | string | null;
   mediaCardMaxWidth?: string;
   sort?: { by?: string; direction?: "asc" | "desc" };
@@ -27,6 +31,8 @@ export function CodePanel({
   socialPostConfig,
   mediaCardConfig,
   optionListConfig,
+  codeBlockConfig,
+  terminalConfig,
   optionListSelection,
   mediaCardMaxWidth,
   sort,
@@ -76,7 +82,9 @@ export function CodePanel({
       props.push(
         `  footerActions={${JSON.stringify(config.footerActions, null, 4).replace(/\n/g, "\n  ")}}`,
       );
-      props.push(`  onFooterAction={(actionId) => console.log("Action:", actionId)}`);
+      props.push(
+        `  onFooterAction={(actionId) => console.log("Action:", actionId)}`,
+      );
     }
 
     // Generate sorting guidance only when relying on controlled state
@@ -246,11 +254,16 @@ export function CodePanel({
       props.push(`  isLoading={true}`);
     }
 
-    if (mediaCardConfig.footerActions && mediaCardConfig.footerActions.length > 0) {
+    if (
+      mediaCardConfig.footerActions &&
+      mediaCardConfig.footerActions.length > 0
+    ) {
       props.push(
         `  footerActions={${JSON.stringify(mediaCardConfig.footerActions, null, 4).replace(/\n/g, "\n  ")}}`,
       );
-      props.push(`  onFooterAction={(actionId) => console.log("Action:", actionId)}`);
+      props.push(
+        `  onFooterAction={(actionId) => console.log("Action:", actionId)}`,
+      );
     }
 
     return `<MediaCard\n${props.join("\n")}\n/>`;
@@ -294,6 +307,77 @@ export function CodePanel({
     return `<OptionList\n${props.join("\n")}\n/>`;
   };
 
+  const generateCodeBlockCode = () => {
+    if (!codeBlockConfig) return "";
+    const block = codeBlockConfig.codeBlock;
+    const props: string[] = [];
+
+    props.push(`  code={\`${escape(block.code)}\`}`);
+    props.push(`  language="${block.language}"`);
+
+    if (block.filename) {
+      props.push(`  filename="${block.filename}"`);
+    }
+
+    if (block.showLineNumbers !== undefined) {
+      props.push(`  showLineNumbers={${block.showLineNumbers}}`);
+    }
+
+    if (block.highlightLines && block.highlightLines.length > 0) {
+      props.push(`  highlightLines={[${block.highlightLines.join(", ")}]}`);
+    }
+
+    if (block.maxCollapsedLines) {
+      props.push(`  maxCollapsedLines={${block.maxCollapsedLines}}`);
+    }
+
+    if (isLoading) {
+      props.push(`  isLoading={true}`);
+    }
+
+    return `<CodeBlock\n${props.join("\n")}\n/>`;
+  };
+
+  const generateTerminalCode = () => {
+    if (!terminalConfig) return "";
+    const term = terminalConfig.terminal;
+    const props: string[] = [];
+
+    props.push(`  command="${escape(term.command)}"`);
+
+    if (term.stdout) {
+      props.push(`  stdout={\`${escape(term.stdout)}\`}`);
+    }
+
+    if (term.stderr) {
+      props.push(`  stderr={\`${escape(term.stderr)}\`}`);
+    }
+
+    props.push(`  exitCode={${term.exitCode}}`);
+
+    if (term.durationMs !== undefined) {
+      props.push(`  durationMs={${term.durationMs}}`);
+    }
+
+    if (term.cwd) {
+      props.push(`  cwd="${term.cwd}"`);
+    }
+
+    if (term.truncated) {
+      props.push(`  truncated={${term.truncated}}`);
+    }
+
+    if (term.maxCollapsedLines) {
+      props.push(`  maxCollapsedLines={${term.maxCollapsedLines}}`);
+    }
+
+    if (isLoading) {
+      props.push(`  isLoading={true}`);
+    }
+
+    return `<Terminal\n${props.join("\n")}\n/>`;
+  };
+
   const generateCode = () => {
     if (componentId === "data-table") {
       return generateDataTableCode();
@@ -303,6 +387,10 @@ export function CodePanel({
       return generateMediaCardCode();
     } else if (componentId === "option-list") {
       return generateOptionListCode();
+    } else if (componentId === "code-block") {
+      return generateCodeBlockCode();
+    } else if (componentId === "terminal") {
+      return generateTerminalCode();
     }
     return "";
   };

@@ -14,9 +14,22 @@ import {
   OptionListPresetName,
   optionListPresetDescriptions,
 } from "@/lib/presets/option-list";
+import {
+  CodeBlockPresetName,
+  codeBlockPresetDescriptions,
+} from "@/lib/presets/code-block";
+import {
+  TerminalPresetName,
+  terminalPresetDescriptions,
+} from "@/lib/presets/terminal";
 import { cn } from "@/lib/ui/cn";
 
-type ComponentPreset = PresetName | MediaCardPresetName | OptionListPresetName;
+type ComponentPreset =
+  | PresetName
+  | MediaCardPresetName
+  | OptionListPresetName
+  | CodeBlockPresetName
+  | TerminalPresetName;
 
 interface PresetSelectorProps {
   componentId: string;
@@ -47,6 +60,24 @@ const optionListPresetNames: OptionListPresetName[] = [
   "actions",
 ];
 
+const codeBlockPresetNames: CodeBlockPresetName[] = [
+  "typescript",
+  "python",
+  "json",
+  "bash",
+  "highlighted",
+  "collapsible",
+];
+
+const terminalPresetNames: TerminalPresetName[] = [
+  "success",
+  "error",
+  "build",
+  "ansiColors",
+  "collapsible",
+  "noOutput",
+];
+
 export function PresetSelector({
   componentId,
   currentPreset,
@@ -57,14 +88,26 @@ export function PresetSelector({
       ? dataTablePresetNames
       : componentId === "media-card"
         ? mediaCardPresetNames
-        : optionListPresetNames;
+        : componentId === "option-list"
+          ? optionListPresetNames
+          : componentId === "code-block"
+            ? codeBlockPresetNames
+            : componentId === "terminal"
+              ? terminalPresetNames
+              : optionListPresetNames;
 
   const descriptions =
     componentId === "data-table"
       ? presetDescriptions
       : componentId === "media-card"
         ? mediaCardPresetDescriptions
-        : optionListPresetDescriptions;
+        : componentId === "option-list"
+          ? optionListPresetDescriptions
+          : componentId === "code-block"
+            ? codeBlockPresetDescriptions
+            : componentId === "terminal"
+              ? terminalPresetDescriptions
+              : optionListPresetDescriptions;
 
   return (
     <ItemGroup className="gap-1">

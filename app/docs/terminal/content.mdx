@@ -1,0 +1,158 @@
+import { DocsHeader } from "../_components/docs-header";
+
+<DocsHeader title="Terminal" mdxPath="app/docs/terminal/content.mdx" />
+
+A command output display component with ANSI color support, exit codes, and duration tracking. Perfect for showing command results, build outputs, and terminal interactions.
+
+<TerminalPresetExample preset="success" />
+
+## Key Features
+
+- **ANSI color support**: Renders colored terminal output correctly
+- **Exit code display**: Visual success/failure indicators
+- **Command display**: Shows the executed command with working directory
+- **Duration tracking**: Displays command execution time
+- **Stdout/Stderr separation**: Different styling for errors
+- **Copy functionality**: Separate copy buttons for command and output
+- **Collapsible mode**: Auto-collapse long output with expand/collapse
+- **Loading states**: Skeleton loading during command execution
+
+## When to Use Terminal
+
+- **Good for:** Build outputs, test results, command responses, CI/CD logs
+- **Not for:** Interactive terminal sessions (use xterm.js), real-time streaming
+
+## Props
+
+### Core Props
+
+- `command` (string, required): The command that was executed
+- `stdout` (string, optional): Standard output content
+- `stderr` (string, optional): Standard error content
+- `exitCode` (number, required): Process exit code (0 = success)
+
+### Metadata
+
+- `durationMs` (number, optional): Command execution time in milliseconds
+- `cwd` (string, optional): Working directory where command ran
+- `truncated` (boolean, optional): Indicates output was truncated
+
+### Display Options
+
+- `maxCollapsedLines` (number, optional): Auto-collapse if output exceeds this many lines
+
+### Standard Props
+
+- `surfaceId` (string, required): Unique identifier for this surface
+- `footerActions` (Action[], optional): Footer action buttons
+- `className` (string, optional): Additional CSS classes
+- `isLoading` (boolean, optional): Show loading skeleton state
+
+## Examples
+
+### Successful Test Run
+
+<TerminalPresetExample preset="success" />
+
+### Failed Build with Error
+
+<TerminalPresetExample preset="error" />
+
+### Docker Build Output
+
+<TerminalPresetExample preset="build" />
+
+### ANSI Colored Output
+
+<TerminalPresetExample preset="ansiColors" />
+
+### Collapsible Long Output
+
+<TerminalPresetExample preset="collapsible" />
+
+### Command with No Output
+
+<TerminalPresetExample preset="noOutput" />
+
+## ANSI Color Support
+
+Terminal automatically renders ANSI escape codes for colored output:
+
+```tsx
+import { Terminal } from "@/components/tool-ui/terminal";
+
+const coloredOutput = "\x1b[32m✔\x1b[0m Success\n\x1b[31m✗\x1b[0m Error";
+
+<Terminal
+  surfaceId="my-terminal"
+  command="npm test"
+  stdout={coloredOutput}
+  exitCode={0}
+/>;
+```
+
+Common ANSI codes:
+
+- `\x1b[32m` - Green text
+- `\x1b[31m` - Red text
+- `\x1b[33m` - Yellow text
+- `\x1b[36m` - Cyan text
+- `\x1b[1m` - Bold text
+- `\x1b[0m` - Reset formatting
+
+## Source and Install
+
+Copy `components/tool-ui/terminal` into your project:
+
+<Files>
+  <Folder name="components" defaultOpen>
+    <Folder name="tool-ui" defaultOpen>
+      <Folder name="terminal" defaultOpen>
+        <File name="terminal.tsx" />
+        <File name="schema.ts" />
+        <File name="index.tsx" />
+        <File name="progress.tsx" />
+        <File name="_ui.tsx" />
+        <File name="_cn.ts" />
+      </Folder>
+    </Folder>
+  </Folder>
+</Files>
+
+Install dependencies:
+
+```bash
+pnpm add ansi-to-react
+```
+
+## Usage
+
+```tsx
+import { Terminal } from "@/components/tool-ui/terminal";
+
+export function MyComponent() {
+  return (
+    <Terminal
+      surfaceId="my-terminal-example"
+      command="ls -la"
+      stdout="total 16
+drwxr-xr-x  3 user user 4096 Dec  3 10:23 .
+drwxr-xr-x 12 user user 4096 Dec  3 10:20 ..
+-rw-r--r--  1 user user  220 Dec  3 10:23 package.json"
+      exitCode={0}
+      durationMs={45}
+      cwd="~/project"
+    />
+  );
+}
+```
+
+## Exit Code Meanings
+
+- `0` - Success (green badge)
+- `1` - General error (red badge)
+- `2` - Misuse of shell builtins (red badge)
+- `126` - Command not executable (red badge)
+- `127` - Command not found (red badge)
+- `130` - Interrupted with Ctrl+C (red badge)
+- Any non-zero - Error (red badge)
