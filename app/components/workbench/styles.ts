@@ -12,7 +12,7 @@ export const CONTROL_BG_CLASSES =
 export const INPUT_GROUP_CLASSES = `${CONTROL_BG_CLASSES} w-fit border-none! shadow-none! max-h-7 tabular-nums`;
 
 export const INPUT_CLASSES =
-  "bg-transparent! dark:bg-transparent! h-7! focus:ring-0! border-0! border-none! [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none";
+  "bg-transparent! dark:bg-transparent! h-7! focus:ring-0! border-0! border-none! [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none text-xs!";
 
 export const ADDON_CLASSES = "bg-transparent! text-sm font-normal select-none";
 
