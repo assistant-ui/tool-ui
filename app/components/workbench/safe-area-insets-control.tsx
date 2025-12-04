@@ -107,15 +107,15 @@ export function SafeAreaInsetsControl({
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <button
-          className={`${CONTROL_BG_CLASSES} flex h-9 items-center gap-2 rounded-md px-2 text-xs`}
+          className={`${CONTROL_BG_CLASSES} flex h-7 items-center gap-2 rounded-md px-2 text-xs`}
           aria-label="Edit safe area insets"
         >
-          <span className="font-mono">
+          <span className="tabular-nums">
             {summaryItems.map((item, i) => (
               <span key={item.label}>
-                <span className="text-muted-foreground">{item.value}</span>
+                <span className="px-1">{item.value}</span>
                 {i < summaryItems.length - 1 && (
-                  <span className="text-muted-foreground/40"> / </span>
+                  <span className="text-muted-foreground/30"> / </span>
                 )}
               </span>
             ))}
@@ -138,8 +138,10 @@ export function SafeAreaInsetsControl({
         </div>
 
         <div className="flex items-center gap-3">
-          <Label className={`${COMPACT_LABEL_CLASSES} w-8 shrink-0`}>All</Label>
-          <InputGroup className={`${INPUT_GROUP_CLASSES} w-22`}>
+          <Label className={`${COMPACT_LABEL_CLASSES} w-12 shrink-0`}>
+            All sides
+          </Label>
+          <InputGroup className={`${INPUT_GROUP_CLASSES} w-20`}>
             <InputGroupInput
               type="number"
               value={allInputValue}
