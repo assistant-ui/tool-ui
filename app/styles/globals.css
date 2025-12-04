@@ -299,15 +299,15 @@
   }
 
   .dark .scrollbar-subtle {
-    scrollbar-color: oklch(0 0 0 / 0.45) transparent;
+    scrollbar-color: oklch(100% 0 271.152 / 0.25) transparent;
   }
 
   .dark .scrollbar-subtle::-webkit-scrollbar-thumb {
-    background-color: oklch(0 0 0 / 0.45);
+    scrollbar-color: oklch(100% 0 271.152 / 0.25) transparent;
   }
 
   .dark .scrollbar-subtle:hover::-webkit-scrollbar-thumb {
-    background-color: oklch(0 0 0 / 0.55);
+    background-color: oklch(100% 0 271.152 / 0.55);
   }
 }
 
