@@ -53,6 +53,7 @@
     "@upstash/redis": "^1.35.6",
     "ai": "^5.0.88",
     "ajv": "^8.17.1",
+    "ansi-to-react": "^6.1.6",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "freestyle-sandboxes": "^0.0.97",

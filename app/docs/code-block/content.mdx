@@ -1,0 +1,132 @@
+import { DocsHeader } from "../_components/docs-header";
+
+<DocsHeader title="Code Block" mdxPath="app/docs/code-block/content.mdx" />
+
+A syntax-highlighted code display component with copy functionality and collapsible mode. Perfect for showing code snippets, examples, and technical content.
+
+<CodeBlockPresetExample preset="typescript" />
+
+## Key Features
+
+- **Syntax highlighting**: Powered by Shiki with support for 100+ languages
+- **Copy to clipboard**: One-click code copying with visual feedback
+- **Line numbers**: Optional line number display
+- **Line highlighting**: Highlight specific lines (useful for bug indicators)
+- **Collapsible mode**: Auto-collapse long code snippets with expand/collapse
+- **Filename header**: Optional filename display with language badge
+- **Theme aware**: Automatically adapts to light/dark theme
+
+## When to Use Code Block
+
+- **Good for:** Code examples, configuration files, API responses, scripts
+- **Not for:** Interactive code editing (use CodeMirror), large files (consider linking)
+
+## Props
+
+### Core Props
+
+- `code` (string, required): The code content to display
+- `language` (string, default: "text"): Programming language for syntax highlighting
+- `filename` (string, optional): Filename to display in the header
+
+### Display Options
+
+- `showLineNumbers` (boolean, default: true): Show line numbers
+- `highlightLines` (number[], optional): Array of line numbers to highlight
+- `maxCollapsedLines` (number, optional): Auto-collapse if code exceeds this many lines
+
+### Standard Props
+
+- `surfaceId` (string, required): Unique identifier for this surface
+- `footerActions` (Action[], optional): Footer action buttons
+- `className` (string, optional): Additional CSS classes
+- `isLoading` (boolean, optional): Show loading skeleton state
+
+## Examples
+
+### Basic TypeScript
+
+<CodeBlockPresetExample preset="typescript" />
+
+### Python with Docstring
+
+<CodeBlockPresetExample preset="python" />
+
+### JSON Configuration
+
+<CodeBlockPresetExample preset="json" />
+
+### Bash Script
+
+<CodeBlockPresetExample preset="bash" />
+
+### Highlighted Lines
+
+<CodeBlockPresetExample preset="highlighted" />
+
+### Collapsible Long Code
+
+<CodeBlockPresetExample preset="collapsible" />
+
+## Source and Install
+
+Copy `components/tool-ui/code-block` into your project:
+
+<Files>
+  <Folder name="components" defaultOpen>
+    <Folder name="tool-ui" defaultOpen>
+      <Folder name="code-block" defaultOpen>
+        <File name="code-block.tsx" />
+        <File name="schema.ts" />
+        <File name="index.tsx" />
+        <File name="progress.tsx" />
+        <File name="_ui.tsx" />
+        <File name="_cn.ts" />
+      </Folder>
+    </Folder>
+  </Folder>
+</Files>
+
+Install dependencies:
+
+```bash
+pnpm add shiki
+```
+
+## Usage
+
+```tsx
+import { CodeBlock } from "@/components/tool-ui/code-block";
+
+export function MyComponent() {
+  return (
+    <CodeBlock
+      surfaceId="my-code-example"
+      code={`function hello(name: string) {
+  return \`Hello, \${name}!\`;
+}`}
+      language="typescript"
+      filename="hello.ts"
+      showLineNumbers={true}
+    />
+  );
+}
+```
+
+## Supported Languages
+
+CodeBlock supports all languages included with Shiki, including:
+
+- TypeScript/JavaScript
+- Python
+- JSON
+- Bash/Shell
+- CSS/HTML
+- Markdown
+- SQL
+- YAML
+- Go
+- Rust
+- And many more...
+
+See [Shiki documentation](https://shiki.style/languages) for the complete list.

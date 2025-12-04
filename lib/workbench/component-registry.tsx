@@ -9,13 +9,29 @@
 
 import type { ComponentType } from "react";
 import { MediaCard } from "@/components/tool-ui/media-card";
-import { OptionList, parseSerializableOptionList } from "@/components/tool-ui/option-list";
+import {
+  OptionList,
+  parseSerializableOptionList,
+} from "@/components/tool-ui/option-list";
+import {
+  CodeBlock,
+  parseSerializableCodeBlock,
+} from "@/components/tool-ui/code-block";
+import {
+  Terminal,
+  parseSerializableTerminal,
+} from "@/components/tool-ui/terminal";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Types
 // ─────────────────────────────────────────────────────────────────────────────
 
-export type ComponentCategory = "cards" | "lists" | "forms" | "data";
+export type ComponentCategory =
+  | "cards"
+  | "lists"
+  | "forms"
+  | "data"
+  | "display";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type AnyComponent = ComponentType<any>;
@@ -45,6 +61,18 @@ function OptionListWrapper(props: Record<string, unknown>) {
   return <OptionList {...parsed} />;
 }
 
+function CodeBlockWrapper(props: Record<string, unknown>) {
+  // Parse the serializable data into the expected format
+  const parsed = parseSerializableCodeBlock(props);
+  return <CodeBlock {...parsed} />;
+}
+
+function TerminalWrapper(props: Record<string, unknown>) {
+  // Parse the serializable data into the expected format
+  const parsed = parseSerializableTerminal(props);
+  return <Terminal {...parsed} />;
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 // Registry
 // ─────────────────────────────────────────────────────────────────────────────
@@ -63,7 +91,8 @@ export const workbenchComponents: WorkbenchComponentEntry[] = [
       src: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&auto=format&fit=crop",
       alt: "Mountain sunrise with golden light",
       title: "Mountain Sunrise",
-      description: "A beautiful sunrise illuminates the mountain peaks with golden light.",
+      description:
+        "A beautiful sunrise illuminates the mountain peaks with golden light.",
       ratio: "16:9",
       domain: "unsplash.com",
       createdAtISO: new Date().toISOString(),
@@ -104,6 +133,40 @@ export const workbenchComponents: WorkbenchComponentEntry[] = [
         },
       ],
       selectionMode: "single",
+    },
+  },
+  {
+    id: "code-block",
+    label: "Code Block",
+    description:
+      "Syntax-highlighted code display with copy and collapse features",
+    category: "display",
+    component: CodeBlockWrapper,
+    defaultProps: {
+      surfaceId: "workbench-code-block",
+      code: `function greet(name: string) {
+  return \`Hello, \${name}!\`;
+}
+
+console.log(greet("World"));`,
+      language: "typescript",
+      filename: "greet.ts",
+      showLineNumbers: true,
+    },
+  },
+  {
+    id: "terminal",
+    label: "Terminal",
+    description: "Command output display with ANSI colors and exit codes",
+    category: "display",
+    component: TerminalWrapper,
+    defaultProps: {
+      surfaceId: "workbench-terminal",
+      command: "echo 'Hello, World!'",
+      stdout: "Hello, World!",
+      exitCode: 0,
+      durationMs: 45,
+      cwd: "~",
     },
   },
   // Placeholder entries for components not yet integrated
