@@ -2,10 +2,7 @@
 
 import type { ComponentType } from "react";
 import { MediaCard } from "@/components/tool-ui/media-card";
-import {
-  OptionList,
-  parseSerializableOptionList,
-} from "@/components/tool-ui/option-list";
+import { OptionListSDK } from "./wrappers";
 
 export type ComponentCategory = "cards" | "lists" | "forms" | "data";
 
@@ -21,18 +18,13 @@ export interface WorkbenchComponentEntry {
   defaultProps: Record<string, unknown>;
 }
 
-function OptionListWrapper(props: Record<string, unknown>) {
-  const parsed = parseSerializableOptionList(props);
-  return <OptionList {...parsed} />;
-}
-
 export const workbenchComponents: WorkbenchComponentEntry[] = [
   {
     id: "option-list",
     label: "Option List",
     description: "Interactive selection list with icons and descriptions",
     category: "lists",
-    component: OptionListWrapper,
+    component: OptionListSDK,
     defaultProps: {
       surfaceId: "workbench-option-list",
       options: [

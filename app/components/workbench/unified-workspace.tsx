@@ -341,6 +341,7 @@ export function UnifiedWorkspace() {
     toolResponseMetadata: "Metadata",
   };
 
+
   return (
     <PanelGroup
       direction="horizontal"
@@ -354,18 +355,16 @@ export function UnifiedWorkspace() {
               aria-hidden="true"
             />
 
-            <div className="sticky top-0 z-20 flex items-center gap-2 px-3 pt-2 pb-3">
+            <div className="sticky top-0 z-20 flex items-center gap-2 px-2 pt-2 pb-3">
               <Tabs
                 value={activeJsonTab}
                 onValueChange={(v) => setActiveJsonTab(v as ActiveJsonTab)}
               >
                 <TabsList>
-                  <TabsTrigger value="toolInput">Tool Input</TabsTrigger>
+                  <TabsTrigger value="toolInput">Input</TabsTrigger>
                   <TabsTrigger value="toolOutput">Output</TabsTrigger>
                   <TabsTrigger value="widgetState">State</TabsTrigger>
-                  <TabsTrigger value="toolResponseMetadata">
-                    Metadata
-                  </TabsTrigger>
+                  <TabsTrigger value="toolResponseMetadata">Meta</TabsTrigger>
                 </TabsList>
               </Tabs>
 

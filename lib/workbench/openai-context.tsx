@@ -48,6 +48,13 @@ export function OpenAIProvider({ children }: OpenAIProviderProps) {
         result,
       });
 
+      if (result.structuredContent) {
+        store.setToolOutput(result.structuredContent);
+      }
+      if (result._meta) {
+        store.setToolResponseMetadata(result._meta);
+      }
+
       return result;
     },
     [store],

@@ -212,6 +212,36 @@ function IsolatedThemeWrapper({
   );
 }
 
+function ConstrainedContainer({ children }: { children: ReactNode }) {
+  const maxHeight = useWorkbenchStore((s) => s.maxHeight);
+  const safeAreaInsets = useWorkbenchStore((s) => s.safeAreaInsets);
+
+  const containerStyle: React.CSSProperties = {
+    maxHeight: maxHeight > 0 ? maxHeight : undefined,
+    paddingTop: safeAreaInsets.top,
+    paddingBottom: safeAreaInsets.bottom,
+    paddingLeft: safeAreaInsets.left,
+    paddingRight: safeAreaInsets.right,
+  };
+
+  const hasConstraints =
+    maxHeight > 0 ||
+    safeAreaInsets.top > 0 ||
+    safeAreaInsets.bottom > 0 ||
+    safeAreaInsets.left > 0 ||
+    safeAreaInsets.right > 0;
+
+  if (!hasConstraints) {
+    return <>{children}</>;
+  }
+
+  return (
+    <div style={containerStyle} className="overflow-auto">
+      {children}
+    </div>
+  );
+}
+
 function ComponentContent({ className }: { className?: string }) {
   const toolInput = useToolInput();
 
@@ -223,9 +253,11 @@ function ComponentContent({ className }: { className?: string }) {
       )}
     >
       <OpenAIProvider>
-        <ComponentErrorBoundary toolInput={toolInput}>
-          <ComponentRenderer />
-        </ComponentErrorBoundary>
+        <ConstrainedContainer>
+          <ComponentErrorBoundary toolInput={toolInput}>
+            <ComponentRenderer />
+          </ComponentErrorBoundary>
+        </ConstrainedContainer>
       </OpenAIProvider>
     </IsolatedThemeWrapper>
   );

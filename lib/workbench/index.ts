@@ -41,3 +41,5 @@ export {
   registerMockHandler,
   getAvailableMockTools,
 } from "./mock-responses";
+
+export { OptionListSDK } from "./wrappers";
