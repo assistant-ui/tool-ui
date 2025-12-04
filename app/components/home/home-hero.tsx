@@ -32,7 +32,7 @@ export function HomeHero() {
         Built on Tailwind, Radix, and shadcn/ui. Open Source.{" "}
         <br className="hidden md:block" />
       </p>
-      <Button asChild className="group" size="homeCTA">
+      <Button asChild className="group font-light tracking-wide" size="homeCTA">
         <Link href="/docs/gallery">
           See the Components
           <ArrowRight className="size-5 shrink-0 transition-transform group-hover:translate-x-1" />
