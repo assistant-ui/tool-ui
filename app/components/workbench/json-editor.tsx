@@ -35,9 +35,7 @@ const customEditorStyleLight = EditorView.theme(
     "&.cm-focused": {
       outline: "none",
     },
-    ".cm-activeLine": {
-      backgroundColor: "rgba(0, 0, 0, 0.05)",
-    },
+
     ".cm-activeLineGutter": {
       backgroundColor: "transparent",
       color: "rgba(0, 0, 0, 0.8)",

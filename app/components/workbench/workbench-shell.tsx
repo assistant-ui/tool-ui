@@ -27,7 +27,7 @@ export function WorkbenchShell() {
 
   return (
     <div className="flex h-full w-full flex-col overflow-hidden">
-      <div className="flex shrink-0 items-center gap-3 px-4 pt-4 pb-2">
+      <div className="flex shrink-0 items-center gap-3 px-4 pt-3 pb-2">
         <Link
           href="/"
           className="text-muted-foreground hover:text-foreground hover:bg-muted -ml-1.5 rounded-md p-1.5 transition-colors"
@@ -50,7 +50,7 @@ export function WorkbenchShell() {
             </Panel>
 
             <PanelResizeHandle className="group relative -mt-3 h-3 shrink-0 cursor-row-resize">
-              <div className="bg-border absolute inset-x-0 -bottom-px h-px transition-colors group-hover:bg-neutral-400 group-data-resize-handle-active:bg-neutral-500 dark:group-hover:bg-neutral-500 dark:group-data-resize-handle-active:bg-neutral-400" />
+              <div className="bg-border absolute inset-x-0 bottom-0 h-px transition-colors group-hover:bg-neutral-400 group-data-resize-handle-active:bg-neutral-500 dark:group-hover:bg-neutral-500 dark:group-data-resize-handle-active:bg-neutral-400" />
             </PanelResizeHandle>
 
             <Panel

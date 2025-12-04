@@ -18,6 +18,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/ui/cn";
 import { RotateCcw, X, AlertTriangle } from "lucide-react";
+import { TAB_LIST_CLASSES, TAB_TRIGGER_CLASSES } from "./styles";
 
 interface ErrorBoundaryProps {
   children: ReactNode;
@@ -354,26 +355,46 @@ export function UnifiedWorkspace() {
               aria-hidden="true"
             />
 
-            <div className="sticky top-0 z-20 flex items-center gap-2 px-2 pt-2 pb-3">
+            <div className="sticky top-0 z-20 flex items-center gap-2 p-2">
               <Tabs
                 value={activeJsonTab}
                 onValueChange={(v) => setActiveJsonTab(v as ActiveJsonTab)}
               >
-                <TabsList>
-                  <TabsTrigger value="toolInput">Input</TabsTrigger>
-                  <TabsTrigger value="toolOutput">Output</TabsTrigger>
-                  <TabsTrigger value="widgetState">State</TabsTrigger>
-                  <TabsTrigger value="toolResponseMetadata">Meta</TabsTrigger>
+                <TabsList className={TAB_LIST_CLASSES}>
+                  <TabsTrigger
+                    className={TAB_TRIGGER_CLASSES}
+                    value="toolInput"
+                  >
+                    Input
+                  </TabsTrigger>
+                  <TabsTrigger
+                    className={TAB_TRIGGER_CLASSES}
+                    value="toolOutput"
+                  >
+                    Output
+                  </TabsTrigger>
+                  <TabsTrigger
+                    className={TAB_TRIGGER_CLASSES}
+                    value="toolResponseMetadata"
+                  >
+                    Meta
+                  </TabsTrigger>
+                  <TabsTrigger
+                    className={TAB_TRIGGER_CLASSES}
+                    value="widgetState"
+                  >
+                    State
+                  </TabsTrigger>
                 </TabsList>
               </Tabs>
 
               <Button
                 variant="ghost"
                 size="sm"
-                className="h-9 gap-1 px-2"
+                className="gap-1 opacity-50 hover:opacity-100"
                 onClick={handleReset}
               >
-                <RotateCcw className="size-4" />
+                <RotateCcw className="size-3" />
               </Button>
             </div>
 
@@ -388,7 +409,7 @@ export function UnifiedWorkspace() {
       </Panel>
 
       <PanelResizeHandle className="group relative z-10 -ml-3 w-3 shrink-0 cursor-col-resize">
-        <div className="bg-border absolute inset-y-0 right-0 w-px transition-colors group-hover:bg-neutral-400 group-data-resize-handle-active:bg-neutral-500 dark:group-hover:bg-neutral-500 dark:group-data-resize-handle-active:bg-neutral-400" />
+        <div className="bg-border absolute inset-y-0 right-0 h-[calc(100%-1px)] w-px transition-colors group-hover:bg-neutral-400 group-data-resize-handle-active:bg-neutral-500 dark:group-hover:bg-neutral-500 dark:group-data-resize-handle-active:bg-neutral-400" />
       </PanelResizeHandle>
 
       <Panel defaultSize={60} minSize={20}>

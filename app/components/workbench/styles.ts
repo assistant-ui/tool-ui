@@ -32,3 +32,7 @@ export const COMPACT_SMALL_TEXT_CLASSES = "text-xs font-normal";
 
 export const COMPACT_LABEL_CLASSES =
   "text-xs font-normal text-neutral-500 dark:text-neutral-400";
+
+export const TAB_LIST_CLASSES = "bg-transparent";
+
+export const TAB_TRIGGER_CLASSES = "bg-transparent font-normal";

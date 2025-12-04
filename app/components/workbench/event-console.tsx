@@ -67,7 +67,7 @@ export function EventConsole() {
 
       <div
         ref={scrollRef}
-        className="scrollbar-subtle h-full overflow-y-auto font-mono text-xs"
+        className="scrollbar-subtle h-full overflow-y-auto font-mono text-sm"
       >
         {consoleLogs.length === 0 ? (
           <div className="text-muted-foreground flex h-full items-center justify-center px-4 text-center">
