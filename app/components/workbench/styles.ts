@@ -1,13 +1,11 @@
-export const SECTION_HEADER_CLASSES =
-  "px-4 py-3 text-sm font-normal select-none";
-
-export const SECTION_CONTENT_CLASSES = "pt-1 px-4 pb-4";
-
 export const PANEL_TOGGLE_CLASSES =
   "text-muted-foreground hover:text-foreground hover:bg-muted rounded-md transition-colors";
 
 export const CONTROL_BG_CLASSES =
   "bg-input/70 hover:bg-input/80 dark:bg-input/70! dark:hover:bg-input/80!";
+
+export const TRANSPARENT_CONTROL_BG_CLASSES =
+  "bg-transparent! dark:bg-transparent! hover:bg-input/70! dark:hover:bg-input/70!";
 
 export const INPUT_GROUP_CLASSES = `${CONTROL_BG_CLASSES} w-fit border-none! shadow-none! max-h-7 tabular-nums`;
 
@@ -19,7 +17,7 @@ export const ADDON_CLASSES = "bg-transparent! text-sm font-normal select-none";
 export const COMPACT_ADDON_CLASSES =
   "bg-transparent! text-xs font-normal select-none";
 
-export const SELECT_CLASSES = `${CONTROL_BG_CLASSES} w-fit text-xs shadow-none h-7! border-none select-none`;
+export const SELECT_CLASSES = `${TRANSPARENT_CONTROL_BG_CLASSES} w-fit text-xs shadow-none h-7! border-none select-none pl-2 pr-1`;
 
 export const TOGGLE_BUTTON_CLASSES = `${CONTROL_BG_CLASSES} flex-1 gap-2 border-none text-xs font-light h-7! select-none`;
 

@@ -152,7 +152,7 @@ const LIGHT_THEME_VARS: React.CSSProperties = {
 } as React.CSSProperties;
 
 const DARK_THEME_VARS: React.CSSProperties = {
-  "--background": "240 10% 3.9%",
+  "--background": "240 0% 8%",
   "--foreground": "0 0% 98%",
   "--card": "240 10% 3.9%",
   "--card-foreground": "0 0% 98%",
@@ -176,7 +176,10 @@ function IsolatedThemeWrapper({
   return (
     <div
       data-theme={theme}
-      className={cn("bg-background text-foreground", className)}
+      className={cn(
+        "bg-background text-foreground transition-colors",
+        className,
+      )}
       style={{ colorScheme: theme, ...themeVars }}
     >
       {children}
@@ -189,10 +192,7 @@ function ComponentContent({ className }: { className?: string }) {
 
   return (
     <IsolatedThemeWrapper
-      className={cn(
-        "flex min-h-full items-center justify-center p-4",
-        className,
-      )}
+      className={cn("flex min-h-full items-center justify-center", className)}
     >
       <OpenAIProvider>
         <ComponentErrorBoundary toolInput={toolInput}>
@@ -205,9 +205,9 @@ function ComponentContent({ className }: { className?: string }) {
 
 function InlineView() {
   return (
-    <div className="h-full py-4">
-      <div className="border-border h-full overflow-auto rounded-xl border transition-all">
-        <ComponentContent className="h-full" />
+    <div className="h-full w-full">
+      <div className="h-full overflow-auto">
+        <ComponentContent className="h-full p-4" />
       </div>
     </div>
   );
@@ -225,7 +225,7 @@ function PipView({ onClose }: { onClose: () => void }) {
         >
           <X className="size-3" />
         </Button>
-        <ComponentContent className="h-full" />
+        <ComponentContent className="h-full p-2" />
       </div>
     </div>
   );
@@ -242,7 +242,7 @@ function FullscreenView({ onClose }: { onClose: () => void }) {
       >
         <X className="size-4" />
       </Button>
-      <ComponentContent className="h-full" />
+      <ComponentContent className="h-full p-4" />
     </div>
   );
 }
@@ -341,17 +341,16 @@ export function UnifiedWorkspace() {
     toolResponseMetadata: "Metadata",
   };
 
-
   return (
     <PanelGroup
       direction="horizontal"
-      className="flex h-full w-full flex-row bg-gray-100 dark:bg-[#0d1117]"
+      className="flex h-full w-full flex-row bg-gray-100 dark:bg-neutral-950"
     >
       <Panel defaultSize={40} minSize={20} maxSize={80}>
         <div className="relative isolate flex h-full flex-col bg-transparent">
           <div className="scrollbar-subtle h-full overflow-y-auto">
             <div
-              className="pointer-events-none absolute top-0 z-10 h-24 w-full bg-linear-to-b from-gray-100 via-gray-100 to-transparent dark:from-[#0d1117] dark:via-[#0d1117]"
+              className="pointer-events-none absolute top-0 z-10 h-22 w-full bg-linear-to-b from-gray-100 via-gray-100 to-transparent dark:from-neutral-950 dark:via-neutral-950"
               aria-hidden="true"
             />
 
@@ -388,12 +387,12 @@ export function UnifiedWorkspace() {
         </div>
       </Panel>
 
-      <PanelResizeHandle className="group relative w-2 shrink-0">
-        <div className="absolute top-1/2 left-1/2 h-12 w-1 -translate-x-1/2 -translate-y-1/2 rounded-full bg-transparent opacity-40 transition-all group-hover:bg-gray-400 group-hover:opacity-100 group-data-resize-handle-active:bg-gray-500 group-data-resize-handle-active:opacity-100 dark:bg-gray-600 dark:group-hover:bg-gray-500 dark:group-data-resize-handle-active:bg-gray-400" />
+      <PanelResizeHandle className="group relative z-10 w-3 -ml-3 shrink-0 cursor-col-resize">
+        <div className="absolute inset-y-0 right-0 w-px bg-border transition-colors group-hover:bg-gray-400 group-data-[resize-handle-active]:bg-gray-500 dark:group-hover:bg-gray-500 dark:group-data-[resize-handle-active]:bg-gray-400" />
       </PanelResizeHandle>
 
       <Panel defaultSize={60} minSize={20}>
-        <div className="relative flex h-full flex-col overflow-hidden pr-4">
+        <div className="relative flex h-full flex-col overflow-hidden">
           {displayMode === "inline" && <InlineView />}
           {displayMode === "pip" && <PipView onClose={handleClose} />}
           {displayMode === "fullscreen" && (

@@ -4,7 +4,7 @@ import { useEffect, useRef } from "react";
 import { useConsoleLogs, useWorkbenchStore } from "@/lib/workbench/store";
 import type { ConsoleEntryType } from "@/lib/workbench/types";
 import { Button } from "@/components/ui/button";
-import { Trash2, Terminal } from "lucide-react";
+import { Trash2 } from "lucide-react";
 import { cn } from "@/lib/ui/cn";
 
 const typeColors: Record<ConsoleEntryType, string> = {
@@ -52,34 +52,25 @@ export function EventConsole() {
   }, [consoleLogs.length]);
 
   return (
-    <div className="bg-background flex h-full flex-col">
-      <div className="flex shrink-0 items-center justify-between border-b px-3 py-2">
-        <div className="flex items-center gap-2">
-          <Terminal className="text-muted-foreground size-4" />
-          <span className="text-sm font-medium">Console</span>
-          <span className="text-muted-foreground text-xs">
-            ({consoleLogs.length}{" "}
-            {consoleLogs.length === 1 ? "event" : "events"})
-          </span>
-        </div>
+    <div className="relative h-full">
+      {consoleLogs.length > 0 && (
         <Button
           variant="ghost"
           size="sm"
-          className="h-7 gap-1 px-2 text-xs"
+          className="absolute top-0 right-2 z-10 h-7 gap-1 px-2 text-xs"
           onClick={clearConsole}
-          disabled={consoleLogs.length === 0}
         >
           <Trash2 className="size-3" />
           Clear
         </Button>
-      </div>
+      )}
 
       <div
         ref={scrollRef}
-        className="scrollbar-subtle flex-1 overflow-y-auto font-mono text-xs"
+        className="scrollbar-subtle h-full overflow-y-auto font-mono text-xs"
       >
         {consoleLogs.length === 0 ? (
-          <div className="text-muted-foreground flex h-full items-center justify-center">
+          <div className="text-muted-foreground flex h-full items-center justify-center px-4 text-center">
             Events will appear here when the component calls window.openai
             methods
           </div>

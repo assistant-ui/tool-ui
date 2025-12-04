@@ -26,12 +26,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {
-  Accordion,
-  AccordionItem,
-  AccordionTrigger,
-  AccordionContent,
-} from "@/components/ui/accordion";
-import {
   InputGroup,
   InputGroupAddon,
   InputGroupInput,
@@ -56,8 +50,6 @@ import {
   SELECT_CLASSES,
   TOGGLE_BUTTON_CLASSES,
   TOGGLE_BUTTON_ACTIVE_CLASSES,
-  SECTION_HEADER_CLASSES,
-  SECTION_CONTENT_CLASSES,
   PANEL_TOGGLE_CLASSES,
   COMPACT_SMALL_TEXT_CLASSES,
 } from "./styles";
@@ -94,12 +86,6 @@ interface SettingRowProps {
   children: React.ReactNode;
 }
 
-interface ConfigSectionProps {
-  value: string;
-  title: string;
-  children: React.ReactNode;
-}
-
 function clamp(value: number, min: number, max: number): number {
   if (!Number.isFinite(value)) return min;
   if (value < min) return min;
@@ -120,37 +106,9 @@ function SettingRow({ label, htmlFor, className, children }: SettingRowProps) {
   );
 }
 
-function ConfigSection({ value, title, children }: ConfigSectionProps) {
-  return (
-    <AccordionItem value={value}>
-      <AccordionTrigger className={SECTION_HEADER_CLASSES}>
-        <span>{title}</span>
-      </AccordionTrigger>
-      <AccordionContent className={SECTION_CONTENT_CLASSES}>
-        <div className="space-y-2">{children}</div>
-      </AccordionContent>
-    </AccordionItem>
-  );
+function Separator() {
+  return <div className="border-border/50 my-2 border-t" />;
 }
-
-// function UserAgentInfo({ deviceType }: { deviceType: DeviceType }) {
-//   const isDesktop = deviceType === "desktop";
-
-//   return (
-//     <div className={INFO_BOX_CLASSES}>
-//       <div>
-//         Device: <span className="font-mono">{deviceType}</span>
-//       </div>
-//       <div>
-//         Hover: <span className="font-mono">{isDesktop ? "true" : "false"}</span>
-//       </div>
-//       <div>
-//         Touch:{" "}
-//         <span className="font-mono">{!isDesktop ? "true" : "false"}</span>
-//       </div>
-//     </div>
-//   );
-// }
 
 export function ConfigPanel({
   isCollapsed,
@@ -203,143 +161,125 @@ export function ConfigPanel({
 
   return (
     <div className="flex h-full min-w-80 flex-col">
-      <div className="scrollbar-subtle flex-1 overflow-y-auto">
-        <Accordion
-          type="multiple"
-          defaultValue={["component", "display", "advanced"]}
-        >
-          <AccordionItem value="component">
-            <AccordionTrigger className={SECTION_HEADER_CLASSES}>
-              <span>Component</span>
-            </AccordionTrigger>
-            <AccordionContent className={SECTION_CONTENT_CLASSES}>
-              <Select
-                value={selectedComponent}
-                onValueChange={setSelectedComponent}
-              >
-                <SelectTrigger className={SELECT_CLASSES}>
-                  <SelectValue placeholder="Select component" />
-                </SelectTrigger>
-                <SelectContent>
-                  {workbenchComponents.map((comp) => (
-                    <SelectItem
-                      className={COMPACT_SMALL_TEXT_CLASSES}
-                      key={comp.id}
-                      value={comp.id}
-                    >
-                      {comp.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </AccordionContent>
-          </AccordionItem>
+      <div className="scrollbar-subtle flex-1 space-y-2 overflow-y-auto px-4">
+        <SettingRow label="Component">
+          <Select
+            value={selectedComponent}
+            onValueChange={setSelectedComponent}
+          >
+            <SelectTrigger className={SELECT_CLASSES}>
+              <SelectValue placeholder="Select component" />
+            </SelectTrigger>
+            <SelectContent>
+              {workbenchComponents.map((comp) => (
+                <SelectItem
+                  className={COMPACT_SMALL_TEXT_CLASSES}
+                  key={comp.id}
+                  value={comp.id}
+                >
+                  {comp.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </SettingRow>
 
-          <ConfigSection value="display" title="Display">
-            <SettingRow label="Mode">
-              <ButtonGroup>
-                {DISPLAY_MODES.map(({ id, label, icon: Icon }) => (
-                  <Button
-                    key={id}
-                    variant="ghost"
-                    size="sm"
-                    className={
-                      displayMode === id
-                        ? TOGGLE_BUTTON_ACTIVE_CLASSES
-                        : TOGGLE_BUTTON_CLASSES
-                    }
-                    onClick={() => setDisplayMode(id)}
-                  >
-                    <Icon className="size-3" />
-                    {label}
-                  </Button>
-                ))}
-              </ButtonGroup>
-            </SettingRow>
+        <Separator />
 
-            <SettingRow label="Device">
-              <ButtonGroup>
-                {DEVICE_TYPES.map(({ id, icon: Icon }) => (
-                  <Button
-                    key={id}
-                    variant="ghost"
-                    size="sm"
-                    className={
-                      deviceType === id
-                        ? TOGGLE_BUTTON_ACTIVE_CLASSES
-                        : TOGGLE_BUTTON_CLASSES
-                    }
-                    onClick={() => setDeviceType(id)}
-                  >
-                    <Icon className="size-3" />
-                  </Button>
-                ))}
-              </ButtonGroup>
-            </SettingRow>
-
-            <SettingRow label="Locale">
-              <Select value={locale} onValueChange={setLocale}>
-                <SelectTrigger className={SELECT_CLASSES}>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {LOCALE_OPTIONS.map((opt) => (
-                    <SelectItem
-                      key={opt.value}
-                      value={opt.value}
-                      className="text-xs"
-                    >
-                      {opt.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </SettingRow>
-
-            <SettingRow
-              label="Dark theme"
-              htmlFor="theme-toggle"
-              className="h-8"
-            >
-              <Switch
-                id="theme-toggle"
-                checked={theme === "dark"}
-                onCheckedChange={(checked) =>
-                  setTheme(checked ? "dark" : "light")
+        <SettingRow label="Mode">
+          <ButtonGroup>
+            {DISPLAY_MODES.map(({ id, label, icon: Icon }) => (
+              <Button
+                key={id}
+                variant="ghost"
+                size="sm"
+                className={
+                  displayMode === id
+                    ? TOGGLE_BUTTON_ACTIVE_CLASSES
+                    : TOGGLE_BUTTON_CLASSES
                 }
-              />
-            </SettingRow>
-          </ConfigSection>
+                onClick={() => setDisplayMode(id)}
+              >
+                <Icon className="size-3" />
+                {label}
+              </Button>
+            ))}
+          </ButtonGroup>
+        </SettingRow>
 
-          <ConfigSection value="advanced" title="Advanced">
-            <SettingRow label="Max height" htmlFor="max-height">
-              <InputGroup className={INPUT_GROUP_CLASSES}>
-                <InputGroupInput
-                  id="max-height"
-                  type="number"
-                  value={maxHeight}
-                  onChange={(e) => {
-                    const clamped = clamp(Number(e.target.value), 100, 2000);
-                    setMaxHeight(clamped);
-                  }}
-                  min={100}
-                  max={2000}
-                  className={INPUT_CLASSES}
-                />
-                <InputGroupAddon align="inline-end" className={ADDON_CLASSES}>
-                  px
-                </InputGroupAddon>
-              </InputGroup>
-            </SettingRow>
+        <SettingRow label="Device">
+          <ButtonGroup>
+            {DEVICE_TYPES.map(({ id, icon: Icon }) => (
+              <Button
+                key={id}
+                variant="ghost"
+                size="sm"
+                className={
+                  deviceType === id
+                    ? TOGGLE_BUTTON_ACTIVE_CLASSES
+                    : TOGGLE_BUTTON_CLASSES
+                }
+                onClick={() => setDeviceType(id)}
+              >
+                <Icon className="size-3" />
+              </Button>
+            ))}
+          </ButtonGroup>
+        </SettingRow>
 
-            <SettingRow label="Safe area">
-              <SafeAreaInsetsControl
-                value={safeAreaInsets}
-                onChange={setSafeAreaInsets}
-              />
-            </SettingRow>
-          </ConfigSection>
-        </Accordion>
+        <SettingRow label="Max height" htmlFor="max-height">
+          <InputGroup className={INPUT_GROUP_CLASSES}>
+            <InputGroupInput
+              id="max-height"
+              type="number"
+              value={maxHeight}
+              onChange={(e) => {
+                const clamped = clamp(Number(e.target.value), 100, 2000);
+                setMaxHeight(clamped);
+              }}
+              min={100}
+              max={2000}
+              className={INPUT_CLASSES}
+            />
+            <InputGroupAddon align="inline-end" className={ADDON_CLASSES}>
+              px
+            </InputGroupAddon>
+          </InputGroup>
+        </SettingRow>
+
+        <SettingRow label="Safe area">
+          <SafeAreaInsetsControl
+            value={safeAreaInsets}
+            onChange={setSafeAreaInsets}
+          />
+        </SettingRow>
+
+        <SettingRow label="Dark theme" htmlFor="theme-toggle">
+          <Switch
+            id="theme-toggle"
+            checked={theme === "dark"}
+            onCheckedChange={(checked) => setTheme(checked ? "dark" : "light")}
+          />
+        </SettingRow>
+
+        <SettingRow label="Locale">
+          <Select value={locale} onValueChange={setLocale}>
+            <SelectTrigger className={SELECT_CLASSES}>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {LOCALE_OPTIONS.map((opt) => (
+                <SelectItem
+                  key={opt.value}
+                  value={opt.value}
+                  className="text-xs"
+                >
+                  {opt.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </SettingRow>
       </div>
 
       <div className="flex items-center justify-end px-2 py-2">

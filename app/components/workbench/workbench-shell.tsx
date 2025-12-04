@@ -27,40 +27,20 @@ export function WorkbenchShell() {
 
   return (
     <div className="flex h-full w-full flex-col overflow-hidden">
-      <div className="bg-background flex h-12 shrink-0 items-center gap-3 px-4">
+      <div className="flex shrink-0 items-center gap-3 px-4 pt-4 pb-2">
         <Link
           href="/"
-          className="text-muted-foreground hover:text-foreground -ml-1 rounded-md p-1 transition-colors"
+          className="text-muted-foreground hover:text-foreground hover:bg-muted -ml-1.5 rounded-md p-1.5 transition-colors"
           aria-label="Back to home"
         >
           <ArrowLeft className="size-4" />
         </Link>
         <LogoMark className="size-5 shrink-0" />
-        <span className="-mb-0.5 font-mono text-sm font-medium select-none">
-          Workbench
-        </span>
+        <span className="font-mono font-medium select-none">Workbench</span>
       </div>
 
       <div className="flex min-h-0 flex-1 overflow-hidden">
-        <aside
-          className={`scrollbar-subtle flex h-full shrink-0 flex-col overflow-hidden transition-[width] duration-200 ease-in-out ${
-            isPanelCollapsed ? "w-12" : "w-80"
-          }`}
-        >
-          <div
-            className={`h-full pt-4 transition-opacity duration-150 ${
-              isFading ? "opacity-0" : "opacity-100"
-            }`}
-          >
-            <ConfigPanel
-              key={isPanelCollapsed ? "collapsed" : "expanded"}
-              isCollapsed={isPanelCollapsed}
-              onToggleCollapse={handleToggleCollapse}
-            />
-          </div>
-        </aside>
-
-        <div className="flex min-w-0 flex-1 flex-col overflow-clip rounded-tl-lg border-t border-l">
+        <div className="flex min-w-0 flex-1 flex-col overflow-clip rounded-tr-lg border-t border-r">
           <PanelGroup direction="vertical">
             <Panel
               defaultSize={100 - CONSOLE_DEFAULT_SIZE}
@@ -69,8 +49,8 @@ export function WorkbenchShell() {
               <UnifiedWorkspace />
             </Panel>
 
-            <PanelResizeHandle className="group relative h-2 shrink-0 border-t">
-              <div className="absolute top-1/2 left-1/2 h-1 w-16 -translate-x-1/2 -translate-y-1/2 rounded-full bg-gray-300 opacity-40 transition-all group-hover:bg-gray-400 group-hover:opacity-100 group-data-resize-handle-active:bg-gray-500 group-data-resize-handle-active:opacity-100 dark:bg-gray-600 dark:group-hover:bg-gray-500 dark:group-data-resize-handle-active:bg-gray-400" />
+            <PanelResizeHandle className="group relative -mt-3 h-3 shrink-0 cursor-row-resize">
+              <div className="bg-border absolute inset-x-0 -bottom-px h-px transition-colors group-hover:bg-neutral-400 group-data-resize-handle-active:bg-neutral-500 dark:group-hover:bg-neutral-500 dark:group-data-resize-handle-active:bg-neutral-400" />
             </PanelResizeHandle>
 
             <Panel
@@ -81,6 +61,23 @@ export function WorkbenchShell() {
             </Panel>
           </PanelGroup>
         </div>
+        <aside
+          className={`scrollbar-subtle flex h-full shrink-0 flex-col overflow-hidden transition-[width] duration-200 ease-in-out ${
+            isPanelCollapsed ? "w-12" : "w-80"
+          }`}
+        >
+          <div
+            className={`h-full pt-2 transition-opacity duration-150 ${
+              isFading ? "opacity-0" : "opacity-100"
+            }`}
+          >
+            <ConfigPanel
+              key={isPanelCollapsed ? "collapsed" : "expanded"}
+              isCollapsed={isPanelCollapsed}
+              onToggleCollapse={handleToggleCollapse}
+            />
+          </div>
+        </aside>
       </div>
     </div>
   );

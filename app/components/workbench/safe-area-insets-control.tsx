@@ -14,30 +14,56 @@ import {
   InputGroup,
   InputGroupAddon,
   InputGroupInput,
-  InputGroupText,
 } from "@/components/ui/input-group";
 import type { SafeAreaInsets } from "@/lib/workbench/types";
 import {
-  CONTROL_BG_CLASSES,
   INPUT_GROUP_CLASSES,
   INPUT_CLASSES,
   COMPACT_ADDON_CLASSES,
   COMPACT_LABEL_CLASSES,
   LABEL_CLASSES,
+  TRANSPARENT_CONTROL_BG_CLASSES,
 } from "./styles";
-
-const INSET_KEYS = [
-  { key: "left" as const, symbol: "←", label: "Left" },
-  { key: "top" as const, symbol: "↑", label: "Top" },
-  { key: "right" as const, symbol: "→", label: "Right" },
-  { key: "bottom" as const, symbol: "↓", label: "Bottom" },
-] as const;
+import { Separator } from "@/components/ui/separator";
 
 function clamp(value: number, min: number, max: number): number {
   if (!Number.isFinite(value)) return min;
   if (value < min) return min;
   if (value > max) return max;
   return value;
+}
+
+function InsetInput({
+  side,
+  value,
+  onChange,
+  align = "left",
+}: {
+  side: keyof SafeAreaInsets;
+  value: number;
+  onChange: (side: keyof SafeAreaInsets, value: string) => void;
+  align?: "left" | "center" | "right";
+}) {
+  const alignClass =
+    align === "center"
+      ? "text-center"
+      : align === "right"
+        ? "text-right"
+        : "text-left";
+
+  return (
+    <InputGroup className={INPUT_GROUP_CLASSES}>
+      <InputGroupInput
+        type="number"
+        value={value}
+        onChange={(e) => onChange(side, e.target.value)}
+        min={0}
+        max={100}
+        aria-label={`${side} inset`}
+        className={`${INPUT_CLASSES} w-14 ${alignClass}`}
+      />
+    </InputGroup>
+  );
 }
 
 interface SafeAreaInsetsControlProps {
@@ -107,7 +133,7 @@ export function SafeAreaInsetsControl({
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <button
-          className={`${CONTROL_BG_CLASSES} flex h-7 items-center gap-2 rounded-md px-2 text-xs select-none`}
+          className={`${TRANSPARENT_CONTROL_BG_CLASSES} flex h-7 items-center gap-2 rounded-md px-2 text-xs select-none`}
           aria-label="Edit safe area insets"
         >
           <span className="tabular-nums">
@@ -161,6 +187,8 @@ export function SafeAreaInsetsControl({
           </InputGroup>
         </div>
 
+        <Separator />
+
         <div className="flex items-center justify-between">
           <Label htmlFor="customize-sides" className={LABEL_CLASSES}>
             Customize sides
@@ -173,23 +201,37 @@ export function SafeAreaInsetsControl({
         </div>
 
         {customizeSides && (
-          <div className="grid w-fit grid-cols-2 gap-2">
-            {INSET_KEYS.map(({ key, symbol, label }) => (
-              <InputGroup key={key} className={INPUT_GROUP_CLASSES}>
-                <InputGroupAddon className={COMPACT_ADDON_CLASSES}>
-                  <InputGroupText>{symbol}</InputGroupText>
-                </InputGroupAddon>
-                <InputGroupInput
-                  type="number"
-                  value={value[key]}
-                  onChange={(e) => handleSideChange(key, e.target.value)}
-                  min={0}
-                  max={100}
-                  aria-label={`${label} inset`}
-                  className={`${INPUT_CLASSES} w-full`}
-                />
-              </InputGroup>
-            ))}
+          <div className="relative grid grid-cols-[auto_0px_auto] grid-rows-[auto_0px_auto] items-center justify-items-center gap-1">
+            <div />
+            <InsetInput
+              side="top"
+              value={value.top}
+              onChange={handleSideChange}
+              align="center"
+            />
+            <div />
+
+            <InsetInput
+              side="left"
+              value={value.left}
+              onChange={handleSideChange}
+            />
+            <div className="size-4 bg-red-500"></div>
+            <InsetInput
+              side="right"
+              value={value.right}
+              onChange={handleSideChange}
+              align="right"
+            />
+
+            <div />
+            <InsetInput
+              side="bottom"
+              value={value.bottom}
+              onChange={handleSideChange}
+              align="center"
+            />
+            <div />
           </div>
         )}
       </PopoverContent>
