@@ -60,20 +60,59 @@ interface HexnutProps {
   scale?: number;
   initialRotation?: [number, number, number];
   rotationSpeed?: number;
+  dragState: React.RefObject<{
+    isDragging: boolean;
+    deltaX: number;
+    velocity: number;
+  }>;
 }
+
+const DRAG_SENSITIVITY = 0.01;
+const MOMENTUM_FRICTION = 0.96;
+const MAX_VELOCITY = 10;
 
 function RotatingHexnut({
   color = "#ffffff",
   scale = 2.1,
   initialRotation = [0.75, -0.75, 0],
   rotationSpeed = 0.1,
+  dragState,
 }: HexnutProps) {
   const meshRef = useRef<Mesh>(null);
   const geometry = useMemo(() => createHexnutGeometry(1.2, 0.6, 0.5), []);
+  const velocity = useRef(rotationSpeed);
+  const wasDragging = useRef(false);
 
   useFrame((_, delta) => {
-    if (meshRef.current) {
-      meshRef.current.rotation.z += delta * rotationSpeed;
+    if (!meshRef.current) return;
+
+    if (dragState.current.isDragging) {
+      const dragDelta = dragState.current.deltaX * DRAG_SENSITIVITY;
+      meshRef.current.rotation.z += dragDelta;
+      dragState.current.deltaX = 0;
+      wasDragging.current = true;
+    } else {
+      if (wasDragging.current) {
+        const rawVelocity = dragState.current.velocity;
+        const sign = rawVelocity >= 0 ? 1 : -1;
+        velocity.current = sign * Math.min(Math.abs(rawVelocity), MAX_VELOCITY);
+        wasDragging.current = false;
+      }
+
+      const absVelocity = Math.abs(velocity.current);
+      const absTarget = Math.abs(rotationSpeed);
+
+      if (absVelocity > absTarget) {
+        velocity.current *= MOMENTUM_FRICTION;
+
+        if (absVelocity <= absTarget) {
+          velocity.current = rotationSpeed;
+        }
+      } else {
+        velocity.current = rotationSpeed;
+      }
+
+      meshRef.current.rotation.z += delta * velocity.current;
     }
   });
 
@@ -116,6 +155,38 @@ export function HexnutScene({
   const containerRef = useRef<HTMLDivElement>(null);
   const [mounted, setMounted] = useState(false);
   const { resolvedTheme } = useTheme();
+
+  const dragState = useRef({ isDragging: false, deltaX: 0, velocity: 0 });
+  const previousX = useRef(0);
+  const lastMoveTime = useRef(0);
+
+  const handlePointerDown = (e: React.PointerEvent) => {
+    dragState.current.isDragging = true;
+    dragState.current.velocity = 0;
+    previousX.current = e.clientX;
+    lastMoveTime.current = performance.now();
+    containerRef.current?.setPointerCapture(e.pointerId);
+  };
+
+  const handlePointerUp = (e: React.PointerEvent) => {
+    dragState.current.isDragging = false;
+    containerRef.current?.releasePointerCapture(e.pointerId);
+  };
+
+  const handlePointerMove = (e: React.PointerEvent) => {
+    if (!dragState.current.isDragging) return;
+    const now = performance.now();
+    const dt = (now - lastMoveTime.current) / 1000;
+    const dx = e.clientX - previousX.current;
+
+    dragState.current.deltaX = dx;
+    if (dt > 0) {
+      dragState.current.velocity = (dx * DRAG_SENSITIVITY) / dt;
+    }
+
+    previousX.current = e.clientX;
+    lastMoveTime.current = now;
+  };
 
   // Theme-specific configurations
   const themeConfigs = {
@@ -217,7 +288,13 @@ export function HexnutScene({
         overflow: "hidden",
         opacity: visible ? 1 : 0,
         transition: "opacity 0.6s ease-in-out",
+        cursor: dragState.current.isDragging ? "grabbing" : "grab",
+        touchAction: "none",
       }}
+      onPointerDown={handlePointerDown}
+      onPointerUp={handlePointerUp}
+      onPointerLeave={handlePointerUp}
+      onPointerMove={handlePointerMove}
     >
       <Canvas
         camera={{ position: [0, 0, cameraZ], fov: 50 }}
@@ -231,8 +308,9 @@ export function HexnutScene({
           scale={hexScale}
           initialRotation={initialRotation}
           rotationSpeed={speed}
+          dragState={dragState}
         />
-        <OrbitControls enableDamping enableZoom={debug} enableRotate={true} />
+        <OrbitControls enableDamping enableZoom={debug} enableRotate={false} />
       </Canvas>
 
       {/* Debug Panel - portaled to body to escape stacking contexts */}
