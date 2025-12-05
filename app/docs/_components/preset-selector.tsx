@@ -5,6 +5,7 @@ import {
   ItemGroup,
   ItemTitle,
 } from "@/components/ui/item";
+import { ChartPresetName, chartPresetDescriptions } from "@/lib/presets/chart";
 import { PresetName, presetDescriptions } from "@/lib/presets/data-table";
 import {
   MediaCardPresetName,
@@ -16,7 +17,11 @@ import {
 } from "@/lib/presets/option-list";
 import { cn } from "@/lib/ui/cn";
 
-type ComponentPreset = PresetName | MediaCardPresetName | OptionListPresetName;
+type ComponentPreset =
+  | ChartPresetName
+  | PresetName
+  | MediaCardPresetName
+  | OptionListPresetName;
 
 interface PresetSelectorProps {
   componentId: string;
@@ -47,24 +52,30 @@ const optionListPresetNames: OptionListPresetName[] = [
   "actions",
 ];
 
+const chartPresetNames: ChartPresetName[] = ["revenue", "performance", "minimal"];
+
 export function PresetSelector({
   componentId,
   currentPreset,
   onSelectPreset,
 }: PresetSelectorProps) {
   const presetNames =
-    componentId === "data-table"
-      ? dataTablePresetNames
-      : componentId === "media-card"
-        ? mediaCardPresetNames
-        : optionListPresetNames;
+    componentId === "chart"
+      ? chartPresetNames
+      : componentId === "data-table"
+        ? dataTablePresetNames
+        : componentId === "media-card"
+          ? mediaCardPresetNames
+          : optionListPresetNames;
 
   const descriptions =
-    componentId === "data-table"
-      ? presetDescriptions
-      : componentId === "media-card"
-        ? mediaCardPresetDescriptions
-        : optionListPresetDescriptions;
+    componentId === "chart"
+      ? chartPresetDescriptions
+      : componentId === "data-table"
+        ? presetDescriptions
+        : componentId === "media-card"
+          ? mediaCardPresetDescriptions
+          : optionListPresetDescriptions;
 
   return (
     <ItemGroup className="gap-1">

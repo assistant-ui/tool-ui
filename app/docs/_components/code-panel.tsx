@@ -4,6 +4,7 @@ import { DataTableConfig } from "@/lib/presets/data-table";
 import { SocialPostConfig } from "@/lib/presets/social-post";
 import { MediaCardConfig } from "@/lib/presets/media-card";
 import { OptionListConfig } from "@/lib/presets/option-list";
+import { ChartConfig } from "@/lib/presets/chart";
 import { DynamicCodeBlock } from "fumadocs-ui/components/dynamic-codeblock";
 
 interface CodePanelProps {
@@ -12,6 +13,7 @@ interface CodePanelProps {
   socialPostConfig?: SocialPostConfig;
   mediaCardConfig?: MediaCardConfig;
   optionListConfig?: OptionListConfig;
+  chartConfig?: ChartConfig;
   optionListSelection?: string[] | string | null;
   mediaCardMaxWidth?: string;
   sort?: { by?: string; direction?: "asc" | "desc" };
@@ -27,6 +29,7 @@ export function CodePanel({
   socialPostConfig,
   mediaCardConfig,
   optionListConfig,
+  chartConfig,
   optionListSelection,
   mediaCardMaxWidth,
   sort,
@@ -76,7 +79,9 @@ export function CodePanel({
       props.push(
         `  footerActions={${JSON.stringify(config.footerActions, null, 4).replace(/\n/g, "\n  ")}}`,
       );
-      props.push(`  onFooterAction={(actionId) => console.log("Action:", actionId)}`);
+      props.push(
+        `  onFooterAction={(actionId) => console.log("Action:", actionId)}`,
+      );
     }
 
     // Generate sorting guidance only when relying on controlled state
@@ -246,11 +251,16 @@ export function CodePanel({
       props.push(`  isLoading={true}`);
     }
 
-    if (mediaCardConfig.footerActions && mediaCardConfig.footerActions.length > 0) {
+    if (
+      mediaCardConfig.footerActions &&
+      mediaCardConfig.footerActions.length > 0
+    ) {
       props.push(
         `  footerActions={${JSON.stringify(mediaCardConfig.footerActions, null, 4).replace(/\n/g, "\n  ")}}`,
       );
-      props.push(`  onFooterAction={(actionId) => console.log("Action:", actionId)}`);
+      props.push(
+        `  onFooterAction={(actionId) => console.log("Action:", actionId)}`,
+      );
     }
 
     return `<MediaCard\n${props.join("\n")}\n/>`;
@@ -294,6 +304,46 @@ export function CodePanel({
     return `<OptionList\n${props.join("\n")}\n/>`;
   };
 
+  const generateChartCode = () => {
+    if (!chartConfig) return "";
+    const props: string[] = [];
+
+    props.push(`  surfaceId="chart-example"`);
+    props.push(`  type="${chartConfig.type}"`);
+
+    if (chartConfig.title) {
+      props.push(`  title="${chartConfig.title}"`);
+    }
+
+    if (chartConfig.description) {
+      props.push(`  description="${chartConfig.description}"`);
+    }
+
+    props.push(
+      `  data={${JSON.stringify(chartConfig.data, null, 4).replace(/\n/g, "\n  ")}}`,
+    );
+    props.push(`  xKey="${chartConfig.xKey}"`);
+    props.push(
+      `  series={${JSON.stringify(chartConfig.series, null, 4).replace(/\n/g, "\n  ")}}`,
+    );
+
+    if (chartConfig.colors) {
+      props.push(
+        `  colors={${JSON.stringify(chartConfig.colors, null, 4).replace(/\n/g, "\n  ")}}`,
+      );
+    }
+
+    if (chartConfig.showLegend) {
+      props.push(`  showLegend`);
+    }
+
+    if (chartConfig.showGrid) {
+      props.push(`  showGrid`);
+    }
+
+    return `<Chart\n${props.join("\n")}\n/>`;
+  };
+
   const generateCode = () => {
     if (componentId === "data-table") {
       return generateDataTableCode();
@@ -303,6 +353,8 @@ export function CodePanel({
       return generateMediaCardCode();
     } else if (componentId === "option-list") {
       return generateOptionListCode();
+    } else if (componentId === "chart") {
+      return generateChartCode();
     }
     return "";
   };

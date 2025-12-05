@@ -2,6 +2,8 @@
 
 import { Tabs, Tab } from "fumadocs-ui/components/tabs";
 import { DynamicCodeBlock } from "fumadocs-ui/components/dynamic-codeblock";
+import { Chart } from "@/components/tool-ui/chart";
+import { ChartPresetName, presets as chartPresets } from "@/lib/presets/chart";
 import { OptionList } from "@/components/tool-ui/option-list";
 import {
   optionListPresets,
@@ -72,6 +74,62 @@ export function OptionListPresetExample({
       <Tab value="Preview">
         <div className="not-prose">
           <OptionList {...config.optionList} />
+        </div>
+      </Tab>
+      <Tab value="Code">
+        <DynamicCodeBlock lang="tsx" code={code} />
+      </Tab>
+    </Tabs>
+  );
+}
+
+function generateChartCode(preset: ChartPresetName): string {
+  const config = chartPresets[preset];
+  const props: string[] = [];
+
+  props.push(`  surfaceId="chart-example"`);
+  props.push(`  type="${config.type}"`);
+
+  if (config.title) {
+    props.push(`  title="${config.title}"`);
+  }
+
+  if (config.description) {
+    props.push(`  description="${config.description}"`);
+  }
+
+  props.push(
+    `  data={${JSON.stringify(config.data, null, 4).replace(/\n/g, "\n  ")}}`,
+  );
+  props.push(`  xKey="${config.xKey}"`);
+  props.push(
+    `  series={${JSON.stringify(config.series, null, 4).replace(/\n/g, "\n  ")}}`,
+  );
+
+  if (config.showLegend) {
+    props.push(`  showLegend`);
+  }
+
+  if (config.showGrid) {
+    props.push(`  showGrid`);
+  }
+
+  return `<Chart\n${props.join("\n")}\n/>`;
+}
+
+interface ChartPresetExampleProps {
+  preset: ChartPresetName;
+}
+
+export function ChartPresetExample({ preset }: ChartPresetExampleProps) {
+  const config = chartPresets[preset];
+  const code = generateChartCode(preset);
+
+  return (
+    <Tabs items={["Preview", "Code"]}>
+      <Tab value="Preview">
+        <div className="not-prose">
+          <Chart surfaceId={`chart-${preset}`} {...config} />
         </div>
       </Tab>
       <Tab value="Code">

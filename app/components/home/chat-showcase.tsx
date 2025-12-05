@@ -5,6 +5,7 @@ import { AnimatePresence, motion } from "motion/react";
 import { cn } from "@/lib/ui/cn";
 import { DataTable, type Column } from "@/components/tool-ui/data-table";
 import { MediaCard, type SerializableMediaCard } from "@/components/tool-ui/media-card";
+import { Chart, type SerializableChart } from "@/components/tool-ui/chart";
 
 // Support ticket type for DataTable demo
 type SupportTicket = {
@@ -301,9 +302,40 @@ const SOCIAL_POST_ACTIONS = [
   { id: "send", label: "Post Now", variant: "default" as const },
 ];
 
+const CHART_DATA = [
+  { month: "Oct", signups: 1240, activations: 890 },
+  { month: "Nov", signups: 1580, activations: 1190 },
+  { month: "Dec", signups: 2120, activations: 1720 },
+];
+
+const SIGNUP_CHART: Omit<SerializableChart, "surfaceId"> = {
+  type: "line",
+  title: "Q4 Signups",
+  data: CHART_DATA,
+  xKey: "month",
+  series: [
+    { key: "signups", label: "Signups" },
+    { key: "activations", label: "Activations" },
+  ],
+  showLegend: true,
+};
+
 function createSceneConfigs(): SceneConfig[] {
   return [
-    // Scene 1: Support Tickets / DataTable
+    // Scene 1: Signup Metrics / Chart
+    {
+      userMessage: "How did signups perform this quarter?",
+      preamble: "Here's the Q4 signup trend:",
+      toolUI: (
+        <Chart
+          surfaceId="chat-showcase-chart"
+          {...SIGNUP_CHART}
+          className="w-full max-w-[560px]"
+        />
+      ),
+      toolFallbackHeight: 240,
+    },
+    // Scene 2: Support Tickets / DataTable
     {
       userMessage: "Show me high-priority support tickets from this week",
       preamble: "Here are the most urgent tickets from this week",
@@ -319,14 +351,14 @@ function createSceneConfigs(): SceneConfig[] {
       ),
       toolFallbackHeight: 320,
     },
-    // Scene 2: RSC Guide / MediaCard
+    // Scene 3: RSC Guide / MediaCard
     {
       userMessage: "Find that React Server Components guide",
       preamble: "Was it this one from yesterday?",
       toolUI: <MediaCard {...MEDIA_CARD} maxWidth="420px" />,
       toolFallbackHeight: 260,
     },
-    // Scene 3: Open Source Release / SocialPost with footerActions
+    // Scene 4: Open Source Release / SocialPost with footerActions
     {
       userMessage: "Draft a tweet about our open-source release",
       preamble: "Here's a draft announcement:",
@@ -613,7 +645,7 @@ export function ChatShowcase() {
       : MOTION.exitStagger.tool + 500; // Last item delay + spring settle time
     setTimeout(() => {
       setIsExiting(false);
-      setSceneIndex((i) => (i + 1) % 3);
+      setSceneIndex((i) => (i + 1) % 4);
       setSceneRunId((id) => id + 1);
     }, exitDuration);
   }, [reducedMotion]);
