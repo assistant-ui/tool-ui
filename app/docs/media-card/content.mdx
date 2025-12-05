@@ -39,6 +39,7 @@ An information surface for links, images, video, and audio. Optimized for inline
       );
     }
     ```
+
   </Tab>
 </Tabs>
 
@@ -55,24 +56,38 @@ An information surface for links, images, video, and audio. Optimized for inline
 - **Click-through support**: Whole card as clickable area
 - **Inline actions**: Buttons for open, save, share
 
-
 ## Source and Install
 
-Copy `components/media-card` into your project next to your shadcn/ui components:
+Copy `components/tool-ui/media-card` into your project. The `tool-ui` directory should sit alongside your shadcn `ui` directory.
+
+### Prerequisites
+
+This component requires the following [shadcn/ui](https://ui.shadcn.com) components:
+
+```bash
+pnpm dlx shadcn@latest add badge button card dropdown-menu tooltip
+```
+
+### Directory Structure
 
 <Files>
   <Folder name="components" defaultOpen>
     <Folder name="ui">
+      <File name="badge.tsx" />
       <File name="button.tsx" />
       <File name="card.tsx" />
+      <File name="dropdown-menu.tsx" />
+      <File name="tooltip.tsx" />
       <File name="..." />
     </Folder>
-    <Folder name="media-card" defaultOpen>
-      <File name="media-card.tsx" />
-      <File name="schema.ts" />
-      <File name="types.ts" />
-      <File name="index.tsx" />
-      <File name="..." />
+    <Folder name="tool-ui" defaultOpen>
+      <Folder name="media-card" defaultOpen>
+        <File name="media-card.tsx" />
+        <File name="schema.ts" />
+        <File name="types.ts" />
+        <File name="index.tsx" />
+        <File name="..." />
+      </Folder>
     </Folder>
   </Folder>
 </Files>
@@ -82,50 +97,48 @@ Copy `components/media-card` into your project next to your shadcn/ui components
 - [**Source on GitHub**](https://github.com/assistant-ui/tool-ui/tree/main/components/media-card)
 - [**Quick download (ZIP)**](https://download-directory.github.io/?url=https://github.com/assistant-ui/tool-ui/tree/main/components/media-card)
 
-
-
 ## Usage
 
 ```tsx
 // Backend tool
-import { tool } from 'ai';
-import { z } from 'zod';
-import { serializableMediaCardSchema } from '@tool-ui/media-card';
+import { tool } from "ai";
+import { z } from "zod";
+import { serializableMediaCardSchema } from "@tool-ui/media-card";
 
 const previewLink = tool({
-  description: 'Show a preview card for a URL',
+  description: "Show a preview card for a URL",
   inputSchema: z.object({ url: z.string().url() }),
   outputSchema: serializableMediaCardSchema,
   async execute({ url }) {
     // Fetch real metadata here
     return {
-      id: 'link-1',
-      kind: 'link',
+      id: "link-1",
+      kind: "link",
       href: url,
-      title: 'Example site',
-      description: 'Preview of the requested URL',
-      thumb: 'https://example.com/image.jpg',
+      title: "Example site",
+      description: "Preview of the requested URL",
+      thumb: "https://example.com/image.jpg",
       meta: { source: new URL(url).hostname },
     };
   },
 });
 
 // Frontend with assistant-ui
-import { makeAssistantToolUI } from '@assistant-ui/react';
-import { MediaCard } from '@tool-ui/media-card';
+import { makeAssistantToolUI } from "@assistant-ui/react";
+import { MediaCard } from "@tool-ui/media-card";
 
 export const PreviewLinkUI = makeAssistantToolUI({
-  toolName: 'previewLink',
+  toolName: "previewLink",
   render: ({ result }) => (
     <MediaCard
       {...result}
       maxWidth="420px"
       actions={[
-        { id: 'open', label: 'Open' },
-        { id: 'save', label: 'Save' },
+        { id: "open", label: "Open" },
+        { id: "save", label: "Save" },
       ]}
       onAction={(id, card) => {
-        if (id === 'open') window.open(card.href, '_blank');
+        if (id === "open") window.open(card.href, "_blank");
         // Handle other actions
       }}
     />
@@ -133,23 +146,33 @@ export const PreviewLinkUI = makeAssistantToolUI({
 });
 ```
 
-
-
 ## Props
 
 <TypeTable
-type={{
-id: { description: "Unique identifier", type: "string", required: true },
-kind: { description: "Content type", type: "'link' | 'image' | 'video' | 'audio' | 'file'", required: true },
-href: { description: "Target URL", type: "string" },
-title: { description: "Title text", type: "string", required: true },
-description: { description: "Description", type: "string" },
-thumb: { description: "Thumbnail URL", type: "string" },
-ratio: { description: "Aspect ratio", type: "'16:9' | '4:3' | '1:1' | 'auto'", default: "'16:9'" },
-meta: { description: "Key/value metadata", type: "Record<string, string>" },
-badge: { description: "Status badge", type: "string" },
-maxWidth: { description: "Max width", type: "string (CSS)", default: "'100%'" },
-actions: { description: "Action buttons", type: "Action[]" },
-onAction: { description: "Click handler", type: "(id, card) => void" },
-}}
+  type={{
+    id: { description: "Unique identifier", type: "string", required: true },
+    kind: {
+      description: "Content type",
+      type: "'link' | 'image' | 'video' | 'audio' | 'file'",
+      required: true,
+    },
+    href: { description: "Target URL", type: "string" },
+    title: { description: "Title text", type: "string", required: true },
+    description: { description: "Description", type: "string" },
+    thumb: { description: "Thumbnail URL", type: "string" },
+    ratio: {
+      description: "Aspect ratio",
+      type: "'16:9' | '4:3' | '1:1' | 'auto'",
+      default: "'16:9'",
+    },
+    meta: { description: "Key/value metadata", type: "Record<string, string>" },
+    badge: { description: "Status badge", type: "string" },
+    maxWidth: {
+      description: "Max width",
+      type: "string (CSS)",
+      default: "'100%'",
+    },
+    actions: { description: "Action buttons", type: "Action[]" },
+    onAction: { description: "Click handler", type: "(id, card) => void" },
+  }}
 />

@@ -32,7 +32,17 @@ The receipt state:
 
 ## Source and Install
 
-Copy `components/option-list` into your project next to your shadcn/ui components:
+Copy `components/tool-ui/option-list` into your project. The `tool-ui` directory should sit alongside your shadcn `ui` directory.
+
+### Prerequisites
+
+This component requires the following [shadcn/ui](https://ui.shadcn.com) components:
+
+```bash
+pnpm dlx shadcn@latest add button separator
+```
+
+### Directory Structure
 
 <Files>
   <Folder name="components" defaultOpen>
@@ -41,12 +51,14 @@ Copy `components/option-list` into your project next to your shadcn/ui component
       <File name="separator.tsx" />
       <File name="..." />
     </Folder>
-    <Folder name="option-list" defaultOpen>
-      <File name="option-list.tsx" />
-      <File name="schema.ts" />
-      <File name="index.tsx" />
-      <File name="_ui.tsx" />
-      <File name="_cn.ts" />
+    <Folder name="tool-ui" defaultOpen>
+      <Folder name="option-list" defaultOpen>
+        <File name="option-list.tsx" />
+        <File name="schema.ts" />
+        <File name="index.tsx" />
+        <File name="_ui.tsx" />
+        <File name="_cn.ts" />
+      </Folder>
     </Folder>
   </Folder>
 </Files>

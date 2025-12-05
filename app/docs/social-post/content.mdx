@@ -109,10 +109,27 @@ Each component is independent and can be imported separately, allowing for tree-
 
 ## Source and Install
 
-Copy the component(s) you need into your project. The `shared` folder is required for all components.
+Copy the component(s) you need from `components/tool-ui` into your project. The `shared` folder is required for all social post components. The `tool-ui` directory should sit alongside your shadcn `ui` directory.
+
+### Prerequisites
+
+These components require the following [shadcn/ui](https://ui.shadcn.com) components:
+
+```bash
+pnpm dlx shadcn@latest add badge button dropdown-menu tooltip
+```
+
+### Directory Structure
 
 <Files>
   <Folder name="components" defaultOpen>
+    <Folder name="ui">
+      <File name="badge.tsx" />
+      <File name="button.tsx" />
+      <File name="dropdown-menu.tsx" />
+      <File name="tooltip.tsx" />
+      <File name="..." />
+    </Folder>
     <Folder name="tool-ui" defaultOpen>
       <Folder name="shared" defaultOpen>
         <File name="action-buttons.tsx" />

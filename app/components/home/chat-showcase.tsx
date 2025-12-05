@@ -4,7 +4,10 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { cn } from "@/lib/ui/cn";
 import { DataTable, type Column } from "@/components/tool-ui/data-table";
-import { MediaCard, type SerializableMediaCard } from "@/components/tool-ui/media-card";
+import {
+  MediaCard,
+  type SerializableMediaCard,
+} from "@/components/tool-ui/media-card";
 import { Chart, type SerializableChart } from "@/components/tool-ui/chart";
 
 // Support ticket type for DataTable demo
