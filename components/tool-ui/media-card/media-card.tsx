@@ -1,22 +1,66 @@
 "use client";
 
 import * as React from "react";
-import { cn } from "./_cn";
-import { Card } from "./_ui";
+import { cn, Card } from "./_ui";
 import {
   MediaCardProvider,
+  useMediaCard,
   type MediaCardClientProps,
   type MediaCardContextValue,
   type MediaCardUIState,
 } from "./context";
 import type { SerializableMediaCard } from "./schema";
-import { MediaCardHeader } from "./header";
-import { MediaFrame } from "./frame";
-import { MediaCardBody } from "./body";
-import { MediaCardFooter } from "./footer";
-import { LinkOverlay } from "./link-overlay";
-import { MediaCardProgress } from "./progress";
+import {
+  MediaCardHeader,
+  MediaCardBody,
+  MediaCardFooter,
+} from "./media-card-parts";
+import { MediaFrame } from "./media-frame";
 import { ActionButtons, normalizeActionsConfig } from "../shared";
+
+function MediaCardProgress({ className }: { className?: string }) {
+  return (
+    <div className={cn("flex w-full animate-pulse flex-col gap-3", className)}>
+      <div className="flex items-center gap-3 text-xs">
+        <div className="bg-muted h-6 w-6 rounded-full" />
+        <div className="bg-muted h-3 w-28 rounded" />
+      </div>
+      <div className="bg-muted h-40 w-full rounded-lg" />
+      <div className="bg-muted h-4 w-3/4 rounded" />
+      <div className="flex gap-2">
+        <div className="bg-muted h-8 w-20 rounded-full" />
+        <div className="bg-muted h-8 w-16 rounded-full" />
+      </div>
+    </div>
+  );
+}
+
+function LinkOverlay({ label }: { label?: string }) {
+  const { card, resolvedHref, handlers } = useMediaCard();
+
+  if (!resolvedHref) {
+    return null;
+  }
+
+  const ariaLabel =
+    label ?? card.title ?? card.description ?? card.domain ?? resolvedHref;
+
+  return (
+    <a
+      className="absolute inset-0 z-10"
+      href={resolvedHref}
+      target="_blank"
+      rel="noreferrer noopener"
+      aria-label={ariaLabel}
+      onClick={(event) => {
+        if (handlers.onNavigate) {
+          event.preventDefault();
+          handlers.onNavigate(resolvedHref, card);
+        }
+      }}
+    />
+  );
+}
 
 const BASE_CARD_STYLE = "border border-border bg-card text-sm shadow-xs";
 const DEFAULT_CONTENT_SPACING = "gap-4 p-5";

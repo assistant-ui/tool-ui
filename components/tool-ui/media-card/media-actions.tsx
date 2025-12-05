@@ -10,8 +10,8 @@ import {
   Volume2,
   VolumeX,
 } from "lucide-react";
-import { cn } from "./_cn";
 import {
+  cn,
   Button,
   Tooltip,
   TooltipContent,

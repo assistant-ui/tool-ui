@@ -2,10 +2,9 @@
 "use client";
 
 import * as React from "react";
-import { cn } from "./_cn";
+import { cn, Button } from "./_ui";
 import type { Aspect } from "./schema";
 import { useMediaCard } from "./context";
-import { Button } from "./_ui";
 import { Play } from "lucide-react";
 
 const RATIO_CLASS_MAP: Record<Aspect, string> = {
