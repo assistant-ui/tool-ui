@@ -144,16 +144,14 @@ export function Chart({
     </ChartContainer>
   );
 
-  if (!title && !description) {
-    return <div className={cn("w-full", className)}>{chartContent}</div>;
-  }
-
   return (
     <Card className={cn("w-full", className)}>
-      <CardHeader>
-        {title && <CardTitle>{title}</CardTitle>}
-        {description && <CardDescription>{description}</CardDescription>}
-      </CardHeader>
+      {(title || description) && (
+        <CardHeader>
+          {title && <CardTitle>{title}</CardTitle>}
+          {description && <CardDescription>{description}</CardDescription>}
+        </CardHeader>
+      )}
       <CardContent>{chartContent}</CardContent>
     </Card>
   );
