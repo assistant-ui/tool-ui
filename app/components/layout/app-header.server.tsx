@@ -1,7 +1,7 @@
 import { ReactNode } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+
 import { FaGithub } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
 import { LogoMark } from "@/components/ui/logo";
@@ -17,48 +17,36 @@ export function ResponsiveHeader({ rightContent }: ResponsiveHeaderProps) {
     { href: "/docs/overview", label: "Docs" },
     { href: "/docs/gallery", label: "Components" },
     { href: "/builder", label: "Builder" },
-    {
-      href: "https://www.assistant-ui.com",
-      label: "assistant-ui ↗",
-      external: true,
-    },
   ];
 
   return (
-    <div className="flex gap-4 pt-[calc(env(safe-area-inset-top)+0.5rem)] pb-3 md:gap-8 md:pt-8">
-      <div className="flex w-fit shrink-0 items-end justify-start gap-3 md:items-center">
-        <Link href="/" className="flex items-center gap-2">
-          <LogoMark className="size-6" />
-          <h1 className="-mb-1 text-xl font-bold md:mb-0">Tool UI</h1>
+    <div className="pt-calc(env(safe-area-inset-top)+0.5rem) flex gap-4 pt-4 pb-2 sm:pt-8 sm:pb-3 md:gap-8">
+      <div className="flex w-fit shrink-0 items-center justify-start gap-3 md:items-center">
+        <Link href="/" className="flex items-center gap-1.5">
+          <LogoMark className="-mb-0.5 size-5" />
+          <h1 className="text-2xl font-semibold">Tool UI</h1>
         </Link>
-        <Badge
-          variant="outline"
-          className="text-muted-foreground cursor-default font-mono font-light select-none"
-        >
+        <span className="text-muted-foreground/80 -mb-0.5 cursor-default border-none bg-transparent font-mono text-xs select-none">
           research preview
-        </Badge>
+        </span>
       </div>
 
       {/* Desktop Navigation */}
       <div className="hidden flex-1 items-center justify-between md:flex">
         <nav className="flex items-center gap-1">
-          {navLinks.map(({ href, label, external }) =>
-            external ? (
-              <Link
-                key={href}
-                href={href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hover:text-foreground hover:bg-muted/50 rounded-lg px-4 py-2 text-sm font-medium transition-colors"
-              >
-                {label}
-              </Link>
-            ) : (
-              <ActiveNavLink key={href} href={href}>
-                {label}
-              </ActiveNavLink>
-            ),
-          )}
+          {navLinks.map(({ href, label }) => (
+            <ActiveNavLink key={href} href={href}>
+              {label}
+            </ActiveNavLink>
+          ))}
+          <Link
+            href="https://www.assistant-ui.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hover:text-foreground hover:bg-muted/50 hidden rounded-lg px-4 py-2 text-sm font-medium transition-colors lg:block"
+          >
+            assistant-ui ↗
+          </Link>
         </nav>
         <div className="flex items-center gap-4">
           {rightContent}

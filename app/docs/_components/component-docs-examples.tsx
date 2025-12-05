@@ -9,6 +9,7 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/components/ui/tabs";
+import { DocsPager } from "./docs-pager";
 
 interface ComponentDocsExamplesProps {
   docs: ReactNode;
@@ -103,9 +104,10 @@ function ComponentDocsExamplesInner({
             value="docs"
             className="scrollbar-subtle h-full min-h-0 flex-1 overflow-y-auto"
           >
-            <div className="z-0 min-h-0 flex-1 p-6 sm:p-10 lg:p-12">
+            <div className="z-0 min-h-0 flex-1 p-6 pb-24 sm:p-10 lg:p-12">
               <div className="prose dark:prose-invert mx-auto max-w-3xl">
                 {docs}
+                <DocsPager />
               </div>
             </div>
           </TabsContent>
