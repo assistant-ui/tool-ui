@@ -1,6 +1,7 @@
 "use client";
 
 import type { ComponentType } from "react";
+import { Chart } from "@/components/tool-ui/chart";
 import { MediaCard } from "@/components/tool-ui/media-card";
 import { OptionListSDK } from "./wrappers";
 
@@ -94,6 +95,34 @@ export const workbenchComponents: WorkbenchComponentEntry[] = [
     component: PlaceholderComponent,
     defaultProps: {
       message: "Data Table component will be integrated here",
+    },
+  },
+  {
+    id: "chart",
+    label: "Chart",
+    description: "Data visualization with bar and line charts",
+    category: "data",
+    component: Chart,
+    defaultProps: {
+      surfaceId: "workbench-chart",
+      type: "bar",
+      title: "Monthly Revenue",
+      description: "Revenue vs Expenses for 2024",
+      data: [
+        { month: "Jan", revenue: 4000, expenses: 2400 },
+        { month: "Feb", revenue: 3000, expenses: 1398 },
+        { month: "Mar", revenue: 2000, expenses: 9800 },
+        { month: "Apr", revenue: 2780, expenses: 3908 },
+        { month: "May", revenue: 1890, expenses: 4800 },
+        { month: "Jun", revenue: 2390, expenses: 3800 },
+      ],
+      xKey: "month",
+      series: [
+        { key: "revenue", label: "Revenue" },
+        { key: "expenses", label: "Expenses" },
+      ],
+      showLegend: true,
+      showGrid: true,
     },
   },
 ];
