@@ -67,23 +67,30 @@ export function MediaCardFooter() {
     meta.push(<span key="domain">{card.domain}</span>);
   }
 
+  const hasActions = card.kind !== "link";
+  const hasMeta = meta.length > 0;
+
+  if (!hasMeta && !hasActions) {
+    return null;
+  }
+
   return (
     <div className="flex w-full flex-col gap-3">
-      {meta.length > 0 ? (
+      {hasMeta && (
         <div className="text-muted-foreground flex flex-wrap items-center gap-x-3 gap-y-1 text-xs">
           {meta.map((node, index) => (
             <React.Fragment key={index}>
-              {index > 0 ? (
+              {index > 0 && (
                 <span aria-hidden="true" className="text-muted-foreground">
                   &bull;
                 </span>
-              ) : null}
+              )}
               {node}
             </React.Fragment>
           ))}
         </div>
-      ) : null}
-      {card.kind === "link" ? null : <Actions />}
+      )}
+      {hasActions && <Actions />}
     </div>
   );
 }

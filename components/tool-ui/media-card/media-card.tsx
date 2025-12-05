@@ -161,7 +161,7 @@ export function MediaCard(props: MediaCardProps) {
       <MediaCardProvider value={value}>
         <Card
           className={cn(
-            "group @container relative isolate flex w-full min-w-0 flex-col overflow-hidden rounded-lg shadow-xs",
+            "group @container relative isolate flex w-full min-w-0 flex-col overflow-hidden shadow-xs",
             BASE_CARD_STYLE,
             cardSpacingClass,
             className,
