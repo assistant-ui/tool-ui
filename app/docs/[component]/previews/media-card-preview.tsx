@@ -21,7 +21,7 @@ export function MediaCardPreview({
   const searchParams = useSearchParams();
 
   const presetParam = searchParams.get("preset");
-  const defaultPreset = "link";
+  const defaultPreset = "image";
   const initialPreset: MediaCardPresetName =
     presetParam && presetParam in mediaCardPresets
       ? (presetParam as MediaCardPresetName)

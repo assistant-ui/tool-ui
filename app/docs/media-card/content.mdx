@@ -9,13 +9,21 @@ An information surface for links, images, video, and audio. Optimized for inline
   <Tab>
     <div className="not-prose">
       <MediaCard
-        id="link-1"
+        surfaceId="media-card-react-docs"
+        assetId="react-docs-link"
         kind="link"
         href="https://react.dev"
-        title="React Docs"
-        description="Learn React with the official documentation."
+        title="React Documentation"
+        description="The library for web and native user interfaces. Build user interfaces out of individual pieces called components."
         thumb="https://images.unsplash.com/photo-1633356122544-f134324a6cee?auto=format&fit=crop&q=80&w=1200"
+        ratio="16:9"
         domain="react.dev"
+        createdAtISO="2025-01-15T10:00:00.000Z"
+        source={{
+          label: "Official docs",
+          iconUrl: "https://api.dicebear.com/7.x/shapes/svg?seed=react",
+          url: "https://react.dev",
+        }}
         maxWidth="420px"
       />
     </div>
@@ -27,13 +35,21 @@ An information surface for links, images, video, and audio. Optimized for inline
     export function Example() {
       return (
         <MediaCard
-          id="link-1"
+          surfaceId="media-card-react-docs"
+          assetId="react-docs-link"
           kind="link"
           href="https://react.dev"
-          title="React Docs"
-          description="Learn React with the official documentation."
-          thumb="https://images.unsplash.com/photo-1633356122544-f134324a6cee?auto=format&fit=crop&q=80&w=1200"
+          title="React Documentation"
+          description="The library for web and native user interfaces."
+          thumb="https://images.unsplash.com/photo-1633356122544-f134324a6cee"
+          ratio="16:9"
           domain="react.dev"
+          createdAtISO="2025-01-15T10:00:00.000Z"
+          source={{
+            label: "Official docs",
+            iconUrl: "https://api.dicebear.com/7.x/shapes/svg?seed=react",
+            url: "https://react.dev",
+          }}
           maxWidth="420px"
         />
       );
@@ -150,29 +166,39 @@ export const PreviewLinkUI = makeAssistantToolUI({
 
 <TypeTable
   type={{
-    id: { description: "Unique identifier", type: "string", required: true },
+    surfaceId: { description: "Unique identifier for this surface instance", type: "string", required: true },
+    assetId: { description: "Persistent asset identifier (e.g., database ID)", type: "string", required: true },
     kind: {
       description: "Content type",
-      type: "'link' | 'image' | 'video' | 'audio' | 'file'",
+      type: "'link' | 'image' | 'video' | 'audio'",
       required: true,
     },
-    href: { description: "Target URL", type: "string" },
-    title: { description: "Title text", type: "string", required: true },
+    src: { description: "Media source URL", type: "string" },
+    href: { description: "Target URL (for link cards)", type: "string" },
+    title: { description: "Title text", type: "string" },
     description: { description: "Description", type: "string" },
-    thumb: { description: "Thumbnail URL", type: "string" },
+    alt: { description: "Alt text for images (required for kind='image')", type: "string" },
+    thumb: { description: "Thumbnail/poster URL", type: "string" },
     ratio: {
       description: "Aspect ratio",
-      type: "'16:9' | '4:3' | '1:1' | 'auto'",
-      default: "'16:9'",
+      type: "'auto' | '1:1' | '4:3' | '16:9' | '9:16'",
+      default: "'auto'",
     },
-    meta: { description: "Key/value metadata", type: "Record<string, string>" },
-    badge: { description: "Status badge", type: "string" },
+    fit: { description: "Object fit mode", type: "'cover' | 'contain'", default: "'cover'" },
+    domain: { description: "Source domain label", type: "string" },
+    source: { description: "Source attribution", type: "{ label: string; iconUrl?: string; url?: string }" },
+    createdAtISO: { description: "Creation timestamp", type: "string (ISO 8601)" },
+    durationMs: { description: "Duration in milliseconds (video/audio)", type: "number" },
+    fileSizeBytes: { description: "File size in bytes", type: "number" },
+    og: { description: "OpenGraph fallback data", type: "{ title?: string; description?: string; imageUrl?: string }" },
     maxWidth: {
       description: "Max width",
       type: "string (CSS)",
       default: "'100%'",
     },
-    actions: { description: "Action buttons", type: "Action[]" },
-    onAction: { description: "Click handler", type: "(id, card) => void" },
+    footerActions: { description: "Footer action buttons", type: "Action[]" },
+    onAction: { description: "Inline action handler", type: "(actionId: string) => void" },
+    onFooterAction: { description: "Footer action handler", type: "(actionId: string) => void" },
+    onNavigate: { description: "Navigation handler", type: "(href: string, card: MediaCard) => void" },
   }}
 />

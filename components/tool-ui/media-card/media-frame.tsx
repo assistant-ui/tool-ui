@@ -102,7 +102,7 @@ export function MediaFrame() {
     return (
       <div
         className={cn(
-          "bg-muted group relative w-full overflow-hidden rounded-lg",
+          "bg-muted group relative w-full overflow-hidden",
           ratio !== "auto" ? RATIO_CLASS_MAP[ratio] : "min-h-[160px]",
         )}
       >
@@ -210,7 +210,7 @@ export function MediaFrame() {
     return (
       <div
         className={cn(
-          "group relative w-full overflow-hidden rounded-lg bg-black",
+          "group relative w-full overflow-hidden bg-black",
           ratio !== "auto" ? RATIO_CLASS_MAP[ratio] : "aspect-video",
         )}
       >
@@ -284,7 +284,7 @@ export function MediaFrame() {
       <div className="flex w-full flex-col gap-3">
         <div className={gridClasses}>
           {thumb ? (
-            <div className="bg-muted relative size-14 w-full overflow-hidden rounded-lg">
+            <div className="bg-muted relative size-14 w-full overflow-hidden">
               <img
                 src={thumb}
                 alt=""
@@ -342,7 +342,7 @@ export function MediaFrame() {
     return (
       <div
         className={cn(
-          "bg-muted relative w-full overflow-hidden rounded-lg",
+          "bg-muted relative w-full overflow-hidden",
           ratio !== "auto" ? RATIO_CLASS_MAP[ratio] : "aspect-[5/3]",
         )}
       >

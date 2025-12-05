@@ -6,7 +6,12 @@ export interface MediaCardConfig {
   footerActions?: SerializableAction[];
 }
 
-export type MediaCardPresetName = "image" | "video" | "audio" | "link" | "actions";
+export type MediaCardPresetName =
+  | "image"
+  | "video"
+  | "audio"
+  | "link"
+  | "actions";
 
 const imagePreset: MediaCardConfig = {
   card: {
@@ -21,6 +26,7 @@ const imagePreset: MediaCardConfig = {
     ratio: "4:3",
     domain: "unsplash.com",
     createdAtISO: "2025-02-10T15:30:00.000Z",
+    fileSizeBytes: 2457600,
     source: {
       label: "Computing archives",
       iconUrl: "https://api.dicebear.com/7.x/shapes/svg?seed=archives",
