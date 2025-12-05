@@ -1,0 +1,226 @@
+import { DocsHeader } from "../_components/docs-header";
+
+<DocsHeader title="Chart" mdxPath="app/docs/chart/content.mdx" />
+
+Data visualization for bar and line charts.
+
+<ChartPresetExample preset="revenue" />
+
+## Line Charts
+
+Switch to line charts for time-series or continuous data.
+
+<ChartPresetExample preset="performance" />
+
+## Minimal Configuration
+
+Charts work with just `data`, `xKey`, and `series`. Title, description, legend, and grid are optional.
+
+<ChartPresetExample preset="minimal" />
+
+## When to Use Chart
+
+- **Good for:** Trends, comparisons, distributions, time-series data
+- **Not for:** Single values (use text), complex dashboards (use multiple charts)
+
+## Key Features
+
+- **Bar and line types**: Switch between chart types via `type` prop
+- **Multiple series**: Compare multiple data series with automatic coloring
+- **Custom colors**: Override default palette with `colors` or per-series `color`
+- **Interactive**: Click handlers for data points, hover tooltips
+
+## Source and Install
+
+Requires shadcn/ui chart component. Install it first:
+
+```bash
+pnpm dlx shadcn@latest add chart
+```
+
+Then copy `components/tool-ui/chart` into your project:
+
+<Files>
+  <Folder name="components" defaultOpen>
+    <Folder name="ui">
+      <File name="chart.tsx" />
+      <File name="card.tsx" />
+      <File name="..." />
+    </Folder>
+    <Folder name="tool-ui" defaultOpen>
+      <Folder name="chart" defaultOpen>
+        <File name="chart.tsx" />
+        <File name="schema.ts" />
+        <File name="index.tsx" />
+        <File name="_ui.tsx" />
+        <File name="_cn.ts" />
+      </Folder>
+    </Folder>
+  </Folder>
+</Files>
+
+## Usage
+
+```tsx
+import { Chart } from "@/components/tool-ui/chart";
+
+<Chart
+  surfaceId="monthly-revenue"
+  type="bar"
+  title="Monthly Revenue"
+  description="2024 YTD"
+  data={[
+    { month: "Jan", revenue: 4000, expenses: 2400 },
+    { month: "Feb", revenue: 3000, expenses: 1398 },
+    // ...
+  ]}
+  xKey="month"
+  series={[
+    { key: "revenue", label: "Revenue" },
+    { key: "expenses", label: "Expenses" },
+  ]}
+  showLegend
+  showGrid
+/>;
+```
+
+### With Custom Colors
+
+```tsx
+<Chart
+  surfaceId="custom-colors"
+  type="bar"
+  data={data}
+  xKey="month"
+  series={[
+    { key: "revenue", label: "Revenue" },
+    { key: "expenses", label: "Expenses" },
+  ]}
+  colors={["#22c55e", "#ef4444"]}
+/>
+```
+
+### With Click Handler
+
+```tsx
+<Chart
+  surfaceId="clickable"
+  type="line"
+  data={data}
+  xKey="time"
+  series={[{ key: "value", label: "Value" }]}
+  onDataPointClick={(point) => {
+    console.log("Clicked:", point.xValue, point.yValue);
+  }}
+/>
+```
+
+## Props
+
+<TypeTable
+  type={{
+    surfaceId: {
+      description: "Unique identifier for this chart instance",
+      type: "string",
+      required: true,
+    },
+    type: {
+      description: "Chart type",
+      type: "'bar' | 'line'",
+      required: true,
+    },
+    data: {
+      description: "Array of data records",
+      type: "Record<string, unknown>[]",
+      required: true,
+    },
+    xKey: {
+      description: "Key for x-axis values",
+      type: "string",
+      required: true,
+    },
+    series: {
+      description: "Data series to plot",
+      type: "ChartSeries[]",
+      required: true,
+    },
+    title: {
+      description: "Chart title (renders in Card header)",
+      type: "string",
+    },
+    description: {
+      description: "Chart description (renders below title)",
+      type: "string",
+    },
+    colors: {
+      description: "Custom color palette for series",
+      type: "string[]",
+    },
+    showLegend: {
+      description: "Show legend below chart",
+      type: "boolean",
+      default: "false",
+    },
+    showGrid: {
+      description: "Show background grid lines",
+      type: "boolean",
+      default: "true",
+    },
+    onDataPointClick: {
+      description: "Click handler for data points",
+      type: "(point: ChartDataPoint) => void",
+    },
+  }}
+/>
+
+## Series Schema
+
+<TypeTable
+  type={{
+    key: {
+      description: "Data key to plot",
+      type: "string",
+      required: true,
+    },
+    label: {
+      description: "Display label for legend/tooltip",
+      type: "string",
+      required: true,
+    },
+    color: {
+      description: "Override color for this series",
+      type: "string",
+    },
+  }}
+/>
+
+## ChartDataPoint (click handler payload)
+
+<TypeTable
+  type={{
+    seriesKey: {
+      description: "Key of the clicked series",
+      type: "string",
+    },
+    seriesLabel: {
+      description: "Label of the clicked series",
+      type: "string",
+    },
+    xValue: {
+      description: "X-axis value at click point",
+      type: "unknown",
+    },
+    yValue: {
+      description: "Y-axis value at click point",
+      type: "unknown",
+    },
+    index: {
+      description: "Index in data array",
+      type: "number",
+    },
+    payload: {
+      description: "Full data record for clicked point",
+      type: "Record<string, unknown>",
+    },
+  }}
+/>

@@ -6,6 +6,11 @@ export interface ComponentMeta {
 
 export const componentsRegistry: ComponentMeta[] = [
   {
+    id: "chart",
+    label: "Chart",
+    path: "/docs/chart",
+  },
+  {
     id: "data-table",
     label: "Data Table",
     path: "/docs/data-table",
