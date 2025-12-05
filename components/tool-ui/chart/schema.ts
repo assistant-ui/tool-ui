@@ -17,9 +17,10 @@ export const ChartPropsSchema = z.object({
   data: z.array(z.record(z.string(), z.unknown())).min(1),
   xKey: z.string().min(1),
   series: z.array(ChartSeriesSchema).min(1),
+  /** Color palette applied to series in order. Individual series.color takes precedence. */
+  colors: z.array(z.string().min(1)).min(1).optional(),
   showLegend: z.boolean().optional(),
   showGrid: z.boolean().optional(),
-  className: z.string().optional(),
 });
 
 export type ChartDataPoint = {
@@ -32,6 +33,7 @@ export type ChartDataPoint = {
 };
 
 export type ChartClientProps = {
+  className?: string;
   onDataPointClick?: (point: ChartDataPoint) => void;
 };
 

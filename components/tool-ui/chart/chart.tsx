@@ -24,14 +24,14 @@ import {
   CardContent,
   type ChartConfig,
 } from "./_ui";
-import type { ChartProps, ChartDataPoint } from "./schema";
+import type { ChartProps } from "./schema";
 
 const DEFAULT_COLORS = [
-  "var(--chart-1)",
-  "var(--chart-2)",
-  "var(--chart-3)",
-  "var(--chart-4)",
-  "var(--chart-5)",
+  "hsl(var(--chart-1))",
+  "hsl(var(--chart-2))",
+  "hsl(var(--chart-3))",
+  "hsl(var(--chart-4))",
+  "hsl(var(--chart-5))",
 ];
 
 export function Chart({
@@ -42,34 +42,41 @@ export function Chart({
   data,
   xKey,
   series,
+  colors,
   showLegend = false,
   showGrid = true,
   className,
   onDataPointClick,
 }: ChartProps) {
+  const palette = colors?.length ? colors : DEFAULT_COLORS;
+  const seriesColors = series.map(
+    (s, i) => s.color ?? palette[i % palette.length],
+  );
+
   const chartConfig: ChartConfig = Object.fromEntries(
     series.map((s, i) => [
       s.key,
       {
         label: s.label,
-        color: s.color ?? DEFAULT_COLORS[i % DEFAULT_COLORS.length],
+        color: seriesColors[i],
       },
-    ])
+    ]),
   );
 
-  const handleClick = (seriesKey: string, seriesLabel: string) => {
-    if (!onDataPointClick) return undefined;
-
-    return (payload: Record<string, unknown>, index: number) => {
-      onDataPointClick({
-        seriesKey,
-        seriesLabel,
-        xValue: payload[xKey],
-        yValue: payload[seriesKey],
-        index,
-        payload,
-      } satisfies ChartDataPoint);
-    };
+  const handleDataPointClick = (
+    seriesKey: string,
+    seriesLabel: string,
+    payload: Record<string, unknown>,
+    index: number,
+  ) => {
+    onDataPointClick?.({
+      seriesKey,
+      seriesLabel,
+      xValue: payload[xKey],
+      yValue: payload[seriesKey],
+      index,
+      payload,
+    });
   };
 
   const ChartComponent = type === "bar" ? BarChart : LineChart;
@@ -93,41 +100,43 @@ export function Chart({
         {showLegend && <ChartLegend content={<ChartLegendContent />} />}
 
         {type === "bar" &&
-          series.map((s) => (
+          series.map((s, i) => (
             <Bar
               key={s.key}
               dataKey={s.key}
-              fill={`var(--color-${s.key})`}
+              fill={seriesColors[i]}
               radius={4}
-              onClick={handleClick(s.key, s.label)}
+              onClick={(data) =>
+                handleDataPointClick(s.key, s.label, data.payload, data.index)
+              }
               cursor={onDataPointClick ? "pointer" : undefined}
             />
           ))}
 
         {type === "line" &&
-          series.map((s) => (
+          series.map((s, i) => (
             <Line
               key={s.key}
               dataKey={s.key}
               type="monotone"
-              stroke={`var(--color-${s.key})`}
+              stroke={seriesColors[i]}
               strokeWidth={2}
               dot={{ r: 4, cursor: onDataPointClick ? "pointer" : undefined }}
               activeDot={{
                 r: 6,
                 cursor: onDataPointClick ? "pointer" : undefined,
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                onClick: ((_event: any, dotData: any) => {
-                  if (!onDataPointClick || !dotData?.payload) return;
-                  onDataPointClick({
-                    seriesKey: s.key,
-                    seriesLabel: s.label,
-                    xValue: dotData.payload[xKey],
-                    yValue: dotData.payload[s.key],
-                    index: dotData.index ?? 0,
-                    payload: dotData.payload,
-                  });
-                }) as never,
+                // Recharts types are incorrect - onClick receives (event, dotData) at runtime
+                onClick: ((
+                  _: unknown,
+                  dotData: { payload: Record<string, unknown>; index: number },
+                ) => {
+                  handleDataPointClick(
+                    s.key,
+                    s.label,
+                    dotData.payload,
+                    dotData.index,
+                  );
+                }) as unknown as React.MouseEventHandler,
               }}
             />
           ))}
