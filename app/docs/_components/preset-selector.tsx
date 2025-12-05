@@ -34,14 +34,29 @@ const dataTablePresetNames: PresetName[] = [
   "tasks",
   "resources",
   "actions",
+  "hardware",
+  "metrics",
+  "ledger",
+  "milestones",
+  "archives",
+  "inventory",
+  "largeDataset",
 ];
 
 const mediaCardPresetNames: MediaCardPresetName[] = [
-  "link",
   "image",
   "video",
   "audio",
+  "link",
   "actions",
+  "portrait",
+  "square",
+  "podcast",
+  "product",
+  "document",
+  "screenshot",
+  "gallery",
+  "edgeCases",
 ];
 
 const optionListPresetNames: OptionListPresetName[] = [
@@ -50,6 +65,13 @@ const optionListPresetNames: OptionListPresetName[] = [
   "notifications",
   "receipt",
   "actions",
+  "approval",
+  "priority",
+  "wizard",
+  "destructive",
+  "settings",
+  "ranking",
+  "edgeCases",
 ];
 
 const chartPresetNames: ChartPresetName[] = ["revenue", "performance", "minimal"];
