@@ -1,5 +1,5 @@
 import * as React from "react";
-import { cn } from "./_cn";
+import { cn } from "./_ui";
 import type { Platform } from "./schema";
 
 type LogoProps = {

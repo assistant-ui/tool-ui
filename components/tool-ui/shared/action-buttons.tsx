@@ -2,8 +2,7 @@
 
 import * as React from "react";
 import type { Action } from "./schema";
-import { Button } from "./_ui";
-import { cn } from "./_cn";
+import { cn, Button } from "./_ui";
 import { useActionButtons } from "./use-action-buttons";
 
 export interface ActionButtonsProps {

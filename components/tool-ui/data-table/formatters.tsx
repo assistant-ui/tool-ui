@@ -1,13 +1,13 @@
 "use client";
 
 import * as React from "react";
-import { cn } from "./_cn";
-import { Badge } from "./_ui";
 import {
+  cn,
+  Badge,
   Tooltip,
   TooltipContent,
   TooltipTrigger,
-} from "@/components/ui/tooltip";
+} from "./_ui";
 
 type Tone = "success" | "warning" | "danger" | "info" | "neutral";
 

@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import type { CSSProperties } from "react";
-import { cn } from "./_cn";
+import { cn } from "./_ui";
 import { useSocialPost } from "./context";
 import { splitText } from "./formatters";
 import { safeHref } from "./utils";

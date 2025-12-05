@@ -1,8 +1,8 @@
 "use client";
 
 import * as React from "react";
-import { cn } from "./_cn";
 import {
+  cn,
   Button,
   Tooltip,
   TooltipContent,

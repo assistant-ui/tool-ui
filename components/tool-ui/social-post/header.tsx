@@ -2,8 +2,7 @@
 "use client";
 
 import * as React from "react";
-import { cn } from "./_cn";
-import { Button } from "./_ui";
+import { cn, Button } from "./_ui";
 import { useSocialPost } from "./context";
 import { formatRelativeTime } from "./formatters";
 import { safeHref } from "./utils";

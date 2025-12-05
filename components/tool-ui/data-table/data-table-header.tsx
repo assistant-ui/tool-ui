@@ -1,9 +1,8 @@
 "use client";
 
 import * as React from "react";
-import { cn } from "./_cn";
-import { useDataTable } from "./data-table";
 import {
+  cn,
   Tooltip,
   TooltipContent,
   TooltipProvider,
@@ -13,6 +12,7 @@ import {
   TableHead,
   Button,
 } from "./_ui";
+import { useDataTable } from "./data-table";
 import type { Column } from "./types";
 
 function SortIcon({ state }: { state?: "asc" | "desc" }) {

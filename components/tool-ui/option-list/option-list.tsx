@@ -8,8 +8,7 @@ import type {
 } from "./schema";
 import { ActionButtons, normalizeActionsConfig } from "../shared";
 import type { Action } from "../shared";
-import { Button, Separator } from "./_ui";
-import { cn } from "./_cn";
+import { cn, Button, Separator } from "./_ui";
 import { Check } from "lucide-react";
 
 function normalizeToSet(

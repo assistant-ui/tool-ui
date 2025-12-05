@@ -2,7 +2,7 @@
 "use client";
 
 import { useSocialPost } from "./context";
-import { cn } from "./_cn";
+import { cn } from "./_ui";
 import { safeHref } from "./utils";
 
 function getDomain(url: string) {

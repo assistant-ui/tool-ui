@@ -1,7 +1,7 @@
 "use client";
 
 import { useSocialPost } from "../context";
-import { cn } from "../_cn";
+import { cn } from "../_ui";
 import { Body } from "../body";
 import { Media } from "../media";
 import { QuotedPost } from "../quoted-post";

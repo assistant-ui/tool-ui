@@ -1,10 +1,18 @@
 /**
- * UI component re-exports for copy-standalone portability.
+ * UI and utility re-exports for copy-standalone portability.
  *
- * This file centralizes UI dependencies so the component can be easily
+ * This file centralizes dependencies so the component can be easily
  * copied to another project by updating these imports to match the target
- * project's component library paths.
+ * project's paths.
  */
+import type { ClassValue } from "clsx";
+import { clsx } from "clsx";
+import { twMerge } from "tailwind-merge";
+
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
+}
+
 export {
   ChartContainer,
   ChartTooltip,

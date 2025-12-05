@@ -1,6 +1,6 @@
 "use client";
 
-import { cn } from "./_cn";
+import { cn } from "./_ui";
 import { useSocialPost } from "./context";
 import { formatCount } from "./formatters";
 

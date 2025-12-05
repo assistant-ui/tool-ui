@@ -1,7 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 
-import { cn } from "./_cn";
+import { cn } from "./_ui";
 import { useSocialPost } from "./context";
 import { formatRelativeTime } from "./formatters";
 import { BadgeCheck } from "lucide-react";

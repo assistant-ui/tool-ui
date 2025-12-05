@@ -1,9 +1,8 @@
 "use client";
 
 import * as React from "react";
-import { cn } from "./_cn";
+import { cn, Table, TableBody, TableRow, TableCell } from "./_ui";
 import { sortData } from "./utilities";
-import { Table, TableBody, TableRow, TableCell } from "./_ui";
 import type {
   DataTableProps,
   DataTableContextValue,

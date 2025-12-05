@@ -10,8 +10,8 @@ import {
   CartesianGrid,
 } from "recharts";
 
-import { cn } from "./_cn";
 import {
+  cn,
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,

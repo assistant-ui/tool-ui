@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { cn } from "./_cn";
+import { cn } from "./_ui";
 import { PLATFORM } from "./platform";
 import { SocialPostProvider, type SocialPostContextValue } from "./context";
 import type { SerializableSocialPost } from "./schema";
