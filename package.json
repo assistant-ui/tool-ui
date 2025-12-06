@@ -61,7 +61,6 @@
     "fumadocs-mdx": "^14.1.0",
     "fumadocs-ui": "^16.2.3",
     "geist": "^1.5.1",
-    "json-schema-to-typescript": "^13.1.2",
     "leva": "^0.10.1",
     "lucide-react": "^0.556.0",
     "mermaid": "^11.12.2",

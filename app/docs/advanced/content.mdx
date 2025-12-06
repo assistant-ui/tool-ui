@@ -17,23 +17,23 @@ With `InferUITools` in AI SDK 5, you can infer tool input/output types from your
 ### Define Tools with Output Schemas
 
 ```ts title="lib/tools.ts"
-import { tool } from 'ai';
-import { z } from 'zod';
-import { serializableMediaCardSchema } from '@/components/tool-ui/media-card/schema';
+import { tool } from "ai";
+import { z } from "zod";
+import { serializableMediaCardSchema } from "@/components/tool-ui/media-card/schema";
 
 export const tools = {
   previewLink: tool({
-    description: 'Return a simple link preview',
+    description: "Return a simple link preview",
     inputSchema: z.object({ url: z.string().url() }),
     outputSchema: serializableMediaCardSchema,
     async execute({ url }) {
       return {
-        id: 'link-1',
-        kind: 'link',
+        id: "link-1",
+        kind: "link",
         href: url,
-        title: 'React Server Components',
+        title: "React Server Components",
         thumb:
-          'https://images.unsplash.com/photo-1633356122544-f134324a6cee?auto=format&fit=crop&q=80&w=1200',
+          "https://images.unsplash.com/photo-1633356122544-f134324a6cee?auto=format&fit=crop&q=80&w=1200",
       };
     },
   }),
@@ -45,22 +45,20 @@ export type Tools = typeof tools;
 
 </Step>
 
-
 <Step>
-
 
 ### Use Tools on the Server
 
 ```ts
-import { streamText, convertToModelMessages } from 'ai';
-import { openai } from '@ai-sdk/openai';
-import { tools } from '@/lib/tools';
+import { streamText, convertToModelMessages } from "ai";
+import { openai } from "@ai-sdk/openai";
+import { tools } from "@/lib/tools";
 
 export async function POST(req: Request) {
   const { messages } = await req.json();
 
   const result = streamText({
-    model: openai('gpt-4o'),
+    model: openai("gpt-4o"),
     messages: convertToModelMessages(messages),
     tools,
   });
@@ -71,24 +69,25 @@ export async function POST(req: Request) {
 
 </Step>
 
-
 <Step>
-
 
 ### Infer UI-Level Types in the Client
 
 ```tsx
-'use client';
+"use client";
 
-import { useChat } from '@ai-sdk/react';
-import { InferUITools } from 'ai';
-import type { Tools } from '@/lib/tools';
-import { MediaCard, parseSerializableMediaCard } from '@/components/tool-ui/media-card';
+import { useChat } from "@ai-sdk/react";
+import { InferUITools } from "ai";
+import type { Tools } from "@/lib/tools";
+import {
+  MediaCard,
+  parseSerializableMediaCard,
+} from "@/components/tool-ui/media-card";
 
 type MyUITools = InferUITools<Tools>;
 
 export default function Chat() {
-  const { messages } = useChat<MyUITools>({ api: '/api/chat' });
+  const { messages } = useChat<MyUITools>({ api: "/api/chat" });
 
   return (
     <div>
@@ -96,7 +95,10 @@ export default function Chat() {
         <div key={m.id}>
           {m.parts.map((part, i) => {
             // Fully typed: 'tool-previewLink' with correct output shape
-            if (part.type === 'tool-previewLink' && part.state === 'output-available') {
+            if (
+              part.type === "tool-previewLink" &&
+              part.state === "output-available"
+            ) {
               const card = parseSerializableMediaCard(part.output);
               return <MediaCard key={i} {...card} />;
             }
@@ -111,11 +113,7 @@ export default function Chat() {
 
 </Step>
 
-
 </Steps>
-
-
-
 
 ## Tips
 

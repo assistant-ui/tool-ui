@@ -1,7 +1,5 @@
 import { defineConfig, globalIgnores } from "eslint/config";
-// @ts-expect-error - eslint-config-next doesn't have type declarations
 import nextVitals from "eslint-config-next/core-web-vitals";
-// @ts-expect-error - eslint-config-next doesn't have type declarations
 import nextTs from "eslint-config-next/typescript";
 
 const eslintConfig = defineConfig([
