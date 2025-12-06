@@ -54,9 +54,19 @@ See **[UI Guidelines](/docs/design-guidelines)** for the full philosophy. Quick 
 
 The assistant calls a tool, the tool returns JSON matching a schema, and the UI renders inline.
 
-```txt
-Assistant calls tool → JSON output → <Component {...props} /> → User interacts → Your app handles effects
-```
+<Mermaid chart={`
+flowchart LR
+    A["Assistant calls tool"] --> B["JSON output"]
+    B --> C["‹Component /›"]
+    C --> D["User interacts"]
+    D --> E["App handles effects"]
+
+    style A fill:#8b5cf6,stroke:#7c3aed,stroke-width:2px,color:#fff
+    style B fill:#10b981,stroke:#059669,stroke-width:2px,color:#fff
+    style C fill:#3b82f6,stroke:#2563eb,stroke-width:2px,color:#fff
+    style D fill:#f59e0b,stroke:#d97706,stroke-width:2px,color:#fff
+    style E fill:#ef4444,stroke:#dc2626,stroke-width:2px,color:#fff
+`} />
 
 ### Minimal example
 
