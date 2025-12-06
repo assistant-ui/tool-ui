@@ -102,14 +102,14 @@ export function ComponentPreviewShell({
         </div>
       </aside>
       <div className="relative flex min-h-0 min-w-0 flex-1 flex-col">
-        {/* Header with status and tabs */}
-        <div className="absolute top-0 right-0 left-0 z-20 flex items-center justify-between px-4 py-3 lg:px-6">
+        {/* Header with status and tabs - desktop only (sticky) */}
+        <div className="absolute top-0 right-0 left-0 z-20 hidden items-center justify-between px-6 py-3 lg:flex">
           <div className="flex items-center gap-2">
-            <Label htmlFor="preview-loading" className="text-sm">
+            <Label htmlFor="preview-loading-desktop" className="text-sm">
               Loading
             </Label>
             <Switch
-              id="preview-loading"
+              id="preview-loading-desktop"
               checked={isLoading}
               onCheckedChange={onLoadingChange}
             />
@@ -134,8 +134,31 @@ export function ComponentPreviewShell({
           </ButtonGroup>
         </div>
 
-        <div className="scrollbar-subtle overflow-x-auto border-b px-4 pt-14 pb-3 lg:hidden">
-          {presetSelector}
+        {/* Mobile header - preset selector + controls inline */}
+        <div className="flex flex-col gap-3 border-b px-4 pt-3 pb-3 lg:hidden">
+          <div className="scrollbar-subtle overflow-x-auto">
+            {presetSelector}
+          </div>
+          <div className="flex items-center justify-end">
+            <ButtonGroup className="bg-background rounded-md shadow-md">
+              <Button
+                variant={activeTab === "ui" ? "secondary" : "outline"}
+                size="icon-lg"
+                onClick={() => setActiveTab("ui")}
+                title="UI view"
+              >
+                <Eye className="size-4" />
+              </Button>
+              <Button
+                variant={activeTab === "code" ? "secondary" : "outline"}
+                size="icon-lg"
+                onClick={() => setActiveTab("code")}
+                title="Code view"
+              >
+                <Code className="size-4" />
+              </Button>
+            </ButtonGroup>
+          </div>
         </div>
 
         {/* Resizable preview area (outer container manages scroll) */}
@@ -148,39 +171,39 @@ export function ComponentPreviewShell({
           )}
           <div className="scrollbar-subtle relative z-10 flex min-h-0 flex-1 items-start justify-center overflow-y-auto">
             {activeTab === "ui" ? (
-              <div className="relative h-fit w-full p-4 pt-16">
-              <PanelGroup
-                ref={horizontalPanelGroupRef}
-                direction="horizontal"
-                onLayout={handleHorizontalLayout}
-              >
-                <Panel defaultSize={7.5} minSize={0} />
-
-                <PanelResizeHandle className="group relative w-4">
-                  <div className="absolute top-1/2 left-1/2 h-12 w-1 -translate-x-1/2 -translate-y-1/2 rounded-full bg-gray-300 opacity-40 transition-all group-hover:bg-gray-400 group-hover:opacity-100 group-data-resize-handle-active:bg-gray-500 group-data-resize-handle-active:opacity-100 dark:bg-gray-600 dark:group-hover:bg-gray-500 dark:group-data-resize-handle-active:bg-gray-400" />
-                </PanelResizeHandle>
-
-                <Panel
-                  defaultSize={85}
-                  minSize={PREVIEW_MIN_SIZE}
-                  maxSize={PREVIEW_MAX_SIZE}
+              <div className="relative h-fit w-full p-4 lg:pt-16">
+                <PanelGroup
+                  ref={horizontalPanelGroupRef}
+                  direction="horizontal"
+                  onLayout={handleHorizontalLayout}
                 >
-                  <div className="border-border scrollbar-subtle relative rounded-xl border-2 border-dashed transition-all">
-                    <div className="relative m-0 flex h-full flex-col p-4">
-                      <div className="w-full">{renderPreview(isLoading)}</div>
+                  <Panel defaultSize={7.5} minSize={0} />
+
+                  <PanelResizeHandle className="group relative w-4">
+                    <div className="absolute top-1/2 left-1/2 h-12 w-1 -translate-x-1/2 -translate-y-1/2 rounded-full bg-gray-300 opacity-40 transition-all group-hover:bg-gray-400 group-hover:opacity-100 group-data-resize-handle-active:bg-gray-500 group-data-resize-handle-active:opacity-100 dark:bg-gray-600 dark:group-hover:bg-gray-500 dark:group-data-resize-handle-active:bg-gray-400" />
+                  </PanelResizeHandle>
+
+                  <Panel
+                    defaultSize={85}
+                    minSize={PREVIEW_MIN_SIZE}
+                    maxSize={PREVIEW_MAX_SIZE}
+                  >
+                    <div className="border-border scrollbar-subtle relative rounded-xl border-2 border-dashed transition-all">
+                      <div className="relative m-0 flex h-full flex-col p-4">
+                        <div className="w-full">{renderPreview(isLoading)}</div>
+                      </div>
                     </div>
-                  </div>
-                </Panel>
+                  </Panel>
 
-                <PanelResizeHandle className="group relative w-4">
-                  <div className="absolute top-1/2 left-1/2 h-12 w-1 -translate-x-1/2 -translate-y-1/2 rounded-full bg-gray-300 opacity-40 transition-all group-hover:bg-gray-400 group-hover:opacity-100 group-data-resize-handle-active:bg-gray-500 group-data-resize-handle-active:opacity-100 dark:bg-gray-600 dark:group-hover:bg-gray-500 dark:group-data-resize-handle-active:bg-gray-400" />
-                </PanelResizeHandle>
+                  <PanelResizeHandle className="group relative w-4">
+                    <div className="absolute top-1/2 left-1/2 h-12 w-1 -translate-x-1/2 -translate-y-1/2 rounded-full bg-gray-300 opacity-40 transition-all group-hover:bg-gray-400 group-hover:opacity-100 group-data-resize-handle-active:bg-gray-500 group-data-resize-handle-active:opacity-100 dark:bg-gray-600 dark:group-hover:bg-gray-500 dark:group-data-resize-handle-active:bg-gray-400" />
+                  </PanelResizeHandle>
 
-                <Panel defaultSize={7.5} minSize={0} />
-              </PanelGroup>
+                  <Panel defaultSize={7.5} minSize={0} />
+                </PanelGroup>
               </div>
             ) : (
-              <div className="relative h-full w-full">
+              <div className="relative h-full w-full p-4 lg:pt-16">
                 {renderCodePanel(isLoading)}
               </div>
             )}
