@@ -87,6 +87,8 @@ interface OptionItemProps {
   isSelected: boolean;
   isDisabled: boolean;
   selectionMode: "multi" | "single";
+  isFirst: boolean;
+  isLast: boolean;
   onToggle: () => void;
 }
 
@@ -95,8 +97,12 @@ function OptionItem({
   isSelected,
   isDisabled,
   selectionMode,
+  isFirst,
+  isLast,
   onToggle,
 }: OptionItemProps) {
+  const isMiddle = !isFirst && !isLast;
+
   return (
     <Button
       data-id={option.id}
@@ -109,6 +115,8 @@ function OptionItem({
       className={cn(
         "peer group relative h-auto min-h-[50px] w-full justify-start text-left text-sm font-medium",
         "rounded-none border-0 bg-transparent px-0 py-2 text-base shadow-none transition-none hover:bg-transparent! @md/option-list:text-sm",
+        isFirst && "pb-2.5",
+        isMiddle && "py-2.5",
       )}
     >
       <span
@@ -401,6 +409,8 @@ export function OptionList({
                 isSelected={isSelected}
                 isDisabled={isDisabled}
                 selectionMode={selectionMode}
+                isFirst={index === 0}
+                isLast={index === options.length - 1}
                 onToggle={() => toggleSelection(option.id)}
               />
             </Fragment>
