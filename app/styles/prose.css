@@ -1,5 +1,4 @@
 @layer utilities {
-  /* Prose (MDX) typography styles */
   .prose {
     @apply text-foreground;
   }
@@ -12,9 +11,8 @@
     @apply text-3xl mt-12 mb-4 font-medium;
   }
 
-  /* Add extra spacing before subsequent sections that start with an h2 */
   .prose :where(h2:not(:first-child)):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
-    @apply mt-20;
+    @apply mt-16;
   }
 
   .prose :where(h3):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
