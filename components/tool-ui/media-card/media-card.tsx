@@ -64,7 +64,7 @@ function LinkOverlay({ label }: { label?: string }) {
 
 const BASE_CARD_STYLE = "border border-border bg-card text-sm shadow-xs";
 const DEFAULT_CONTENT_SPACING = "gap-4 p-5";
-const LINK_CONTENT_SPACING = "px-5 py-4 gap-3";
+const LINK_CONTENT_SPACING = "px-5 py-4 gap-2";
 
 export const DEFAULT_LOCALE = "en-US" as const;
 
@@ -226,6 +226,7 @@ export function MediaCard(props: MediaCardProps) {
             <div className="flex flex-col">
               <MediaFrame />
               <div className={cn("flex flex-col", linkContentPadding)}>
+                <MediaCardHeader />
                 <MediaCardBody />
                 <MediaCardFooter />
               </div>

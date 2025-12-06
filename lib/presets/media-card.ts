@@ -92,12 +92,6 @@ const linkPreset: MediaCardConfig = {
     domain: "wikipedia.org",
     thumb:
       "https://images.unsplash.com/photo-1562408590-e32931084e23?auto=format&fit=crop&q=80&w=2046",
-    createdAtISO: "2025-02-05T09:45:00.000Z",
-    source: {
-      label: "History compendium",
-      iconUrl: "https://api.dicebear.com/7.x/shapes/svg?seed=history",
-      url: "https://assistant-ui.com",
-    },
     og: {
       imageUrl:
         "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&q=80&w=2046",
