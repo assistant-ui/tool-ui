@@ -3,12 +3,7 @@
 import { useSearchParams, usePathname, useRouter } from "next/navigation";
 import { type ReactNode, useEffect, useRef, useState, Suspense } from "react";
 import { cn } from "@/lib/ui/cn";
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@/components/ui/tabs";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { DocsPager } from "./docs-pager";
 
 interface ComponentDocsExamplesProps {
@@ -81,7 +76,6 @@ function ComponentDocsExamplesInner({
         }
         className="flex h-full min-h-0 flex-col gap-0"
       >
-        {/* Sticky tablist */}
         <div
           className={cn(
             "z-20 flex shrink-0 items-center justify-center border-b px-3 py-2 sm:px-6 sm:py-3",
@@ -94,11 +88,10 @@ function ComponentDocsExamplesInner({
           </TabsList>
         </div>
 
-        {/* Content area */}
         <div
           id="examples"
           ref={contentRef}
-          className="relative flex min-h-0 flex-1 flex-col scroll-mt-16"
+          className="relative flex min-h-0 flex-1 scroll-mt-16 flex-col"
         >
           <TabsContent
             value="docs"

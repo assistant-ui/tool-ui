@@ -1,13 +1,6 @@
 "use client";
 
-import {
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-  type ReactNode,
-} from "react";
-import { useResizableViewport } from "@/app/components/builder/resizable-viewport-provider";
+import { useCallback, useRef, useState, type ReactNode } from "react";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import { Button } from "@/components/ui/button";
 import { ButtonGroup } from "@/components/ui/button-group";
@@ -39,7 +32,6 @@ export function ComponentPreviewShell({
   onLoadingChange,
   withContainer = true,
 }: ComponentPreviewShellProps) {
-  const { viewport } = useResizableViewport();
   const [activeTab, setActiveTab] = useState("ui");
   const horizontalPanelGroupRef = useRef<
     import("react-resizable-panels").ImperativePanelGroupHandle | null
@@ -75,22 +67,6 @@ export function ComponentPreviewShell({
       ]);
     }
   }, []);
-
-  // Update panel layout when viewport changes
-  useEffect(() => {
-    if (!horizontalPanelGroupRef.current) return;
-
-    const viewportSizes = {
-      mobile: 50, // 50% for mobile (375px equivalent)
-      desktop: 85, // 85% for desktop (full width)
-    };
-
-    const targetSize = viewportSizes[viewport];
-    const spacing = Math.max(0, (100 - targetSize) / 2);
-
-    isSyncingHorizontalLayout.current = true;
-    horizontalPanelGroupRef.current.setLayout([spacing, targetSize, spacing]);
-  }, [viewport]);
 
   const Shell = (
     <div className="flex h-full min-h-0 w-full flex-1 flex-col overflow-clip lg:flex-row">

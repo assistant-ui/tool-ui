@@ -1,24 +1,13 @@
 import ContentLayout from "@/app/components/layout/page-shell";
 import { HeaderFrame } from "@/app/components/layout/app-shell";
+import { ThemeToggle } from "@/app/components/builder/theme-toggle";
 import { HomeHero } from "@/app/components/home/home-hero";
-import { HomeViewportControls } from "@/app/components/home/home-viewport-controls";
-import { HomeDebugPanel } from "@/app/components/home/home-debug-panel";
 import { ChatShowcase } from "@/app/components/home/chat-showcase";
 
-type HomePageProps = {
-  searchParams?: {
-    logoDebug?: string;
-  };
-};
-
-export default function HomePage({
-  searchParams: _searchParams,
-}: {
-  searchParams?: HomePageProps["searchParams"];
-}) {
+export default function HomePage() {
   return (
     <HeaderFrame
-      rightContent={<HomeViewportControls showViewportButtons={false} />}
+      rightContent={<ThemeToggle />}
       background={
         <div
           className="bg-background pointer-events-none fixed inset-0 opacity-60 dark:opacity-40"
@@ -38,7 +27,6 @@ export default function HomePage({
             </div>
           </div>
         </main>
-        <HomeDebugPanel />
       </ContentLayout>
     </HeaderFrame>
   );
