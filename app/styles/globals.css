@@ -14,6 +14,9 @@
 /* Silk Sheet UI styles */
 @import "@silk-hq/components/layered-styles";
 
+/* Misc */
+@import "./squircle.css";
+
 /* Shadcn UI theme styles */
 @custom-variant dark (&:is(.dark *, [data-theme="dark"], [data-theme="dark"] *));
 @theme inline {

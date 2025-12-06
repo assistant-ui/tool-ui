@@ -26,13 +26,10 @@ export function ResponsiveHeader({ rightContent }: ResponsiveHeaderProps) {
           <LogoMark className="-mb-0.5 size-5" />
           <h1 className="text-2xl font-semibold">Tool UI</h1>
         </Link>
-        <span className="text-muted-foreground/80 -mb-0.5 cursor-default border-none bg-transparent font-mono text-xs select-none">
-          research preview
-        </span>
       </div>
 
       {/* Desktop Navigation */}
-      <div className="hidden flex-1 items-center justify-between md:flex">
+      <div className="hidden flex-1 items-center justify-between md:flex md:pl-18">
         <nav className="flex items-center gap-1">
           {navLinks.map(({ href, label }) => (
             <ActiveNavLink key={href} href={href}>
