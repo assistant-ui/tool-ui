@@ -15,7 +15,7 @@ export function ResponsiveHeader({ rightContent }: ResponsiveHeaderProps) {
   const navLinks = [
     { href: "/", label: "Home" },
     { href: "/docs/overview", label: "Docs" },
-    { href: "/docs/gallery", label: "Components" },
+    { href: "/docs/gallery", label: "Gallery" },
     { href: "/builder", label: "Builder" },
   ];
 

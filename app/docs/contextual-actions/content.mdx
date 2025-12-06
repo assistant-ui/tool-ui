@@ -1,6 +1,9 @@
 import { DocsHeader } from "../_components/docs-header";
 
-<DocsHeader title="Contextual Actions" mdxPath="app/docs/contextual-actions/content.mdx" />
+<DocsHeader
+  title="Contextual Actions"
+  mdxPath="app/docs/contextual-actions/content.mdx"
+/>
 
 Lightweight, in-flow CTA rows attached to tool UIs—meant for time-bound, conversational decisions tied to the content above.
 
@@ -109,7 +112,7 @@ import { ActionButtons } from "@/components/tool-ui/shared";
     { id: "send", label: "Send", variant: "default", confirmLabel: "Confirm" },
   ]}
   onAction={(id) => console.log(id)}
-/>
+/>;
 ```
 
 ## Design guidance
