@@ -1,4 +1,7 @@
 import { DocsHeader } from "../_components/docs-header";
+import { DataTable } from "@/components/tool-ui/data-table";
+import { MediaCard } from "@/components/tool-ui/media-card";
+import { SocialPost } from "@/components/tool-ui/social-post";
 
 <DocsHeader
   title="Contextual Actions"
@@ -7,117 +10,257 @@ import { DocsHeader } from "../_components/docs-header";
 
 Lightweight, in-flow CTA rows attached to tool UIs—meant for time-bound, conversational decisions tied to the content above.
 
-## Shape
+## DataTable with Footer Actions
 
-`ActionsProp` accepts either an array of actions or an object with inline layout config:
+<Tabs items={["Preview", "Code"]}>
+  <Tab>
+    <div className="not-prose">
+      <DataTable
+        rowIdKey="id"
+        columns={[
+          { key: "issue", label: "Issue", priority: "primary", truncate: true },
+          {
+            key: "priority",
+            label: "Urgency",
+            format: {
+              kind: "status",
+              statusMap: {
+                high: { tone: "danger", label: "High" },
+                medium: { tone: "warning", label: "Medium" },
+                low: { tone: "neutral", label: "Low" },
+              },
+            },
+          },
+          {
+            key: "createdAt",
+            label: "Created",
+            format: { kind: "date", dateFormat: "relative" },
+          },
+        ]}
+        data={[
+          { id: "1", issue: "Payment failing on checkout", priority: "high", createdAt: "2025-11-11T09:24:00Z" },
+          { id: "2", issue: "Billing UI alignment bug", priority: "medium", createdAt: "2025-11-10T17:03:00Z" },
+          { id: "3", issue: "Export CSV missing headers", priority: "low", createdAt: "2025-11-08T08:00:00Z" },
+        ]}
+        footerActions={{
+          items: [
+            { id: "export", label: "Export CSV", variant: "secondary" },
+            { id: "sync", label: "Sync to Jira", variant: "default", confirmLabel: "Confirm Sync" },
+          ],
+          align: "right",
+        }}
+      />
+    </div>
+  </Tab>
+  <Tab>
+    ```tsx
+    import { DataTable } from "@/components/tool-ui/data-table";
+
+    <DataTable
+      rowIdKey="id"
+      columns={[
+        { key: "issue", label: "Issue", priority: "primary", truncate: true },
+        {
+          key: "priority",
+          label: "Urgency",
+          format: {
+            kind: "status",
+            statusMap: {
+              high: { tone: "danger", label: "High" },
+              medium: { tone: "warning", label: "Medium" },
+              low: { tone: "neutral", label: "Low" },
+            },
+          },
+        },
+        { key: "createdAt", label: "Created", format: { kind: "date", dateFormat: "relative" } },
+      ]}
+      data={[
+        { id: "1", issue: "Payment failing on checkout", priority: "high", createdAt: "2025-11-11T09:24:00Z" },
+        { id: "2", issue: "Billing UI alignment bug", priority: "medium", createdAt: "2025-11-10T17:03:00Z" },
+        { id: "3", issue: "Export CSV missing headers", priority: "low", createdAt: "2025-11-08T08:00:00Z" },
+      ]}
+      footerActions={{
+        items: [
+          { id: "export", label: "Export CSV", variant: "secondary" },
+          { id: "sync", label: "Sync to Jira", variant: "default", confirmLabel: "Confirm Sync" },
+        ],
+        align: "right",
+      }}
+      onFooterAction={(id) => console.log("Action:", id)}
+    />
+    ```
+  </Tab>
+</Tabs>
+
+## MediaCard with Footer Actions
+
+<Tabs items={["Preview", "Code"]}>
+  <Tab>
+    <div className="not-prose">
+      <MediaCard
+        surfaceId="contextual-actions-media-card"
+        assetId="rsc-guide"
+        kind="link"
+        href="https://react.dev/reference/rsc/server-components"
+        title="React Server Components"
+        description="Learn how to use Server Components to build fast, dynamic applications with React."
+        thumb="https://images.unsplash.com/photo-1633356122544-f134324a6cee?auto=format&fit=crop&q=80&w=1200"
+        ratio="16:9"
+        domain="react.dev"
+        maxWidth="420px"
+        footerActions={[
+          { id: "open", label: "Open", variant: "default" },
+          { id: "save", label: "Save for later", variant: "secondary" },
+        ]}
+      />
+    </div>
+  </Tab>
+  <Tab>
+    ```tsx
+    import { MediaCard } from "@/components/tool-ui/media-card";
+
+    <MediaCard
+      surfaceId="contextual-actions-media-card"
+      assetId="rsc-guide"
+      kind="link"
+      href="https://react.dev/reference/rsc/server-components"
+      title="React Server Components"
+      description="Learn how to use Server Components to build fast, dynamic applications."
+      thumb="https://images.unsplash.com/photo-1633356122544-f134324a6cee"
+      ratio="16:9"
+      domain="react.dev"
+      maxWidth="420px"
+      footerActions={[
+        { id: "open", label: "Open", variant: "default" },
+        { id: "save", label: "Save for later", variant: "secondary" },
+      ]}
+      onFooterAction={(id) => console.log("Action:", id)}
+    />
+    ```
+  </Tab>
+</Tabs>
+
+## SocialPost with Footer Actions
+
+<Tabs items={["Preview", "Code"]}>
+  <Tab>
+    <div className="not-prose">
+      <SocialPost
+        surfaceId="contextual-actions-social-post"
+        platform="x"
+        content="Just shipped a major update to Tool UI! 🚀\n\nContextual actions are now live—lightweight CTAs that attach to any component for in-flow decisions.\n\nCheck it out: https://tool-ui.com/docs/contextual-actions"
+        author={{
+          name: "Tool UI",
+          handle: "tool_ui",
+          avatarUrl: "https://api.dicebear.com/7.x/shapes/svg?seed=toolui",
+          verified: true,
+        }}
+        footerActions={[
+          { id: "edit", label: "Edit draft", variant: "secondary" },
+          { id: "schedule", label: "Schedule", variant: "outline" },
+          { id: "post", label: "Post now", variant: "default", confirmLabel: "Confirm" },
+        ]}
+      />
+    </div>
+  </Tab>
+  <Tab>
+    ```tsx
+    import { SocialPost } from "@/components/tool-ui/social-post";
+
+    <SocialPost
+      surfaceId="contextual-actions-social-post"
+      platform="x"
+      content="Just shipped a major update to Tool UI! 🚀\n\nContextual actions are now live."
+      author={{
+        name: "Tool UI",
+        handle: "tool_ui",
+        avatarUrl: "https://api.dicebear.com/7.x/shapes/svg?seed=toolui",
+        verified: true,
+      }}
+      footerActions={[
+        { id: "edit", label: "Edit draft", variant: "secondary" },
+        { id: "schedule", label: "Schedule", variant: "outline" },
+        { id: "post", label: "Post now", variant: "default", confirmLabel: "Confirm" },
+      ]}
+      onFooterAction={(id) => console.log("Action:", id)}
+    />
+    ```
+  </Tab>
+</Tabs>
+
+## Action Shape
+
+`footerActions` accepts either an array of actions or an object with layout config:
 
 ```ts
 // Array form
-[
+footerActions={[
   { id: "approve", label: "Approve", variant: "default" },
   { id: "reject", label: "Reject", variant: "destructive", confirmLabel: "Confirm" },
-]
+]}
 
-// Config form
-{
+// Config form with alignment
+footerActions={{
   items: [
-    { id: "export", label: "Export CSV", variant: "secondary" },
+    { id: "export", label: "Export", variant: "secondary" },
     { id: "sync", label: "Sync", variant: "default", confirmLabel: "Confirm" },
   ],
   align: "right",      // default "right"
   confirmTimeout: 3000 // default 3000ms
-}
+}}
 ```
 
-### Action fields
+### Action Fields
 
-- `id` (required): unique identifier.
-- `label` (required): button text.
-- `variant`: `"default" | "secondary" | "ghost" | "destructive" | "outline"`.
-- `confirmLabel`: triggers a two-step confirm pattern (label shown on second click).
-- `disabled`, `loading`: disable or show spinner.
-- `shortcut`: optional keyboard hint.
-- `icon`: ReactNode (runtime only; omitted in serializable shape).
+<TypeTable
+  type={{
+    id: { description: "Unique identifier", type: "string", required: true },
+    label: { description: "Button text", type: "string", required: true },
+    variant: { description: "Button style", type: "'default' | 'secondary' | 'ghost' | 'destructive' | 'outline'", default: "'secondary'" },
+    confirmLabel: { description: "Enables two-step confirm (label shown on second click)", type: "string" },
+    disabled: { description: "Disable the button", type: "boolean" },
+    loading: { description: "Show loading spinner", type: "boolean" },
+    shortcut: { description: "Keyboard hint", type: "string" },
+    icon: { description: "Icon element (runtime only)", type: "ReactNode" },
+  }}
+/>
 
 ## Handlers
 
-- `onAction(id)`: called after confirm/preflight.
-- `onBeforeAction(id) => boolean | Promise<boolean>`: return `false` to cancel (use for confirmations or auth gates).
-- Confirmations: provided by `confirmLabel` + optional `confirmTimeout` (defaults to 3000ms).
+<TypeTable
+  type={{
+    onFooterAction: { description: "Called after confirm/preflight completes", type: "(actionId: string) => void" },
+    onBeforeFooterAction: { description: "Gate actions—return false to cancel", type: "(actionId: string) => boolean | Promise<boolean>" },
+  }}
+/>
 
 ## Serialization
 
-Use `SerializableAction`/`SerializableActionsConfig` when actions come from tool/LLM output. Runtime code can provide React icons and handlers.
-
-- **Tool output:** stick to the serializable shapes so payloads survive `JSON.stringify` and hydrate cleanly.
-- **Runtime overrides:** when you render the component, you can add icons or custom handlers on top of the serializable payload without mutating the tool contract.
-
-## Examples
-
-### Footer actions on DataTable
+Use `SerializableAction` when actions come from tool/LLM output. Runtime code can add React icons and handlers on top.
 
 ```tsx
-<DataTable
-  {...data}
-  footerActions={{
-    items: [
-      { id: "export", label: "Export", variant: "secondary" },
-      {
-        id: "sync",
-        label: "Sync",
-        variant: "default",
-        confirmLabel: "Confirm",
-      },
-    ],
-    align: "right",
-  }}
-  onFooterAction={(id) => console.log(id)}
-/>
-```
-
-### MediaCard footer
-
-```tsx
-<MediaCard
-  {...card}
-  footerActions={[
+// Tool output (serializable)
+const toolOutput = {
+  footerActions: [
     { id: "open", label: "Open", variant: "default" },
     { id: "save", label: "Save", variant: "secondary" },
-  ]}
-  onFooterAction={(id) => console.log(id)}
+  ],
+};
+
+// Runtime rendering (can add icons, handlers)
+<MediaCard
+  {...toolOutput}
+  onFooterAction={(id) => {
+    if (id === "open") window.open(url, "_blank");
+    if (id === "save") saveToLibrary(url);
+  }}
 />
 ```
 
-### SocialPost footer CTA
+## Design Guidance
 
-```tsx
-<SocialPost
-  {...post}
-  footerActions={[
-    { id: "save", label: "Save draft", variant: "secondary" },
-    { id: "share", label: "Share", variant: "default" },
-  ]}
-  onFooterAction={(id) => console.log(id)}
-/>
-```
-
-### Standalone ActionButtons
-
-```tsx
-import { ActionButtons } from "@/components/tool-ui/shared";
-
-<ActionButtons
-  actions={[
-    { id: "cancel", label: "Cancel", variant: "ghost" },
-    { id: "send", label: "Send", variant: "default", confirmLabel: "Confirm" },
-  ]}
-  onAction={(id) => console.log(id)}
-/>;
-```
-
-## Design guidance
-
-- Default to 2–3 CTAs tied directly to the content above; avoid toolbar sprawl.
-- Use `confirmLabel` for destructive/high-impact actions; keep `confirmTimeout` short.
-- ActionButtons are responsive by default using container queries—they stack vertically on narrow containers and display inline on wider ones.
-- For richer controls, prefer dedicated components (OptionList, filters) and keep this strip focused on decisions.
+- Default to 2–3 CTAs tied directly to the content above; avoid toolbar sprawl
+- Use `confirmLabel` for destructive or high-impact actions
+- Keep `confirmTimeout` short (default 3000ms) to avoid stale confirm states
+- ActionButtons are responsive by default—they stack on narrow containers
+- For richer controls, prefer dedicated components (OptionList, filters) and keep this strip focused on decisions
