@@ -28,8 +28,8 @@ export interface LinkedInPostProps {
   post: LinkedInPostData;
   className?: string;
   onAction?: (action: string, post: LinkedInPostData) => void;
-  footerActions?: ActionsProp;
-  onFooterAction?: (actionId: string) => void;
+  responseActions?: ActionsProp;
+  onResponseAction?: (actionId: string) => void;
 }
 
 function LinkedinLogo({ className }: { className?: string }) {
@@ -255,12 +255,12 @@ export function LinkedInPost({
   post,
   className,
   onAction,
-  footerActions,
-  onFooterAction,
+  responseActions,
+  onResponseAction,
 }: LinkedInPostProps) {
   const normalizedFooterActions = React.useMemo(
-    () => normalizeActionsConfig(footerActions),
-    [footerActions],
+    () => normalizeActionsConfig(responseActions),
+    [responseActions],
   );
 
   return (
@@ -289,7 +289,7 @@ export function LinkedInPost({
             actions={normalizedFooterActions.items}
             align={normalizedFooterActions.align}
             confirmTimeout={normalizedFooterActions.confirmTimeout}
-            onAction={(id) => onFooterAction?.(id)}
+            onAction={(id) => onResponseAction?.(id)}
           />
         </div>
       )}

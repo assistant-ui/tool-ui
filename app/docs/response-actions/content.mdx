@@ -4,13 +4,13 @@ import { MediaCard } from "@/components/tool-ui/media-card";
 import { XPost } from "@/components/tool-ui/x-post";
 
 <DocsHeader
-  title="Contextual Actions"
-  mdxPath="app/docs/contextual-actions/content.mdx"
+  title="Response Actions"
+  mdxPath="app/docs/response-actions/content.mdx"
 />
 
-Lightweight, in-flow CTA rows attached to tool UIs—meant for time-bound, conversational decisions tied to the content above.
+Response Actions are human-in-the-loop decision points—lightweight CTAs that let users respond to AI-generated content before it's finalized or acted upon.
 
-## DataTable with Footer Actions
+## DataTable with Response Actions
 
 <Tabs items={["Preview", "Code"]}>
   <Tab>
@@ -42,7 +42,7 @@ Lightweight, in-flow CTA rows attached to tool UIs—meant for time-bound, conve
           { id: "2", issue: "Billing UI alignment bug", priority: "medium", createdAt: "2025-11-10T17:03:00Z" },
           { id: "3", issue: "Export CSV missing headers", priority: "low", createdAt: "2025-11-08T08:00:00Z" },
         ]}
-        footerActions={{
+        responseActions={{
           items: [
             { id: "export", label: "Export CSV", variant: "secondary" },
             { id: "sync", label: "Sync to Jira", variant: "default", confirmLabel: "Confirm Sync" },
@@ -79,26 +79,26 @@ Lightweight, in-flow CTA rows attached to tool UIs—meant for time-bound, conve
         { id: "2", issue: "Billing UI alignment bug", priority: "medium", createdAt: "2025-11-10T17:03:00Z" },
         { id: "3", issue: "Export CSV missing headers", priority: "low", createdAt: "2025-11-08T08:00:00Z" },
       ]}
-      footerActions={{
+      responseActions={{
         items: [
           { id: "export", label: "Export CSV", variant: "secondary" },
           { id: "sync", label: "Sync to Jira", variant: "default", confirmLabel: "Confirm Sync" },
         ],
         align: "right",
       }}
-      onFooterAction={(id) => console.log("Action:", id)}
+      onResponseAction={(id) => console.log("Action:", id)}
     />
     ```
   </Tab>
 </Tabs>
 
-## MediaCard with Footer Actions
+## MediaCard with Response Actions
 
 <Tabs items={["Preview", "Code"]}>
   <Tab>
     <div className="not-prose">
       <MediaCard
-        id="contextual-actions-media-card"
+        id="response-actions-media-card"
         assetId="rsc-guide"
         kind="link"
         href="https://react.dev/reference/rsc/server-components"
@@ -108,7 +108,7 @@ Lightweight, in-flow CTA rows attached to tool UIs—meant for time-bound, conve
         ratio="16:9"
         domain="react.dev"
         maxWidth="420px"
-        footerActions={[
+        responseActions={[
           { id: "open", label: "Open", variant: "default" },
           { id: "save", label: "Save for later", variant: "secondary" },
         ]}
@@ -120,7 +120,7 @@ Lightweight, in-flow CTA rows attached to tool UIs—meant for time-bound, conve
     import { MediaCard } from "@/components/tool-ui/media-card";
 
     <MediaCard
-      id="contextual-actions-media-card"
+      id="response-actions-media-card"
       assetId="rsc-guide"
       kind="link"
       href="https://react.dev/reference/rsc/server-components"
@@ -130,33 +130,33 @@ Lightweight, in-flow CTA rows attached to tool UIs—meant for time-bound, conve
       ratio="16:9"
       domain="react.dev"
       maxWidth="420px"
-      footerActions={[
+      responseActions={[
         { id: "open", label: "Open", variant: "default" },
         { id: "save", label: "Save for later", variant: "secondary" },
       ]}
-      onFooterAction={(id) => console.log("Action:", id)}
+      onResponseAction={(id) => console.log("Action:", id)}
     />
     ```
   </Tab>
 </Tabs>
 
-## XPost with Footer Actions
+## XPost with Response Actions
 
 <Tabs items={["Preview", "Code"]}>
   <Tab>
     <div className="not-prose">
       <XPost
         post={{
-          id: "contextual-actions-x-post",
+          id: "response-actions-x-post",
           author: {
             name: "Tool UI",
             handle: "tool_ui",
             avatarUrl: "https://api.dicebear.com/7.x/shapes/svg?seed=toolui",
             verified: true,
           },
-          text: "Just shipped a major update to Tool UI! 🚀\n\nContextual actions are now live—lightweight CTAs that attach to any component for in-flow decisions.\n\nCheck it out: https://tool-ui.com/docs/contextual-actions",
+          text: "Just shipped a major update to Tool UI!\n\nResponse Actions are now live—human-in-the-loop decision points that attach to any component.\n\nCheck it out: https://tool-ui.com/docs/response-actions",
         }}
-        footerActions={[
+        responseActions={[
           { id: "edit", label: "Edit draft", variant: "secondary" },
           { id: "schedule", label: "Schedule", variant: "outline" },
           { id: "post", label: "Post now", variant: "default", confirmLabel: "Confirm" },
@@ -170,21 +170,21 @@ Lightweight, in-flow CTA rows attached to tool UIs—meant for time-bound, conve
 
     <XPost
       post={{
-        id: "contextual-actions-x-post",
+        id: "response-actions-x-post",
         author: {
           name: "Tool UI",
           handle: "tool_ui",
           avatarUrl: "https://api.dicebear.com/7.x/shapes/svg?seed=toolui",
           verified: true,
         },
-        text: "Just shipped a major update to Tool UI! 🚀\n\nContextual actions are now live.",
+        text: "Just shipped a major update to Tool UI!\n\nResponse Actions are now live.",
       }}
-      footerActions={[
+      responseActions={[
         { id: "edit", label: "Edit draft", variant: "secondary" },
         { id: "schedule", label: "Schedule", variant: "outline" },
         { id: "post", label: "Post now", variant: "default", confirmLabel: "Confirm" },
       ]}
-      onFooterAction={(id) => console.log("Action:", id)}
+      onResponseAction={(id) => console.log("Action:", id)}
     />
     ```
   </Tab>
@@ -192,17 +192,17 @@ Lightweight, in-flow CTA rows attached to tool UIs—meant for time-bound, conve
 
 ## Action Shape
 
-`footerActions` accepts either an array of actions or an object with layout config:
+`responseActions` accepts either an array of actions or an object with layout config:
 
 ```ts
 // Array form
-footerActions={[
+responseActions={[
   { id: "approve", label: "Approve", variant: "default" },
   { id: "reject", label: "Reject", variant: "destructive", confirmLabel: "Confirm" },
 ]}
 
 // Config form with alignment
-footerActions={{
+responseActions={{
   items: [
     { id: "export", label: "Export", variant: "secondary" },
     { id: "sync", label: "Sync", variant: "default", confirmLabel: "Confirm" },
@@ -231,8 +231,8 @@ footerActions={{
 
 <TypeTable
   type={{
-    onFooterAction: { description: "Called after confirm/preflight completes", type: "(actionId: string) => void" },
-    onBeforeFooterAction: { description: "Gate actions—return false to cancel", type: "(actionId: string) => boolean | Promise<boolean>" },
+    onResponseAction: { description: "Called after confirm/preflight completes", type: "(actionId: string) => void" },
+    onBeforeResponseAction: { description: "Gate actions—return false to cancel", type: "(actionId: string) => boolean | Promise<boolean>" },
   }}
 />
 
@@ -243,7 +243,7 @@ Use `SerializableAction` when actions come from tool/LLM output. Runtime code ca
 ```tsx
 // Tool output (serializable)
 const toolOutput = {
-  footerActions: [
+  responseActions: [
     { id: "open", label: "Open", variant: "default" },
     { id: "save", label: "Save", variant: "secondary" },
   ],
@@ -252,7 +252,7 @@ const toolOutput = {
 // Runtime rendering (can add icons, handlers)
 <MediaCard
   {...toolOutput}
-  onFooterAction={(id) => {
+  onResponseAction={(id) => {
     if (id === "open") window.open(url, "_blank");
     if (id === "save") saveToLibrary(url);
   }}

@@ -169,7 +169,7 @@ An information surface for tabular tool outputs with responsive layout, sorting,
 - **Responsive**: Table on wide screens, cards on mobile
 - **Sorting**: Tri-state: none → asc → desc
 - **Formatting**: Currency, dates, links, badges, etc. via declarative config
-- **Footer Actions**: Surface-level actions via `footerActions` prop
+- **Response Actions**: Surface-level actions via `responseActions` prop
 - **Accessible**: Screen reader support, keyboard navigation
 
 ## Source and Install
@@ -332,19 +332,19 @@ export const SearchProductsUI = makeAssistantToolUI({
   }}
 />
 
-### Footer Actions
+### Response Actions
 
 <TypeTable
   type={{
-    footerActions: {
+    responseActions: {
       description: "Surface-level actions below the table",
       type: "Action[] | ActionsConfig",
     },
-    onFooterAction: {
+    onResponseAction: {
       description: "Click handler",
       type: "(actionId: string) => void",
     },
-    onBeforeFooterAction: {
+    onBeforeResponseAction: {
       description: "Gate actions (return false to cancel)",
       type: "(actionId: string) => boolean | Promise<boolean>",
     },

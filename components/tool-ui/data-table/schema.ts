@@ -157,8 +157,8 @@ export const serializableDataTableSchema = z.object({
  * - Row data (primitives: strings, numbers, booleans, null, string arrays)
  *
  * Excluded from this type:
- * - Event handlers (`onSortChange`, `onFooterAction`)
- * - React-specific props (`className`, `isLoading`, `footerActions`)
+ * - Event handlers (`onSortChange`, `onResponseAction`)
+ * - React-specific props (`className`, `isLoading`, `responseActions`)
  *
  * @example
  * ```ts
@@ -185,7 +185,7 @@ export type SerializableDataTable = z.infer<typeof serializableDataTableSchema>;
  * 3. Returns typed serializable props ready to pass to the `<DataTable>` component
  *
  * The returned props are **serializable only** - you must provide client-side props
- * separately (onSortChange, isLoading, className, footerActions, onFooterAction).
+ * separately (onSortChange, isLoading, className, responseActions, onResponseAction).
  *
  * @param input - Unknown data to validate (typically from an LLM tool call)
  * @returns Validated and typed DataTable serializable props (id, columns, data)
@@ -199,8 +199,8 @@ export type SerializableDataTable = z.infer<typeof serializableDataTableSchema>;
  *   return (
  *     <DataTable
  *       {...serializableProps}
- *       footerActions={[{ id: "export", label: "Export" }]}
- *       onFooterAction={(id) => console.log(id)}
+ *       responseActions={[{ id: "export", label: "Export" }]}
+ *       onResponseAction={(id) => console.log(id)}
  *     />
  *   )
  * }

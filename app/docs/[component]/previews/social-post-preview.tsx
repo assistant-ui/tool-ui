@@ -51,7 +51,7 @@ const platformConfig = {
       quoted: "Post with quoted tweet",
       media: "Post with image",
       link: "Post with link preview",
-      "footer-actions": "Post with footer actions",
+      "footer-actions": "Post with response actions",
     },
   },
   instagram: {
@@ -65,7 +65,7 @@ const platformConfig = {
     descriptions: {
       basic: "Single image post",
       carousel: "Multi-image carousel",
-      "footer-actions": "Post with footer actions",
+      "footer-actions": "Post with response actions",
     },
   },
   linkedin: {
@@ -81,7 +81,7 @@ const platformConfig = {
       basic: "Text-only post",
       link: "Post with link preview",
       media: "Post with image",
-      "footer-actions": "Post with footer actions",
+      "footer-actions": "Post with response actions",
     },
   },
 } as const;
@@ -279,13 +279,13 @@ export function SocialPostPreview({
           {currentPlatform === "x" && (
             <XPost
               post={xPostPresets[currentPreset as XPostPresetName].post}
-              footerActions={
-                xPostPresets[currentPreset as XPostPresetName].footerActions
+              responseActions={
+                xPostPresets[currentPreset as XPostPresetName].responseActions
               }
               onAction={(action, post) =>
                 console.log("X action:", action, post.id)
               }
-              onFooterAction={(id) => alert(`Footer action: ${id}`)}
+              onResponseAction={(id) => alert(`Response action: ${id}`)}
             />
           )}
           {currentPlatform === "instagram" && (
@@ -294,14 +294,14 @@ export function SocialPostPreview({
                 instagramPostPresets[currentPreset as InstagramPostPresetName]
                   .post
               }
-              footerActions={
+              responseActions={
                 instagramPostPresets[currentPreset as InstagramPostPresetName]
-                  .footerActions
+                  .responseActions
               }
               onAction={(action, post) =>
                 console.log("Instagram action:", action, post.id)
               }
-              onFooterAction={(id) => alert(`Footer action: ${id}`)}
+              onResponseAction={(id) => alert(`Response action: ${id}`)}
             />
           )}
           {currentPlatform === "linkedin" && (
@@ -310,14 +310,14 @@ export function SocialPostPreview({
                 linkedInPostPresets[currentPreset as LinkedInPostPresetName]
                   .post
               }
-              footerActions={
+              responseActions={
                 linkedInPostPresets[currentPreset as LinkedInPostPresetName]
-                  .footerActions
+                  .responseActions
               }
               onAction={(action, post) =>
                 console.log("LinkedIn action:", action, post.id)
               }
-              onFooterAction={(id) => alert(`Footer action: ${id}`)}
+              onResponseAction={(id) => alert(`Response action: ${id}`)}
             />
           )}
         </div>

@@ -25,7 +25,7 @@ A family of platform-specific components for rendering social media content: `XP
           stats: { likes: 12 },
           createdAt: "2025-01-05T12:00:00.000Z",
         }}
-        footerActions={[{ id: "open", label: "Open in app" }]}
+        responseActions={[{ id: "open", label: "Open in app" }]}
       />
     </div>
   </Tab>
@@ -104,7 +104,7 @@ Each component is independent and can be imported separately, allowing for tree-
 
 - **Platform-native styling**: Each component mirrors its platform's visual language
 - **Simple props**: Flat `post` object, no complex configuration
-- **Footer actions**: Add custom actions below any post via `footerActions`
+- **Response actions**: Add custom actions below any post via `responseActions`
 - **Lightweight**: ~250 lines per component, no shared context or state management
 
 ## Source and Install
@@ -182,8 +182,8 @@ import { LinkedInPost } from "@/components/tool-ui/linkedin-post";
     createdAt: "2025-01-01T12:00:00Z",
   }}
   onAction={(action, post) => console.log(action, post.id)}
-  footerActions={[{ id: "report", label: "Report", variant: "destructive" }]}
-  onFooterAction={(id) => console.log(id)}
+  responseActions={[{ id: "report", label: "Report", variant: "destructive" }]}
+  onResponseAction={(id) => console.log(id)}
 />
 
 // Instagram Post
@@ -225,12 +225,12 @@ All three components share the same prop pattern:
       description: "Called when like/share clicked",
       type: "(action: string, post) => void",
     },
-    footerActions: {
+    responseActions: {
       description: "Custom actions below the post",
       type: "Action[]",
     },
-    onFooterAction: {
-      description: "Called when footer action clicked",
+    onResponseAction: {
+      description: "Called when response action clicked",
       type: "(actionId: string) => void",
     },
   }}

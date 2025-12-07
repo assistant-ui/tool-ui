@@ -8,7 +8,7 @@ export type DocsPageLink = {
 export const BASE_DOCS_PAGES: DocsPageLink[] = [
   { path: "/docs/overview", label: "Overview" },
   { path: "/docs/quick-start", label: "Quick Start" },
-  { path: "/docs/contextual-actions", label: "Contextual Actions" },
+  { path: "/docs/response-actions", label: "Response Actions" },
   { path: "/docs/advanced", label: "Advanced" },
   { path: "/docs/design-guidelines", label: "UI Guidelines" },
   { path: "/docs/contributing", label: "Contributing" },

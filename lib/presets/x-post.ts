@@ -3,7 +3,7 @@ import type { ActionsProp } from "@/components/tool-ui/shared";
 
 export interface XPostConfig {
   post: XPostData;
-  footerActions?: ActionsProp;
+  responseActions?: ActionsProp;
 }
 
 export const sampleBasic: XPostConfig = {
@@ -116,7 +116,7 @@ export const sampleWithFooterActions: XPostConfig = {
     },
     createdAt: "2025-11-24T16:30:00.000Z",
   },
-  footerActions: [
+  responseActions: [
     { id: "view-templates", label: "View Templates" },
     { id: "report", label: "Report", variant: "destructive" },
   ],
@@ -137,5 +137,5 @@ export const xPostPresetDescriptions: Record<XPostPresetName, string> = {
   quoted: "Post with quoted tweet",
   media: "Post with image attachment",
   link: "Post with link preview card",
-  "footer-actions": "Post with custom footer actions",
+  "footer-actions": "Post with custom response actions",
 };

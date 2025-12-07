@@ -24,8 +24,8 @@ export interface XPostProps {
   post: XPostData;
   className?: string;
   onAction?: (action: string, post: XPostData) => void;
-  footerActions?: ActionsProp;
-  onFooterAction?: (actionId: string) => void;
+  responseActions?: ActionsProp;
+  onResponseAction?: (actionId: string) => void;
 }
 
 function Avatar({ src, alt }: { src: string; alt: string }) {
@@ -306,12 +306,12 @@ export function XPost({
   post,
   className,
   onAction,
-  footerActions,
-  onFooterAction,
+  responseActions,
+  onResponseAction,
 }: XPostProps) {
   const normalizedFooterActions = React.useMemo(
-    () => normalizeActionsConfig(footerActions),
-    [footerActions],
+    () => normalizeActionsConfig(responseActions),
+    [responseActions],
   );
 
   return (
@@ -354,7 +354,7 @@ export function XPost({
             actions={normalizedFooterActions.items}
             align={normalizedFooterActions.align}
             confirmTimeout={normalizedFooterActions.confirmTimeout}
-            onAction={(id) => onFooterAction?.(id)}
+            onAction={(id) => onResponseAction?.(id)}
           />
         </div>
       )}

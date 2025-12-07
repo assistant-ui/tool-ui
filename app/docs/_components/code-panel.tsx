@@ -72,12 +72,12 @@ export function CodePanel({
       props.push(`  locale="${config.locale}"`);
     }
 
-    if (config.footerActions && config.footerActions.length > 0) {
+    if (config.responseActions && config.responseActions.length > 0) {
       props.push(
-        `  footerActions={${JSON.stringify(config.footerActions, null, 4).replace(/\n/g, "\n  ")}}`,
+        `  responseActions={${JSON.stringify(config.responseActions, null, 4).replace(/\n/g, "\n  ")}}`,
       );
       props.push(
-        `  onFooterAction={(actionId) => console.log("Action:", actionId)}`,
+        `  onResponseAction={(actionId) => console.log("Action:", actionId)}`,
       );
     }
 
@@ -190,14 +190,14 @@ export function CodePanel({
     }
 
     if (
-      mediaCardConfig.footerActions &&
-      mediaCardConfig.footerActions.length > 0
+      mediaCardConfig.responseActions &&
+      mediaCardConfig.responseActions.length > 0
     ) {
       props.push(
-        `  footerActions={${JSON.stringify(mediaCardConfig.footerActions, null, 4).replace(/\n/g, "\n  ")}}`,
+        `  responseActions={${JSON.stringify(mediaCardConfig.responseActions, null, 4).replace(/\n/g, "\n  ")}}`,
       );
       props.push(
-        `  onFooterAction={(actionId) => console.log("Action:", actionId)}`,
+        `  onResponseAction={(actionId) => console.log("Action:", actionId)}`,
       );
     }
 
@@ -229,9 +229,9 @@ export function CodePanel({
       props.push(`  maxSelections={${list.maxSelections}}`);
     }
 
-    if (list.footerActions) {
+    if (list.responseActions) {
       props.push(
-        `  footerActions={${JSON.stringify(list.footerActions, null, 4).replace(/\n/g, "\n  ")}}`,
+        `  responseActions={${JSON.stringify(list.responseActions, null, 4).replace(/\n/g, "\n  ")}}`,
       );
     }
 

@@ -93,9 +93,9 @@ export function MediaCard(props: MediaCardProps) {
     onStateChange,
     onNavigate,
     onMediaEvent,
-    footerActions,
-    onFooterAction,
-    onBeforeFooterAction,
+    responseActions,
+    onResponseAction,
+    onBeforeResponseAction,
     onMediaAction,
     onBeforeMediaAction,
     locale: providedLocale,
@@ -190,8 +190,8 @@ export function MediaCard(props: MediaCardProps) {
   const linkContentPadding = LINK_CONTENT_SPACING;
 
   const normalizedFooterActions = React.useMemo(
-    () => normalizeActionsConfig(footerActions),
-    [footerActions],
+    () => normalizeActionsConfig(responseActions),
+    [responseActions],
   );
 
   return (
@@ -250,8 +250,8 @@ export function MediaCard(props: MediaCardProps) {
               actions={normalizedFooterActions.items}
               align={normalizedFooterActions.align}
               confirmTimeout={normalizedFooterActions.confirmTimeout}
-              onAction={(id: string) => onFooterAction?.(id)}
-              onBeforeAction={onBeforeFooterAction}
+              onAction={(id: string) => onResponseAction?.(id)}
+              onBeforeAction={onBeforeResponseAction}
             />
           </div>
         ) : null}

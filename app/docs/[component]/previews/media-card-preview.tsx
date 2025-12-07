@@ -75,15 +75,15 @@ export function MediaCardPreview({
           <MediaCard
             {...currentConfig.card}
             isLoading={loading}
-            footerActions={currentConfig.footerActions}
+            responseActions={currentConfig.responseActions}
             onAction={(actionId) => {
               console.log("MediaCard action:", actionId);
             }}
             onNavigate={(href) => {
               console.log("MediaCard navigate:", href);
             }}
-            onFooterAction={(actionId) => {
-              console.log("MediaCard footer action:", actionId);
+            onResponseAction={(actionId) => {
+              console.log("MediaCard response action:", actionId);
             }}
           />
         </div>

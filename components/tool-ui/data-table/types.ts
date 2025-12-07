@@ -192,8 +192,8 @@ export interface DataTableSerializableProps<T extends object = RowData> {
  *   isLoading: false,
  *   className: "my-table",
  *   onSortChange: (next) => setSort(next),
- *   footerActions: [{ id: "export", label: "Export" }],
- *   onFooterAction: (id) => console.log(id)
+ *   responseActions: [{ id: "export", label: "Export" }],
+ *   onResponseAction: (id) => console.log(id)
  * }
  * ```
  */
@@ -228,10 +228,10 @@ export interface DataTableClientProps<T extends object = RowData> {
     by?: ColumnKey<T>;
     direction?: "asc" | "desc";
   }) => void;
-  /** Optional footer actions rendered below the table */
-  footerActions?: ActionsProp;
-  onFooterAction?: (actionId: string) => void | Promise<void>;
-  onBeforeFooterAction?: (actionId: string) => boolean | Promise<boolean>;
+  /** Optional response actions rendered below the table */
+  responseActions?: ActionsProp;
+  onResponseAction?: (actionId: string) => void | Promise<void>;
+  onBeforeResponseAction?: (actionId: string) => boolean | Promise<boolean>;
 }
 
 /**
@@ -254,8 +254,8 @@ export interface DataTableClientProps<T extends object = RowData> {
  * <DataTable
  *   {...serializableProps}
  *   onSortChange={setSort}
- *   footerActions={[{ id: "export", label: "Export" }]}
- *   onFooterAction={(id) => handleAction(id)}
+ *   responseActions={[{ id: "export", label: "Export" }]}
+ *   onResponseAction={(id) => handleAction(id)}
  *   isLoading={loading}
  * />
  * ```

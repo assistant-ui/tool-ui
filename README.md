@@ -7,7 +7,7 @@ Responsive, accessible, typed, copy-pasteable. Built on Radix, shadcn/ui, and Ta
 ## Components
 
 - Data Table — Sortable columns, row actions, loading/empty states, mobile accordion layout
-- Option List — Single/multi-select choices with configurable footer actions
+- Option List — Single/multi-select choices with configurable response actions
 - Social Post — X/Instagram/LinkedIn renderers; media + link previews
 - Media Card — Image/video/audio/link cards; OG previews; alt-text validation
 

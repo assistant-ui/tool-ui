@@ -86,9 +86,9 @@ export function DataTablePreview({
           onSortChange={setSort}
           isLoading={loading}
           emptyMessage={emptyMessage}
-          footerActions={currentConfig.footerActions}
-          onFooterAction={(actionId) => {
-            console.log("Footer action:", actionId);
+          responseActions={currentConfig.responseActions}
+          onResponseAction={(actionId) => {
+            console.log("Response action:", actionId);
           }}
         />
       )}

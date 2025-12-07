@@ -3,7 +3,7 @@ import type { SerializableAction } from "@/components/tool-ui/shared";
 
 export interface MediaCardConfig {
   card: SerializableMediaCard;
-  footerActions?: SerializableAction[];
+  responseActions?: SerializableAction[];
 }
 
 export type MediaCardPresetName =
@@ -120,7 +120,7 @@ const actionsPreset: MediaCardConfig = {
       url: "https://assistant-ui.com",
     },
   },
-  footerActions: [
+  responseActions: [
     { id: "download", label: "Download", variant: "secondary" },
     { id: "share", label: "Share", variant: "default" },
     {
@@ -146,5 +146,5 @@ export const mediaCardPresetDescriptions: Record<MediaCardPresetName, string> =
     video: "Video preview with metadata, duration, and media controls",
     audio: "Audio clip with optional poster artwork and duration metadata",
     link: "Rich link preview using OpenGraph data",
-    actions: "Image with footer action buttons and confirmation",
+    actions: "Image with response action buttons and confirmation",
   };

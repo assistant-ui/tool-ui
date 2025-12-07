@@ -217,7 +217,7 @@ export function OptionList({
   onChange,
   onConfirm,
   onCancel,
-  footerActions,
+  responseActions,
   className,
 }: OptionListProps) {
   const effectiveMaxSelections = selectionMode === "single" ? 1 : maxSelections;
@@ -319,7 +319,7 @@ export function OptionList({
   );
 
   const normalizedFooterActions = useMemo(() => {
-    const normalized = normalizeActionsConfig(footerActions);
+    const normalized = normalizeActionsConfig(responseActions);
     if (normalized) return normalized;
     return {
       items: [
@@ -328,7 +328,7 @@ export function OptionList({
       ],
       align: "right" as const,
     } satisfies ReturnType<typeof normalizeActionsConfig>;
-  }, [footerActions]);
+  }, [responseActions]);
 
   const isConfirmDisabled =
     selectedCount < minSelections || selectedCount === 0;

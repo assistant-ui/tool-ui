@@ -15,7 +15,7 @@ When `confirmed` is set, the component renders in a read-only receipt state show
 The receipt state:
 
 - Shows only the confirmed option(s) with a checkmark
-- Hides unselected options and footer actions
+- Hides unselected options and response actions
 - Is read-only (no interaction)
 
 ## When to Use Option List
@@ -153,8 +153,8 @@ export const SelectFormatUI = makeAssistantToolUI({
       description: "Maximum allowed selections",
       type: "number",
     },
-    footerActions: {
-      description: "Footer action buttons",
+    responseActions: {
+      description: "Response action buttons",
       type: "Action[] | ActionsConfig",
     },
     onChange: {

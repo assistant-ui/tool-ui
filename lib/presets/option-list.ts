@@ -22,7 +22,7 @@ const exportPreset: OptionListConfig = {
     selectionMode: "multi",
     minSelections: 1,
     maxSelections: 2,
-    footerActions: [
+    responseActions: [
       { id: "cancel", label: "Reset", variant: "secondary" },
       { id: "confirm", label: "Confirm", variant: "default" },
     ],
@@ -46,7 +46,7 @@ const travelPreset: OptionListConfig = {
       },
     ],
     selectionMode: "single",
-    footerActions: [
+    responseActions: [
       { id: "cancel", label: "Reset", variant: "ghost" },
       { id: "confirm", label: "Continue", variant: "default" },
     ],
@@ -65,7 +65,7 @@ const notificationsPreset: OptionListConfig = {
     selectionMode: "multi",
     minSelections: 1,
     maxSelections: 2,
-    footerActions: [
+    responseActions: [
       { id: "cancel", label: "Reset", variant: "ghost" },
       { id: "confirm", label: "Save", variant: "default" },
     ],
@@ -114,7 +114,7 @@ const actionsPreset: OptionListConfig = {
       },
     ],
     selectionMode: "single",
-    footerActions: [
+    responseActions: [
       { id: "cancel", label: "Cancel", variant: "ghost" },
       { id: "preview", label: "Preview", variant: "secondary" },
       {
@@ -144,5 +144,5 @@ export const optionListPresetDescriptions: Record<
   travel: "Single-select with radio styling",
   notifications: "Multi-select with reset/confirm",
   receipt: "Confirmed selection (receipt state)",
-  actions: "Footer actions with confirmation pattern",
+  actions: "Response actions with confirmation pattern",
 };

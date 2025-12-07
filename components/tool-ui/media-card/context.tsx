@@ -32,9 +32,9 @@ export interface MediaCardClientProps {
     action: string;
     card: SerializableMediaCard;
   }) => boolean | Promise<boolean>;
-  footerActions?: ActionsProp;
-  onFooterAction?: (actionId: string) => void | Promise<void>;
-  onBeforeFooterAction?: (actionId: string) => boolean | Promise<boolean>;
+  responseActions?: ActionsProp;
+  onResponseAction?: (actionId: string) => void | Promise<void>;
+  onBeforeResponseAction?: (actionId: string) => boolean | Promise<boolean>;
   locale?: string;
 }
 

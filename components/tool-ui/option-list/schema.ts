@@ -43,7 +43,7 @@ export const OptionListPropsSchema = z.object({
    *
    * In receipt state:
    * - Only the confirmed option(s) are shown
-   * - Footer actions are hidden
+   * - Response actions are hidden
    * - The component is read-only
    *
    * Use this with assistant-ui's `addResult` to show the outcome of a decision.
@@ -59,7 +59,7 @@ export const OptionListPropsSchema = z.object({
   confirmed: z
     .union([z.array(z.string()), z.string(), z.null()])
     .optional(),
-  footerActions: z
+  responseActions: z
     .union([z.array(ActionSchema), SerializableActionsConfigSchema])
     .optional(),
   minSelections: z.number().min(0).optional(),
@@ -84,12 +84,12 @@ export type OptionListProps = Omit<
   onChange?: (value: OptionListSelection) => void;
   onConfirm?: (value: OptionListSelection) => void | Promise<void>;
   onCancel?: () => void;
-  footerActions?: ActionsProp;
+  responseActions?: ActionsProp;
 };
 
 export const SerializableOptionListSchema = OptionListPropsSchema.extend({
   options: z.array(OptionListOptionSchema.omit({ icon: true })),
-  footerActions: z
+  responseActions: z
     .union([z.array(SerializableActionSchema), SerializableActionsConfigSchema])
     .optional(),
 });

@@ -3,7 +3,7 @@ import type { ActionsProp } from "@/components/tool-ui/shared";
 
 export interface LinkedInPostConfig {
   post: LinkedInPostData;
-  footerActions?: ActionsProp;
+  responseActions?: ActionsProp;
 }
 
 export const sampleBasic: LinkedInPostConfig = {
@@ -85,7 +85,7 @@ export const sampleWithFooterActions: LinkedInPostConfig = {
     },
     createdAt: "2025-11-24T10:00:00.000Z",
   },
-  footerActions: [
+  responseActions: [
     { id: "view-jobs", label: "View Open Positions" },
     { id: "apply", label: "Apply Now" },
   ],
@@ -114,5 +114,5 @@ export const linkedInPostPresetDescriptions: Record<
   basic: "Text-only professional post",
   link: "Post with link preview",
   media: "Post with image",
-  "footer-actions": "Post with custom footer actions",
+  "footer-actions": "Post with custom response actions",
 };

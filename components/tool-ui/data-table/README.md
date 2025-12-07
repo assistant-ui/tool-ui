@@ -12,7 +12,7 @@ A flexible, accessible data table component for assistant-ui's widget registry. 
 - ✅ Full table layout with sortable columns
 - ✅ Horizontal scroll with gradient shadow affordances
 - ✅ Visual sort indicators (chevron icons)
-- ✅ Footer actions for surface-level CTAs
+- ✅ Response actions for surface-level CTAs
 
 ### Mobile
 
@@ -153,9 +153,9 @@ function MyComponent() {
 | `isLoading`            | `boolean`                                    | `false`               | Show loading skeleton                                                                       |
 | `emptyMessage`         | `string`                                     | `"No data available"` | Empty state message                                                                         |
 | `maxHeight`            | `string`                                     | `undefined`           | Max height with vertical scroll                                                             |
-| `footerActions`        | `Action[] \| ActionsConfig`                  | `undefined`           | Surface-level actions rendered below the table                                              |
-| `onFooterAction`       | `(actionId: string) => void`                 | `undefined`           | Footer action click handler                                                                 |
-| `onBeforeFooterAction` | `(actionId: string) => boolean \| Promise<boolean>` | `undefined`    | Preflight hook to gate footer actions. Return `false` to cancel.                            |
+| `responseActions`        | `Action[] \| ActionsConfig`                  | `undefined`           | Surface-level actions rendered below the table                                              |
+| `onResponseAction`       | `(actionId: string) => void`                 | `undefined`           | Response action click handler                                                                 |
+| `onBeforeResponseAction` | `(actionId: string) => boolean \| Promise<boolean>` | `undefined`    | Preflight hook to gate response actions. Return `false` to cancel.                            |
 | `locale`               | `string`                                     | `undefined`           | Locale for formatting/sorting (e.g., `en-US`)                                               |
 | `className`            | `string`                                     | `undefined`           | Additional CSS classes                                                                      |
 
@@ -214,9 +214,9 @@ interface Column {
 - `tertiary`: Completely hidden on mobile (optional/advanced fields)
 - No priority specified: Auto-assigned (first 2 columns = primary, rest = secondary)
 
-### Footer Actions
+### Response Actions
 
-Footer actions provide surface-level CTAs that apply to the table as a whole. Use these for operations like "Export", "Sync", or "Clear selection".
+Response actions provide surface-level CTAs that apply to the table as a whole. Use these for operations like "Export", "Sync", or "Clear selection".
 
 ```typescript
 interface Action {
@@ -229,36 +229,36 @@ interface Action {
 
 The `confirmLabel` field enables a built-in two-step confirmation pattern - the button shows the original label, then changes to the confirm label when clicked. The action only fires on the second click (or auto-cancels after the timeout).
 
-**Example: Footer actions with confirmation**
+**Example: Response actions with confirmation**
 
 ```tsx
 <DataTable
   columns={columns}
   data={rows}
-  footerActions={[
+  responseActions={[
     { id: "export", label: "Export CSV", variant: "secondary" },
     { id: "sync", label: "Sync", variant: "default" },
     { id: "clear", label: "Clear All", confirmLabel: "Confirm Clear", variant: "destructive" },
   ]}
-  onFooterAction={(actionId) => {
+  onResponseAction={(actionId) => {
     if (actionId === "export") exportToCsv(rows);
     if (actionId === "clear") clearAllRows();
   }}
 />
 ```
 
-For custom confirmation flows (modals, etc.), use `onBeforeFooterAction`:
+For custom confirmation flows (modals, etc.), use `onBeforeResponseAction`:
 
 ```tsx
 <DataTable
-  footerActions={[{ id: "delete", label: "Delete All", variant: "destructive" }]}
-  onBeforeFooterAction={(actionId) => {
+  responseActions={[{ id: "delete", label: "Delete All", variant: "destructive" }]}
+  onBeforeResponseAction={(actionId) => {
     if (actionId === "delete") {
       return window.confirm("Delete all items?");
     }
     return true;
   }}
-  onFooterAction={(actionId) => performAction(actionId)}
+  onResponseAction={(actionId) => performAction(actionId)}
 />
 ```
 
@@ -396,17 +396,17 @@ onSortChange={(next) => {
 }}
 ```
 
-### With Footer Actions
+### With Response Actions
 
 ```tsx
 <DataTable
   columns={columns}
   data={rows}
-  footerActions={[
+  responseActions={[
     { id: "export", label: "Export", variant: "secondary" },
     { id: "refresh", label: "Refresh", variant: "default" },
   ]}
-  onFooterAction={(actionId) => {
+  onResponseAction={(actionId) => {
     if (actionId === "export") {
       console.log("Exporting data...");
     } else if (actionId === "refresh") {
@@ -672,9 +672,9 @@ interface DataTableSerializableProps<T> {
 interface DataTableClientProps<T> {
   isLoading?: boolean;
   className?: string;
-  footerActions?: Action[] | ActionsConfig;
-  onFooterAction?: (actionId: string) => void;
-  onBeforeFooterAction?: (actionId: string) => boolean | Promise<boolean>;
+  responseActions?: Action[] | ActionsConfig;
+  onResponseAction?: (actionId: string) => void;
+  onBeforeResponseAction?: (actionId: string) => boolean | Promise<boolean>;
   onSortChange?: (next: { by?: string; direction?: "asc" | "desc" }) => void;
 }
 
@@ -702,8 +702,8 @@ const serializableProps: DataTableSerializableProps = parseSerializableDataTable
 // Combine with React-specific props
 const clientProps: DataTableClientProps = {
   isLoading: false,
-  footerActions: [{ id: "export", label: "Export" }],
-  onFooterAction: (id) => handleAction(id),
+  responseActions: [{ id: "export", label: "Export" }],
+  onResponseAction: (id) => handleAction(id),
   onSortChange: setSort
 }
 
@@ -887,11 +887,11 @@ function StockTableToolUI({ result }: { result: unknown }) {
     <DataTable
       columns={columns}
       data={data}
-      footerActions={[
+      responseActions={[
         { id: "export", label: "Export CSV", variant: "secondary" },
         { id: "refresh", label: "Refresh", variant: "default" },
       ]}
-      onFooterAction={(actionId) => {
+      onResponseAction={(actionId) => {
         if (actionId === "export") {
           exportToCsv(data);
         }
@@ -1143,10 +1143,10 @@ const tools = {
 // Render in chat
 <DataTable
   {...toolResult}
-  footerActions={[
+  responseActions={[
     { id: "export", label: "Export", variant: "secondary" },
   ]}
-  onFooterAction={(actionId) => {
+  onResponseAction={(actionId) => {
     if (actionId === 'export') {
       // Export the data
       exportToCsv(toolResult.data);

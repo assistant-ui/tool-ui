@@ -13,7 +13,7 @@ export interface DataTableConfig {
   maxHeight?: string;
   emptyMessage?: string;
   locale?: string;
-  footerActions?: SerializableAction[];
+  responseActions?: SerializableAction[];
 }
 
 const stockColumns: Column<GenericRow>[] = [
@@ -364,7 +364,7 @@ const sampleActions: DataTableConfig = {
   data: actionsData,
   rowIdKey: "id",
   defaultSort: { by: "waitTime", direction: "desc" },
-  footerActions: [
+  responseActions: [
     { id: "assign", label: "Assign to me", variant: "default" },
     { id: "escalate", label: "Escalate", variant: "secondary" },
     {
@@ -389,5 +389,5 @@ export const presetDescriptions: Record<PresetName, string> = {
   stocks: "Market data with currency, delta, and percent formatting",
   tasks: "Status pills, boolean badges, and date formatting",
   resources: "Links, tag arrays, badges, and relative dates",
-  actions: "Support ticket queue with footer actions",
+  actions: "Support ticket queue with response actions",
 };

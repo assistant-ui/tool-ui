@@ -285,7 +285,7 @@ These are library-level; Waymo is just a preset.
 - Great for quick time selection in chat bubble
 
 ### 3. SummaryReceiptCard
-- Compact summary: icon, title, key info lines, footer actions
+- Compact summary: icon, title, key info lines, response actions
 - Used for: booking confirmation, post-selection receipts
 
 ### 4. TimelineStatusCard

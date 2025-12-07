@@ -355,7 +355,7 @@ function createSceneConfigs(): SceneConfig[] {
       toolUI: <MediaCard {...MEDIA_CARD} maxWidth="420px" />,
       toolFallbackHeight: 260,
     },
-    // Scene 4: Open Source Release / XPost with footerActions
+    // Scene 4: Open Source Release / XPost with responseActions
     {
       userMessage: "Draft a tweet about our open-source release",
       preamble: "Here's a draft announcement:",
@@ -364,7 +364,7 @@ function createSceneConfigs(): SceneConfig[] {
           <XPost
             post={X_POST}
             className="w-full"
-            footerActions={X_POST_ACTIONS}
+            responseActions={X_POST_ACTIONS}
           />
         </div>
       ),

@@ -3,7 +3,7 @@ import type { ActionsProp } from "@/components/tool-ui/shared";
 
 export interface InstagramPostConfig {
   post: InstagramPostData;
-  footerActions?: ActionsProp;
+  responseActions?: ActionsProp;
 }
 
 export const sampleBasic: InstagramPostConfig = {
@@ -86,7 +86,7 @@ export const sampleWithFooterActions: InstagramPostConfig = {
     },
     createdAt: "2025-11-23T09:30:00.000Z",
   },
-  footerActions: [
+  responseActions: [
     { id: "save-location", label: "Save Location" },
     { id: "view-more", label: "View More Posts" },
   ],
@@ -109,5 +109,5 @@ export const instagramPostPresetDescriptions: Record<
 > = {
   basic: "Single image post",
   carousel: "Multi-image carousel",
-  "footer-actions": "Post with custom footer actions",
+  "footer-actions": "Post with custom response actions",
 };

@@ -39,14 +39,14 @@ function generateOptionListCode(config: OptionListConfig): string {
     props.push(`  confirmed={${confirmedValue}}`);
   }
 
-  if (list.footerActions) {
-    const hasActions = Array.isArray(list.footerActions)
-      ? list.footerActions.length > 0
-      : list.footerActions.items.length > 0;
+  if (list.responseActions) {
+    const hasActions = Array.isArray(list.responseActions)
+      ? list.responseActions.length > 0
+      : list.responseActions.items.length > 0;
 
     if (hasActions) {
       props.push(
-        `  footerActions={${JSON.stringify(list.footerActions, null, 4).replace(/\n/g, "\n  ")}}`,
+        `  responseActions={${JSON.stringify(list.responseActions, null, 4).replace(/\n/g, "\n  ")}}`,
       );
     }
   }

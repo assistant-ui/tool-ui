@@ -152,11 +152,11 @@ export const PreviewLinkUI = makeAssistantToolUI({
       <MediaCard
         {...card}
         maxWidth="420px"
-        footerActions={[
+        responseActions={[
           { id: "open", label: "Open" },
           { id: "save", label: "Save" },
         ]}
-        onFooterAction={(id) => {
+        onResponseAction={(id) => {
           if (id === "open") window.open(card.href, "_blank");
           // Handle other actions
         }}
@@ -200,9 +200,9 @@ export const PreviewLinkUI = makeAssistantToolUI({
       type: "string (CSS)",
       default: "'100%'",
     },
-    footerActions: { description: "Footer action buttons", type: "Action[]" },
+    responseActions: { description: "Response action buttons", type: "Action[]" },
     onAction: { description: "Inline action handler", type: "(actionId: string) => void" },
-    onFooterAction: { description: "Footer action handler", type: "(actionId: string) => void" },
+    onResponseAction: { description: "Response action handler", type: "(actionId: string) => void" },
     onNavigate: { description: "Navigation handler", type: "(href: string, card: MediaCard) => void" },
   }}
 />

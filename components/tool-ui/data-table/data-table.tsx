@@ -57,9 +57,9 @@ export function DataTable<T extends object = RowData>({
   onSortChange,
   className,
   locale,
-  footerActions,
-  onFooterAction,
-  onBeforeFooterAction,
+  responseActions,
+  onResponseAction,
+  onBeforeResponseAction,
 }: DataTableProps<T>) {
   /**
    * Resolved locale with explicit default.
@@ -147,8 +147,8 @@ export function DataTable<T extends object = RowData>({
   }, [columns, sortBy, sortDirection]);
 
   const normalizedFooterActions = React.useMemo(
-    () => normalizeActionsConfig(footerActions),
-    [footerActions],
+    () => normalizeActionsConfig(responseActions),
+    [responseActions],
   );
 
   return (
@@ -269,8 +269,8 @@ export function DataTable<T extends object = RowData>({
               actions={normalizedFooterActions.items}
               align={normalizedFooterActions.align}
               confirmTimeout={normalizedFooterActions.confirmTimeout}
-              onAction={(id) => onFooterAction?.(id)}
-              onBeforeAction={onBeforeFooterAction}
+              onAction={(id) => onResponseAction?.(id)}
+              onBeforeAction={onBeforeResponseAction}
             />
           </div>
         ) : null}
