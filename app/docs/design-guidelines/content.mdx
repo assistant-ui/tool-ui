@@ -209,8 +209,8 @@ The receipt shows what the user chose. The assistant's follow-up confirms the ou
 
 ## Anti-Patterns
 
-- **Forms in chat:** Multi-field forms don't belong in Tool UIs. Collect inputs through conversation or link to a dedicated form.
-- **Hidden mutations:** Actions that change state should produce visible receipts.
+- **Input fields:** Input fields introduce dissonance by competing with the primary composer input. Reflect on whether it'd be more appropriate to capture that information through dialogue with the asssitant or, in rare cases, link to a dedicated form outside of or detached from the the chat context.
+- **Hidden mutations:** Actions that change state should produce visible indication of what happened; terminal decisions should produce a receipt that reflects what choice the user made.
 - **Kitchen sinks:** If it needs tabs or navigation, consider breaking it into separate Tool UIs.
-- **Silent tool UIs:** Always have the assistant introduce a tool UI.
-- **Redundant narration:** The assistant shouldn't describe what the tool UI already shows. Conversely, the tool UI shouldn't echo what the assistant just said. If the assistant asks "Where to?", the tool UI doesn't need a header saying "Where to?" — just show the options. Divide the work: the assistant provides context, the tool UI provides structure.
+- **Uncontextualized tool UIs:** Always have the assistant introduce a tool UI, providing context that clarifies what's being shown.
+- **Redundant narration:** The assistant shouldn't describe what the tool UI already shows. Conversely, the tool UI shouldn't echo what the assistant just said. If the assistant asks "Where to?", the tool UI doesn't need a header saying "Where to?"; just show the options. Divide the work: the assistant provides context, the tool UI provides structure.
