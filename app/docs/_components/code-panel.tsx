@@ -1,7 +1,6 @@
 "use client";
 
 import { DataTableConfig } from "@/lib/presets/data-table";
-import { SocialPostConfig } from "@/lib/presets/social-post";
 import { MediaCardConfig } from "@/lib/presets/media-card";
 import { OptionListConfig } from "@/lib/presets/option-list";
 import { ChartConfig } from "@/lib/presets/chart";
@@ -10,7 +9,6 @@ import { DynamicCodeBlock } from "fumadocs-ui/components/dynamic-codeblock";
 interface CodePanelProps {
   componentId: string;
   config?: DataTableConfig;
-  socialPostConfig?: SocialPostConfig;
   mediaCardConfig?: MediaCardConfig;
   optionListConfig?: OptionListConfig;
   chartConfig?: ChartConfig;
@@ -26,7 +24,6 @@ interface CodePanelProps {
 export function CodePanel({
   componentId,
   config,
-  socialPostConfig,
   mediaCardConfig,
   optionListConfig,
   chartConfig,
@@ -102,65 +99,6 @@ export function CodePanel({
       sortingComment.length > 0 ? `\n${sortingComment.join("\n")}\n` : "";
 
     return `${sortingExplanation}<DataTable\n${props.join("\n")}\n/>`;
-  };
-
-  const generateSocialPostCode = () => {
-    if (!socialPostConfig) return "";
-
-    const post = socialPostConfig.post;
-    const props: string[] = [];
-
-    // Add the serializable props
-    props.push(`  id="${post.id}"`);
-    props.push(`  postId="${post.postId}"`);
-    props.push(`  platform="${post.platform}"`);
-    props.push(
-      `  author={${JSON.stringify(post.author, null, 4).replace(/\n/g, "\n  ")}}`,
-    );
-
-    if (post.text) {
-      props.push(`  text="${post.text.replace(/"/g, '\\"')}"`);
-    }
-
-    if (post.entities) {
-      props.push(
-        `  entities={${JSON.stringify(post.entities, null, 4).replace(/\n/g, "\n  ")}}`,
-      );
-    }
-
-    if (post.media && post.media.length > 0) {
-      props.push(
-        `  media={${JSON.stringify(post.media, null, 4).replace(/\n/g, "\n  ")}}`,
-      );
-    }
-
-    if (post.linkPreview) {
-      props.push(
-        `  linkPreview={${JSON.stringify(post.linkPreview, null, 4).replace(/\n/g, "\n  ")}}`,
-      );
-    }
-
-    if (post.stats) {
-      props.push(
-        `  stats={${JSON.stringify(post.stats, null, 4).replace(/\n/g, "\n  ")}}`,
-      );
-    }
-
-    if (post.actions && post.actions.length > 0) {
-      props.push(
-        `  actions={${JSON.stringify(post.actions, null, 4).replace(/\n/g, "\n  ")}}`,
-      );
-    }
-
-    if (post.createdAtISO) {
-      props.push(`  createdAtISO="${post.createdAtISO}"`);
-    }
-
-    if (isLoading) {
-      props.push(`  isLoading={true}`);
-    }
-
-    return `<SocialPost\n${props.join("\n")}\n/>`;
   };
 
   const escape = (value: string) =>
@@ -347,8 +285,6 @@ export function CodePanel({
   const generateCode = () => {
     if (componentId === "data-table") {
       return generateDataTableCode();
-    } else if (componentId === "social-post") {
-      return generateSocialPostCode();
     } else if (componentId === "media-card") {
       return generateMediaCardCode();
     } else if (componentId === "option-list") {

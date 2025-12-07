@@ -20,10 +20,7 @@ type SupportTicket = {
   assignee: string;
   created: string;
 };
-import {
-  SocialPost,
-  type SerializableSocialPost,
-} from "@/components/tool-ui/social-post";
+import { XPost, type XPostData } from "@/components/tool-ui/x-post";
 
 type BubbleProps = {
   role: "user" | "assistant";
@@ -284,10 +281,8 @@ const MEDIA_CARD: SerializableMediaCard = {
   },
 };
 
-const SOCIAL_POST: SerializableSocialPost = {
-  id: "chat-showcase-social-post",
-  postId: "x-draft-oss",
-  platform: "x",
+const X_POST: XPostData = {
+  id: "chat-showcase-x-post",
   author: {
     name: "DevTools Team",
     handle: "devtoolsco",
@@ -295,11 +290,10 @@ const SOCIAL_POST: SerializableSocialPost = {
       "https://images.unsplash.com/photo-1599566150163-29194dcaad36?auto=format&fit=crop&q=80&w=1200",
   },
   text: "We're thrilled to announce that our component library is now open source! 🎉\n\nBuilt with React, TypeScript, and Tailwind. Fully accessible, customizable, and production-ready.\n\nStar us on GitHub and join the community ⭐️\n\ngithub.com/devtools/ui-kit",
-  createdAtISO: "2025-11-10T14:30:00.000Z",
-  language: "en-US",
+  createdAt: "2025-11-10T14:30:00.000Z",
 };
 
-const SOCIAL_POST_ACTIONS = [
+const X_POST_ACTIONS = [
   { id: "cancel", label: "Discard", variant: "ghost" as const },
   { id: "edit", label: "Revise", variant: "outline" as const },
   { id: "send", label: "Post Now", variant: "default" as const },
@@ -361,17 +355,16 @@ function createSceneConfigs(): SceneConfig[] {
       toolUI: <MediaCard {...MEDIA_CARD} maxWidth="420px" />,
       toolFallbackHeight: 260,
     },
-    // Scene 4: Open Source Release / SocialPost with footerActions
+    // Scene 4: Open Source Release / XPost with footerActions
     {
       userMessage: "Draft a tweet about our open-source release",
       preamble: "Here's a draft announcement:",
       toolUI: (
         <div className="w-full max-w-[600px] min-w-0">
-          <SocialPost
-            {...SOCIAL_POST}
+          <XPost
+            post={X_POST}
             className="w-full"
-            maxWidth="100%"
-            footerActions={SOCIAL_POST_ACTIONS}
+            footerActions={X_POST_ACTIONS}
           />
         </div>
       ),

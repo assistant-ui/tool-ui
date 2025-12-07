@@ -2,15 +2,15 @@ import Link from "next/link";
 import { DocsBorderedShell } from "@/app/docs/_components/docs-bordered-shell";
 import { DataTable } from "@/components/tool-ui/data-table";
 import { MediaCard } from "@/components/tool-ui/media-card";
-import { SocialPost } from "@/components/tool-ui/social-post";
+import { XPost } from "@/components/tool-ui/x-post";
+import { InstagramPost } from "@/components/tool-ui/instagram-post";
+import { LinkedInPost } from "@/components/tool-ui/linkedin-post";
 import { OptionList } from "@/components/tool-ui/option-list";
 import { presets } from "@/lib/presets/data-table";
 import { mediaCardPresets } from "@/lib/presets/media-card";
-import {
-  sampleX,
-  sampleInstagram,
-  sampleLinkedIn,
-} from "@/lib/presets/social-post";
+import { xPostPresets } from "@/lib/presets/x-post";
+import { instagramPostPresets } from "@/lib/presets/instagram-post";
+import { linkedInPostPresets } from "@/lib/presets/linkedin-post";
 import { optionListPresets } from "@/lib/presets/option-list";
 import { ArrowRightIcon } from "lucide-react";
 
@@ -24,7 +24,7 @@ export default function ComponentsGalleryPage() {
           </div>
 
           <div className="mb-5 break-inside-avoid 2xl:mb-5">
-            <SocialPost {...sampleX.post} maxWidth="100%" />
+            <XPost post={xPostPresets.basic.post} />
           </div>
 
           <div className="mb-5 break-inside-avoid 2xl:mb-5">
@@ -50,7 +50,7 @@ export default function ComponentsGalleryPage() {
           </div>
 
           <div className="mb-5 break-inside-avoid 2xl:mb-5">
-            <SocialPost {...sampleInstagram.post} maxWidth="100%" />
+            <InstagramPost post={instagramPostPresets.basic.post} />
           </div>
 
           <div className="mb-5 break-inside-avoid 2xl:mb-5">
@@ -62,7 +62,7 @@ export default function ComponentsGalleryPage() {
           </div>
 
           <div className="mb-5 break-inside-avoid 2xl:mb-5">
-            <SocialPost {...sampleLinkedIn.post} maxWidth="100%" />
+            <LinkedInPost post={linkedInPostPresets.basic.post} />
           </div>
 
           <div className="mb-5 break-inside-avoid 2xl:mb-5">

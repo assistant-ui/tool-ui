@@ -1,7 +1,7 @@
 import { DocsHeader } from "../_components/docs-header";
 import { DataTable } from "@/components/tool-ui/data-table";
 import { MediaCard } from "@/components/tool-ui/media-card";
-import { SocialPost } from "@/components/tool-ui/social-post";
+import { XPost } from "@/components/tool-ui/x-post";
 
 <DocsHeader
   title="Contextual Actions"
@@ -140,21 +140,21 @@ Lightweight, in-flow CTA rows attached to tool UIs—meant for time-bound, conve
   </Tab>
 </Tabs>
 
-## SocialPost with Footer Actions
+## XPost with Footer Actions
 
 <Tabs items={["Preview", "Code"]}>
   <Tab>
     <div className="not-prose">
-      <SocialPost
-        id="contextual-actions-social-post"
-        postId="social-post-1"
-        platform="x"
-        content="Just shipped a major update to Tool UI! 🚀\n\nContextual actions are now live—lightweight CTAs that attach to any component for in-flow decisions.\n\nCheck it out: https://tool-ui.com/docs/contextual-actions"
-        author={{
-          name: "Tool UI",
-          handle: "tool_ui",
-          avatarUrl: "https://api.dicebear.com/7.x/shapes/svg?seed=toolui",
-          verified: true,
+      <XPost
+        post={{
+          id: "contextual-actions-x-post",
+          author: {
+            name: "Tool UI",
+            handle: "tool_ui",
+            avatarUrl: "https://api.dicebear.com/7.x/shapes/svg?seed=toolui",
+            verified: true,
+          },
+          text: "Just shipped a major update to Tool UI! 🚀\n\nContextual actions are now live—lightweight CTAs that attach to any component for in-flow decisions.\n\nCheck it out: https://tool-ui.com/docs/contextual-actions",
         }}
         footerActions={[
           { id: "edit", label: "Edit draft", variant: "secondary" },
@@ -166,18 +166,18 @@ Lightweight, in-flow CTA rows attached to tool UIs—meant for time-bound, conve
   </Tab>
   <Tab>
     ```tsx
-    import { SocialPost } from "@/components/tool-ui/social-post";
+    import { XPost } from "@/components/tool-ui/x-post";
 
-    <SocialPost
-      id="contextual-actions-social-post"
-      postId="social-post-1"
-      platform="x"
-      content="Just shipped a major update to Tool UI! 🚀\n\nContextual actions are now live."
-      author={{
-        name: "Tool UI",
-        handle: "tool_ui",
-        avatarUrl: "https://api.dicebear.com/7.x/shapes/svg?seed=toolui",
-        verified: true,
+    <XPost
+      post={{
+        id: "contextual-actions-x-post",
+        author: {
+          name: "Tool UI",
+          handle: "tool_ui",
+          avatarUrl: "https://api.dicebear.com/7.x/shapes/svg?seed=toolui",
+          verified: true,
+        },
+        text: "Just shipped a major update to Tool UI! 🚀\n\nContextual actions are now live.",
       }}
       footerActions={[
         { id: "edit", label: "Edit draft", variant: "secondary" },
