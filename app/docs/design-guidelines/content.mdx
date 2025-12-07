@@ -33,7 +33,12 @@ The assistant contextualizes, interprets, and narrates. The tool UI provides str
         <DataTable
           rowIdKey="id"
           columns={[
-            { key: "name", label: "Repository", priority: "primary" },
+            {
+              key: "name",
+              label: "Repository",
+              priority: "primary",
+              format: { kind: "link", hrefKey: "url", external: true },
+            },
             {
               key: "stars",
               label: "Stars",
@@ -41,41 +46,68 @@ The assistant contextualizes, interprets, and narrates. The tool UI provides str
               format: { kind: "number" },
             },
             {
-              key: "updated",
-              label: "Last Commit",
-              format: { kind: "date", dateFormat: "relative" },
+              key: "weeklyChange",
+              label: "Weekly",
+              align: "right",
+              format: { kind: "delta", decimals: 0, showSign: true },
+            },
+            {
+              key: "issues",
+              label: "Issues",
+              align: "right",
+              format: { kind: "number" },
+            },
+            {
+              key: "license",
+              label: "License",
+              format: { kind: "badge" },
             },
           ]}
           data={[
             {
               id: "1",
               name: "next-auth",
+              url: "https://github.com/nextauthjs/next-auth",
               stars: 19420,
-              updated: "2025-01-18T10:00:00Z",
+              weeklyChange: 342,
+              issues: 86,
+              license: "MIT",
             },
             {
               id: "2",
               name: "passport",
+              url: "https://github.com/jaredhanson/passport",
               stars: 847,
-              updated: "2025-01-15T14:30:00Z",
+              weeklyChange: -12,
+              issues: 124,
+              license: "MIT",
             },
             {
               id: "3",
               name: "auth0-react",
+              url: "https://github.com/auth0/auth0-react",
               stars: 3210,
-              updated: "2025-01-12T09:00:00Z",
+              weeklyChange: 89,
+              issues: 23,
+              license: "MIT",
             },
             {
               id: "4",
               name: "firebase-auth",
+              url: "https://github.com/nicholasgriffintn/firebase-auth",
               stars: 562,
-              updated: "2025-01-10T16:45:00Z",
+              weeklyChange: 8,
+              issues: 45,
+              license: "Apache-2.0",
             },
             {
               id: "5",
               name: "clerk-sdk",
+              url: "https://github.com/clerk/javascript",
               stars: 1580,
-              updated: "2025-01-08T11:20:00Z",
+              weeklyChange: 156,
+              issues: 31,
+              license: "MIT",
             },
           ]}
         />
