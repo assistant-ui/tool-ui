@@ -62,7 +62,7 @@ An information surface for links, images, video, and audio. Optimized for inline
 
 ## Source and Install
 
-Copy `components/tool-ui/media-card` into your project. The `tool-ui` directory should sit alongside your shadcn `ui` directory.
+Copy `components/tool-ui/media-card` and the `shared` directory into your project. The `shared` folder contains utilities used by all Tool UI components. The `tool-ui` directory should sit alongside your shadcn `ui` directory.
 
 ### Prerequisites
 
@@ -85,6 +85,12 @@ pnpm dlx shadcn@latest add badge button card dropdown-menu tooltip
       <File name="..." />
     </Folder>
     <Folder name="tool-ui" defaultOpen>
+      <Folder name="shared" defaultOpen>
+        <File name="action-buttons.tsx" />
+        <File name="schema.ts" />
+        <File name="index.ts" />
+        <File name="..." />
+      </Folder>
       <Folder name="media-card" defaultOpen>
         <File name="media-card.tsx" />
         <File name="schema.ts" />
@@ -98,8 +104,8 @@ pnpm dlx shadcn@latest add badge button card dropdown-menu tooltip
 
 ### Download
 
-- [**Source on GitHub**](https://github.com/assistant-ui/tool-ui/tree/main/components/media-card)
-- [**Quick download (ZIP)**](https://download-directory.github.io/?url=https://github.com/assistant-ui/tool-ui/tree/main/components/media-card)
+- [**Shared Dependencies (GitHub)**](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/shared) ([ZIP](https://download-directory.github.io/?url=https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/shared))
+- [**Media Card (GitHub)**](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/media-card) ([ZIP](https://download-directory.github.io/?url=https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/media-card))
 
 ## Usage
 

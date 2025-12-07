@@ -32,7 +32,7 @@ The receipt state:
 
 ## Source and Install
 
-Copy `components/tool-ui/option-list` into your project. The `tool-ui` directory should sit alongside your shadcn `ui` directory.
+Copy `components/tool-ui/option-list` and the `shared` directory into your project. The `shared` folder contains utilities used by all Tool UI components. The `tool-ui` directory should sit alongside your shadcn `ui` directory.
 
 ### Prerequisites
 
@@ -52,12 +52,17 @@ pnpm dlx shadcn@latest add button separator
       <File name="..." />
     </Folder>
     <Folder name="tool-ui" defaultOpen>
+      <Folder name="shared" defaultOpen>
+        <File name="action-buttons.tsx" />
+        <File name="schema.ts" />
+        <File name="index.ts" />
+        <File name="..." />
+      </Folder>
       <Folder name="option-list" defaultOpen>
         <File name="option-list.tsx" />
         <File name="schema.ts" />
         <File name="index.tsx" />
-        <File name="_ui.tsx" />
-        <File name="_cn.ts" />
+        <File name="..." />
       </Folder>
     </Folder>
   </Folder>
@@ -65,8 +70,8 @@ pnpm dlx shadcn@latest add button separator
 
 ### Download
 
-- [**Source on GitHub**](https://github.com/assistant-ui/tool-ui/tree/main/components/option-list)
-- [**Quick download (ZIP)**](https://download-directory.github.io/?url=https://github.com/assistant-ui/tool-ui/tree/main/components/option-list)
+- [**Shared Dependencies (GitHub)**](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/shared) ([ZIP](https://download-directory.github.io/?url=https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/shared))
+- [**Option List (GitHub)**](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/option-list) ([ZIP](https://download-directory.github.io/?url=https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/option-list))
 
 ## Usage
 

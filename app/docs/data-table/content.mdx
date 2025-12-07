@@ -174,7 +174,7 @@ An information surface for tabular tool outputs with responsive layout, sorting,
 
 ## Source and Install
 
-Copy `components/tool-ui/data-table` into your project. The `tool-ui` directory should sit alongside your shadcn `ui` directory.
+Copy `components/tool-ui/data-table` and the `shared` directory into your project. The `shared` folder contains utilities used by all Tool UI components. The `tool-ui` directory should sit alongside your shadcn `ui` directory.
 
 ### Prerequisites
 
@@ -198,6 +198,12 @@ pnpm dlx shadcn@latest add accordion badge button dropdown-menu table tooltip
       <File name="..." />
     </Folder>
     <Folder name="tool-ui" defaultOpen>
+      <Folder name="shared" defaultOpen>
+        <File name="action-buttons.tsx" />
+        <File name="schema.ts" />
+        <File name="index.ts" />
+        <File name="..." />
+      </Folder>
       <Folder name="data-table" defaultOpen>
         <File name="data-table.tsx" />
         <File name="schema.ts" />
@@ -211,8 +217,8 @@ pnpm dlx shadcn@latest add accordion badge button dropdown-menu table tooltip
 
 ### Download
 
-- [**Source on GitHub**](https://github.com/assistant-ui/tool-ui/tree/main/components/data-table)
-- [**Quick download (ZIP)**](https://download-directory.github.io/?url=https://github.com/assistant-ui/tool-ui/tree/main/components/data-table)
+- [**Shared Dependencies (GitHub)**](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/shared) ([ZIP](https://download-directory.github.io/?url=https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/shared))
+- [**Data Table (GitHub)**](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/data-table) ([ZIP](https://download-directory.github.io/?url=https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/data-table))
 
 ## Usage
 
