@@ -8,44 +8,53 @@ import { XPost } from "@/components/tool-ui/x-post";
   mdxPath="app/docs/response-actions/content.mdx"
 />
 
-Response Actions are human-in-the-loop decision points—lightweight CTAs that let users respond to AI-generated content before it's finalized or acted upon.
+Response Actions are lightweight CTAs for human-in-the-loop decision points. They let users respond to AI-generated content before it's finalized or acted upon.
 
-## DataTable with Response Actions
+## Examples
+
+The following examples show Response Actions in context—each represents a moment where the AI has done its work and is waiting for human approval before proceeding.
+
+### DataTable: Flagged Expenses
+
+AI detected anomalies in recent expenses. The user must approve or escalate before reimbursement proceeds.
 
 <Tabs items={["Preview", "Code"]}>
   <Tab>
     <div className="not-prose">
       <DataTable
+        id="flagged-expenses"
         rowIdKey="id"
         columns={[
-          { key: "issue", label: "Issue", priority: "primary", truncate: true },
+          { key: "merchant", label: "Merchant", priority: "primary" },
           {
-            key: "priority",
-            label: "Urgency",
+            key: "amount",
+            label: "Amount",
+            align: "right",
+            priority: "primary",
+            format: { kind: "currency", currency: "USD" },
+          },
+          {
+            key: "flag",
+            label: "Flag",
             format: {
               kind: "status",
               statusMap: {
-                high: { tone: "danger", label: "High" },
-                medium: { tone: "warning", label: "Medium" },
-                low: { tone: "neutral", label: "Low" },
+                duplicate: { tone: "warning", label: "Possible duplicate" },
+                policy: { tone: "danger", label: "Over policy limit" },
+                missing: { tone: "info", label: "Missing receipt" },
               },
             },
           },
-          {
-            key: "createdAt",
-            label: "Created",
-            format: { kind: "date", dateFormat: "relative" },
-          },
         ]}
         data={[
-          { id: "1", issue: "Payment failing on checkout", priority: "high", createdAt: "2025-11-11T09:24:00Z" },
-          { id: "2", issue: "Billing UI alignment bug", priority: "medium", createdAt: "2025-11-10T17:03:00Z" },
-          { id: "3", issue: "Export CSV missing headers", priority: "low", createdAt: "2025-11-08T08:00:00Z" },
+          { id: "1", merchant: "Delta Airlines", amount: 847.00, flag: "duplicate" },
+          { id: "2", merchant: "The Capital Grille", amount: 312.50, flag: "policy" },
+          { id: "3", merchant: "Uber", amount: 45.20, flag: "missing" },
         ]}
         responseActions={{
           items: [
-            { id: "export", label: "Export CSV", variant: "secondary" },
-            { id: "sync", label: "Sync to Jira", variant: "default", confirmLabel: "Confirm Sync" },
+            { id: "reject", label: "Reject All", variant: "destructive", confirmLabel: "Confirm Reject" },
+            { id: "approve", label: "Approve All", variant: "default", confirmLabel: "Confirm Approval" },
           ],
           align: "right",
         }}
@@ -56,61 +65,74 @@ Response Actions are human-in-the-loop decision points—lightweight CTAs that l
     ```tsx
     import { DataTable } from "@/components/tool-ui/data-table";
 
+    // AI flagged these expenses as anomalies — user decides before processing
     <DataTable
+      id="flagged-expenses"
       rowIdKey="id"
       columns={[
-        { key: "issue", label: "Issue", priority: "primary", truncate: true },
+        { key: "merchant", label: "Merchant", priority: "primary" },
         {
-          key: "priority",
-          label: "Urgency",
+          key: "amount",
+          label: "Amount",
+          align: "right",
+          format: { kind: "currency", currency: "USD" },
+        },
+        {
+          key: "flag",
+          label: "Flag",
           format: {
             kind: "status",
             statusMap: {
-              high: { tone: "danger", label: "High" },
-              medium: { tone: "warning", label: "Medium" },
-              low: { tone: "neutral", label: "Low" },
+              duplicate: { tone: "warning", label: "Possible duplicate" },
+              policy: { tone: "danger", label: "Over policy limit" },
+              missing: { tone: "info", label: "Missing receipt" },
             },
           },
         },
-        { key: "createdAt", label: "Created", format: { kind: "date", dateFormat: "relative" } },
       ]}
       data={[
-        { id: "1", issue: "Payment failing on checkout", priority: "high", createdAt: "2025-11-11T09:24:00Z" },
-        { id: "2", issue: "Billing UI alignment bug", priority: "medium", createdAt: "2025-11-10T17:03:00Z" },
-        { id: "3", issue: "Export CSV missing headers", priority: "low", createdAt: "2025-11-08T08:00:00Z" },
+        { id: "1", merchant: "Delta Airlines", amount: 847.00, flag: "duplicate" },
+        { id: "2", merchant: "The Capital Grille", amount: 312.50, flag: "policy" },
+        { id: "3", merchant: "Uber", amount: 45.20, flag: "missing" },
       ]}
       responseActions={{
         items: [
-          { id: "export", label: "Export CSV", variant: "secondary" },
-          { id: "sync", label: "Sync to Jira", variant: "default", confirmLabel: "Confirm Sync" },
+          { id: "reject", label: "Reject All", variant: "destructive", confirmLabel: "Confirm" },
+          { id: "approve", label: "Approve All", variant: "default", confirmLabel: "Confirm" },
         ],
         align: "right",
       }}
-      onResponseAction={(id) => console.log("Action:", id)}
+      onResponseAction={(id) => {
+        if (id === "approve") submitExpenses();
+        if (id === "reject") returnToSubmitter();
+      }}
     />
     ```
+
   </Tab>
 </Tabs>
 
-## MediaCard with Response Actions
+### MediaCard: Generated Hero Image
+
+AI generated a hero image for the blog post. The user must approve before it goes live.
 
 <Tabs items={["Preview", "Code"]}>
   <Tab>
     <div className="not-prose">
       <MediaCard
-        id="response-actions-media-card"
-        assetId="rsc-guide"
-        kind="link"
-        href="https://react.dev/reference/rsc/server-components"
-        title="React Server Components"
-        description="Learn how to use Server Components to build fast, dynamic applications with React."
-        thumb="https://images.unsplash.com/photo-1633356122544-f134324a6cee?auto=format&fit=crop&q=80&w=1200"
+        id="generated-hero"
+        assetId="gen-img-7f3a"
+        kind="image"
+        src="https://images.unsplash.com/photo-1620712943543-bcc4688e7485?auto=format&fit=crop&q=80&w=1200"
+        alt="Abstract visualization of neural networks with glowing nodes"
+        title="Generated: AI Infrastructure"
+        description="Style: technical illustration. Prompt: 'neural network visualization, dark background, glowing blue nodes'"
         ratio="16:9"
-        domain="react.dev"
         maxWidth="420px"
         responseActions={[
-          { id: "open", label: "Open", variant: "default" },
-          { id: "save", label: "Save for later", variant: "secondary" },
+          { id: "regenerate", label: "Try Again", variant: "secondary" },
+          { id: "edit", label: "Edit Prompt", variant: "outline" },
+          { id: "use", label: "Use This", variant: "default" },
         ]}
       />
     </div>
@@ -119,47 +141,55 @@ Response Actions are human-in-the-loop decision points—lightweight CTAs that l
     ```tsx
     import { MediaCard } from "@/components/tool-ui/media-card";
 
+    // AI generated this image — user approves before publishing
     <MediaCard
-      id="response-actions-media-card"
-      assetId="rsc-guide"
-      kind="link"
-      href="https://react.dev/reference/rsc/server-components"
-      title="React Server Components"
-      description="Learn how to use Server Components to build fast, dynamic applications."
-      thumb="https://images.unsplash.com/photo-1633356122544-f134324a6cee"
+      id="generated-hero"
+      assetId="gen-img-7f3a"
+      kind="image"
+      src="https://images.unsplash.com/photo-1620712943543-bcc4688e7485"
+      alt="Abstract visualization of neural networks with glowing nodes"
+      title="Generated: AI Infrastructure"
+      description="Style: technical illustration. Prompt: 'neural network visualization...'"
       ratio="16:9"
-      domain="react.dev"
       maxWidth="420px"
       responseActions={[
-        { id: "open", label: "Open", variant: "default" },
-        { id: "save", label: "Save for later", variant: "secondary" },
+        { id: "regenerate", label: "Try Again", variant: "secondary" },
+        { id: "edit", label: "Edit Prompt", variant: "outline" },
+        { id: "use", label: "Use This", variant: "default" },
       ]}
-      onResponseAction={(id) => console.log("Action:", id)}
+      onResponseAction={(id) => {
+        if (id === "use") attachToPost(assetId);
+        if (id === "regenerate") generateNewImage();
+        if (id === "edit") openPromptEditor();
+      }}
     />
     ```
+
   </Tab>
 </Tabs>
 
-## XPost with Response Actions
+### XPost: Draft Awaiting Publish
+
+AI drafted a post based on the user's notes. The user reviews and decides whether to publish, schedule, or revise.
 
 <Tabs items={["Preview", "Code"]}>
   <Tab>
-    <div className="not-prose">
+    <div className="not-prose w-full max-w-[540px]">
       <XPost
         post={{
-          id: "response-actions-x-post",
+          id: "draft-post-1",
           author: {
-            name: "Tool UI",
-            handle: "tool_ui",
-            avatarUrl: "https://api.dicebear.com/7.x/shapes/svg?seed=toolui",
+            name: "Acme Dev",
+            handle: "acme_dev",
+            avatarUrl: "https://api.dicebear.com/7.x/shapes/svg?seed=acme",
             verified: true,
           },
-          text: "Just shipped a major update to Tool UI!\n\nResponse Actions are now live—human-in-the-loop decision points that attach to any component.\n\nCheck it out: https://tool-ui.com/docs/response-actions",
+          text: "We just hit 10,000 stars on GitHub! Huge thanks to everyone who contributed, filed issues, and spread the word.\n\nOpen source is a team sport.",
         }}
         responseActions={[
-          { id: "edit", label: "Edit draft", variant: "secondary" },
+          { id: "edit", label: "Edit", variant: "secondary" },
           { id: "schedule", label: "Schedule", variant: "outline" },
-          { id: "post", label: "Post now", variant: "default", confirmLabel: "Confirm" },
+          { id: "post", label: "Post Now", variant: "default", confirmLabel: "Confirm Post" },
         ]}
       />
     </div>
@@ -168,25 +198,31 @@ Response Actions are human-in-the-loop decision points—lightweight CTAs that l
     ```tsx
     import { XPost } from "@/components/tool-ui/x-post";
 
+    // AI drafted this post — user approves before it goes live
     <XPost
       post={{
-        id: "response-actions-x-post",
+        id: "draft-post-1",
         author: {
-          name: "Tool UI",
-          handle: "tool_ui",
-          avatarUrl: "https://api.dicebear.com/7.x/shapes/svg?seed=toolui",
+          name: "Acme Dev",
+          handle: "acme_dev",
+          avatarUrl: "https://api.dicebear.com/7.x/shapes/svg?seed=acme",
           verified: true,
         },
-        text: "Just shipped a major update to Tool UI!\n\nResponse Actions are now live.",
+        text: "We just hit 10,000 stars on GitHub! Huge thanks to everyone...",
       }}
       responseActions={[
-        { id: "edit", label: "Edit draft", variant: "secondary" },
+        { id: "edit", label: "Edit", variant: "secondary" },
         { id: "schedule", label: "Schedule", variant: "outline" },
-        { id: "post", label: "Post now", variant: "default", confirmLabel: "Confirm" },
+        { id: "post", label: "Post Now", variant: "default", confirmLabel: "Confirm" },
       ]}
-      onResponseAction={(id) => console.log("Action:", id)}
+      onResponseAction={(id) => {
+        if (id === "post") publishImmediately();
+        if (id === "schedule") openScheduler();
+        if (id === "edit") openEditor();
+      }}
     />
     ```
+
   </Tab>
 </Tabs>
 
@@ -218,8 +254,15 @@ responseActions={{
   type={{
     id: { description: "Unique identifier", type: "string", required: true },
     label: { description: "Button text", type: "string", required: true },
-    variant: { description: "Button style", type: "'default' | 'secondary' | 'ghost' | 'destructive' | 'outline'", default: "'secondary'" },
-    confirmLabel: { description: "Enables two-step confirm (label shown on second click)", type: "string" },
+    variant: {
+      description: "Button style",
+      type: "'default' | 'secondary' | 'ghost' | 'destructive' | 'outline'",
+      default: "'secondary'",
+    },
+    confirmLabel: {
+      description: "Enables two-step confirm (label shown on second click)",
+      type: "string",
+    },
     disabled: { description: "Disable the button", type: "boolean" },
     loading: { description: "Show loading spinner", type: "boolean" },
     shortcut: { description: "Keyboard hint", type: "string" },
@@ -231,8 +274,14 @@ responseActions={{
 
 <TypeTable
   type={{
-    onResponseAction: { description: "Called after confirm/preflight completes", type: "(actionId: string) => void" },
-    onBeforeResponseAction: { description: "Gate actions—return false to cancel", type: "(actionId: string) => boolean | Promise<boolean>" },
+    onResponseAction: {
+      description: "Called after confirm/preflight completes",
+      type: "(actionId: string) => void",
+    },
+    onBeforeResponseAction: {
+      description: "Gate actions—return false to cancel",
+      type: "(actionId: string) => boolean | Promise<boolean>",
+    },
   }}
 />
 
@@ -256,7 +305,7 @@ const toolOutput = {
     if (id === "open") window.open(url, "_blank");
     if (id === "save") saveToLibrary(url);
   }}
-/>
+/>;
 ```
 
 ## Design Guidance
@@ -265,4 +314,4 @@ const toolOutput = {
 - Use `confirmLabel` for destructive or high-impact actions
 - Keep `confirmTimeout` short (default 3000ms) to avoid stale confirm states
 - ActionButtons are responsive by default—they stack on narrow containers
-- For richer controls, prefer dedicated components (OptionList, filters) and keep this strip focused on decisions
+- For richer controls, prefer dedicated components (Option List, filters) and keep this strip focused on decisions

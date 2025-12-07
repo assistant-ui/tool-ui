@@ -147,7 +147,10 @@ const defaultComponents = memoizeMarkdownComponents({
   ),
   ul: ({ className, ...props }) => (
     <ul
-      className={cn("aui-md-ul my-5 ml-6 list-disc [&>li]:mt-2", className)}
+      className={cn(
+        "aui-md-ul my-5 ml-6 list-disc border border-red-500 [&>li]:mt-2",
+        className,
+      )}
       {...props}
     />
   ),
