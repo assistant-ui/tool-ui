@@ -1,5 +1,6 @@
 import { DocsHeader } from "../_components/docs-header";
 import { MockThread, MockMessage } from "../_components/mock-thread";
+import { CollaborationDiagram } from "../_components/collaboration-diagram";
 import { DataTable } from "@/components/tool-ui/data-table";
 import { OptionList } from "@/components/tool-ui/option-list";
 
@@ -12,31 +13,11 @@ Principles for building Tool UIs that feel native to conversation. A work in pro
 
 ## The Collaboration Model
 
-In AI chat, users interact with both the assistant and any UI surfaces it renders. Most tool UIs treat this relationship as incidental: a surface appears, the user clicks something, done. We treat it as foundational. The assistant, the surface, and the user form a collaborative triad.
+In AI chat, users interact with both the assistant and any tool UIs it renders. Most tool UIs treat this relationship as incidental: a tool UI appears, the user clicks something, done. We treat it as foundational. The assistant, the tool UI, and the user form a collaborative triad.
 
-<Mermaid chart={`
-flowchart LR
-    U(("  User  "))
-    S["Surface"]
-    A(("Assistant"))
+<CollaborationDiagram />
 
-    U -- controls --> S
-    U -. observes .-> S
-    S <-- mediates --> A
-    A -. narrates .-> U
-
-    style U fill:#3b82f6,stroke:#2563eb,stroke-width:2px,color:#fff
-    style S fill:#10b981,stroke:#059669,stroke-width:2px,color:#fff
-    style A fill:#8b5cf6,stroke:#7c3aed,stroke-width:2px,color:#fff
-
-    linkStyle 0 stroke:#3b82f6,stroke-width:2px
-    linkStyle 1 stroke:#3b82f6,stroke-width:1px
-    linkStyle 2 stroke:#10b981,stroke-width:2px
-    linkStyle 3 stroke:#8b5cf6,stroke-width:1px
-
-`} />
-
-The assistant contextualizes, interprets, and narrates. The surface provides structure that prose cannot: sortable tables, precise controls, rich media. Neither replaces the other.
+The assistant contextualizes, interprets, and narrates. The tool UI provides structure that prose cannot: sortable tables, precise controls, rich media. Neither replaces the other.
 
 <div className="mx-auto max-w-2xl">
   <MockThread caption="The triadic loop in action">
@@ -115,7 +96,7 @@ The assistant contextualizes, interprets, and narrates. The surface provides str
   </MockThread>
 </div>
 
-The assistant introduces the surface, the user scans it and asks a follow-up, the assistant answers by referencing specific rows. This is the triadic loop.
+The assistant introduces the tool UI, the user scans it and asks a follow-up, the assistant answers by referencing specific rows. This is the triadic loop.
 
 ## Roles
 
@@ -129,7 +110,7 @@ Every Tool UI has a primary role:
 
 - **State:** Expose internal activity (progress indicators, status logs, loading states).
 
-Some surfaces combine roles. A data table with row actions is "information with control." When combining, the primary role should dominate.
+Some tool UIs combine roles. A data table with row actions is "information with control." When combining, the primary role should dominate.
 
 ## Constraints
 
@@ -144,17 +125,17 @@ Tool UIs live in chat: narrow widths, variable heights, mixed with prose.
 
 If the assistant can't point at something later, you lose half the value of rendering it.
 
-- **`surfaceId`**: Identifies this specific rendering in the conversation ("the preview above", "that table").
+- **`surfaceId`**: Identifies this specific tool UI in the conversation ("the preview above", "that table").
 - **`assetId` / row IDs / option IDs**: Identify real objects ("that link", "row 4", "the merge option").
 
 Prefer stable IDs derived from your backend (database IDs, canonical URLs) over array indexes or UUIDs generated at render time. When something can be acted on, it should have an ID the assistant can cite.
 
 ## Receipts
 
-When a user takes an action with consequences, the surface should transition to a receipt state that confirms what happened. This gives the user proof and gives the assistant something to reference later.
+When a user takes an action with consequences, the tool UI should transition to a receipt state that confirms what happened. This gives the user proof and gives the assistant something to reference later.
 
 <div className="mx-auto max-w-2xl">
-  <MockThread caption="A decision surface with receipt">
+  <MockThread caption="A decision tool UI with receipt">
     <MockMessage role="assistant">
       <span className="text-foreground">
         How would you like to handle the duplicate contacts?
@@ -199,5 +180,5 @@ The receipt shows what the user chose. The assistant's follow-up confirms the ou
 - **Forms in chat:** Multi-field forms don't belong in Tool UIs. Collect inputs through conversation or link to a dedicated form.
 - **Hidden mutations:** Actions that change state should produce visible receipts.
 - **Kitchen sinks:** If it needs tabs or navigation, consider breaking it into separate Tool UIs.
-- **Silent surfaces:** Always have the assistant introduce a Tool UI.
-- **Redundant narration:** The assistant shouldn't describe what the surface already shows. Conversely, the surface shouldn't echo what the assistant just said. If the assistant asks "Where to?", the surface doesn't need a header saying "Where to?" — just show the options. Divide the work: the assistant provides context, the surface provides structure.
+- **Silent tool UIs:** Always have the assistant introduce a tool UI.
+- **Redundant narration:** The assistant shouldn't describe what the tool UI already shows. Conversely, the tool UI shouldn't echo what the assistant just said. If the assistant asks "Where to?", the tool UI doesn't need a header saying "Where to?" — just show the options. Divide the work: the assistant provides context, the tool UI provides structure.
