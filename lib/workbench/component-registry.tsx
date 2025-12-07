@@ -27,7 +27,7 @@ export const workbenchComponents: WorkbenchComponentEntry[] = [
     category: "lists",
     component: OptionListSDK,
     defaultProps: {
-      surfaceId: "workbench-option-list",
+      id: "workbench-option-list",
       options: [
         {
           id: "sf",
@@ -60,7 +60,7 @@ export const workbenchComponents: WorkbenchComponentEntry[] = [
     category: "cards",
     component: MediaCard,
     defaultProps: {
-      surfaceId: "workbench-media-card",
+      id: "workbench-media-card",
       assetId: "workbench-asset",
       kind: "image",
       src: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&auto=format&fit=crop",
@@ -104,7 +104,7 @@ export const workbenchComponents: WorkbenchComponentEntry[] = [
     category: "data",
     component: Chart,
     defaultProps: {
-      surfaceId: "workbench-chart",
+      id: "workbench-chart",
       type: "bar",
       title: "Monthly Revenue",
       description: "Revenue vs Expenses for 2024",

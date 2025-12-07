@@ -53,7 +53,7 @@ export function DataTable<T extends object = RowData>({
   emptyMessage = "No data available",
   isLoading = false,
   maxHeight,
-  messageId,
+  id,
   onSortChange,
   className,
   locale,
@@ -133,7 +133,7 @@ export function DataTable<T extends object = RowData>({
     sortBy,
     sortDirection,
     toggleSort: handleSort,
-    messageId,
+    id,
     isLoading,
     locale: resolvedLocale,
   };

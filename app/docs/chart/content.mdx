@@ -69,7 +69,7 @@ pnpm dlx shadcn@latest add card chart
 import { Chart } from "@/components/tool-ui/chart";
 
 <Chart
-  surfaceId="monthly-revenue"
+  id="monthly-revenue"
   type="bar"
   title="Monthly Revenue"
   description="2024 YTD"
@@ -92,7 +92,7 @@ import { Chart } from "@/components/tool-ui/chart";
 
 ```tsx
 <Chart
-  surfaceId="custom-colors"
+  id="custom-colors"
   type="bar"
   data={data}
   xKey="month"
@@ -108,7 +108,7 @@ import { Chart } from "@/components/tool-ui/chart";
 
 ```tsx
 <Chart
-  surfaceId="clickable"
+  id="clickable"
   type="line"
   data={data}
   xKey="time"
@@ -123,7 +123,7 @@ import { Chart } from "@/components/tool-ui/chart";
 
 <TypeTable
   type={{
-    surfaceId: {
+    id: {
       description: "Unique identifier for this chart instance",
       type: "string",
       required: true,

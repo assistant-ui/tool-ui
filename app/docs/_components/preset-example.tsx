@@ -87,7 +87,7 @@ function generateChartCode(preset: ChartPresetName): string {
   const config = chartPresets[preset];
   const props: string[] = [];
 
-  props.push(`  surfaceId="chart-example"`);
+  props.push(`  id="chart-example"`);
   props.push(`  type="${config.type}"`);
 
   if (config.title) {
@@ -129,7 +129,7 @@ export function ChartPresetExample({ preset }: ChartPresetExampleProps) {
     <Tabs items={["Preview", "Code"]}>
       <Tab value="Preview">
         <div className="not-prose">
-          <Chart surfaceId={`chart-${preset}`} {...config} />
+          <Chart id={`chart-${preset}`} {...config} />
         </div>
       </Tab>
       <Tab value="Code">

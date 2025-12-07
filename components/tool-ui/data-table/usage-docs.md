@@ -144,15 +144,15 @@ export default function Example() {
 | `data`           | `T[]`                                                         | ✅       | —                     | Serializable rows. Values must be primitives or arrays of primitives.                          |
 | `rowIdKey`       | `string`                                                      | —        | —                     | Strongly recommended. Used to build stable React keys and mobile IDs (e.g., "id" or "symbol"). |
 | `actions`        | `Action[]`                                                    | —        | —                     | Row‑level actions. ≤2 renders inline buttons; >2 collapses into a menu.                        |
-| `onBeforeAction` | `({ action, row, messageId }) => boolean \| Promise<boolean>` | —        | —                     | Preflight: return `false` to cancel. Lets you implement confirmation your way.                 |
-| `onAction`       | `(actionId, row, ctx) => void`                                | —        | —                     | Called when an action is triggered. `ctx = { messageId?: string }`.                            |
+| `onBeforeAction` | `({ action, row, id }) => boolean \| Promise<boolean>`        | —        | —                     | Preflight: return `false` to cancel. Lets you implement confirmation your way.                 |
+| `onAction`       | `(actionId, row, ctx) => void`                                | —        | —                     | Called when an action is triggered. `ctx = { id?: string }`.                                   |
 | `isLoading`      | `boolean`                                                     | —        | `false`               | Skeleton state.                                                                                |
 | `emptyMessage`   | `string`                                                      | —        | `"No data available"` | Message when `data.length === 0`.                                                              |
 | `defaultSort`    | `{ by: string; direction: "asc" \| "desc" }`                  | —        | —                     | Uncontrolled sort (component manages state).                                                   |
 | `sort`           | `{ by?: string; direction?: "asc" \| "desc" }`                | —        | —                     | Controlled sort (you manage state).                                                            |
 | `onSortChange`   | `(next) => void`                                              | —        | —                     | With `sort`, handle updates.                                                                   |
 | `locale`         | `string`                                                      | —        | `"en-US"`             | Used for `Intl.NumberFormat`/`Intl.Collator` and date formatting.                              |
-| `messageId`      | `string`                                                      | —        | —                     | Optional analytics/context tag passed to `onAction` calls.                                     |
+| `id`             | `string`                                                      | —        | —                     | Optional analytics/context tag passed to `onAction` calls.                                     |
 
 **SSR note**: The table defaults `locale` to `"en-US"` to avoid server/client mismatches; pass an explicit locale if you need one.
 
@@ -362,11 +362,11 @@ Inline buttons or a menu. No built‑in confirmation. Use `onBeforeAction` to im
     { id: "danger", label: "Nuke", variant: "destructive", requiresConfirmation: true },
   ]}
   onBeforeAction={({ action, row }) => action.requiresConfirmation ? window.confirm(`Confirm ${action.label.toLowerCase()}?`) : true}
-  onAction={(actionId, row, { messageId }) => {
+  onAction={(actionId, row, { id }) => {
     // Send an event, call an API, etc.
-    console.log({ actionId, row, messageId });
+    console.log({ actionId, row, id });
   }}
-  messageId="msg_123" // passed to onAction for analytics
+  id="msg_123" // passed to onAction for analytics
 />
 
 ### Optional: Radix confirm provider (recipe)

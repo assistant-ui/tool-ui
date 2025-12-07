@@ -68,7 +68,7 @@ export function ChartPreview({
         />
       }
       renderPreview={() => (
-        <Chart surfaceId={`chart-${currentPreset}`} {...currentConfig} />
+        <Chart id={`chart-${currentPreset}`} {...currentConfig} />
       )}
       renderCodePanel={() => (
         <CodePanel

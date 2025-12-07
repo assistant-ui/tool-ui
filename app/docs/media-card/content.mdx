@@ -9,7 +9,7 @@ An information surface for links, images, video, and audio. Optimized for inline
   <Tab>
     <div className="not-prose">
       <MediaCard
-        surfaceId="media-card-react-docs"
+        id="media-card-react-docs"
         assetId="react-docs-link"
         kind="link"
         href="https://react.dev"
@@ -29,7 +29,7 @@ An information surface for links, images, video, and audio. Optimized for inline
     export function Example() {
       return (
         <MediaCard
-          surfaceId="media-card-react-docs"
+          id="media-card-react-docs"
           assetId="react-docs-link"
           kind="link"
           href="https://react.dev"
@@ -118,7 +118,7 @@ const previewLink = tool({
   async execute({ url }) {
     // Fetch real metadata here
     return {
-      surfaceId: "link-preview-1",
+      id: "link-preview-1",
       assetId: url,
       kind: "link",
       href: url,
@@ -164,7 +164,7 @@ export const PreviewLinkUI = makeAssistantToolUI({
 
 <TypeTable
   type={{
-    surfaceId: { description: "Unique identifier for this surface instance", type: "string", required: true },
+    id: { description: "Unique identifier for this tool UI instance", type: "string", required: true },
     assetId: { description: "Persistent asset identifier (e.g., database ID)", type: "string", required: true },
     kind: {
       description: "Content type",

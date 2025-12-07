@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { SurfaceIdSchema } from "../shared";
+import { ToolUIIdSchema } from "../shared";
 
 export const ChartSeriesSchema = z.object({
   key: z.string().min(1),
@@ -10,7 +10,7 @@ export const ChartSeriesSchema = z.object({
 export type ChartSeries = z.infer<typeof ChartSeriesSchema>;
 
 export const ChartPropsSchema = z.object({
-  surfaceId: SurfaceIdSchema,
+  id: ToolUIIdSchema,
   type: z.enum(["bar", "line"]),
   title: z.string().optional(),
   description: z.string().optional(),

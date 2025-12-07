@@ -2,9 +2,9 @@ import { z } from "zod";
 import type { ReactNode } from "react";
 
 /**
- * Schema for surface identity.
+ * Schema for tool UI identity.
  *
- * Every Tool UI surface should have a unique identifier that:
+ * Every tool UI should have a unique identifier that:
  * - Is stable across re-renders
  * - Is meaningful (not auto-generated)
  * - Is unique within the conversation
@@ -12,9 +12,9 @@ import type { ReactNode } from "react";
  * Format recommendation: `{component-type}-{semantic-identifier}`
  * Examples: "data-table-expenses-q3", "option-list-deploy-target"
  */
-export const SurfaceIdSchema = z.string().min(1);
+export const ToolUIIdSchema = z.string().min(1);
 
-export type SurfaceId = z.infer<typeof SurfaceIdSchema>;
+export type ToolUIId = z.infer<typeof ToolUIIdSchema>;
 
 export const ActionSchema = z.object({
   id: z.string().min(1),

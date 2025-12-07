@@ -101,7 +101,7 @@ export async function POST(req: Request) {
         outputSchema: serializableMediaCardSchema,
         async execute({ url }) {
           return {
-            surfaceId: "link-preview-1",
+            id: "link-preview-1",
             assetId: "link-1",
             kind: "link",
             href: url,
@@ -161,14 +161,14 @@ Every Tool UI surface is addressable and reconstructable. Here's the common sche
 
 **What this shows:**
 
-- `surfaceId` makes the surface referenceable by the assistant ("the link preview above")
+- `id` makes the tool UI referenceable by the assistant ("the link preview above")
 - `role` declares the primary purpose (information, decision, control, state, or composite)
 - `actions` with `sentence` fields enable natural language interaction
 - `receipt` provides durable proof of side effects with timestamps and identifiers
 
 ```ts
 {
-  surfaceId: string;              // stable identifier for this rendering
+  id: string;                     // stable identifier for this rendering
   role: "information"|"decision"|"control"|"state"|"composite";
   actions?: Array<{ id: string; label: string; sentence: string }>;
   // optional receipt after side effects:

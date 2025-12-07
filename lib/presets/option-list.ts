@@ -13,7 +13,7 @@ export type OptionListPresetName =
 
 const exportPreset: OptionListConfig = {
   optionList: {
-    surfaceId: "option-list-preview-export",
+    id: "option-list-preview-export",
     options: [
       { id: "good", label: "Good", description: "High quality work" },
       { id: "fast", label: "Fast", description: "Quick turnaround" },
@@ -31,7 +31,7 @@ const exportPreset: OptionListConfig = {
 
 const travelPreset: OptionListConfig = {
   optionList: {
-    surfaceId: "option-list-preview-travel",
+    id: "option-list-preview-travel",
     options: [
       {
         id: "walk",
@@ -55,7 +55,7 @@ const travelPreset: OptionListConfig = {
 
 const notificationsPreset: OptionListConfig = {
   optionList: {
-    surfaceId: "option-list-preview-notifications",
+    id: "option-list-preview-notifications",
     options: [
       { id: "email", label: "Email" },
       { id: "sms", label: "SMS" },
@@ -74,7 +74,7 @@ const notificationsPreset: OptionListConfig = {
 
 const receiptPreset: OptionListConfig = {
   optionList: {
-    surfaceId: "option-list-preview-receipt",
+    id: "option-list-preview-receipt",
     options: [
       {
         id: "walk",
@@ -95,7 +95,7 @@ const receiptPreset: OptionListConfig = {
 
 const actionsPreset: OptionListConfig = {
   optionList: {
-    surfaceId: "option-list-preview-actions",
+    id: "option-list-preview-actions",
     options: [
       {
         id: "immediate",

@@ -44,7 +44,7 @@ Create a tool on your server that the LLM can call. The tool returns structured 
 
 **What this demonstrates:**
 - `serializableMediaCardSchema` ensures your tool output matches the MediaCard component's expected format
-- `surfaceId` identifies this rendering in the conversation; `assetId` identifies the underlying resource
+- `id` identifies this rendering in the conversation; `assetId` identifies the underlying resource
 - The `outputSchema` validates that returned data is type-safe and serializable
 - Your tool can fetch real data (APIs, databases) and return it in the component schema format
 
@@ -68,7 +68,7 @@ export async function POST(req: Request) {
         async execute({ url }) {
           // In production, you'd fetch real metadata here
           return {
-            surfaceId: "link-preview-1",
+            id: "link-preview-1",
             assetId: url,
             kind: "link",
             href: url,

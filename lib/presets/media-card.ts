@@ -15,7 +15,7 @@ export type MediaCardPresetName =
 
 const imagePreset: MediaCardConfig = {
   card: {
-    surfaceId: "media-card-preview-image",
+    id: "media-card-preview-image",
     assetId: "media-card-image",
     kind: "image",
     src: "https://images.unsplash.com/photo-1504548840739-580b10ae7715?w=1200&auto=format&fit=crop",
@@ -37,7 +37,7 @@ const imagePreset: MediaCardConfig = {
 
 const videoPreset: MediaCardConfig = {
   card: {
-    surfaceId: "media-card-preview-video",
+    id: "media-card-preview-video",
     assetId: "media-card-video",
     kind: "video",
     src: "https://samplelib.com/lib/preview/mp4/sample-5s.mp4",
@@ -59,7 +59,7 @@ const videoPreset: MediaCardConfig = {
 
 const audioPreset: MediaCardConfig = {
   card: {
-    surfaceId: "media-card-preview-audio",
+    id: "media-card-preview-audio",
     assetId: "media-card-audio",
     kind: "audio",
     src: "https://samplelib.com/lib/preview/mp3/sample-6s.mp3",
@@ -80,7 +80,7 @@ const audioPreset: MediaCardConfig = {
 
 const linkPreset: MediaCardConfig = {
   card: {
-    surfaceId: "media-card-preview-link",
+    id: "media-card-preview-link",
     assetId: "media-card-link",
     kind: "link",
     href: "https://en.wikipedia.org/wiki/History_of_computing_hardware",
@@ -103,7 +103,7 @@ const linkPreset: MediaCardConfig = {
 
 const actionsPreset: MediaCardConfig = {
   card: {
-    surfaceId: "media-card-preview-actions",
+    id: "media-card-preview-actions",
     assetId: "media-card-actions",
     kind: "image",
     src: "https://images.unsplash.com/photo-1518770660439-4636190af475?w=1200&auto=format&fit=crop",

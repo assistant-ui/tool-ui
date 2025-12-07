@@ -664,7 +664,7 @@ interface DataTableSerializableProps<T> {
   sort?: { by?: string; direction?: "asc" | "desc" };
   emptyMessage?: string;
   maxHeight?: string;
-  messageId?: string;
+  id?: string;
   locale?: string;
 }
 

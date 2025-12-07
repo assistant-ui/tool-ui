@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { SurfaceIdSchema } from "../shared";
+import { ToolUIIdSchema } from "../shared";
 
 export const platformEnum = z.enum(["x", "instagram", "linkedin"]);
 export type Platform = z.infer<typeof platformEnum>;
@@ -79,7 +79,7 @@ export const serializableSocialPostSchema: z.ZodType<SerializableSocialPost> =
   z.lazy(() =>
     z.object({
       /**
-       * Unique identifier for this surface instance in the conversation.
+       * Unique identifier for this tool UI instance in the conversation.
        *
        * Used for:
        * - Assistant referencing ("the tweet above")
@@ -90,7 +90,7 @@ export const serializableSocialPostSchema: z.ZodType<SerializableSocialPost> =
        *
        * @example "social-post-tweet-123", "linkedin-post-announcement"
        */
-      surfaceId: SurfaceIdSchema,
+      id: ToolUIIdSchema,
       /**
        * The post's identifier on the social platform (e.g., tweet ID, Instagram post ID).
        *
@@ -118,16 +118,12 @@ export const serializableSocialPostSchema: z.ZodType<SerializableSocialPost> =
       language: z.string().optional(),
       locale: z.string().optional(),
       compact: z.boolean().optional(),
-      /**
-       * @deprecated Use `surfaceId` instead. This prop will be removed in a future version.
-       */
-      messageId: z.string().optional(),
     }),
   );
 
 export interface SerializableSocialPost {
   /**
-   * Unique identifier for this surface instance in the conversation.
+   * Unique identifier for this tool UI instance in the conversation.
    *
    * Used for:
    * - Assistant referencing ("the tweet above")
@@ -138,7 +134,7 @@ export interface SerializableSocialPost {
    *
    * @example "social-post-tweet-123", "linkedin-post-announcement"
    */
-  surfaceId: string;
+  id: string;
   /**
    * The post's identifier on the social platform (e.g., tweet ID, Instagram post ID).
    *
@@ -166,10 +162,6 @@ export interface SerializableSocialPost {
   language?: string;
   locale?: string;
   compact?: boolean;
-  /**
-   * @deprecated Use `surfaceId` instead. This prop will be removed in a future version.
-   */
-  messageId?: string;
 }
 
 export function parseSerializableSocialPost(

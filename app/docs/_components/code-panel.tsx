@@ -111,7 +111,7 @@ export function CodePanel({
     const props: string[] = [];
 
     // Add the serializable props
-    props.push(`  surfaceId="${post.surfaceId}"`);
+    props.push(`  id="${post.id}"`);
     props.push(`  postId="${post.postId}"`);
     props.push(`  platform="${post.platform}"`);
     props.push(
@@ -308,7 +308,7 @@ export function CodePanel({
     if (!chartConfig) return "";
     const props: string[] = [];
 
-    props.push(`  surfaceId="chart-example"`);
+    props.push(`  id="chart-example"`);
     props.push(`  type="${chartConfig.type}"`);
 
     if (chartConfig.title) {

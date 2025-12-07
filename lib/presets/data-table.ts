@@ -5,7 +5,7 @@ type GenericRow = Record<string, RowPrimitive>;
 export type SortState = { by?: string; direction?: "asc" | "desc" };
 
 export interface DataTableConfig {
-  surfaceId: string;
+  id: string;
   columns: Column[];
   data: GenericRow[];
   rowIdKey?: string;
@@ -103,7 +103,7 @@ const stockData: GenericRow[] = [
 ];
 
 export const sampleStocks: DataTableConfig = {
-  surfaceId: "data-table-preview-stocks",
+  id: "data-table-preview-stocks",
   columns: stockColumns,
   data: stockData,
   rowIdKey: "symbol",
@@ -198,7 +198,7 @@ const taskData: GenericRow[] = [
 ];
 
 const sampleTasks: DataTableConfig = {
-  surfaceId: "data-table-preview-tasks",
+  id: "data-table-preview-tasks",
   columns: taskColumns,
   data: taskData,
   rowIdKey: "title",
@@ -272,7 +272,7 @@ const resourceData: GenericRow[] = [
 ];
 
 const sampleResources: DataTableConfig = {
-  surfaceId: "data-table-preview-resources",
+  id: "data-table-preview-resources",
   columns: resourceColumns,
   data: resourceData,
   rowIdKey: "name",
@@ -359,7 +359,7 @@ const actionsData: GenericRow[] = [
 ];
 
 const sampleActions: DataTableConfig = {
-  surfaceId: "data-table-preview-actions",
+  id: "data-table-preview-actions",
   columns: actionsColumns,
   data: actionsData,
   rowIdKey: "id",

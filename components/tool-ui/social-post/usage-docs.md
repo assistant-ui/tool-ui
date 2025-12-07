@@ -167,7 +167,6 @@ interface SerializableSocialPost {
   language?: string; // e.g. "en", "ar"
   locale?: string; // per-post override for formatting
   compact?: boolean; // clamp body text to platform default
-  messageId?: string; // arbitrary metadata passed to handlers
 }
 ```
 
@@ -193,8 +192,8 @@ interface SerializableSocialPost {
 | `defaultState`            | `SocialPostState`                                              | `{}`     | Initial uncontrolled toggle state (liked, saved, etc.).                                              |
 | `state`                   | `SocialPostState`                                              | —        | Controlled state. Provide `onStateChange` to listen for updates.                                     |
 | `onStateChange`           | `(next) => void`                                               | —        | Called whenever toggles change (both controlled/uncontrolled).                                       |
-| `onBeforeAction`          | `({ action, post, messageId }) => boolean \| Promise<boolean>` | —        | Return `false` to cancel an action (confirmation, auth guards, etc.).                                |
-| `onAction`                | `(actionId, post, ctx) => void`                                | —        | Fired after a successful action trigger. `ctx.messageId` is forwarded from the payload.              |
+| `onBeforeAction`          | `({ action, post, id }) => boolean \| Promise<boolean>`        | —        | Return `false` to cancel an action (confirmation, auth guards, etc.).                                |
+| `onAction`                | `(actionId, post, ctx) => void`                                | —        | Fired after a successful action trigger. `ctx.id` is forwarded from the payload.                     |
 | `onEntityClick`           | `(type, value) => void`                                        | —        | Called when a hashtag/mention/url button is pressed.                                                 |
 | `onMediaEvent`            | `(type, payload?) => void`                                     | —        | Events: `"open"` (with `{ index }`), `"play"`, `"pause"`.                                            |
 | `onNavigate`              | `(href, post) => void`                                         | —        | Invoked when navigation happens (links in body, “View source”). Use to log telemetry or open modals. |
@@ -228,8 +227,8 @@ type SocialPostState = {
     }
     return true;
   }}
-  onAction={(action, post, { messageId }) => {
-    analytics.track("social_post_action", { action, id: post.id, messageId });
+  onAction={(action, post, { id }) => {
+    analytics.track("social_post_action", { action, postId: post.id, id });
   }}
   onEntityClick={(type, value) => {
     sendMessage?.(`Search ${type}: ${value}`);

@@ -25,12 +25,12 @@ export interface SocialPostClientProps {
   onBeforeAction?: (args: {
     action: string;
     post: SerializableSocialPost;
-    messageId?: string;
+    id?: string;
   }) => boolean | Promise<boolean>;
   onAction?: (
     action: string,
     post: SerializableSocialPost,
-    ctx?: { messageId?: string },
+    ctx?: { id?: string },
   ) => void;
   onEntityClick?: (type: "mention" | "hashtag" | "url", value: string) => void;
   onMediaEvent?: (type: "open" | "play" | "pause", payload?: unknown) => void;
@@ -38,12 +38,12 @@ export interface SocialPostClientProps {
   onPostAction?: (
     actionId: string,
     post: SerializableSocialPost,
-    ctx?: { messageId?: string },
+    ctx?: { id?: string },
   ) => void;
   onBeforePostAction?: (args: {
     action: string;
     post: SerializableSocialPost;
-    messageId?: string;
+    id?: string;
   }) => boolean | Promise<boolean>;
   footerActions?: ActionsProp;
   onFooterAction?: (actionId: string) => void | Promise<void>;

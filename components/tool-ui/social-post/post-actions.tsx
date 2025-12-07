@@ -75,10 +75,10 @@ export function Actions() {
       (await handlers.onBeforePostAction?.({
         action: actionId,
         post,
-        messageId: post.messageId,
+        id: post.id,
       })) ?? true;
     if (!shouldProceed) return;
-    handlers.onPostAction?.(actionId, post, { messageId: post.messageId });
+    handlers.onPostAction?.(actionId, post, { id: post.id });
 
     if (actionId in TOGGLE_MAP) {
       const key = TOGGLE_MAP[actionId];
@@ -147,7 +147,9 @@ export function Actions() {
                     aria-label={action.label}
                     aria-pressed={toggleKey ? isActive : undefined}
                   >
-                    {Icon ? <Icon className="h-4 w-4" aria-hidden="true" /> : null}
+                    {Icon ? (
+                      <Icon className="h-4 w-4" aria-hidden="true" />
+                    ) : null}
                     {count !== undefined ? (
                       <span className="text-sm">{count}</span>
                     ) : null}
@@ -191,7 +193,9 @@ export function Actions() {
                     aria-label={action.label}
                     aria-pressed={toggleKey ? isActive : undefined}
                   >
-                    {Icon ? <Icon className="h-4 w-4" aria-hidden="true" /> : null}
+                    {Icon ? (
+                      <Icon className="h-4 w-4" aria-hidden="true" />
+                    ) : null}
                     {showLabel ? (
                       <span className="text-sm">{action.label}</span>
                     ) : null}

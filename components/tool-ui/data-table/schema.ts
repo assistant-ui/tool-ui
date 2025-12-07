@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { SurfaceIdSchema } from "../shared";
+import { ToolUIIdSchema } from "../shared";
 import type { Column, DataTableProps, RowData } from "./types";
 
 const alignEnum = z.enum(["left", "right", "center"]);
@@ -126,7 +126,7 @@ export const serializableDataSchema = z.record(
  * Zod schema for validating DataTable payloads from LLM tool calls.
  *
  * This schema validates the serializable parts of a DataTable:
- * - surfaceId: Unique identifier for this surface in the conversation
+ * - id: Unique identifier for this tool UI in the conversation
  * - columns: Column definitions (keys, labels, formatting, etc.)
  * - data: Data rows (primitives only - no functions or class instances)
  * - layout: Optional layout override ('auto' | 'table' | 'cards')
@@ -138,12 +138,12 @@ export const serializableDataSchema = z.record(
  * ```ts
  * const result = serializableDataTableSchema.safeParse(llmResponse)
  * if (result.success) {
- *   // result.data contains validated surfaceId, columns, and data
+ *   // result.data contains validated id, columns, and data
  * }
  * ```
  */
 export const serializableDataTableSchema = z.object({
-  surfaceId: SurfaceIdSchema,
+  id: ToolUIIdSchema,
   columns: z.array(serializableColumnSchema),
   data: z.array(serializableDataSchema),
   layout: layoutEnum.optional(),
@@ -163,7 +163,7 @@ export const serializableDataTableSchema = z.object({
  * @example
  * ```ts
  * const payload: SerializableDataTable = {
- *   surfaceId: "data-table-expenses",
+ *   id: "data-table-expenses",
  *   columns: [
  *     { key: "name", label: "Name" },
  *     { key: "price", label: "Price", format: { kind: "currency", currency: "USD" } }
@@ -188,7 +188,7 @@ export type SerializableDataTable = z.infer<typeof serializableDataTableSchema>;
  * separately (onSortChange, isLoading, className, footerActions, onFooterAction).
  *
  * @param input - Unknown data to validate (typically from an LLM tool call)
- * @returns Validated and typed DataTable serializable props (surfaceId, columns, data)
+ * @returns Validated and typed DataTable serializable props (id, columns, data)
  * @throws Error with validation details if input is invalid
  *
  * @example
@@ -208,14 +208,14 @@ export type SerializableDataTable = z.infer<typeof serializableDataTableSchema>;
  */
 export function parseSerializableDataTable(
   input: unknown,
-): Pick<DataTableProps<RowData>, "surfaceId" | "columns" | "data" | "layout"> {
+): Pick<DataTableProps<RowData>, "id" | "columns" | "data" | "layout"> {
   const res = serializableDataTableSchema.safeParse(input);
   if (!res.success) {
     throw new Error(`Invalid DataTable payload: ${res.error.message}`);
   }
-  const { surfaceId, columns, data, layout } = res.data;
+  const { id, columns, data, layout } = res.data;
   return {
-    surfaceId,
+    id,
     columns: columns as unknown as Column<RowData>[],
     data: data as RowData[],
     layout,

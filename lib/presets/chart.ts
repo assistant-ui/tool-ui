@@ -2,7 +2,7 @@ import type { SerializableChart } from "@/components/tool-ui/chart";
 
 export type ChartPresetName = "revenue" | "performance" | "minimal";
 
-export type ChartPreset = Omit<SerializableChart, "surfaceId">;
+export type ChartPreset = Omit<SerializableChart, "id">;
 
 export type ChartConfig = ChartPreset;
 

@@ -258,7 +258,7 @@ const TABLE_DATA: SupportTicket[] = (
 });
 
 const MEDIA_CARD: SerializableMediaCard = {
-  surfaceId: "chat-showcase-media-card",
+  id: "chat-showcase-media-card",
   assetId: "rsc-guide",
   kind: "link",
   href: "https://react.dev/reference/rsc/server-components",
@@ -285,7 +285,7 @@ const MEDIA_CARD: SerializableMediaCard = {
 };
 
 const SOCIAL_POST: SerializableSocialPost = {
-  surfaceId: "chat-showcase-social-post",
+  id: "chat-showcase-social-post",
   postId: "x-draft-oss",
   platform: "x",
   author: {
@@ -311,7 +311,7 @@ const CHART_DATA = [
   { month: "Dec", signups: 2120, activations: 1720 },
 ];
 
-const SIGNUP_CHART: Omit<SerializableChart, "surfaceId"> = {
+const SIGNUP_CHART: Omit<SerializableChart, "id"> = {
   type: "line",
   title: "Q4 Signups",
   data: CHART_DATA,
@@ -331,7 +331,7 @@ function createSceneConfigs(): SceneConfig[] {
       preamble: "Here's the Q4 signup trend:",
       toolUI: (
         <Chart
-          surfaceId="chat-showcase-chart"
+          id="chat-showcase-chart"
           {...SIGNUP_CHART}
           className="w-full max-w-[560px]"
         />
@@ -344,7 +344,7 @@ function createSceneConfigs(): SceneConfig[] {
       preamble: "Here are the most urgent tickets from this week",
       toolUI: (
         <DataTable<SupportTicket>
-          surfaceId="chat-showcase-data-table"
+          id="chat-showcase-data-table"
           rowIdKey="id"
           columns={TABLE_COLUMNS}
           data={TABLE_DATA}

@@ -5,7 +5,7 @@ import {
   ActionSchema,
   SerializableActionSchema,
   SerializableActionsConfigSchema,
-  SurfaceIdSchema,
+  ToolUIIdSchema,
 } from "../shared";
 
 export const OptionListOptionSchema = z.object({
@@ -18,7 +18,7 @@ export const OptionListOptionSchema = z.object({
 
 export const OptionListPropsSchema = z.object({
   /**
-   * Unique identifier for this surface instance in the conversation.
+   * Unique identifier for this tool UI instance in the conversation.
    *
    * Used for:
    * - Assistant referencing ("the options above")
@@ -29,7 +29,7 @@ export const OptionListPropsSchema = z.object({
    *
    * @example "option-list-deploy-target", "format-selection"
    */
-  surfaceId: SurfaceIdSchema,
+  id: ToolUIIdSchema,
   options: z.array(OptionListOptionSchema).min(1),
   selectionMode: z.enum(["multi", "single"]).optional(),
   value: z
@@ -75,8 +75,8 @@ export type OptionListProps = Omit<
   z.infer<typeof OptionListPropsSchema>,
   "value" | "defaultValue" | "confirmed"
 > & {
-  /** @see OptionListPropsSchema.surfaceId */
-  surfaceId: string;
+  /** @see OptionListPropsSchema.id */
+  id: string;
   value?: OptionListSelection;
   defaultValue?: OptionListSelection;
   /** @see OptionListPropsSchema.confirmed */

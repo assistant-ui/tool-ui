@@ -1,4 +1,4 @@
-import type { ActionsProp, SurfaceId } from "../shared";
+import type { ActionsProp, ToolUIId } from "../shared";
 import type { FormatConfig } from "./formatters";
 
 /**
@@ -101,7 +101,7 @@ export interface Column<
  */
 export interface DataTableSerializableProps<T extends object = RowData> {
   /**
-   * Unique identifier for this surface instance in the conversation.
+   * Unique identifier for this tool UI instance in the conversation.
    *
    * Used for:
    * - Assistant referencing ("the table above")
@@ -112,7 +112,7 @@ export interface DataTableSerializableProps<T extends object = RowData> {
    *
    * @example "data-table-expenses-q3", "search-results-repos"
    */
-  surfaceId: SurfaceId;
+  id: ToolUIId;
   /** Column definitions */
   columns: Column<T>[];
   /** Row data (primitives only - no functions or class instances) */
@@ -164,11 +164,6 @@ export interface DataTableSerializableProps<T extends object = RowData> {
   emptyMessage?: string;
   /** Max table height with vertical scroll (CSS value) */
   maxHeight?: string;
-  /**
-   * @deprecated Use `surfaceId` instead. This prop will be removed in a future version.
-   * Message identifier for context (used with assistant-ui)
-   */
-  messageId?: string;
   /**
    * BCP47 locale for formatting and sorting (e.g., 'en-US', 'de-DE', 'ja-JP')
    *
@@ -266,8 +261,7 @@ export interface DataTableClientProps<T extends object = RowData> {
  * ```
  */
 export interface DataTableProps<T extends object = RowData>
-  extends DataTableSerializableProps<T>,
-    DataTableClientProps<T> {}
+  extends DataTableSerializableProps<T>, DataTableClientProps<T> {}
 
 export interface DataTableContextValue<T extends object = RowData> {
   columns: Column<T>[];
@@ -276,7 +270,7 @@ export interface DataTableContextValue<T extends object = RowData> {
   sortBy?: ColumnKey<T>;
   sortDirection?: "asc" | "desc";
   toggleSort?: (key: ColumnKey<T>) => void;
-  messageId?: string;
+  id?: string;
   isLoading?: boolean;
   locale?: string;
 }

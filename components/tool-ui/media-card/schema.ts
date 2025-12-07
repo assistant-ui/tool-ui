@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { SurfaceIdSchema } from "../shared";
+import { ToolUIIdSchema } from "../shared";
 
 export const mediaKind = z.enum(["image", "video", "audio", "link"]);
 export type MediaCardKind = z.infer<typeof mediaKind>;
@@ -15,7 +15,7 @@ export type Fit = z.infer<typeof fit>;
 export const serializableMediaCardSchema = z
   .object({
     /**
-     * Unique identifier for this surface instance in the conversation.
+     * Unique identifier for this tool UI instance in the conversation.
      *
      * Used for:
      * - Assistant referencing ("the image above")
@@ -26,7 +26,7 @@ export const serializableMediaCardSchema = z
      *
      * @example "media-card-hero-image", "link-preview-article-123"
      */
-    surfaceId: SurfaceIdSchema,
+    id: ToolUIIdSchema,
     /**
      * The media asset's persistent identifier (e.g., database ID, CDN asset ID, URL hash).
      *

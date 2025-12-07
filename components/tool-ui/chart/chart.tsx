@@ -35,7 +35,7 @@ const DEFAULT_COLORS = [
 ];
 
 export function Chart({
-  surfaceId,
+  id,
   type,
   title,
   description,
@@ -85,7 +85,7 @@ export function Chart({
     <ChartContainer
       config={chartConfig}
       className="min-h-[200px] w-full"
-      data-surface-id={surfaceId}
+      data-tool-ui-id={id}
     >
       <ChartComponent data={data} accessibilityLayer>
         {showGrid && <CartesianGrid vertical={false} />}

@@ -8,7 +8,7 @@ export interface SocialPostConfig {
 
 export const sampleX: SocialPostConfig = {
   post: {
-    surfaceId: "social-post-preview-x",
+    id: "social-post-preview-x",
     postId: "x-post-1",
     platform: "x",
     author: {
@@ -40,7 +40,7 @@ export const sampleX: SocialPostConfig = {
 
 const sampleXQuoted: SocialPostConfig = {
   post: {
-    surfaceId: "social-post-preview-x-quoted",
+    id: "social-post-preview-x-quoted",
     postId: "x-post-1",
     platform: "x",
     author: {
@@ -56,7 +56,7 @@ const sampleXQuoted: SocialPostConfig = {
       mentions: [],
     },
     quotedPost: {
-      surfaceId: "social-post-preview-x-quoted-inner",
+      id: "social-post-preview-x-quoted-inner",
       postId: "x-post-quoted-1",
       platform: "x",
       author: {
@@ -99,7 +99,7 @@ const sampleXQuoted: SocialPostConfig = {
 
 export const sampleInstagram: SocialPostConfig = {
   post: {
-    surfaceId: "social-post-preview-instagram",
+    id: "social-post-preview-instagram",
     postId: "ig-post-1",
     platform: "instagram",
     author: {
@@ -150,7 +150,7 @@ export const sampleInstagram: SocialPostConfig = {
 
 export const sampleLinkedIn: SocialPostConfig = {
   post: {
-    surfaceId: "social-post-preview-linkedin",
+    id: "social-post-preview-linkedin",
     postId: "linkedin-post-1",
     platform: "linkedin",
     author: {
@@ -187,7 +187,7 @@ export const sampleLinkedIn: SocialPostConfig = {
 
 const sampleActions: SocialPostConfig = {
   post: {
-    surfaceId: "social-post-preview-actions",
+    id: "social-post-preview-actions",
     postId: "actions-post-1",
     platform: "x",
     author: {
