@@ -321,12 +321,6 @@ export function BadgeValue({ value, options }: BadgeValueProps) {
         ? "outline"
         : "secondary";
 
-  // Auto-capitalize badge text
-  const displayValue = value
-    .split(/[_-\s]+/)
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-    .join(" ");
-
   return (
     <Badge
       variant={variant}
@@ -342,7 +336,7 @@ export function BadgeValue({ value, options }: BadgeValueProps) {
           "bg-red-100 text-red-700 dark:bg-red-950 dark:text-red-100",
       )}
     >
-      {displayValue}
+      {value}
     </Badge>
   );
 }
