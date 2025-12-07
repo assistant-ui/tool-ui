@@ -140,6 +140,15 @@ Tool UIs live in chat: narrow widths, variable heights, mixed with prose.
 - **Touch:** Interactive elements need at least 44×44px tap area.
 - **Choices:** Limit visible options to 5–7. The assistant can offer to show more.
 
+## Addressability
+
+If the assistant can't point at something later, you lose half the value of rendering it.
+
+- **`surfaceId`**: Identifies this specific rendering in the conversation ("the preview above", "that table").
+- **`assetId` / row IDs / option IDs**: Identify real objects ("that link", "row 4", "the merge option").
+
+Prefer stable IDs derived from your backend (database IDs, canonical URLs) over array indexes or UUIDs generated at render time. When something can be acted on, it should have an ID the assistant can cite.
+
 ## Receipts
 
 When a user takes an action with consequences, the surface should transition to a receipt state that confirms what happened. This gives the user proof and gives the assistant something to reference later.

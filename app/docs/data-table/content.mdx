@@ -23,7 +23,7 @@ An information surface for tabular tool outputs with responsive layout, sorting,
     <div className="not-prose">
       <DataTable
         rowIdKey="id"
-        defaultSort={{ by: "priority", direction: "asc" }}
+        defaultSort={{ by: "createdAt", direction: "desc" }}
         columns={[
           { key: "issue", label: "Issue", priority: "primary", truncate: true },
           {
@@ -150,7 +150,7 @@ An information surface for tabular tool outputs with responsive layout, sorting,
           rowIdKey="id"
           columns={columns}
           data={data}
-          defaultSort={{ by: "priority", direction: "asc" }}
+          defaultSort={{ by: "createdAt", direction: "desc" }}
         />
       );
     }
@@ -221,7 +221,7 @@ Define a tool that returns table data, then render with the DataTable component.
 ```tsx
 // Backend tool
 import { tool } from "ai";
-import { serializableDataTableSchema } from "@tool-ui/data-table";
+import { serializableDataTableSchema } from "@/components/tool-ui/data-table/schema";
 
 const searchProducts = tool({
   description: "Search products and return results in a table",
@@ -250,7 +250,7 @@ const searchProducts = tool({
 
 // Frontend with assistant-ui
 import { makeAssistantToolUI } from "@assistant-ui/react";
-import { DataTable, parseSerializableDataTable } from "@tool-ui/data-table";
+import { DataTable, parseSerializableDataTable } from "@/components/tool-ui/data-table";
 
 export const SearchProductsUI = makeAssistantToolUI({
   toolName: "searchProducts",

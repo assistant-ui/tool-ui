@@ -103,11 +103,13 @@ pnpm dlx shadcn@latest add badge button card dropdown-menu tooltip
 
 ## Usage
 
+Define a tool that returns Media Card props, then render the card with runtime validation.
+
 ```tsx
 // Backend tool
 import { tool } from "ai";
 import { z } from "zod";
-import { serializableMediaCardSchema } from "@tool-ui/media-card";
+import { serializableMediaCardSchema } from "@/components/tool-ui/media-card/schema";
 
 const previewLink = tool({
   description: "Show a preview card for a URL",
@@ -116,37 +118,45 @@ const previewLink = tool({
   async execute({ url }) {
     // Fetch real metadata here
     return {
-      id: "link-1",
+      surfaceId: "link-preview-1",
+      assetId: url,
       kind: "link",
       href: url,
       title: "Example site",
       description: "Preview of the requested URL",
       thumb: "https://example.com/image.jpg",
-      meta: { source: new URL(url).hostname },
+      domain: new URL(url).hostname,
     };
   },
 });
 
 // Frontend with assistant-ui
 import { makeAssistantToolUI } from "@assistant-ui/react";
-import { MediaCard } from "@tool-ui/media-card";
+import {
+  MediaCard,
+  parseSerializableMediaCard,
+} from "@/components/tool-ui/media-card";
 
 export const PreviewLinkUI = makeAssistantToolUI({
   toolName: "previewLink",
-  render: ({ result }) => (
-    <MediaCard
-      {...result}
-      maxWidth="420px"
-      actions={[
-        { id: "open", label: "Open" },
-        { id: "save", label: "Save" },
-      ]}
-      onAction={(id, card) => {
-        if (id === "open") window.open(card.href, "_blank");
-        // Handle other actions
-      }}
-    />
-  ),
+  render: ({ result }) => {
+    const card = parseSerializableMediaCard(result);
+
+    return (
+      <MediaCard
+        {...card}
+        maxWidth="420px"
+        footerActions={[
+          { id: "open", label: "Open" },
+          { id: "save", label: "Save" },
+        ]}
+        onFooterAction={(id) => {
+          if (id === "open") window.open(card.href, "_blank");
+          // Handle other actions
+        }}
+      />
+    );
+  },
 });
 ```
 

@@ -28,12 +28,14 @@ export const tools = {
     outputSchema: serializableMediaCardSchema,
     async execute({ url }) {
       return {
-        id: "link-1",
+        surfaceId: "link-preview-1",
+        assetId: url,
         kind: "link",
         href: url,
         title: "React Server Components",
         thumb:
           "https://images.unsplash.com/photo-1633356122544-f134324a6cee?auto=format&fit=crop&q=80&w=1200",
+        domain: new URL(url).hostname,
       };
     },
   }),

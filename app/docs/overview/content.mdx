@@ -86,7 +86,7 @@ flowchart LR
 import { streamText, tool } from "ai";
 import { openai } from "@ai-sdk/openai";
 import { z } from "zod";
-import { serializableMediaCardSchema } from "@tool-ui/media-card";
+import { serializableMediaCardSchema } from "@/components/tool-ui/media-card/schema";
 
 export async function POST(req: Request) {
   const { messages } = await req.json();
@@ -135,7 +135,7 @@ import {
   AssistantChatTransport,
   makeAssistantToolUI,
 } from "@assistant-ui/react-ai-sdk";
-import { MediaCard } from "@tool-ui/media-card";
+import { MediaCard } from "@/components/tool-ui/media-card";
 
 const PreviewLinkUI = makeAssistantToolUI({
   toolName: "previewLink",

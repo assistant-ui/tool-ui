@@ -74,7 +74,7 @@ pnpm dlx shadcn@latest add button separator
 // Backend tool
 import { tool } from "ai";
 import { z } from "zod";
-import { serializableOptionListSchema } from "@tool-ui/option-list";
+import { serializableOptionListSchema } from "@/components/tool-ui/option-list/schema";
 
 const selectFormat = tool({
   description: "Let user select export format(s)",
@@ -91,7 +91,7 @@ const selectFormat = tool({
 
 // Frontend with assistant-ui
 import { makeAssistantToolUI } from "@assistant-ui/react";
-import { OptionList } from "@tool-ui/option-list";
+import { OptionList } from "@/components/tool-ui/option-list";
 
 export const SelectFormatUI = makeAssistantToolUI({
   toolName: "selectFormat",
