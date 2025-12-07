@@ -13,6 +13,7 @@ const STORAGE_KEY = "tool-ui-components-nav-collapsed";
 export function DocsNav() {
   const pathname = usePathname();
   const [collapsed, setCollapsed] = useState(false);
+  const [isPressing, setIsPressing] = useState(false);
 
   React.useEffect(() => {
     try {
@@ -23,14 +24,33 @@ export function DocsNav() {
     } catch {}
   }, []);
 
+  React.useEffect(() => {
+    setIsPressing(false);
+  }, [pathname]);
+
+  React.useEffect(() => {
+    const handleMouseUp = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      const isNavLink = target.closest('a[href^="/docs"]');
+      if (!isNavLink) {
+        setIsPressing(false);
+      }
+    };
+    document.addEventListener("mouseup", handleMouseUp);
+    return () => document.removeEventListener("mouseup", handleMouseUp);
+  }, []);
+
   const buildLinkClasses = (isActive: boolean) =>
     cn(
-      "flex items-center gap-2 rounded-lg px-4 hover:bg-primary/5 bg-background active:bg-primary/10 py-2 text-sm transition-[colors,background] duration-75",
+      "flex items-center gap-2 rounded-lg px-4 hover:bg-primary/5 bg-background active:bg-primary/4 py-2 text-sm transition-[colors,background] duration-75",
       {
         "justify-center px-0": collapsed,
-        "text-primary bg-primary/5": isActive,
+        "text-primary": isActive,
+        "bg-primary/5": isActive && !isPressing,
       },
     );
+
+  const handleLinkMouseDown = () => setIsPressing(true);
 
   const galleryPath = "/docs/gallery";
   const isGalleryActive = pathname === galleryPath;
@@ -49,6 +69,7 @@ export function DocsNav() {
             href={galleryPath}
             className={buildLinkClasses(isGalleryActive)}
             title={collapsed ? "Gallery" : undefined}
+            onMouseDown={handleLinkMouseDown}
           >
             {!collapsed && (
               <div className="flex flex-col overflow-hidden">
@@ -78,6 +99,7 @@ export function DocsNav() {
                 href={page.path}
                 className={buildLinkClasses(isActive)}
                 title={collapsed ? page.label : undefined}
+                onMouseDown={handleLinkMouseDown}
               >
                 {!collapsed && (
                   <div className="overflow-hidden">
@@ -104,6 +126,7 @@ export function DocsNav() {
                 href={component.path}
                 className={buildLinkClasses(isActive)}
                 title={collapsed ? component.label : undefined}
+                onMouseDown={handleLinkMouseDown}
               >
                 {!collapsed && (
                   <div className="overflow-hidden">

@@ -11,7 +11,7 @@ export function DocsBorderedShell({
   return (
     <div
       className={cn(
-        "bg-background relative box-border flex h-full min-h-0 w-full flex-col overflow-hidden border md:rounded-t-lg",
+        "bg-background relative box-border flex h-full min-h-0 w-full flex-col overflow-hidden border border-b-0 md:rounded-t-lg",
         className,
       )}
     >
