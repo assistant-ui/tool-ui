@@ -1,0 +1,156 @@
+import { DocsHeader } from "../_components/docs-header";
+
+<DocsHeader title="Plan" mdxPath="app/docs/plan/content.mdx" />
+
+A structured plan display component for presenting step-by-step tasks with progress tracking, status indicators, and expandable details. Perfect for AI assistants presenting implementation plans, task breakdowns, or guided workflows.
+
+<PlanPresetExample preset="comprehensive" />
+
+## Key Features
+
+- **Progress visualization**: Progress bar and "X of Y complete" summary
+- **Status indicators**: Visual icons for pending, in_progress, completed, and cancelled states
+- **Expandable details**: Todos with descriptions expand on click
+- **Completion celebration**: Visual feedback when all todos are done
+- **Temporal context**: Optional "Updated X ago" footer
+- **Collapsible overflow**: Items beyond threshold collapse into accordion
+
+## When to Use Plan
+
+- **Good for:** Implementation roadmaps, onboarding checklists, deployment steps, task breakdowns
+- **Not for:** Real-time task management (use interactive todo apps), single actions
+
+## Props
+
+### Core Props
+
+- `id` (string, required): Unique identifier for this component
+- `title` (string, required): Plan title displayed as the header
+- `description` (string, optional): Context description below the title
+- `todos` (PlanTodo[], required): Array of todo items (min 1)
+
+### Todo Item Shape
+
+```ts
+interface PlanTodo {
+  id: string;
+  label: string;
+  status: "pending" | "in_progress" | "completed" | "cancelled";
+  description?: string; // Expandable detail text
+}
+```
+
+### Display Options
+
+- `maxVisibleTodos` (number, optional): Items to show before collapsing (default: 4)
+- `updatedAt` (string, optional): ISO timestamp for "Updated X ago" footer
+
+### Standard Props
+
+- `responseActions` (Action[], optional): Footer action buttons
+- `className` (string, optional): Additional CSS classes
+
+## Examples
+
+### Simple Plan (No Accordion)
+
+<PlanPresetExample preset="simple" />
+
+### Comprehensive Plan with Details
+
+<PlanPresetExample preset="comprehensive" />
+
+### Mixed Status States
+
+<PlanPresetExample preset="mixed_states" />
+
+### All Complete (Celebration State)
+
+<PlanPresetExample preset="all_complete" />
+
+## Status States
+
+| Status | Icon | Styling |
+|--------|------|---------|
+| `pending` | Circle outline | Muted color |
+| `in_progress` | Filled circle | Primary color with glow |
+| `completed` | Checkmark | Emerald green, strikethrough |
+| `cancelled` | X circle | Muted, strikethrough |
+
+## Source and Install
+
+Copy `components/tool-ui/plan` into your project:
+
+<Files>
+  <Folder name="components" defaultOpen>
+    <Folder name="tool-ui" defaultOpen>
+      <Folder name="plan" defaultOpen>
+        <File name="plan.tsx" />
+        <File name="schema.ts" />
+        <File name="index.tsx" />
+        <File name="_ui.tsx" />
+      </Folder>
+    </Folder>
+  </Folder>
+</Files>
+
+Dependencies (likely already installed):
+
+```bash
+pnpm add lucide-react zod clsx tailwind-merge
+```
+
+## Usage
+
+```tsx
+import { Plan } from "@/components/tool-ui/plan";
+
+export function MyComponent() {
+  return (
+    <Plan
+      id="onboarding-plan"
+      title="Getting Started"
+      description="Complete these steps to set up your project"
+      todos={[
+        { id: "1", label: "Install dependencies", status: "completed" },
+        { id: "2", label: "Configure environment", status: "in_progress" },
+        { id: "3", label: "Run the app", status: "pending" },
+      ]}
+    />
+  );
+}
+```
+
+## With Expandable Details
+
+```tsx
+<Plan
+  id="feature-plan"
+  title="Feature Implementation"
+  todos={[
+    {
+      id: "1",
+      label: "Design API schema",
+      status: "completed",
+      description: "Created OpenAPI spec with all endpoints documented",
+    },
+    {
+      id: "2",
+      label: "Implement endpoints",
+      status: "in_progress",
+      description: "Working on authentication middleware",
+    },
+    { id: "3", label: "Write tests", status: "pending" },
+  ]}
+  updatedAt={new Date().toISOString()}
+/>
+```
+
+## Completion Behavior
+
+When all todos have `status: "completed"`:
+- Progress bar turns emerald green
+- Container gets subtle green border/tint
+- "All done!" badge appears
+
+This provides positive feedback when a plan is fully executed.

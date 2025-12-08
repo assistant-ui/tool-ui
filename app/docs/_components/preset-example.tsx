@@ -22,6 +22,8 @@ import {
   TerminalPresetName,
   TerminalConfig,
 } from "@/lib/presets/terminal";
+import { Plan } from "@/components/tool-ui/plan";
+import { planPresets, PlanPresetName, PlanConfig } from "@/lib/presets/plan";
 
 function generateOptionListCode(config: OptionListConfig): string {
   const list = config.optionList;
@@ -249,6 +251,54 @@ export function TerminalPresetExample({ preset }: TerminalPresetExampleProps) {
       <Tab value="Preview">
         <div className="not-prose">
           <Terminal {...config.terminal} />
+        </div>
+      </Tab>
+      <Tab value="Code">
+        <DynamicCodeBlock lang="tsx" code={code} />
+      </Tab>
+    </Tabs>
+  );
+}
+
+function generatePlanCode(config: PlanConfig): string {
+  const plan = config.plan;
+  const props: string[] = [];
+
+  props.push(`  id="${plan.id}"`);
+  props.push(`  title="${plan.title}"`);
+
+  if (plan.description) {
+    props.push(`  description="${plan.description}"`);
+  }
+
+  props.push(
+    `  todos={${JSON.stringify(plan.todos, null, 4).replace(/\n/g, "\n  ")}}`,
+  );
+
+  if (plan.maxVisibleTodos) {
+    props.push(`  maxVisibleTodos={${plan.maxVisibleTodos}}`);
+  }
+
+  if (plan.updatedAt) {
+    props.push(`  updatedAt="${plan.updatedAt}"`);
+  }
+
+  return `<Plan\n${props.join("\n")}\n/>`;
+}
+
+interface PlanPresetExampleProps {
+  preset: PlanPresetName;
+}
+
+export function PlanPresetExample({ preset }: PlanPresetExampleProps) {
+  const config = planPresets[preset];
+  const code = generatePlanCode(config);
+
+  return (
+    <Tabs items={["Preview", "Code"]}>
+      <Tab value="Preview">
+        <div className="not-prose">
+          <Plan {...config.plan} />
         </div>
       </Tab>
       <Tab value="Code">

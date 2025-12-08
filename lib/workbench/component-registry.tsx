@@ -12,6 +12,7 @@ import {
   Terminal,
   parseSerializableTerminal,
 } from "@/components/tool-ui/terminal";
+import { Plan, parseSerializablePlan } from "@/components/tool-ui/plan";
 
 export type ComponentCategory =
   | "cards"
@@ -44,6 +45,11 @@ function CodeBlockWrapper(props: Record<string, unknown>) {
 function TerminalWrapper(props: Record<string, unknown>) {
   const parsed = parseSerializableTerminal(props);
   return <Terminal {...parsed} />;
+}
+
+function PlanWrapper(props: Record<string, unknown>) {
+  const parsed = parseSerializablePlan(props);
+  return <Plan {...parsed} />;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -82,6 +88,26 @@ export const workbenchComponents: WorkbenchComponentEntry[] = [
         },
       ],
       selectionMode: "single",
+    },
+  },
+  {
+    id: "plan",
+    label: "Plan",
+    description: "Structured plan display with collapsible todo list",
+    category: "lists",
+    component: PlanWrapper,
+    defaultProps: {
+      id: "workbench-plan",
+      title: "Implementation Plan",
+      description: "Step-by-step guide for the feature rollout",
+      todos: [
+        { id: "1", label: "Review requirements", status: "completed" },
+        { id: "2", label: "Design solution", status: "completed" },
+        { id: "3", label: "Implement core logic", status: "in_progress" },
+        { id: "4", label: "Write tests", status: "pending" },
+        { id: "5", label: "Update documentation", status: "pending" },
+        { id: "6", label: "Deploy to staging", status: "pending" },
+      ],
     },
   },
   {

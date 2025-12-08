@@ -19,6 +19,7 @@ import {
   OptionListPresetExample,
   CodeBlockPresetExample,
   TerminalPresetExample,
+  PlanPresetExample,
 } from "@/app/docs/_components/preset-example";
 
 export function useMDXComponents(components: MDXComponents): MDXComponents {
@@ -93,6 +94,7 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
     OptionListPresetExample,
     CodeBlockPresetExample,
     TerminalPresetExample,
+    PlanPresetExample,
     ...components,
   };
 }

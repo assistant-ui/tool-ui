@@ -31,6 +31,11 @@ export const componentsRegistry: ComponentMeta[] = [
     path: "/docs/option-list",
   },
   {
+    id: "plan",
+    label: "Plan",
+    path: "/docs/plan",
+  },
+  {
     id: "social-post",
     label: "Social Posts",
     path: "/docs/social-post",

@@ -23,6 +23,10 @@ import {
   TerminalPresetName,
   terminalPresetDescriptions,
 } from "@/lib/presets/terminal";
+import {
+  PlanPresetName,
+  planPresetDescriptions,
+} from "@/lib/presets/plan";
 import { cn } from "@/lib/ui/cn";
 
 type ComponentPreset =
@@ -31,7 +35,8 @@ type ComponentPreset =
   | MediaCardPresetName
   | OptionListPresetName
   | CodeBlockPresetName
-  | TerminalPresetName;
+  | TerminalPresetName
+  | PlanPresetName;
 
 interface PresetSelectorProps {
   componentId: string;
@@ -89,6 +94,13 @@ const terminalPresetNames: TerminalPresetName[] = [
   "noOutput",
 ];
 
+const planPresetNames: PlanPresetName[] = [
+  "simple",
+  "comprehensive",
+  "mixed_states",
+  "all_complete",
+];
+
 export function PresetSelector({
   componentId,
   currentPreset,
@@ -107,7 +119,9 @@ export function PresetSelector({
               ? codeBlockPresetNames
               : componentId === "terminal"
                 ? terminalPresetNames
-                : optionListPresetNames;
+                : componentId === "plan"
+                  ? planPresetNames
+                  : optionListPresetNames;
 
   const descriptions =
     componentId === "chart"
@@ -122,7 +136,9 @@ export function PresetSelector({
               ? codeBlockPresetDescriptions
               : componentId === "terminal"
                 ? terminalPresetDescriptions
-                : optionListPresetDescriptions;
+                : componentId === "plan"
+                  ? planPresetDescriptions
+                  : optionListPresetDescriptions;
 
   return (
     <ItemGroup className="gap-1">

@@ -6,6 +6,7 @@ import { OptionListConfig } from "@/lib/presets/option-list";
 import { ChartConfig } from "@/lib/presets/chart";
 import { CodeBlockConfig } from "@/lib/presets/code-block";
 import { TerminalConfig } from "@/lib/presets/terminal";
+import { PlanConfig } from "@/lib/presets/plan";
 import { DynamicCodeBlock } from "fumadocs-ui/components/dynamic-codeblock";
 
 interface CodePanelProps {
@@ -16,6 +17,7 @@ interface CodePanelProps {
   chartConfig?: ChartConfig;
   codeBlockConfig?: CodeBlockConfig;
   terminalConfig?: TerminalConfig;
+  planConfig?: PlanConfig;
   optionListSelection?: string[] | string | null;
   mediaCardMaxWidth?: string;
   sort?: { by?: string; direction?: "asc" | "desc" };
@@ -33,6 +35,7 @@ export function CodePanel({
   chartConfig,
   codeBlockConfig,
   terminalConfig,
+  planConfig,
   optionListSelection,
   mediaCardMaxWidth,
   sort,
@@ -359,6 +362,33 @@ export function CodePanel({
     return `<Terminal\n${props.join("\n")}\n/>`;
   };
 
+  const generatePlanCode = () => {
+    if (!planConfig) return "";
+    const plan = planConfig.plan;
+    const props: string[] = [];
+
+    props.push(`  id="${plan.id}"`);
+    props.push(`  title="${escape(plan.title)}"`);
+
+    if (plan.description) {
+      props.push(`  description="${escape(plan.description)}"`);
+    }
+
+    props.push(
+      `  todos={${JSON.stringify(plan.todos, null, 4).replace(/\n/g, "\n  ")}}`,
+    );
+
+    if (plan.maxVisibleTodos) {
+      props.push(`  maxVisibleTodos={${plan.maxVisibleTodos}}`);
+    }
+
+    if (plan.updatedAt) {
+      props.push(`  updatedAt="${plan.updatedAt}"`);
+    }
+
+    return `<Plan\n${props.join("\n")}\n/>`;
+  };
+
   const generateCode = () => {
     if (componentId === "data-table") {
       return generateDataTableCode();
@@ -372,6 +402,8 @@ export function CodePanel({
       return generateCodeBlockCode();
     } else if (componentId === "terminal") {
       return generateTerminalCode();
+    } else if (componentId === "plan") {
+      return generatePlanCode();
     }
     return "";
   };
