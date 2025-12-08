@@ -136,9 +136,9 @@ function OptionItem({
           <span className="flex h-6 items-center">{option.icon}</span>
         )}
         <div className="flex flex-col text-left">
-          <span className="leading-6">{option.label}</span>
+          <span className="text-pretty leading-6">{option.label}</span>
           {option.description && (
-            <span className="text-muted-foreground text-sm font-normal">
+            <span className="text-muted-foreground text-pretty text-sm font-normal">
               {option.description}
             </span>
           )}
@@ -189,11 +189,11 @@ function OptionListReceipt({
                 <span className="flex h-6 items-center">{option.icon}</span>
               )}
               <div className="flex flex-col text-left">
-                <span className="text-base leading-6 font-medium @md/option-list:text-sm">
+                <span className="text-pretty text-base leading-6 font-medium @md/option-list:text-sm">
                   {option.label}
                 </span>
                 {option.description && (
-                  <span className="text-muted-foreground text-sm font-normal">
+                  <span className="text-muted-foreground text-pretty text-sm font-normal">
                     {option.description}
                   </span>
                 )}

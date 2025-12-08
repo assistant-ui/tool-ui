@@ -206,7 +206,7 @@ function MediaGrid({
 function PostBody({ text }: { text?: string }) {
   if (!text) return null;
   return (
-    <span className="text-sm leading-relaxed wrap-break-word whitespace-pre-wrap">
+    <span className="text-pretty text-sm leading-relaxed wrap-break-word whitespace-pre-wrap">
       {text}
     </span>
   );

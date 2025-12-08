@@ -115,12 +115,12 @@ export function MediaCardBody() {
   return (
     <div className="flex w-full flex-col gap-1">
       {title ? (
-        <h3 className="text-foreground text-base font-medium">
+        <h3 className="text-foreground text-pretty text-base font-medium">
           <span className={cn("line-clamp-2")}>{title}</span>
         </h3>
       ) : null}
       {description ? (
-        <p className="text-muted-foreground leading-snug">
+        <p className="text-muted-foreground text-pretty leading-snug">
           <span className="line-clamp-2">{description}</span>
         </p>
       ) : null}

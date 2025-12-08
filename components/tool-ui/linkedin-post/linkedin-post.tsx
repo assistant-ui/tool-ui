@@ -96,7 +96,7 @@ function PostBody({ text }: { text?: string }) {
   if (!text) return null;
 
   return (
-    <div className="text-sm leading-relaxed wrap-break-word whitespace-pre-wrap">
+    <div className="text-pretty text-sm leading-relaxed wrap-break-word whitespace-pre-wrap">
       {shouldTruncate && !isExpanded ? (
         <>
           {text.slice(0, 280)}
@@ -164,7 +164,7 @@ function PostLinkPreview({ preview }: { preview: LinkedInPostLinkPreview }) {
       )}
       <div className="p-3">
         {preview.title && (
-          <div className="line-clamp-2 font-medium">{preview.title}</div>
+          <div className="line-clamp-2 text-pretty font-medium">{preview.title}</div>
         )}
         {domain && (
           <div className="text-muted-foreground mt-1 text-xs">{domain}</div>

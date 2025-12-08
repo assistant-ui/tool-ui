@@ -148,8 +148,8 @@ export function Chart({
     <Card className={cn("w-full", className)}>
       {(title || description) && (
         <CardHeader>
-          {title && <CardTitle>{title}</CardTitle>}
-          {description && <CardDescription>{description}</CardDescription>}
+          {title && <CardTitle className="text-pretty">{title}</CardTitle>}
+          {description && <CardDescription className="text-pretty">{description}</CardDescription>}
         </CardHeader>
       )}
       <CardContent>{chartContent}</CardContent>

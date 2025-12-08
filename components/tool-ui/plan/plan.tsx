@@ -115,13 +115,13 @@ function PlanTodoItem({ todo }: PlanTodoItemProps) {
       <Collapsible>
         <CollapsibleTrigger className="group/todo flex w-full cursor-default items-start gap-2 px-2 py-1 text-left">
           <TodoIcon icon={icon} className={iconClassName} animate={isActive} />
-          <span className={cn("flex-1 text-sm", labelClassName)}>
+          <span className={cn("flex-1 text-pretty text-sm", labelClassName)}>
             {todo.label}
           </span>
           <ChevronRight className="text-muted-foreground/50 mt-0.5 size-4 shrink-0 rotate-90 transition-transform duration-150 group-data-[state=open]/todo:[transform:rotateY(180deg)]" />
         </CollapsibleTrigger>
         <CollapsibleContent>
-          <p className="text-muted-foreground pr-2 pb-1.5 pl-8 text-xs">
+          <p className="text-muted-foreground text-pretty pr-2 pb-1.5 pl-8 text-xs">
             {todo.description}
           </p>
         </CollapsibleContent>

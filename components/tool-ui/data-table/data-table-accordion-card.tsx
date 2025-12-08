@@ -172,7 +172,7 @@ export function DataTableAccordionCard({
                   </dt>
                   <dd
                     className={cn(
-                      "text-foreground min-w-0 break-words",
+                      "text-foreground min-w-0 text-pretty break-words",
                       col.align === "right" && "text-right",
                       col.align === "center" && "text-center",
                     )}

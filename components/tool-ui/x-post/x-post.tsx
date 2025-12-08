@@ -104,7 +104,7 @@ function AuthorInfo({
 function PostBody({ text }: { text?: string }) {
   if (!text) return null;
   return (
-    <p className="text-[15px] leading-normal wrap-break-word whitespace-pre-wrap">
+    <p className="text-pretty text-[15px] leading-normal wrap-break-word whitespace-pre-wrap">
       {text}
     </p>
   );
@@ -177,9 +177,9 @@ function PostLinkPreview({ preview }: { preview: XPostLinkPreview }) {
         {domain && (
           <div className="text-muted-foreground text-xs">{domain}</div>
         )}
-        {preview.title && <div className="font-medium">{preview.title}</div>}
+        {preview.title && <div className="text-pretty font-medium">{preview.title}</div>}
         {preview.description && (
-          <div className="text-muted-foreground line-clamp-2 text-sm">
+          <div className="text-muted-foreground line-clamp-2 text-pretty text-sm">
             {preview.description}
           </div>
         )}
