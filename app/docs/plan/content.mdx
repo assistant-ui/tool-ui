@@ -12,7 +12,6 @@ A structured plan display component for presenting step-by-step tasks with progr
 - **Status indicators**: Visual icons for pending, in_progress, completed, and cancelled states
 - **Expandable details**: Todos with descriptions expand on click
 - **Completion celebration**: Visual feedback when all todos are done
-- **Temporal context**: Optional "Updated X ago" footer
 - **Collapsible overflow**: Items beyond threshold collapse into accordion
 
 ## When to Use Plan
@@ -22,33 +21,71 @@ A structured plan display component for presenting step-by-step tasks with progr
 
 ## Props
 
-### Core Props
+<TypeTable
+  type={{
+    id: {
+      description: "Unique identifier for this component",
+      type: "string",
+      required: true,
+    },
+    title: {
+      description: "Plan title displayed as the header",
+      type: "string",
+      required: true,
+    },
+    description: {
+      description: "Context description below the title",
+      type: "string",
+    },
+    todos: {
+      description: "Array of todo items (min 1)",
+      type: "PlanTodo[]",
+      required: true,
+    },
+    maxVisibleTodos: {
+      description: "Items to show before collapsing",
+      type: "number",
+      default: "4",
+    },
+    showProgress: {
+      description: "Show/hide progress bar and summary",
+      type: "boolean",
+      default: "true",
+    },
+    responseActions: {
+      description: "Footer action buttons",
+      type: "Action[] | ActionsConfig",
+    },
+    className: { description: "Additional CSS classes", type: "string" },
+    onResponseAction: {
+      description: "Callback when action button clicked",
+      type: "(actionId: string) => void",
+    },
+    onBeforeResponseAction: {
+      description: "Validation before action executes",
+      type: "(actionId: string) => boolean",
+    },
+  }}
+/>
 
-- `id` (string, required): Unique identifier for this component
-- `title` (string, required): Plan title displayed as the header
-- `description` (string, optional): Context description below the title
-- `todos` (PlanTodo[], required): Array of todo items (min 1)
+## Todo Item Schema
 
-### Todo Item Shape
-
-```ts
-interface PlanTodo {
-  id: string;
-  label: string;
-  status: "pending" | "in_progress" | "completed" | "cancelled";
-  description?: string; // Expandable detail text
-}
-```
-
-### Display Options
-
-- `maxVisibleTodos` (number, optional): Items to show before collapsing (default: 4)
-- `updatedAt` (string, optional): ISO timestamp for "Updated X ago" footer
-
-### Standard Props
-
-- `responseActions` (Action[], optional): Footer action buttons
-- `className` (string, optional): Additional CSS classes
+<TypeTable
+  type={{
+    id: {
+      description: "Unique todo identifier",
+      type: "string",
+      required: true,
+    },
+    label: { description: "Display text", type: "string", required: true },
+    status: {
+      description: "Current state",
+      type: "'pending' | 'in_progress' | 'completed' | 'cancelled'",
+      required: true,
+    },
+    description: { description: "Expandable detail text", type: "string" },
+  }}
+/>
 
 ## Examples
 
@@ -70,20 +107,57 @@ interface PlanTodo {
 
 ## Status States
 
-| Status        | Icon           | Styling                      |
-| ------------- | -------------- | ---------------------------- |
-| `pending`     | Circle outline | Muted color                  |
-| `in_progress` | Filled circle  | Primary color with glow      |
-| `completed`   | Checkmark      | Emerald green, strikethrough |
-| `cancelled`   | X circle       | Muted, strikethrough         |
+<TypeTable
+  type={{
+    pending: {
+      description: "Circle outline icon, muted color",
+      type: "Not started",
+    },
+    in_progress: {
+      description: "Dashed circle (spinning) icon, shimmer text effect",
+      type: "Active",
+    },
+    completed: {
+      description: "Checkmark icon, emerald green with strikethrough",
+      type: "Done",
+    },
+    cancelled: {
+      description: "X circle icon, destructive color with strikethrough",
+      type: "Skipped",
+    },
+  }}
+/>
 
 ## Source and Install
 
-Copy `components/tool-ui/plan` into your project:
+Copy `components/tool-ui/plan` and the `shared` directory into your project. The `shared` folder contains utilities used by all Tool UI components. The `tool-ui` directory should sit alongside your shadcn `ui` directory.
+
+### Prerequisites
+
+This component requires the following [shadcn/ui](https://ui.shadcn.com) components:
+
+```bash
+pnpm dlx shadcn@latest add accordion button card collapsible
+```
+
+### Directory Structure
 
 <Files>
   <Folder name="components" defaultOpen>
+    <Folder name="ui">
+      <File name="accordion.tsx" />
+      <File name="button.tsx" />
+      <File name="card.tsx" />
+      <File name="collapsible.tsx" />
+      <File name="..." />
+    </Folder>
     <Folder name="tool-ui" defaultOpen>
+      <Folder name="shared" defaultOpen>
+        <File name="action-buttons.tsx" />
+        <File name="schema.ts" />
+        <File name="index.ts" />
+        <File name="..." />
+      </Folder>
       <Folder name="plan" defaultOpen>
         <File name="plan.tsx" />
         <File name="schema.ts" />
@@ -94,31 +168,60 @@ Copy `components/tool-ui/plan` into your project:
   </Folder>
 </Files>
 
-Dependencies (likely already installed):
+### Download
 
-```bash
-pnpm add lucide-react zod clsx tailwind-merge
-```
+- [**Shared Dependencies (GitHub)**](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/shared) ([ZIP](https://download-directory.github.io/?url=https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/shared))
+- [**Plan (GitHub)**](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/plan) ([ZIP](https://download-directory.github.io/?url=https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/plan))
 
 ## Usage
 
 ```tsx
-import { Plan } from "@/components/tool-ui/plan";
+// Backend tool
+import { tool } from "ai";
+import { z } from "zod";
+import { SerializablePlanSchema } from "@/components/tool-ui/plan/schema";
 
-export function MyComponent() {
-  return (
-    <Plan
-      id="onboarding-plan"
-      title="Getting Started"
-      description="Complete these steps to set up your project"
-      todos={[
-        { id: "1", label: "Install dependencies", status: "completed" },
-        { id: "2", label: "Configure environment", status: "in_progress" },
-        { id: "3", label: "Run the app", status: "pending" },
-      ]}
-    />
-  );
-}
+const showPlan = tool({
+  description: "Display an implementation plan to the user",
+  inputSchema: z.object({ task: z.string() }),
+  outputSchema: SerializablePlanSchema,
+  async execute({ task }) {
+    return {
+      id: "plan-1",
+      title: "Implementation Plan",
+      description: `Steps to complete: ${task}`,
+      todos: [
+        { id: "1", label: "Analyze requirements", status: "completed" },
+        { id: "2", label: "Implement solution", status: "in_progress" },
+        { id: "3", label: "Write tests", status: "pending" },
+      ],
+    };
+  },
+});
+
+// Frontend with assistant-ui
+import { makeAssistantToolUI } from "@assistant-ui/react";
+import { Plan, parseSerializablePlan } from "@/components/tool-ui/plan";
+
+export const ShowPlanUI = makeAssistantToolUI({
+  toolName: "showPlan",
+  render: ({ result }) => {
+    const plan = parseSerializablePlan(result);
+    return (
+      <Plan
+        {...plan}
+        responseActions={[
+          { id: "approve", label: "Approve Plan" },
+          { id: "revise", label: "Request Changes", variant: "secondary" },
+        ]}
+        onResponseAction={(id) => {
+          if (id === "approve") console.log("Plan approved");
+          // Handle other actions
+        }}
+      />
+    );
+  },
+});
 ```
 
 ## With Expandable Details
@@ -142,7 +245,6 @@ export function MyComponent() {
     },
     { id: "3", label: "Write tests", status: "pending" },
   ]}
-  updatedAt="2025-01-15T10:30:00.000Z"
 />
 ```
 
@@ -150,8 +252,12 @@ export function MyComponent() {
 
 When all todos have `status: "completed"`:
 
-- Progress bar turns emerald green
-- Container gets subtle green border/tint
-- "All done!" badge appears
+- Progress bar fill turns emerald green
+- Green checkmark appears in the card header (opposite the title)
 
-This provides positive feedback when a plan is fully executed.
+This provides subtle positive feedback when a plan is fully executed.
+
+## Accessibility
+
+- Spinning icon and shimmer animations respect `prefers-reduced-motion`
+- Users who prefer reduced motion see static icons and text
