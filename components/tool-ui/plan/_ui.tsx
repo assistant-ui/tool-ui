@@ -27,6 +27,7 @@ export {
   CardTitle,
   CardDescription,
   CardContent,
+  CardFooter,
 } from "../../ui/card";
 export {
   Collapsible,

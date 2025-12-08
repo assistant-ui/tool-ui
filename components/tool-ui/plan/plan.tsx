@@ -18,6 +18,7 @@ import {
   CardTitle,
   CardDescription,
   CardContent,
+  CardFooter,
   Accordion,
   AccordionItem,
   AccordionTrigger,
@@ -26,6 +27,7 @@ import {
   CollapsibleTrigger,
   CollapsibleContent,
 } from "./_ui";
+import { ActionButtons, normalizeActionsConfig } from "../shared";
 
 const DEFAULT_MAX_VISIBLE = 4;
 
@@ -51,7 +53,7 @@ const STATUS_STYLES: Record<PlanTodoStatus, StatusStyle> = {
   in_progress: {
     icon: CircleDotDashed,
     iconClassName: "text-muted-foreground",
-    labelClassName: "shimmer text-primary/50",
+    labelClassName: "motion-safe:shimmer text-primary/50",
   },
   completed: {
     icon: CheckCircle2,
@@ -78,15 +80,9 @@ function TodoIcon({
 
   if (animate) {
     return (
-      <>
-        <style>{SPIN_KEYFRAMES}</style>
-        <span
-          className="mt-0.5 inline-flex shrink-0"
-          style={{ animation: "plan-spin 8s linear infinite" }}
-        >
-          {iconElement}
-        </span>
-      </>
+      <span className="mt-0.5 inline-flex shrink-0 motion-safe:animate-[plan-spin_8s_linear_infinite]">
+        {iconElement}
+      </span>
     );
   }
 
@@ -107,7 +103,7 @@ function PlanTodoItem({ todo }: PlanTodoItemProps) {
 
   if (!todo.description) {
     return (
-      <li className="hover:bg-muted -mx-2 flex items-start gap-2 rounded-md px-2 py-1">
+      <li className="-mx-2 flex cursor-default items-start gap-2 rounded-md px-2 py-1">
         <TodoIcon icon={icon} className={iconClassName} animate={isActive} />
         {todoLabel}
       </li>
@@ -115,9 +111,9 @@ function PlanTodoItem({ todo }: PlanTodoItemProps) {
   }
 
   return (
-    <li className="hover:bg-muted -mx-2 rounded-md">
+    <li className="hover:bg-muted -mx-2 cursor-default rounded-md">
       <Collapsible>
-        <CollapsibleTrigger className="group/todo flex w-full items-start gap-2 px-2 py-1 text-left">
+        <CollapsibleTrigger className="group/todo flex w-full cursor-default items-start gap-2 px-2 py-1 text-left">
           <TodoIcon icon={icon} className={iconClassName} animate={isActive} />
           <span className={cn("flex-1 text-sm", labelClassName)}>
             {todo.label}
@@ -155,12 +151,7 @@ interface ProgressBarProps {
 
 function ProgressBar({ progress, isCelebrating }: ProgressBarProps) {
   return (
-    <div
-      className={cn(
-        "mb-3 h-1.5 overflow-hidden rounded-full",
-        isCelebrating ? "bg-emerald-500/20" : "bg-muted",
-      )}
-    >
+    <div className="bg-muted mb-3 h-1.5 overflow-hidden rounded-full">
       <div
         className={cn(
           "h-full transition-all duration-500",
@@ -172,6 +163,11 @@ function ProgressBar({ progress, isCelebrating }: ProgressBarProps) {
   );
 }
 
+interface PlanClientProps {
+  onResponseAction?: (actionId: string) => void | Promise<void>;
+  onBeforeResponseAction?: (actionId: string) => boolean | Promise<boolean>;
+}
+
 export function Plan({
   id,
   title,
@@ -179,8 +175,11 @@ export function Plan({
   todos,
   maxVisibleTodos = DEFAULT_MAX_VISIBLE,
   showProgress = true,
+  responseActions,
+  onResponseAction,
+  onBeforeResponseAction,
   className,
-}: PlanProps) {
+}: PlanProps & PlanClientProps) {
   const { visibleTodos, hiddenTodos, completedCount, allComplete, progress } =
     useMemo(() => {
       const completed = todos.filter((t) => t.status === "completed").length;
@@ -193,53 +192,73 @@ export function Plan({
       };
     }, [todos, maxVisibleTodos]);
 
+  const normalizedActions = useMemo(
+    () => normalizeActionsConfig(responseActions),
+    [responseActions],
+  );
+
   return (
-    <Card className={cn("w-full max-w-md", className)} data-tool-ui-id={id}>
-      <CardHeader className="flex flex-row items-start justify-between gap-4">
-        <div className="space-y-1.5">
-          <CardTitle>{title}</CardTitle>
-          {description && <CardDescription>{description}</CardDescription>}
-        </div>
-        {allComplete && (
-          <CheckCircle2 className="mt-0.5 size-5 shrink-0 text-emerald-500" />
-        )}
-      </CardHeader>
-
-      <CardContent>
-        <div className="bg-muted/50 rounded-lg border p-3">
-          {showProgress && (
-            <>
-              <div className="text-muted-foreground mb-2 text-sm">
-                {completedCount} of {todos.length} complete
-              </div>
-
-              <ProgressBar progress={progress} isCelebrating={allComplete} />
-            </>
+    <>
+      <style>{SPIN_KEYFRAMES}</style>
+      <Card className={cn("w-full max-w-md", className)} data-tool-ui-id={id}>
+        <CardHeader className="flex flex-row items-start justify-between gap-4">
+          <div className="space-y-1.5">
+            <CardTitle>{title}</CardTitle>
+            {description && <CardDescription>{description}</CardDescription>}
+          </div>
+          {allComplete && (
+            <CheckCircle2 className="mt-0.5 size-5 shrink-0 text-emerald-500" />
           )}
+        </CardHeader>
 
-          <ul className="space-y-2">
-            <TodoList todos={visibleTodos} />
+        <CardContent>
+          <div className="bg-muted/50 rounded-lg border p-3">
+            {showProgress && (
+              <>
+                <div className="text-muted-foreground mb-2 text-sm">
+                  {completedCount} of {todos.length} complete
+                </div>
 
-            {hiddenTodos.length > 0 && (
-              <li className="mt-1">
-                <Accordion type="single" collapsible>
-                  <AccordionItem value="more" className="border-0">
-                    <AccordionTrigger className="text-muted-foreground hover:text-primary flex items-start justify-start gap-2 py-1 text-sm font-normal [&>svg:last-child]:hidden">
-                      <MoreHorizontal className="text-muted-foreground/70 mt-0.5 size-4 shrink-0" />
-                      <span>{hiddenTodos.length} more</span>
-                    </AccordionTrigger>
-                    <AccordionContent className="pt-2 pb-0">
-                      <ul className="-mx-2 space-y-2 px-2">
-                        <TodoList todos={hiddenTodos} />
-                      </ul>
-                    </AccordionContent>
-                  </AccordionItem>
-                </Accordion>
-              </li>
+                <ProgressBar progress={progress} isCelebrating={allComplete} />
+              </>
             )}
-          </ul>
-        </div>
-      </CardContent>
-    </Card>
+
+            <ul className="space-y-2">
+              <TodoList todos={visibleTodos} />
+
+              {hiddenTodos.length > 0 && (
+                <li className="mt-1">
+                  <Accordion type="single" collapsible>
+                    <AccordionItem value="more" className="border-0">
+                      <AccordionTrigger className="text-muted-foreground hover:text-primary flex cursor-default items-start justify-start gap-2 py-1 text-sm font-normal [&>svg:last-child]:hidden">
+                        <MoreHorizontal className="text-muted-foreground/70 mt-0.5 size-4 shrink-0" />
+                        <span>{hiddenTodos.length} more</span>
+                      </AccordionTrigger>
+                      <AccordionContent className="pt-2 pb-0">
+                        <ul className="-mx-2 space-y-2 px-2">
+                          <TodoList todos={hiddenTodos} />
+                        </ul>
+                      </AccordionContent>
+                    </AccordionItem>
+                  </Accordion>
+                </li>
+              )}
+            </ul>
+          </div>
+        </CardContent>
+
+        {normalizedActions && (
+          <CardFooter className="@container/actions">
+            <ActionButtons
+              actions={normalizedActions.items}
+              align={normalizedActions.align}
+              confirmTimeout={normalizedActions.confirmTimeout}
+              onAction={(id) => onResponseAction?.(id)}
+              onBeforeAction={onBeforeResponseAction}
+            />
+          </CardFooter>
+        )}
+      </Card>
+    </>
   );
 }

@@ -110,8 +110,8 @@ export const planPresets: Record<PlanPresetName, PlanConfig> = {
 };
 
 export const planPresetDescriptions: Record<PlanPresetName, string> = {
-  simple: "A minimal plan with 3 todos (no accordion)",
-  comprehensive: "Detailed plan with descriptions and timestamp",
+  simple: "A minimal plan with 3 todos (no progress bar)",
+  comprehensive: "Detailed plan with descriptions and progress bar",
   mixed_states: "All 4 status states with expandable details",
   all_complete: "Completion celebration state",
 };
