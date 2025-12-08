@@ -2,7 +2,8 @@
 
 import { useMemo } from "react";
 import {
-  CircleDot,
+  Circle,
+  CircleDotDashed,
   CheckCircle2,
   XCircle,
   MoreHorizontal,
@@ -43,36 +44,16 @@ function formatRelativeTime(isoString: string): string {
   return date.toLocaleDateString();
 }
 
-function DashedCircle({ className }: { className?: string }) {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeDasharray="4 3"
-      className={className}
-    >
-      <circle cx="12" cy="12" r="10" />
-    </svg>
-  );
-}
-
 const STATUS_CONFIG = {
   pending: {
-    icon: DashedCircle,
+    icon: Circle,
     iconClassName: "text-muted-foreground",
     labelClassName: "",
   },
   in_progress: {
-    icon: CircleDot,
-    iconClassName: "text-primary drop-shadow-[0_0_4px_hsl(var(--primary)/0.5)]",
-    labelClassName: "text-primary",
+    icon: CircleDotDashed,
+    iconClassName: "text-muted-foreground",
+    labelClassName: "shimmer text-primary/50",
   },
   completed: {
     icon: CheckCircle2,
@@ -85,6 +66,13 @@ const STATUS_CONFIG = {
     labelClassName: "text-muted-foreground line-through",
   },
 } as const;
+
+const spinKeyframes = `
+  @keyframes plan-spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+`;
 
 function PlanTodoItem({
   todo,
@@ -101,16 +89,38 @@ function PlanTodoItem({
 
   const hasDescription = Boolean(todo.description);
   const greenTint = allComplete && todo.status === "completed";
+  const isActive = todo.status === "in_progress";
+
+  const iconElement = (
+    <Icon
+      className={cn(
+        "h-4 w-4 shrink-0",
+        greenTint ? "text-emerald-500" : iconClassName,
+      )}
+    />
+  );
+
+  const renderIcon = () => {
+    if (isActive) {
+      return (
+        <>
+          <style>{spinKeyframes}</style>
+          <span
+            className="mt-0.5 inline-flex shrink-0"
+            style={{ animation: "plan-spin 8s linear infinite" }}
+          >
+            {iconElement}
+          </span>
+        </>
+      );
+    }
+    return <span className="mt-0.5 inline-flex shrink-0">{iconElement}</span>;
+  };
 
   if (!hasDescription) {
     return (
       <li className="hover:bg-muted -mx-2 flex items-start gap-2 rounded-md px-2 py-1 transition-colors">
-        <Icon
-          className={cn(
-            "mt-0.5 h-4 w-4 shrink-0",
-            greenTint ? "text-emerald-500" : iconClassName,
-          )}
-        />
+        {renderIcon()}
         <span
           className={cn(
             "text-sm",
@@ -127,12 +137,7 @@ function PlanTodoItem({
     <li className="hover:bg-muted -mx-2 rounded-md transition-colors">
       <Collapsible>
         <CollapsibleTrigger className="flex w-full items-start gap-2 px-2 py-1 text-left">
-          <Icon
-            className={cn(
-              "mt-0.5 h-4 w-4 shrink-0",
-              greenTint ? "text-emerald-500" : iconClassName,
-            )}
-          />
+          {renderIcon()}
           <span
             className={cn(
               "flex-1 text-sm",
@@ -195,7 +200,9 @@ export function Plan({
         >
           <div className="mb-3 flex items-center justify-between text-xs font-medium">
             <span
-              className={allComplete ? "text-emerald-600" : "text-muted-foreground"}
+              className={
+                allComplete ? "text-emerald-600" : "text-muted-foreground"
+              }
             >
               {completedCount} of {todos.length} complete
             </span>
@@ -219,7 +226,11 @@ export function Plan({
 
           <ul className="space-y-2">
             {visibleTodos.map((todo) => (
-              <PlanTodoItem key={todo.id} todo={todo} allComplete={allComplete} />
+              <PlanTodoItem
+                key={todo.id}
+                todo={todo}
+                allComplete={allComplete}
+              />
             ))}
 
             {hiddenTodos.length > 0 && (
@@ -237,13 +248,15 @@ export function Plan({
                       <MoreHorizontal
                         className={cn(
                           "mt-0.5 h-4 w-4 shrink-0",
-                          allComplete ? "text-emerald-500" : "text-muted-foreground",
+                          allComplete
+                            ? "text-emerald-500"
+                            : "text-muted-foreground",
                         )}
                       />
                       <span>{hiddenTodos.length} more</span>
                     </AccordionTrigger>
                     <AccordionContent className="pt-2 pb-0">
-                      <ul className="space-y-2 px-2 -mx-2">
+                      <ul className="-mx-2 space-y-2 px-2">
                         {hiddenTodos.map((todo) => (
                           <PlanTodoItem
                             key={todo.id}
