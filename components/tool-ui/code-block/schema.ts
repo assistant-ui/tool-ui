@@ -1,12 +1,12 @@
 import { z } from "zod";
 import {
-  SurfaceIdSchema,
+  ToolUIIdSchema,
   SerializableActionSchema,
   SerializableActionsConfigSchema,
 } from "../shared";
 
 export const CodeBlockPropsSchema = z.object({
-  surfaceId: SurfaceIdSchema,
+  id: ToolUIIdSchema,
   code: z.string(),
   language: z.string().default("text"),
   filename: z.string().optional(),

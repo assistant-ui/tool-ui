@@ -43,7 +43,7 @@ function useCopyToClipboard() {
 }
 
 export function Terminal({
-  surfaceId,
+  id,
   command,
   stdout,
   stderr,
@@ -86,7 +86,7 @@ export function Terminal({
     return (
       <div
         className={cn("@container flex w-full flex-col gap-3", className)}
-        data-surface-id={surfaceId}
+        data-tool-ui-id={id}
         aria-busy="true"
       >
         <div className="overflow-hidden rounded-lg border border-zinc-700 shadow-xs">
@@ -99,7 +99,7 @@ export function Terminal({
   return (
     <div
       className={cn("@container flex w-full flex-col gap-3", className)}
-      data-surface-id={surfaceId}
+      data-tool-ui-id={id}
       data-slot="terminal"
     >
       <div className="overflow-hidden rounded-lg border border-zinc-700 shadow-xs">

@@ -43,7 +43,7 @@ A command output display component with ANSI color support, exit codes, and dura
 
 ### Standard Props
 
-- `surfaceId` (string, required): Unique identifier for this surface
+- `id` (string, required): Unique identifier for this component
 - `footerActions` (Action[], optional): Footer action buttons
 - `className` (string, optional): Additional CSS classes
 - `isLoading` (boolean, optional): Show loading skeleton state
@@ -84,7 +84,7 @@ import { Terminal } from "@/components/tool-ui/terminal";
 const coloredOutput = "\x1b[32m✔\x1b[0m Success\n\x1b[31m✗\x1b[0m Error";
 
 <Terminal
-  surfaceId="my-terminal"
+  id="my-terminal"
   command="npm test"
   stdout={coloredOutput}
   exitCode={0}
@@ -133,7 +133,7 @@ import { Terminal } from "@/components/tool-ui/terminal";
 export function MyComponent() {
   return (
     <Terminal
-      surfaceId="my-terminal-example"
+      id="my-terminal-example"
       command="ls -la"
       stdout="total 16
 drwxr-xr-x  3 user user 4096 Dec  3 10:23 .

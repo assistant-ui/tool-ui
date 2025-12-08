@@ -75,7 +75,7 @@ export function TerminalPreview({
         <div className="w-full">
           <Terminal
             {...currentConfig.terminal}
-            surfaceId="terminal-preview"
+            id="terminal-preview"
             onFooterAction={handleFooterAction}
             isLoading={isLoadingState}
           />

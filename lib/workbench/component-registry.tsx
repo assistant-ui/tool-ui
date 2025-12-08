@@ -116,7 +116,7 @@ export const workbenchComponents: WorkbenchComponentEntry[] = [
     category: "display",
     component: CodeBlockWrapper,
     defaultProps: {
-      surfaceId: "workbench-code-block",
+      id: "workbench-code-block",
       code: `function greet(name: string) {
   return \`Hello, \${name}!\`;
 }
@@ -134,7 +134,7 @@ console.log(greet("World"));`,
     category: "display",
     component: TerminalWrapper,
     defaultProps: {
-      surfaceId: "workbench-terminal",
+      id: "workbench-terminal",
       command: "echo 'Hello, World!'",
       stdout: "Hello, World!",
       exitCode: 0,

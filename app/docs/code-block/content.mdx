@@ -37,7 +37,7 @@ A syntax-highlighted code display component with copy functionality and collapsi
 
 ### Standard Props
 
-- `surfaceId` (string, required): Unique identifier for this surface
+- `id` (string, required): Unique identifier for this component
 - `footerActions` (Action[], optional): Footer action buttons
 - `className` (string, optional): Additional CSS classes
 - `isLoading` (boolean, optional): Show loading skeleton state
@@ -101,7 +101,7 @@ import { CodeBlock } from "@/components/tool-ui/code-block";
 export function MyComponent() {
   return (
     <CodeBlock
-      surfaceId="my-code-example"
+      id="my-code-example"
       code={`function hello(name: string) {
   return \`Hello, \${name}!\`;
 }`}

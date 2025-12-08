@@ -78,7 +78,7 @@ export function CodeBlockPreview({
         <div className="w-full">
           <CodeBlock
             {...currentConfig.codeBlock}
-            surfaceId="code-block-preview"
+            id="code-block-preview"
             onFooterAction={handleFooterAction}
             isLoading={isLoadingState}
           />

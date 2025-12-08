@@ -14,7 +14,7 @@ export type CodeBlockPresetName =
 
 const typescriptPreset: CodeBlockConfig = {
   codeBlock: {
-    surfaceId: "code-block-preview-typescript",
+    id: "code-block-preview-typescript",
     code: `import { useState } from "react";
 
 export function Counter() {
@@ -34,7 +34,7 @@ export function Counter() {
 
 const pythonPreset: CodeBlockConfig = {
   codeBlock: {
-    surfaceId: "code-block-preview-python",
+    id: "code-block-preview-python",
     code: `def fibonacci(n: int) -> list[int]:
     """Generate Fibonacci sequence up to n terms."""
     if n <= 0:
@@ -58,7 +58,7 @@ print(fibonacci(10))`,
 
 const jsonPreset: CodeBlockConfig = {
   codeBlock: {
-    surfaceId: "code-block-preview-json",
+    id: "code-block-preview-json",
     code: `{
   "name": "tool-ui",
   "version": "1.0.0",
@@ -76,7 +76,7 @@ const jsonPreset: CodeBlockConfig = {
 
 const bashPreset: CodeBlockConfig = {
   codeBlock: {
-    surfaceId: "code-block-preview-bash",
+    id: "code-block-preview-bash",
     code: `#!/bin/bash
 # Deploy script
 
@@ -98,7 +98,7 @@ echo "Done!"`,
 
 const highlightedPreset: CodeBlockConfig = {
   codeBlock: {
-    surfaceId: "code-block-preview-highlighted",
+    id: "code-block-preview-highlighted",
     code: `function processData(items: string[]) {
   const results = [];
 
@@ -118,7 +118,7 @@ const highlightedPreset: CodeBlockConfig = {
 
 const collapsiblePreset: CodeBlockConfig = {
   codeBlock: {
-    surfaceId: "code-block-preview-collapsible",
+    id: "code-block-preview-collapsible",
     code: Array.from(
       { length: 30 },
       (_, i) => `console.log("Line ${i + 1}");`,

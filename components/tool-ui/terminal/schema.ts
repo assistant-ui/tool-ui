@@ -1,12 +1,12 @@
 import { z } from "zod";
 import {
-  SurfaceIdSchema,
+  ToolUIIdSchema,
   SerializableActionSchema,
   SerializableActionsConfigSchema,
 } from "../shared";
 
 export const TerminalPropsSchema = z.object({
-  surfaceId: SurfaceIdSchema,
+  id: ToolUIIdSchema,
   command: z.string(),
   stdout: z.string().optional(),
   stderr: z.string().optional(),

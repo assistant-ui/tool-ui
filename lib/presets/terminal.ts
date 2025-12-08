@@ -14,7 +14,7 @@ export type TerminalPresetName =
 
 const successPreset: TerminalConfig = {
   terminal: {
-    surfaceId: "terminal-preview-success",
+    id: "terminal-preview-success",
     command: "pnpm test",
     stdout: `✓ src/utils.test.ts (5 tests) 23ms
 ✓ src/api.test.ts (12 tests) 156ms
@@ -32,7 +32,7 @@ Test Files  3 passed (3)
 
 const errorPreset: TerminalConfig = {
   terminal: {
-    surfaceId: "terminal-preview-error",
+    id: "terminal-preview-error",
     command: "pnpm build",
     stdout: `Building application...
 Compiling TypeScript...`,
@@ -51,7 +51,7 @@ Found 1 error in src/utils.ts:23`,
 
 const buildPreset: TerminalConfig = {
   terminal: {
-    surfaceId: "terminal-preview-build",
+    id: "terminal-preview-build",
     command: "docker build -t myapp:latest .",
     stdout: `[+] Building 45.2s (12/12) FINISHED
  => [internal] load build definition from Dockerfile
@@ -75,7 +75,7 @@ Successfully built image myapp:latest`,
 
 const ansiColorsPreset: TerminalConfig = {
   terminal: {
-    surfaceId: "terminal-preview-ansi",
+    id: "terminal-preview-ansi",
     command: "npm run lint",
     stdout: `\x1b[32m✔\x1b[0m No ESLint warnings or errors
 \x1b[36minfo\x1b[0m Checking formatting...
@@ -91,7 +91,7 @@ const ansiColorsPreset: TerminalConfig = {
 
 const collapsiblePreset: TerminalConfig = {
   terminal: {
-    surfaceId: "terminal-preview-collapsible",
+    id: "terminal-preview-collapsible",
     command: "npm install",
     stdout:
       Array.from({ length: 25 }, (_, i) => `added package-${i + 1}@1.0.0`).join(
@@ -105,7 +105,7 @@ const collapsiblePreset: TerminalConfig = {
 
 const noOutputPreset: TerminalConfig = {
   terminal: {
-    surfaceId: "terminal-preview-no-output",
+    id: "terminal-preview-no-output",
     command: "touch newfile.txt",
     exitCode: 0,
     durationMs: 12,

@@ -52,7 +52,7 @@ function useCopyToClipboard() {
 }
 
 export function CodeBlock({
-  surfaceId,
+  id,
   code,
   language = "text",
   filename,
@@ -128,7 +128,7 @@ export function CodeBlock({
     return (
       <div
         className={cn("@container flex w-full flex-col gap-3", className)}
-        data-surface-id={surfaceId}
+        data-tool-ui-id={id}
         aria-busy="true"
       >
         <div className="border-border bg-card overflow-hidden rounded-lg border shadow-xs">
@@ -141,7 +141,7 @@ export function CodeBlock({
   return (
     <div
       className={cn("@container flex w-full flex-col gap-3", className)}
-      data-surface-id={surfaceId}
+      data-tool-ui-id={id}
       data-slot="code-block"
     >
       <div className="border-border bg-card overflow-hidden rounded-lg border shadow-xs">
