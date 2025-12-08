@@ -29,3 +29,10 @@ export {
 export { Skeleton } from "../../ui/skeleton";
 export { Avatar, AvatarFallback, AvatarImage } from "../../ui/avatar";
 export { Separator } from "../../ui/separator";
+export {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "../../ui/dropdown-menu";

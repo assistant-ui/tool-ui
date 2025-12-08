@@ -1,8 +1,13 @@
 "use client";
 
-import { useMemo, Component, type ReactNode } from "react";
+import { useMemo, useCallback, useRef, Component, type ReactNode } from "react";
 import { useShallow } from "zustand/react/shallow";
-import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
+import {
+  Panel,
+  PanelGroup,
+  PanelResizeHandle,
+  type ImperativePanelGroupHandle,
+} from "react-resizable-panels";
 import {
   useWorkbenchStore,
   useActiveJsonTab,
@@ -201,28 +206,92 @@ function ComponentContent({ className }: { className?: string }) {
   const toolInput = useToolInput();
 
   return (
-    <IsolatedThemeWrapper
-      className={cn("flex min-h-full items-center justify-center", className)}
-    >
+    <IsolatedThemeWrapper className={cn("flex", className)}>
       <OpenAIProvider>
         <ComponentErrorBoundary toolInput={toolInput}>
-          <ComponentRenderer />
+          <div className="h-full w-full">
+            <ComponentRenderer />
+          </div>
         </ComponentErrorBoundary>
       </OpenAIProvider>
     </IsolatedThemeWrapper>
   );
 }
 
+const PREVIEW_MIN_SIZE = 30;
+const PREVIEW_MAX_SIZE = 100;
+
 function InlineView() {
   const maxHeight = useWorkbenchStore((s) => s.maxHeight);
+  const panelGroupRef = useRef<ImperativePanelGroupHandle | null>(null);
+  const isSyncingLayout = useRef(false);
+
+  const handleLayout = useCallback((sizes: number[]) => {
+    if (!panelGroupRef.current) return;
+    if (isSyncingLayout.current) {
+      isSyncingLayout.current = false;
+      return;
+    }
+
+    const [left, center, right] = sizes;
+    const clampedCenter = Math.min(
+      PREVIEW_MAX_SIZE,
+      Math.max(PREVIEW_MIN_SIZE, center),
+    );
+    const spacing = Math.max(0, (100 - clampedCenter) / 2);
+    const epsilon = 0.5;
+
+    const isSymmetric =
+      Math.abs(left - spacing) < epsilon &&
+      Math.abs(right - spacing) < epsilon &&
+      Math.abs(center - clampedCenter) < epsilon;
+
+    if (!isSymmetric) {
+      isSyncingLayout.current = true;
+      panelGroupRef.current.setLayout([spacing, clampedCenter, spacing]);
+    }
+  }, []);
 
   return (
-    <div className="flex h-full w-full items-start justify-center overflow-auto p-4">
+    <div className="relative h-full w-full">
       <div
-        className="w-full"
-        style={{ maxHeight, height: maxHeight }}
-      >
-        <ComponentContent className="h-full" />
+        className="bg-dot-grid bg-wash pointer-events-none absolute inset-0 z-0 opacity-60 dark:opacity-40"
+        aria-hidden="true"
+      />
+      <div className="scrollbar-subtle absolute inset-0 z-10 overflow-auto p-4">
+        <div className="flex min-h-full w-full items-start justify-center">
+          <PanelGroup
+            ref={panelGroupRef}
+            direction="horizontal"
+            onLayout={handleLayout}
+            className="w-full"
+          >
+            <Panel defaultSize={5} minSize={0} />
+
+            <PanelResizeHandle className="group relative w-4">
+              <div className="absolute top-1/2 left-1/2 h-12 w-1 -translate-x-1/2 -translate-y-1/2 rounded-full bg-gray-300 opacity-40 transition-all group-hover:bg-gray-400 group-hover:opacity-100 group-data-resize-handle-active:bg-gray-500 group-data-resize-handle-active:opacity-100 dark:bg-gray-600 dark:group-hover:bg-gray-500 dark:group-data-resize-handle-active:bg-gray-400" />
+            </PanelResizeHandle>
+
+            <Panel
+              defaultSize={90}
+              minSize={PREVIEW_MIN_SIZE}
+              maxSize={PREVIEW_MAX_SIZE}
+            >
+              <div
+                className="border-border overflow-hidden rounded-xl border-2 border-dashed"
+                style={{ height: maxHeight }}
+              >
+                <ComponentContent className="h-full" />
+              </div>
+            </Panel>
+
+            <PanelResizeHandle className="group relative w-4">
+              <div className="absolute top-1/2 left-1/2 h-12 w-1 -translate-x-1/2 -translate-y-1/2 rounded-full bg-gray-300 opacity-40 transition-all group-hover:bg-gray-400 group-hover:opacity-100 group-data-resize-handle-active:bg-gray-500 group-data-resize-handle-active:opacity-100 dark:bg-gray-600 dark:group-hover:bg-gray-500 dark:group-data-resize-handle-active:bg-gray-400" />
+            </PanelResizeHandle>
+
+            <Panel defaultSize={5} minSize={0} />
+          </PanelGroup>
+        </div>
       </div>
     </div>
   );

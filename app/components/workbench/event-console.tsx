@@ -142,7 +142,7 @@ function ConsoleEntryRow({ entry, onExpand }: ConsoleEntryRowProps) {
 
   if (!hasExpandableContent) {
     return (
-      <div className="group hover:bg-muted/50 flex items-start gap-2 px-3 py-2 transition-colors">
+      <div className="group hover:bg-muted/50 flex items-center gap-2 px-3 py-2 transition-colors">
         <div className="size-4 shrink-0" />
         <span className="text-muted-foreground shrink-0 tabular-nums">
           [{formatTimestamp(entry.timestamp)}]
@@ -175,14 +175,21 @@ function ConsoleEntryRow({ entry, onExpand }: ConsoleEntryRowProps) {
 
   return (
     <Collapsible open={isOpen} onOpenChange={handleOpenChange}>
-      <div ref={rowRef} className="group hover:bg-muted/50 transition-colors">
+      <div ref={rowRef} className="group hover:bg-muted/50 relative transition-colors">
         <CollapsibleTrigger asChild>
-          <button className="flex w-full items-start gap-2 px-3 py-2 text-left">
-            <span className="text-muted-foreground mt-0.5 shrink-0">
+          <button className="flex w-full items-center gap-2 px-3 py-2 pr-10 text-left">
+            <span
+              className={cn(
+                "shrink-0 transition-colors",
+                isOpen
+                  ? "text-foreground"
+                  : "text-muted-foreground/50 group-hover:text-foreground",
+              )}
+            >
               {isOpen ? (
-                <ChevronDown className="size-4" />
+                <ChevronDown className="size-3.5" />
               ) : (
-                <ChevronRight className="size-4" />
+                <ChevronRight className="size-3.5" />
               )}
             </span>
             <span className="text-muted-foreground shrink-0 tabular-nums">
@@ -211,27 +218,22 @@ function ConsoleEntryRow({ entry, onExpand }: ConsoleEntryRowProps) {
                 )}
               </>
             )}
-            <div className="ml-auto shrink-0">
-              <CopyButton text={getFullEntryText()} />
-            </div>
           </button>
         </CollapsibleTrigger>
+        <div className="absolute top-2 right-3">
+          <CopyButton text={getFullEntryText()} />
+        </div>
         <CollapsibleContent>
-          <div className="bg-muted/30 mx-3 mb-2 space-y-2 rounded-md p-3">
+          <div className="space-y-2 px-3 pb-2 pl-9">
             {entry.args !== undefined && (
-              <pre className="text-foreground overflow-x-auto text-xs leading-relaxed">
+              <pre className="text-muted-foreground overflow-x-auto text-xs leading-relaxed">
                 {formatValueFull(entry.args)}
               </pre>
             )}
             {entry.result !== undefined && (
-              <div>
-                <div className="mb-1 text-xs font-medium uppercase tracking-wide text-emerald-600 dark:text-emerald-400">
-                  Result
-                </div>
-                <pre className="overflow-x-auto text-xs leading-relaxed text-emerald-600 dark:text-emerald-400">
-                  {formatValueFull(entry.result)}
-                </pre>
-              </div>
+              <pre className="overflow-x-auto text-xs leading-relaxed text-emerald-600 dark:text-emerald-400">
+                → {formatValueFull(entry.result)}
+              </pre>
             )}
           </div>
         </CollapsibleContent>
@@ -287,7 +289,7 @@ export function EventConsole({
     <div
       ref={scrollRef}
       onScroll={handleScroll}
-      className="min-h-0 flex-1 overflow-y-auto font-mono text-sm"
+      className="scrollbar-subtle min-h-0 flex-1 overflow-y-auto font-mono text-xs"
     >
       {logs.length === 0 ? (
         <div className="text-muted-foreground flex h-full flex-1 grow justify-center self-center px-4 pt-12 text-center opacity-70">

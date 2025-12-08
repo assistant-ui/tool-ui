@@ -5,6 +5,7 @@ import {
   POIMap,
   parseSerializablePOIMap,
   type POIMapWidgetState,
+  type POICategory,
   DEFAULT_CENTER,
   DEFAULT_ZOOM,
 } from "@/components/tool-ui/poi-map";
@@ -79,6 +80,15 @@ export function POIMapSDK(props: Record<string, unknown>) {
     [callTool],
   );
 
+  const handleFilterCategory = useCallback(
+    async (category: POICategory | null) => {
+      await callTool("filter_pois", {
+        category,
+      });
+    },
+    [callTool],
+  );
+
   return (
     <POIMap
       id={parsed.id}
@@ -94,6 +104,7 @@ export function POIMapSDK(props: Record<string, unknown>) {
       onRequestDisplayMode={handleRequestDisplayMode}
       onRefresh={handleRefresh}
       onToggleFavorite={handleToggleFavorite}
+      onFilterCategory={handleFilterCategory}
     />
   );
 }
