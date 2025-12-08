@@ -67,7 +67,7 @@ export function PlanPreview({
           onSelectPreset={handleSelectPreset}
         />
       }
-      renderPreview={(_isLoadingState) => (
+      renderPreview={() => (
         <div className="w-full">
           <Plan {...currentConfig.plan} id="plan-preview" />
         </div>

@@ -4,13 +4,18 @@ export interface PlanConfig {
   plan: SerializablePlan;
 }
 
-export type PlanPresetName = "simple" | "comprehensive" | "mixed_states" | "all_complete";
+export type PlanPresetName =
+  | "simple"
+  | "comprehensive"
+  | "mixed_states"
+  | "all_complete";
 
 const simplePreset: PlanConfig = {
   plan: {
     id: "plan-simple",
     title: "Quick Setup",
     description: "Get started in 3 easy steps",
+    showProgress: false,
     todos: [
       { id: "1", label: "Install dependencies", status: "completed" },
       { id: "2", label: "Configure environment", status: "in_progress" },
@@ -25,13 +30,13 @@ const comprehensivePreset: PlanConfig = {
     title: "Feature Implementation Plan",
     description:
       "Step-by-step guide for implementing the new authentication system",
-    updatedAt: new Date(Date.now() - 5 * 60 * 1000).toISOString(),
     todos: [
       {
         id: "1",
         label: "Review existing auth flow",
         status: "completed",
-        description: "Analyzed current session-based auth and identified pain points",
+        description:
+          "Analyzed current session-based auth and identified pain points",
       },
       {
         id: "2",
@@ -63,7 +68,6 @@ const mixedStatesPreset: PlanConfig = {
   plan: {
     id: "plan-mixed",
     title: "Migration Progress",
-    updatedAt: new Date(Date.now() - 2 * 60 * 1000).toISOString(),
     todos: [
       { id: "1", label: "Backup database", status: "completed" },
       { id: "2", label: "Run migration scripts", status: "completed" },
@@ -89,7 +93,6 @@ const allCompletePreset: PlanConfig = {
     id: "plan-all-complete",
     title: "Deployment Complete",
     description: "All steps finished successfully",
-    updatedAt: new Date(Date.now() - 30 * 1000).toISOString(),
     todos: [
       { id: "1", label: "Run pre-flight checks", status: "completed" },
       { id: "2", label: "Deploy to production", status: "completed" },

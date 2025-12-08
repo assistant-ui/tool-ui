@@ -70,12 +70,12 @@ interface PlanTodo {
 
 ## Status States
 
-| Status | Icon | Styling |
-|--------|------|---------|
-| `pending` | Circle outline | Muted color |
-| `in_progress` | Filled circle | Primary color with glow |
-| `completed` | Checkmark | Emerald green, strikethrough |
-| `cancelled` | X circle | Muted, strikethrough |
+| Status        | Icon           | Styling                      |
+| ------------- | -------------- | ---------------------------- |
+| `pending`     | Circle outline | Muted color                  |
+| `in_progress` | Filled circle  | Primary color with glow      |
+| `completed`   | Checkmark      | Emerald green, strikethrough |
+| `cancelled`   | X circle       | Muted, strikethrough         |
 
 ## Source and Install
 
@@ -142,13 +142,14 @@ export function MyComponent() {
     },
     { id: "3", label: "Write tests", status: "pending" },
   ]}
-  updatedAt={new Date().toISOString()}
+  updatedAt="2025-01-15T10:30:00.000Z"
 />
 ```
 
 ## Completion Behavior
 
 When all todos have `status: "completed"`:
+
 - Progress bar turns emerald green
 - Container gets subtle green border/tint
 - "All done!" badge appears

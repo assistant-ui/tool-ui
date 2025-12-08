@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
+import type { LucideIcon } from "lucide-react";
 import {
   Circle,
   CircleDotDashed,
@@ -9,7 +10,7 @@ import {
   MoreHorizontal,
   ChevronRight,
 } from "lucide-react";
-import type { PlanProps, PlanTodo } from "./schema";
+import type { PlanProps, PlanTodo, PlanTodoStatus } from "./schema";
 import {
   cn,
   Card,
@@ -28,23 +29,20 @@ import {
 
 const DEFAULT_MAX_VISIBLE = 4;
 
-function formatRelativeTime(isoString: string): string {
-  const date = new Date(isoString);
-  const now = new Date();
-  const diffMs = now.getTime() - date.getTime();
-  const diffSec = Math.floor(diffMs / 1000);
-  const diffMin = Math.floor(diffSec / 60);
-  const diffHour = Math.floor(diffMin / 60);
-  const diffDay = Math.floor(diffHour / 24);
+const SPIN_KEYFRAMES = `
+  @keyframes plan-spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+`;
 
-  if (diffSec < 60) return "just now";
-  if (diffMin < 60) return `${diffMin}m ago`;
-  if (diffHour < 24) return `${diffHour}h ago`;
-  if (diffDay < 7) return `${diffDay}d ago`;
-  return date.toLocaleDateString();
+interface StatusStyle {
+  icon: LucideIcon;
+  iconClassName: string;
+  labelClassName: string;
 }
 
-const STATUS_CONFIG = {
+const STATUS_STYLES: Record<PlanTodoStatus, StatusStyle> = {
   pending: {
     icon: Circle,
     iconClassName: "text-muted-foreground",
@@ -62,104 +60,115 @@ const STATUS_CONFIG = {
   },
   cancelled: {
     icon: XCircle,
-    iconClassName: "text-muted-foreground",
+    iconClassName: "text-destructive/70",
     labelClassName: "text-muted-foreground line-through",
   },
-} as const;
+};
 
-const spinKeyframes = `
-  @keyframes plan-spin {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
-  }
-`;
-
-function PlanTodoItem({
-  todo,
-  allComplete,
+function TodoIcon({
+  icon: Icon,
+  className,
+  animate,
 }: {
-  todo: PlanTodo;
-  allComplete?: boolean;
+  icon: LucideIcon;
+  className: string;
+  animate?: boolean;
 }) {
-  const {
-    icon: Icon,
-    iconClassName,
-    labelClassName,
-  } = STATUS_CONFIG[todo.status];
+  const iconElement = <Icon className={cn("h-4 w-4 shrink-0", className)} />;
 
-  const hasDescription = Boolean(todo.description);
-  const greenTint = allComplete && todo.status === "completed";
+  if (animate) {
+    return (
+      <>
+        <style>{SPIN_KEYFRAMES}</style>
+        <span
+          className="mt-0.5 inline-flex shrink-0"
+          style={{ animation: "plan-spin 8s linear infinite" }}
+        >
+          {iconElement}
+        </span>
+      </>
+    );
+  }
+
+  return <span className="mt-0.5 inline-flex shrink-0">{iconElement}</span>;
+}
+
+interface PlanTodoItemProps {
+  todo: PlanTodo;
+}
+
+function PlanTodoItem({ todo }: PlanTodoItemProps) {
+  const { icon, iconClassName, labelClassName } = STATUS_STYLES[todo.status];
   const isActive = todo.status === "in_progress";
 
-  const iconElement = (
-    <Icon
-      className={cn(
-        "h-4 w-4 shrink-0",
-        greenTint ? "text-emerald-500" : iconClassName,
-      )}
-    />
+  const todoLabel = (
+    <span className={cn("text-sm", labelClassName)}>{todo.label}</span>
   );
 
-  const renderIcon = () => {
-    if (isActive) {
-      return (
-        <>
-          <style>{spinKeyframes}</style>
-          <span
-            className="mt-0.5 inline-flex shrink-0"
-            style={{ animation: "plan-spin 8s linear infinite" }}
-          >
-            {iconElement}
-          </span>
-        </>
-      );
-    }
-    return <span className="mt-0.5 inline-flex shrink-0">{iconElement}</span>;
-  };
-
-  if (!hasDescription) {
+  if (!todo.description) {
     return (
-      <li className="hover:bg-muted -mx-2 flex items-start gap-2 rounded-md px-2 py-1 transition-colors">
-        {renderIcon()}
-        <span
-          className={cn(
-            "text-sm",
-            greenTint ? "text-emerald-600/70 line-through" : labelClassName,
-          )}
-        >
-          {todo.label}
-        </span>
+      <li className="hover:bg-muted -mx-2 flex items-start gap-2 rounded-md px-2 py-1">
+        <TodoIcon icon={icon} className={iconClassName} animate={isActive} />
+        {todoLabel}
       </li>
     );
   }
 
   return (
-    <li className="hover:bg-muted -mx-2 rounded-md transition-colors">
+    <li className="hover:bg-muted -mx-2 rounded-md">
       <Collapsible>
-        <CollapsibleTrigger className="flex w-full items-start gap-2 px-2 py-1 text-left">
-          {renderIcon()}
-          <span
-            className={cn(
-              "flex-1 text-sm",
-              greenTint ? "text-emerald-600/70 line-through" : labelClassName,
-            )}
-          >
+        <CollapsibleTrigger className="group/todo flex w-full items-start gap-2 px-2 py-1 text-left">
+          <TodoIcon icon={icon} className={iconClassName} animate={isActive} />
+          <span className={cn("flex-1 text-sm", labelClassName)}>
             {todo.label}
           </span>
-          <ChevronRight className="text-muted-foreground mt-0.5 h-4 w-4 shrink-0 rotate-90 transition-transform duration-200 in-data-[state=open]:-rotate-90" />
+          <ChevronRight className="text-muted-foreground mt-0.5 size-4 shrink-0 rotate-90 transition-transform duration-150 group-data-[state=open]/todo:[transform:rotateY(180deg)]" />
         </CollapsibleTrigger>
         <CollapsibleContent>
-          <p
-            className={cn(
-              "pr-2 pb-1 pl-8 text-xs",
-              greenTint ? "text-emerald-600/60" : "text-muted-foreground",
-            )}
-          >
+          <p className="text-muted-foreground pr-2 pb-1.5 pl-8 text-xs">
             {todo.description}
           </p>
         </CollapsibleContent>
       </Collapsible>
     </li>
+  );
+}
+
+interface TodoListProps {
+  todos: PlanTodo[];
+}
+
+function TodoList({ todos }: TodoListProps) {
+  return (
+    <>
+      {todos.map((todo) => (
+        <PlanTodoItem key={todo.id} todo={todo} />
+      ))}
+    </>
+  );
+}
+
+interface ProgressBarProps {
+  progress: number;
+  isCelebrating: boolean;
+}
+
+function ProgressBar({ progress, isCelebrating }: ProgressBarProps) {
+  return (
+    <div
+      className={cn(
+        "mb-3 h-1.5 overflow-hidden rounded-full",
+        isCelebrating ? "bg-emerald-500/20" : "bg-muted",
+      )}
+    >
+      <div
+        className={cn(
+          "h-full transition-all duration-500",
+          isCelebrating ? "bg-emerald-500" : "bg-primary",
+        )}
+        style={{ width: `${progress}%` }}
+      />
+    </div>
   );
 }
 
@@ -169,7 +178,7 @@ export function Plan({
   description,
   todos,
   maxVisibleTodos = DEFAULT_MAX_VISIBLE,
-  updatedAt,
+  showProgress = true,
   className,
 }: PlanProps) {
   const { visibleTodos, hiddenTodos, completedCount, allComplete, progress } =
@@ -186,84 +195,42 @@ export function Plan({
 
   return (
     <Card className={cn("w-full max-w-md", className)} data-tool-ui-id={id}>
-      <CardHeader>
-        <CardTitle>{title}</CardTitle>
-        {description && <CardDescription>{description}</CardDescription>}
+      <CardHeader className="flex flex-row items-start justify-between gap-4">
+        <div className="space-y-1.5">
+          <CardTitle>{title}</CardTitle>
+          {description && <CardDescription>{description}</CardDescription>}
+        </div>
+        {allComplete && (
+          <CheckCircle2 className="mt-0.5 size-5 shrink-0 text-emerald-500" />
+        )}
       </CardHeader>
 
       <CardContent>
-        <div
-          className={cn(
-            "bg-muted/50 rounded-lg border p-3",
-            allComplete && "border-emerald-500/50 bg-emerald-500/5",
-          )}
-        >
-          <div className="mb-3 flex items-center justify-between text-xs font-medium">
-            <span
-              className={
-                allComplete ? "text-emerald-600" : "text-muted-foreground"
-              }
-            >
-              {completedCount} of {todos.length} complete
-            </span>
-            {allComplete && <span className="text-emerald-600">All done!</span>}
-          </div>
+        <div className="bg-muted/50 rounded-lg border p-3">
+          {showProgress && (
+            <>
+              <div className="text-muted-foreground mb-2 text-sm">
+                {completedCount} of {todos.length} complete
+              </div>
 
-          <div
-            className={cn(
-              "mb-3 h-1.5 overflow-hidden rounded-full",
-              allComplete ? "bg-emerald-500/20" : "bg-muted",
-            )}
-          >
-            <div
-              className={cn(
-                "h-full transition-all duration-500",
-                allComplete ? "bg-emerald-500" : "bg-primary",
-              )}
-              style={{ width: `${progress}%` }}
-            />
-          </div>
+              <ProgressBar progress={progress} isCelebrating={allComplete} />
+            </>
+          )}
 
           <ul className="space-y-2">
-            {visibleTodos.map((todo) => (
-              <PlanTodoItem
-                key={todo.id}
-                todo={todo}
-                allComplete={allComplete}
-              />
-            ))}
+            <TodoList todos={visibleTodos} />
 
             {hiddenTodos.length > 0 && (
-              <li>
+              <li className="mt-1">
                 <Accordion type="single" collapsible>
                   <AccordionItem value="more" className="border-0">
-                    <AccordionTrigger
-                      className={cn(
-                        "flex items-start justify-start gap-2 py-0 text-sm font-normal [&>svg:last-child]:hidden",
-                        allComplete
-                          ? "text-emerald-600/70 hover:text-emerald-600"
-                          : "text-muted-foreground hover:text-primary",
-                      )}
-                    >
-                      <MoreHorizontal
-                        className={cn(
-                          "mt-0.5 h-4 w-4 shrink-0",
-                          allComplete
-                            ? "text-emerald-500"
-                            : "text-muted-foreground",
-                        )}
-                      />
+                    <AccordionTrigger className="text-muted-foreground hover:text-primary flex items-start justify-start gap-2 py-1 text-sm font-normal [&>svg:last-child]:hidden">
+                      <MoreHorizontal className="text-muted-foreground/70 mt-0.5 size-4 shrink-0" />
                       <span>{hiddenTodos.length} more</span>
                     </AccordionTrigger>
                     <AccordionContent className="pt-2 pb-0">
                       <ul className="-mx-2 space-y-2 px-2">
-                        {hiddenTodos.map((todo) => (
-                          <PlanTodoItem
-                            key={todo.id}
-                            todo={todo}
-                            allComplete={allComplete}
-                          />
-                        ))}
+                        <TodoList todos={hiddenTodos} />
                       </ul>
                     </AccordionContent>
                   </AccordionItem>
@@ -271,19 +238,6 @@ export function Plan({
               </li>
             )}
           </ul>
-
-          {updatedAt && (
-            <div
-              className={cn(
-                "mt-3 border-t pt-2 text-xs",
-                allComplete
-                  ? "border-emerald-500/30 text-emerald-600/70"
-                  : "text-muted-foreground",
-              )}
-            >
-              Updated {formatRelativeTime(updatedAt)}
-            </div>
-          )}
         </div>
       </CardContent>
     </Card>
