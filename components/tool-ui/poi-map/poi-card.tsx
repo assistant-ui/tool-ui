@@ -16,7 +16,17 @@ import {
 } from "lucide-react";
 import type { POI, POICategory } from "./schema";
 import { CATEGORY_LABELS } from "./schema";
-import { cn, Button } from "./_ui";
+import {
+  cn,
+  Button,
+  Badge,
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "./_ui";
 
 const CATEGORY_ICONS: Record<POICategory, typeof MapPin> = {
   restaurant: UtensilsCrossed,
@@ -62,12 +72,10 @@ export const POICard = memo(function POICard({
         )}
       >
         <div className="flex items-start justify-between gap-1">
-          <div className="flex items-center gap-1.5">
-            <CategoryIcon className="text-muted-foreground size-3.5 shrink-0" />
-            <span className="text-muted-foreground text-[10px] uppercase tracking-wide">
-              {CATEGORY_LABELS[poi.category]}
-            </span>
-          </div>
+          <Badge variant="secondary" className="h-5 gap-1 px-1.5 text-[10px]">
+            <CategoryIcon className="size-3" />
+            {CATEGORY_LABELS[poi.category]}
+          </Badge>
           {isFavorite && (
             <Heart className="size-3 shrink-0 fill-rose-500 text-rose-500" />
           )}
@@ -97,19 +105,12 @@ export const POICard = memo(function POICard({
           : "border-border hover:border-primary/50",
       )}
     >
-      {poi.imageUrl ? (
-        <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-md">
-          <img
-            src={poi.imageUrl}
-            alt={poi.name}
-            className="h-full w-full object-cover"
-          />
-        </div>
-      ) : (
-        <div className="bg-muted flex h-16 w-16 shrink-0 items-center justify-center rounded-md">
+      <Avatar className="size-14 shrink-0 rounded-md">
+        <AvatarImage src={poi.imageUrl} alt={poi.name} className="object-cover" />
+        <AvatarFallback className="rounded-md">
           <CategoryIcon className="text-muted-foreground size-6" />
-        </div>
-      )}
+        </AvatarFallback>
+      </Avatar>
 
       <div className="flex min-w-0 flex-1 flex-col">
         <div className="flex items-start justify-between gap-2">
@@ -118,36 +119,44 @@ export const POICard = memo(function POICard({
             className="min-w-0 flex-1 text-left"
           >
             <h3 className="truncate text-sm font-medium">{poi.name}</h3>
-            <div className="text-muted-foreground mt-0.5 flex items-center gap-1.5 text-xs">
-              <CategoryIcon className="size-3 shrink-0" />
-              <span>{CATEGORY_LABELS[poi.category]}</span>
+            <div className="mt-1 flex flex-wrap items-center gap-1.5">
+              <Badge variant="outline" className="h-5 gap-1 px-1.5 text-[10px]">
+                <CategoryIcon className="size-3" />
+                {CATEGORY_LABELS[poi.category]}
+              </Badge>
               {poi.rating !== undefined && (
-                <>
-                  <span>•</span>
+                <Badge variant="secondary" className="h-5 gap-0.5 px-1.5 text-[10px]">
                   <Star className="size-3 fill-amber-400 text-amber-400" />
-                  <span>{poi.rating.toFixed(1)}</span>
-                </>
+                  {poi.rating.toFixed(1)}
+                </Badge>
               )}
             </div>
           </button>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="size-7 shrink-0"
-            onClick={(e) => {
-              e.stopPropagation();
-              onToggleFavorite(poi.id);
-            }}
-          >
-            <Heart
-              className={cn(
-                "size-4 transition-colors",
-                isFavorite
-                  ? "fill-rose-500 text-rose-500"
-                  : "text-muted-foreground hover:text-rose-500",
-              )}
-            />
-          </Button>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="size-7 shrink-0"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onToggleFavorite(poi.id);
+                }}
+              >
+                <Heart
+                  className={cn(
+                    "size-4 transition-colors",
+                    isFavorite
+                      ? "fill-rose-500 text-rose-500"
+                      : "text-muted-foreground hover:text-rose-500",
+                  )}
+                />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="left">
+              {isFavorite ? "Remove from favorites" : "Add to favorites"}
+            </TooltipContent>
+          </Tooltip>
         </div>
 
         {poi.description && (

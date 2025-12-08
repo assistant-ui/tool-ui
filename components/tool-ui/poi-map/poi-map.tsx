@@ -12,7 +12,13 @@ import { usePOIMap } from "./use-poi-map";
 import { POIListInline } from "./poi-list-inline";
 import { POIListSidebar } from "./poi-list-sidebar";
 import { MapView } from "./map-view";
-import { cn, Button } from "./_ui";
+import {
+  cn,
+  Button,
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "./_ui";
 
 type DisplayMode = "inline" | "pip" | "fullscreen";
 
@@ -104,25 +110,33 @@ export function POIMap({
             </div>
             <div className="flex items-center gap-1">
               {onRefresh && (
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="size-7"
-                  onClick={onRefresh}
-                  title="Refresh locations"
-                >
-                  <RefreshCw className="size-3.5" />
-                </Button>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="size-7"
+                      onClick={onRefresh}
+                    >
+                      <RefreshCw className="size-3.5" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>Refresh locations</TooltipContent>
+                </Tooltip>
               )}
-              <Button
-                variant="ghost"
-                size="icon"
-                className="size-7"
-                onClick={handleToggleFullscreen}
-                title="Exit fullscreen"
-              >
-                <Minimize2 className="size-3.5" />
-              </Button>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="size-7"
+                    onClick={handleToggleFullscreen}
+                  >
+                    <Minimize2 className="size-3.5" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>Exit fullscreen</TooltipContent>
+              </Tooltip>
             </div>
           </div>
           <POIListSidebar
@@ -172,25 +186,33 @@ export function POIMap({
 
         <div className="absolute top-3 right-3 z-10 flex gap-1">
           {onRefresh && (
-            <Button
-              variant="secondary"
-              size="icon"
-              className="bg-background/90 size-8 backdrop-blur-sm"
-              onClick={onRefresh}
-              title="Refresh locations"
-            >
-              <RefreshCw className="size-4" />
-            </Button>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="secondary"
+                  size="icon"
+                  className="bg-background/90 size-8 backdrop-blur-sm"
+                  onClick={onRefresh}
+                >
+                  <RefreshCw className="size-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Refresh locations</TooltipContent>
+            </Tooltip>
           )}
-          <Button
-            variant="secondary"
-            size="icon"
-            className="bg-background/90 size-8 backdrop-blur-sm"
-            onClick={handleToggleFullscreen}
-            title="Enter fullscreen"
-          >
-            <Maximize2 className="size-4" />
-          </Button>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="secondary"
+                size="icon"
+                className="bg-background/90 size-8 backdrop-blur-sm"
+                onClick={handleToggleFullscreen}
+              >
+                <Maximize2 className="size-4" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Enter fullscreen</TooltipContent>
+          </Tooltip>
         </div>
 
         {title && (

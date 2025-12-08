@@ -2,8 +2,9 @@
 
 import { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
+import { MapPin } from "lucide-react";
 import type { POI, MapCenter, POICategory } from "./schema";
-import { cn } from "./_ui";
+import { cn, Skeleton } from "./_ui";
 
 export const CATEGORY_COLORS: Record<POICategory, string> = {
   restaurant: "#ef4444",
@@ -33,11 +34,15 @@ export function MapSkeleton({ className }: { className?: string }) {
   return (
     <div
       className={cn(
-        "flex h-full w-full items-center justify-center bg-neutral-100 dark:bg-neutral-900",
+        "relative h-full w-full overflow-hidden",
         className,
       )}
     >
-      <div className="text-muted-foreground text-sm">Loading map...</div>
+      <Skeleton className="absolute inset-0" />
+      <div className="absolute inset-0 flex flex-col items-center justify-center gap-2">
+        <MapPin className="text-muted-foreground/50 size-8 animate-pulse" />
+        <span className="text-muted-foreground text-sm">Loading map...</span>
+      </div>
     </div>
   );
 }
