@@ -2,10 +2,20 @@
 
 import { useState, useEffect, useRef, useMemo } from "react";
 import CodeMirror from "@uiw/react-codemirror";
-import { json } from "@codemirror/lang-json";
-import { EditorView } from "@codemirror/view";
+import { json, jsonParseLinter } from "@codemirror/lang-json";
+import { linter, lintGutter, type Diagnostic } from "@codemirror/lint";
+import { EditorView, placeholder, tooltips } from "@codemirror/view";
 import { githubLight, githubDark } from "@uiw/codemirror-theme-github";
 import { useTheme } from "next-themes";
+import { cn } from "@/lib/ui/cn";
+
+const jsonLinterWithNullSupport = linter((view): Diagnostic[] => {
+  const content = view.state.doc.toString().trim();
+  if (content === "" || content === "null") {
+    return [];
+  }
+  return jsonParseLinter()(view);
+});
 
 interface JsonEditorProps {
   label: string;
@@ -39,6 +49,27 @@ const customEditorStyleLight = EditorView.theme(
     ".cm-activeLineGutter": {
       backgroundColor: "transparent",
       color: "rgba(0, 0, 0, 0.8)",
+    },
+    ".cm-placeholder": {
+      color: "rgba(0, 0, 0, 0.35)",
+      fontStyle: "italic",
+    },
+    ".cm-lintRange-error": {
+      backgroundImage: `url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='6' height='3'><path d='m0 2.5 l2 -1.5 l1 0 l2 1.5 l1 0' stroke='%23e53935' fill='none' stroke-width='1'/></svg>")`,
+      backgroundRepeat: "repeat-x",
+      backgroundPosition: "bottom",
+    },
+    ".cm-lint-marker-error": {
+      content: '"●"',
+      color: "#e53935",
+    },
+    ".cm-tooltip-lint": {
+      backgroundColor: "#fef2f2",
+      border: "1px solid #fecaca",
+      borderRadius: "6px",
+      padding: "6px 10px",
+      fontSize: "13px",
+      color: "#991b1b",
     },
   },
   { dark: false },
@@ -74,6 +105,27 @@ const customEditorStyleDark = EditorView.theme(
       backgroundColor: "transparent",
       color: "rgba(255, 255, 255, 0.8)",
     },
+    ".cm-placeholder": {
+      color: "rgba(255, 255, 255, 0.35)",
+      fontStyle: "italic",
+    },
+    ".cm-lintRange-error": {
+      backgroundImage: `url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='6' height='3'><path d='m0 2.5 l2 -1.5 l1 0 l2 1.5 l1 0' stroke='%23f87171' fill='none' stroke-width='1'/></svg>")`,
+      backgroundRepeat: "repeat-x",
+      backgroundPosition: "bottom",
+    },
+    ".cm-lint-marker-error": {
+      content: '"●"',
+      color: "#f87171",
+    },
+    ".cm-tooltip-lint": {
+      backgroundColor: "#450a0a",
+      border: "1px solid #7f1d1d",
+      borderRadius: "6px",
+      padding: "6px 10px",
+      fontSize: "13px",
+      color: "#fecaca",
+    },
   },
   { dark: true },
 );
@@ -89,15 +141,18 @@ export function JsonEditor({
     }
     return JSON.stringify(value, null, 2);
   });
-  const [error, setError] = useState<string | null>(null);
   const lastSentValueRef = useRef<string>("");
   const { theme } = useTheme();
 
   const extensions = useMemo(
     () => [
       json(),
+      jsonLinterWithNullSupport,
+      lintGutter(),
+      tooltips({ position: "fixed" }),
       EditorView.lineWrapping,
       theme === "dark" ? customEditorStyleDark : customEditorStyleLight,
+      placeholder("null"),
     ],
     [theme],
   );
@@ -114,7 +169,6 @@ export function JsonEditor({
     } else {
       setText(JSON.stringify(value, null, 2));
     }
-    setError(null);
   }, [value]);
 
   const handleChange = (newText: string) => {
@@ -122,7 +176,6 @@ export function JsonEditor({
 
     const trimmed = newText.trim();
     if (trimmed === "" || trimmed === "null") {
-      setError(null);
       const emptyObj = {};
       lastSentValueRef.current = JSON.stringify(emptyObj);
       onChange(emptyObj);
@@ -131,11 +184,10 @@ export function JsonEditor({
 
     try {
       const parsed = JSON.parse(newText);
-      setError(null);
       lastSentValueRef.current = JSON.stringify(parsed);
       onChange(parsed);
     } catch {
-      setError("Invalid JSON");
+      // Linter will show the error inline
     }
   };
 
@@ -153,13 +205,30 @@ export function JsonEditor({
           highlightActiveLineGutter: true,
           highlightActiveLine: true,
         }}
-        className="h-full [&_.cm-activeLineGutter]:text-[rgba(0,0,0,0.8)]! dark:[&_.cm-activeLineGutter]:text-[rgba(255,255,255,0.8)]! [&_.cm-editor]:h-full [&_.cm-editor]:bg-transparent! [&_.cm-gutters]:bg-transparent! [&_.cm-lineNumbers]:text-[rgba(0,0,0,0.25)]! dark:[&_.cm-lineNumbers]:text-[rgba(255,255,255,0.35)]! [&_.cm-matchingBracket]:bg-[rgba(0,0,0,0.1)]! dark:[&_.cm-matchingBracket]:bg-[rgba(255,255,255,0.15)]! [&_.cm-scroller]:h-full"
+        className={cn(
+          "h-full",
+          "[&_.cm-editor]:h-full",
+          "[&_.cm-scroller]:h-full",
+
+          // Editor backgrounds
+          "[&_.cm-editor]:bg-transparent!",
+          "[&_.cm-gutters]:bg-transparent!",
+
+          // Line numbers
+          "[&_.cm-lineNumbers]:text-[rgba(0,0,0,0.25)]!",
+          "dark:[&_.cm-lineNumbers]:text-[rgba(255,255,255,0.25)]!",
+
+          // Active line gutter
+          "[&_.cm-activeLineGutter]:text-[rgba(0,0,0,0.8)]!",
+          "dark:[&_.cm-activeLineGutter]:text-[rgba(255,255,255,0.7)]!",
+          "[&_.cm-activeLineGutter]:bg-transparent!",
+          "dark:[&_.cm-activeLineGutter]:bg-transparent!",
+
+          // Matching bracket
+          "[&_.cm-matchingBracket]:bg-[rgba(0,0,0,0.1)]!",
+          "dark:[&_.cm-matchingBracket]:bg-[rgba(255,255,255,0.15)]!",
+        )}
       />
-      {error && (
-        <div className="text-destructive pointer-events-none absolute bottom-2 left-2 z-20 rounded px-2 py-1 text-xs">
-          {error}
-        </div>
-      )}
     </div>
   );
 }
