@@ -119,18 +119,23 @@ export default function Chat() {
 
 ## Tips
 
-- **Keep runtime boundaries clean**
-  Export only types from `lib/tools.ts` to the client; never import server code into the browser.
+### Keep runtime boundaries clean
 
-- **Single-tool helpers**
-  For a single tool, `InferUITool` works the same way as `InferUITools` but for one tool definition.
+Export only types from `lib/tools.ts` to the client; never import server code into the browser.
 
-- **End-to-end validation**
-  Use the component's `outputSchema` on the server and `parseSerializableX` on the client to validate at both ends.
+### Single-tool helpers
 
-- **Lifecycle-aware rendering**
-  Use `part.state` to respect the Tool UI lifecycle from UI Guidelines:
-  - `state === 'invocation'` → show intent / shell
-  - `state === 'output-pending'` → show skeleton / loading shell
-  - `state === 'output-available'` → render the full component
-  - `state === 'errored'` → show an error surface instead of silently failing
+For a single tool, `InferUITool` works the same way as `InferUITools` but for one tool definition.
+
+### End-to-end validation
+
+Use the component's `outputSchema` on the server and `parseSerializable{componentName}` on the client to validate at both ends.
+
+### Lifecycle-aware rendering
+
+Use `part.state` to respect the Tool UI lifecycle from UI Guidelines:
+
+- `state === 'invocation'` → show intent / shell
+- `state === 'output-pending'` → show skeleton / loading shell
+- `state === 'output-available'` → render the full component
+- `state === 'errored'` → show an error surface instead of silently failing
