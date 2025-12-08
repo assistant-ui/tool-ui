@@ -22,13 +22,13 @@ export function MobileNavSheet() {
 
   const isHome = pathname === "/";
   const isDocs = pathname.startsWith("/docs") && pathname !== "/docs/gallery";
-  const isComponents = pathname === "/docs/gallery";
+  const isGallery = pathname === "/docs/gallery";
   const isBuilder = pathname.startsWith("/builder");
 
   const mainNavLinks = [
     { href: "/", label: "Home", isActive: isHome },
     { href: "/docs/overview", label: "Docs", isActive: isDocs },
-    { href: "/docs/gallery", label: "Components", isActive: isComponents },
+    { href: "/docs/gallery", label: "Gallery", isActive: isGallery },
     { href: "/builder", label: "Builder", isActive: isBuilder },
   ];
 

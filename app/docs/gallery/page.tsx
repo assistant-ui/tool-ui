@@ -3,15 +3,21 @@ import { DocsBorderedShell } from "@/app/docs/_components/docs-bordered-shell";
 import { DataTable } from "@/components/tool-ui/data-table";
 import { MediaCard } from "@/components/tool-ui/media-card";
 import { XPost } from "@/components/tool-ui/x-post";
-import { InstagramPost } from "@/components/tool-ui/instagram-post";
 import { LinkedInPost } from "@/components/tool-ui/linkedin-post";
 import { OptionList } from "@/components/tool-ui/option-list";
+import { Plan } from "@/components/tool-ui/plan";
+import { Terminal } from "@/components/tool-ui/terminal";
+import { CodeBlock } from "@/components/tool-ui/code-block";
+import { Chart } from "@/components/tool-ui/chart";
 import { presets } from "@/lib/presets/data-table";
 import { mediaCardPresets } from "@/lib/presets/media-card";
 import { xPostPresets } from "@/lib/presets/x-post";
-import { instagramPostPresets } from "@/lib/presets/instagram-post";
 import { linkedInPostPresets } from "@/lib/presets/linkedin-post";
 import { optionListPresets } from "@/lib/presets/option-list";
+import { planPresets } from "@/lib/presets/plan";
+import { terminalPresets } from "@/lib/presets/terminal";
+import { codeBlockPresets } from "@/lib/presets/code-block";
+import { presets as chartPresets } from "@/lib/presets/chart";
 import { ArrowRightIcon } from "lucide-react";
 
 export default function ComponentsGalleryPage() {
@@ -50,11 +56,11 @@ export default function ComponentsGalleryPage() {
           </div>
 
           <div className="mb-5 break-inside-avoid 2xl:mb-5">
-            <InstagramPost post={instagramPostPresets.basic.post} />
+            <OptionList {...optionListPresets.export.optionList} />
           </div>
 
           <div className="mb-5 break-inside-avoid 2xl:mb-5">
-            <OptionList {...optionListPresets.export.optionList} />
+            <Plan {...planPresets.comprehensive.plan} />
           </div>
 
           <div className="mb-5 break-inside-avoid 2xl:mb-5">
@@ -63,6 +69,18 @@ export default function ComponentsGalleryPage() {
 
           <div className="mb-5 break-inside-avoid 2xl:mb-5">
             <LinkedInPost post={linkedInPostPresets.basic.post} />
+          </div>
+
+          <div className="mb-5 break-inside-avoid 2xl:mb-5">
+            <Terminal {...terminalPresets.success.terminal} />
+          </div>
+
+          <div className="mb-5 break-inside-avoid 2xl:mb-5">
+            <CodeBlock {...codeBlockPresets.typescript.codeBlock} />
+          </div>
+
+          <div className="mb-5 break-inside-avoid 2xl:mb-5">
+            <Chart id="gallery-chart" {...chartPresets.revenue} />
           </div>
 
           <div className="mb-5 break-inside-avoid 2xl:mb-5">
