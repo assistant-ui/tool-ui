@@ -22,17 +22,6 @@ const typeColors: Record<ConsoleEntryType, string> = {
   event: "text-cyan-600 dark:text-cyan-400",
 };
 
-const typeBgColors: Record<ConsoleEntryType, string> = {
-  callTool: "bg-blue-500/10",
-  setWidgetState: "bg-green-500/10",
-  requestDisplayMode: "bg-purple-500/10",
-  sendFollowUpMessage: "bg-orange-500/10",
-  requestClose: "bg-neutral-500/10",
-  openExternal: "bg-neutral-500/10",
-  notifyIntrinsicHeight: "bg-teal-500/10",
-  requestModal: "bg-pink-500/10",
-  event: "bg-cyan-500/10",
-};
 
 function formatTimestamp(date: Date): string {
   const h = date.getHours().toString().padStart(2, "0");
@@ -148,11 +137,7 @@ function ConsoleEntryRow({ entry, onExpand }: ConsoleEntryRowProps) {
           [{formatTimestamp(entry.timestamp)}]
         </span>
         <span
-          className={cn(
-            "shrink-0 rounded px-1.5 py-0.5 text-xs font-medium",
-            typeColors[entry.type],
-            typeBgColors[entry.type],
-          )}
+          className={cn("shrink-0 font-medium", typeColors[entry.type])}
         >
           {entry.method}
         </span>
@@ -196,11 +181,7 @@ function ConsoleEntryRow({ entry, onExpand }: ConsoleEntryRowProps) {
               [{formatTimestamp(entry.timestamp)}]
             </span>
             <span
-              className={cn(
-                "shrink-0 rounded px-1.5 py-0.5 text-xs font-medium",
-                typeColors[entry.type],
-                typeBgColors[entry.type],
-              )}
+              className={cn("shrink-0 font-medium", typeColors[entry.type])}
             >
               {entry.method}
             </span>

@@ -436,7 +436,7 @@ export function UnifiedWorkspace() {
         <div className="relative flex h-full flex-col bg-transparent">
           <div className="scrollbar-subtle h-full overflow-y-auto">
             <div
-              className="pointer-events-none absolute top-0 z-10 h-22 w-full bg-linear-to-b from-neutral-100 via-neutral-100 to-transparent dark:from-neutral-950 dark:via-neutral-950"
+              className="pointer-events-none absolute top-0 z-10 h-18 w-full bg-linear-to-b from-neutral-100 via-neutral-100 to-transparent dark:from-neutral-950 dark:via-neutral-950"
               aria-hidden="true"
             />
 
@@ -451,12 +451,6 @@ export function UnifiedWorkspace() {
                     value="toolInput"
                   >
                     Input
-                  </TabsTrigger>
-                  <TabsTrigger
-                    className={TAB_TRIGGER_CLASSES}
-                    value="toolOutput"
-                  >
-                    Output
                   </TabsTrigger>
                   <TabsTrigger
                     className={TAB_TRIGGER_CLASSES}
