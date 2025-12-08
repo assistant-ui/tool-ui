@@ -232,3 +232,75 @@ export function JsonEditor({
     </div>
   );
 }
+
+const readOnlyStyle = EditorView.theme({
+  "&": {
+    fontSize: "14px",
+    fontFamily: "ui-monospace, monospace",
+  },
+  ".cm-content": {
+    padding: "16px",
+  },
+  ".cm-gutters": {
+    backgroundColor: "transparent",
+    borderRight: "none",
+    marginLeft: "8px",
+    userSelect: "none",
+    pointerEvents: "none",
+  },
+  ".cm-line": {
+    padding: "0",
+  },
+  "&.cm-focused": {
+    outline: "none",
+  },
+  ".cm-cursor": {
+    display: "none",
+  },
+});
+
+interface ReadOnlyJsonViewProps {
+  value: object;
+}
+
+export function ReadOnlyJsonView({ value }: ReadOnlyJsonViewProps) {
+  const jsonString = JSON.stringify(value, null, 2);
+  const { theme } = useTheme();
+
+  const extensions = useMemo(
+    () => [
+      json(),
+      EditorView.lineWrapping,
+      readOnlyStyle,
+      EditorView.editable.of(false),
+    ],
+    [],
+  );
+
+  return (
+    <div className="scrollbar-subtle h-full overflow-y-auto">
+      <CodeMirror
+        value={jsonString}
+        height="100%"
+        extensions={extensions}
+        theme={theme === "dark" ? githubDark : githubLight}
+        editable={false}
+        basicSetup={{
+          lineNumbers: true,
+          foldGutter: false,
+          highlightActiveLineGutter: false,
+          highlightActiveLine: false,
+        }}
+        className={cn(
+          "h-full",
+          "[&_.cm-editor]:h-full",
+          "[&_.cm-scroller]:h-full",
+          "[&_.cm-editor]:bg-transparent!",
+          "[&_.cm-gutters]:bg-transparent!",
+          "[&_.cm-lineNumbers]:text-[rgba(0,0,0,0.25)]!",
+          "dark:[&_.cm-lineNumbers]:text-[rgba(255,255,255,0.35)]!",
+        )}
+      />
+    </div>
+  );
+}

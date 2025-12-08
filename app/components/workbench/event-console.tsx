@@ -1,10 +1,8 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { useConsoleLogs, useWorkbenchStore } from "@/lib/workbench/store";
+import { useConsoleLogs } from "@/lib/workbench/store";
 import type { ConsoleEntryType } from "@/lib/workbench/types";
-import { Button } from "@/components/ui/button";
-import { Trash2 } from "lucide-react";
 import { cn } from "@/lib/ui/cn";
 
 const typeColors: Record<ConsoleEntryType, string> = {
@@ -42,7 +40,6 @@ function formatValue(value: unknown): string {
 
 export function EventConsole() {
   const consoleLogs = useConsoleLogs();
-  const clearConsole = useWorkbenchStore((s) => s.clearConsole);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -52,63 +49,42 @@ export function EventConsole() {
   }, [consoleLogs.length]);
 
   return (
-    <div className="relative h-full">
-      {consoleLogs.length > 0 && (
-        <Button
-          variant="ghost"
-          size="sm"
-          className="absolute top-0 right-2 z-10 h-7 gap-1 px-2 text-xs"
-          onClick={clearConsole}
-        >
-          <Trash2 className="size-3" />
-          Clear
-        </Button>
-      )}
+    <div ref={scrollRef} className="font-mono text-sm">
+      {consoleLogs.length === 0 ? (
+        <div className="text-muted-foreground flex h-full flex-1 grow justify-center self-center px-4 pt-12 text-center opacity-70">
+          Events will appear here when the component calls window methods
+        </div>
+      ) : (
+        <div className="divide-y">
+          {consoleLogs.map((entry) => (
+            <div
+              key={entry.id}
+              className="hover:bg-muted/50 flex gap-2 px-3 py-2 transition-colors"
+            >
+              <span className="text-muted-foreground shrink-0">
+                [{formatTimestamp(entry.timestamp)}]
+              </span>
 
-      <div
-        ref={scrollRef}
-        className="scrollbar-subtle h-full overflow-y-auto font-mono text-sm"
-      >
-        {consoleLogs.length === 0 ? (
-          <div className="text-muted-foreground flex h-full items-center justify-center px-4 text-center">
-            Events will appear here when the component calls window.openai
-            methods
-          </div>
-        ) : (
-          <div className="divide-y">
-            {consoleLogs.map((entry) => (
-              <div
-                key={entry.id}
-                className="hover:bg-muted/50 flex gap-2 px-3 py-2 transition-colors"
+              <span
+                className={cn("shrink-0 font-semibold", typeColors[entry.type])}
               >
-                <span className="text-muted-foreground shrink-0">
-                  [{formatTimestamp(entry.timestamp)}]
-                </span>
+                {entry.method}
+              </span>
 
-                <span
-                  className={cn(
-                    "shrink-0 font-semibold",
-                    typeColors[entry.type],
-                  )}
-                >
-                  {entry.method}
+              {entry.args !== undefined && (
+                <span className="text-muted-foreground truncate">
+                  {formatValue(entry.args)}
                 </span>
-
-                {entry.args !== undefined && (
-                  <span className="text-muted-foreground truncate">
-                    {formatValue(entry.args)}
-                  </span>
-                )}
-                {entry.result !== undefined && (
-                  <span className="truncate text-emerald-600 dark:text-emerald-400">
-                    → {formatValue(entry.result)}
-                  </span>
-                )}
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
+              )}
+              {entry.result !== undefined && (
+                <span className="truncate text-emerald-600 dark:text-emerald-400">
+                  → {formatValue(entry.result)}
+                </span>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

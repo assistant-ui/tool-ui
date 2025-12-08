@@ -9,15 +9,16 @@ import {
   useDisplayMode,
   useSelectedComponent,
   useToolInput,
+  useOpenAIGlobals,
   type ActiveJsonTab,
 } from "@/lib/workbench/store";
 import { getComponent } from "@/lib/workbench/component-registry";
 import { OpenAIProvider } from "@/lib/workbench/openai-context";
-import { JsonEditor } from "./json-editor";
+import { JsonEditor, ReadOnlyJsonView } from "./json-editor";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/ui/cn";
-import { RotateCcw, X, AlertTriangle } from "lucide-react";
+import { RotateCcw, X, AlertTriangle, Globe } from "lucide-react";
 import { TAB_LIST_CLASSES, TAB_TRIGGER_CLASSES } from "./styles";
 
 interface ErrorBoundaryProps {
@@ -253,6 +254,7 @@ export function UnifiedWorkspace() {
   const selectedComponent = useSelectedComponent();
   const displayMode = useDisplayMode();
   const setDisplayMode = useWorkbenchStore((s) => s.setDisplayMode);
+  const globals = useOpenAIGlobals();
 
   const {
     toolInput,
@@ -340,6 +342,7 @@ export function UnifiedWorkspace() {
     toolOutput: "Tool Output",
     widgetState: "Widget State",
     toolResponseMetadata: "Metadata",
+    window: "Window",
   };
 
   return (
@@ -348,7 +351,7 @@ export function UnifiedWorkspace() {
       className="flex h-full w-full flex-row bg-neutral-100 dark:bg-neutral-950"
     >
       <Panel defaultSize={40} minSize={20} maxSize={80}>
-        <div className="relative isolate flex h-full flex-col bg-transparent">
+        <div className="relative flex h-full flex-col bg-transparent">
           <div className="scrollbar-subtle h-full overflow-y-auto">
             <div
               className="pointer-events-none absolute top-0 z-10 h-22 w-full bg-linear-to-b from-neutral-100 via-neutral-100 to-transparent dark:from-neutral-950 dark:via-neutral-950"
@@ -385,6 +388,13 @@ export function UnifiedWorkspace() {
                   >
                     State
                   </TabsTrigger>
+                  <TabsTrigger
+                    className={`${TAB_TRIGGER_CLASSES} gap-1.5`}
+                    value="window"
+                  >
+                    <Globe className="size-3.5" />
+                    Window
+                  </TabsTrigger>
                 </TabsList>
               </Tabs>
 
@@ -398,12 +408,16 @@ export function UnifiedWorkspace() {
               </Button>
             </div>
 
-            <JsonEditor
-              key={activeJsonTab}
-              label={tabLabels[activeJsonTab]}
-              value={getActiveData()}
-              onChange={handleChange}
-            />
+            {activeJsonTab === "window" ? (
+              <ReadOnlyJsonView value={globals} />
+            ) : (
+              <JsonEditor
+                key={activeJsonTab}
+                label={tabLabels[activeJsonTab]}
+                value={getActiveData()}
+                onChange={handleChange}
+              />
+            )}
           </div>
         </div>
       </Panel>

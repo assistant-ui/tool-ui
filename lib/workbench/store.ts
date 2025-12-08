@@ -20,7 +20,8 @@ export type ActiveJsonTab =
   | "toolInput"
   | "toolOutput"
   | "widgetState"
-  | "toolResponseMetadata";
+  | "toolResponseMetadata"
+  | "window";
 
 interface WorkbenchState {
   selectedComponent: string;
