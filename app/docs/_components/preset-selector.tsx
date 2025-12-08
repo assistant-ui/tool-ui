@@ -44,13 +44,6 @@ const dataTablePresetNames: PresetName[] = [
   "tasks",
   "resources",
   "actions",
-  "hardware",
-  "metrics",
-  "ledger",
-  "milestones",
-  "archives",
-  "inventory",
-  "largeDataset",
 ];
 
 const mediaCardPresetNames: MediaCardPresetName[] = [
@@ -59,14 +52,6 @@ const mediaCardPresetNames: MediaCardPresetName[] = [
   "audio",
   "link",
   "actions",
-  "portrait",
-  "square",
-  "podcast",
-  "product",
-  "document",
-  "screenshot",
-  "gallery",
-  "edgeCases",
 ];
 
 const optionListPresetNames: OptionListPresetName[] = [
