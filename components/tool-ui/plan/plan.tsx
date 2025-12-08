@@ -118,7 +118,7 @@ function PlanTodoItem({ todo }: PlanTodoItemProps) {
           <span className={cn("flex-1 text-sm", labelClassName)}>
             {todo.label}
           </span>
-          <ChevronRight className="text-muted-foreground mt-0.5 size-4 shrink-0 rotate-90 transition-transform duration-150 group-data-[state=open]/todo:[transform:rotateY(180deg)]" />
+          <ChevronRight className="text-muted-foreground/50 mt-0.5 size-4 shrink-0 rotate-90 transition-transform duration-150 group-data-[state=open]/todo:[transform:rotateY(180deg)]" />
         </CollapsibleTrigger>
         <CollapsibleContent>
           <p className="text-muted-foreground pr-2 pb-1.5 pl-8 text-xs">
