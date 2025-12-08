@@ -28,3 +28,4 @@ export {
 } from "../../ui/tooltip";
 export { Skeleton } from "../../ui/skeleton";
 export { Avatar, AvatarFallback, AvatarImage } from "../../ui/avatar";
+export { Separator } from "../../ui/separator";

@@ -95,10 +95,10 @@ export function POIMap({
     return (
       <div
         id={id}
-        className={cn("relative flex h-full w-full", className)}
+        className={cn("flex h-full w-full gap-3", className)}
       >
-        <div className="bg-background/95 border-border relative z-10 flex w-72 shrink-0 flex-col border-r backdrop-blur-sm">
-          <div className="border-border flex items-center justify-between border-b px-3 py-2">
+        <div className="flex w-72 shrink-0 flex-col">
+          <div className="mb-2 flex items-center justify-between px-1">
             <div className="flex items-center gap-2">
               <MapPin className="text-primary size-4" />
               <span className="text-sm font-medium">
@@ -121,7 +121,7 @@ export function POIMap({
                       <RefreshCw className="size-3.5" />
                     </Button>
                   </TooltipTrigger>
-                  <TooltipContent>Refresh locations</TooltipContent>
+                  <TooltipContent className="z-[1001]">Refresh locations</TooltipContent>
                 </Tooltip>
               )}
               <Tooltip>
@@ -135,7 +135,7 @@ export function POIMap({
                     <Minimize2 className="size-3.5" />
                   </Button>
                 </TooltipTrigger>
-                <TooltipContent>Exit fullscreen</TooltipContent>
+                <TooltipContent className="z-[1001]">Exit fullscreen</TooltipContent>
               </Tooltip>
             </div>
           </div>
@@ -149,7 +149,7 @@ export function POIMap({
           />
         </div>
 
-        <div className="relative flex-1">
+        <div className="relative min-w-0 flex-1 overflow-hidden rounded-xl">
           <MapView
             pois={filteredPois}
             center={mapCenter}
@@ -169,61 +169,59 @@ export function POIMap({
   return (
     <div
       id={id}
-      className={cn("relative flex h-full w-full flex-col", className)}
+      className={cn("relative h-full w-full overflow-hidden rounded-xl", className)}
     >
-      <div className="relative flex-1">
-        <MapView
-          pois={filteredPois}
-          center={mapCenter}
-          zoom={mapZoom}
-          selectedPoiId={selectedPoiId}
-          favoriteIds={favoriteIds}
-          onSelectPoi={selectPoi}
-          onMoveEnd={handleMoveEnd}
-          theme={theme}
-          className="h-full w-full"
-        />
+      <MapView
+        pois={filteredPois}
+        center={mapCenter}
+        zoom={mapZoom}
+        selectedPoiId={selectedPoiId}
+        favoriteIds={favoriteIds}
+        onSelectPoi={selectPoi}
+        onMoveEnd={handleMoveEnd}
+        theme={theme}
+        className="h-full w-full"
+      />
 
-        <div className="absolute top-3 right-3 z-10 flex gap-1">
-          {onRefresh && (
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant="secondary"
-                  size="icon"
-                  className="bg-background/90 size-8 backdrop-blur-sm"
-                  onClick={onRefresh}
-                >
-                  <RefreshCw className="size-4" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>Refresh locations</TooltipContent>
-            </Tooltip>
-          )}
+      <div className="absolute top-3 right-3 z-[1000] flex gap-1">
+        {onRefresh && (
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
                 variant="secondary"
                 size="icon"
-                className="bg-background/90 size-8 backdrop-blur-sm"
-                onClick={handleToggleFullscreen}
+                className="bg-background/80 size-8 backdrop-blur-md"
+                onClick={onRefresh}
               >
-                <Maximize2 className="size-4" />
+                <RefreshCw className="size-4" />
               </Button>
             </TooltipTrigger>
-            <TooltipContent>Enter fullscreen</TooltipContent>
+            <TooltipContent className="z-[1001]">Refresh locations</TooltipContent>
           </Tooltip>
-        </div>
-
-        {title && (
-          <div className="bg-background/90 absolute top-3 left-3 z-10 flex items-center gap-2 rounded-lg px-3 py-1.5 backdrop-blur-sm">
-            <MapPin className="text-primary size-4" />
-            <span className="text-sm font-medium">{title}</span>
-          </div>
         )}
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant="secondary"
+              size="icon"
+              className="bg-background/80 size-8 backdrop-blur-md"
+              onClick={handleToggleFullscreen}
+            >
+              <Maximize2 className="size-4" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent className="z-[1001]">Enter fullscreen</TooltipContent>
+        </Tooltip>
       </div>
 
-      <div className="bg-background/95 border-border shrink-0 border-t backdrop-blur-sm">
+      {title && (
+        <div className="bg-background/80 absolute top-3 left-3 z-[1000] flex items-center gap-2 rounded-lg px-3 py-1.5 backdrop-blur-md">
+          <MapPin className="text-primary size-4" />
+          <span className="text-sm font-medium">{title}</span>
+        </div>
+      )}
+
+      <div className="absolute right-3 bottom-3 left-3 z-[1000]">
         <POIListInline
           pois={filteredPois}
           selectedPoiId={selectedPoiId}

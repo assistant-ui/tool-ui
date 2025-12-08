@@ -64,8 +64,8 @@ export const POICard = memo(function POICard({
       <button
         onClick={() => onSelect(poi.id)}
         className={cn(
-          "group relative flex h-20 w-40 shrink-0 snap-start flex-col rounded-lg border p-2.5 text-left transition-all",
-          "bg-card hover:bg-accent/50",
+          "group relative flex h-20 w-40 shrink-0 snap-start flex-col rounded-lg border p-2.5 text-left shadow-lg transition-all",
+          "bg-card/95 hover:bg-card backdrop-blur-sm",
           isSelected
             ? "border-primary ring-primary/20 ring-2"
             : "border-border hover:border-primary/50",
@@ -80,7 +80,7 @@ export const POICard = memo(function POICard({
             <Heart className="size-3 shrink-0 fill-rose-500 text-rose-500" />
           )}
         </div>
-        <span className="mt-1 line-clamp-2 text-sm font-medium leading-tight">
+        <span className="mt-1 line-clamp-2 text-sm leading-tight font-medium">
           {poi.name}
         </span>
         {poi.rating !== undefined && (
@@ -98,15 +98,17 @@ export const POICard = memo(function POICard({
   return (
     <div
       className={cn(
-        "group relative flex gap-3 rounded-lg border p-3 transition-all",
-        "bg-card hover:bg-accent/50",
-        isSelected
-          ? "border-primary ring-primary/20 ring-2"
-          : "border-border hover:border-primary/50",
+        "group relative flex gap-3 rounded-lg p-2 transition-colors",
+        "hover:bg-accent/50",
+        isSelected && "bg-accent",
       )}
     >
       <Avatar className="size-14 shrink-0 rounded-md">
-        <AvatarImage src={poi.imageUrl} alt={poi.name} className="object-cover" />
+        <AvatarImage
+          src={poi.imageUrl}
+          alt={poi.name}
+          className="object-cover"
+        />
         <AvatarFallback className="rounded-md">
           <CategoryIcon className="text-muted-foreground size-6" />
         </AvatarFallback>
@@ -125,7 +127,10 @@ export const POICard = memo(function POICard({
                 {CATEGORY_LABELS[poi.category]}
               </Badge>
               {poi.rating !== undefined && (
-                <Badge variant="secondary" className="h-5 gap-0.5 px-1.5 text-[10px]">
+                <Badge
+                  variant="secondary"
+                  className="h-5 gap-0.5 px-1.5 text-[10px]"
+                >
                   <Star className="size-3 fill-amber-400 text-amber-400" />
                   {poi.rating.toFixed(1)}
                 </Badge>
@@ -153,7 +158,7 @@ export const POICard = memo(function POICard({
                 />
               </Button>
             </TooltipTrigger>
-            <TooltipContent side="left">
+            <TooltipContent side="left" className="z-[1001]">
               {isFavorite ? "Remove from favorites" : "Add to favorites"}
             </TooltipContent>
           </Tooltip>

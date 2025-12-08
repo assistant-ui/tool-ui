@@ -173,7 +173,15 @@ function IsolatedThemeWrapper({
   className?: string;
 }) {
   const theme = useWorkbenchStore((s) => s.theme);
+  const safeAreaInsets = useWorkbenchStore((s) => s.safeAreaInsets);
   const themeVars = theme === "dark" ? DARK_THEME_VARS : LIGHT_THEME_VARS;
+
+  const insetStyle: React.CSSProperties = {
+    paddingTop: safeAreaInsets.top,
+    paddingBottom: safeAreaInsets.bottom,
+    paddingLeft: safeAreaInsets.left,
+    paddingRight: safeAreaInsets.right,
+  };
 
   return (
     <div
@@ -182,7 +190,7 @@ function IsolatedThemeWrapper({
         "bg-background text-foreground transition-colors",
         className,
       )}
-      style={{ colorScheme: theme, ...themeVars }}
+      style={{ colorScheme: theme, ...themeVars, ...insetStyle }}
     >
       {children}
     </div>
@@ -206,10 +214,15 @@ function ComponentContent({ className }: { className?: string }) {
 }
 
 function InlineView() {
+  const maxHeight = useWorkbenchStore((s) => s.maxHeight);
+
   return (
-    <div className="h-full w-full">
-      <div className="h-full overflow-auto">
-        <ComponentContent className="h-full p-4" />
+    <div className="flex h-full w-full items-start justify-center overflow-auto p-4">
+      <div
+        className="w-full"
+        style={{ maxHeight, height: maxHeight }}
+      >
+        <ComponentContent className="h-full" />
       </div>
     </div>
   );

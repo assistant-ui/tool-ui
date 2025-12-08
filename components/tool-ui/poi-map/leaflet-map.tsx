@@ -20,7 +20,7 @@ function createMarkerIcon(
   isFavorite: boolean,
 ): L.DivIcon {
   const color = CATEGORY_COLORS[category];
-  const size = isSelected ? 40 : 32;
+  const size = isSelected ? 28 : 20;
   const borderWidth = isSelected ? 3 : 2;
   const shadow = isSelected
     ? "0 4px 12px rgba(0,0,0,0.3)"
@@ -29,23 +29,22 @@ function createMarkerIcon(
   return L.divIcon({
     className: "custom-marker",
     iconSize: [size, size],
-    iconAnchor: [size / 2, size],
-    popupAnchor: [0, -size],
+    iconAnchor: [size / 2, size / 2],
+    popupAnchor: [0, -size / 2],
     html: `
       <div style="
         width: ${size}px;
         height: ${size}px;
         background: ${color};
         border: ${borderWidth}px solid white;
-        border-radius: 50% 50% 50% 0;
-        transform: rotate(-45deg);
+        border-radius: 50%;
         box-shadow: ${shadow};
         display: flex;
         align-items: center;
         justify-content: center;
         transition: all 0.2s ease;
       ">
-        ${isFavorite ? `<span style="transform: rotate(45deg); font-size: ${size * 0.4}px;">★</span>` : ""}
+        ${isFavorite ? `<span style="color: white; font-size: ${size * 0.5}px; line-height: 1;">★</span>` : ""}
       </div>
     `,
   });

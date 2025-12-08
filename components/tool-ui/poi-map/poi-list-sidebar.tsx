@@ -1,9 +1,9 @@
 "use client";
 
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, Fragment } from "react";
 import type { POI } from "./schema";
 import { POICard } from "./poi-card";
-import { cn } from "./_ui";
+import { cn, Separator } from "./_ui";
 
 interface POIListSidebarProps {
   pois: POI[];
@@ -41,10 +41,7 @@ export function POIListSidebar({
   if (pois.length === 0) {
     return (
       <div
-        className={cn(
-          "flex h-full items-center justify-center p-4",
-          className,
-        )}
+        className={cn("flex h-full items-center justify-center p-4", className)}
       >
         <p className="text-muted-foreground text-sm">No locations found</p>
       </div>
@@ -56,18 +53,21 @@ export function POIListSidebar({
       ref={scrollRef}
       className={cn("scrollbar-subtle h-full overflow-y-auto", className)}
     >
-      <div className="flex flex-col gap-2 p-3">
-        {pois.map((poi) => (
-          <div key={poi.id} data-poi-id={poi.id}>
-            <POICard
-              poi={poi}
-              isSelected={poi.id === selectedPoiId}
-              isFavorite={favoriteIds.has(poi.id)}
-              variant="expanded"
-              onSelect={onSelectPoi}
-              onToggleFavorite={onToggleFavorite}
-            />
-          </div>
+      <div className="flex flex-col">
+        {pois.map((poi, index) => (
+          <Fragment key={poi.id}>
+            {index > 0 && <Separator />}
+            <div data-poi-id={poi.id}>
+              <POICard
+                poi={poi}
+                isSelected={poi.id === selectedPoiId}
+                isFavorite={favoriteIds.has(poi.id)}
+                variant="expanded"
+                onSelect={onSelectPoi}
+                onToggleFavorite={onToggleFavorite}
+              />
+            </div>
+          </Fragment>
         ))}
       </div>
     </div>

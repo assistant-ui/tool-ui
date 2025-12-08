@@ -216,7 +216,7 @@ export function SafeAreaInsetsControl({
               value={value.left}
               onChange={handleSideChange}
             />
-            <div className="size-4 bg-red-500"></div>
+            <div className="size-4"></div>
             <InsetInput
               side="right"
               value={value.right}

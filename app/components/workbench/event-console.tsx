@@ -1,9 +1,14 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-import { useConsoleLogs } from "@/lib/workbench/store";
-import type { ConsoleEntryType } from "@/lib/workbench/types";
+import { useCallback, useEffect, useRef, useState } from "react";
+import type { ConsoleEntry, ConsoleEntryType } from "@/lib/workbench/types";
 import { cn } from "@/lib/ui/cn";
+import { ChevronDown, ChevronRight, Copy, Check } from "lucide-react";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 
 const typeColors: Record<ConsoleEntryType, string> = {
   callTool: "text-blue-600 dark:text-blue-400",
@@ -17,6 +22,18 @@ const typeColors: Record<ConsoleEntryType, string> = {
   event: "text-cyan-600 dark:text-cyan-400",
 };
 
+const typeBgColors: Record<ConsoleEntryType, string> = {
+  callTool: "bg-blue-500/10",
+  setWidgetState: "bg-green-500/10",
+  requestDisplayMode: "bg-purple-500/10",
+  sendFollowUpMessage: "bg-orange-500/10",
+  requestClose: "bg-neutral-500/10",
+  openExternal: "bg-neutral-500/10",
+  notifyIntrinsicHeight: "bg-teal-500/10",
+  requestModal: "bg-pink-500/10",
+  event: "bg-cyan-500/10",
+};
+
 function formatTimestamp(date: Date): string {
   const h = date.getHours().toString().padStart(2, "0");
   const m = date.getMinutes().toString().padStart(2, "0");
@@ -25,12 +42,12 @@ function formatTimestamp(date: Date): string {
   return `${h}:${m}:${s}.${ms}`;
 }
 
-function formatValue(value: unknown): string {
+function formatValueCompact(value: unknown): string {
   if (value === undefined) return "";
   try {
     const str = JSON.stringify(value);
-    if (str.length > 100) {
-      return str.slice(0, 100) + "...";
+    if (str.length > 80) {
+      return str.slice(0, 80) + "…";
     }
     return str;
   } catch {
@@ -38,51 +55,254 @@ function formatValue(value: unknown): string {
   }
 }
 
-export function EventConsole() {
-  const consoleLogs = useConsoleLogs();
-  const scrollRef = useRef<HTMLDivElement>(null);
+function formatValueFull(value: unknown): string {
+  if (value === undefined) return "";
+  try {
+    return JSON.stringify(value, null, 2);
+  } catch {
+    return String(value);
+  }
+}
 
-  useEffect(() => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-    }
-  }, [consoleLogs.length]);
+function isExpandable(value: unknown): boolean {
+  if (value === undefined) return false;
+  try {
+    const str = JSON.stringify(value);
+    return str.length > 80;
+  } catch {
+    return false;
+  }
+}
+
+function CopyButton({ text }: { text: string }) {
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = useCallback(
+    async (e: React.MouseEvent) => {
+      e.stopPropagation();
+      try {
+        await navigator.clipboard.writeText(text);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 1500);
+      } catch {
+        const textArea = document.createElement("textarea");
+        textArea.value = text;
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand("copy");
+        document.body.removeChild(textArea);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 1500);
+      }
+    },
+    [text],
+  );
 
   return (
-    <div ref={scrollRef} className="font-mono text-sm">
-      {consoleLogs.length === 0 ? (
+    <button
+      onClick={handleCopy}
+      className="text-muted-foreground hover:text-foreground rounded p-1 opacity-0 transition-all group-hover:opacity-100"
+      title="Copy to clipboard"
+    >
+      {copied ? <Check className="size-3.5" /> : <Copy className="size-3.5" />}
+    </button>
+  );
+}
+
+interface ConsoleEntryRowProps {
+  entry: ConsoleEntry;
+  onExpand?: () => void;
+}
+
+function ConsoleEntryRow({ entry, onExpand }: ConsoleEntryRowProps) {
+  const [isOpen, setIsOpen] = useState(false);
+  const rowRef = useRef<HTMLDivElement>(null);
+  const hasExpandableContent =
+    isExpandable(entry.args) || isExpandable(entry.result);
+
+  const handleOpenChange = (open: boolean) => {
+    setIsOpen(open);
+    if (open) {
+      onExpand?.();
+      requestAnimationFrame(() => {
+        rowRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+      });
+    }
+  };
+
+  const getFullEntryText = () => {
+    const parts = [
+      `[${formatTimestamp(entry.timestamp)}]`,
+      entry.method,
+      entry.args !== undefined ? formatValueFull(entry.args) : "",
+      entry.result !== undefined ? `→ ${formatValueFull(entry.result)}` : "",
+    ];
+    return parts.filter(Boolean).join(" ");
+  };
+
+  if (!hasExpandableContent) {
+    return (
+      <div className="group hover:bg-muted/50 flex items-start gap-2 px-3 py-2 transition-colors">
+        <div className="size-4 shrink-0" />
+        <span className="text-muted-foreground shrink-0 tabular-nums">
+          [{formatTimestamp(entry.timestamp)}]
+        </span>
+        <span
+          className={cn(
+            "shrink-0 rounded px-1.5 py-0.5 text-xs font-medium",
+            typeColors[entry.type],
+            typeBgColors[entry.type],
+          )}
+        >
+          {entry.method}
+        </span>
+        {entry.args !== undefined && (
+          <span className="text-muted-foreground min-w-0 truncate">
+            {formatValueCompact(entry.args)}
+          </span>
+        )}
+        {entry.result !== undefined && (
+          <span className="min-w-0 truncate text-emerald-600 dark:text-emerald-400">
+            → {formatValueCompact(entry.result)}
+          </span>
+        )}
+        <div className="ml-auto shrink-0">
+          <CopyButton text={getFullEntryText()} />
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <Collapsible open={isOpen} onOpenChange={handleOpenChange}>
+      <div ref={rowRef} className="group hover:bg-muted/50 transition-colors">
+        <CollapsibleTrigger asChild>
+          <button className="flex w-full items-start gap-2 px-3 py-2 text-left">
+            <span className="text-muted-foreground mt-0.5 shrink-0">
+              {isOpen ? (
+                <ChevronDown className="size-4" />
+              ) : (
+                <ChevronRight className="size-4" />
+              )}
+            </span>
+            <span className="text-muted-foreground shrink-0 tabular-nums">
+              [{formatTimestamp(entry.timestamp)}]
+            </span>
+            <span
+              className={cn(
+                "shrink-0 rounded px-1.5 py-0.5 text-xs font-medium",
+                typeColors[entry.type],
+                typeBgColors[entry.type],
+              )}
+            >
+              {entry.method}
+            </span>
+            {!isOpen && (
+              <>
+                {entry.args !== undefined && (
+                  <span className="text-muted-foreground min-w-0 truncate">
+                    {formatValueCompact(entry.args)}
+                  </span>
+                )}
+                {entry.result !== undefined && (
+                  <span className="min-w-0 truncate text-emerald-600 dark:text-emerald-400">
+                    → {formatValueCompact(entry.result)}
+                  </span>
+                )}
+              </>
+            )}
+            <div className="ml-auto shrink-0">
+              <CopyButton text={getFullEntryText()} />
+            </div>
+          </button>
+        </CollapsibleTrigger>
+        <CollapsibleContent>
+          <div className="bg-muted/30 mx-3 mb-2 space-y-2 rounded-md p-3">
+            {entry.args !== undefined && (
+              <pre className="text-foreground overflow-x-auto text-xs leading-relaxed">
+                {formatValueFull(entry.args)}
+              </pre>
+            )}
+            {entry.result !== undefined && (
+              <div>
+                <div className="mb-1 text-xs font-medium uppercase tracking-wide text-emerald-600 dark:text-emerald-400">
+                  Result
+                </div>
+                <pre className="overflow-x-auto text-xs leading-relaxed text-emerald-600 dark:text-emerald-400">
+                  {formatValueFull(entry.result)}
+                </pre>
+              </div>
+            )}
+          </div>
+        </CollapsibleContent>
+      </div>
+    </Collapsible>
+  );
+}
+
+interface EventConsoleProps {
+  logs: ConsoleEntry[];
+  autoScroll: boolean;
+  onAutoScrollChange: (autoScroll: boolean) => void;
+  scrollToBottomTrigger: number;
+}
+
+export function EventConsole({
+  logs,
+  autoScroll,
+  onAutoScrollChange,
+  scrollToBottomTrigger,
+}: EventConsoleProps) {
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const bottomRef = useRef<HTMLDivElement>(null);
+  const lastLogCountRef = useRef(logs.length);
+
+  const handleScroll = useCallback(() => {
+    if (!scrollRef.current) return;
+    const { scrollTop, scrollHeight, clientHeight } = scrollRef.current;
+    const isAtBottom = scrollHeight - scrollTop - clientHeight < 50;
+    onAutoScrollChange(isAtBottom);
+  }, [onAutoScrollChange]);
+
+  const handleEntryExpand = useCallback(() => {
+    onAutoScrollChange(false);
+  }, [onAutoScrollChange]);
+
+  useEffect(() => {
+    if (autoScroll && logs.length > lastLogCountRef.current) {
+      requestAnimationFrame(() => {
+        bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+      });
+    }
+    lastLogCountRef.current = logs.length;
+  }, [logs.length, autoScroll]);
+
+  useEffect(() => {
+    if (scrollToBottomTrigger > 0) {
+      bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [scrollToBottomTrigger]);
+
+  return (
+    <div
+      ref={scrollRef}
+      onScroll={handleScroll}
+      className="min-h-0 flex-1 overflow-y-auto font-mono text-sm"
+    >
+      {logs.length === 0 ? (
         <div className="text-muted-foreground flex h-full flex-1 grow justify-center self-center px-4 pt-12 text-center opacity-70">
           Events will appear here when the component calls window methods
         </div>
       ) : (
         <div className="divide-y">
-          {consoleLogs.map((entry) => (
-            <div
+          {logs.map((entry) => (
+            <ConsoleEntryRow
               key={entry.id}
-              className="hover:bg-muted/50 flex gap-2 px-3 py-2 transition-colors"
-            >
-              <span className="text-muted-foreground shrink-0">
-                [{formatTimestamp(entry.timestamp)}]
-              </span>
-
-              <span
-                className={cn("shrink-0 font-semibold", typeColors[entry.type])}
-              >
-                {entry.method}
-              </span>
-
-              {entry.args !== undefined && (
-                <span className="text-muted-foreground truncate">
-                  {formatValue(entry.args)}
-                </span>
-              )}
-              {entry.result !== undefined && (
-                <span className="truncate text-emerald-600 dark:text-emerald-400">
-                  → {formatValue(entry.result)}
-                </span>
-              )}
-            </div>
+              entry={entry}
+              onExpand={handleEntryExpand}
+            />
           ))}
+          <div ref={bottomRef} />
         </div>
       )}
     </div>

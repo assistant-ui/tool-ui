@@ -178,6 +178,7 @@ export const useDisplayMode = () => useWorkbenchStore((s) => s.displayMode);
 export const useWorkbenchTheme = () => useWorkbenchStore((s) => s.theme);
 export const useDeviceType = () => useWorkbenchStore((s) => s.deviceType);
 export const useConsoleLogs = () => useWorkbenchStore((s) => s.consoleLogs);
+export const useClearConsole = () => useWorkbenchStore((s) => s.clearConsole);
 export const useToolInput = () => useWorkbenchStore((s) => s.toolInput);
 export const useToolOutput = () => useWorkbenchStore((s) => s.toolOutput);
 export const useActiveJsonTab = () => useWorkbenchStore((s) => s.activeJsonTab);

@@ -32,12 +32,7 @@ export interface MapViewProps {
 
 export function MapSkeleton({ className }: { className?: string }) {
   return (
-    <div
-      className={cn(
-        "relative h-full w-full overflow-hidden",
-        className,
-      )}
-    >
+    <div className={cn("relative h-full w-full overflow-clip", className)}>
       <Skeleton className="absolute inset-0" />
       <div className="absolute inset-0 flex flex-col items-center justify-center gap-2">
         <MapPin className="text-muted-foreground/50 size-8 animate-pulse" />
