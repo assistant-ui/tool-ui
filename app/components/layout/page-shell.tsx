@@ -14,14 +14,14 @@ export default function ContentLayout({
       {sidebar ? (
         <div className="relative hidden w-[220px] shrink-0 md:block">
           <div
-            className="from-background pointer-events-none absolute top-0 right-0 left-0 z-10 h-12 bg-linear-to-b to-transparent"
+            className="from-background pointer-events-none absolute top-0 right-2 left-0 z-10 h-12 bg-linear-to-b to-transparent"
             aria-hidden="true"
           />
           <div className="scrollbar-subtle h-full overflow-y-auto pt-4">
             {sidebar}
           </div>
           <div
-            className="from-background pointer-events-none absolute right-0 bottom-0 left-0 z-10 h-12 bg-linear-to-t to-transparent"
+            className="from-background pointer-events-none absolute right-2 bottom-0 left-0 z-10 h-12 bg-linear-to-t to-transparent"
             aria-hidden="true"
           />
         </div>
