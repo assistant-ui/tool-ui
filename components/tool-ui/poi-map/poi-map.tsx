@@ -103,6 +103,14 @@ export function POIMap({
     [setCategoryFilter, onFilterCategory],
   );
 
+  const handleSelectPoiInline = useCallback(
+    (poiId: string) => {
+      selectPoi(poiId);
+      onRequestDisplayMode("fullscreen");
+    },
+    [selectPoi, onRequestDisplayMode],
+  );
+
   const isFullscreen = displayMode === "fullscreen";
 
   if (isFullscreen) {
@@ -270,7 +278,7 @@ export function POIMap({
           pois={filteredPois}
           selectedPoiId={selectedPoiId}
           favoriteIds={favoriteIds}
-          onSelectPoi={selectPoi}
+          onSelectPoi={handleSelectPoiInline}
           onToggleFavorite={handleToggleFavorite}
         />
       </div>

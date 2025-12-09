@@ -105,7 +105,7 @@ export const useWorkbenchStore = create<WorkbenchState>((set, get) => ({
   toolInput: defaultComponent?.defaultProps ?? {},
   toolOutput: null,
   widgetState: null,
-  maxHeight: 800,
+  maxHeight: 500,
   toolResponseMetadata: null,
   safeAreaInsets: { top: 0, bottom: 0, left: 0, right: 0 },
   consoleLogs: [],
@@ -127,11 +127,7 @@ export const useWorkbenchStore = create<WorkbenchState>((set, get) => ({
   setDisplayMode: (mode) => set(() => ({ displayMode: mode })),
   setTheme: (theme) => set(() => ({ theme })),
   setLocale: (locale) => set(() => ({ locale })),
-  setDeviceType: (type) => {
-    const preset = DEVICE_PRESETS[type];
-    const maxHeight = typeof preset.height === "number" ? preset.height : 800;
-    set(() => ({ deviceType: type, maxHeight }));
-  },
+  setDeviceType: (type) => set(() => ({ deviceType: type })),
   setToolInput: (input) => set(() => ({ toolInput: input })),
   setToolOutput: (output) => set(() => ({ toolOutput: output })),
   setWidgetState: (state) => set(() => ({ widgetState: state })),

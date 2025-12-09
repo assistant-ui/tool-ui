@@ -26,7 +26,7 @@ interface JsonEditorProps {
 const customEditorStyleLight = EditorView.theme(
   {
     "&": {
-      fontSize: "14px",
+      fontSize: "12px",
       fontFamily: "ui-monospace, monospace",
     },
     ".cm-content": {
@@ -78,7 +78,7 @@ const customEditorStyleLight = EditorView.theme(
 const customEditorStyleDark = EditorView.theme(
   {
     "&": {
-      fontSize: "14px",
+      fontSize: "12px",
       fontFamily: "ui-monospace, monospace",
     },
     ".cm-content": {
@@ -235,7 +235,7 @@ export function JsonEditor({
 
 const readOnlyStyle = EditorView.theme({
   "&": {
-    fontSize: "14px",
+    fontSize: "12px",
     fontFamily: "ui-monospace, monospace",
   },
   ".cm-content": {

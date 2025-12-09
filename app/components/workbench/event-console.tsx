@@ -141,17 +141,15 @@ function ConsoleEntryRow({ entry, onExpand }: ConsoleEntryRowProps) {
         >
           {entry.method}
         </span>
-        {entry.args !== undefined && (
-          <span className="text-muted-foreground min-w-0 truncate">
-            {formatValueCompact(entry.args)}
-          </span>
-        )}
-        {entry.result !== undefined && (
-          <span className="min-w-0 truncate text-emerald-600 dark:text-emerald-400">
-            → {formatValueCompact(entry.result)}
-          </span>
-        )}
-        <div className="ml-auto shrink-0">
+        <span className="text-muted-foreground min-w-0 flex-1 truncate">
+          {entry.args !== undefined && formatValueCompact(entry.args)}
+          {entry.result !== undefined && (
+            <span className="text-emerald-600 dark:text-emerald-400">
+              {" "}→ {formatValueCompact(entry.result)}
+            </span>
+          )}
+        </span>
+        <div className="shrink-0">
           <CopyButton text={getFullEntryText()} />
         </div>
       </div>
@@ -186,18 +184,14 @@ function ConsoleEntryRow({ entry, onExpand }: ConsoleEntryRowProps) {
               {entry.method}
             </span>
             {!isOpen && (
-              <>
-                {entry.args !== undefined && (
-                  <span className="text-muted-foreground min-w-0 truncate">
-                    {formatValueCompact(entry.args)}
-                  </span>
-                )}
+              <span className="text-muted-foreground min-w-0 flex-1 truncate">
+                {entry.args !== undefined && formatValueCompact(entry.args)}
                 {entry.result !== undefined && (
-                  <span className="min-w-0 truncate text-emerald-600 dark:text-emerald-400">
-                    → {formatValueCompact(entry.result)}
+                  <span className="text-emerald-600 dark:text-emerald-400">
+                    {" "}→ {formatValueCompact(entry.result)}
                   </span>
                 )}
-              </>
+              </span>
             )}
           </button>
         </CollapsibleTrigger>

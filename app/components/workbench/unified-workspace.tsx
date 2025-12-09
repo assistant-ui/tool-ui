@@ -15,8 +15,10 @@ import {
   useSelectedComponent,
   useToolInput,
   useOpenAIGlobals,
+  useDeviceType,
   type ActiveJsonTab,
 } from "@/lib/workbench/store";
+import { DEVICE_PRESETS } from "@/lib/workbench/types";
 import { getComponent } from "@/lib/workbench/component-registry";
 import { OpenAIProvider } from "@/lib/workbench/openai-context";
 import { JsonEditor, ReadOnlyJsonView } from "./json-editor";
@@ -147,7 +149,7 @@ function ComponentRenderer() {
 }
 
 const LIGHT_THEME_VARS: React.CSSProperties = {
-  "--background": "0 0% 100%",
+  "--background": "240 5% 96%",
   "--foreground": "240 10% 3.9%",
   "--card": "0 0% 100%",
   "--card-foreground": "240 10% 3.9%",
@@ -223,8 +225,13 @@ const PREVIEW_MAX_SIZE = 100;
 
 function InlineView() {
   const maxHeight = useWorkbenchStore((s) => s.maxHeight);
+  const deviceType = useDeviceType();
   const panelGroupRef = useRef<ImperativePanelGroupHandle | null>(null);
   const isSyncingLayout = useRef(false);
+
+  const devicePreset = DEVICE_PRESETS[deviceType];
+  const previewWidth = devicePreset.width;
+  const isFixedWidth = typeof previewWidth === "number";
 
   const handleLayout = useCallback((sizes: number[]) => {
     if (!panelGroupRef.current) return;
@@ -252,6 +259,27 @@ function InlineView() {
     }
   }, []);
 
+  if (isFixedWidth) {
+    return (
+      <div className="relative h-full w-full">
+        <div
+          className="bg-dot-grid bg-wash pointer-events-none absolute inset-0 z-0 opacity-60 dark:opacity-40"
+          aria-hidden="true"
+        />
+        <div className="scrollbar-subtle absolute inset-0 z-10 overflow-auto p-4">
+          <div className="flex min-h-full w-full items-start justify-center">
+            <div
+              className="bg-background border-border overflow-hidden rounded-xl border-2 border-dashed"
+              style={{ width: previewWidth, height: maxHeight }}
+            >
+              <ComponentContent className="h-full" />
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="relative h-full w-full">
       <div
@@ -278,7 +306,7 @@ function InlineView() {
               maxSize={PREVIEW_MAX_SIZE}
             >
               <div
-                className="border-border overflow-hidden rounded-xl border-2 border-dashed"
+                className="bg-background border-border overflow-hidden rounded-xl border-2 border-dashed"
                 style={{ height: maxHeight }}
               >
                 <ComponentContent className="h-full" />
@@ -315,17 +343,9 @@ function PipView({ onClose }: { onClose: () => void }) {
   );
 }
 
-function FullscreenView({ onClose }: { onClose: () => void }) {
+function FullscreenView() {
   return (
     <div className="absolute inset-0 overflow-hidden">
-      <Button
-        variant="ghost"
-        size="icon"
-        className="absolute top-3 right-3 z-10 size-8"
-        onClick={onClose}
-      >
-        <X className="size-4" />
-      </Button>
       <ComponentContent className="h-full p-4" />
     </div>
   );
@@ -507,7 +527,7 @@ export function UnifiedWorkspace() {
           {displayMode === "inline" && <InlineView />}
           {displayMode === "pip" && <PipView onClose={handleClose} />}
           {displayMode === "fullscreen" && (
-            <FullscreenView onClose={handleClose} />
+            <FullscreenView />
           )}
         </div>
       </Panel>
