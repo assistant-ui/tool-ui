@@ -103,6 +103,12 @@ export function OpenAIProvider({ children }: OpenAIProviderProps) {
       }
 
       store.setTransitioning(true);
+
+      const toFullscreen = args.mode === "fullscreen";
+      const root = document.documentElement;
+      root.style.setProperty("--morph-radius-from", toFullscreen ? "0.75rem" : "0");
+      root.style.setProperty("--morph-radius-to", toFullscreen ? "0" : "0.75rem");
+
       (
         document as Document & {
           startViewTransition: (callback: () => void) => void;
@@ -113,6 +119,8 @@ export function OpenAIProvider({ children }: OpenAIProviderProps) {
 
       setTimeout(() => {
         store.setTransitioning(false);
+        root.style.removeProperty("--morph-radius-from");
+        root.style.removeProperty("--morph-radius-to");
       }, MORPH_TIMING.viewTransitionDuration);
 
       return { mode: args.mode };

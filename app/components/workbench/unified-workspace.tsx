@@ -252,6 +252,7 @@ const PREVIEW_MAX_SIZE = 100;
 function InlineView() {
   const maxHeight = useWorkbenchStore((s) => s.maxHeight);
   const deviceType = useDeviceType();
+  const isTransitioning = useIsTransitioning();
   const panelGroupRef = useRef<ImperativePanelGroupHandle | null>(null);
   const isSyncingLayout = useRef(false);
 
@@ -289,13 +290,16 @@ function InlineView() {
     return (
       <div className="relative h-full w-full">
         <div
-          className="bg-dot-grid bg-wash pointer-events-none absolute inset-0 z-0 opacity-60 dark:opacity-40"
+          className={cn(
+            "bg-dot-grid bg-wash pointer-events-none absolute inset-0 z-0 opacity-60 dark:opacity-40",
+            isTransitioning && "opacity-0",
+          )}
           aria-hidden="true"
         />
         <div className="scrollbar-subtle absolute inset-0 z-10 overflow-auto p-4">
           <div className="flex min-h-full w-full items-start justify-center">
             <MorphContainer
-              className="bg-background border-border overflow-hidden rounded-xl border-2 border-dashed"
+              className="bg-background overflow-hidden rounded-xl"
               style={{ width: previewWidth, height: maxHeight }}
             >
               <ComponentContent className="h-full" />
@@ -309,7 +313,10 @@ function InlineView() {
   return (
     <div className="relative h-full w-full">
       <div
-        className="bg-dot-grid bg-wash pointer-events-none absolute inset-0 z-0 opacity-60 dark:opacity-40"
+        className={cn(
+          "bg-dot-grid bg-wash pointer-events-none absolute inset-0 z-0 opacity-60 dark:opacity-40",
+          isTransitioning && "opacity-0",
+        )}
         aria-hidden="true"
       />
       <div className="scrollbar-subtle absolute inset-0 z-10 overflow-auto p-4">
@@ -322,7 +329,12 @@ function InlineView() {
           >
             <Panel defaultSize={5} minSize={0} />
 
-            <PanelResizeHandle className="group relative w-4">
+            <PanelResizeHandle
+              className={cn(
+                "group relative w-4",
+                isTransitioning && "opacity-0",
+              )}
+            >
               <div className="absolute top-1/2 left-1/2 h-12 w-1 -translate-x-1/2 -translate-y-1/2 rounded-full bg-gray-300 opacity-40 transition-all group-hover:bg-gray-400 group-hover:opacity-100 group-data-resize-handle-active:bg-gray-500 group-data-resize-handle-active:opacity-100 dark:bg-gray-600 dark:group-hover:bg-gray-500 dark:group-data-resize-handle-active:bg-gray-400" />
             </PanelResizeHandle>
 
@@ -332,14 +344,19 @@ function InlineView() {
               maxSize={PREVIEW_MAX_SIZE}
             >
               <MorphContainer
-                className="bg-background border-border overflow-hidden rounded-xl border-2 border-dashed"
+                className="bg-background overflow-hidden rounded-xl"
                 style={{ height: maxHeight }}
               >
                 <ComponentContent className="h-full" />
               </MorphContainer>
             </Panel>
 
-            <PanelResizeHandle className="group relative w-4">
+            <PanelResizeHandle
+              className={cn(
+                "group relative w-4",
+                isTransitioning && "opacity-0",
+              )}
+            >
               <div className="absolute top-1/2 left-1/2 h-12 w-1 -translate-x-1/2 -translate-y-1/2 rounded-full bg-gray-300 opacity-40 transition-all group-hover:bg-gray-400 group-hover:opacity-100 group-data-resize-handle-active:bg-gray-500 group-data-resize-handle-active:opacity-100 dark:bg-gray-600 dark:group-hover:bg-gray-500 dark:group-data-resize-handle-active:bg-gray-400" />
             </PanelResizeHandle>
 
@@ -371,7 +388,7 @@ function PipView({ onClose }: { onClose: () => void }) {
 
 function FullscreenView() {
   return (
-    <MorphContainer className="absolute inset-0 overflow-hidden">
+    <MorphContainer className="bg-background absolute inset-0 overflow-hidden">
       <ComponentContent className="h-full p-4" />
     </MorphContainer>
   );
