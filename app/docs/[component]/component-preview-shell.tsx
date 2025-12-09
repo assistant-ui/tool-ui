@@ -164,10 +164,8 @@ export function ComponentPreviewShell({
                     minSize={PREVIEW_MIN_SIZE}
                     maxSize={PREVIEW_MAX_SIZE}
                   >
-                    <div className="border-border scrollbar-subtle relative rounded-xl border-2 border-dashed transition-all">
-                      <div className="relative m-0 flex h-full flex-col p-4">
-                        <div className="w-full">{renderPreview(isLoading)}</div>
-                      </div>
+                    <div className="border-border scrollbar-subtle relative flex items-start justify-center rounded-xl border-2 border-dashed p-4 transition-all">
+                      <div className="min-w-0 max-w-full">{renderPreview(isLoading)}</div>
                     </div>
                   </Panel>
 

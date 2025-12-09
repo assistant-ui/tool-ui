@@ -334,7 +334,12 @@ const actionsColumns: Column<GenericRow>[] = [
     abbr: "Wait",
     align: "right",
     priority: "secondary",
-    format: { kind: "delta", decimals: 0, upIsPositive: false, showSign: false },
+    format: {
+      kind: "delta",
+      decimals: 0,
+      upIsPositive: false,
+      showSign: false,
+    },
   },
   {
     key: "createdAt",
@@ -409,6 +414,7 @@ export const presets: Record<PresetName, DataTableConfig> = {
 export const presetDescriptions: Record<PresetName, string> = {
   stocks: "Market data with currency, delta, and percent formatting",
   tasks: "Status pills, boolean badges, and multiple date formats",
-  resources: "External and internal links, tag arrays, badges, and relative dates",
+  resources:
+    "External and internal links, tag arrays, badges, and relative dates",
   actions: "Support queue with response actions and wait time indicators",
 };

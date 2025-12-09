@@ -74,7 +74,7 @@ export function OptionListPreview({
         />
       }
       renderPreview={() => (
-        <div className="mx-auto" style={{ maxWidth: "420px" }}>
+        <div className="w-full max-w-[420px]">
           <OptionList
             {...currentConfig.optionList}
             id="option-list-preview"

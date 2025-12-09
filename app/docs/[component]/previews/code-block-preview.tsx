@@ -75,14 +75,12 @@ export function CodeBlockPreview({
         />
       }
       renderPreview={(isLoadingState) => (
-        <div className="w-full">
-          <CodeBlock
-            {...currentConfig.codeBlock}
-            id="code-block-preview"
-            onFooterAction={handleFooterAction}
-            isLoading={isLoadingState}
-          />
-        </div>
+        <CodeBlock
+          {...currentConfig.codeBlock}
+          id="code-block-preview"
+          onFooterAction={handleFooterAction}
+          isLoading={isLoadingState}
+        />
       )}
       renderCodePanel={() => (
         <CodePanel

@@ -72,14 +72,12 @@ export function TerminalPreview({
         />
       }
       renderPreview={(isLoadingState) => (
-        <div className="w-full">
-          <Terminal
-            {...currentConfig.terminal}
-            id="terminal-preview"
-            onFooterAction={handleFooterAction}
-            isLoading={isLoadingState}
-          />
-        </div>
+        <Terminal
+          {...currentConfig.terminal}
+          id="terminal-preview"
+          onFooterAction={handleFooterAction}
+          isLoading={isLoadingState}
+        />
       )}
       renderCodePanel={() => (
         <CodePanel

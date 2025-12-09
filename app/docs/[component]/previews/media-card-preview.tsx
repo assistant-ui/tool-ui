@@ -71,7 +71,7 @@ export function MediaCardPreview({
         />
       }
       renderPreview={(loading) => (
-        <div className="mx-auto" style={{ maxWidth: "420px" }}>
+        <div className="w-full max-w-[420px]">
           <MediaCard
             {...currentConfig.card}
             isLoading={loading}

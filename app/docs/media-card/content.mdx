@@ -7,19 +7,21 @@ An information surface for links, images, video, and audio. Optimized for inline
 
 <Tabs items={["Preview", "Code"]}>
   <Tab>
-    <div className="not-prose">
-      <MediaCard
-        id="media-card-react-docs"
-        assetId="react-docs-link"
-        kind="link"
-        href="https://react.dev"
-        title="React Documentation"
-        description="The library for web and native user interfaces. Build user interfaces out of individual pieces called components."
-        thumb="https://images.unsplash.com/photo-1633356122544-f134324a6cee?auto=format&fit=crop&q=80&w=1200"
-        ratio="16:9"
-        domain="react.dev"
-        maxWidth="420px"
-      />
+    <div className="not-prose flex justify-center">
+      <div className="w-full max-w-md">
+        <MediaCard
+          id="media-card-react-docs"
+          assetId="react-docs-link"
+          kind="link"
+          href="https://react.dev"
+          title="React Documentation"
+          description="The library for web and native user interfaces. Build user interfaces out of individual pieces called components."
+          thumb="https://images.unsplash.com/photo-1633356122544-f134324a6cee?auto=format&fit=crop&q=80&w=1200"
+          ratio="16:9"
+          domain="react.dev"
+          maxWidth="420px"
+        />
+      </div>
     </div>
   </Tab>
   <Tab>

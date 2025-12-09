@@ -275,7 +275,7 @@ export function SocialPostPreview({
         </>
       }
       renderPreview={() => (
-        <div className="mx-auto" style={{ maxWidth: "550px" }}>
+        <div className="w-full max-w-[550px]">
           {currentPlatform === "x" && (
             <XPost
               post={xPostPresets[currentPreset as XPostPresetName].post}
