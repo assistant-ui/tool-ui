@@ -68,7 +68,7 @@ export function MediaCardPreview({
         />
       }
       renderPreview={(loading) => (
-        <div className="mx-auto w-full max-w-md">
+        <div className="mx-auto w-full max-w-[500px]">
           <MediaCard
             {...card}
             isLoading={loading}

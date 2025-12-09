@@ -200,7 +200,7 @@ export function Plan({
   return (
     <>
       <style>{SPIN_KEYFRAMES}</style>
-      <Card className={cn("mx-auto w-full min-w-96 max-w-md", className)} data-tool-ui-id={id}>
+      <Card className={cn("mx-auto w-full min-w-80 max-w-[500px]", className)} data-tool-ui-id={id}>
         <CardHeader className="flex flex-row items-start justify-between gap-4">
           <div className="space-y-2">
             <CardTitle className="leading-5 font-medium text-pretty">

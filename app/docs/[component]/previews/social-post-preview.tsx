@@ -7,8 +7,14 @@ import { XPost } from "@/components/tool-ui/x-post";
 import { InstagramPost } from "@/components/tool-ui/instagram-post";
 import { LinkedInPost } from "@/components/tool-ui/linkedin-post";
 import { xPostPresets, type XPostPresetName } from "@/lib/presets/x-post";
-import { instagramPostPresets, type InstagramPostPresetName } from "@/lib/presets/instagram-post";
-import { linkedInPostPresets, type LinkedInPostPresetName } from "@/lib/presets/linkedin-post";
+import {
+  instagramPostPresets,
+  type InstagramPostPresetName,
+} from "@/lib/presets/instagram-post";
+import {
+  linkedInPostPresets,
+  type LinkedInPostPresetName,
+} from "@/lib/presets/linkedin-post";
 import {
   Item,
   ItemContent,
@@ -16,10 +22,14 @@ import {
   ItemGroup,
   ItemTitle,
 } from "@/components/ui/item";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/ui/cn";
 
 type Platform = "x" | "instagram" | "linkedin";
-type PresetName = XPostPresetName | InstagramPostPresetName | LinkedInPostPresetName;
+type PresetName =
+  | XPostPresetName
+  | InstagramPostPresetName
+  | LinkedInPostPresetName;
 
 const platformConfig = {
   x: {
@@ -46,29 +56,27 @@ function PlatformSelector({
   currentPlatform: Platform;
   onSelectPlatform: (platform: Platform) => void;
 }) {
-  const platforms: Platform[] = ["x", "instagram", "linkedin"];
-
   return (
     <div className="mb-4">
       <div className="text-muted-foreground mb-2 text-xs font-medium tracking-wide uppercase">
         Platform
       </div>
-      <div className="flex gap-1">
-        {platforms.map((platform) => (
-          <button
-            key={platform}
-            onClick={() => onSelectPlatform(platform)}
-            className={cn(
-              "rounded-md px-3 py-1.5 text-sm font-medium transition-colors",
-              currentPlatform === platform
-                ? "bg-primary text-primary-foreground"
-                : "bg-muted hover:bg-muted/80",
-            )}
-          >
-            {platformConfig[platform].label}
-          </button>
-        ))}
-      </div>
+      <Tabs
+        value={currentPlatform}
+        onValueChange={(value) => onSelectPlatform(value as Platform)}
+      >
+        <TabsList className="w-full bg-transparent">
+          <TabsTrigger value="x" className="flex-1">
+            X
+          </TabsTrigger>
+          <TabsTrigger value="instagram" className="flex-1">
+            Instagram
+          </TabsTrigger>
+          <TabsTrigger value="linkedin" className="flex-1">
+            LinkedIn
+          </TabsTrigger>
+        </TabsList>
+      </Tabs>
     </div>
   );
 }
@@ -83,7 +91,10 @@ function PresetSelector({
   onSelectPreset: (preset: PresetName) => void;
 }) {
   const config = platformConfig[platform];
-  const presets = config.presets as Record<string, { description: string; data: unknown }>;
+  const presets = config.presets as Record<
+    string,
+    { description: string; data: unknown }
+  >;
 
   return (
     <ItemGroup className="gap-1">
@@ -142,7 +153,8 @@ export function SocialPostPreview({
     platformParam && platformParam in platformConfig ? platformParam : "x";
   const initialPreset = getValidPreset(initialPlatform, presetParam);
 
-  const [currentPlatform, setCurrentPlatform] = useState<Platform>(initialPlatform);
+  const [currentPlatform, setCurrentPlatform] =
+    useState<Platform>(initialPlatform);
   const [currentPreset, setCurrentPreset] = useState<PresetName>(initialPreset);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -212,28 +224,49 @@ export function SocialPostPreview({
         </>
       }
       renderPreview={() => (
-        <div className="mx-auto w-full max-w-[550px]">
+        <div className="mx-auto w-full max-w-[500px]">
           {currentPlatform === "x" && (
             <XPost
               post={xPostPresets[currentPreset as XPostPresetName].data.post}
-              responseActions={xPostPresets[currentPreset as XPostPresetName].data.responseActions}
-              onAction={(action, post) => console.log("X action:", action, post.id)}
+              responseActions={
+                xPostPresets[currentPreset as XPostPresetName].data
+                  .responseActions
+              }
+              onAction={(action, post) =>
+                console.log("X action:", action, post.id)
+              }
               onResponseAction={(id) => alert(`Response action: ${id}`)}
             />
           )}
           {currentPlatform === "instagram" && (
             <InstagramPost
-              post={instagramPostPresets[currentPreset as InstagramPostPresetName].data.post}
-              responseActions={instagramPostPresets[currentPreset as InstagramPostPresetName].data.responseActions}
-              onAction={(action, post) => console.log("Instagram action:", action, post.id)}
+              post={
+                instagramPostPresets[currentPreset as InstagramPostPresetName]
+                  .data.post
+              }
+              responseActions={
+                instagramPostPresets[currentPreset as InstagramPostPresetName]
+                  .data.responseActions
+              }
+              onAction={(action, post) =>
+                console.log("Instagram action:", action, post.id)
+              }
               onResponseAction={(id) => alert(`Response action: ${id}`)}
             />
           )}
           {currentPlatform === "linkedin" && (
             <LinkedInPost
-              post={linkedInPostPresets[currentPreset as LinkedInPostPresetName].data.post}
-              responseActions={linkedInPostPresets[currentPreset as LinkedInPostPresetName].data.responseActions}
-              onAction={(action, post) => console.log("LinkedIn action:", action, post.id)}
+              post={
+                linkedInPostPresets[currentPreset as LinkedInPostPresetName]
+                  .data.post
+              }
+              responseActions={
+                linkedInPostPresets[currentPreset as LinkedInPostPresetName]
+                  .data.responseActions
+              }
+              onAction={(action, post) =>
+                console.log("LinkedIn action:", action, post.id)
+              }
               onResponseAction={(id) => alert(`Response action: ${id}`)}
             />
           )}

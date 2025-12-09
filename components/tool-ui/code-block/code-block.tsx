@@ -127,7 +127,7 @@ export function CodeBlock({
   if (isLoading) {
     return (
       <div
-        className={cn("@container flex w-full min-w-96 flex-col gap-3", className)}
+        className={cn("@container flex w-full min-w-80 flex-col gap-3", className)}
         data-tool-ui-id={id}
         aria-busy="true"
       >
@@ -140,7 +140,7 @@ export function CodeBlock({
 
   return (
     <div
-      className={cn("@container flex w-full min-w-96 flex-col gap-3", className)}
+      className={cn("@container flex w-full min-w-80 flex-col gap-3", className)}
       data-tool-ui-id={id}
       data-slot="code-block"
     >
