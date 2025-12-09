@@ -103,7 +103,7 @@ function PlanTodoItem({ todo }: PlanTodoItemProps) {
 
   if (!todo.description) {
     return (
-      <li className="-mx-2 flex cursor-default items-start gap-2 rounded-md px-2 py-1">
+      <li className="-mx-2 flex cursor-default items-start gap-2 rounded-md px-2 py-2">
         <TodoIcon icon={icon} className={iconClassName} animate={isActive} />
         {todoLabel}
       </li>
@@ -113,15 +113,15 @@ function PlanTodoItem({ todo }: PlanTodoItemProps) {
   return (
     <li className="hover:bg-muted -mx-2 cursor-default rounded-md">
       <Collapsible>
-        <CollapsibleTrigger className="group/todo flex w-full cursor-default items-start gap-2 px-2 py-1 text-left">
+        <CollapsibleTrigger className="group/todo flex w-full cursor-default items-start gap-2 px-2 py-2 text-left">
           <TodoIcon icon={icon} className={iconClassName} animate={isActive} />
-          <span className={cn("flex-1 text-pretty text-sm", labelClassName)}>
+          <span className={cn("flex-1 text-sm text-pretty", labelClassName)}>
             {todo.label}
           </span>
           <ChevronRight className="text-muted-foreground/50 mt-0.5 size-4 shrink-0 rotate-90 transition-transform duration-150 group-data-[state=open]/todo:[transform:rotateY(180deg)]" />
         </CollapsibleTrigger>
         <CollapsibleContent>
-          <p className="text-muted-foreground text-pretty pr-2 pb-1.5 pl-8 text-xs">
+          <p className="text-muted-foreground pr-2 pb-1.5 pl-8 text-sm text-pretty">
             {todo.description}
           </p>
         </CollapsibleContent>
@@ -200,10 +200,12 @@ export function Plan({
   return (
     <>
       <style>{SPIN_KEYFRAMES}</style>
-      <Card className={cn("w-full max-w-md", className)} data-tool-ui-id={id}>
+      <Card className={cn("mx-auto w-full min-w-96 max-w-md", className)} data-tool-ui-id={id}>
         <CardHeader className="flex flex-row items-start justify-between gap-4">
-          <div className="space-y-1.5">
-            <CardTitle>{title}</CardTitle>
+          <div className="space-y-2">
+            <CardTitle className="leading-5 font-medium text-pretty">
+              {title}
+            </CardTitle>
             {description && <CardDescription>{description}</CardDescription>}
           </div>
           {allComplete && (
@@ -223,7 +225,7 @@ export function Plan({
               </>
             )}
 
-            <ul className="space-y-2">
+            <ul className="space-y-0">
               <TodoList todos={visibleTodos} />
 
               {hiddenTodos.length > 0 && (

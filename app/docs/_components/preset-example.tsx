@@ -7,8 +7,14 @@ import { chartPresets, ChartPresetName } from "@/lib/presets/chart";
 import { OptionList } from "@/components/tool-ui/option-list";
 import { CodeBlock } from "@/components/tool-ui/code-block";
 import { Terminal } from "@/components/tool-ui/terminal";
-import { optionListPresets, OptionListPresetName } from "@/lib/presets/option-list";
-import { codeBlockPresets, CodeBlockPresetName } from "@/lib/presets/code-block";
+import {
+  optionListPresets,
+  OptionListPresetName,
+} from "@/lib/presets/option-list";
+import {
+  codeBlockPresets,
+  CodeBlockPresetName,
+} from "@/lib/presets/code-block";
 import { terminalPresets, TerminalPresetName } from "@/lib/presets/terminal";
 import { Plan } from "@/components/tool-ui/plan";
 import { planPresets, PlanPresetName } from "@/lib/presets/plan";
@@ -134,10 +140,8 @@ export function OptionListPresetExample({
   return (
     <Tabs items={["Preview", "Code"]}>
       <Tab value="Preview">
-        <div className="not-prose flex justify-center">
-          <div className="w-full max-w-md">
-            <OptionList {...data} />
-          </div>
+        <div className="not-prose">
+          <OptionList {...data} />
         </div>
       </Tab>
       <Tab value="Code">
@@ -192,7 +196,7 @@ export function ChartPresetExample({ preset }: ChartPresetExampleProps) {
   return (
     <Tabs items={["Preview", "Code"]}>
       <Tab value="Preview">
-        <div className="not-prose flex justify-center">
+        <div className="not-prose">
           <Chart id={`chart-${preset}`} {...config} />
         </div>
       </Tab>
@@ -216,7 +220,7 @@ export function CodeBlockPresetExample({
   return (
     <Tabs items={["Preview", "Code"]}>
       <Tab value="Preview">
-        <div className="not-prose flex justify-center">
+        <div className="not-prose">
           <CodeBlock {...data} />
         </div>
       </Tab>
@@ -238,7 +242,7 @@ export function TerminalPresetExample({ preset }: TerminalPresetExampleProps) {
   return (
     <Tabs items={["Preview", "Code"]}>
       <Tab value="Preview">
-        <div className="not-prose flex justify-center">
+        <div className="not-prose">
           <Terminal {...data} />
         </div>
       </Tab>
@@ -282,7 +286,7 @@ export function PlanPresetExample({ preset }: PlanPresetExampleProps) {
   return (
     <Tabs items={["Preview", "Code"]}>
       <Tab value="Preview">
-        <div className="not-prose flex justify-center">
+        <div className="not-prose">
           <Plan {...data} />
         </div>
       </Tab>

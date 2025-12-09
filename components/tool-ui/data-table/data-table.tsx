@@ -154,7 +154,7 @@ export function DataTable<T extends object = RowData>({
   return (
     <DataTableContext.Provider value={contextValue}>
       <div
-        className={cn("@container w-full", className)}
+        className={cn("@container w-full min-w-96", className)}
         data-layout={layout}
       >
         {/* Table view: visible at @md+ in auto mode */}

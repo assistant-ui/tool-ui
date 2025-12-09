@@ -164,7 +164,7 @@ function OptionListReceipt({
   return (
     <div
       className={cn(
-        "@container/option-list flex w-full max-w-md flex-col",
+        "@container/option-list mx-auto flex w-full min-w-96 max-w-md flex-col",
         "text-foreground",
         className,
       )}
@@ -372,7 +372,7 @@ export function OptionList({
   return (
     <div
       className={cn(
-        "@container/option-list flex w-full max-w-md flex-col gap-3",
+        "@container/option-list mx-auto flex w-full min-w-96 max-w-md flex-col gap-3",
         "text-foreground",
         className,
       )}

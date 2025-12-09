@@ -145,7 +145,7 @@ export function Chart({
   );
 
   return (
-    <Card className={cn("w-full", className)}>
+    <Card className={cn("w-full min-w-96", className)}>
       {(title || description) && (
         <CardHeader>
           {title && <CardTitle className="text-pretty">{title}</CardTitle>}
