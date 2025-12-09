@@ -420,10 +420,18 @@ function createSceneConfigs(): SceneConfig[] {
       toolFallbackHeight: 200,
     },
     {
-      userMessage: "Find that React Server Components guide",
-      preamble: "Was it this one from yesterday?",
-      toolUI: <MediaCard {...MEDIA_CARD} maxWidth="420px" />,
-      toolFallbackHeight: 260,
+      userMessage: "Set up integrations for this project",
+      preamble: "Which integrations should I enable?",
+      toolUI: (
+        <OptionList
+          id="chat-showcase-option-list"
+          options={OPTION_LIST_OPTIONS}
+          selectionMode="multi"
+          defaultValue={["slack", "github"]}
+          className="w-full max-w-[480px]"
+        />
+      ),
+      toolFallbackHeight: 320,
     },
     {
       userMessage: "Write me a debounce hook",
@@ -435,6 +443,12 @@ function createSceneConfigs(): SceneConfig[] {
           className="w-full"
         />
       ),
+      toolFallbackHeight: 260,
+    },
+    {
+      userMessage: "Find that React Server Components guide",
+      preamble: "Was it this one from yesterday?",
+      toolUI: <MediaCard {...MEDIA_CARD} maxWidth="420px" />,
       toolFallbackHeight: 260,
     },
     {
@@ -450,20 +464,6 @@ function createSceneConfigs(): SceneConfig[] {
         </div>
       ),
       toolFallbackHeight: 480,
-    },
-    {
-      userMessage: "Set up integrations for this project",
-      preamble: "Which integrations should I enable?",
-      toolUI: (
-        <OptionList
-          id="chat-showcase-option-list"
-          options={OPTION_LIST_OPTIONS}
-          selectionMode="multi"
-          defaultValue={["slack", "github"]}
-          className="w-full max-w-[480px]"
-        />
-      ),
-      toolFallbackHeight: 320,
     },
   ];
 }
