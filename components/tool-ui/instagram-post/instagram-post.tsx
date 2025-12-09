@@ -206,7 +206,7 @@ function MediaGrid({
 function PostBody({ text }: { text?: string }) {
   if (!text) return null;
   return (
-    <span className="text-pretty text-sm leading-relaxed wrap-break-word whitespace-pre-wrap">
+    <span className="text-sm leading-relaxed text-pretty wrap-break-word whitespace-pre-wrap">
       {text}
     </span>
   );
@@ -290,7 +290,7 @@ export function InstagramPost({
   );
 
   return (
-    <div className={cn("flex flex-col gap-3", className)}>
+    <div className={cn("flex max-w-xl flex-col gap-3", className)}>
       <article className="bg-card overflow-hidden rounded-lg border shadow-sm">
         <Header author={post.author} createdAt={post.createdAt} />
 

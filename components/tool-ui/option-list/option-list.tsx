@@ -136,9 +136,9 @@ function OptionItem({
           <span className="flex h-6 items-center">{option.icon}</span>
         )}
         <div className="flex flex-col text-left">
-          <span className="text-pretty leading-6">{option.label}</span>
+          <span className="leading-6 text-pretty">{option.label}</span>
           {option.description && (
-            <span className="text-muted-foreground text-pretty text-sm font-normal">
+            <span className="text-muted-foreground text-sm font-normal text-pretty">
               {option.description}
             </span>
           )}
@@ -164,7 +164,7 @@ function OptionListReceipt({
   return (
     <div
       className={cn(
-        "@container/option-list mx-auto flex w-full min-w-80 max-w-[500px] flex-col",
+        "@container/option-list mx-auto flex w-full max-w-md min-w-80 flex-col",
         "text-foreground",
         className,
       )}
@@ -189,11 +189,11 @@ function OptionListReceipt({
                 <span className="flex h-6 items-center">{option.icon}</span>
               )}
               <div className="flex flex-col text-left">
-                <span className="text-pretty text-base leading-6 font-medium @md/option-list:text-sm">
+                <span className="text-base leading-6 font-medium text-pretty @md/option-list:text-sm">
                   {option.label}
                 </span>
                 {option.description && (
-                  <span className="text-muted-foreground text-pretty text-sm font-normal">
+                  <span className="text-muted-foreground text-sm font-normal text-pretty">
                     {option.description}
                   </span>
                 )}
@@ -372,7 +372,7 @@ export function OptionList({
   return (
     <div
       className={cn(
-        "@container/option-list mx-auto flex w-full min-w-80 max-w-[500px] flex-col gap-3",
+        "@container/option-list mx-auto flex w-full max-w-md min-w-80 flex-col gap-3",
         "text-foreground",
         className,
       )}

@@ -104,7 +104,7 @@ function AuthorInfo({
 function PostBody({ text }: { text?: string }) {
   if (!text) return null;
   return (
-    <p className="text-pretty text-[15px] leading-normal wrap-break-word whitespace-pre-wrap">
+    <p className="text-[15px] leading-normal text-pretty wrap-break-word whitespace-pre-wrap">
       {text}
     </p>
   );
@@ -177,9 +177,11 @@ function PostLinkPreview({ preview }: { preview: XPostLinkPreview }) {
         {domain && (
           <div className="text-muted-foreground text-xs">{domain}</div>
         )}
-        {preview.title && <div className="text-pretty font-medium">{preview.title}</div>}
+        {preview.title && (
+          <div className="font-medium text-pretty">{preview.title}</div>
+        )}
         {preview.description && (
-          <div className="text-muted-foreground line-clamp-2 text-pretty text-sm">
+          <div className="text-muted-foreground line-clamp-2 text-sm text-pretty">
             {preview.description}
           </div>
         )}
@@ -315,7 +317,7 @@ export function XPost({
   );
 
   return (
-    <div className={cn("flex flex-col gap-1.5", className)}>
+    <div className={cn("flex max-w-xl flex-col gap-1.5", className)}>
       <article className="bg-card rounded-xl border p-3 shadow-sm">
         <div className="flex gap-3">
           <Avatar

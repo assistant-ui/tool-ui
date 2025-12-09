@@ -96,7 +96,7 @@ function PostBody({ text }: { text?: string }) {
   if (!text) return null;
 
   return (
-    <div className="text-pretty text-sm leading-relaxed wrap-break-word whitespace-pre-wrap">
+    <div className="text-sm leading-relaxed text-pretty wrap-break-word whitespace-pre-wrap">
       {shouldTruncate && !isExpanded ? (
         <>
           {text.slice(0, 280)}
@@ -164,7 +164,9 @@ function PostLinkPreview({ preview }: { preview: LinkedInPostLinkPreview }) {
       )}
       <div className="p-3">
         {preview.title && (
-          <div className="line-clamp-2 text-pretty font-medium">{preview.title}</div>
+          <div className="line-clamp-2 font-medium text-pretty">
+            {preview.title}
+          </div>
         )}
         {domain && (
           <div className="text-muted-foreground mt-1 text-xs">{domain}</div>
@@ -264,7 +266,7 @@ export function LinkedInPost({
   );
 
   return (
-    <div className={cn("flex flex-col gap-3", className)}>
+    <div className={cn("flex max-w-xl flex-col gap-3", className)}>
       <article className="bg-card flex flex-col gap-3 rounded-lg border p-4 shadow-sm">
         <Header author={post.author} createdAt={post.createdAt} />
         <PostBody text={post.text} />
