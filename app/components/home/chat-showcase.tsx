@@ -7,6 +7,10 @@ import { DataTable } from "@/components/tool-ui/data-table";
 import { MediaCard } from "@/components/tool-ui/media-card";
 import { Chart } from "@/components/tool-ui/chart";
 import { XPost } from "@/components/tool-ui/x-post";
+import { Plan } from "@/components/tool-ui/plan";
+import { Terminal } from "@/components/tool-ui/terminal";
+import { CodeBlock } from "@/components/tool-ui/code-block";
+import { OptionList } from "@/components/tool-ui/option-list";
 import {
   type SupportTicket,
   TABLE_COLUMNS,
@@ -15,6 +19,9 @@ import {
   X_POST,
   X_POST_ACTIONS,
   SIGNUP_CHART,
+  PLAN_TODO_LABELS,
+  CODE_BLOCK_DATA,
+  OPTION_LIST_OPTIONS,
 } from "./chat-showcase-data";
 
 const TIMING = {
@@ -172,6 +179,80 @@ function TypingIndicator() {
   );
 }
 
+const TEST_LINES = [
+  "✓ login flow handles invalid credentials",
+  "✓ session tokens refresh correctly",
+  "✓ logout clears all cookies",
+  "",
+  "Tests: 3 passed, 3 total",
+];
+
+function AnimatedTerminal({ className }: { className?: string }) {
+  const [lineCount, setLineCount] = useState(0);
+
+  useEffect(() => {
+    if (lineCount >= TEST_LINES.length) return;
+
+    const delay = lineCount === 0 ? 300 : 700;
+    const timeoutId = window.setTimeout(() => {
+      setLineCount((c) => c + 1);
+    }, delay);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [lineCount]);
+
+  const visibleOutput = TEST_LINES.slice(0, lineCount).join("\n") || " ";
+  const isComplete = lineCount >= TEST_LINES.length;
+
+  return (
+    <Terminal
+      id="chat-showcase-terminal"
+      command="pnpm test auth"
+      stdout={visibleOutput}
+      exitCode={0}
+      durationMs={isComplete ? 1243 : undefined}
+      className={className}
+    />
+  );
+}
+
+function AnimatedPlan({ className }: { className?: string }) {
+  const [completedCount, setCompletedCount] = useState(0);
+
+  useEffect(() => {
+    if (completedCount >= PLAN_TODO_LABELS.length) return;
+
+    const delay = completedCount === 0 ? 600 : 800;
+    const timeoutId = window.setTimeout(() => {
+      setCompletedCount((c) => c + 1);
+    }, delay);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [completedCount]);
+
+  const todos = PLAN_TODO_LABELS.map((label: string, index: number) => ({
+    id: String(index + 1),
+    label,
+    status:
+      index < completedCount
+        ? ("completed" as const)
+        : index === completedCount
+          ? ("in_progress" as const)
+          : ("pending" as const),
+  }));
+
+  return (
+    <Plan
+      id="chat-showcase-plan"
+      title="Production Deployment"
+      description="Deploy the main branch to the production cluster"
+      todos={todos}
+      showProgress
+      className={className}
+    />
+  );
+}
+
 type ChatBubbleProps = {
   role: "user" | "assistant";
   children: React.ReactNode;
@@ -312,6 +393,12 @@ function createSceneConfigs(): SceneConfig[] {
       toolFallbackHeight: 240,
     },
     {
+      userMessage: "Help me deploy this to production",
+      preamble: "Here's the deployment plan:",
+      toolUI: <AnimatedPlan className="w-full max-w-[480px]" />,
+      toolFallbackHeight: 280,
+    },
+    {
       userMessage: "Show me high-priority support tickets from this week",
       preamble: "Here are the most urgent tickets from this week",
       toolUI: (
@@ -327,9 +414,27 @@ function createSceneConfigs(): SceneConfig[] {
       toolFallbackHeight: 320,
     },
     {
+      userMessage: "Run the tests for the auth module",
+      preamble: "Running tests:",
+      toolUI: <AnimatedTerminal className="w-full max-w-[560px]" />,
+      toolFallbackHeight: 200,
+    },
+    {
       userMessage: "Find that React Server Components guide",
       preamble: "Was it this one from yesterday?",
       toolUI: <MediaCard {...MEDIA_CARD} maxWidth="420px" />,
+      toolFallbackHeight: 260,
+    },
+    {
+      userMessage: "Write me a debounce hook",
+      preamble: "Here's a custom useDebounce hook:",
+      toolUI: (
+        <CodeBlock
+          id="chat-showcase-code-block"
+          {...CODE_BLOCK_DATA}
+          className="w-full max-w-[560px]"
+        />
+      ),
       toolFallbackHeight: 260,
     },
     {
@@ -346,10 +451,24 @@ function createSceneConfigs(): SceneConfig[] {
       ),
       toolFallbackHeight: 480,
     },
+    {
+      userMessage: "Set up integrations for this project",
+      preamble: "Which integrations should I enable?",
+      toolUI: (
+        <OptionList
+          id="chat-showcase-option-list"
+          options={OPTION_LIST_OPTIONS}
+          selectionMode="multi"
+          defaultValue={["slack", "github"]}
+          className="w-full max-w-[480px]"
+        />
+      ),
+      toolFallbackHeight: 320,
+    },
   ];
 }
 
-const SCENE_COUNT = 4;
+const SCENE_COUNT = 8;
 
 type AnimatedSceneProps = {
   config: SceneConfig;
@@ -517,19 +636,42 @@ export function ChatShowcase() {
   const [sceneRunId, setSceneRunId] = useState(0);
   const [isExiting, setIsExiting] = useState(false);
 
+  const exitDuration = reducedMotion
+    ? TIMING.reducedMotion.duration
+    : TIMING.exitStagger.tool + 500;
+
+  const transitionToScene = useCallback(
+    (getNextIndex: (current: number) => number) => {
+      setIsExiting(true);
+      setTimeout(() => {
+        setIsExiting(false);
+        setSceneIndex(getNextIndex);
+        setSceneRunId((id) => id + 1);
+      }, exitDuration);
+    },
+    [exitDuration],
+  );
+
   const advanceToNextScene = useCallback(() => {
-    setIsExiting(true);
+    transitionToScene((current) => (current + 1) % SCENE_COUNT);
+  }, [transitionToScene]);
 
-    const exitDuration = reducedMotion
-      ? TIMING.reducedMotion.duration
-      : TIMING.exitStagger.tool + 500;
+  const goToPreviousScene = useCallback(() => {
+    transitionToScene((current) => (current - 1 + SCENE_COUNT) % SCENE_COUNT);
+  }, [transitionToScene]);
 
-    setTimeout(() => {
-      setIsExiting(false);
-      setSceneIndex((current) => (current + 1) % SCENE_COUNT);
-      setSceneRunId((id) => id + 1);
-    }, exitDuration);
-  }, [reducedMotion]);
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "ArrowRight") {
+        advanceToNextScene();
+      } else if (e.key === "ArrowLeft") {
+        goToPreviousScene();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [advanceToNextScene, goToPreviousScene]);
 
   return (
     <div className="relative flex h-full w-full flex-col overflow-hidden">

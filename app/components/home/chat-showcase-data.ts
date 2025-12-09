@@ -2,6 +2,10 @@ import type { Column } from "@/components/tool-ui/data-table";
 import type { SerializableMediaCard } from "@/components/tool-ui/media-card";
 import type { SerializableChart } from "@/components/tool-ui/chart";
 import type { XPostData } from "@/components/tool-ui/x-post";
+import type { PlanTodo } from "@/components/tool-ui/plan";
+import type { OptionListOption } from "@/components/tool-ui/option-list";
+import type { SerializableTerminal } from "@/components/tool-ui/terminal";
+import type { SerializableCodeBlock } from "@/components/tool-ui/code-block";
 
 export type SupportTicket = {
   id: string;
@@ -160,3 +164,49 @@ export const SIGNUP_CHART: Omit<SerializableChart, "id"> = {
   ],
   showLegend: true,
 };
+
+export const PLAN_TODO_LABELS = [
+  "Run test suite",
+  "Build production bundle",
+  "Run database migrations",
+  "Deploy to cluster",
+];
+
+export const TERMINAL_DATA: Omit<SerializableTerminal, "id"> = {
+  command: "pnpm test auth",
+  stdout: `✓ login flow handles invalid credentials
+✓ session tokens refresh correctly
+✓ logout clears all cookies
+
+Tests: 3 passed, 3 total
+Time: 1.24s`,
+  exitCode: 0,
+  durationMs: 1243,
+};
+
+export const CODE_BLOCK_DATA: Omit<SerializableCodeBlock, "id"> = {
+  language: "typescript",
+  filename: "use-debounce.ts",
+  code: `import { useState, useEffect } from "react";
+
+export function useDebounce<T>(value: T, delay: number): T {
+  const [debouncedValue, setDebouncedValue] = useState(value);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedValue(value), delay);
+    return () => clearTimeout(timer);
+  }, [value, delay]);
+
+  return debouncedValue;
+}`,
+  showLineNumbers: true,
+};
+
+export const OPTION_LIST_OPTIONS: OptionListOption[] = [
+  { id: "slack", label: "Slack", description: "Team notifications and alerts" },
+  { id: "github", label: "GitHub", description: "Code repository sync" },
+  { id: "linear", label: "Linear", description: "Issue tracking integration" },
+  { id: "figma", label: "Figma", description: "Design file previews" },
+];
+
+export const OPTION_LIST_CONFIRMED = ["slack", "github", "linear"];
