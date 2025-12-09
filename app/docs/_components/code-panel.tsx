@@ -1,23 +1,23 @@
 "use client";
 
-import { DataTableConfig } from "@/lib/presets/data-table";
-import { MediaCardConfig } from "@/lib/presets/media-card";
-import { OptionListConfig } from "@/lib/presets/option-list";
-import { ChartConfig } from "@/lib/presets/chart";
-import { CodeBlockConfig } from "@/lib/presets/code-block";
-import { TerminalConfig } from "@/lib/presets/terminal";
-import { PlanConfig } from "@/lib/presets/plan";
+import { DataTableData } from "@/lib/presets/data-table";
+import { mediaCardPresets, MediaCardPresetName } from "@/lib/presets/media-card";
+import { optionListPresets, OptionListPresetName } from "@/lib/presets/option-list";
+import { chartPresets, ChartPresetName } from "@/lib/presets/chart";
+import { codeBlockPresets, CodeBlockPresetName } from "@/lib/presets/code-block";
+import { terminalPresets, TerminalPresetName } from "@/lib/presets/terminal";
+import { planPresets, PlanPresetName } from "@/lib/presets/plan";
 import { DynamicCodeBlock } from "fumadocs-ui/components/dynamic-codeblock";
 
 interface CodePanelProps {
   componentId: string;
-  config?: DataTableConfig;
-  mediaCardConfig?: MediaCardConfig;
-  optionListConfig?: OptionListConfig;
-  chartConfig?: ChartConfig;
-  codeBlockConfig?: CodeBlockConfig;
-  terminalConfig?: TerminalConfig;
-  planConfig?: PlanConfig;
+  config?: DataTableData;
+  mediaCardPreset?: MediaCardPresetName;
+  optionListPreset?: OptionListPresetName;
+  chartPreset?: ChartPresetName;
+  codeBlockPreset?: CodeBlockPresetName;
+  terminalPreset?: TerminalPresetName;
+  planPreset?: PlanPresetName;
   optionListSelection?: string[] | string | null;
   mediaCardMaxWidth?: string;
   sort?: { by?: string; direction?: "asc" | "desc" };
@@ -30,12 +30,12 @@ interface CodePanelProps {
 export function CodePanel({
   componentId,
   config,
-  mediaCardConfig,
-  optionListConfig,
-  chartConfig,
-  codeBlockConfig,
-  terminalConfig,
-  planConfig,
+  mediaCardPreset,
+  optionListPreset,
+  chartPreset,
+  codeBlockPreset,
+  terminalPreset,
+  planPreset,
   optionListSelection,
   mediaCardMaxWidth,
   sort,
@@ -90,7 +90,6 @@ export function CodePanel({
       );
     }
 
-    // Generate sorting guidance only when relying on controlled state
     const sortingComment: string[] = [];
     if (!config.defaultSort && sort?.by && sort?.direction) {
       sortingComment.push(
@@ -117,8 +116,8 @@ export function CodePanel({
     JSON.stringify(value, null, 2).replace(/\n/g, "\n  ");
 
   const generateMediaCardCode = () => {
-    if (!mediaCardConfig) return "";
-    const card = mediaCardConfig.card;
+    if (!mediaCardPreset) return "";
+    const { card, responseActions } = mediaCardPresets[mediaCardPreset].data;
     const props: string[] = [];
 
     props.push(`  assetId="${card.assetId}"`);
@@ -198,12 +197,9 @@ export function CodePanel({
       props.push(`  isLoading={true}`);
     }
 
-    if (
-      mediaCardConfig.responseActions &&
-      mediaCardConfig.responseActions.length > 0
-    ) {
+    if (responseActions && responseActions.length > 0) {
       props.push(
-        `  responseActions={${JSON.stringify(mediaCardConfig.responseActions, null, 4).replace(/\n/g, "\n  ")}}`,
+        `  responseActions={${JSON.stringify(responseActions, null, 4).replace(/\n/g, "\n  ")}}`,
       );
       props.push(
         `  onResponseAction={(actionId) => console.log("Action:", actionId)}`,
@@ -214,8 +210,8 @@ export function CodePanel({
   };
 
   const generateOptionListCode = () => {
-    if (!optionListConfig) return "";
-    const list = optionListConfig.optionList;
+    if (!optionListPreset) return "";
+    const list = optionListPresets[optionListPreset].data;
     const props: string[] = [];
 
     props.push(
@@ -252,7 +248,8 @@ export function CodePanel({
   };
 
   const generateChartCode = () => {
-    if (!chartConfig) return "";
+    if (!chartPreset) return "";
+    const chartConfig = chartPresets[chartPreset].data;
     const props: string[] = [];
 
     props.push(`  id="chart-example"`);
@@ -292,8 +289,8 @@ export function CodePanel({
   };
 
   const generateCodeBlockCode = () => {
-    if (!codeBlockConfig) return "";
-    const block = codeBlockConfig.codeBlock;
+    if (!codeBlockPreset) return "";
+    const block = codeBlockPresets[codeBlockPreset].data;
     const props: string[] = [];
 
     props.push(`  code={\`${escape(block.code)}\`}`);
@@ -323,8 +320,8 @@ export function CodePanel({
   };
 
   const generateTerminalCode = () => {
-    if (!terminalConfig) return "";
-    const term = terminalConfig.terminal;
+    if (!terminalPreset) return "";
+    const term = terminalPresets[terminalPreset].data;
     const props: string[] = [];
 
     props.push(`  command="${escape(term.command)}"`);
@@ -363,8 +360,8 @@ export function CodePanel({
   };
 
   const generatePlanCode = () => {
-    if (!planConfig) return "";
-    const plan = planConfig.plan;
+    if (!planPreset) return "";
+    const plan = planPresets[planPreset].data;
     const props: string[] = [];
 
     props.push(`  id="${plan.id}"`);

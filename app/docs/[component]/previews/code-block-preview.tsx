@@ -6,10 +6,7 @@ import { ComponentPreviewShell } from "../component-preview-shell";
 import { PresetSelector } from "../../_components/preset-selector";
 import { CodePanel } from "../../_components/code-panel";
 import { CodeBlock } from "@/components/tool-ui/code-block";
-import {
-  CodeBlockPresetName,
-  codeBlockPresets,
-} from "@/lib/presets/code-block";
+import { CodeBlockPresetName, codeBlockPresets } from "@/lib/presets/code-block";
 
 export function CodeBlockPreview({
   withContainer = true,
@@ -43,7 +40,7 @@ export function CodeBlockPreview({
     }
   }, [searchParams, currentPreset]);
 
-  const currentConfig = codeBlockPresets[currentPreset];
+  const currentData = codeBlockPresets[currentPreset].data;
 
   const handleSelectPreset = useCallback(
     (preset: unknown) => {
@@ -76,7 +73,7 @@ export function CodeBlockPreview({
       }
       renderPreview={(isLoadingState) => (
         <CodeBlock
-          {...currentConfig.codeBlock}
+          {...currentData}
           id="code-block-preview"
           onFooterAction={handleFooterAction}
           isLoading={isLoadingState}
@@ -86,7 +83,7 @@ export function CodeBlockPreview({
         <CodePanel
           className="h-full w-full"
           componentId="code-block"
-          codeBlockConfig={currentConfig}
+          codeBlockPreset={currentPreset}
           mode="plain"
         />
       )}

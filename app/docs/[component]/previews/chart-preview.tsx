@@ -6,7 +6,7 @@ import { ComponentPreviewShell } from "../component-preview-shell";
 import { PresetSelector } from "../../_components/preset-selector";
 import { CodePanel } from "../../_components/code-panel";
 import { Chart } from "@/components/tool-ui/chart";
-import { ChartPresetName, presets } from "@/lib/presets/chart";
+import { ChartPresetName, chartPresets } from "@/lib/presets/chart";
 
 export function ChartPreview({
   withContainer = true,
@@ -20,7 +20,7 @@ export function ChartPreview({
   const presetParam = searchParams.get("preset");
   const defaultPreset = "revenue";
   const initialPreset: ChartPresetName =
-    presetParam && presetParam in presets
+    presetParam && presetParam in chartPresets
       ? (presetParam as ChartPresetName)
       : defaultPreset;
 
@@ -32,7 +32,7 @@ export function ChartPreview({
     const presetParam = searchParams.get("preset");
     if (
       presetParam &&
-      presetParam in presets &&
+      presetParam in chartPresets &&
       presetParam !== currentPreset
     ) {
       setCurrentPreset(presetParam as ChartPresetName);
@@ -40,7 +40,7 @@ export function ChartPreview({
     }
   }, [searchParams, currentPreset]);
 
-  const currentConfig = presets[currentPreset];
+  const currentData = chartPresets[currentPreset].data;
 
   const handleSelectPreset = useCallback(
     (preset: unknown) => {
@@ -68,13 +68,13 @@ export function ChartPreview({
         />
       }
       renderPreview={() => (
-        <Chart id={`chart-${currentPreset}`} {...currentConfig} />
+        <Chart id={`chart-${currentPreset}`} {...currentData} />
       )}
       renderCodePanel={() => (
         <CodePanel
           className="h-full w-full"
           componentId="chart"
-          chartConfig={currentConfig}
+          chartPreset={currentPreset}
           mode="plain"
         />
       )}

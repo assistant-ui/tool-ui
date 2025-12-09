@@ -7,14 +7,8 @@ import { XPost } from "@/components/tool-ui/x-post";
 import { InstagramPost } from "@/components/tool-ui/instagram-post";
 import { LinkedInPost } from "@/components/tool-ui/linkedin-post";
 import { xPostPresets, type XPostPresetName } from "@/lib/presets/x-post";
-import {
-  instagramPostPresets,
-  type InstagramPostPresetName,
-} from "@/lib/presets/instagram-post";
-import {
-  linkedInPostPresets,
-  type LinkedInPostPresetName,
-} from "@/lib/presets/linkedin-post";
+import { instagramPostPresets, type InstagramPostPresetName } from "@/lib/presets/instagram-post";
+import { linkedInPostPresets, type LinkedInPostPresetName } from "@/lib/presets/linkedin-post";
 import {
   Item,
   ItemContent,
@@ -24,71 +18,26 @@ import {
 } from "@/components/ui/item";
 import { cn } from "@/lib/ui/cn";
 
-// ============================================================================
-// Types
-// ============================================================================
-
 type Platform = "x" | "instagram" | "linkedin";
-
-type PresetName =
-  | XPostPresetName
-  | InstagramPostPresetName
-  | LinkedInPostPresetName;
+type PresetName = XPostPresetName | InstagramPostPresetName | LinkedInPostPresetName;
 
 const platformConfig = {
   x: {
     label: "X (Twitter)",
     presets: xPostPresets,
-    presetNames: [
-      "basic",
-      "quoted",
-      "media",
-      "link",
-      "footer-actions",
-    ] as XPostPresetName[],
-    descriptions: {
-      basic: "Simple text post",
-      quoted: "Post with quoted tweet",
-      media: "Post with image",
-      link: "Post with link preview",
-      "footer-actions": "Post with response actions",
-    },
+    presetNames: Object.keys(xPostPresets) as XPostPresetName[],
   },
   instagram: {
     label: "Instagram",
     presets: instagramPostPresets,
-    presetNames: [
-      "basic",
-      "carousel",
-      "footer-actions",
-    ] as InstagramPostPresetName[],
-    descriptions: {
-      basic: "Single image post",
-      carousel: "Multi-image carousel",
-      "footer-actions": "Post with response actions",
-    },
+    presetNames: Object.keys(instagramPostPresets) as InstagramPostPresetName[],
   },
   linkedin: {
     label: "LinkedIn",
     presets: linkedInPostPresets,
-    presetNames: [
-      "basic",
-      "link",
-      "media",
-      "footer-actions",
-    ] as LinkedInPostPresetName[],
-    descriptions: {
-      basic: "Text-only post",
-      link: "Post with link preview",
-      media: "Post with image",
-      "footer-actions": "Post with response actions",
-    },
+    presetNames: Object.keys(linkedInPostPresets) as LinkedInPostPresetName[],
   },
 } as const;
-
-// ============================================================================
-// Platform Selector
-// ============================================================================
 
 function PlatformSelector({
   currentPlatform,
@@ -124,10 +73,6 @@ function PlatformSelector({
   );
 }
 
-// ============================================================================
-// Preset Selector
-// ============================================================================
-
 function PresetSelector({
   platform,
   currentPreset,
@@ -138,12 +83,11 @@ function PresetSelector({
   onSelectPreset: (preset: PresetName) => void;
 }) {
   const config = platformConfig[platform];
-  const presetNames = config.presetNames as readonly PresetName[];
-  const descriptions = config.descriptions as Record<string, string>;
+  const presets = config.presets as Record<string, { description: string; data: unknown }>;
 
   return (
     <ItemGroup className="gap-1">
-      {presetNames.map((preset) => (
+      {config.presetNames.map((preset) => (
         <Item
           key={preset}
           variant="default"
@@ -155,7 +99,7 @@ function PresetSelector({
               ? "bg-muted cursor-pointer border-transparent shadow-xs"
               : "hover:bg-primary/5 active:bg-primary/10 cursor-pointer transition-[colors,shadow,border,background] duration-150 ease-out",
           )}
-          onClick={() => onSelectPreset(preset)}
+          onClick={() => onSelectPreset(preset as PresetName)}
         >
           <ItemContent className="transform-gpu transition-transform duration-300 ease-[cubic-bezier(0.3,-0.55,0.27,1.55)] will-change-transform group-active/item:scale-[0.98] group-active/item:duration-100 group-active/item:ease-out">
             <div className="relative flex items-start justify-between">
@@ -166,7 +110,7 @@ function PresetSelector({
                   </span>
                 </ItemTitle>
                 <ItemDescription className="text-sm font-light">
-                  {descriptions[preset]}
+                  {presets[preset].description}
                 </ItemDescription>
               </div>
             </div>
@@ -182,10 +126,6 @@ function PresetSelector({
   );
 }
 
-// ============================================================================
-// Main Component
-// ============================================================================
-
 export function SocialPostPreview({
   withContainer = true,
 }: {
@@ -195,7 +135,6 @@ export function SocialPostPreview({
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  // Get initial state from URL
   const platformParam = searchParams.get("platform") as Platform | null;
   const presetParam = searchParams.get("preset");
 
@@ -203,12 +142,10 @@ export function SocialPostPreview({
     platformParam && platformParam in platformConfig ? platformParam : "x";
   const initialPreset = getValidPreset(initialPlatform, presetParam);
 
-  const [currentPlatform, setCurrentPlatform] =
-    useState<Platform>(initialPlatform);
+  const [currentPlatform, setCurrentPlatform] = useState<Platform>(initialPlatform);
   const [currentPreset, setCurrentPreset] = useState<PresetName>(initialPreset);
   const [isLoading, setIsLoading] = useState(false);
 
-  // Sync with URL changes
   useEffect(() => {
     const platformParam = searchParams.get("platform") as Platform | null;
     const presetParam = searchParams.get("preset");
@@ -278,45 +215,25 @@ export function SocialPostPreview({
         <div className="w-full max-w-[550px]">
           {currentPlatform === "x" && (
             <XPost
-              post={xPostPresets[currentPreset as XPostPresetName].post}
-              responseActions={
-                xPostPresets[currentPreset as XPostPresetName].responseActions
-              }
-              onAction={(action, post) =>
-                console.log("X action:", action, post.id)
-              }
+              post={xPostPresets[currentPreset as XPostPresetName].data.post}
+              responseActions={xPostPresets[currentPreset as XPostPresetName].data.responseActions}
+              onAction={(action, post) => console.log("X action:", action, post.id)}
               onResponseAction={(id) => alert(`Response action: ${id}`)}
             />
           )}
           {currentPlatform === "instagram" && (
             <InstagramPost
-              post={
-                instagramPostPresets[currentPreset as InstagramPostPresetName]
-                  .post
-              }
-              responseActions={
-                instagramPostPresets[currentPreset as InstagramPostPresetName]
-                  .responseActions
-              }
-              onAction={(action, post) =>
-                console.log("Instagram action:", action, post.id)
-              }
+              post={instagramPostPresets[currentPreset as InstagramPostPresetName].data.post}
+              responseActions={instagramPostPresets[currentPreset as InstagramPostPresetName].data.responseActions}
+              onAction={(action, post) => console.log("Instagram action:", action, post.id)}
               onResponseAction={(id) => alert(`Response action: ${id}`)}
             />
           )}
           {currentPlatform === "linkedin" && (
             <LinkedInPost
-              post={
-                linkedInPostPresets[currentPreset as LinkedInPostPresetName]
-                  .post
-              }
-              responseActions={
-                linkedInPostPresets[currentPreset as LinkedInPostPresetName]
-                  .responseActions
-              }
-              onAction={(action, post) =>
-                console.log("LinkedIn action:", action, post.id)
-              }
+              post={linkedInPostPresets[currentPreset as LinkedInPostPresetName].data.post}
+              responseActions={linkedInPostPresets[currentPreset as LinkedInPostPresetName].data.responseActions}
+              onAction={(action, post) => console.log("LinkedIn action:", action, post.id)}
               onResponseAction={(id) => alert(`Response action: ${id}`)}
             />
           )}
@@ -330,10 +247,6 @@ export function SocialPostPreview({
     />
   );
 }
-
-// ============================================================================
-// Helpers
-// ============================================================================
 
 function getValidPreset(platform: Platform, preset: string | null): PresetName {
   const config = platformConfig[platform];

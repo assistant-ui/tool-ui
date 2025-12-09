@@ -1,21 +1,14 @@
 import type { SerializableCodeBlock } from "@/components/tool-ui/code-block";
+import type { Preset } from "./types";
 
-export interface CodeBlockConfig {
-  codeBlock: SerializableCodeBlock;
-}
+export type CodeBlockPresetName = "typescript" | "python" | "json" | "bash" | "highlighted" | "collapsible";
 
-export type CodeBlockPresetName =
-  | "typescript"
-  | "python"
-  | "json"
-  | "bash"
-  | "highlighted"
-  | "collapsible";
-
-const typescriptPreset: CodeBlockConfig = {
-  codeBlock: {
-    id: "code-block-preview-typescript",
-    code: `import { useState } from "react";
+export const codeBlockPresets: Record<CodeBlockPresetName, Preset<SerializableCodeBlock>> = {
+  typescript: {
+    description: "TypeScript with filename header",
+    data: {
+      id: "code-block-preview-typescript",
+      code: `import { useState } from "react";
 
 export function Counter() {
   const [count, setCount] = useState(0);
@@ -26,16 +19,16 @@ export function Counter() {
     </button>
   );
 }`,
-    language: "typescript",
-    filename: "Counter.tsx",
-    showLineNumbers: true,
+      language: "typescript",
+      filename: "Counter.tsx",
+      showLineNumbers: true,
+    } satisfies SerializableCodeBlock,
   },
-};
-
-const pythonPreset: CodeBlockConfig = {
-  codeBlock: {
-    id: "code-block-preview-python",
-    code: `def fibonacci(n: int) -> list[int]:
+  python: {
+    description: "Python function with docstring",
+    data: {
+      id: "code-block-preview-python",
+      code: `def fibonacci(n: int) -> list[int]:
     """Generate Fibonacci sequence up to n terms."""
     if n <= 0:
         return []
@@ -50,16 +43,16 @@ const pythonPreset: CodeBlockConfig = {
 
 # Example usage
 print(fibonacci(10))`,
-    language: "python",
-    filename: "fibonacci.py",
-    showLineNumbers: true,
+      language: "python",
+      filename: "fibonacci.py",
+      showLineNumbers: true,
+    } satisfies SerializableCodeBlock,
   },
-};
-
-const jsonPreset: CodeBlockConfig = {
-  codeBlock: {
-    id: "code-block-preview-json",
-    code: `{
+  json: {
+    description: "JSON configuration file",
+    data: {
+      id: "code-block-preview-json",
+      code: `{
   "name": "tool-ui",
   "version": "1.0.0",
   "dependencies": {
@@ -68,16 +61,16 @@ const jsonPreset: CodeBlockConfig = {
     "shiki": "^3.0.0"
   }
 }`,
-    language: "json",
-    filename: "package.json",
-    showLineNumbers: true,
+      language: "json",
+      filename: "package.json",
+      showLineNumbers: true,
+    } satisfies SerializableCodeBlock,
   },
-};
-
-const bashPreset: CodeBlockConfig = {
-  codeBlock: {
-    id: "code-block-preview-bash",
-    code: `#!/bin/bash
+  bash: {
+    description: "Bash script with comments",
+    data: {
+      id: "code-block-preview-bash",
+      code: `#!/bin/bash
 # Deploy script
 
 echo "Building application..."
@@ -90,16 +83,16 @@ echo "Deploying to production..."
 rsync -avz ./dist/ user@server:/var/www/app/
 
 echo "Done!"`,
-    language: "bash",
-    filename: "deploy.sh",
-    showLineNumbers: true,
+      language: "bash",
+      filename: "deploy.sh",
+      showLineNumbers: true,
+    } satisfies SerializableCodeBlock,
   },
-};
-
-const highlightedPreset: CodeBlockConfig = {
-  codeBlock: {
-    id: "code-block-preview-highlighted",
-    code: `function processData(items: string[]) {
+  highlighted: {
+    description: "Code with highlighted lines (bug indicator)",
+    data: {
+      id: "code-block-preview-highlighted",
+      code: `function processData(items: string[]) {
   const results = [];
 
   for (const item of items) {
@@ -109,41 +102,23 @@ const highlightedPreset: CodeBlockConfig = {
 
   return results;
 }`,
-    language: "typescript",
-    filename: "processor.ts",
-    showLineNumbers: true,
-    highlightLines: [5, 6],
+      language: "typescript",
+      filename: "processor.ts",
+      showLineNumbers: true,
+      highlightLines: [5, 6],
+    } satisfies SerializableCodeBlock,
+  },
+  collapsible: {
+    description: "Long code with collapse/expand",
+    data: {
+      id: "code-block-preview-collapsible",
+      code: Array.from(
+        { length: 30 },
+        (_, i) => `console.log("Line ${i + 1}");`,
+      ).join("\n"),
+      language: "javascript",
+      showLineNumbers: true,
+      maxCollapsedLines: 10,
+    } satisfies SerializableCodeBlock,
   },
 };
-
-const collapsiblePreset: CodeBlockConfig = {
-  codeBlock: {
-    id: "code-block-preview-collapsible",
-    code: Array.from(
-      { length: 30 },
-      (_, i) => `console.log("Line ${i + 1}");`,
-    ).join("\n"),
-    language: "javascript",
-    showLineNumbers: true,
-    maxCollapsedLines: 10,
-  },
-};
-
-export const codeBlockPresets: Record<CodeBlockPresetName, CodeBlockConfig> = {
-  typescript: typescriptPreset,
-  python: pythonPreset,
-  json: jsonPreset,
-  bash: bashPreset,
-  highlighted: highlightedPreset,
-  collapsible: collapsiblePreset,
-};
-
-export const codeBlockPresetDescriptions: Record<CodeBlockPresetName, string> =
-  {
-    typescript: "TypeScript with filename header",
-    python: "Python function with docstring",
-    json: "JSON configuration file",
-    bash: "Bash script with comments",
-    highlighted: "Code with highlighted lines (bug indicator)",
-    collapsible: "Long code with collapse/expand",
-  };

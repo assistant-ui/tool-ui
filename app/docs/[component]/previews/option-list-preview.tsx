@@ -6,10 +6,7 @@ import { ComponentPreviewShell } from "../component-preview-shell";
 import { PresetSelector } from "../../_components/preset-selector";
 import { CodePanel } from "../../_components/code-panel";
 import { OptionList } from "@/components/tool-ui/option-list";
-import {
-  OptionListPresetName,
-  optionListPresets,
-} from "@/lib/presets/option-list";
+import { OptionListPresetName, optionListPresets } from "@/lib/presets/option-list";
 
 export function OptionListPreview({
   withContainer = true,
@@ -45,7 +42,7 @@ export function OptionListPreview({
     }
   }, [searchParams, currentPreset]);
 
-  const currentConfig = optionListPresets[currentPreset];
+  const currentData = optionListPresets[currentPreset].data;
 
   const handleSelectPreset = useCallback(
     (preset: unknown) => {
@@ -76,7 +73,7 @@ export function OptionListPreview({
       renderPreview={() => (
         <div className="w-full max-w-[420px]">
           <OptionList
-            {...currentConfig.optionList}
+            {...currentData}
             id="option-list-preview"
             value={selection}
             onChange={setSelection}
@@ -91,7 +88,7 @@ export function OptionListPreview({
         <CodePanel
           className="h-full w-full"
           componentId="option-list"
-          optionListConfig={currentConfig}
+          optionListPreset={currentPreset}
           optionListSelection={selection}
           mode="plain"
         />

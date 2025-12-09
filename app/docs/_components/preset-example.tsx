@@ -3,30 +3,18 @@
 import { Tabs, Tab } from "fumadocs-ui/components/tabs";
 import { DynamicCodeBlock } from "fumadocs-ui/components/dynamic-codeblock";
 import { Chart } from "@/components/tool-ui/chart";
-import { ChartPresetName, presets as chartPresets } from "@/lib/presets/chart";
+import { chartPresets, ChartPresetName } from "@/lib/presets/chart";
 import { OptionList } from "@/components/tool-ui/option-list";
 import { CodeBlock } from "@/components/tool-ui/code-block";
 import { Terminal } from "@/components/tool-ui/terminal";
-import {
-  optionListPresets,
-  OptionListPresetName,
-  OptionListConfig,
-} from "@/lib/presets/option-list";
-import {
-  codeBlockPresets,
-  CodeBlockPresetName,
-  CodeBlockConfig,
-} from "@/lib/presets/code-block";
-import {
-  terminalPresets,
-  TerminalPresetName,
-  TerminalConfig,
-} from "@/lib/presets/terminal";
+import { optionListPresets, OptionListPresetName } from "@/lib/presets/option-list";
+import { codeBlockPresets, CodeBlockPresetName } from "@/lib/presets/code-block";
+import { terminalPresets, TerminalPresetName } from "@/lib/presets/terminal";
 import { Plan } from "@/components/tool-ui/plan";
-import { planPresets, PlanPresetName, PlanConfig } from "@/lib/presets/plan";
+import { planPresets, PlanPresetName } from "@/lib/presets/plan";
 
-function generateOptionListCode(config: OptionListConfig): string {
-  const list = config.optionList;
+function generateOptionListCode(preset: OptionListPresetName): string {
+  const list = optionListPresets[preset].data;
   const props: string[] = [];
 
   props.push(
@@ -65,7 +53,6 @@ function generateOptionListCode(config: OptionListConfig): string {
     }
   }
 
-  // Only add onConfirm for interactive (non-receipt) examples
   if (!list.confirmed) {
     props.push(`  onConfirm={(selection) => console.log(selection)}`);
   }
@@ -73,8 +60,8 @@ function generateOptionListCode(config: OptionListConfig): string {
   return `<OptionList\n${props.join("\n")}\n/>`;
 }
 
-function generateCodeBlockCode(config: CodeBlockConfig): string {
-  const block = config.codeBlock;
+function generateCodeBlockCode(preset: CodeBlockPresetName): string {
+  const block = codeBlockPresets[preset].data;
   const props: string[] = [];
 
   props.push(`  code={\`${block.code.replace(/`/g, "\\`")}\`}`);
@@ -99,8 +86,8 @@ function generateCodeBlockCode(config: CodeBlockConfig): string {
   return `<CodeBlock\n${props.join("\n")}\n/>`;
 }
 
-function generateTerminalCode(config: TerminalConfig): string {
-  const term = config.terminal;
+function generateTerminalCode(preset: TerminalPresetName): string {
+  const term = terminalPresets[preset].data;
   const props: string[] = [];
 
   props.push(`  command="${term.command.replace(/"/g, '\\"')}"`);
@@ -141,15 +128,15 @@ interface OptionListPresetExampleProps {
 export function OptionListPresetExample({
   preset,
 }: OptionListPresetExampleProps) {
-  const config = optionListPresets[preset];
-  const code = generateOptionListCode(config);
+  const data = optionListPresets[preset].data;
+  const code = generateOptionListCode(preset);
 
   return (
     <Tabs items={["Preview", "Code"]}>
       <Tab value="Preview">
         <div className="not-prose flex justify-center">
           <div className="w-full max-w-md">
-            <OptionList {...config.optionList} />
+            <OptionList {...data} />
           </div>
         </div>
       </Tab>
@@ -161,7 +148,7 @@ export function OptionListPresetExample({
 }
 
 function generateChartCode(preset: ChartPresetName): string {
-  const config = chartPresets[preset];
+  const config = chartPresets[preset].data;
   const props: string[] = [];
 
   props.push(`  id="chart-example"`);
@@ -199,7 +186,7 @@ interface ChartPresetExampleProps {
 }
 
 export function ChartPresetExample({ preset }: ChartPresetExampleProps) {
-  const config = chartPresets[preset];
+  const config = chartPresets[preset].data;
   const code = generateChartCode(preset);
 
   return (
@@ -223,14 +210,14 @@ interface CodeBlockPresetExampleProps {
 export function CodeBlockPresetExample({
   preset,
 }: CodeBlockPresetExampleProps) {
-  const config = codeBlockPresets[preset];
-  const code = generateCodeBlockCode(config);
+  const data = codeBlockPresets[preset].data;
+  const code = generateCodeBlockCode(preset);
 
   return (
     <Tabs items={["Preview", "Code"]}>
       <Tab value="Preview">
         <div className="not-prose flex justify-center">
-          <CodeBlock {...config.codeBlock} />
+          <CodeBlock {...data} />
         </div>
       </Tab>
       <Tab value="Code">
@@ -245,14 +232,14 @@ interface TerminalPresetExampleProps {
 }
 
 export function TerminalPresetExample({ preset }: TerminalPresetExampleProps) {
-  const config = terminalPresets[preset];
-  const code = generateTerminalCode(config);
+  const data = terminalPresets[preset].data;
+  const code = generateTerminalCode(preset);
 
   return (
     <Tabs items={["Preview", "Code"]}>
       <Tab value="Preview">
         <div className="not-prose flex justify-center">
-          <Terminal {...config.terminal} />
+          <Terminal {...data} />
         </div>
       </Tab>
       <Tab value="Code">
@@ -262,8 +249,8 @@ export function TerminalPresetExample({ preset }: TerminalPresetExampleProps) {
   );
 }
 
-function generatePlanCode(config: PlanConfig): string {
-  const plan = config.plan;
+function generatePlanCode(preset: PlanPresetName): string {
+  const plan = planPresets[preset].data;
   const props: string[] = [];
 
   props.push(`  id="${plan.id}"`);
@@ -289,14 +276,14 @@ interface PlanPresetExampleProps {
 }
 
 export function PlanPresetExample({ preset }: PlanPresetExampleProps) {
-  const config = planPresets[preset];
-  const code = generatePlanCode(config);
+  const data = planPresets[preset].data;
+  const code = generatePlanCode(preset);
 
   return (
     <Tabs items={["Preview", "Code"]}>
       <Tab value="Preview">
         <div className="not-prose flex justify-center">
-          <Plan {...config.plan} />
+          <Plan {...data} />
         </div>
       </Tab>
       <Tab value="Code">

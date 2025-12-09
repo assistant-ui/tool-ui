@@ -40,7 +40,7 @@ export function TerminalPreview({
     }
   }, [searchParams, currentPreset]);
 
-  const currentConfig = terminalPresets[currentPreset];
+  const currentData = terminalPresets[currentPreset].data;
 
   const handleSelectPreset = useCallback(
     (preset: unknown) => {
@@ -73,7 +73,7 @@ export function TerminalPreview({
       }
       renderPreview={(isLoadingState) => (
         <Terminal
-          {...currentConfig.terminal}
+          {...currentData}
           id="terminal-preview"
           onFooterAction={handleFooterAction}
           isLoading={isLoadingState}
@@ -83,7 +83,7 @@ export function TerminalPreview({
         <CodePanel
           className="h-full w-full"
           componentId="terminal"
-          terminalConfig={currentConfig}
+          terminalPreset={currentPreset}
           mode="plain"
         />
       )}

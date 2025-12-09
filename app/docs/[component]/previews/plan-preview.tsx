@@ -40,7 +40,7 @@ export function PlanPreview({
     }
   }, [searchParams, currentPreset]);
 
-  const currentConfig = planPresets[currentPreset];
+  const currentData = planPresets[currentPreset].data;
 
   const handleSelectPreset = useCallback(
     (preset: unknown) => {
@@ -67,12 +67,12 @@ export function PlanPreview({
           onSelectPreset={handleSelectPreset}
         />
       }
-      renderPreview={() => <Plan {...currentConfig.plan} id="plan-preview" />}
+      renderPreview={() => <Plan {...currentData} id="plan-preview" />}
       renderCodePanel={() => (
         <CodePanel
           className="h-full w-full"
           componentId="plan"
-          planConfig={currentConfig}
+          planPreset={currentPreset}
           mode="plain"
         />
       )}

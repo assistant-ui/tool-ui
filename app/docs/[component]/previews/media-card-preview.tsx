@@ -6,10 +6,7 @@ import { ComponentPreviewShell } from "../component-preview-shell";
 import { PresetSelector } from "../../_components/preset-selector";
 import { CodePanel } from "../../_components/code-panel";
 import { MediaCard } from "@/components/tool-ui/media-card";
-import {
-  MediaCardPresetName,
-  mediaCardPresets,
-} from "@/lib/presets/media-card";
+import { MediaCardPresetName, mediaCardPresets } from "@/lib/presets/media-card";
 
 export function MediaCardPreview({
   withContainer = true,
@@ -43,7 +40,7 @@ export function MediaCardPreview({
     }
   }, [searchParams, currentPreset]);
 
-  const currentConfig = mediaCardPresets[currentPreset];
+  const { card, responseActions } = mediaCardPresets[currentPreset].data;
 
   const handleSelectPreset = useCallback(
     (preset: unknown) => {
@@ -73,9 +70,9 @@ export function MediaCardPreview({
       renderPreview={(loading) => (
         <div className="w-full max-w-[420px]">
           <MediaCard
-            {...currentConfig.card}
+            {...card}
             isLoading={loading}
-            responseActions={currentConfig.responseActions}
+            responseActions={responseActions}
             onAction={(actionId) => {
               console.log("MediaCard action:", actionId);
             }}
@@ -92,7 +89,7 @@ export function MediaCardPreview({
         <CodePanel
           className="h-full w-full"
           componentId="media-card"
-          mediaCardConfig={currentConfig}
+          mediaCardPreset={currentPreset}
           mediaCardMaxWidth="420px"
           isLoading={loading}
           mode="plain"

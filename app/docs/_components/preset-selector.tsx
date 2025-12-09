@@ -5,51 +5,31 @@ import {
   ItemGroup,
   ItemTitle,
 } from "@/components/ui/item";
-import { ChartPresetName, chartPresetDescriptions } from "@/lib/presets/chart";
-import {
-  CodeBlockPresetName,
-  codeBlockPresetDescriptions,
-} from "@/lib/presets/code-block";
-import { PresetName, presetDescriptions } from "@/lib/presets/data-table";
-import {
-  MediaCardPresetName,
-  mediaCardPresetDescriptions,
-} from "@/lib/presets/media-card";
-import {
-  OptionListPresetName,
-  optionListPresetDescriptions,
-} from "@/lib/presets/option-list";
-import { PlanPresetName, planPresetDescriptions } from "@/lib/presets/plan";
-import {
-  TerminalPresetName,
-  terminalPresetDescriptions,
-} from "@/lib/presets/terminal";
+import { chartPresets } from "@/lib/presets/chart";
+import { codeBlockPresets } from "@/lib/presets/code-block";
+import { dataTablePresets } from "@/lib/presets/data-table";
+import { mediaCardPresets } from "@/lib/presets/media-card";
+import { optionListPresets } from "@/lib/presets/option-list";
+import { planPresets } from "@/lib/presets/plan";
+import { terminalPresets } from "@/lib/presets/terminal";
+import type { Preset } from "@/lib/presets/types";
 import { cn } from "@/lib/ui/cn";
 
-type ComponentPreset =
-  | ChartPresetName
-  | CodeBlockPresetName
-  | MediaCardPresetName
-  | OptionListPresetName
-  | PlanPresetName
-  | PresetName
-  | TerminalPresetName;
+type PresetMap = Record<string, Preset<unknown>>;
 
-type PresetDescriptions = Partial<Record<ComponentPreset, string>>;
-
-const PRESET_REGISTRY: Record<string, PresetDescriptions> = {
-  chart: chartPresetDescriptions,
-  "code-block": codeBlockPresetDescriptions,
-  "data-table": presetDescriptions,
-  "media-card": mediaCardPresetDescriptions,
-  "option-list": optionListPresetDescriptions,
-  plan: planPresetDescriptions,
-  terminal: terminalPresetDescriptions,
+const PRESET_REGISTRY: Record<string, PresetMap> = {
+  chart: chartPresets,
+  "code-block": codeBlockPresets,
+  "data-table": dataTablePresets,
+  "media-card": mediaCardPresets,
+  "option-list": optionListPresets,
+  plan: planPresets,
+  terminal: terminalPresets,
 };
 
 const DEFAULT_COMPONENT = "option-list";
 
-function getPresetDescriptions(componentId: string): PresetDescriptions {
+function getPresets(componentId: string): PresetMap {
   return PRESET_REGISTRY[componentId] ?? PRESET_REGISTRY[DEFAULT_COMPONENT];
 }
 
@@ -59,8 +39,8 @@ function formatPresetName(preset: string): string {
 
 interface PresetSelectorProps {
   componentId: string;
-  currentPreset: ComponentPreset;
-  onSelectPreset: (preset: ComponentPreset) => void;
+  currentPreset: string;
+  onSelectPreset: (preset: string) => void;
 }
 
 export function PresetSelector({
@@ -68,17 +48,17 @@ export function PresetSelector({
   currentPreset,
   onSelectPreset,
 }: PresetSelectorProps) {
-  const descriptions = getPresetDescriptions(componentId);
-  const presets = Object.keys(descriptions) as ComponentPreset[];
+  const presets = getPresets(componentId);
+  const presetNames = Object.keys(presets);
 
   return (
     <ItemGroup className="gap-1">
-      {presets.map((preset) => (
+      {presetNames.map((name) => (
         <PresetItem
-          key={preset}
-          preset={preset}
-          description={descriptions[preset] ?? ""}
-          isSelected={currentPreset === preset}
+          key={name}
+          preset={name}
+          description={presets[name].description}
+          isSelected={currentPreset === name}
           onSelect={onSelectPreset}
         />
       ))}
@@ -87,10 +67,10 @@ export function PresetSelector({
 }
 
 interface PresetItemProps {
-  preset: ComponentPreset;
+  preset: string;
   description: string;
   isSelected: boolean;
-  onSelect: (preset: ComponentPreset) => void;
+  onSelect: (preset: string) => void;
 }
 
 function PresetItem({

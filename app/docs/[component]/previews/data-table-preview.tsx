@@ -6,7 +6,7 @@ import { ComponentPreviewShell } from "../component-preview-shell";
 import { PresetSelector } from "../../_components/preset-selector";
 import { CodePanel } from "../../_components/code-panel";
 import { DataTable } from "@/components/tool-ui/data-table";
-import { PresetName, presets, SortState } from "@/lib/presets/data-table";
+import { DataTablePresetName, dataTablePresets, SortState } from "@/lib/presets/data-table";
 
 export function DataTablePreview({
   withContainer = true,
@@ -19,47 +19,46 @@ export function DataTablePreview({
 
   const presetParam = searchParams.get("preset");
   const defaultPreset = "stocks";
-  const initialPreset: PresetName =
-    presetParam && presetParam in presets
-      ? (presetParam as PresetName)
+  const initialPreset: DataTablePresetName =
+    presetParam && presetParam in dataTablePresets
+      ? (presetParam as DataTablePresetName)
       : defaultPreset;
 
-  const [currentPreset, setCurrentPreset] = useState<PresetName>(initialPreset);
+  const [currentPreset, setCurrentPreset] = useState<DataTablePresetName>(initialPreset);
   const [isLoading, setIsLoading] = useState(false);
   const [sort, setSort] = useState<SortState>(
-    presets[initialPreset].defaultSort ?? {},
+    dataTablePresets[initialPreset].data.defaultSort ?? {},
   );
   const [emptyMessage, setEmptyMessage] = useState(
-    presets[initialPreset].emptyMessage ?? "No data available",
+    dataTablePresets[initialPreset].data.emptyMessage ?? "No data available",
   );
 
   useEffect(() => {
     const presetParam = searchParams.get("preset");
     if (
       presetParam &&
-      presetParam in presets &&
+      presetParam in dataTablePresets &&
       presetParam !== currentPreset
     ) {
-      const nextConfig = presets[presetParam as PresetName];
-      setCurrentPreset(presetParam as PresetName);
-      setSort(nextConfig.defaultSort ?? {});
-      setEmptyMessage(nextConfig.emptyMessage ?? "No data available");
+      const nextData = dataTablePresets[presetParam as DataTablePresetName].data;
+      setCurrentPreset(presetParam as DataTablePresetName);
+      setSort(nextData.defaultSort ?? {});
+      setEmptyMessage(nextData.emptyMessage ?? "No data available");
       setIsLoading(false);
     }
   }, [searchParams, currentPreset]);
 
-  const currentConfig = presets[currentPreset];
+  const currentData = dataTablePresets[currentPreset].data;
 
   const handleSelectPreset = useCallback(
     (preset: unknown) => {
-      const presetName = preset as PresetName;
-      const nextConfig = presets[presetName];
+      const presetName = preset as DataTablePresetName;
+      const nextData = dataTablePresets[presetName].data;
       setCurrentPreset(presetName);
-      setSort(nextConfig.defaultSort ?? {});
-      setEmptyMessage(nextConfig.emptyMessage ?? "No data available");
+      setSort(nextData.defaultSort ?? {});
+      setEmptyMessage(nextData.emptyMessage ?? "No data available");
       setIsLoading(false);
 
-      // Update URL
       const params = new URLSearchParams(searchParams.toString());
       params.set("preset", presetName);
       router.push(`${pathname}?${params.toString()}`, { scroll: false });
@@ -81,12 +80,12 @@ export function DataTablePreview({
       }
       renderPreview={(loading) => (
         <DataTable
-          {...currentConfig}
+          {...currentData}
           sort={sort}
           onSortChange={setSort}
           isLoading={loading}
           emptyMessage={emptyMessage}
-          responseActions={currentConfig.responseActions}
+          responseActions={currentData.responseActions}
           onResponseAction={(actionId) => {
             console.log("Response action:", actionId);
           }}
@@ -96,7 +95,7 @@ export function DataTablePreview({
         <CodePanel
           className="h-full w-full"
           componentId="data-table"
-          config={currentConfig}
+          config={currentData}
           sort={sort}
           isLoading={loading}
           emptyMessage={emptyMessage}

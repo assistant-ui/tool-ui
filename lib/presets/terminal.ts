@@ -1,22 +1,15 @@
 import type { SerializableTerminal } from "@/components/tool-ui/terminal";
+import type { Preset } from "./types";
 
-export interface TerminalConfig {
-  terminal: SerializableTerminal;
-}
+export type TerminalPresetName = "success" | "error" | "build" | "ansiColors" | "collapsible" | "noOutput";
 
-export type TerminalPresetName =
-  | "success"
-  | "error"
-  | "build"
-  | "ansiColors"
-  | "collapsible"
-  | "noOutput";
-
-const successPreset: TerminalConfig = {
-  terminal: {
-    id: "terminal-preview-success",
-    command: "pnpm test",
-    stdout: `✓ src/utils.test.ts (5 tests) 23ms
+export const terminalPresets: Record<TerminalPresetName, Preset<SerializableTerminal>> = {
+  success: {
+    description: "Successful test run with duration",
+    data: {
+      id: "terminal-preview-success",
+      command: "pnpm test",
+      stdout: `✓ src/utils.test.ts (5 tests) 23ms
 ✓ src/api.test.ts (12 tests) 156ms
 ✓ src/components.test.ts (8 tests) 89ms
 
@@ -24,36 +17,36 @@ Test Files  3 passed (3)
      Tests  25 passed (25)
   Start at  10:23:45
   Duration  312ms`,
-    exitCode: 0,
-    durationMs: 312,
-    cwd: "~/project",
+      exitCode: 0,
+      durationMs: 312,
+      cwd: "~/project",
+    } satisfies SerializableTerminal,
   },
-};
-
-const errorPreset: TerminalConfig = {
-  terminal: {
-    id: "terminal-preview-error",
-    command: "pnpm build",
-    stdout: `Building application...
+  error: {
+    description: "Failed build with TypeScript error",
+    data: {
+      id: "terminal-preview-error",
+      command: "pnpm build",
+      stdout: `Building application...
 Compiling TypeScript...`,
-    stderr: `error TS2345: Argument of type 'string' is not assignable to parameter of type 'number'.
+      stderr: `error TS2345: Argument of type 'string' is not assignable to parameter of type 'number'.
 
   src/utils.ts:23:15
     23   calculate(input);
                   ~~~~~
 
 Found 1 error in src/utils.ts:23`,
-    exitCode: 1,
-    durationMs: 1523,
-    cwd: "~/project",
+      exitCode: 1,
+      durationMs: 1523,
+      cwd: "~/project",
+    } satisfies SerializableTerminal,
   },
-};
-
-const buildPreset: TerminalConfig = {
-  terminal: {
-    id: "terminal-preview-build",
-    command: "docker build -t myapp:latest .",
-    stdout: `[+] Building 45.2s (12/12) FINISHED
+  build: {
+    description: "Docker build output",
+    data: {
+      id: "terminal-preview-build",
+      command: "docker build -t myapp:latest .",
+      stdout: `[+] Building 45.2s (12/12) FINISHED
  => [internal] load build definition from Dockerfile
  => [internal] load .dockerignore
  => [internal] load metadata for node:20-alpine
@@ -68,65 +61,48 @@ const buildPreset: TerminalConfig = {
  => => naming to docker.io/library/myapp:latest
 
 Successfully built image myapp:latest`,
-    exitCode: 0,
-    durationMs: 45200,
+      exitCode: 0,
+      durationMs: 45200,
+    } satisfies SerializableTerminal,
   },
-};
-
-const ansiColorsPreset: TerminalConfig = {
-  terminal: {
-    id: "terminal-preview-ansi",
-    command: "npm run lint",
-    stdout: `\x1b[32m✔\x1b[0m No ESLint warnings or errors
+  ansiColors: {
+    description: "ANSI colored lint output",
+    data: {
+      id: "terminal-preview-ansi",
+      command: "npm run lint",
+      stdout: `\x1b[32m✔\x1b[0m No ESLint warnings or errors
 \x1b[36minfo\x1b[0m Checking formatting...
 \x1b[33m⚠\x1b[0m 2 files need formatting
   \x1b[90msrc/utils.ts\x1b[0m
   \x1b[90msrc/api.ts\x1b[0m
 \x1b[32m✔\x1b[0m TypeScript compilation successful
 \x1b[1m\x1b[32mAll checks passed!\x1b[0m`,
-    exitCode: 0,
-    durationMs: 2341,
+      exitCode: 0,
+      durationMs: 2341,
+    } satisfies SerializableTerminal,
   },
-};
-
-const collapsiblePreset: TerminalConfig = {
-  terminal: {
-    id: "terminal-preview-collapsible",
-    command: "npm install",
-    stdout:
-      Array.from({ length: 25 }, (_, i) => `added package-${i + 1}@1.0.0`).join(
-        "\n",
-      ) + "\n\nadded 25 packages in 3.2s",
-    exitCode: 0,
-    durationMs: 3200,
-    maxCollapsedLines: 8,
+  collapsible: {
+    description: "Long output with collapse",
+    data: {
+      id: "terminal-preview-collapsible",
+      command: "npm install",
+      stdout:
+        Array.from({ length: 25 }, (_, i) => `added package-${i + 1}@1.0.0`).join(
+          "\n",
+        ) + "\n\nadded 25 packages in 3.2s",
+      exitCode: 0,
+      durationMs: 3200,
+      maxCollapsedLines: 8,
+    } satisfies SerializableTerminal,
   },
-};
-
-const noOutputPreset: TerminalConfig = {
-  terminal: {
-    id: "terminal-preview-no-output",
-    command: "touch newfile.txt",
-    exitCode: 0,
-    durationMs: 12,
-    cwd: "~/project",
+  noOutput: {
+    description: "Command with no output",
+    data: {
+      id: "terminal-preview-no-output",
+      command: "touch newfile.txt",
+      exitCode: 0,
+      durationMs: 12,
+      cwd: "~/project",
+    } satisfies SerializableTerminal,
   },
-};
-
-export const terminalPresets: Record<TerminalPresetName, TerminalConfig> = {
-  success: successPreset,
-  error: errorPreset,
-  build: buildPreset,
-  ansiColors: ansiColorsPreset,
-  collapsible: collapsiblePreset,
-  noOutput: noOutputPreset,
-};
-
-export const terminalPresetDescriptions: Record<TerminalPresetName, string> = {
-  success: "Successful test run with duration",
-  error: "Failed build with TypeScript error",
-  build: "Docker build output",
-  ansiColors: "ANSI colored lint output",
-  collapsible: "Long output with collapse",
-  noOutput: "Command with no output",
 };
