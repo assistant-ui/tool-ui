@@ -21,6 +21,7 @@ import {
   TerminalPresetExample,
   PlanPresetExample,
 } from "@/app/docs/_components/preset-example";
+import { FeatureGrid, Feature } from "@/app/components/mdx/features";
 
 export function useMDXComponents(components: MDXComponents): MDXComponents {
   // Wrap selected default components to auto-link Tool UI mentions
@@ -95,6 +96,8 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
     CodeBlockPresetExample,
     TerminalPresetExample,
     PlanPresetExample,
+    FeatureGrid,
+    Feature,
     ...components,
   };
 }

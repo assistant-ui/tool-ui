@@ -9,7 +9,7 @@ import { Plan } from "@/components/tool-ui/plan";
 import { Terminal } from "@/components/tool-ui/terminal";
 import { CodeBlock } from "@/components/tool-ui/code-block";
 import { Chart } from "@/components/tool-ui/chart";
-import { presets } from "@/lib/presets/data-table";
+import { dataTablePresets } from "@/lib/presets/data-table";
 import { mediaCardPresets } from "@/lib/presets/media-card";
 import { xPostPresets } from "@/lib/presets/x-post";
 import { linkedInPostPresets } from "@/lib/presets/linkedin-post";
@@ -17,7 +17,7 @@ import { optionListPresets } from "@/lib/presets/option-list";
 import { planPresets } from "@/lib/presets/plan";
 import { terminalPresets } from "@/lib/presets/terminal";
 import { codeBlockPresets } from "@/lib/presets/code-block";
-import { presets as chartPresets } from "@/lib/presets/chart";
+import { chartPresets } from "@/lib/presets/chart";
 import { ArrowRightIcon } from "lucide-react";
 
 export default function ComponentsGalleryPage() {
@@ -26,61 +26,61 @@ export default function ComponentsGalleryPage() {
       <div className="scrollbar-subtle z-10 min-h-0 flex-1 overflow-y-auto overscroll-contain p-6 sm:p-10 lg:p-12">
         <div className="mx-auto columns-1 gap-5 pb-20 [column-fill:balance] md:columns-2 2xl:columns-3 2xl:gap-5">
           <div className="mb-5 [column-span:all] 2xl:mb-5">
-            <DataTable {...presets.stocks} />
+            <DataTable {...dataTablePresets.stocks.data} />
           </div>
 
           <div className="mb-5 break-inside-avoid 2xl:mb-5">
-            <XPost post={xPostPresets.basic.post} />
+            <XPost post={xPostPresets.basic.data.post} />
           </div>
 
           <div className="mb-5 break-inside-avoid 2xl:mb-5">
-            <MediaCard {...mediaCardPresets.image.card} maxWidth="100%" />
+            <MediaCard {...mediaCardPresets.image.data.card} maxWidth="100%" />
           </div>
 
           <div className="mb-5 break-inside-avoid 2xl:mb-5">
-            <MediaCard {...mediaCardPresets.video.card} maxWidth="100%" />
+            <MediaCard {...mediaCardPresets.video.data.card} maxWidth="100%" />
           </div>
 
           <div className="mb-5 break-inside-avoid 2xl:mb-5">
             <div className="w-full">
-              <DataTable layout="cards" {...presets.tasks} />
+              <DataTable layout="cards" {...dataTablePresets.tasks.data} />
             </div>
           </div>
 
           <div className="mb-5 break-inside-avoid 2xl:mb-5">
-            <MediaCard {...mediaCardPresets.link.card} maxWidth="100%" />
+            <MediaCard {...mediaCardPresets.link.data.card} maxWidth="100%" />
           </div>
 
           <div className="mb-5 break-inside-avoid 2xl:mb-5">
-            <MediaCard {...mediaCardPresets.audio.card} maxWidth="100%" />
+            <MediaCard {...mediaCardPresets.audio.data.card} maxWidth="100%" />
           </div>
 
           <div className="mb-5 break-inside-avoid 2xl:mb-5">
-            <OptionList {...optionListPresets.export.optionList} />
+            <OptionList {...optionListPresets.export.data} />
           </div>
 
           <div className="mb-5 break-inside-avoid 2xl:mb-5">
-            <Plan {...planPresets.comprehensive.plan} />
+            <Plan {...planPresets.comprehensive.data} />
           </div>
 
           <div className="mb-5 break-inside-avoid 2xl:mb-5">
-            <OptionList {...optionListPresets.travel.optionList} />
+            <OptionList {...optionListPresets.travel.data} />
           </div>
 
           <div className="mb-5 break-inside-avoid 2xl:mb-5">
-            <LinkedInPost post={linkedInPostPresets.basic.post} />
+            <LinkedInPost post={linkedInPostPresets.basic.data.post} />
           </div>
 
           <div className="mb-5 break-inside-avoid 2xl:mb-5">
-            <Terminal {...terminalPresets.success.terminal} />
+            <Terminal {...terminalPresets.success.data} />
           </div>
 
           <div className="mb-5 break-inside-avoid 2xl:mb-5">
-            <CodeBlock {...codeBlockPresets.typescript.codeBlock} />
+            <CodeBlock {...codeBlockPresets.typescript.data} />
           </div>
 
           <div className="mb-5 break-inside-avoid 2xl:mb-5">
-            <Chart id="gallery-chart" {...chartPresets.revenue} />
+            <Chart id="gallery-chart" {...chartPresets.revenue.data} />
           </div>
 
           <div className="mb-5 break-inside-avoid 2xl:mb-5">
