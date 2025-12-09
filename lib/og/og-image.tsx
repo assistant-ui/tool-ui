@@ -36,7 +36,7 @@ export async function generateOgImage(title: string, description?: string) {
         alignItems: "flex-start",
         justifyContent: "space-between",
         backgroundColor: ZINC_950,
-        padding: "60px",
+        padding: "85px",
       }}
     >
       <svg width="150" height="150" viewBox="0 0 24 24" fill="white">
