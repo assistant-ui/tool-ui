@@ -41,12 +41,7 @@ export function POIListInline({
 
   if (pois.length === 0) {
     return (
-      <div
-        className={cn(
-          "flex h-24 items-center justify-center",
-          className,
-        )}
-      >
+      <div className={cn("flex h-24 items-center justify-center", className)}>
         <p className="text-muted-foreground text-sm">No locations found</p>
       </div>
     );

@@ -195,10 +195,7 @@ function IsolatedThemeWrapper({
   return (
     <div
       data-theme={theme}
-      className={cn(
-        "bg-background text-foreground transition-colors",
-        className,
-      )}
+      className={cn("bg-card text-foreground transition-colors", className)}
       style={{ colorScheme: theme, ...themeVars, ...insetStyle }}
     >
       {children}
@@ -288,81 +285,55 @@ function InlineView() {
 
   if (isFixedWidth) {
     return (
-      <div className="relative h-full w-full">
-        <div
-          className={cn(
-            "bg-dot-grid bg-wash pointer-events-none absolute inset-0 z-0 opacity-60 dark:opacity-40",
-            isTransitioning && "opacity-0",
-          )}
-          aria-hidden="true"
-        />
-        <div className="scrollbar-subtle absolute inset-0 z-10 overflow-auto p-4">
-          <div className="flex min-h-full w-full items-start justify-center">
-            <MorphContainer
-              className="bg-background overflow-hidden rounded-xl"
-              style={{ width: previewWidth, height: maxHeight }}
-            >
-              <ComponentContent className="h-full" />
-            </MorphContainer>
-          </div>
-        </div>
+      <div className="scrollbar-subtle flex h-full w-full items-start justify-center overflow-auto p-4">
+        <MorphContainer
+          className="overflow-hidden rounded-xl"
+          style={{ width: previewWidth, height: maxHeight }}
+        >
+          <ComponentContent className="h-full" />
+        </MorphContainer>
       </div>
     );
   }
 
   return (
-    <div className="relative h-full w-full">
-      <div
-        className={cn(
-          "bg-dot-grid bg-wash pointer-events-none absolute inset-0 z-0 opacity-60 dark:opacity-40",
-          isTransitioning && "opacity-0",
-        )}
-        aria-hidden="true"
-      />
-      <div className="scrollbar-subtle absolute inset-0 z-10 overflow-auto p-4">
-        <div className="flex min-h-full w-full items-start justify-center">
-          <PanelGroup
-            ref={panelGroupRef}
-            direction="horizontal"
-            onLayout={handleLayout}
-            className="w-full"
+    <div className="scrollbar-subtle h-full w-full overflow-auto p-4">
+      <div className="flex min-h-full w-full items-start justify-center">
+        <PanelGroup
+          ref={panelGroupRef}
+          direction="horizontal"
+          onLayout={handleLayout}
+          className="w-full"
+        >
+          <Panel defaultSize={5} minSize={0} />
+
+          <PanelResizeHandle
+            className={cn("group relative w-4", isTransitioning && "opacity-0")}
           >
-            <Panel defaultSize={5} minSize={0} />
+            <div className="absolute top-1/2 left-1/2 h-12 w-1 -translate-x-1/2 -translate-y-1/2 rounded-full bg-gray-300 opacity-40 transition-all group-hover:bg-gray-400 group-hover:opacity-100 group-data-resize-handle-active:bg-gray-500 group-data-resize-handle-active:opacity-100 dark:bg-gray-600 dark:group-hover:bg-gray-500 dark:group-data-resize-handle-active:bg-gray-400" />
+          </PanelResizeHandle>
 
-            <PanelResizeHandle
-              className={cn(
-                "group relative w-4",
-                isTransitioning && "opacity-0",
-              )}
+          <Panel
+            defaultSize={90}
+            minSize={PREVIEW_MIN_SIZE}
+            maxSize={PREVIEW_MAX_SIZE}
+          >
+            <MorphContainer
+              className="overflow-hidden rounded-xl"
+              style={{ height: maxHeight }}
             >
-              <div className="absolute top-1/2 left-1/2 h-12 w-1 -translate-x-1/2 -translate-y-1/2 rounded-full bg-gray-300 opacity-40 transition-all group-hover:bg-gray-400 group-hover:opacity-100 group-data-resize-handle-active:bg-gray-500 group-data-resize-handle-active:opacity-100 dark:bg-gray-600 dark:group-hover:bg-gray-500 dark:group-data-resize-handle-active:bg-gray-400" />
-            </PanelResizeHandle>
+              <ComponentContent className="h-full" />
+            </MorphContainer>
+          </Panel>
 
-            <Panel
-              defaultSize={90}
-              minSize={PREVIEW_MIN_SIZE}
-              maxSize={PREVIEW_MAX_SIZE}
-            >
-              <MorphContainer
-                className="bg-background overflow-hidden rounded-xl"
-                style={{ height: maxHeight }}
-              >
-                <ComponentContent className="h-full" />
-              </MorphContainer>
-            </Panel>
+          <PanelResizeHandle
+            className={cn("group relative w-4", isTransitioning && "opacity-0")}
+          >
+            <div className="absolute top-1/2 left-1/2 h-12 w-1 -translate-x-1/2 -translate-y-1/2 rounded-full bg-gray-300 opacity-40 transition-all group-hover:bg-gray-400 group-hover:opacity-100 group-data-resize-handle-active:bg-gray-500 group-data-resize-handle-active:opacity-100 dark:bg-gray-600 dark:group-hover:bg-gray-500 dark:group-data-resize-handle-active:bg-gray-400" />
+          </PanelResizeHandle>
 
-            <PanelResizeHandle
-              className={cn(
-                "group relative w-4",
-                isTransitioning && "opacity-0",
-              )}
-            >
-              <div className="absolute top-1/2 left-1/2 h-12 w-1 -translate-x-1/2 -translate-y-1/2 rounded-full bg-gray-300 opacity-40 transition-all group-hover:bg-gray-400 group-hover:opacity-100 group-data-resize-handle-active:bg-gray-500 group-data-resize-handle-active:opacity-100 dark:bg-gray-600 dark:group-hover:bg-gray-500 dark:group-data-resize-handle-active:bg-gray-400" />
-            </PanelResizeHandle>
-
-            <Panel defaultSize={5} minSize={0} />
-          </PanelGroup>
-        </div>
+          <Panel defaultSize={5} minSize={0} />
+        </PanelGroup>
       </div>
     </div>
   );
@@ -388,7 +359,7 @@ function PipView({ onClose }: { onClose: () => void }) {
 
 function FullscreenView() {
   return (
-    <MorphContainer className="bg-background absolute inset-0 overflow-hidden">
+    <MorphContainer className="absolute inset-0 overflow-hidden">
       <ComponentContent className="h-full p-4" />
     </MorphContainer>
   );
@@ -491,10 +462,7 @@ export function UnifiedWorkspace() {
   };
 
   return (
-    <PanelGroup
-      direction="horizontal"
-      className="flex h-full w-full flex-row bg-neutral-100 dark:bg-neutral-950"
-    >
+    <PanelGroup direction="horizontal" className="flex h-full w-full flex-row">
       <Panel defaultSize={40} minSize={20} maxSize={80}>
         <div className="relative flex h-full flex-col bg-transparent">
           <div className="scrollbar-subtle h-full overflow-y-auto">
@@ -566,7 +534,7 @@ export function UnifiedWorkspace() {
       </PanelResizeHandle>
 
       <Panel defaultSize={60} minSize={20}>
-        <div className="relative flex h-full flex-col overflow-hidden">
+        <div className="relative flex h-full flex-col overflow-hidden bg-neutral-100 dark:bg-neutral-900">
           {displayMode === "inline" && <InlineView />}
           {displayMode === "pip" && <PipView onClose={handleClose} />}
           {displayMode === "fullscreen" && <FullscreenView />}

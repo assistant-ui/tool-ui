@@ -92,7 +92,9 @@ export function POIMap({
   );
 
   const handleToggleFullscreen = useCallback(() => {
-    onRequestDisplayMode(displayMode === "fullscreen" ? "inline" : "fullscreen");
+    onRequestDisplayMode(
+      displayMode === "fullscreen" ? "inline" : "fullscreen",
+    );
   }, [displayMode, onRequestDisplayMode]);
 
   const handleFilterCategory = useCallback(
@@ -115,10 +117,7 @@ export function POIMap({
 
   if (isFullscreen) {
     return (
-      <div
-        id={id}
-        className={cn("flex h-full w-full gap-3", className)}
-      >
+      <div id={id} className={cn("flex h-full w-full gap-3", className)}>
         <div className="flex w-72 shrink-0 flex-col py-3 pl-3">
           <div className="mb-4">
             <div className="flex items-center justify-between">
@@ -130,10 +129,7 @@ export function POIMap({
                   <Button
                     variant="ghost"
                     size="icon"
-                    className={cn(
-                      "size-7",
-                      categoryFilter && "text-primary",
-                    )}
+                    className={cn("size-7", categoryFilter && "text-primary")}
                   >
                     <Filter className="size-4" />
                   </Button>
@@ -149,8 +145,12 @@ export function POIMap({
                       key={category}
                       onClick={() => handleFilterCategory(category)}
                     >
-                      <span className="flex-1">{CATEGORY_LABELS[category]}</span>
-                      {categoryFilter === category && <Check className="size-4" />}
+                      <span className="flex-1">
+                        {CATEGORY_LABELS[category]}
+                      </span>
+                      {categoryFilter === category && (
+                        <Check className="size-4" />
+                      )}
                     </DropdownMenuItem>
                   ))}
                 </DropdownMenuContent>
@@ -197,7 +197,9 @@ export function POIMap({
                     <RefreshCw className="size-4" />
                   </Button>
                 </TooltipTrigger>
-                <TooltipContent className="z-[1001]">Refresh locations</TooltipContent>
+                <TooltipContent className="z-[1001]">
+                  Refresh locations
+                </TooltipContent>
               </Tooltip>
             )}
             <Tooltip>
@@ -211,7 +213,9 @@ export function POIMap({
                   <Minimize2 className="size-4" />
                 </Button>
               </TooltipTrigger>
-              <TooltipContent className="z-[1001]">Exit fullscreen</TooltipContent>
+              <TooltipContent className="z-[1001]">
+                Exit fullscreen
+              </TooltipContent>
             </Tooltip>
           </div>
         </div>
@@ -222,7 +226,10 @@ export function POIMap({
   return (
     <div
       id={id}
-      className={cn("border-border relative h-full w-full overflow-hidden rounded-xl border", className)}
+      className={cn(
+        "border-border relative h-full w-full overflow-hidden rounded-xl border",
+        className,
+      )}
     >
       <MapView
         pois={filteredPois}
@@ -249,7 +256,9 @@ export function POIMap({
                 <RefreshCw className="size-4" />
               </Button>
             </TooltipTrigger>
-            <TooltipContent className="z-[1001]">Refresh locations</TooltipContent>
+            <TooltipContent className="z-[1001]">
+              Refresh locations
+            </TooltipContent>
           </Tooltip>
         )}
         <Tooltip>
