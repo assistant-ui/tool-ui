@@ -62,7 +62,7 @@ export function DocsNav() {
         collapsed ? "w-16" : "w-full",
       )}
     >
-      <nav className="flex flex-1 flex-col py-4">
+      <nav className="flex flex-1 flex-col py-4 pb-24">
         {/* Gallery Link */}
         <div className="mb-4 flex flex-col gap-2 px-4">
           <Link
