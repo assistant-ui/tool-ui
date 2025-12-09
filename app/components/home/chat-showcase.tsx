@@ -394,7 +394,7 @@ function createSceneConfigs(): SceneConfig[] {
     },
     {
       userMessage: "Help me deploy this to production",
-      preamble: "Here's the deployment plan:",
+      preamble: "Here's the plan. I'll get started now.",
       toolUI: <AnimatedPlan className="w-full max-w-[480px]" />,
       toolFallbackHeight: 280,
     },
@@ -432,7 +432,7 @@ function createSceneConfigs(): SceneConfig[] {
         <CodeBlock
           id="chat-showcase-code-block"
           {...CODE_BLOCK_DATA}
-          className="w-full max-w-[560px]"
+          className="w-full"
         />
       ),
       toolFallbackHeight: 260,

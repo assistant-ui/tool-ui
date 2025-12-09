@@ -2,7 +2,6 @@ import type { Column } from "@/components/tool-ui/data-table";
 import type { SerializableMediaCard } from "@/components/tool-ui/media-card";
 import type { SerializableChart } from "@/components/tool-ui/chart";
 import type { XPostData } from "@/components/tool-ui/x-post";
-import type { PlanTodo } from "@/components/tool-ui/plan";
 import type { OptionListOption } from "@/components/tool-ui/option-list";
 import type { SerializableTerminal } from "@/components/tool-ui/terminal";
 import type { SerializableCodeBlock } from "@/components/tool-ui/code-block";
