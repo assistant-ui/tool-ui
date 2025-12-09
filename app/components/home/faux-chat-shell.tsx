@@ -29,7 +29,7 @@ export function FauxChatShell({ className }: FauxChatShellProps) {
   return (
     <div
       className={cn(
-        "bg-background/60 flex h-full w-full flex-col overflow-hidden rounded-2xl backdrop-blur-md dark:bg-neutral-900",
+        "bg-background/60 flex h-full w-full flex-col overflow-hidden rounded-2xl backdrop-blur-md dark:bg-neutral-900/50",
         className,
       )}
       style={{

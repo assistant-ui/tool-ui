@@ -145,22 +145,6 @@ function useSceneTimeline({
   );
 }
 
-function TypingCaret({ visible }: { visible: boolean }) {
-  return (
-    <motion.span
-      aria-hidden="true"
-      initial={{ opacity: 0 }}
-      animate={visible ? { opacity: [0, 1, 0] } : { opacity: 0 }}
-      transition={{
-        duration: 1.1,
-        ease: "easeInOut",
-        repeat: visible ? Infinity : 0,
-      }}
-      className="-mb-[2px] ml-1 inline-block h-[1em] w-[2px] bg-current/80"
-    />
-  );
-}
-
 function ToolReveal({ children }: { children: React.ReactNode }) {
   return (
     <motion.div
@@ -206,52 +190,192 @@ function ChatBubble({ role, children, className }: ChatBubbleProps) {
 
 type PreambleBubbleProps = {
   text: string;
-  speedMsPerChar?: number;
+  msPerChar?: number;
   reducedMotion?: boolean;
   onComplete?: () => void;
 };
 
+function StreamingChar({ char, delay }: { char: string; delay: number }) {
+  return (
+    <motion.span
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{
+        duration: 0.4,
+        delay,
+        ease: [0.25, 0.1, 0.25, 1],
+      }}
+    >
+      {char}
+    </motion.span>
+  );
+}
+
+type IndicatorPhase = "thinking" | "streaming" | "complete";
+
+function AssistantIndicator({
+  phase,
+  targetX,
+}: {
+  phase: IndicatorPhase;
+  targetX: number;
+}) {
+  const isThinking = phase === "thinking";
+  const isComplete = phase === "complete";
+
+  return (
+    <motion.span
+      aria-hidden="true"
+      className="absolute top-1/2 inline-flex items-center"
+      initial={{ x: 0, y: "-50%", opacity: 0, scale: 0.5 }}
+      animate={{
+        x: targetX,
+        y: "-50%",
+        opacity: isComplete ? 0 : 1,
+        scale: isComplete ? 0.5 : 1,
+      }}
+      transition={{
+        x: {
+          type: "spring",
+          damping: 30,
+          stiffness: 200,
+          mass: 0.5,
+        },
+        opacity: isComplete
+          ? { duration: 0.2, ease: [0.4, 0, 1, 1] }
+          : { duration: 0.3, ease: "easeOut" },
+        scale: isComplete
+          ? { duration: 0.2, ease: [0.4, 0, 1, 1] }
+          : { duration: 0.3, ease: "easeOut" },
+      }}
+    >
+      <motion.span
+        className="inline-block size-[0.5em] rounded-full bg-current"
+        animate={
+          isThinking
+            ? { opacity: [0.4, 1, 0.4], scale: [0.85, 1, 0.85] }
+            : { opacity: 0.7, scale: 1 }
+        }
+        transition={
+          isThinking
+            ? { duration: 1.2, ease: "easeInOut", repeat: Infinity }
+            : { duration: 0.2 }
+        }
+      />
+    </motion.span>
+  );
+}
+
 function PreambleBubble({
   text,
-  speedMsPerChar = 38,
+  msPerChar = 28,
   reducedMotion,
   onComplete,
 }: PreambleBubbleProps) {
-  const [charCount, setCharCount] = useState(reducedMotion ? text.length : 0);
   const [isVisible, setIsVisible] = useState(reducedMotion);
-  const isTypingComplete = charCount >= text.length;
+  const [indicatorPhase, setIndicatorPhase] =
+    useState<IndicatorPhase>("thinking");
+  const [textWidth, setTextWidth] = useState(0);
+  const textMeasureRef = useRef<HTMLSpanElement>(null);
+  const hasCalledComplete = useRef(false);
 
   useEffect(() => {
     if (reducedMotion) return;
 
-    const timeoutId = window.setTimeout(() => setIsVisible(true), 100);
+    const timeoutId = window.setTimeout(() => setIsVisible(true), 50);
     return () => window.clearTimeout(timeoutId);
   }, [reducedMotion]);
 
   useEffect(() => {
-    if (reducedMotion) {
-      onComplete?.();
+    if (reducedMotion || !isVisible) return;
+
+    const thinkingDuration = 800;
+    const timeoutId = window.setTimeout(() => {
+      setIndicatorPhase("streaming");
+    }, thinkingDuration);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [reducedMotion, isVisible]);
+
+  useEffect(() => {
+    if (
+      reducedMotion ||
+      indicatorPhase !== "streaming" ||
+      !textMeasureRef.current
+    )
       return;
-    }
-    if (!isVisible) return;
 
-    let currentIndex = 0;
-    const timers: number[] = [];
-
-    const tick = () => {
-      currentIndex += 1;
-      setCharCount((count) => Math.min(count + 1, text.length));
-
-      if (currentIndex < text.length) {
-        timers.push(window.setTimeout(tick, speedMsPerChar));
-      } else {
-        onComplete?.();
+    const measureText = () => {
+      if (textMeasureRef.current) {
+        setTextWidth(textMeasureRef.current.offsetWidth);
       }
     };
 
-    timers.push(window.setTimeout(tick, speedMsPerChar));
-    return () => timers.forEach((timer) => window.clearTimeout(timer));
-  }, [reducedMotion, speedMsPerChar, text.length, onComplete, isVisible]);
+    measureText();
+    const intervalId = window.setInterval(measureText, 16);
+
+    const streamingDuration = text.length * msPerChar + 500;
+    const timeoutId = window.setTimeout(() => {
+      window.clearInterval(intervalId);
+      measureText();
+    }, streamingDuration);
+
+    return () => {
+      window.clearInterval(intervalId);
+      window.clearTimeout(timeoutId);
+    };
+  }, [reducedMotion, indicatorPhase, text.length, msPerChar]);
+
+  useEffect(() => {
+    if (hasCalledComplete.current) return;
+
+    if (reducedMotion) {
+      hasCalledComplete.current = true;
+      onComplete?.();
+      return;
+    }
+
+    if (!isVisible || indicatorPhase !== "streaming") return;
+
+    const streamingDuration = text.length * msPerChar + 400;
+    const timeoutId = window.setTimeout(() => {
+      setIndicatorPhase("complete");
+
+      window.setTimeout(() => {
+        if (!hasCalledComplete.current) {
+          hasCalledComplete.current = true;
+          onComplete?.();
+        }
+      }, 250);
+    }, streamingDuration);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [
+    reducedMotion,
+    msPerChar,
+    text.length,
+    onComplete,
+    isVisible,
+    indicatorPhase,
+  ]);
+
+  const characters = useMemo(() => {
+    return text.split("").map((char, index) => ({
+      char,
+      delay: index * (msPerChar / 1000),
+    }));
+  }, [text, msPerChar]);
+
+  if (reducedMotion) {
+    return (
+      <ChatBubble role="assistant">
+        <span>{text}</span>
+      </ChatBubble>
+    );
+  }
+
+  const isStreaming = indicatorPhase === "streaming";
+  const indicatorOffset = textWidth + 4;
 
   return (
     <motion.div
@@ -260,9 +384,24 @@ function PreambleBubble({
       transition={SPRINGS.smooth}
     >
       <ChatBubble role="assistant">
-        <span>
-          {text.slice(0, charCount)}
-          {!reducedMotion && <TypingCaret visible={!isTypingComplete} />}
+        <span className="relative inline-block">
+          <span
+            ref={textMeasureRef}
+            className="inline"
+            aria-hidden={!isStreaming && indicatorPhase !== "complete"}
+          >
+            {isStreaming &&
+              characters.map(({ char, delay }, index) => (
+                <StreamingChar key={index} char={char} delay={delay} />
+              ))}
+            {indicatorPhase === "complete" && text}
+          </span>
+          {isVisible && (
+            <AssistantIndicator
+              phase={indicatorPhase}
+              targetX={indicatorOffset}
+            />
+          )}
         </span>
       </ChatBubble>
     </motion.div>
