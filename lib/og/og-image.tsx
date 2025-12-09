@@ -61,7 +61,7 @@ export async function generateOgImage(title: string, description?: string) {
             fontFamily: "Geist Bold",
             fontWeight: 700,
             color: "white",
-            marginBottom: "0",
+            marginBottom: "12px",
             letterSpacing: "-0.02em",
           }}
         >
