@@ -31,8 +31,8 @@ const TIMING = {
   sceneHold: 4500,
   exitStagger: {
     user: 0,
-    preamble: 120,
-    tool: 180,
+    preamble: 80,
+    tool: 160,
   },
   reducedMotion: {
     duration: 250,
@@ -148,12 +148,27 @@ function useSceneTimeline({
 function ToolReveal({ children }: { children: React.ReactNode }) {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 30, scale: 0.94, filter: "blur(10px)" }}
-      animate={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
+      initial={{ opacity: 0, y: 30, filter: "blur(10px)" }}
+      animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
       transition={SPRINGS.gentle}
     >
       {children}
     </motion.div>
+  );
+}
+
+function TypingIndicator() {
+  return (
+    <motion.span
+      className="bg-foreground/50 block size-4 rounded-full"
+      animate={{ opacity: [0.4, 1, 0.4] }}
+      transition={{
+        duration: 1.4,
+        repeat: Infinity,
+        ease: "easeInOut",
+      }}
+      aria-label="Assistant is typing"
+    />
   );
 }
 
@@ -211,61 +226,6 @@ function StreamingChar({ char, delay }: { char: string; delay: number }) {
   );
 }
 
-type IndicatorPhase = "thinking" | "streaming" | "complete";
-
-function AssistantIndicator({
-  phase,
-  targetX,
-}: {
-  phase: IndicatorPhase;
-  targetX: number;
-}) {
-  const isThinking = phase === "thinking";
-  const isComplete = phase === "complete";
-
-  return (
-    <motion.span
-      aria-hidden="true"
-      className="absolute top-1/2 inline-flex items-center"
-      initial={{ x: 0, y: "-50%", opacity: 0, scale: 0.5 }}
-      animate={{
-        x: targetX,
-        y: "-50%",
-        opacity: isComplete ? 0 : 1,
-        scale: isComplete ? 0.5 : 1,
-      }}
-      transition={{
-        x: {
-          type: "spring",
-          damping: 30,
-          stiffness: 200,
-          mass: 0.5,
-        },
-        opacity: isComplete
-          ? { duration: 0.2, ease: [0.4, 0, 1, 1] }
-          : { duration: 0.3, ease: "easeOut" },
-        scale: isComplete
-          ? { duration: 0.2, ease: [0.4, 0, 1, 1] }
-          : { duration: 0.3, ease: "easeOut" },
-      }}
-    >
-      <motion.span
-        className="inline-block size-[0.5em] rounded-full bg-current"
-        animate={
-          isThinking
-            ? { opacity: [0.4, 1, 0.4], scale: [0.85, 1, 0.85] }
-            : { opacity: 0.7, scale: 1 }
-        }
-        transition={
-          isThinking
-            ? { duration: 1.2, ease: "easeInOut", repeat: Infinity }
-            : { duration: 0.2 }
-        }
-      />
-    </motion.span>
-  );
-}
-
 function PreambleBubble({
   text,
   msPerChar = 28,
@@ -273,58 +233,14 @@ function PreambleBubble({
   onComplete,
 }: PreambleBubbleProps) {
   const [isVisible, setIsVisible] = useState(reducedMotion);
-  const [indicatorPhase, setIndicatorPhase] =
-    useState<IndicatorPhase>("thinking");
-  const [textWidth, setTextWidth] = useState(0);
-  const textMeasureRef = useRef<HTMLSpanElement>(null);
   const hasCalledComplete = useRef(false);
 
   useEffect(() => {
     if (reducedMotion) return;
 
-    const timeoutId = window.setTimeout(() => setIsVisible(true), 50);
+    const timeoutId = window.setTimeout(() => setIsVisible(true), 100);
     return () => window.clearTimeout(timeoutId);
   }, [reducedMotion]);
-
-  useEffect(() => {
-    if (reducedMotion || !isVisible) return;
-
-    const thinkingDuration = 800;
-    const timeoutId = window.setTimeout(() => {
-      setIndicatorPhase("streaming");
-    }, thinkingDuration);
-
-    return () => window.clearTimeout(timeoutId);
-  }, [reducedMotion, isVisible]);
-
-  useEffect(() => {
-    if (
-      reducedMotion ||
-      indicatorPhase !== "streaming" ||
-      !textMeasureRef.current
-    )
-      return;
-
-    const measureText = () => {
-      if (textMeasureRef.current) {
-        setTextWidth(textMeasureRef.current.offsetWidth);
-      }
-    };
-
-    measureText();
-    const intervalId = window.setInterval(measureText, 16);
-
-    const streamingDuration = text.length * msPerChar + 500;
-    const timeoutId = window.setTimeout(() => {
-      window.clearInterval(intervalId);
-      measureText();
-    }, streamingDuration);
-
-    return () => {
-      window.clearInterval(intervalId);
-      window.clearTimeout(timeoutId);
-    };
-  }, [reducedMotion, indicatorPhase, text.length, msPerChar]);
 
   useEffect(() => {
     if (hasCalledComplete.current) return;
@@ -335,29 +251,18 @@ function PreambleBubble({
       return;
     }
 
-    if (!isVisible || indicatorPhase !== "streaming") return;
+    if (!isVisible) return;
 
-    const streamingDuration = text.length * msPerChar + 400;
+    const totalDuration = text.length * msPerChar + 400;
     const timeoutId = window.setTimeout(() => {
-      setIndicatorPhase("complete");
-
-      window.setTimeout(() => {
-        if (!hasCalledComplete.current) {
-          hasCalledComplete.current = true;
-          onComplete?.();
-        }
-      }, 250);
-    }, streamingDuration);
+      if (!hasCalledComplete.current) {
+        hasCalledComplete.current = true;
+        onComplete?.();
+      }
+    }, totalDuration);
 
     return () => window.clearTimeout(timeoutId);
-  }, [
-    reducedMotion,
-    msPerChar,
-    text.length,
-    onComplete,
-    isVisible,
-    indicatorPhase,
-  ]);
+  }, [reducedMotion, msPerChar, text.length, onComplete, isVisible]);
 
   const characters = useMemo(() => {
     return text.split("").map((char, index) => ({
@@ -374,9 +279,6 @@ function PreambleBubble({
     );
   }
 
-  const isStreaming = indicatorPhase === "streaming";
-  const indicatorOffset = textWidth + 4;
-
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -384,24 +286,11 @@ function PreambleBubble({
       transition={SPRINGS.smooth}
     >
       <ChatBubble role="assistant">
-        <span className="relative inline-block">
-          <span
-            ref={textMeasureRef}
-            className="inline"
-            aria-hidden={!isStreaming && indicatorPhase !== "complete"}
-          >
-            {isStreaming &&
-              characters.map(({ char, delay }, index) => (
-                <StreamingChar key={index} char={char} delay={delay} />
-              ))}
-            {indicatorPhase === "complete" && text}
-          </span>
-          {isVisible && (
-            <AssistantIndicator
-              phase={indicatorPhase}
-              targetX={indicatorOffset}
-            />
-          )}
+        <span>
+          {isVisible &&
+            characters.map(({ char, delay }, index) => (
+              <StreamingChar key={index} char={char} delay={delay} />
+            ))}
         </span>
       </ChatBubble>
     </motion.div>
@@ -516,17 +405,15 @@ function AnimatedScene({
           {shouldRenderItems && config.userMessage && (
             <motion.div
               key={`${sceneId}-user`}
-              initial={{ opacity: 0, y: 16, scale: 0.97 }}
+              initial={{ opacity: 0, y: 16 }}
               animate={{
                 opacity: 1,
                 y: 0,
-                scale: 1,
                 transition: createEntryTransition(80),
               }}
               exit={{
                 opacity: 0,
                 y: -8,
-                scale: 0.97,
                 transition: createExitTransition(TIMING.exitStagger.user),
               }}
               className="mb-11"
@@ -537,25 +424,53 @@ function AnimatedScene({
             </motion.div>
           )}
 
-          {shouldRenderItems && timeline.preambleReady && config.preamble && (
+          {shouldRenderItems && config.preamble && (
             <motion.div
-              key={`${sceneId}-preamble`}
+              key={`${sceneId}-preamble-area`}
+              className="relative mb-3"
               initial={{ opacity: 0 }}
-              animate={{
-                opacity: 1,
-                transition: createEntryTransition(TIMING.beats.beforeContent),
-              }}
+              animate={{ opacity: 1 }}
               exit={{
                 opacity: 0,
+                y: -8,
                 transition: createExitTransition(TIMING.exitStagger.preamble),
               }}
-              className="mb-3"
             >
-              <PreambleBubble
-                text={config.preamble}
-                reducedMotion={reducedMotion}
-                onComplete={handlePreambleComplete}
-              />
+              <AnimatePresence>
+                {config.userMessage &&
+                  !timeline.preambleReady &&
+                  !reducedMotion && (
+                    <motion.div
+                      key={`${sceneId}-indicator`}
+                      className="absolute top-1.5 left-0"
+                      initial={{ opacity: 0, scale: 0.5 }}
+                      animate={{
+                        opacity: 1,
+                        scale: 1,
+                        transition: {
+                          ...SPRINGS.smooth,
+                          delay: TIMING.durations.userIn / 1000,
+                        },
+                      }}
+                      exit={{
+                        opacity: 0,
+                        transition: { duration: 0.15, ease: "easeOut" },
+                      }}
+                    >
+                      <TypingIndicator />
+                    </motion.div>
+                  )}
+              </AnimatePresence>
+
+              {timeline.preambleReady && (
+                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+                  <PreambleBubble
+                    text={config.preamble}
+                    reducedMotion={reducedMotion}
+                    onComplete={handlePreambleComplete}
+                  />
+                </motion.div>
+              )}
             </motion.div>
           )}
 
@@ -564,11 +479,10 @@ function AnimatedScene({
             shouldShowToolContent && (
               <motion.div
                 key={`${sceneId}-tool`}
-                initial={{ opacity: 0, y: 16, scale: 0.97 }}
+                initial={{ opacity: 0, y: 16 }}
                 animate={{
                   opacity: 1,
                   y: 0,
-                  scale: 1,
                   transition: createEntryTransition(
                     config.preamble
                       ? TIMING.beats.afterPreamble
@@ -578,7 +492,6 @@ function AnimatedScene({
                 exit={{
                   opacity: 0,
                   y: -8,
-                  scale: 0.97,
                   transition: createExitTransition(TIMING.exitStagger.tool),
                 }}
                 className={config.userMessage ? "" : "mb-11"}
