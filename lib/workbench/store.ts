@@ -38,9 +38,12 @@ interface WorkbenchState {
   consoleLogs: ConsoleEntry[];
   collapsedSections: Record<string, boolean>;
   activeJsonTab: ActiveJsonTab;
+  isTransitioning: boolean;
+  transitionFrom: DisplayMode | null;
 
   setSelectedComponent: (id: string) => void;
   setDisplayMode: (mode: DisplayMode) => void;
+  setTransitioning: (transitioning: boolean) => void;
   setTheme: (theme: Theme) => void;
   setLocale: (locale: string) => void;
   setDeviceType: (type: DeviceType) => void;
@@ -111,6 +114,8 @@ export const useWorkbenchStore = create<WorkbenchState>((set, get) => ({
   consoleLogs: [],
   collapsedSections: {},
   activeJsonTab: "toolInput",
+  isTransitioning: false,
+  transitionFrom: null,
   setSelectedComponent: (id) =>
     set(() => {
       const entry = workbenchComponents.find((comp) => comp.id === id) ?? null;
@@ -125,6 +130,11 @@ export const useWorkbenchStore = create<WorkbenchState>((set, get) => ({
       };
     }),
   setDisplayMode: (mode) => set(() => ({ displayMode: mode })),
+  setTransitioning: (transitioning) =>
+    set((state) => ({
+      isTransitioning: transitioning,
+      transitionFrom: transitioning ? state.displayMode : null,
+    })),
   setTheme: (theme) => set(() => ({ theme })),
   setLocale: (locale) => set(() => ({ locale })),
   setDeviceType: (type) => set(() => ({ deviceType: type })),
@@ -171,6 +181,10 @@ export const useWorkbenchStore = create<WorkbenchState>((set, get) => ({
 export const useSelectedComponent = () =>
   useWorkbenchStore((s) => s.selectedComponent);
 export const useDisplayMode = () => useWorkbenchStore((s) => s.displayMode);
+export const useIsTransitioning = () =>
+  useWorkbenchStore((s) => s.isTransitioning);
+export const useTransitionFrom = () =>
+  useWorkbenchStore((s) => s.transitionFrom);
 export const useWorkbenchTheme = () => useWorkbenchStore((s) => s.theme);
 export const useDeviceType = () => useWorkbenchStore((s) => s.deviceType);
 export const useConsoleLogs = () => useWorkbenchStore((s) => s.consoleLogs);

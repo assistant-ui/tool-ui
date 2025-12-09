@@ -12,6 +12,7 @@ import {
   useWorkbenchStore,
   useActiveJsonTab,
   useDisplayMode,
+  useIsTransitioning,
   useSelectedComponent,
   useToolInput,
   useOpenAIGlobals,
@@ -27,6 +28,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/ui/cn";
 import { RotateCcw, X, AlertTriangle, Globe } from "lucide-react";
 import { TAB_LIST_CLASSES, TAB_TRIGGER_CLASSES } from "./styles";
+import { VIEW_TRANSITION_NAME } from "@/lib/workbench/transition-config";
 
 interface ErrorBoundaryProps {
   children: ReactNode;
@@ -220,6 +222,30 @@ function ComponentContent({ className }: { className?: string }) {
   );
 }
 
+function MorphContainer({
+  children,
+  className,
+  style,
+}: {
+  children: ReactNode;
+  className?: string;
+  style?: React.CSSProperties;
+}) {
+  const isTransitioning = useIsTransitioning();
+
+  return (
+    <div
+      className={className}
+      style={{
+        ...style,
+        viewTransitionName: isTransitioning ? VIEW_TRANSITION_NAME : undefined,
+      }}
+    >
+      {children}
+    </div>
+  );
+}
+
 const PREVIEW_MIN_SIZE = 30;
 const PREVIEW_MAX_SIZE = 100;
 
@@ -268,12 +294,12 @@ function InlineView() {
         />
         <div className="scrollbar-subtle absolute inset-0 z-10 overflow-auto p-4">
           <div className="flex min-h-full w-full items-start justify-center">
-            <div
+            <MorphContainer
               className="bg-background border-border overflow-hidden rounded-xl border-2 border-dashed"
               style={{ width: previewWidth, height: maxHeight }}
             >
               <ComponentContent className="h-full" />
-            </div>
+            </MorphContainer>
           </div>
         </div>
       </div>
@@ -305,12 +331,12 @@ function InlineView() {
               minSize={PREVIEW_MIN_SIZE}
               maxSize={PREVIEW_MAX_SIZE}
             >
-              <div
+              <MorphContainer
                 className="bg-background border-border overflow-hidden rounded-xl border-2 border-dashed"
                 style={{ height: maxHeight }}
               >
                 <ComponentContent className="h-full" />
-              </div>
+              </MorphContainer>
             </Panel>
 
             <PanelResizeHandle className="group relative w-4">
@@ -345,9 +371,9 @@ function PipView({ onClose }: { onClose: () => void }) {
 
 function FullscreenView() {
   return (
-    <div className="absolute inset-0 overflow-hidden">
+    <MorphContainer className="absolute inset-0 overflow-hidden">
       <ComponentContent className="h-full p-4" />
-    </div>
+    </MorphContainer>
   );
 }
 
@@ -526,9 +552,7 @@ export function UnifiedWorkspace() {
         <div className="relative flex h-full flex-col overflow-hidden">
           {displayMode === "inline" && <InlineView />}
           {displayMode === "pip" && <PipView onClose={handleClose} />}
-          {displayMode === "fullscreen" && (
-            <FullscreenView />
-          )}
+          {displayMode === "fullscreen" && <FullscreenView />}
         </div>
       </Panel>
     </PanelGroup>

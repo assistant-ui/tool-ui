@@ -360,4 +360,58 @@
   .dark::view-transition-new(root) {
     z-index: 1;
   }
+
+  /*
+    Workbench app container morph transition
+    Used when transitioning between inline and fullscreen display modes
+
+    The old layer stays fully opaque while the new layer fades in on top,
+    then the old layer fades out at the end. This prevents the background
+    from showing through during the crossfade.
+  */
+  ::view-transition-old(workbench-app-container),
+  ::view-transition-new(workbench-app-container) {
+    animation-duration: 350ms;
+    animation-timing-function: cubic-bezier(0.32, 0.72, 0, 1);
+    mix-blend-mode: normal;
+  }
+
+  ::view-transition-old(workbench-app-container) {
+    animation: workbench-morph-out 350ms cubic-bezier(0.32, 0.72, 0, 1) forwards;
+  }
+
+  ::view-transition-new(workbench-app-container) {
+    animation: workbench-morph-in 350ms cubic-bezier(0.32, 0.72, 0, 1) forwards;
+  }
+
+  @keyframes workbench-morph-out {
+    0% {
+      opacity: 1;
+    }
+    70% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+    }
+  }
+
+  @keyframes workbench-morph-in {
+    0% {
+      opacity: 0;
+    }
+    50% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    ::view-transition-old(workbench-app-container),
+    ::view-transition-new(workbench-app-container) {
+      animation-duration: 0ms;
+    }
+  }
 }

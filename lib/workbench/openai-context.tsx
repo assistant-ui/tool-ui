@@ -9,6 +9,8 @@ import {
 } from "react";
 import { useWorkbenchStore } from "./store";
 import { handleMockToolCall } from "./mock-responses";
+import { MORPH_TIMING } from "./transition-config";
+import { useReducedMotion } from "@/hooks/use-reduced-motion";
 import type {
   OpenAIGlobals,
   OpenAIAPI,
@@ -28,6 +30,7 @@ interface OpenAIProviderProps {
 export function OpenAIProvider({ children }: OpenAIProviderProps) {
   const store = useWorkbenchStore();
   const globals = store.getOpenAIGlobals();
+  const reducedMotion = useReducedMotion();
 
   const callTool = useCallback(
     async (
@@ -74,15 +77,47 @@ export function OpenAIProvider({ children }: OpenAIProviderProps) {
 
   const requestDisplayMode = useCallback(
     async (args: { mode: DisplayMode }): Promise<{ mode: DisplayMode }> => {
+      const currentMode = store.displayMode;
+
       store.addConsoleEntry({
         type: "requestDisplayMode",
         method: `requestDisplayMode("${args.mode}")`,
         args,
       });
-      store.setDisplayMode(args.mode);
+
+      if (currentMode === args.mode) {
+        return { mode: args.mode };
+      }
+
+      if (store.isTransitioning) {
+        return { mode: args.mode };
+      }
+
+      if (
+        reducedMotion ||
+        typeof document === "undefined" ||
+        !("startViewTransition" in document)
+      ) {
+        store.setDisplayMode(args.mode);
+        return { mode: args.mode };
+      }
+
+      store.setTransitioning(true);
+      (
+        document as Document & {
+          startViewTransition: (callback: () => void) => void;
+        }
+      ).startViewTransition(() => {
+        store.setDisplayMode(args.mode);
+      });
+
+      setTimeout(() => {
+        store.setTransitioning(false);
+      }, MORPH_TIMING.viewTransitionDuration);
+
       return { mode: args.mode };
     },
-    [store],
+    [store, reducedMotion],
   );
 
   const sendFollowUpMessage = useCallback(
