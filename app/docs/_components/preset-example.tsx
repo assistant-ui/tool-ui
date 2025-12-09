@@ -279,10 +279,6 @@ function generatePlanCode(config: PlanConfig): string {
     props.push(`  maxVisibleTodos={${plan.maxVisibleTodos}}`);
   }
 
-  if (plan.updatedAt) {
-    props.push(`  updatedAt="${plan.updatedAt}"`);
-  }
-
   return `<Plan\n${props.join("\n")}\n/>`;
 }
 

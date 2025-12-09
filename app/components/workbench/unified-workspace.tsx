@@ -1,8 +1,13 @@
 "use client";
 
-import { useMemo, Component, type ReactNode } from "react";
+import { useMemo, useCallback, useRef, Component, type ReactNode } from "react";
 import { useShallow } from "zustand/react/shallow";
-import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
+import {
+  Panel,
+  PanelGroup,
+  PanelResizeHandle,
+  type ImperativePanelGroupHandle,
+} from "react-resizable-panels";
 import {
   useWorkbenchStore,
   useActiveJsonTab,
@@ -10,8 +15,10 @@ import {
   useSelectedComponent,
   useToolInput,
   useOpenAIGlobals,
+  useDeviceType,
   type ActiveJsonTab,
 } from "@/lib/workbench/store";
+import { DEVICE_PRESETS } from "@/lib/workbench/types";
 import { getComponent } from "@/lib/workbench/component-registry";
 import { OpenAIProvider } from "@/lib/workbench/openai-context";
 import { JsonEditor, ReadOnlyJsonView } from "./json-editor";
@@ -142,7 +149,7 @@ function ComponentRenderer() {
 }
 
 const LIGHT_THEME_VARS: React.CSSProperties = {
-  "--background": "0 0% 100%",
+  "--background": "240 5% 96%",
   "--foreground": "240 10% 3.9%",
   "--card": "0 0% 100%",
   "--card-foreground": "240 10% 3.9%",
@@ -173,7 +180,15 @@ function IsolatedThemeWrapper({
   className?: string;
 }) {
   const theme = useWorkbenchStore((s) => s.theme);
+  const safeAreaInsets = useWorkbenchStore((s) => s.safeAreaInsets);
   const themeVars = theme === "dark" ? DARK_THEME_VARS : LIGHT_THEME_VARS;
+
+  const insetStyle: React.CSSProperties = {
+    paddingTop: safeAreaInsets.top,
+    paddingBottom: safeAreaInsets.bottom,
+    paddingLeft: safeAreaInsets.left,
+    paddingRight: safeAreaInsets.right,
+  };
 
   return (
     <div
@@ -182,7 +197,7 @@ function IsolatedThemeWrapper({
         "bg-background text-foreground transition-colors",
         className,
       )}
-      style={{ colorScheme: theme, ...themeVars }}
+      style={{ colorScheme: theme, ...themeVars, ...insetStyle }}
     >
       {children}
     </div>
@@ -193,23 +208,118 @@ function ComponentContent({ className }: { className?: string }) {
   const toolInput = useToolInput();
 
   return (
-    <IsolatedThemeWrapper
-      className={cn("flex min-h-full items-center justify-center", className)}
-    >
+    <IsolatedThemeWrapper className={cn("flex", className)}>
       <OpenAIProvider>
         <ComponentErrorBoundary toolInput={toolInput}>
-          <ComponentRenderer />
+          <div className="h-full w-full">
+            <ComponentRenderer />
+          </div>
         </ComponentErrorBoundary>
       </OpenAIProvider>
     </IsolatedThemeWrapper>
   );
 }
 
+const PREVIEW_MIN_SIZE = 30;
+const PREVIEW_MAX_SIZE = 100;
+
 function InlineView() {
+  const maxHeight = useWorkbenchStore((s) => s.maxHeight);
+  const deviceType = useDeviceType();
+  const panelGroupRef = useRef<ImperativePanelGroupHandle | null>(null);
+  const isSyncingLayout = useRef(false);
+
+  const devicePreset = DEVICE_PRESETS[deviceType];
+  const previewWidth = devicePreset.width;
+  const isFixedWidth = typeof previewWidth === "number";
+
+  const handleLayout = useCallback((sizes: number[]) => {
+    if (!panelGroupRef.current) return;
+    if (isSyncingLayout.current) {
+      isSyncingLayout.current = false;
+      return;
+    }
+
+    const [left, center, right] = sizes;
+    const clampedCenter = Math.min(
+      PREVIEW_MAX_SIZE,
+      Math.max(PREVIEW_MIN_SIZE, center),
+    );
+    const spacing = Math.max(0, (100 - clampedCenter) / 2);
+    const epsilon = 0.5;
+
+    const isSymmetric =
+      Math.abs(left - spacing) < epsilon &&
+      Math.abs(right - spacing) < epsilon &&
+      Math.abs(center - clampedCenter) < epsilon;
+
+    if (!isSymmetric) {
+      isSyncingLayout.current = true;
+      panelGroupRef.current.setLayout([spacing, clampedCenter, spacing]);
+    }
+  }, []);
+
+  if (isFixedWidth) {
+    return (
+      <div className="relative h-full w-full">
+        <div
+          className="bg-dot-grid bg-wash pointer-events-none absolute inset-0 z-0 opacity-60 dark:opacity-40"
+          aria-hidden="true"
+        />
+        <div className="scrollbar-subtle absolute inset-0 z-10 overflow-auto p-4">
+          <div className="flex min-h-full w-full items-start justify-center">
+            <div
+              className="bg-background border-border overflow-hidden rounded-xl border-2 border-dashed"
+              style={{ width: previewWidth, height: maxHeight }}
+            >
+              <ComponentContent className="h-full" />
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="h-full w-full">
-      <div className="h-full overflow-auto">
-        <ComponentContent className="h-full p-4" />
+    <div className="relative h-full w-full">
+      <div
+        className="bg-dot-grid bg-wash pointer-events-none absolute inset-0 z-0 opacity-60 dark:opacity-40"
+        aria-hidden="true"
+      />
+      <div className="scrollbar-subtle absolute inset-0 z-10 overflow-auto p-4">
+        <div className="flex min-h-full w-full items-start justify-center">
+          <PanelGroup
+            ref={panelGroupRef}
+            direction="horizontal"
+            onLayout={handleLayout}
+            className="w-full"
+          >
+            <Panel defaultSize={5} minSize={0} />
+
+            <PanelResizeHandle className="group relative w-4">
+              <div className="absolute top-1/2 left-1/2 h-12 w-1 -translate-x-1/2 -translate-y-1/2 rounded-full bg-gray-300 opacity-40 transition-all group-hover:bg-gray-400 group-hover:opacity-100 group-data-resize-handle-active:bg-gray-500 group-data-resize-handle-active:opacity-100 dark:bg-gray-600 dark:group-hover:bg-gray-500 dark:group-data-resize-handle-active:bg-gray-400" />
+            </PanelResizeHandle>
+
+            <Panel
+              defaultSize={90}
+              minSize={PREVIEW_MIN_SIZE}
+              maxSize={PREVIEW_MAX_SIZE}
+            >
+              <div
+                className="bg-background border-border overflow-hidden rounded-xl border-2 border-dashed"
+                style={{ height: maxHeight }}
+              >
+                <ComponentContent className="h-full" />
+              </div>
+            </Panel>
+
+            <PanelResizeHandle className="group relative w-4">
+              <div className="absolute top-1/2 left-1/2 h-12 w-1 -translate-x-1/2 -translate-y-1/2 rounded-full bg-gray-300 opacity-40 transition-all group-hover:bg-gray-400 group-hover:opacity-100 group-data-resize-handle-active:bg-gray-500 group-data-resize-handle-active:opacity-100 dark:bg-gray-600 dark:group-hover:bg-gray-500 dark:group-data-resize-handle-active:bg-gray-400" />
+            </PanelResizeHandle>
+
+            <Panel defaultSize={5} minSize={0} />
+          </PanelGroup>
+        </div>
       </div>
     </div>
   );
@@ -233,17 +343,9 @@ function PipView({ onClose }: { onClose: () => void }) {
   );
 }
 
-function FullscreenView({ onClose }: { onClose: () => void }) {
+function FullscreenView() {
   return (
     <div className="absolute inset-0 overflow-hidden">
-      <Button
-        variant="ghost"
-        size="icon"
-        className="absolute top-3 right-3 z-10 size-8"
-        onClick={onClose}
-      >
-        <X className="size-4" />
-      </Button>
       <ComponentContent className="h-full p-4" />
     </div>
   );
@@ -354,7 +456,7 @@ export function UnifiedWorkspace() {
         <div className="relative flex h-full flex-col bg-transparent">
           <div className="scrollbar-subtle h-full overflow-y-auto">
             <div
-              className="pointer-events-none absolute top-0 z-10 h-22 w-full bg-linear-to-b from-neutral-100 via-neutral-100 to-transparent dark:from-neutral-950 dark:via-neutral-950"
+              className="pointer-events-none absolute top-0 z-10 h-18 w-full bg-linear-to-b from-neutral-100 via-neutral-100 to-transparent dark:from-neutral-950 dark:via-neutral-950"
               aria-hidden="true"
             />
 
@@ -369,12 +471,6 @@ export function UnifiedWorkspace() {
                     value="toolInput"
                   >
                     Input
-                  </TabsTrigger>
-                  <TabsTrigger
-                    className={TAB_TRIGGER_CLASSES}
-                    value="toolOutput"
-                  >
-                    Output
                   </TabsTrigger>
                   <TabsTrigger
                     className={TAB_TRIGGER_CLASSES}
@@ -431,7 +527,7 @@ export function UnifiedWorkspace() {
           {displayMode === "inline" && <InlineView />}
           {displayMode === "pip" && <PipView onClose={handleClose} />}
           {displayMode === "fullscreen" && (
-            <FullscreenView onClose={handleClose} />
+            <FullscreenView />
           )}
         </div>
       </Panel>

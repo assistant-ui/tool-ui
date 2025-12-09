@@ -173,6 +173,28 @@ export function ConfigPanel({
           </ButtonGroup>
         </SettingRow>
 
+        {displayMode === "inline" && (
+          <SettingRow label="Inline max height" htmlFor="max-height">
+            <InputGroup className={INPUT_GROUP_CLASSES}>
+              <InputGroupInput
+                id="max-height"
+                type="number"
+                value={maxHeight}
+                onChange={(e) => {
+                  const clamped = clamp(Number(e.target.value), 100, 2000);
+                  setMaxHeight(clamped);
+                }}
+                min={100}
+                max={2000}
+                className={INPUT_CLASSES}
+              />
+              <InputGroupAddon align="inline-end" className={ADDON_CLASSES}>
+                px
+              </InputGroupAddon>
+            </InputGroup>
+          </SettingRow>
+        )}
+
         <SettingRow label="Device">
           <ButtonGroup>
             {DEVICE_TYPES.map(({ id, icon: Icon }) => (
@@ -191,26 +213,6 @@ export function ConfigPanel({
               </Button>
             ))}
           </ButtonGroup>
-        </SettingRow>
-
-        <SettingRow label="Max height" htmlFor="max-height">
-          <InputGroup className={INPUT_GROUP_CLASSES}>
-            <InputGroupInput
-              id="max-height"
-              type="number"
-              value={maxHeight}
-              onChange={(e) => {
-                const clamped = clamp(Number(e.target.value), 100, 2000);
-                setMaxHeight(clamped);
-              }}
-              min={100}
-              max={2000}
-              className={INPUT_CLASSES}
-            />
-            <InputGroupAddon align="inline-end" className={ADDON_CLASSES}>
-              px
-            </InputGroupAddon>
-          </InputGroup>
         </SettingRow>
 
         <SettingRow label="Safe area">

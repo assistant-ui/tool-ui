@@ -274,35 +274,37 @@ describe("Workbench Store", () => {
   });
 
   describe("setDeviceType", () => {
-    it("should update deviceType and maxHeight for mobile", () => {
+    it("should update deviceType without changing maxHeight", () => {
       const store = useWorkbenchStore.getState();
+      const initialMaxHeight = store.maxHeight;
 
       store.setDeviceType("mobile");
       const state = useWorkbenchStore.getState();
 
       expect(state.deviceType).toBe("mobile");
-      expect(state.maxHeight).toBe(667); // Mobile preset height
+      expect(state.maxHeight).toBe(initialMaxHeight);
     });
 
-    it("should update deviceType and maxHeight for tablet", () => {
+    it("should update deviceType to tablet without changing maxHeight", () => {
       const store = useWorkbenchStore.getState();
+      store.setMaxHeight(500);
 
       store.setDeviceType("tablet");
       const state = useWorkbenchStore.getState();
 
       expect(state.deviceType).toBe("tablet");
-      expect(state.maxHeight).toBe(1024); // Tablet preset height
+      expect(state.maxHeight).toBe(500);
     });
 
-    it("should update deviceType and keep maxHeight at 800 for desktop (100% preset)", () => {
+    it("should update deviceType to desktop without changing maxHeight", () => {
       const store = useWorkbenchStore.getState();
+      store.setMaxHeight(600);
 
       store.setDeviceType("desktop");
       const state = useWorkbenchStore.getState();
 
       expect(state.deviceType).toBe("desktop");
-      // Desktop has "100%" height, so maxHeight defaults to 800
-      expect(state.maxHeight).toBe(800);
+      expect(state.maxHeight).toBe(600);
     });
   });
 
@@ -311,12 +313,11 @@ describe("Workbench Store", () => {
       const store = useWorkbenchStore.getState();
 
       // Set various state values
-      // Note: setDeviceType also updates maxHeight, so set device type first
       store.setTheme("dark");
       store.setLocale("fr-FR");
       store.setDisplayMode("pip");
       store.setDeviceType("tablet");
-      store.setMaxHeight(1500); // Set after device type to override the preset
+      store.setMaxHeight(1500);
       store.setToolInput({ input1: "value1" });
       store.setToolOutput({ output1: "result1" });
       store.setWidgetState({ state1: "stateValue1" });
