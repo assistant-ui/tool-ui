@@ -41,13 +41,9 @@ function ChatBubble({ role, children, className }: BubbleProps) {
       <div
         className={cn(
           "relative max-w-[min(720px,100%)]",
-          // Text styling
-          "text-xl leading-relaxed",
-          // User messages: iMessage blue bubble
+          "text-xl",
           isUser && "rounded-full bg-[#007AFF] text-white dark:bg-[#002b90]",
-          // Assistant messages: no bubble, just content
           !isUser && "text-foreground",
-          // padding varies: text vs embedded UI
           className,
         )}
       >
@@ -57,29 +53,23 @@ function ChatBubble({ role, children, className }: BubbleProps) {
   );
 }
 
-// Motion configuration for smooth, elegant animations
 const MOTION = {
-  // Durations (ms)
   durations: {
     userIn: 500,
     preambleIn: 280,
     toolIn: 600,
   },
-  // Pauses between phases (ms)
   beats: {
     afterUser: 700,
     beforeContent: 500,
     afterPreamble: 200,
   },
-  // Scene hold after tool appears (ms)
   sceneHold: 4500,
-  // Staggered exit delays (ms)
   exitStagger: {
     user: 0,
     preamble: 120,
     tool: 180,
   },
-  // Reduced motion settings
   reducedMotion: {
     duration: 250,
     sceneHold: 1500,
@@ -319,7 +309,6 @@ const SIGNUP_CHART: Omit<SerializableChart, "id"> = {
 
 function createSceneConfigs(): SceneConfig[] {
   return [
-    // Scene 1: Signup Metrics / Chart
     {
       userMessage: "How did signups perform this quarter?",
       preamble: "Here's the Q4 signup trend:",
@@ -332,7 +321,6 @@ function createSceneConfigs(): SceneConfig[] {
       ),
       toolFallbackHeight: 240,
     },
-    // Scene 2: Support Tickets / DataTable
     {
       userMessage: "Show me high-priority support tickets from this week",
       preamble: "Here are the most urgent tickets from this week",
@@ -348,7 +336,6 @@ function createSceneConfigs(): SceneConfig[] {
       ),
       toolFallbackHeight: 320,
     },
-    // Scene 3: RSC Guide / MediaCard
     {
       userMessage: "Find that React Server Components guide",
       preamble: "Was it this one from yesterday?",
@@ -395,7 +382,6 @@ function ToolReveal({ children }: { children: React.ReactNode }) {
   );
 }
 
-// Custom hook for orchestrating scene timeline phases
 function useSceneTimeline({
   reducedMotion,
   onComplete,
@@ -409,7 +395,6 @@ function useSceneTimeline({
   const [showTool, setShowTool] = useState(reducedMotion);
   const scheduledRef = useRef(false);
 
-  // Handle reduced motion auto-advance
   useEffect(() => {
     if (reducedMotion) {
       const id = window.setTimeout(onComplete, MOTION.reducedMotion.sceneHold);
@@ -417,7 +402,6 @@ function useSceneTimeline({
     }
   }, [reducedMotion, onComplete]);
 
-  // Start preamble after user message lands (or immediately if no user message)
   useEffect(() => {
     if (reducedMotion || preambleReady) return;
     const delay = hasUserMessage
@@ -427,7 +411,6 @@ function useSceneTimeline({
     return () => window.clearTimeout(id);
   }, [preambleReady, reducedMotion, hasUserMessage]);
 
-  // Auto-advance scene after tool is shown
   useEffect(() => {
     if (!scheduledRef.current && preambleReady && showTool && !reducedMotion) {
       scheduledRef.current = true;
@@ -446,7 +429,6 @@ function useSceneTimeline({
   );
 }
 
-// Scene configuration type
 type SceneConfig = {
   userMessage?: string;
   preamble?: string;
@@ -454,7 +436,6 @@ type SceneConfig = {
   toolFallbackHeight?: number;
 };
 
-// Abstract scene component that handles the common animation pattern
 function AnimatedScene({
   config,
   reducedMotion,
@@ -478,7 +459,6 @@ function AnimatedScene({
     timeline.setShowTool(true);
   }, [timeline]);
 
-  // Trigger setShowTool if no preamble
   useEffect(() => {
     if (!config.preamble && timeline.preambleReady && !timeline.showTool) {
       timeline.setShowTool(true);
@@ -633,12 +613,10 @@ export function ChatShowcase() {
   const [isExiting, setIsExiting] = useState(false);
 
   const nextScene = useCallback(() => {
-    // Trigger exit animations
     setIsExiting(true);
-    // Wait for staggered exits to complete, then switch scene
     const exitDuration = reducedMotion
       ? MOTION.reducedMotion.duration
-      : MOTION.exitStagger.tool + 500; // Last item delay + spring settle time
+      : MOTION.exitStagger.tool + 500;
     setTimeout(() => {
       setIsExiting(false);
       setSceneIndex((i) => (i + 1) % 4);
