@@ -111,7 +111,7 @@ export const useWorkbenchStore = create<WorkbenchState>((set, get) => ({
   widgetState: null,
   maxHeight: 500,
   toolResponseMetadata: null,
-  safeAreaInsets: { top: 0, bottom: 0, left: 0, right: 0 },
+  safeAreaInsets: { top: 10, bottom: 100, left: 10, right: 10 },
   consoleLogs: [],
   collapsedSections: {},
   activeJsonTab: "toolInput",

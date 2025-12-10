@@ -1,6 +1,13 @@
 "use client";
 
-import { useMemo, useCallback, useRef, Component, type ReactNode } from "react";
+import {
+  useMemo,
+  useCallback,
+  useRef,
+  useState,
+  Component,
+  type ReactNode,
+} from "react";
 import { useShallow } from "zustand/react/shallow";
 import {
   Panel,
@@ -26,7 +33,7 @@ import { JsonEditor, ReadOnlyJsonView } from "./json-editor";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/ui/cn";
-import { RotateCcw, X, AlertTriangle, Globe } from "lucide-react";
+import { RotateCcw, X, AlertTriangle, Globe, ArrowUp } from "lucide-react";
 import { TAB_LIST_CLASSES, TAB_TRIGGER_CLASSES } from "./styles";
 import { VIEW_TRANSITION_NAME } from "@/lib/workbench/transition-config";
 import { PANEL_AUTO_SAVE_IDS } from "@/lib/workbench/persistence";
@@ -183,15 +190,19 @@ function IsolatedThemeWrapper({
   className?: string;
 }) {
   const theme = useWorkbenchStore((s) => s.theme);
+  const displayMode = useDisplayMode();
   const safeAreaInsets = useWorkbenchStore((s) => s.safeAreaInsets);
   const themeVars = theme === "dark" ? DARK_THEME_VARS : LIGHT_THEME_VARS;
 
-  const insetStyle: React.CSSProperties = {
-    paddingTop: safeAreaInsets.top,
-    paddingBottom: safeAreaInsets.bottom,
-    paddingLeft: safeAreaInsets.left,
-    paddingRight: safeAreaInsets.right,
-  };
+  const insetStyle: React.CSSProperties =
+    displayMode === "fullscreen"
+      ? {
+          paddingTop: safeAreaInsets.top,
+          paddingBottom: safeAreaInsets.bottom,
+          paddingLeft: safeAreaInsets.left,
+          paddingRight: safeAreaInsets.right,
+        }
+      : {};
 
   return (
     <div
@@ -358,10 +369,58 @@ function PipView({ onClose }: { onClose: () => void }) {
   );
 }
 
+function MockComposer() {
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const [isMultiline, setIsMultiline] = useState(false);
+
+  const handleInput = useCallback(() => {
+    const textarea = textareaRef.current;
+    if (!textarea) return;
+    textarea.style.height = "auto";
+    const scrollHeight = textarea.scrollHeight;
+    textarea.style.height = `${scrollHeight}px`;
+
+    const lineHeight =
+      parseInt(getComputedStyle(textarea).lineHeight, 10) || 24;
+    setIsMultiline(scrollHeight > lineHeight * 1.5);
+  }, []);
+
+  return (
+    <div className="absolute inset-x-0 bottom-0 z-10 flex justify-center px-4 pb-4">
+      <div
+        className={cn(
+          "relative flex min-h-14 w-full max-w-2xl items-center border border-neutral-200 bg-white pr-2 pl-6 shadow-sm",
+          isMultiline ? "rounded-3xl py-2" : "rounded-full py-2",
+        )}
+      >
+        <textarea
+          ref={textareaRef}
+          placeholder="Send a message..."
+          rows={1}
+          onInput={handleInput}
+          className="max-h-[300px] w-full resize-none self-center bg-transparent pr-12 text-base leading-6 text-neutral-900 outline-none placeholder:text-neutral-400 dark:text-neutral-100 dark:placeholder:text-neutral-500"
+        />
+        <button
+          type="button"
+          className={cn(
+            "flex size-10 shrink-0 items-center justify-center rounded-full bg-neutral-900 dark:bg-white",
+            isMultiline ? "absolute right-2 bottom-2" : "",
+          )}
+        >
+          <ArrowUp className="size-5 text-white dark:text-neutral-900" />
+        </button>
+      </div>
+    </div>
+  );
+}
+
 function FullscreenView() {
   return (
     <MorphContainer className="absolute inset-0 overflow-hidden">
-      <ComponentContent className="h-full p-4" />
+      <div className="isolate h-full">
+        <ComponentContent className="h-full p-4" />
+      </div>
+      <MockComposer />
     </MorphContainer>
   );
 }
@@ -538,8 +597,8 @@ export function UnifiedWorkspace() {
         <div className="bg-border absolute inset-y-0 right-0 h-[calc(100%-1px)] w-px transition-colors group-hover:bg-neutral-400 group-data-resize-handle-active:bg-neutral-500 dark:group-hover:bg-neutral-500 dark:group-data-resize-handle-active:bg-neutral-400" />
       </PanelResizeHandle>
 
-      <Panel defaultSize={60} minSize={20}>
-        <div className="relative flex h-full flex-col overflow-hidden bg-neutral-100 dark:bg-neutral-900">
+      <Panel defaultSize={60} minSize={20} style={{ minWidth: 320 }}>
+        <div className="bg-background relative flex h-full flex-col overflow-hidden dark:bg-neutral-900">
           {displayMode === "inline" && <InlineView />}
           {displayMode === "pip" && <PipView onClose={handleClose} />}
           {displayMode === "fullscreen" && <FullscreenView />}

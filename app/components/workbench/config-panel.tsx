@@ -152,6 +152,26 @@ export function ConfigPanel({
   return (
     <div className="flex h-full min-w-80 flex-col">
       <div className="scrollbar-subtle flex-1 space-y-2 overflow-y-auto px-4">
+        <SettingRow label="Device">
+          <ButtonGroup>
+            {DEVICE_TYPES.map(({ id, icon: Icon }) => (
+              <Button
+                key={id}
+                variant="ghost"
+                size="sm"
+                className={
+                  deviceType === id
+                    ? TOGGLE_BUTTON_ACTIVE_CLASSES
+                    : TOGGLE_BUTTON_CLASSES
+                }
+                onClick={() => setDeviceType(id)}
+              >
+                <Icon className="size-3" />
+              </Button>
+            ))}
+          </ButtonGroup>
+        </SettingRow>
+
         <SettingRow label="Mode">
           <ButtonGroup>
             {DISPLAY_MODES.map(({ id, label, icon: Icon }) => (
@@ -195,32 +215,14 @@ export function ConfigPanel({
           </SettingRow>
         )}
 
-        <SettingRow label="Device">
-          <ButtonGroup>
-            {DEVICE_TYPES.map(({ id, icon: Icon }) => (
-              <Button
-                key={id}
-                variant="ghost"
-                size="sm"
-                className={
-                  deviceType === id
-                    ? TOGGLE_BUTTON_ACTIVE_CLASSES
-                    : TOGGLE_BUTTON_CLASSES
-                }
-                onClick={() => setDeviceType(id)}
-              >
-                <Icon className="size-3" />
-              </Button>
-            ))}
-          </ButtonGroup>
-        </SettingRow>
-
-        <SettingRow label="Safe area">
-          <SafeAreaInsetsControl
-            value={safeAreaInsets}
-            onChange={setSafeAreaInsets}
-          />
-        </SettingRow>
+        {displayMode === "fullscreen" && (
+          <SettingRow label="Safe area">
+            <SafeAreaInsetsControl
+              value={safeAreaInsets}
+              onChange={setSafeAreaInsets}
+            />
+          </SettingRow>
+        )}
 
         <SettingRow label="Dark theme" htmlFor="theme-toggle">
           <Switch
