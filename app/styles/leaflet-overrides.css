@@ -7,7 +7,7 @@
 }
 
 [data-theme="dark"] .leaflet-container {
-  background: hsl(240 3.7% 15.9%);
+  background: hsl(240 0 10%);
 }
 
 .leaflet-control-attribution {

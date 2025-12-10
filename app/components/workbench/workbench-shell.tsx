@@ -134,7 +134,7 @@ export function WorkbenchShell() {
       </div>
 
       <div className="flex min-h-0 flex-1 overflow-hidden">
-        <div className="flex min-w-0 flex-1 flex-col overflow-clip rounded-tr-lg border-t border-r">
+        <div className="flex min-w-0 flex-1 flex-col overflow-hidden rounded-tr-lg border-t border-r">
           <PanelGroup
             direction="vertical"
             autoSaveId={PANEL_AUTO_SAVE_IDS.SHELL_VERTICAL}

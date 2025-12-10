@@ -4,28 +4,29 @@
 
   Border-radius direction is controlled via CSS custom properties:
   --morph-radius-from / --morph-radius-to (set by JS before transition)
+
+  Uses nested view transition groups (CSS View Transitions Level 2) to
+  respect the parent container's overflow clipping during transitions.
 */
 
 @supports (view-transition-name: none) {
+  /* Parent container - establishes clipping boundary */
+  ::view-transition-group(workbench-preview-panel) {
+    overflow: clip;
+  }
+
+  /* Child container - nested under parent to respect clipping */
   ::view-transition-group(workbench-app-container) {
     animation-duration: 350ms;
     animation-timing-function: cubic-bezier(0.32, 0.72, 0, 1);
     overflow: clip;
+    /* Instantly apply inline radius to clip corners from frame 0 */
+    border-radius: 0.75rem;
   }
 
   ::view-transition-image-pair(workbench-app-container) {
     overflow: clip;
-    animation: workbench-radius-morph 350ms cubic-bezier(0.32, 0.72, 0, 1)
-      forwards;
-  }
-
-  @keyframes workbench-radius-morph {
-    0% {
-      border-radius: var(--morph-radius-from);
-    }
-    100% {
-      border-radius: var(--morph-radius-to);
-    }
+    border-radius: 0.75rem;
   }
 
   ::view-transition-old(workbench-app-container),
@@ -68,6 +69,7 @@
   }
 
   @media (prefers-reduced-motion: reduce) {
+    ::view-transition-group(workbench-preview-panel),
     ::view-transition-group(workbench-app-container),
     ::view-transition-old(workbench-app-container),
     ::view-transition-new(workbench-app-container) {

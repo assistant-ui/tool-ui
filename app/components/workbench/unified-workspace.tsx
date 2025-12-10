@@ -33,7 +33,11 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { TAB_LIST_CLASSES, TAB_TRIGGER_CLASSES } from "./styles";
-import { VIEW_TRANSITION_NAME } from "@/lib/workbench/transition-config";
+import {
+  VIEW_TRANSITION_NAME,
+  VIEW_TRANSITION_PARENT_NAME,
+  VIEW_TRANSITION_ROOT_NAME,
+} from "@/lib/workbench/transition-config";
 import { PANEL_AUTO_SAVE_IDS } from "@/lib/workbench/persistence";
 import { ComponentErrorBoundary } from "./component-error-boundary";
 import { IsolatedThemeWrapper } from "./isolated-theme-wrapper";
@@ -121,10 +125,17 @@ function MorphContainer({
   return (
     <div
       className={className}
-      style={{
-        ...style,
-        viewTransitionName: isTransitioning ? VIEW_TRANSITION_NAME : undefined,
-      }}
+      style={
+        {
+          ...style,
+          viewTransitionName: isTransitioning
+            ? VIEW_TRANSITION_NAME
+            : undefined,
+          viewTransitionGroup: isTransitioning
+            ? VIEW_TRANSITION_PARENT_NAME
+            : undefined,
+        } as React.CSSProperties
+      }
     >
       {children}
     </div>
@@ -442,13 +453,26 @@ function EditorPanel() {
 function PreviewPanel() {
   const displayMode = useDisplayMode();
   const setDisplayMode = useWorkbenchStore((s) => s.setDisplayMode);
+  const isTransitioning = useIsTransitioning();
 
   const handlePipClose = useCallback(() => {
     setDisplayMode("inline");
   }, [setDisplayMode]);
 
   return (
-    <div className="bg-background relative flex h-full flex-col overflow-hidden dark:bg-neutral-900">
+    <div
+      className="bg-background relative flex h-full flex-col overflow-hidden dark:bg-neutral-900"
+      style={
+        {
+          viewTransitionName: isTransitioning
+            ? VIEW_TRANSITION_PARENT_NAME
+            : undefined,
+          viewTransitionGroup: isTransitioning
+            ? VIEW_TRANSITION_ROOT_NAME
+            : undefined,
+        } as React.CSSProperties
+      }
+    >
       {displayMode === "inline" && <InlineView />}
       {displayMode === "pip" && (
         <PipView onClose={handlePipClose}>
