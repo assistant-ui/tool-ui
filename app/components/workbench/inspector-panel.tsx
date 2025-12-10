@@ -20,7 +20,9 @@ function formatEntryForCopy(entry: ConsoleEntry): string {
     `[${formatTimestamp(entry.timestamp)}]`,
     entry.method,
     entry.args !== undefined ? JSON.stringify(entry.args, null, 2) : "",
-    entry.result !== undefined ? `→ ${JSON.stringify(entry.result, null, 2)}` : "",
+    entry.result !== undefined
+      ? `→ ${JSON.stringify(entry.result, null, 2)}`
+      : "",
   ];
   return parts.filter(Boolean).join(" ");
 }
@@ -75,7 +77,7 @@ export function InspectorPanel() {
             onChange={(e) =>
               setTypeFilter(e.target.value as ConsoleEntryType | "all")
             }
-            className="bg-muted text-foreground h-6 rounded-md border-0 pl-2 pr-6 text-xs"
+            className="bg-muted text-foreground h-6 rounded-md border-0 pr-6 pl-2 text-xs"
           >
             <option value="all">All</option>
             {uniqueTypes.map((type) => (
@@ -106,7 +108,11 @@ export function InspectorPanel() {
                 onClick={handleCopyAll}
                 title="Copy all logs"
               >
-                {copied ? <Check className="size-3" /> : <Copy className="size-3" />}
+                {copied ? (
+                  <Check className="size-3" />
+                ) : (
+                  <Copy className="size-3" />
+                )}
               </Button>
               <Button
                 variant="ghost"

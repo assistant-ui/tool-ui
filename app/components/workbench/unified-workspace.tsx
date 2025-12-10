@@ -152,7 +152,10 @@ function PreviewResizeHandle({
 }) {
   return (
     <PanelResizeHandle
-      className={cn("group relative w-4", isTransitioning && "opacity-0")}
+      className={cn(
+        "group relative w-4 transition-opacity",
+        isTransitioning ? "opacity-0 duration-50" : "opacity-100 duration-300",
+      )}
     >
       <div className={RESIZE_HANDLE_CLASSES} />
     </PanelResizeHandle>
@@ -268,8 +271,8 @@ function FullscreenView() {
       >
         <div className="isolate h-full">
           <ComponentContent className="h-full p-4" />
+          <MockComposer />
         </div>
-        <MockComposer />
       </MorphContainer>
     </div>
   );
