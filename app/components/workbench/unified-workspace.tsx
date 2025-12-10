@@ -498,7 +498,7 @@ export function UnifiedWorkspace() {
         <EditorPanel />
       </Panel>
 
-      <PanelResizeHandle className="group relative z-10 -ml-3 w-3 shrink-0 cursor-col-resize">
+      <PanelResizeHandle className="group relative z-10 -ml-3 w-3 shrink-0">
         <div className="bg-border absolute inset-y-0 right-0 h-[calc(100%-1px)] w-px transition-colors group-hover:bg-neutral-400 group-data-resize-handle-active:bg-neutral-500 dark:group-hover:bg-neutral-500 dark:group-data-resize-handle-active:bg-neutral-400" />
       </PanelResizeHandle>
 

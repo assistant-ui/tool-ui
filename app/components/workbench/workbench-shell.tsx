@@ -147,10 +147,7 @@ export function WorkbenchShell() {
               <UnifiedWorkspace />
             </Panel>
 
-            <PanelResizeHandle
-              className="group relative z-20 h-px shrink-0 cursor-row-resize"
-              style={{ viewTransitionName: "none" } as React.CSSProperties}
-            >
+            <PanelResizeHandle className="group relative z-20 h-px shrink-0">
               <div className="bg-border absolute inset-x-0 top-1/2 h-px -translate-y-1/2 transition-colors group-hover:bg-neutral-400 group-data-resize-handle-active:bg-neutral-500 dark:group-hover:bg-neutral-500 dark:group-data-resize-handle-active:bg-neutral-400" />
               <div className="absolute inset-x-0 -top-1.5 -bottom-1.5" />
             </PanelResizeHandle>
