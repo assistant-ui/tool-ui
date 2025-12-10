@@ -231,15 +231,22 @@ function FullscreenView() {
   const isFixedWidth = typeof devicePreset.width === "number";
 
   return (
-    <MorphContainer className="absolute inset-0 overflow-hidden">
-      <div
-        className={cn("isolate h-full", isFixedWidth && "mx-auto")}
+    <div
+      className={cn(
+        "absolute inset-0 overflow-hidden",
+        isFixedWidth && "flex justify-center",
+      )}
+    >
+      <MorphContainer
+        className="h-full overflow-hidden"
         style={isFixedWidth ? { width: devicePreset.width } : undefined}
       >
-        <ComponentContent className="h-full p-4" />
-        <MockComposer />
-      </div>
-    </MorphContainer>
+        <div className="isolate h-full">
+          <ComponentContent className="h-full p-4" />
+          <MockComposer />
+        </div>
+      </MorphContainer>
+    </div>
   );
 }
 
