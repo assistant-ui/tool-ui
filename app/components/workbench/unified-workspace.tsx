@@ -1,13 +1,6 @@
 "use client";
 
-import {
-  useMemo,
-  useCallback,
-  useRef,
-  useState,
-  Component,
-  type ReactNode,
-} from "react";
+import { useMemo, useCallback, useRef, type ReactNode } from "react";
 import { useShallow } from "zustand/react/shallow";
 import {
   Panel,
@@ -33,89 +26,30 @@ import { JsonEditor, ReadOnlyJsonView } from "./json-editor";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/ui/cn";
-import { RotateCcw, X, AlertTriangle, Globe, ArrowUp } from "lucide-react";
+import { RotateCcw } from "lucide-react";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { TAB_LIST_CLASSES, TAB_TRIGGER_CLASSES } from "./styles";
 import { VIEW_TRANSITION_NAME } from "@/lib/workbench/transition-config";
 import { PANEL_AUTO_SAVE_IDS } from "@/lib/workbench/persistence";
+import { ComponentErrorBoundary } from "./component-error-boundary";
+import { IsolatedThemeWrapper } from "./isolated-theme-wrapper";
+import { PipView } from "./pip-view";
+import { MockComposer } from "./mock-composer";
 
-interface ErrorBoundaryProps {
-  children: ReactNode;
-  toolInput: Record<string, unknown>;
-}
+const PREVIEW_MIN_SIZE = 30;
+const PREVIEW_MAX_SIZE = 100;
 
-interface ErrorBoundaryState {
-  hasError: boolean;
-  error: Error | null;
-}
-
-class ComponentErrorBoundary extends Component<
-  ErrorBoundaryProps,
-  ErrorBoundaryState
-> {
-  constructor(props: ErrorBoundaryProps) {
-    super(props);
-    this.state = { hasError: false, error: null };
-  }
-
-  static getDerivedStateFromError(error: Error): ErrorBoundaryState {
-    return { hasError: true, error };
-  }
-
-  componentDidUpdate(prevProps: ErrorBoundaryProps) {
-    if (this.state.hasError && prevProps.toolInput !== this.props.toolInput) {
-      this.setState({ hasError: false, error: null });
-    }
-  }
-
-  render() {
-    if (this.state.hasError) {
-      return <ErrorDisplay error={this.state.error} />;
-    }
-    return this.props.children;
-  }
-}
-
-function ErrorDisplay({ error }: { error: Error | null }) {
-  const message = error?.message ?? "Unknown error";
-
-  let formattedError = message;
-  if (message.includes("Invalid") && message.includes("[")) {
-    try {
-      const jsonStart = message.indexOf("[");
-      const jsonPart = message.slice(jsonStart);
-      const parsed = JSON.parse(jsonPart);
-      if (Array.isArray(parsed)) {
-        formattedError = parsed
-          .map(
-            (e: { path?: string[]; message?: string }) =>
-              `${e.path?.join(".") ?? "root"}: ${e.message ?? "invalid"}`,
-          )
-          .join("\n");
-      }
-    } catch {}
-  }
-
-  return (
-    <div className="flex h-full items-center justify-center p-8">
-      <div className="max-w-md rounded-lg border border-amber-200 bg-amber-50 p-4 dark:border-amber-900 dark:bg-amber-950">
-        <div className="flex items-start gap-3">
-          <AlertTriangle className="mt-0.5 size-5 shrink-0 text-amber-600 dark:text-amber-400" />
-          <div className="space-y-2">
-            <div className="text-sm font-medium text-amber-800 dark:text-amber-200">
-              Invalid Props
-            </div>
-            <pre className="text-xs whitespace-pre-wrap text-amber-700 dark:text-amber-300">
-              {formattedError}
-            </pre>
-            <div className="text-xs text-amber-600 dark:text-amber-400">
-              Fix the toolInput JSON to see the component
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
+const TAB_LABELS: Record<ActiveJsonTab, string> = {
+  toolInput: "Tool Input",
+  toolOutput: "Tool Output",
+  widgetState: "Widget State",
+  toolResponseMetadata: "Metadata",
+  window: "Window",
+};
 
 function FallbackComponent({ componentId }: { componentId: string }) {
   return (
@@ -154,65 +88,7 @@ function ComponentRenderer() {
   }
 
   const Component = entry.component;
-
   return <Component {...props} />;
-}
-
-const LIGHT_THEME_VARS: React.CSSProperties = {
-  "--background": "240 5% 96%",
-  "--foreground": "240 10% 3.9%",
-  "--card": "0 0% 100%",
-  "--card-foreground": "240 10% 3.9%",
-  "--primary": "240 5.9% 10%",
-  "--primary-foreground": "0 0% 98%",
-  "--muted": "240 4.8% 95.9%",
-  "--muted-foreground": "240 3.8% 46.1%",
-  "--border": "240 5.9% 90%",
-} as React.CSSProperties;
-
-const DARK_THEME_VARS: React.CSSProperties = {
-  "--background": "240 0% 8%",
-  "--foreground": "0 0% 98%",
-  "--card": "240 10% 3.9%",
-  "--card-foreground": "0 0% 98%",
-  "--primary": "0 0% 98%",
-  "--primary-foreground": "240 5.9% 10%",
-  "--muted": "240 3.7% 15.9%",
-  "--muted-foreground": "240 5% 64.9%",
-  "--border": "240 3.7% 15.9%",
-} as React.CSSProperties;
-
-function IsolatedThemeWrapper({
-  children,
-  className,
-}: {
-  children: ReactNode;
-  className?: string;
-}) {
-  const theme = useWorkbenchStore((s) => s.theme);
-  const displayMode = useDisplayMode();
-  const safeAreaInsets = useWorkbenchStore((s) => s.safeAreaInsets);
-  const themeVars = theme === "dark" ? DARK_THEME_VARS : LIGHT_THEME_VARS;
-
-  const insetStyle: React.CSSProperties =
-    displayMode === "fullscreen"
-      ? {
-          paddingTop: safeAreaInsets.top,
-          paddingBottom: safeAreaInsets.bottom,
-          paddingLeft: safeAreaInsets.left,
-          paddingRight: safeAreaInsets.right,
-        }
-      : {};
-
-  return (
-    <div
-      data-theme={theme}
-      className={cn("bg-card text-foreground transition-colors", className)}
-      style={{ colorScheme: theme, ...themeVars, ...insetStyle }}
-    >
-      {children}
-    </div>
-  );
 }
 
 function ComponentContent({ className }: { className?: string }) {
@@ -255,8 +131,18 @@ function MorphContainer({
   );
 }
 
-const PREVIEW_MIN_SIZE = 30;
-const PREVIEW_MAX_SIZE = 100;
+const RESIZE_HANDLE_CLASSES =
+  "absolute top-1/2 left-1/2 h-12 w-1 -translate-x-1/2 -translate-y-1/2 rounded-full bg-gray-300 opacity-40 transition-all group-hover:bg-gray-400 group-hover:opacity-100 group-data-resize-handle-active:bg-gray-500 group-data-resize-handle-active:opacity-100 dark:bg-gray-600 dark:group-hover:bg-gray-500 dark:group-data-resize-handle-active:bg-gray-400";
+
+function PreviewResizeHandle({ isTransitioning }: { isTransitioning: boolean }) {
+  return (
+    <PanelResizeHandle
+      className={cn("group relative w-4", isTransitioning && "opacity-0")}
+    >
+      <div className={RESIZE_HANDLE_CLASSES} />
+    </PanelResizeHandle>
+  );
+}
 
 function InlineView() {
   const maxHeight = useWorkbenchStore((s) => s.maxHeight);
@@ -318,13 +204,7 @@ function InlineView() {
           className="w-full"
         >
           <Panel defaultSize={5} minSize={0} />
-
-          <PanelResizeHandle
-            className={cn("group relative w-4", isTransitioning && "opacity-0")}
-          >
-            <div className="absolute top-1/2 left-1/2 h-12 w-1 -translate-x-1/2 -translate-y-1/2 rounded-full bg-gray-300 opacity-40 transition-all group-hover:bg-gray-400 group-hover:opacity-100 group-data-resize-handle-active:bg-gray-500 group-data-resize-handle-active:opacity-100 dark:bg-gray-600 dark:group-hover:bg-gray-500 dark:group-data-resize-handle-active:bg-gray-400" />
-          </PanelResizeHandle>
-
+          <PreviewResizeHandle isTransitioning={isTransitioning} />
           <Panel
             defaultSize={90}
             minSize={PREVIEW_MIN_SIZE}
@@ -337,13 +217,7 @@ function InlineView() {
               <ComponentContent className="h-full" />
             </MorphContainer>
           </Panel>
-
-          <PanelResizeHandle
-            className={cn("group relative w-4", isTransitioning && "opacity-0")}
-          >
-            <div className="absolute top-1/2 left-1/2 h-12 w-1 -translate-x-1/2 -translate-y-1/2 rounded-full bg-gray-300 opacity-40 transition-all group-hover:bg-gray-400 group-hover:opacity-100 group-data-resize-handle-active:bg-gray-500 group-data-resize-handle-active:opacity-100 dark:bg-gray-600 dark:group-hover:bg-gray-500 dark:group-data-resize-handle-active:bg-gray-400" />
-          </PanelResizeHandle>
-
+          <PreviewResizeHandle isTransitioning={isTransitioning} />
           <Panel defaultSize={5} minSize={0} />
         </PanelGroup>
       </div>
@@ -351,86 +225,26 @@ function InlineView() {
   );
 }
 
-function PipView({ onClose }: { onClose: () => void }) {
-  return (
-    <div className="absolute inset-0 flex items-center justify-center">
-      <div className="relative h-80 w-96 overflow-hidden rounded-xl border shadow-2xl">
-        <Button
-          variant="ghost"
-          size="icon"
-          className="absolute top-2 right-2 z-10 size-6"
-          onClick={onClose}
-        >
-          <X className="size-3" />
-        </Button>
-        <ComponentContent className="h-full p-2" />
-      </div>
-    </div>
-  );
-}
-
-function MockComposer() {
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const [isMultiline, setIsMultiline] = useState(false);
-
-  const handleInput = useCallback(() => {
-    const textarea = textareaRef.current;
-    if (!textarea) return;
-    textarea.style.height = "auto";
-    const scrollHeight = textarea.scrollHeight;
-    textarea.style.height = `${scrollHeight}px`;
-
-    const lineHeight =
-      parseInt(getComputedStyle(textarea).lineHeight, 10) || 24;
-    setIsMultiline(scrollHeight > lineHeight * 1.5);
-  }, []);
-
-  return (
-    <div className="absolute inset-x-0 bottom-0 z-10 flex justify-center px-4 pb-4">
-      <div
-        className={cn(
-          "relative flex min-h-14 w-full max-w-2xl items-center border border-neutral-200 bg-white pr-2 pl-6 shadow-sm",
-          isMultiline ? "rounded-3xl py-2" : "rounded-full py-2",
-        )}
-      >
-        <textarea
-          ref={textareaRef}
-          placeholder="Send a message..."
-          rows={1}
-          onInput={handleInput}
-          className="max-h-[300px] w-full resize-none self-center bg-transparent pr-12 text-base leading-6 text-neutral-900 outline-none placeholder:text-neutral-400 dark:text-neutral-100 dark:placeholder:text-neutral-500"
-        />
-        <button
-          type="button"
-          className={cn(
-            "flex size-10 shrink-0 items-center justify-center rounded-full bg-neutral-900 dark:bg-white",
-            isMultiline ? "absolute right-2 bottom-2" : "",
-          )}
-        >
-          <ArrowUp className="size-5 text-white dark:text-neutral-900" />
-        </button>
-      </div>
-    </div>
-  );
-}
-
 function FullscreenView() {
+  const deviceType = useDeviceType();
+  const devicePreset = DEVICE_PRESETS[deviceType];
+  const isFixedWidth = typeof devicePreset.width === "number";
+
   return (
     <MorphContainer className="absolute inset-0 overflow-hidden">
-      <div className="isolate h-full">
+      <div
+        className={cn("isolate h-full", isFixedWidth && "mx-auto")}
+        style={isFixedWidth ? { width: devicePreset.width } : undefined}
+      >
         <ComponentContent className="h-full p-4" />
+        <MockComposer />
       </div>
-      <MockComposer />
     </MorphContainer>
   );
 }
 
-export function UnifiedWorkspace() {
-  const activeJsonTab = useActiveJsonTab();
+function useJsonEditorState() {
   const selectedComponent = useSelectedComponent();
-  const displayMode = useDisplayMode();
-  const setDisplayMode = useWorkbenchStore((s) => s.setDisplayMode);
-  const globals = useOpenAIGlobals();
 
   const {
     toolInput,
@@ -441,7 +255,6 @@ export function UnifiedWorkspace() {
     setToolOutput,
     setWidgetState,
     setToolResponseMetadata,
-    setActiveJsonTab,
   } = useWorkbenchStore(
     useShallow((s) => ({
       toolInput: s.toolInput,
@@ -452,75 +265,181 @@ export function UnifiedWorkspace() {
       setToolOutput: s.setToolOutput,
       setWidgetState: s.setWidgetState,
       setToolResponseMetadata: s.setToolResponseMetadata,
-      setActiveJsonTab: s.setActiveJsonTab,
     })),
   );
 
-  const getActiveData = (): Record<string, unknown> => {
-    switch (activeJsonTab) {
-      case "toolInput":
-        return toolInput;
-      case "toolOutput":
-        return toolOutput ?? {};
-      case "widgetState":
-        return widgetState ?? {};
-      case "toolResponseMetadata":
-        return toolResponseMetadata ?? {};
-      default:
-        return {};
-    }
-  };
-
-  const handleChange = (value: Record<string, unknown>) => {
-    const isEmpty = Object.keys(value).length === 0;
-
-    switch (activeJsonTab) {
-      case "toolInput":
-        setToolInput(value);
-        break;
-      case "toolOutput":
-        setToolOutput(isEmpty ? null : value);
-        break;
-      case "widgetState":
-        setWidgetState(isEmpty ? null : value);
-        break;
-      case "toolResponseMetadata":
-        setToolResponseMetadata(isEmpty ? null : value);
-        break;
-    }
-  };
-
-  const handleReset = () => {
-    switch (activeJsonTab) {
-      case "toolInput": {
-        const component = getComponent(selectedComponent);
-        setToolInput(component?.defaultProps ?? {});
-        break;
+  const getActiveData = useCallback(
+    (tab: ActiveJsonTab): Record<string, unknown> => {
+      switch (tab) {
+        case "toolInput":
+          return toolInput;
+        case "toolOutput":
+          return toolOutput ?? {};
+        case "widgetState":
+          return widgetState ?? {};
+        case "toolResponseMetadata":
+          return toolResponseMetadata ?? {};
+        default:
+          return {};
       }
-      case "toolOutput":
-        setToolOutput(null);
-        break;
-      case "widgetState":
-        setWidgetState(null);
-        break;
-      case "toolResponseMetadata":
-        setToolResponseMetadata(null);
-        break;
-    }
-  };
+    },
+    [toolInput, toolOutput, widgetState, toolResponseMetadata],
+  );
 
-  const handleClose = () => {
+  const handleChange = useCallback(
+    (tab: ActiveJsonTab, value: Record<string, unknown>) => {
+      const isEmpty = Object.keys(value).length === 0;
+
+      switch (tab) {
+        case "toolInput":
+          setToolInput(value);
+          break;
+        case "toolOutput":
+          setToolOutput(isEmpty ? null : value);
+          break;
+        case "widgetState":
+          setWidgetState(isEmpty ? null : value);
+          break;
+        case "toolResponseMetadata":
+          setToolResponseMetadata(isEmpty ? null : value);
+          break;
+      }
+    },
+    [setToolInput, setToolOutput, setWidgetState, setToolResponseMetadata],
+  );
+
+  const handleReset = useCallback(
+    (tab: ActiveJsonTab) => {
+      switch (tab) {
+        case "toolInput": {
+          const component = getComponent(selectedComponent);
+          setToolInput(component?.defaultProps ?? {});
+          break;
+        }
+        case "toolOutput":
+          setToolOutput(null);
+          break;
+        case "widgetState":
+          setWidgetState(null);
+          break;
+        case "toolResponseMetadata":
+          setToolResponseMetadata(null);
+          break;
+      }
+    },
+    [
+      selectedComponent,
+      setToolInput,
+      setToolOutput,
+      setWidgetState,
+      setToolResponseMetadata,
+    ],
+  );
+
+  return { getActiveData, handleChange, handleReset };
+}
+
+function EditorPanel() {
+  const activeJsonTab = useActiveJsonTab();
+  const setActiveJsonTab = useWorkbenchStore((s) => s.setActiveJsonTab);
+  const globals = useOpenAIGlobals();
+  const { getActiveData, handleChange, handleReset } = useJsonEditorState();
+
+  return (
+    <div className="relative flex h-full flex-col">
+      <div className="scrollbar-subtle h-full overflow-y-auto">
+        <div
+          className="pointer-events-none absolute top-0 z-10 h-20 w-full bg-linear-to-b from-neutral-100 via-neutral-100/90 to-transparent dark:from-neutral-950 dark:via-neutral-950"
+          aria-hidden="true"
+        />
+
+        <div className="sticky top-0 z-20 flex items-center gap-2 p-2">
+          <Tabs
+            value={activeJsonTab}
+            onValueChange={(v) => setActiveJsonTab(v as ActiveJsonTab)}
+          >
+            <TabsList className={TAB_LIST_CLASSES}>
+              <TabsTrigger className={TAB_TRIGGER_CLASSES} value="toolInput">
+                Input
+              </TabsTrigger>
+              <TabsTrigger
+                className={TAB_TRIGGER_CLASSES}
+                value="toolResponseMetadata"
+              >
+                Meta
+              </TabsTrigger>
+              <TabsTrigger className={TAB_TRIGGER_CLASSES} value="widgetState">
+                State
+              </TabsTrigger>
+              <TabsTrigger
+                className={`${TAB_TRIGGER_CLASSES} gap-1.5`}
+                value="window"
+              >
+                Window
+              </TabsTrigger>
+            </TabsList>
+          </Tabs>
+        </div>
+
+        {activeJsonTab === "window" ? (
+          <ReadOnlyJsonView value={globals} />
+        ) : (
+          <JsonEditor
+            key={activeJsonTab}
+            label={TAB_LABELS[activeJsonTab]}
+            value={getActiveData(activeJsonTab)}
+            onChange={(value) => handleChange(activeJsonTab, value)}
+          />
+        )}
+      </div>
+
+      {activeJsonTab === "window" ? (
+        <div className="text-muted-foreground bg-background/60 absolute right-3 bottom-3 z-20 rounded-full border px-2.5 py-1 text-xs backdrop-blur-sm">
+          Read only
+        </div>
+      ) : (
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant="outline"
+              size="icon"
+              className="absolute right-3 bottom-3 z-20 size-8 rounded-full opacity-60 hover:opacity-100"
+              onClick={() => handleReset(activeJsonTab)}
+            >
+              <RotateCcw className="size-3.5" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent side="left">
+            Reset {TAB_LABELS[activeJsonTab].toLowerCase()}
+          </TooltipContent>
+        </Tooltip>
+      )}
+    </div>
+  );
+}
+
+function PreviewPanel() {
+  const displayMode = useDisplayMode();
+  const setDisplayMode = useWorkbenchStore((s) => s.setDisplayMode);
+
+  const handlePipClose = useCallback(() => {
     setDisplayMode("inline");
-  };
+  }, [setDisplayMode]);
 
-  const tabLabels: Record<ActiveJsonTab, string> = {
-    toolInput: "Tool Input",
-    toolOutput: "Tool Output",
-    widgetState: "Widget State",
-    toolResponseMetadata: "Metadata",
-    window: "Window",
-  };
+  return (
+    <div className="bg-background relative flex h-full flex-col overflow-hidden dark:bg-neutral-900">
+      {displayMode === "inline" && <InlineView />}
+      {displayMode === "pip" && (
+        <PipView onClose={handlePipClose}>
+          <ComponentContent className="h-full" />
+        </PipView>
+      )}
+      {displayMode === "fullscreen" && <FullscreenView />}
+    </div>
+  );
+}
 
+export function UnifiedWorkspace() {
   return (
     <PanelGroup
       direction="horizontal"
@@ -528,69 +447,7 @@ export function UnifiedWorkspace() {
       autoSaveId={PANEL_AUTO_SAVE_IDS.WORKSPACE_HORIZONTAL}
     >
       <Panel defaultSize={40} minSize={20} maxSize={80}>
-        <div className="relative flex h-full flex-col bg-transparent">
-          <div className="scrollbar-subtle h-full overflow-y-auto">
-            <div
-              className="pointer-events-none absolute top-0 z-10 h-18 w-full bg-linear-to-b from-neutral-100 via-neutral-100 to-transparent dark:from-neutral-950 dark:via-neutral-950"
-              aria-hidden="true"
-            />
-
-            <div className="sticky top-0 z-20 flex items-center gap-2 p-2">
-              <Tabs
-                value={activeJsonTab}
-                onValueChange={(v) => setActiveJsonTab(v as ActiveJsonTab)}
-              >
-                <TabsList className={TAB_LIST_CLASSES}>
-                  <TabsTrigger
-                    className={TAB_TRIGGER_CLASSES}
-                    value="toolInput"
-                  >
-                    Input
-                  </TabsTrigger>
-                  <TabsTrigger
-                    className={TAB_TRIGGER_CLASSES}
-                    value="toolResponseMetadata"
-                  >
-                    Meta
-                  </TabsTrigger>
-                  <TabsTrigger
-                    className={TAB_TRIGGER_CLASSES}
-                    value="widgetState"
-                  >
-                    State
-                  </TabsTrigger>
-                  <TabsTrigger
-                    className={`${TAB_TRIGGER_CLASSES} gap-1.5`}
-                    value="window"
-                  >
-                    <Globe className="size-3.5" />
-                    Window
-                  </TabsTrigger>
-                </TabsList>
-              </Tabs>
-
-              <Button
-                variant="ghost"
-                size="sm"
-                className="gap-1 opacity-50 hover:opacity-100"
-                onClick={handleReset}
-              >
-                <RotateCcw className="size-3" />
-              </Button>
-            </div>
-
-            {activeJsonTab === "window" ? (
-              <ReadOnlyJsonView value={globals} />
-            ) : (
-              <JsonEditor
-                key={activeJsonTab}
-                label={tabLabels[activeJsonTab]}
-                value={getActiveData()}
-                onChange={handleChange}
-              />
-            )}
-          </div>
-        </div>
+        <EditorPanel />
       </Panel>
 
       <PanelResizeHandle className="group relative z-10 -ml-3 w-3 shrink-0 cursor-col-resize">
@@ -598,11 +455,7 @@ export function UnifiedWorkspace() {
       </PanelResizeHandle>
 
       <Panel defaultSize={60} minSize={20} style={{ minWidth: 320 }}>
-        <div className="bg-background relative flex h-full flex-col overflow-hidden dark:bg-neutral-900">
-          {displayMode === "inline" && <InlineView />}
-          {displayMode === "pip" && <PipView onClose={handleClose} />}
-          {displayMode === "fullscreen" && <FullscreenView />}
-        </div>
+        <PreviewPanel />
       </Panel>
     </PanelGroup>
   );
