@@ -1,0 +1,81 @@
+/*
+  Workbench app container morph transition
+  Used when transitioning between inline and fullscreen display modes.
+
+  Border-radius direction is controlled via CSS custom properties:
+  --morph-radius-from / --morph-radius-to (set by JS before transition)
+*/
+
+@supports (view-transition-name: none) {
+  ::view-transition-group(workbench-app-container) {
+    animation-duration: 350ms;
+    animation-timing-function: cubic-bezier(0.32, 0.72, 0, 1);
+    overflow: clip;
+  }
+
+  ::view-transition-image-pair(workbench-app-container) {
+    overflow: clip;
+    animation: workbench-radius-morph 350ms cubic-bezier(0.32, 0.72, 0, 1)
+      forwards;
+  }
+
+  @keyframes workbench-radius-morph {
+    0% {
+      border-radius: var(--morph-radius-from);
+    }
+    100% {
+      border-radius: var(--morph-radius-to);
+    }
+  }
+
+  ::view-transition-old(workbench-app-container),
+  ::view-transition-new(workbench-app-container) {
+    animation-duration: 350ms;
+    animation-timing-function: cubic-bezier(0.32, 0.72, 0, 1);
+    mix-blend-mode: normal;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: top left;
+  }
+
+  ::view-transition-old(workbench-app-container) {
+    animation: workbench-morph-out 350ms cubic-bezier(0.32, 0.72, 0, 1) forwards;
+  }
+
+  ::view-transition-new(workbench-app-container) {
+    animation: workbench-morph-in 350ms cubic-bezier(0.32, 0.72, 0, 1) forwards;
+  }
+
+  @keyframes workbench-morph-out {
+    0% {
+      opacity: 1;
+    }
+    70% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+    }
+  }
+
+  @keyframes workbench-morph-in {
+    0% {
+      opacity: 0;
+    }
+    50% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    ::view-transition-group(workbench-app-container),
+    ::view-transition-old(workbench-app-container),
+    ::view-transition-new(workbench-app-container) {
+      animation-duration: 0ms;
+    }
+  }
+}

@@ -1,0 +1,129 @@
+/* Custom utility classes */
+
+/* Squircle corners - progressive enhancement */
+:root {
+  --border-radius-multiplier: 1;
+}
+
+@supports (corner-shape: squircle) {
+  :root {
+    --border-radius-multiplier: 2;
+  }
+}
+
+.squircle {
+  corner-shape: squircle;
+  border-radius: 30px !important;
+  border-radius: calc(var(--radius) * var(--border-radius-multiplier));
+}
+
+@keyframes accordion-down {
+  from {
+    height: 0;
+  }
+  to {
+    height: var(--radix-accordion-content-height);
+  }
+}
+
+@keyframes accordion-up {
+  from {
+    height: var(--radix-accordion-content-height);
+  }
+  to {
+    height: 0;
+  }
+}
+
+@layer utilities {
+  .animate-accordion-down {
+    animation: accordion-down 200ms ease-out;
+  }
+
+  .animate-accordion-up {
+    animation: accordion-up 200ms ease-out;
+  }
+
+  .bg-wash {
+    background-color: hsl(var(--wash));
+  }
+  .bg-dot-grid {
+    background-image: radial-gradient(
+      circle,
+      hsl(var(--dot-grid-color)) 1px,
+      transparent 1px
+    );
+    background-size: 20px 20px;
+  }
+
+  .shadow-crisp-edge {
+    position: relative;
+    box-sizing: padding-box;
+    box-shadow:
+      0px 1px 0px -1px oklch(0 0 0 / 0.1),
+      0px 1px 1px -1px oklch(0 0 0 / 0.1),
+      0px 1px 2px -1px oklch(0 0 0 / 0.1),
+      0px 2px 4px -2px oklch(0 0 0 / 0.1),
+      0px 3px 6px -3px oklch(0 0 0 / 0.1);
+
+    &::after {
+      content: "";
+      pointer-events: none;
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      box-shadow:
+        inset 0px 0px 0px 1px oklch(1 0 0 / 0.5),
+        inset 0px 1px 0px oklch(1 0 0 / 0.5);
+    }
+  }
+
+  .dark .shadow-crisp-edge {
+    box-shadow:
+      0px 1px 0px -1px oklch(0 0 0 / 0.1),
+      0px 1px 1px -1px oklch(0 0 0 / 0.1),
+      0px 1px 2px -1px oklch(0 0 0 / 0.1),
+      0px 2px 4px -2px oklch(0 0 0 / 0.1),
+      0px 3px 6px -3px oklch(0 0 0 / 0.1);
+
+    &::after {
+      box-shadow:
+        inset 0px 0px 0px 1px oklch(1 0 0 / 0.05),
+        inset 0px 1px 0px oklch(1 0 0 / 0.05);
+    }
+  }
+
+  .scrollbar-subtle {
+    scrollbar-width: thin;
+    scrollbar-color: oklch(0 0 0 / 0.2) transparent;
+  }
+
+  .scrollbar-subtle::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  .scrollbar-subtle::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .scrollbar-subtle::-webkit-scrollbar-thumb {
+    background-color: oklch(0 0 0 / 0.2);
+    border-radius: 9999px;
+  }
+
+  .scrollbar-subtle:hover::-webkit-scrollbar-thumb {
+    background-color: oklch(0 0 0 / 0.3);
+  }
+
+  .dark .scrollbar-subtle {
+    scrollbar-color: oklch(100% 0 271.152 / 0.25) transparent;
+  }
+
+  .dark .scrollbar-subtle::-webkit-scrollbar-thumb {
+    scrollbar-color: oklch(100% 0 271.152 / 0.25) transparent;
+  }
+
+  .dark .scrollbar-subtle:hover::-webkit-scrollbar-thumb {
+    background-color: oklch(100% 0 271.152 / 0.55);
+  }
+}
