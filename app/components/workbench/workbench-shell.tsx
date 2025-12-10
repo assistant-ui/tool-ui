@@ -76,7 +76,7 @@ export function WorkbenchShell() {
             <ArrowLeft className="size-4" />
           </Link>
           <LogoMark className="size-5 shrink-0" />
-          <span className="font-mono font-medium select-none">Workbench</span>
+          <span className="font-mono select-none">Workbench</span>
         </div>
 
         <div className="flex flex-1 justify-center">

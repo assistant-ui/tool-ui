@@ -22,7 +22,7 @@ export function ResponsiveHeader({ rightContent }: ResponsiveHeaderProps) {
     <div className="pt-calc(env(safe-area-inset-top)+0.5rem) flex gap-4 pt-4 pb-2 sm:pt-8 sm:pb-3 md:gap-8">
       <div className="flex w-fit shrink-0 items-center justify-start gap-3 md:items-center">
         <Link href="/" className="flex items-center gap-1.5">
-          <LogoMark className="-mb-0.5 size-5" />
+          <LogoMark className="-mb-0.5 size-6" />
           <h1 className="text-2xl font-semibold">Tool UI</h1>
         </Link>
       </div>
