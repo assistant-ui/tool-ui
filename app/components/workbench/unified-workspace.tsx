@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useCallback, useRef, type ReactNode } from "react";
+import { useMemo, useCallback, useRef, useEffect, type ReactNode } from "react";
 import { useShallow } from "zustand/react/shallow";
 import {
   Panel,
@@ -149,11 +149,31 @@ function InlineView() {
   const deviceType = useDeviceType();
   const isTransitioning = useIsTransitioning();
   const panelGroupRef = useRef<ImperativePanelGroupHandle | null>(null);
+  const containerRef = useRef<HTMLDivElement | null>(null);
   const isSyncingLayout = useRef(false);
 
   const devicePreset = DEVICE_PRESETS[deviceType];
-  const previewWidth = devicePreset.width;
-  const isFixedWidth = typeof previewWidth === "number";
+
+  useEffect(() => {
+    if (!panelGroupRef.current || !containerRef.current) return;
+
+    const containerWidth = containerRef.current.offsetWidth;
+    let centerSize: number;
+
+    if (devicePreset.width === "100%") {
+      centerSize = 90;
+    } else {
+      const targetWidth = devicePreset.width + 32;
+      centerSize = Math.min(
+        PREVIEW_MAX_SIZE,
+        Math.max(PREVIEW_MIN_SIZE, (targetWidth / containerWidth) * 100),
+      );
+    }
+
+    const spacing = (100 - centerSize) / 2;
+    isSyncingLayout.current = true;
+    panelGroupRef.current.setLayout([spacing, centerSize, spacing]);
+  }, [devicePreset.width]);
 
   const handleLayout = useCallback((sizes: number[]) => {
     if (!panelGroupRef.current) return;
@@ -181,21 +201,11 @@ function InlineView() {
     }
   }, []);
 
-  if (isFixedWidth) {
-    return (
-      <div className="scrollbar-subtle flex h-full w-full items-start justify-center overflow-auto p-4">
-        <MorphContainer
-          className="overflow-hidden rounded-xl"
-          style={{ width: previewWidth, height: maxHeight }}
-        >
-          <ComponentContent className="h-full" />
-        </MorphContainer>
-      </div>
-    );
-  }
-
   return (
-    <div className="scrollbar-subtle h-full w-full overflow-auto p-4">
+    <div
+      ref={containerRef}
+      className="scrollbar-subtle h-full w-full overflow-auto p-4"
+    >
       <div className="flex min-h-full w-full items-start justify-center">
         <PanelGroup
           ref={panelGroupRef}
