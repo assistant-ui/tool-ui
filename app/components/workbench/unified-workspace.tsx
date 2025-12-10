@@ -134,7 +134,11 @@ function MorphContainer({
 const RESIZE_HANDLE_CLASSES =
   "absolute top-1/2 left-1/2 h-12 w-1 -translate-x-1/2 -translate-y-1/2 rounded-full bg-gray-300 opacity-40 transition-all group-hover:bg-gray-400 group-hover:opacity-100 group-data-resize-handle-active:bg-gray-500 group-data-resize-handle-active:opacity-100 dark:bg-gray-600 dark:group-hover:bg-gray-500 dark:group-data-resize-handle-active:bg-gray-400";
 
-function PreviewResizeHandle({ isTransitioning }: { isTransitioning: boolean }) {
+function PreviewResizeHandle({
+  isTransitioning,
+}: {
+  isTransitioning: boolean;
+}) {
   return (
     <PanelResizeHandle
       className={cn("group relative w-4", isTransitioning && "opacity-0")}

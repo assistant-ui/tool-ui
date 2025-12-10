@@ -171,7 +171,7 @@ export function POIMap({
           />
         </div>
 
-        <div className="border-border relative min-w-0 flex-1 overflow-hidden rounded-xl border">
+        <div className="border-border isolate relative min-w-0 flex-1 overflow-hidden rounded-xl border">
           <MapView
             pois={filteredPois}
             center={mapCenter}
@@ -227,7 +227,7 @@ export function POIMap({
     <div
       id={id}
       className={cn(
-        "border-border relative h-full w-full overflow-hidden rounded-xl border",
+        "border-border isolate relative h-full w-full overflow-hidden rounded-xl border",
         className,
       )}
     >

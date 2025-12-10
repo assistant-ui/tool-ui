@@ -2,6 +2,8 @@
 
 .leaflet-container {
   background: hsl(var(--muted));
+  /* Isolate Leaflet's high z-indices to prevent them from escaping the container */
+  isolation: isolate;
 }
 
 [data-theme="dark"] .leaflet-container {
