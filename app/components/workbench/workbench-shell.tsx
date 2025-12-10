@@ -15,6 +15,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useSelectedComponent, useWorkbenchStore } from "@/lib/workbench/store";
+import {
+  useWorkbenchPersistence,
+  PANEL_AUTO_SAVE_IDS,
+} from "@/lib/workbench/persistence";
 import { workbenchComponents } from "@/lib/workbench/component-registry";
 import { SELECT_CLASSES, COMPACT_SMALL_TEXT_CLASSES } from "./styles";
 import { Button } from "@/components/ui/button";
@@ -33,6 +37,8 @@ export function WorkbenchShell() {
   const selectedComponent = useSelectedComponent();
   const setSelectedComponent = useWorkbenchStore((s) => s.setSelectedComponent);
   const { setTheme, resolvedTheme } = useTheme();
+
+  useWorkbenchPersistence();
 
   React.useEffect(() => {
     setMounted(true);
@@ -129,7 +135,10 @@ export function WorkbenchShell() {
 
       <div className="flex min-h-0 flex-1 overflow-hidden">
         <div className="flex min-w-0 flex-1 flex-col overflow-clip rounded-tr-lg border-t border-r">
-          <PanelGroup direction="vertical">
+          <PanelGroup
+            direction="vertical"
+            autoSaveId={PANEL_AUTO_SAVE_IDS.SHELL_VERTICAL}
+          >
             <Panel
               defaultSize={100 - CONSOLE_DEFAULT_SIZE}
               minSize={WORKSPACE_MIN_SIZE}

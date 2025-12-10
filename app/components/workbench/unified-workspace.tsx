@@ -29,6 +29,7 @@ import { cn } from "@/lib/ui/cn";
 import { RotateCcw, X, AlertTriangle, Globe } from "lucide-react";
 import { TAB_LIST_CLASSES, TAB_TRIGGER_CLASSES } from "./styles";
 import { VIEW_TRANSITION_NAME } from "@/lib/workbench/transition-config";
+import { PANEL_AUTO_SAVE_IDS } from "@/lib/workbench/persistence";
 
 interface ErrorBoundaryProps {
   children: ReactNode;
@@ -462,7 +463,11 @@ export function UnifiedWorkspace() {
   };
 
   return (
-    <PanelGroup direction="horizontal" className="flex h-full w-full flex-row">
+    <PanelGroup
+      direction="horizontal"
+      className="flex h-full w-full flex-row"
+      autoSaveId={PANEL_AUTO_SAVE_IDS.WORKSPACE_HORIZONTAL}
+    >
       <Panel defaultSize={40} minSize={20} maxSize={80}>
         <div className="relative flex h-full flex-col bg-transparent">
           <div className="scrollbar-subtle h-full overflow-y-auto">

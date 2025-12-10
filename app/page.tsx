@@ -21,7 +21,7 @@ export default function HomePage() {
             <HomeHero />
           </div>
 
-          <div className="relative hidden h-full min-h-0 w-full min-w-0 items-center justify-center lg:flex lg:flex-1">
+          <div className="squircle relative hidden h-full min-h-0 w-full min-w-0 items-center justify-center lg:flex lg:flex-1">
             <div className="h-full w-full max-w-[800px]">
               <FauxChatShell />
             </div>

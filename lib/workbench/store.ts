@@ -61,6 +61,7 @@ interface WorkbenchState {
     result?: unknown;
   }) => void;
   clearConsole: () => void;
+  restoreConsoleLogs: (entries: ConsoleEntry[]) => void;
   toggleSection: (section: string) => void;
   setActiveJsonTab: (tab: ActiveJsonTab) => void;
   getOpenAIGlobals: () => OpenAIGlobals;
@@ -164,6 +165,7 @@ export const useWorkbenchStore = create<WorkbenchState>((set, get) => ({
       ],
     })),
   clearConsole: () => set(() => ({ consoleLogs: [] })),
+  restoreConsoleLogs: (entries) => set(() => ({ consoleLogs: entries })),
   toggleSection: (section) =>
     set((state) => ({
       collapsedSections: {
