@@ -238,13 +238,13 @@ function FullscreenView() {
       )}
     >
       <MorphContainer
-        className="h-full overflow-hidden"
+        className="relative h-full overflow-hidden"
         style={isFixedWidth ? { width: devicePreset.width } : undefined}
       >
         <div className="isolate h-full">
           <ComponentContent className="h-full p-4" />
-          <MockComposer />
         </div>
+        <MockComposer />
       </MorphContainer>
     </div>
   );

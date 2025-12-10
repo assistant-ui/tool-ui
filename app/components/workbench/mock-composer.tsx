@@ -3,10 +3,15 @@
 import { useRef, useState, useCallback } from "react";
 import { ArrowUp } from "lucide-react";
 import { cn } from "@/lib/ui/cn";
+import { useDeviceType, useWorkbenchStore } from "@/lib/workbench/store";
 
 export function MockComposer() {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [isMultiline, setIsMultiline] = useState(false);
+  const deviceType = useDeviceType();
+  const theme = useWorkbenchStore((s) => s.theme);
+  const isMobile = deviceType === "mobile";
+  const isDark = theme === "dark";
 
   const handleInput = useCallback(() => {
     const textarea = textareaRef.current;
@@ -22,11 +27,22 @@ export function MockComposer() {
   }, []);
 
   return (
-    <div className="absolute inset-x-0 bottom-0 z-10 flex justify-center px-4 pb-4">
+    <div
+      className={cn(
+        "absolute inset-x-0 bottom-0 z-10 flex justify-center",
+        isMobile ? "px-3 pb-3" : "px-4 pb-4",
+      )}
+    >
       <div
         className={cn(
-          "relative flex min-h-14 w-full max-w-2xl items-center border border-neutral-200 bg-white pr-2 pl-6 shadow-sm",
-          isMultiline ? "rounded-3xl py-2" : "rounded-full py-2",
+          "relative flex w-full items-center border shadow-sm transition-colors",
+          isDark
+            ? "border-neutral-800 bg-neutral-900"
+            : "border-neutral-200 bg-white",
+          isMobile
+            ? "min-h-12 rounded-2xl pr-1.5 pl-4"
+            : "min-h-14 max-w-2xl rounded-full pr-2 pl-6",
+          isMultiline && (isMobile ? "rounded-2xl py-1.5" : "rounded-3xl py-2"),
         )}
       >
         <textarea
@@ -34,16 +50,34 @@ export function MockComposer() {
           placeholder="Send a message..."
           rows={1}
           onInput={handleInput}
-          className="max-h-[300px] w-full resize-none self-center bg-transparent pr-12 text-base leading-6 text-neutral-900 outline-none placeholder:text-neutral-400 dark:text-neutral-100 dark:placeholder:text-neutral-500"
+          className={cn(
+            "w-full resize-none self-center bg-transparent leading-6 transition-colors outline-none",
+            isDark
+              ? "text-neutral-100 placeholder:text-neutral-500"
+              : "text-neutral-900 placeholder:text-neutral-400",
+            isMobile
+              ? "max-h-[200px] pr-10 text-sm"
+              : "max-h-[300px] pr-12 text-base",
+          )}
         />
         <button
           type="button"
           className={cn(
-            "flex size-10 shrink-0 items-center justify-center rounded-full bg-neutral-900 dark:bg-white",
-            isMultiline && "absolute right-2 bottom-2",
+            "flex shrink-0 items-center justify-center rounded-full transition-colors",
+            isDark ? "bg-white" : "bg-neutral-950",
+            isMobile ? "size-8" : "size-10",
+            isMultiline &&
+              (isMobile
+                ? "absolute right-1.5 bottom-1.5"
+                : "absolute right-2 bottom-2"),
           )}
         >
-          <ArrowUp className="size-5 text-white dark:text-neutral-900" />
+          <ArrowUp
+            className={cn(
+              isDark ? "text-neutral-900" : "text-white",
+              isMobile ? "size-4" : "size-5",
+            )}
+          />
         </button>
       </div>
     </div>
