@@ -252,16 +252,16 @@ export function ProductList({
           variant="secondary"
           size="icon-sm"
           className={cn(
-            "bg-background/80 absolute top-1/2 left-2 z-20 hidden -translate-y-1/2 rounded-full shadow-sm backdrop-blur-sm",
-            "transition-[opacity,transform] duration-200 ease-out will-change-transform motion-reduce:transition-none",
+            "bg-background/80 absolute inset-y-0 left-2 z-20 my-auto hidden rounded-full shadow-sm backdrop-blur-sm",
+            "transition-[opacity,transform] duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] will-change-transform motion-reduce:transition-none",
             "@md:flex",
             // Base (hidden)
-            "pointer-events-none -translate-x-1 scale-95 opacity-0",
+            "pointer-events-none scale-95 opacity-0",
             // Show only when scrollable AND the user is interacting with the carousel area.
             canScrollLeft &&
-              "@md:group-hover:pointer-events-auto @md:group-hover:translate-x-0 @md:group-hover:scale-100 @md:group-hover:opacity-100",
+              "@md:group-hover:pointer-events-auto @md:group-hover:scale-100 @md:group-hover:opacity-100",
             canScrollLeft &&
-              "@md:group-focus-within:pointer-events-auto @md:group-focus-within:translate-x-0 @md:group-focus-within:scale-100 @md:group-focus-within:opacity-100",
+              "@md:group-focus-within:pointer-events-auto @md:group-focus-within:scale-100 @md:group-focus-within:opacity-100",
           )}
           onClick={() => scroll("left")}
           aria-label="Scroll left"
@@ -275,16 +275,16 @@ export function ProductList({
           variant="secondary"
           size="icon-sm"
           className={cn(
-            "bg-background/80 absolute top-1/2 right-2 z-20 hidden -translate-y-1/2 rounded-full shadow-sm backdrop-blur-sm",
-            "transition-[opacity,transform] duration-200 ease-out will-change-transform motion-reduce:transition-none",
+            "bg-background/80 absolute inset-y-0 right-2 z-20 my-auto hidden rounded-full shadow-sm backdrop-blur-sm",
+            "transition-[opacity,transform] duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] will-change-transform motion-reduce:transition-none",
             "@md:flex",
             // Base (hidden)
-            "pointer-events-none translate-x-1 scale-95 opacity-0",
+            "pointer-events-none scale-95 opacity-0",
             // Show only when scrollable AND the user is interacting with the carousel area.
             canScrollRight &&
-              "@md:group-hover:pointer-events-auto @md:group-hover:translate-x-0 @md:group-hover:scale-100 @md:group-hover:opacity-100",
+              "@md:group-hover:pointer-events-auto @md:group-hover:scale-100 @md:group-hover:opacity-100",
             canScrollRight &&
-              "@md:group-focus-within:pointer-events-auto @md:group-focus-within:translate-x-0 @md:group-focus-within:scale-100 @md:group-focus-within:opacity-100",
+              "@md:group-focus-within:pointer-events-auto @md:group-focus-within:scale-100 @md:group-focus-within:opacity-100",
           )}
           onClick={() => scroll("right")}
           aria-label="Scroll right"
