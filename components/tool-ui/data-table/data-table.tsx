@@ -385,12 +385,13 @@ function DataTableHeader() {
   return (
     <TooltipProvider delayDuration={300}>
       <TableHeader>
-        <TableRow>
+        <TableRow className="hover:bg-transparent">
           {columns.map((column, columnIndex) => (
             <DataTableHead
               key={column.key}
               column={column}
               columnIndex={columnIndex}
+              totalColumns={columns.length}
             />
           ))}
         </TableRow>
@@ -402,10 +403,17 @@ function DataTableHeader() {
 interface DataTableHeadProps {
   column: Column;
   columnIndex?: number;
+  totalColumns?: number;
 }
 
-function DataTableHead({ column, columnIndex = 0 }: DataTableHeadProps) {
+function DataTableHead({
+  column,
+  columnIndex = 0,
+  totalColumns = 1,
+}: DataTableHeadProps) {
   const { sortBy, sortDirection, toggleSort, isLoading } = useDataTable();
+  const isFirstColumn = columnIndex === 0;
+  const isLastColumn = columnIndex === totalColumns - 1;
 
   const isSortable = column.sortable !== false;
 
@@ -442,7 +450,11 @@ function DataTableHead({ column, columnIndex = 0 }: DataTableHeadProps) {
   return (
     <TableHead
       scope="col"
-      className={alignClass}
+      className={cn(
+        alignClass,
+        isFirstColumn && "pl-1",
+        isLastColumn && "pr-1",
+      )}
       style={column.width ? { width: column.width } : undefined}
       aria-sort={
         isSorted
@@ -465,7 +477,12 @@ function DataTableHead({ column, columnIndex = 0 }: DataTableHeadProps) {
         }}
         disabled={isDisabled}
         variant="ghost"
-        className={cn(buttonAlignClass, "w-fit min-w-10")}
+        className={cn(
+          buttonAlignClass,
+          "w-fit min-w-10",
+          isFirstColumn && "pl-4",
+          isLastColumn && "pr-4",
+        )}
         aria-label={
           `Sort by ${column.label}` +
           (isSorted && direction
