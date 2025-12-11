@@ -16,7 +16,9 @@ export const ProductSchema = z.object({
 
 export const ProductListPropsSchema = z.object({
   id: ToolUIIdSchema,
-  products: z.array(ProductSchema).min(1),
+  title: z.string().optional(),
+  description: z.string().optional(),
+  products: z.array(ProductSchema),
   className: z.string().optional(),
 });
 
@@ -32,7 +34,7 @@ export const SerializableProductSchema = ProductSchema.extend({
 });
 
 export const SerializableProductListSchema = ProductListPropsSchema.extend({
-  products: z.array(SerializableProductSchema).min(1),
+  products: z.array(SerializableProductSchema),
 });
 
 export type SerializableProduct = z.infer<typeof SerializableProductSchema>;
