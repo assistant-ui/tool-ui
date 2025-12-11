@@ -31,7 +31,9 @@ export function ProductCard({
   return (
     <Card
       className={cn(
-        "group relative flex w-[180px] shrink-0 cursor-pointer flex-col overflow-hidden transition-shadow hover:shadow-md",
+        "group relative flex w-[180px] shrink-0 cursor-pointer flex-col overflow-hidden",
+        "snap-start transition-shadow hover:shadow-md",
+        "touch-manipulation",
         !available && "opacity-75",
       )}
       onClick={handleCardClick}
