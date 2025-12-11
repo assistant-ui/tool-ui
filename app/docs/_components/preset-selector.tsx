@@ -5,15 +5,42 @@ import {
   ItemGroup,
   ItemTitle,
 } from "@/components/ui/item";
-import { type ComponentId, previewConfigs } from "@/lib/docs/preview-config";
+import { chartPresets } from "@/lib/presets/chart";
+import { codeBlockPresets } from "@/lib/presets/code-block";
+import { dataTablePresets } from "@/lib/presets/data-table";
+import { mediaCardPresets } from "@/lib/presets/media-card";
+import { optionListPresets } from "@/lib/presets/option-list";
+import { planPresets } from "@/lib/presets/plan";
+import { productListPresets } from "@/lib/presets/product-list";
+import { terminalPresets } from "@/lib/presets/terminal";
+import type { Preset } from "@/lib/presets/types";
 import { cn } from "@/lib/ui/cn";
+
+type PresetMap = Record<string, Preset<unknown>>;
+
+const PRESET_REGISTRY: Record<string, PresetMap> = {
+  chart: chartPresets,
+  "code-block": codeBlockPresets,
+  "data-table": dataTablePresets,
+  "media-card": mediaCardPresets,
+  "option-list": optionListPresets,
+  plan: planPresets,
+  "product-list": productListPresets,
+  terminal: terminalPresets,
+};
+
+const DEFAULT_COMPONENT = "option-list";
+
+function getPresets(componentId: string): PresetMap {
+  return PRESET_REGISTRY[componentId] ?? PRESET_REGISTRY[DEFAULT_COMPONENT];
+}
 
 function formatPresetName(preset: string): string {
   return preset.replaceAll("-", " ").replaceAll("_", " ");
 }
 
 interface PresetSelectorProps {
-  componentId: ComponentId;
+  componentId: string;
   currentPreset: string;
   onSelectPreset: (preset: string) => void;
 }
@@ -23,8 +50,7 @@ export function PresetSelector({
   currentPreset,
   onSelectPreset,
 }: PresetSelectorProps) {
-  const config = previewConfigs[componentId];
-  const presets = config.presets;
+  const presets = getPresets(componentId);
   const presetNames = Object.keys(presets);
 
   return (
@@ -63,12 +89,12 @@ function PresetItem({
       className={cn(
         "group/item relative py-[2px] pb-[2px] lg:py-3!",
         isSelected
-          ? "bg-muted cursor-pointer border-transparent"
+          ? "bg-muted cursor-pointer border-transparent shadow-xs"
           : "hover:bg-primary/5 active:bg-primary/10 cursor-pointer transition-[colors,shadow,border,background] duration-150 ease-out",
       )}
       onClick={() => onSelect(preset)}
     >
-      <ItemContent className="transform-gpu transition-transform duration-300 ease-[cubic-bezier(0.3,-0.55,0.27,1.55)] will-change-transform select-none group-active/item:scale-[0.98] group-active/item:duration-100 group-active/item:ease-out">
+      <ItemContent className="transform-gpu transition-transform duration-300 ease-[cubic-bezier(0.3,-0.55,0.27,1.55)] will-change-transform group-active/item:scale-[0.98] group-active/item:duration-100 group-active/item:ease-out">
         <div className="relative flex items-start justify-between">
           <div className="flex flex-1 flex-col gap-0 lg:gap-1">
             <ItemTitle className="flex w-full items-center justify-between capitalize">

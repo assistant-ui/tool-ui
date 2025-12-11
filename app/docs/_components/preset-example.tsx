@@ -18,6 +18,11 @@ import {
 import { terminalPresets, TerminalPresetName } from "@/lib/presets/terminal";
 import { Plan } from "@/components/tool-ui/plan";
 import { planPresets, PlanPresetName } from "@/lib/presets/plan";
+import { ProductList } from "@/components/tool-ui/product-list";
+import {
+  productListPresets,
+  ProductListPresetName,
+} from "@/lib/presets/product-list";
 
 function generateOptionListCode(preset: OptionListPresetName): string {
   const list = optionListPresets[preset].data;
@@ -288,6 +293,48 @@ export function PlanPresetExample({ preset }: PlanPresetExampleProps) {
       <Tab value="Preview">
         <div className="not-prose mx-auto max-w-xl">
           <Plan {...data} />
+        </div>
+      </Tab>
+      <Tab value="Code">
+        <DynamicCodeBlock lang="tsx" code={code} />
+      </Tab>
+    </Tabs>
+  );
+}
+
+function generateProductListCode(preset: ProductListPresetName): string {
+  const list = productListPresets[preset].data;
+  const props: string[] = [];
+
+  props.push(`  id="${list.id}"`);
+  props.push(
+    `  products={${JSON.stringify(list.products, null, 4).replace(/\n/g, "\n  ")}}`,
+  );
+  props.push(
+    `  onProductClick={(productId) => console.log("Clicked:", productId)}`,
+  );
+  props.push(
+    `  onProductAction={(productId, actionId) => console.log("Action:", productId, actionId)}`,
+  );
+
+  return `<ProductList\n${props.join("\n")}\n/>`;
+}
+
+interface ProductListPresetExampleProps {
+  preset: ProductListPresetName;
+}
+
+export function ProductListPresetExample({
+  preset,
+}: ProductListPresetExampleProps) {
+  const data = productListPresets[preset].data;
+  const code = generateProductListCode(preset);
+
+  return (
+    <Tabs items={["Preview", "Code"]}>
+      <Tab value="Preview">
+        <div className="not-prose">
+          <ProductList {...data} />
         </div>
       </Tab>
       <Tab value="Code">
