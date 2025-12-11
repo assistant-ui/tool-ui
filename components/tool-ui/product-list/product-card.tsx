@@ -15,7 +15,7 @@ export function ProductCard({
   onProductClick,
   onProductAction,
 }: ProductCardProps) {
-  const { id, name, price, image, available = true, actions } = product;
+  const { id, name, price, image, actions } = product;
   const isCardInteractive = typeof onProductClick === "function";
 
   const handleCardClick = (e: React.MouseEvent) => {
@@ -68,13 +68,7 @@ export function ProductCard({
       )}
       role={isCardInteractive ? "button" : undefined}
       tabIndex={isCardInteractive ? 0 : undefined}
-      aria-label={
-        isCardInteractive
-          ? available
-            ? `View product: ${name}`
-            : `View product: ${name} (out of stock)`
-          : undefined
-      }
+      aria-label={isCardInteractive ? `View product: ${name}` : undefined}
       onClick={isCardInteractive ? handleCardClick : undefined}
       onKeyDown={isCardInteractive ? handleCardKeyDown : undefined}
       onKeyUp={isCardInteractive ? handleCardKeyUp : undefined}
@@ -89,36 +83,16 @@ export function ProductCard({
           className={cn(
             "h-full w-full object-cover transition-transform duration-300",
             isCardInteractive && "group-hover:scale-105",
-            !available && "opacity-75",
           )}
         />
-        {!available && (
-          <div className="absolute inset-0 flex items-center justify-center bg-black/30">
-            <span className="rounded-full border border-white/15 bg-black/60 px-2.5 py-1 text-[11px] font-medium tracking-wide text-white">
-              Out of Stock
-            </span>
-          </div>
-        )}
       </div>
 
       <div className="flex flex-1 flex-col gap-2 p-3">
-        <h3
-          className={cn(
-            "line-clamp-2 text-sm leading-tight font-medium",
-            !available && "text-muted-foreground",
-          )}
-        >
+        <h3 className="line-clamp-2 text-sm leading-tight font-medium">
           {name}
         </h3>
 
-        <p
-          className={cn(
-            "text-foreground text-sm font-semibold",
-            !available && "text-muted-foreground",
-          )}
-        >
-          {price}
-        </p>
+        <p className="text-foreground text-sm font-semibold">{price}</p>
 
         {actions && actions.length > 0 && (
           <div

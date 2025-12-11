@@ -10,7 +10,6 @@ export const ProductSchema = z.object({
   name: z.string().min(1),
   price: z.string().min(1),
   image: z.string().url(),
-  available: z.boolean().optional(),
   actions: z.array(ActionSchema).optional(),
 });
 
