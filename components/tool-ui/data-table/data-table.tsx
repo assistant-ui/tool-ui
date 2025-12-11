@@ -1,28 +1,56 @@
 "use client";
 
 import * as React from "react";
-import { cn, Table, TableBody, TableRow, TableCell } from "./_ui";
-import { sortData } from "./utilities";
+import {
+  cn,
+  Table,
+  TableBody,
+  TableRow,
+  TableCell,
+  TableHeader,
+  TableHead,
+  Button,
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "./_ui";
+import { sortData, getRowIdentifier } from "./utilities";
+import { renderFormattedValue } from "./formatters";
 import type {
   DataTableProps,
   DataTableContextValue,
   RowData,
   DataTableRowData,
   ColumnKey,
+  Column,
 } from "./types";
 import { ActionButtons, normalizeActionsConfig } from "../shared";
+import type { FormatConfig } from "./formatters";
 
-/**
- * Default locale for all Intl formatting operations.
- *
- * Used as fallback when no locale prop is provided. This ensures consistent
- * behavior across server and client rendering, avoiding mismatches from
- * Node.js default locale (often 'en-US') vs browser locale (varies by user).
- *
- * @see {@link DataTableSerializableProps.locale}
- */
 export const DEFAULT_LOCALE = "en-US" as const;
 
+function isNumericFormat(format?: FormatConfig): boolean {
+  const kind = format?.kind;
+  return (
+    kind === "number" ||
+    kind === "currency" ||
+    kind === "percent" ||
+    kind === "delta"
+  );
+}
+
+function getAlignmentClass(
+  align?: "left" | "right" | "center",
+): string | undefined {
+  if (align === "right") return "text-right";
+  if (align === "center") return "text-center";
+  return undefined;
+}
 
 // We intentionally use `any` here to store the context value,
 // then expose a strongly-typed hook via `useDataTable<T>()` that
@@ -197,14 +225,7 @@ export function DataTable<T extends object = RowData>({
                   ) : data.length === 0 ? (
                     <DataTableEmpty message={emptyMessage} />
                   ) : (
-                    <>
-                      {React.Children.toArray(
-                        React.Children.map(
-                          React.createElement(DataTableContent, null),
-                          (child) => child,
-                        ),
-                      )}
-                    </>
+                    <DataTableContent />
                   )}
                 </Table>
               </DataTableErrorBoundary>
@@ -337,7 +358,556 @@ function DataTableSkeletonCards() {
   );
 }
 
-import { DataTableHeader } from "./data-table-header";
-import { DataTableBody } from "./data-table-body";
-import { DataTableAccordionCard } from "./data-table-accordion-card";
-import { DataTableErrorBoundary } from "./error-boundary";
+function SortIcon({ state }: { state?: "asc" | "desc" }) {
+  let char = "⇅";
+  let className = "opacity-20";
+
+  if (state === "asc") {
+    char = "↑";
+    className = "";
+  }
+
+  if (state === "desc") {
+    char = "↓";
+    className = "";
+  }
+
+  return (
+    <span aria-hidden className={cn("min-w-4 shrink-0 text-center", className)}>
+      {char}
+    </span>
+  );
+}
+
+function DataTableHeader() {
+  const { columns } = useDataTable();
+
+  return (
+    <TooltipProvider delayDuration={300}>
+      <TableHeader>
+        <TableRow>
+          {columns.map((column, columnIndex) => (
+            <DataTableHead
+              key={column.key}
+              column={column}
+              columnIndex={columnIndex}
+            />
+          ))}
+        </TableRow>
+      </TableHeader>
+    </TooltipProvider>
+  );
+}
+
+interface DataTableHeadProps {
+  column: Column;
+  columnIndex?: number;
+}
+
+function DataTableHead({ column, columnIndex = 0 }: DataTableHeadProps) {
+  const { sortBy, sortDirection, toggleSort, isLoading } = useDataTable();
+
+  const isSortable = column.sortable !== false;
+
+  const isSorted = sortBy === column.key;
+  const direction = isSorted ? sortDirection : undefined;
+  const isDisabled = isLoading || !isSortable;
+
+  const handleClick = () => {
+    if (!isDisabled && toggleSort) {
+      toggleSort(column.key);
+    }
+  };
+
+  const displayText = column.abbr || column.label;
+  const shouldShowTooltip = column.abbr || displayText.length > 15;
+  const isNumericKind = isNumericFormat(column.format);
+  const align =
+    column.align ??
+    (columnIndex === 0 ? "left" : isNumericKind ? "right" : "left");
+  const alignClass = getAlignmentClass(align);
+  const buttonAlignClass = cn(
+    "min-w-0 gap-1 font-normal",
+    align === "right" && "text-right",
+    align === "center" && "text-center",
+    align === "left" && "text-left",
+  );
+  const labelAlignClass =
+    align === "right"
+      ? "text-right"
+      : align === "center"
+        ? "text-center"
+        : "text-left";
+
+  return (
+    <TableHead
+      scope="col"
+      className={alignClass}
+      style={column.width ? { width: column.width } : undefined}
+      aria-sort={
+        isSorted
+          ? direction === "asc"
+            ? "ascending"
+            : "descending"
+          : undefined
+      }
+    >
+      <Button
+        type="button"
+        size="sm"
+        onClick={handleClick}
+        onKeyDown={(e) => {
+          if (isDisabled) return;
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            handleClick();
+          }
+        }}
+        disabled={isDisabled}
+        variant="ghost"
+        className={cn(buttonAlignClass, "w-fit min-w-10")}
+        aria-label={
+          `Sort by ${column.label}` +
+          (isSorted && direction
+            ? ` (${direction === "asc" ? "ascending" : "descending"})`
+            : "")
+        }
+        aria-disabled={isDisabled || undefined}
+      >
+        {shouldShowTooltip ? (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <span className={cn("truncate", labelAlignClass)}>
+                {column.abbr ? (
+                  <abbr
+                    title={column.label}
+                    className={cn(
+                      "cursor-help border-b border-dotted border-current no-underline",
+                      labelAlignClass,
+                    )}
+                  >
+                    {column.abbr}
+                  </abbr>
+                ) : (
+                  <span className={labelAlignClass}>{column.label}</span>
+                )}
+              </span>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>{column.label}</p>
+            </TooltipContent>
+          </Tooltip>
+        ) : (
+          <span className={cn("truncate", labelAlignClass)}>
+            {column.label}
+          </span>
+        )}
+        {isSortable && <SortIcon state={direction} />}
+      </Button>
+    </TableHead>
+  );
+}
+
+function DataTableBody() {
+  const { data, rowIdKey } = useDataTable<DataTableRowData>();
+
+  React.useEffect(() => {
+    if (process.env.NODE_ENV !== "production" && !rowIdKey && data.length > 0) {
+      console.warn(
+        "[DataTable] Missing `rowIdKey` prop. Using array index as React key can cause reconciliation issues when data reorders (focus traps, animation glitches, incorrect state preservation). " +
+          "Strongly recommended: Pass a `rowIdKey` prop that points to a unique identifier in your row data (e.g., 'id', 'uuid', 'symbol').\n" +
+          'Example: <DataTable rowIdKey="id" columns={...} data={...} />',
+      );
+    }
+  }, [rowIdKey, data.length]);
+
+  return (
+    <TableBody>
+      {data.map((row, index) => {
+        const keyVal = rowIdKey ? row[rowIdKey] : undefined;
+        const rowKey = keyVal != null ? String(keyVal) : String(index);
+        return <DataTableRow key={rowKey} row={row} />;
+      })}
+    </TableBody>
+  );
+}
+
+interface DataTableRowProps {
+  row: DataTableRowData;
+  className?: string;
+}
+
+function DataTableRow({ row, className }: DataTableRowProps) {
+  const { columns } = useDataTable();
+
+  return (
+    <TableRow className={className}>
+      {columns.map((column, columnIndex) => (
+        <DataTableCell
+          key={column.key}
+          value={row[column.key]}
+          column={column}
+          row={row}
+          columnIndex={columnIndex}
+        />
+      ))}
+    </TableRow>
+  );
+}
+
+interface DataTableCellProps {
+  value:
+    | string
+    | number
+    | boolean
+    | null
+    | (string | number | boolean | null)[];
+  column: Column;
+  row: DataTableRowData;
+  className?: string;
+  columnIndex?: number;
+}
+
+function DataTableCell({
+  value,
+  column,
+  row,
+  className,
+  columnIndex = 0,
+}: DataTableCellProps) {
+  const { locale } = useDataTable();
+  const isNumericKind = isNumericFormat(column.format);
+  const isNumericValue = typeof value === "number";
+  const displayValue = renderFormattedValue({ value, column, row, locale });
+  const align =
+    column.align ??
+    (columnIndex === 0
+      ? "left"
+      : isNumericKind || isNumericValue
+        ? "right"
+        : "left");
+  const alignClass = getAlignmentClass(align);
+
+  return (
+    <TableCell className={cn("px-5 py-3", alignClass, className)}>
+      {displayValue}
+    </TableCell>
+  );
+}
+
+function categorizeColumns(columns: Column[]) {
+  const primary: Column[] = [];
+  const secondary: Column[] = [];
+
+  let seenVisible = 0;
+  columns.forEach((col) => {
+    if (col.hideOnMobile) return;
+
+    if (col.priority === "primary") {
+      primary.push(col);
+    } else if (col.priority === "secondary") {
+      secondary.push(col);
+    } else if (col.priority === "tertiary") {
+      return;
+    } else {
+      if (seenVisible < 2) {
+        primary.push(col);
+      } else {
+        secondary.push(col);
+      }
+      seenVisible++;
+    }
+  });
+
+  return { primary, secondary };
+}
+
+interface DataTableAccordionCardProps {
+  row: DataTableRowData;
+  index: number;
+  isFirst?: boolean;
+}
+
+function DataTableAccordionCard({
+  row,
+  index,
+  isFirst = false,
+}: DataTableAccordionCardProps) {
+  const { columns, locale, rowIdKey } = useDataTable();
+
+  const { primary, secondary } = React.useMemo(
+    () => categorizeColumns(columns),
+    [columns],
+  );
+
+  if (secondary.length === 0) {
+    return (
+      <SimpleCard row={row} columns={primary} index={index} isFirst={isFirst} />
+    );
+  }
+
+  const primaryColumn = primary[0];
+  const secondaryPrimary = primary.slice(1);
+
+  const stableRowId =
+    getRowIdentifier(row, rowIdKey ? String(rowIdKey) : undefined) ||
+    `${index}-${primaryColumn?.key ?? "row"}`;
+
+  const headingId = `row-${stableRowId}-heading`;
+  const detailsId = `row-${stableRowId}-details`;
+  const secondaryDataIds = secondaryPrimary.map(
+    (col) => `row-${stableRowId}-${String(col.key)}`,
+  );
+
+  const primaryValue = primaryColumn
+    ? String(row[primaryColumn.key] ?? "")
+    : "";
+  const rowLabel = `Row ${index + 1}: ${primaryValue}`;
+  const itemValue = `row-${stableRowId}`;
+
+  return (
+    <Accordion
+      type="single"
+      collapsible
+      className={cn(!isFirst && "border-t")}
+      role="listitem"
+      aria-label={rowLabel}
+    >
+      <AccordionItem value={itemValue} className="group border-0">
+        <AccordionTrigger
+          className="group-data-[state=closed]:hover:bg-accent/50 active:bg-accent/50 group-data-[state=open]:bg-muted w-full rounded-none px-4 py-3 hover:no-underline"
+          aria-controls={detailsId}
+          aria-label={`${rowLabel}. ${secondary.length > 0 ? "Expand for details" : ""}`}
+        >
+          <div className="flex min-w-0 flex-1 flex-col gap-2">
+            {primaryColumn && (
+              <div
+                id={headingId}
+                role="heading"
+                aria-level={3}
+                className="truncate"
+                aria-label={`${primaryColumn.label}: ${row[primaryColumn.key]}`}
+              >
+                {renderFormattedValue({
+                  value: row[primaryColumn.key],
+                  column: primaryColumn,
+                  row,
+                  locale,
+                })}
+              </div>
+            )}
+
+            {secondaryPrimary.length > 0 && (
+              <div
+                className="text-muted-foreground flex w-full flex-wrap gap-x-4 gap-y-0.5"
+                role="group"
+                aria-label="Summary information"
+              >
+                {secondaryPrimary.map((col, idx) => (
+                  <span
+                    key={col.key}
+                    id={secondaryDataIds[idx]}
+                    className="flex min-w-0 gap-1 font-normal"
+                    role="cell"
+                    aria-label={`${col.label}: ${row[col.key]}`}
+                  >
+                    <span className="sr-only">{col.label}:</span>
+                    <span aria-hidden="true">{col.label}:</span>
+                    <span className="truncate">
+                      {renderFormattedValue({
+                        value: row[col.key],
+                        column: col,
+                        row,
+                        locale,
+                      })}
+                    </span>
+                  </span>
+                ))}
+              </div>
+            )}
+          </div>
+        </AccordionTrigger>
+
+        <AccordionContent
+          className={cn("flex flex-col gap-4", "px-4 pb-4")}
+          id={detailsId}
+          role="region"
+          aria-labelledby={headingId}
+        >
+          {secondary.length > 0 && (
+            <dl
+              className={cn(
+                "flex flex-col gap-2 pt-4",
+                "group-data-[state=open]:animate-in group-data-[state=open]:fade-in-0",
+                "group-data-[state=open]:slide-in-from-top-1",
+                "group-data-[state=closed]:animate-out group-data-[state=closed]:fade-out-0",
+                "group-data-[state=closed]:slide-out-to-top-1",
+                "duration-150",
+              )}
+              role="list"
+              aria-label="Additional data"
+            >
+              {secondary.map((col) => (
+                <div
+                  key={col.key}
+                  className="flex items-start justify-between gap-4"
+                  role="listitem"
+                >
+                  <dt
+                    className="text-muted-foreground shrink-0"
+                    id={`row-${stableRowId}-${String(col.key)}-label`}
+                  >
+                    {col.label}
+                  </dt>
+                  <dd
+                    className={cn(
+                      "text-foreground min-w-0 text-pretty break-words",
+                      col.align === "right" && "text-right",
+                      col.align === "center" && "text-center",
+                    )}
+                    role="cell"
+                    aria-labelledby={`row-${stableRowId}-${String(col.key)}-label`}
+                  >
+                    {renderFormattedValue({
+                      value: row[col.key],
+                      column: col,
+                      row,
+                      locale,
+                    })}
+                  </dd>
+                </div>
+              ))}
+            </dl>
+          )}
+        </AccordionContent>
+      </AccordionItem>
+    </Accordion>
+  );
+}
+
+/**
+ * Simple card (no accordion) for when there are only primary columns
+ */
+function SimpleCard({
+  row,
+  columns,
+  index,
+  isFirst = false,
+}: {
+  row: DataTableRowData;
+  columns: Column[];
+  index: number;
+  isFirst?: boolean;
+}) {
+  const { locale, rowIdKey } = useDataTable();
+  const primaryColumn = columns[0];
+  const otherColumns = columns.slice(1);
+
+  const stableRowId =
+    getRowIdentifier(row, rowIdKey ? String(rowIdKey) : undefined) ||
+    `${index}-${primaryColumn?.key ?? "row"}`;
+
+  const primaryValue = primaryColumn
+    ? String(row[primaryColumn.key] ?? "")
+    : "";
+  const rowLabel = `Row ${index + 1}: ${primaryValue}`;
+
+  return (
+    <div
+      className={cn("flex flex-col gap-2 p-4", !isFirst && "border-t")}
+      role="listitem"
+      aria-label={rowLabel}
+    >
+      {primaryColumn && (
+        <div
+          role="heading"
+          aria-level={3}
+          aria-label={`${primaryColumn.label}: ${row[primaryColumn.key]}`}
+        >
+          {renderFormattedValue({
+            value: row[primaryColumn.key],
+            column: primaryColumn,
+            row,
+            locale,
+          })}
+        </div>
+      )}
+
+      {otherColumns.map((col) => (
+        <div
+          key={col.key}
+          className="flex items-start justify-between gap-4"
+          role="group"
+        >
+          <span
+            className="text-muted-foreground"
+            id={`row-${stableRowId}-${String(col.key)}-label`}
+          >
+            {col.label}:
+          </span>
+          <span
+            className={cn(
+              "min-w-0 break-words",
+              col.align === "right" && "text-right",
+              col.align === "center" && "text-center",
+            )}
+            role="cell"
+            aria-labelledby={`row-${stableRowId}-${String(col.key)}-label`}
+          >
+            {renderFormattedValue({
+              value: row[col.key],
+              column: col,
+              row,
+              locale,
+            })}
+          </span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+interface ErrorBoundaryProps {
+  children: React.ReactNode;
+  fallback?: React.ReactNode;
+  onError?: (error: Error, errorInfo: React.ErrorInfo) => void;
+}
+
+interface ErrorBoundaryState {
+  hasError: boolean;
+  error?: Error;
+}
+
+class DataTableErrorBoundary extends React.Component<
+  ErrorBoundaryProps,
+  ErrorBoundaryState
+> {
+  constructor(props: ErrorBoundaryProps) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError(error: Error): ErrorBoundaryState {
+    return { hasError: true, error };
+  }
+
+  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+    console.error("DataTable Error:", error, errorInfo);
+    this.props.onError?.(error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        this.props.fallback ?? (
+          <div className="border-destructive text-destructive rounded-lg border p-4">
+            <p className="font-semibold">Something went wrong</p>
+            <p className="text-sm">{this.state.error?.message}</p>
+          </div>
+        )
+      );
+    }
+
+    return this.props.children;
+  }
+}
