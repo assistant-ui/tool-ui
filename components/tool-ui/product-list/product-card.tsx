@@ -74,6 +74,7 @@ export function ProductCard({
       onKeyUp={isCardInteractive ? handleCardKeyUp : undefined}
     >
       <div className="bg-muted relative aspect-3/4 w-full overflow-hidden">
+        {/* eslint-disable-next-line @next/next/no-img-element -- copy-standalone portability (Next/Image requires app-level config) */}
         <img
           src={image}
           alt={name}
@@ -104,6 +105,7 @@ export function ProductCard({
             {actions.map((action) => (
               <Button
                 key={action.id}
+                type="button"
                 variant={action.variant ?? "default"}
                 size="sm"
                 disabled={action.disabled}

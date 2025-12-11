@@ -3,18 +3,222 @@
 import { useRef, useState, useEffect, useCallback } from "react";
 import { cn, Button, Card, ChevronLeft, ChevronRight } from "./_ui";
 import { ProductCard } from "./product-card";
+import { prefersReducedMotion } from "../shared/utils";
 import type { ProductListProps } from "./schema";
 
-function easeOutCubic(t: number): number {
-  return 1 - Math.pow(1 - t, 3);
-}
+const SCROLL_PADDING_STYLE = { scrollPaddingInline: "1rem" };
 
-interface ScrollAnimation {
-  targetScrollLeft: number;
-  startScrollLeft: number;
+const SCROLL_EDGE_THRESHOLD_PX = 8;
+const SNAP_EPSILON_PX = 5;
+const SCROLL_ANIMATION_DURATION_MS = 300;
+const PAGE_SCROLL_RATIO = 0.8;
+const PAGE_SCROLL_BREAKPOINT_PX = 640;
+
+type ScrollDirection = "left" | "right";
+
+interface ScrollAnimationState {
+  target: number;
+  start: number;
   startTime: number;
   duration: number;
   onComplete?: () => void;
+}
+
+function useSmoothScroll() {
+  const animationRef = useRef<ScrollAnimationState | null>(null);
+  const frameRef = useRef<number | null>(null);
+
+  const cancelAnimation = useCallback(() => {
+    if (frameRef.current !== null) {
+      cancelAnimationFrame(frameRef.current);
+      frameRef.current = null;
+    }
+    animationRef.current = null;
+  }, []);
+
+  useEffect(() => cancelAnimation, [cancelAnimation]);
+
+  const scrollTo = useCallback(
+    (
+      element: HTMLElement,
+      target: number,
+      duration = SCROLL_ANIMATION_DURATION_MS,
+      onComplete?: () => void,
+    ) => {
+      if (prefersReducedMotion() || duration <= 0) {
+        element.scrollLeft = target;
+        onComplete?.();
+        return;
+      }
+
+      cancelAnimation();
+
+      animationRef.current = {
+        target,
+        start: element.scrollLeft,
+        startTime: performance.now(),
+        duration,
+        onComplete,
+      };
+
+      element.style.scrollSnapType = "none";
+
+      const step = () => {
+        const anim = animationRef.current;
+        if (!anim) return;
+
+        const elapsed = performance.now() - anim.startTime;
+        const progress = Math.min(elapsed / anim.duration, 1);
+        const eased = 1 - Math.pow(1 - progress, 3);
+
+        element.scrollLeft = anim.start + (anim.target - anim.start) * eased;
+
+        if (progress < 1) {
+          frameRef.current = requestAnimationFrame(step);
+          return;
+        }
+
+        element.scrollLeft = anim.target;
+        const callback = anim.onComplete;
+        cancelAnimation();
+
+        requestAnimationFrame(() => {
+          element.style.scrollSnapType = "";
+          callback?.();
+        });
+      };
+
+      frameRef.current = requestAnimationFrame(step);
+    },
+    [cancelAnimation],
+  );
+
+  const isAnimating = useCallback(
+    () => animationRef.current !== null && frameRef.current !== null,
+    [],
+  );
+
+  return { scrollTo, isAnimating, cancelAnimation };
+}
+
+function useScrollEdgeState(
+  scrollRef: React.RefObject<HTMLDivElement | null>,
+  itemCount: number,
+) {
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(false);
+
+  const updateState = useCallback(() => {
+    const container = scrollRef.current;
+    if (!container) return;
+
+    const scrollLeft = Math.round(container.scrollLeft);
+    const maxScroll = Math.max(
+      0,
+      Math.round(container.scrollWidth - container.clientWidth),
+    );
+
+    setCanScrollLeft(scrollLeft > SCROLL_EDGE_THRESHOLD_PX);
+    setCanScrollRight(scrollLeft < maxScroll - SCROLL_EDGE_THRESHOLD_PX);
+  }, [scrollRef]);
+
+  useEffect(() => {
+    const container = scrollRef.current;
+    if (!container) return;
+
+    let rafId: number | null = null;
+
+    const scheduleUpdate = () => {
+      if (rafId !== null) cancelAnimationFrame(rafId);
+      rafId = requestAnimationFrame(() => {
+        rafId = null;
+        updateState();
+      });
+    };
+
+    scheduleUpdate();
+
+    container.addEventListener("scroll", scheduleUpdate, { passive: true });
+    const resizeObserver = new ResizeObserver(scheduleUpdate);
+    resizeObserver.observe(container);
+
+    return () => {
+      container.removeEventListener("scroll", scheduleUpdate);
+      resizeObserver.disconnect();
+      if (rafId !== null) cancelAnimationFrame(rafId);
+    };
+  }, [scrollRef, updateState, itemCount]);
+
+  return { canScrollLeft, canScrollRight };
+}
+
+function CarouselNavButton({
+  direction,
+  visible,
+  onClick,
+}: {
+  direction: ScrollDirection;
+  visible: boolean;
+  onClick: () => void;
+}) {
+  const isLeft = direction === "left";
+  const Icon = isLeft ? ChevronLeft : ChevronRight;
+
+  return (
+    <Button
+      type="button"
+      variant="secondary"
+      size="icon-sm"
+      className={cn(
+        "pointer-events-none scale-90 opacity-0",
+        "bg-background/60 absolute inset-y-0 z-20 my-auto hidden h-[6cqh] min-h-[50px] rounded-2xl shadow-md backdrop-blur-lg",
+        "transition-[opacity,transform] duration-250 ease-[cubic-bezier(0.16,1,0.3,1)] motion-reduce:transition-none",
+        "@md:flex",
+        isLeft ? "left-1.5" : "right-1.5",
+        visible &&
+          "pointer-events-auto scale-100 opacity-100 @md:group-focus-within:pointer-events-auto @md:group-focus-within:scale-100 @md:group-focus-within:opacity-100 @md:group-hover:pointer-events-auto @md:group-hover:scale-100 @md:group-hover:opacity-100",
+      )}
+      onClick={onClick}
+      aria-label={isLeft ? "Scroll left" : "Scroll right"}
+      tabIndex={visible ? 0 : -1}
+      aria-hidden={!visible}
+    >
+      <Icon className="h-4 w-4" />
+    </Button>
+  );
+}
+
+function ProductListHeader({
+  title,
+  description,
+}: {
+  title?: string;
+  description?: string;
+}) {
+  if (!title && !description) return null;
+
+  return (
+    <div className="border-border/60 border-b px-4 pt-4 pb-3">
+      {title && (
+        <h3 className="text-[15px] leading-tight font-semibold tracking-tight">
+          {title}
+        </h3>
+      )}
+      {description && (
+        <p className="text-muted-foreground mt-1 text-sm leading-snug">
+          {description}
+        </p>
+      )}
+    </div>
+  );
+}
+
+function EmptyState({ className }: { className?: string }) {
+  return (
+    <Card className={cn("flex h-48 items-center justify-center", className)}>
+      <p className="text-muted-foreground text-sm">No products to display</p>
+    </Card>
+  );
 }
 
 export function ProductList({
@@ -28,281 +232,127 @@ export function ProductList({
 }: ProductListProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const targetIndexRef = useRef<number | null>(null);
-  const activeAnimationRef = useRef<ScrollAnimation | null>(null);
-  const animationFrameRef = useRef<number | null>(null);
-  const [canScrollLeft, setCanScrollLeft] = useState(false);
-  const [canScrollRight, setCanScrollRight] = useState(false);
 
-  const smoothScrollTo = useCallback(
-    (
-      element: HTMLElement,
-      targetScrollLeft: number,
-      duration = 300,
-      onComplete?: () => void,
-    ) => {
-      const prefersReducedMotion =
-        typeof window !== "undefined" &&
-        window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
-
-      if (prefersReducedMotion || duration <= 0) {
-        element.scrollLeft = targetScrollLeft;
-        onComplete?.();
-        return;
-      }
-
-      // If animation is in progress, restart from current position.
-      if (animationFrameRef.current !== null) {
-        cancelAnimationFrame(animationFrameRef.current);
-        animationFrameRef.current = null;
-      }
-
-      const startScrollLeft = element.scrollLeft;
-      const startTime = performance.now();
-
-      activeAnimationRef.current = {
-        targetScrollLeft,
-        startScrollLeft,
-        startTime,
-        duration,
-        onComplete,
-      };
-
-      // Temporarily disable scroll snap during animation.
-      element.style.scrollSnapType = "none";
-
-      const step = () => {
-        const anim = activeAnimationRef.current;
-        if (!anim) return;
-
-        const elapsed = performance.now() - anim.startTime;
-        const progress = Math.min(elapsed / anim.duration, 1);
-        const eased = easeOutCubic(progress);
-
-        const distance = anim.targetScrollLeft - anim.startScrollLeft;
-        element.scrollLeft = anim.startScrollLeft + distance * eased;
-
-        if (progress < 1) {
-          animationFrameRef.current = requestAnimationFrame(step);
-          return;
-        }
-
-        element.scrollLeft = anim.targetScrollLeft;
-        const callback = anim.onComplete;
-        activeAnimationRef.current = null;
-        animationFrameRef.current = null;
-        requestAnimationFrame(() => {
-          element.style.scrollSnapType = "";
-          callback?.();
-        });
-      };
-
-      animationFrameRef.current = requestAnimationFrame(step);
-    },
-    [],
+  const { scrollTo, isAnimating } = useSmoothScroll();
+  const { canScrollLeft, canScrollRight } = useScrollEdgeState(
+    scrollRef,
+    products.length,
   );
 
-  const updateScrollState = useCallback(() => {
-    const container = scrollRef.current;
-    if (!container) return;
+  const scroll = useCallback(
+    (direction: ScrollDirection) => {
+      const container = scrollRef.current;
+      if (!container) return;
 
-    // Use rounding + a slightly larger threshold to avoid flicker when scroll snapping
-    // settles on fractional scroll positions.
-    const EDGE_THRESHOLD_PX = 8;
-    const { scrollLeft, scrollWidth, clientWidth } = container;
-    const left = Math.round(scrollLeft);
-    const right = Math.round(scrollLeft + clientWidth);
-    const max = Math.round(scrollWidth);
+      const paddingValue = window.getComputedStyle(container).scrollPaddingLeft;
+      const scrollPaddingLeft = Number.isFinite(Number.parseFloat(paddingValue))
+        ? Number.parseFloat(paddingValue)
+        : 0;
 
-    setCanScrollLeft(left > EDGE_THRESHOLD_PX);
-    setCanScrollRight(right < max - EDGE_THRESHOLD_PX);
-  }, []);
+      const items = Array.from(
+        container.querySelectorAll<HTMLElement>("[data-product-item]"),
+      );
+      if (items.length === 0) return;
 
-  useEffect(() => {
-    const container = scrollRef.current;
-    if (!container) return;
+      const snapPositions = items.map((item) =>
+        Math.max(0, item.offsetLeft - scrollPaddingLeft),
+      );
 
-    let rafId: number | null = null;
-    const scheduleUpdate = () => {
-      if (rafId !== null) cancelAnimationFrame(rafId);
-      rafId = requestAnimationFrame(() => {
-        rafId = null;
-        updateScrollState();
-      });
-    };
-
-    scheduleUpdate();
-
-    container.addEventListener("scroll", scheduleUpdate, { passive: true });
-
-    const resizeObserver = new ResizeObserver(scheduleUpdate);
-    resizeObserver.observe(container);
-
-    return () => {
-      container.removeEventListener("scroll", scheduleUpdate);
-      resizeObserver.disconnect();
-      if (rafId !== null) cancelAnimationFrame(rafId);
-    };
-  }, [updateScrollState, products.length]);
-
-  useEffect(() => {
-    return () => {
-      if (animationFrameRef.current !== null) {
-        cancelAnimationFrame(animationFrameRef.current);
-      }
-      animationFrameRef.current = null;
-      activeAnimationRef.current = null;
-    };
-  }, []);
-
-  const scroll = (direction: "left" | "right") => {
-    const container = scrollRef.current;
-    if (!container) return;
-
-    const styles = window.getComputedStyle(container);
-    const scrollPaddingLeft = Number.parseFloat(styles.scrollPaddingLeft) || 0;
-
-    const items = Array.from(
-      container.querySelectorAll<HTMLElement>("[data-product-item]"),
-    );
-    if (items.length === 0) return;
-
-    const snapPositions = items.map((item) =>
-      Math.max(0, item.offsetLeft - scrollPaddingLeft),
-    );
-
-    // If we have a pending target from rapid clicks, use that as base
-    // Otherwise, find current position from scroll
-    let currentIndex: number;
-    if (targetIndexRef.current !== null && activeAnimationRef.current) {
-      currentIndex = targetIndexRef.current;
-    } else {
-      const scrollLeft = container.scrollLeft;
-      currentIndex = 0;
-      for (let i = 0; i < snapPositions.length; i++) {
-        if (Math.abs(snapPositions[i] - scrollLeft) < 5) {
-          currentIndex = i;
-          break;
-        } else if (snapPositions[i] > scrollLeft) {
-          currentIndex = Math.max(0, i - 1);
-          break;
-        } else if (i === snapPositions.length - 1) {
-          currentIndex = i;
+      const scrollLeft = Math.round(container.scrollLeft);
+      let currentIndex: number;
+      if (isAnimating()) {
+        currentIndex = Math.min(
+          targetIndexRef.current ?? 0,
+          snapPositions.length - 1,
+        );
+      } else {
+        currentIndex = snapPositions.length - 1;
+        for (let i = 0; i < snapPositions.length; i++) {
+          const snap = snapPositions[i];
+          if (Math.abs(snap - scrollLeft) < SNAP_EPSILON_PX) {
+            currentIndex = i;
+            break;
+          }
+          if (snap > scrollLeft) {
+            currentIndex = Math.max(0, i - 1);
+            break;
+          }
         }
       }
-    }
 
-    let targetIndex: number;
-    const itemStepPx =
-      items.length > 1 ? items[1].offsetLeft - items[0].offsetLeft : 0;
-    const safeStepPx = itemStepPx > 0 ? itemStepPx : items[0].offsetWidth || 1;
-    const step =
-      container.clientWidth >= 640
-        ? Math.max(1, Math.floor((container.clientWidth * 0.8) / safeStepPx))
-        : 1;
+      const itemStep =
+        items.length > 1 ? items[1].offsetLeft - items[0].offsetLeft : 0;
+      const safeStep = itemStep > 0 ? itemStep : items[0].offsetWidth || 1;
 
-    if (direction === "right") {
-      targetIndex = Math.min(currentIndex + step, items.length - 1);
-    } else {
-      targetIndex = Math.max(currentIndex - step, 0);
-    }
+      const pageIndexStep =
+        container.clientWidth >= PAGE_SCROLL_BREAKPOINT_PX
+          ? Math.max(
+              1,
+              Math.floor(
+                (container.clientWidth * PAGE_SCROLL_RATIO) / safeStep,
+              ),
+            )
+          : 1;
 
-    targetIndexRef.current = targetIndex;
-    const targetScrollLeft = snapPositions[targetIndex];
+      const targetIndex =
+        direction === "right"
+          ? Math.min(currentIndex + pageIndexStep, items.length - 1)
+          : Math.max(currentIndex - pageIndexStep, 0);
 
-    if (Math.abs(targetScrollLeft - container.scrollLeft) > 1) {
-      smoothScrollTo(container, targetScrollLeft, 300, () => {
-        targetIndexRef.current = null;
-      });
-    }
-  };
+      targetIndexRef.current = targetIndex;
+      const targetScrollLeft = snapPositions[targetIndex];
+
+      if (Math.abs(targetScrollLeft - container.scrollLeft) > 1) {
+        scrollTo(
+          container,
+          targetScrollLeft,
+          SCROLL_ANIMATION_DURATION_MS,
+          () => {
+            targetIndexRef.current = null;
+          },
+        );
+      }
+    },
+    [scrollTo, isAnimating],
+  );
+
+  const handleScrollLeft = useCallback(() => scroll("left"), [scroll]);
+  const handleScrollRight = useCallback(() => scroll("right"), [scroll]);
 
   if (products.length === 0) {
-    return (
-      <Card className={cn("flex h-48 items-center justify-center", className)}>
-        <p className="text-muted-foreground text-sm">No products to display</p>
-      </Card>
-    );
+    return <EmptyState className={className} />;
   }
 
   return (
-    <Card
+    <div
+      data-product-list-id={id}
       className={cn(
-        "@container relative w-full gap-0 overflow-hidden p-0",
+        "bg-background @container relative isolate w-full gap-0 overflow-hidden rounded-xl border p-0",
         className,
       )}
-      data-product-list-id={id}
     >
-      {(title || description) && (
-        <div className="border-border/60 border-b px-4 pt-4 pb-3">
-          {title && (
-            <h3 className="text-[15px] leading-tight font-semibold tracking-tight">
-              {title}
-            </h3>
-          )}
-          {description && (
-            <p className="text-muted-foreground mt-1 text-sm leading-snug">
-              {description}
-            </p>
-          )}
-        </div>
-      )}
+      <ProductListHeader title={title} description={description} />
 
       <div className="group relative">
-        <Button
-          variant="secondary"
-          size="icon-sm"
-          className={cn(
-            "bg-background/80 absolute inset-y-0 left-2 z-20 my-auto hidden rounded-full shadow-sm backdrop-blur-sm",
-            "transition-[opacity,transform] duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] will-change-transform motion-reduce:transition-none",
-            "@md:flex",
-            // Base (hidden)
-            "pointer-events-none scale-95 opacity-0",
-            // Show only when scrollable AND the user is interacting with the carousel area.
-            canScrollLeft &&
-              "@md:group-hover:pointer-events-auto @md:group-hover:scale-100 @md:group-hover:opacity-100",
-            canScrollLeft &&
-              "@md:group-focus-within:pointer-events-auto @md:group-focus-within:scale-100 @md:group-focus-within:opacity-100",
-          )}
-          onClick={() => scroll("left")}
-          aria-label="Scroll left"
-          tabIndex={canScrollLeft ? 0 : -1}
-          aria-hidden={!canScrollLeft}
-        >
-          <ChevronLeft className="h-4 w-4" />
-        </Button>
-
-        <Button
-          variant="secondary"
-          size="icon-sm"
-          className={cn(
-            "bg-background/80 absolute inset-y-0 right-2 z-20 my-auto hidden rounded-full shadow-sm backdrop-blur-sm",
-            "transition-[opacity,transform] duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] will-change-transform motion-reduce:transition-none",
-            "@md:flex",
-            // Base (hidden)
-            "pointer-events-none scale-95 opacity-0",
-            // Show only when scrollable AND the user is interacting with the carousel area.
-            canScrollRight &&
-              "@md:group-hover:pointer-events-auto @md:group-hover:scale-100 @md:group-hover:opacity-100",
-            canScrollRight &&
-              "@md:group-focus-within:pointer-events-auto @md:group-focus-within:scale-100 @md:group-focus-within:opacity-100",
-          )}
-          onClick={() => scroll("right")}
-          aria-label="Scroll right"
-          tabIndex={canScrollRight ? 0 : -1}
-          aria-hidden={!canScrollRight}
-        >
-          <ChevronRight className="h-4 w-4" />
-        </Button>
+        <CarouselNavButton
+          direction="left"
+          visible={canScrollLeft}
+          onClick={handleScrollLeft}
+        />
+        <CarouselNavButton
+          direction="right"
+          visible={canScrollRight}
+          onClick={handleScrollRight}
+        />
 
         <div
           ref={scrollRef}
           className={cn(
             "flex gap-4 overflow-x-auto overscroll-x-contain px-4 py-3",
             "snap-x snap-proximity",
-            "scrollbar-subtle",
           )}
           role="list"
-          style={{ scrollPadding: "0 1rem" }}
+          style={SCROLL_PADDING_STYLE}
         >
           {products.map((product) => (
             <div
@@ -321,6 +371,6 @@ export function ProductList({
           ))}
         </div>
       </div>
-    </Card>
+    </div>
   );
 }

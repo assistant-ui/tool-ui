@@ -20,3 +20,10 @@ export function getDomain(url: string): string {
     return "";
   }
 }
+
+export function prefersReducedMotion(): boolean {
+  return (
+    typeof window !== "undefined" &&
+    window.matchMedia?.("(prefers-reduced-motion: reduce)").matches
+  );
+}
