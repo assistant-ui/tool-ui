@@ -1,6 +1,6 @@
 "use client";
 
-import * as React from "react";
+import type { CSSProperties } from "react";
 import { useRef, useState, useEffect, useCallback } from "react";
 import { cn, Button, ChevronLeft, ChevronRight } from "./_ui";
 import { ProductCard } from "./product-card";
@@ -32,19 +32,9 @@ function smoothScrollTo(
     if (progress < 1) {
       requestAnimationFrame(step);
     } else {
-      // Ensure we land exactly on target
       element.scrollLeft = targetScrollLeft;
-      console.log("Animation complete:", {
-        targetScrollLeft,
-        actualScrollLeft: element.scrollLeft,
-      });
-      // Re-enable scroll snap after a brief delay to prevent snap jump
       requestAnimationFrame(() => {
-        console.log("Before re-enable snap:", element.scrollLeft);
         element.style.scrollSnapType = "";
-        requestAnimationFrame(() => {
-          console.log("After re-enable snap:", element.scrollLeft);
-        });
       });
     }
   }
@@ -105,13 +95,6 @@ export function ProductList({
       index === 0 ? 0 : card.offsetLeft,
     );
 
-    // Log for debugging - remove once working
-    console.log({
-      snapPositions,
-      scrollLeft,
-      offsets: cards.map((c) => c.offsetLeft),
-    });
-
     // Find the current snap index
     let currentIndex = 0;
     for (let i = 0; i < snapPositions.length; i++) {
@@ -135,17 +118,43 @@ export function ProductList({
 
     const targetScrollLeft = snapPositions[targetIndex];
 
-    console.log({ currentIndex, targetIndex, targetScrollLeft });
-
     if (Math.abs(targetScrollLeft - scrollLeft) > 1) {
       smoothScrollTo(container, targetScrollLeft);
     }
   };
 
+  const getMaskStyle = (): CSSProperties => {
+    const fadeWidth = 36;
+
+    // Two mask layers, one for each edge
+    // Left layer: fades from left edge, positioned from left
+    // Right layer: fades from right edge, positioned from right
+    const leftMask = `linear-gradient(to right, transparent, black ${fadeWidth}px, black 100%)`;
+    const rightMask = `linear-gradient(to left, transparent, black ${fadeWidth}px, black 100%)`;
+
+    // Animate mask-position per layer to show/hide each fade
+    // Left layer: 0 = fade visible, -fadeWidth = fade hidden (slides left)
+    // Right layer: positioned from right edge, 0 = fade visible, -fadeWidth = fade hidden (slides right)
+    const leftPos = canScrollLeft ? 0 : -fadeWidth;
+    const rightPos = canScrollRight ? 0 : -fadeWidth;
+
+    return {
+      maskImage: `${leftMask}, ${rightMask}`,
+      WebkitMaskImage: `${leftMask}, ${rightMask}`,
+      maskSize: `calc(100% + ${fadeWidth}px) 100%, calc(100% + ${fadeWidth}px) 100%`,
+      WebkitMaskSize: `calc(100% + ${fadeWidth}px) 100%, calc(100% + ${fadeWidth}px) 100%`,
+      maskPosition: `left ${leftPos}px top 0, right ${rightPos}px top 0`,
+      WebkitMaskPosition: `left ${leftPos}px top 0, right ${rightPos}px top 0`,
+      maskComposite: "intersect",
+      WebkitMaskComposite: "source-in",
+      transition: "mask-position 200ms ease-out, -webkit-mask-position 200ms ease-out",
+    };
+  };
+
   if (products.length === 0) {
     return (
       <div className={cn("flex h-48 items-center justify-center", className)}>
-        <p className="text-sm text-muted-foreground">No products to display</p>
+        <p className="text-muted-foreground text-sm">No products to display</p>
       </div>
     );
   }
@@ -159,7 +168,7 @@ export function ProductList({
         <Button
           variant="secondary"
           size="icon"
-          className="absolute left-2 top-1/2 z-10 hidden h-8 w-8 -translate-y-1/2 rounded-full bg-background/80 shadow-md backdrop-blur-sm @md:flex"
+          className="bg-background/80 absolute top-1/2 left-2 z-10 hidden h-8 w-8 -translate-y-1/2 rounded-full shadow-md backdrop-blur-sm @md:flex"
           onClick={() => scroll("left")}
           aria-label="Scroll left"
         >
@@ -171,7 +180,7 @@ export function ProductList({
         <Button
           variant="secondary"
           size="icon"
-          className="absolute right-2 top-1/2 z-10 hidden h-8 w-8 -translate-y-1/2 rounded-full bg-background/80 shadow-md backdrop-blur-sm @md:flex"
+          className="bg-background/80 absolute top-1/2 right-2 z-10 hidden h-8 w-8 -translate-y-1/2 rounded-full shadow-md backdrop-blur-sm @md:flex"
           onClick={() => scroll("right")}
           aria-label="Scroll right"
         >
@@ -181,8 +190,9 @@ export function ProductList({
 
       <div
         ref={scrollRef}
+        style={getMaskStyle()}
         className={cn(
-          "flex gap-3 overflow-x-auto overscroll-x-contain py-2 px-4",
+          "flex gap-3 overflow-x-auto overscroll-x-contain px-4 py-2",
           "snap-x snap-proximity",
           "scrollbar-subtle",
         )}
