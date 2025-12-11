@@ -34,17 +34,9 @@ function smoothScrollTo(
     } else {
       // Ensure we land exactly on target
       element.scrollLeft = targetScrollLeft;
-      console.log("Animation complete:", {
-        targetScrollLeft,
-        actualScrollLeft: element.scrollLeft,
-      });
-      // Re-enable scroll snap after a brief delay to prevent snap jump
+      // Re-enable scroll snap after animation completes
       requestAnimationFrame(() => {
-        console.log("Before re-enable snap:", element.scrollLeft);
         element.style.scrollSnapType = "";
-        requestAnimationFrame(() => {
-          console.log("After re-enable snap:", element.scrollLeft);
-        });
       });
     }
   }
@@ -105,13 +97,6 @@ export function ProductList({
       index === 0 ? 0 : card.offsetLeft,
     );
 
-    // Log for debugging - remove once working
-    console.log({
-      snapPositions,
-      scrollLeft,
-      offsets: cards.map((c) => c.offsetLeft),
-    });
-
     // Find the current snap index
     let currentIndex = 0;
     for (let i = 0; i < snapPositions.length; i++) {
@@ -134,8 +119,6 @@ export function ProductList({
     }
 
     const targetScrollLeft = snapPositions[targetIndex];
-
-    console.log({ currentIndex, targetIndex, targetScrollLeft });
 
     if (Math.abs(targetScrollLeft - scrollLeft) > 1) {
       smoothScrollTo(container, targetScrollLeft);
