@@ -7,6 +7,7 @@ import { chartPresets, ChartPresetName } from "@/lib/presets/chart";
 import { codeBlockPresets, CodeBlockPresetName } from "@/lib/presets/code-block";
 import { terminalPresets, TerminalPresetName } from "@/lib/presets/terminal";
 import { planPresets, PlanPresetName } from "@/lib/presets/plan";
+import { productListPresets, ProductListPresetName } from "@/lib/presets/product-list";
 import { DynamicCodeBlock } from "fumadocs-ui/components/dynamic-codeblock";
 
 interface CodePanelProps {
@@ -18,6 +19,7 @@ interface CodePanelProps {
   codeBlockPreset?: CodeBlockPresetName;
   terminalPreset?: TerminalPresetName;
   planPreset?: PlanPresetName;
+  productListPreset?: ProductListPresetName;
   optionListSelection?: string[] | string | null;
   mediaCardMaxWidth?: string;
   sort?: { by?: string; direction?: "asc" | "desc" };
@@ -36,6 +38,7 @@ export function CodePanel({
   codeBlockPreset,
   terminalPreset,
   planPreset,
+  productListPreset,
   optionListSelection,
   mediaCardMaxWidth,
   sort,
@@ -382,6 +385,25 @@ export function CodePanel({
     return `<Plan\n${props.join("\n")}\n/>`;
   };
 
+  const generateProductListCode = () => {
+    if (!productListPreset) return "";
+    const list = productListPresets[productListPreset].data;
+    const props: string[] = [];
+
+    props.push(`  id="${list.id}"`);
+    props.push(
+      `  products={${JSON.stringify(list.products, null, 4).replace(/\n/g, "\n  ")}}`,
+    );
+    props.push(
+      `  onProductClick={(productId) => console.log("Clicked:", productId)}`,
+    );
+    props.push(
+      `  onProductAction={(productId, actionId) => console.log("Action:", productId, actionId)}`,
+    );
+
+    return `<ProductList\n${props.join("\n")}\n/>`;
+  };
+
   const generateCode = () => {
     if (componentId === "data-table") {
       return generateDataTableCode();
@@ -397,6 +419,8 @@ export function CodePanel({
       return generateTerminalCode();
     } else if (componentId === "plan") {
       return generatePlanCode();
+    } else if (componentId === "product-list") {
+      return generateProductListCode();
     }
     return "";
   };

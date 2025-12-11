@@ -20,6 +20,7 @@ import {
   CodeBlockPresetExample,
   TerminalPresetExample,
   PlanPresetExample,
+  ProductListPresetExample,
 } from "@/app/docs/_components/preset-example";
 import { FeatureGrid, Feature } from "@/app/components/mdx/features";
 
@@ -96,6 +97,7 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
     CodeBlockPresetExample,
     TerminalPresetExample,
     PlanPresetExample,
+    ProductListPresetExample,
     FeatureGrid,
     Feature,
     ...components,

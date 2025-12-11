@@ -11,6 +11,7 @@ import { dataTablePresets } from "@/lib/presets/data-table";
 import { mediaCardPresets } from "@/lib/presets/media-card";
 import { optionListPresets } from "@/lib/presets/option-list";
 import { planPresets } from "@/lib/presets/plan";
+import { productListPresets } from "@/lib/presets/product-list";
 import { terminalPresets } from "@/lib/presets/terminal";
 import type { Preset } from "@/lib/presets/types";
 import { cn } from "@/lib/ui/cn";
@@ -24,6 +25,7 @@ const PRESET_REGISTRY: Record<string, PresetMap> = {
   "media-card": mediaCardPresets,
   "option-list": optionListPresets,
   plan: planPresets,
+  "product-list": productListPresets,
   terminal: terminalPresets,
 };
 
