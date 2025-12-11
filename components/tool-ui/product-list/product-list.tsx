@@ -105,9 +105,16 @@ export function ProductList({
     const container = scrollRef.current;
     if (!container) return;
 
+    // Use rounding + a slightly larger threshold to avoid flicker when scroll snapping
+    // settles on fractional scroll positions.
+    const EDGE_THRESHOLD_PX = 8;
     const { scrollLeft, scrollWidth, clientWidth } = container;
-    setCanScrollLeft(scrollLeft > 1);
-    setCanScrollRight(scrollLeft + clientWidth < scrollWidth - 1);
+    const left = Math.round(scrollLeft);
+    const right = Math.round(scrollLeft + clientWidth);
+    const max = Math.round(scrollWidth);
+
+    setCanScrollLeft(left > EDGE_THRESHOLD_PX);
+    setCanScrollRight(right < max - EDGE_THRESHOLD_PX);
   }, []);
 
   useEffect(() => {
@@ -241,39 +248,51 @@ export function ProductList({
       )}
 
       <div className="group relative">
-        {canScrollLeft && (
-          <Button
-            variant="secondary"
-            size="icon"
-            className={cn(
-              "bg-background/80 absolute top-1/2 left-2 z-20 hidden h-8 w-8 -translate-y-1/2 rounded-full shadow-sm backdrop-blur-sm transition-opacity",
-              "@md:pointer-events-none @md:flex @md:opacity-0",
-              "@md:group-hover:pointer-events-auto @md:group-hover:opacity-100",
-              "@md:group-focus-within:pointer-events-auto @md:group-focus-within:opacity-100",
-            )}
-            onClick={() => scroll("left")}
-            aria-label="Scroll left"
-          >
-            <ChevronLeft className="h-4 w-4" />
-          </Button>
-        )}
+        <Button
+          variant="secondary"
+          size="icon-sm"
+          className={cn(
+            "bg-background/80 absolute top-1/2 left-2 z-20 hidden -translate-y-1/2 rounded-full shadow-sm backdrop-blur-sm",
+            "transition-[opacity,transform] duration-200 ease-out will-change-transform motion-reduce:transition-none",
+            "@md:flex",
+            // Base (hidden)
+            "pointer-events-none -translate-x-1 scale-95 opacity-0",
+            // Show only when scrollable AND the user is interacting with the carousel area.
+            canScrollLeft &&
+              "@md:group-hover:pointer-events-auto @md:group-hover:translate-x-0 @md:group-hover:scale-100 @md:group-hover:opacity-100",
+            canScrollLeft &&
+              "@md:group-focus-within:pointer-events-auto @md:group-focus-within:translate-x-0 @md:group-focus-within:scale-100 @md:group-focus-within:opacity-100",
+          )}
+          onClick={() => scroll("left")}
+          aria-label="Scroll left"
+          tabIndex={canScrollLeft ? 0 : -1}
+          aria-hidden={!canScrollLeft}
+        >
+          <ChevronLeft className="h-4 w-4" />
+        </Button>
 
-        {canScrollRight && (
-          <Button
-            variant="secondary"
-            size="icon"
-            className={cn(
-              "bg-background/80 absolute top-1/2 right-2 z-20 hidden h-8 w-8 -translate-y-1/2 rounded-full shadow-sm backdrop-blur-sm transition-opacity",
-              "@md:pointer-events-none @md:flex @md:opacity-0",
-              "@md:group-hover:pointer-events-auto @md:group-hover:opacity-100",
-              "@md:group-focus-within:pointer-events-auto @md:group-focus-within:opacity-100",
-            )}
-            onClick={() => scroll("right")}
-            aria-label="Scroll right"
-          >
-            <ChevronRight className="h-4 w-4" />
-          </Button>
-        )}
+        <Button
+          variant="secondary"
+          size="icon-sm"
+          className={cn(
+            "bg-background/80 absolute top-1/2 right-2 z-20 hidden -translate-y-1/2 rounded-full shadow-sm backdrop-blur-sm",
+            "transition-[opacity,transform] duration-200 ease-out will-change-transform motion-reduce:transition-none",
+            "@md:flex",
+            // Base (hidden)
+            "pointer-events-none translate-x-1 scale-95 opacity-0",
+            // Show only when scrollable AND the user is interacting with the carousel area.
+            canScrollRight &&
+              "@md:group-hover:pointer-events-auto @md:group-hover:translate-x-0 @md:group-hover:scale-100 @md:group-hover:opacity-100",
+            canScrollRight &&
+              "@md:group-focus-within:pointer-events-auto @md:group-focus-within:translate-x-0 @md:group-focus-within:scale-100 @md:group-focus-within:opacity-100",
+          )}
+          onClick={() => scroll("right")}
+          aria-label="Scroll right"
+          tabIndex={canScrollRight ? 0 : -1}
+          aria-hidden={!canScrollRight}
+        >
+          <ChevronRight className="h-4 w-4" />
+        </Button>
 
         <div
           ref={scrollRef}
