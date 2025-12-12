@@ -37,6 +37,14 @@ export const OptionListPropsSchema = z.object({
   receipt: ToolUIReceiptSchema.optional(),
   options: z.array(OptionListOptionSchema).min(1),
   selectionMode: z.enum(["multi", "single"]).optional(),
+  /**
+   * Controlled selection value (advanced / runtime only).
+   *
+   * For Tool UI tool payloads, prefer `defaultValue` (initial selection) and
+   * `confirmed` (receipt state). Controlled `value` is intentionally excluded
+   * from `SerializableOptionListSchema` to avoid accidental "controlled but
+   * non-interactive" states when an LLM includes `value` in args.
+   */
   value: z.union([z.array(z.string()), z.string(), z.null()]).optional(),
   defaultValue: z.union([z.array(z.string()), z.string(), z.null()]).optional(),
   /**
@@ -88,7 +96,10 @@ export type OptionListProps = Omit<
   className?: string;
 };
 
-export const SerializableOptionListSchema = OptionListPropsSchema.extend({
+export const SerializableOptionListSchema = OptionListPropsSchema.omit({
+  // Exclude controlled selection from tool/LLM payloads.
+  value: true,
+}).extend({
   options: z.array(OptionListOptionSchema.omit({ icon: true })),
   responseActions: z
     .union([z.array(SerializableActionSchema), SerializableActionsConfigSchema])

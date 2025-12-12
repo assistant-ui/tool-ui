@@ -61,7 +61,7 @@ export async function POST(req: Request) {
     const modelMessages = convertToModelMessages(messages);
 
     const result = streamText({
-      model: openai("gpt-4o"),
+      model: openai("gpt-5-nano"),
       messages: modelMessages,
       system: `You are a helpful assistant that can provide stock market data and visualize it using tables.
 

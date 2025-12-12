@@ -53,7 +53,7 @@ Create a tool on your server that the LLM can call. The tool returns structured 
 - Your tool can fetch real data (APIs, databases) and return it in the component schema format
 
 ```ts
-import { streamText, tool } from "ai";
+import { streamText, tool, convertToModelMessages } from "ai";
 import { openai } from "@ai-sdk/openai";
 import { z } from "zod";
 import { SerializableMediaCardSchema } from "@/components/tool-ui/media-card/schema";
@@ -63,7 +63,7 @@ export async function POST(req: Request) {
 
   const result = streamText({
     model: openai("gpt-4o"),
-    messages,
+    messages: convertToModelMessages(messages),
     tools: {
       previewLink: tool({
         description: "Show a preview card for a URL",
@@ -152,6 +152,127 @@ Add your OpenAI API key to your environment variables:
 
 ```env
 OPENAI_API_KEY=sk-...
+```
+
+## Frontend tools (interactive Tool UIs)
+
+Some Tool UIs (especially decision surfaces like **Option List**) are easiest to model as **frontend tools**: the model calls a tool with Tool UI props as the arguments, and your UI calls `addResult(...)` after the user confirms.
+
+If you're using `AssistantChatTransport`, it forwards **system instructions** and **registered tools** in the request body. Make sure your `/api/chat` route reads and forwards them, otherwise the model won't see your frontend tools.
+
+```ts
+import { openai } from "@ai-sdk/openai";
+import {
+  streamText,
+  convertToModelMessages,
+  jsonSchema,
+  type UIMessage,
+  type JSONSchema7,
+} from "ai";
+
+type ForwardedTools = Record<
+  string,
+  { description?: string; parameters: JSONSchema7 }
+>;
+
+function toStreamTextTools(tools?: ForwardedTools) {
+  if (!tools) return undefined;
+  return Object.fromEntries(
+    Object.entries(tools).map(([name, tool]) => [
+      name,
+      {
+        ...(tool.description ? { description: tool.description } : {}),
+        inputSchema: jsonSchema(tool.parameters),
+      },
+    ]),
+  );
+}
+
+export async function POST(req: Request) {
+  const body = (await req.json()) as {
+    messages: UIMessage[];
+    system?: string;
+    tools?: ForwardedTools;
+  };
+
+  const result = streamText({
+    model: openai("gpt-4o"),
+    messages: convertToModelMessages(body.messages),
+    system: body.system,
+    tools: toStreamTextTools(body.tools),
+  });
+
+  return result.toUIMessageStreamResponse();
+}
+```
+
+### Register a frontend tool (assistant-ui)
+
+When the tool is frontend/interactive, you register the tool **on the client** (so it gets forwarded by `AssistantChatTransport`) and render a Tool UI when it is called.
+
+```tsx
+"use client";
+
+import { makeAssistantTool } from "@assistant-ui/react";
+import {
+  OptionList,
+  parseSerializableOptionList,
+  SerializableOptionListSchema,
+  type OptionListSelection,
+} from "@/components/tool-ui/option-list";
+
+export const SelectFormatTool = makeAssistantTool<unknown, OptionListSelection>(
+  {
+    toolName: "selectFormat",
+    description: "Ask the user to choose an output format.",
+    parameters: SerializableOptionListSchema,
+    render: ({ args, result, addResult, toolCallId }) => {
+      // Tool args can be incomplete while streaming; wait until required fields exist.
+      if (!Array.isArray((args as any)?.options)) return null;
+
+      const optionList = parseSerializableOptionList({
+        ...args,
+        // `id` is required and should be stable/meaningful; fall back for DX.
+        id: (args as any)?.id ?? `format-selection-${toolCallId}`,
+      });
+
+      // Receipt state
+      if (result !== undefined) {
+        return (
+          <OptionList {...optionList} value={undefined} confirmed={result} />
+        );
+      }
+
+      return (
+        <OptionList
+          {...optionList}
+          // Avoid controlled selection in LLM-driven payloads.
+          value={undefined}
+          onConfirm={(selection) => addResult(selection)}
+        />
+      );
+    },
+  },
+);
+```
+
+Mount `<SelectFormatTool />` under `<AssistantRuntimeProvider>` (just like the Tool UI registration step above) to register the tool and UI.
+
+### Auto-continue after `addResult(...)` (AI SDK runtime)
+
+If you want the assistant to continue automatically after the user confirms (instead of waiting for the next user message), enable AI SDK's auto-resubmit behavior:
+
+```tsx
+import {
+  useChatRuntime,
+  AssistantChatTransport,
+} from "@assistant-ui/react-ai-sdk";
+import { lastAssistantMessageIsCompleteWithToolCalls } from "ai";
+
+const runtime = useChatRuntime({
+  transport: new AssistantChatTransport({ api: "/api/chat" }),
+  sendAutomaticallyWhen: lastAssistantMessageIsCompleteWithToolCalls,
+});
 ```
 
 ## Other Frameworks

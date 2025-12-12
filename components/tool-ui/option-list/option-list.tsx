@@ -243,6 +243,19 @@ export function OptionList({
   onBeforeResponseAction,
   className,
 }: OptionListProps) {
+  if (process.env["NODE_ENV"] !== "production") {
+    if (value !== undefined && defaultValue !== undefined) {
+      console.warn(
+        "[OptionList] Both `value` (controlled) and `defaultValue` (uncontrolled) were provided. `defaultValue` is ignored when `value` is set.",
+      );
+    }
+    if (value !== undefined && !onChange) {
+      console.warn(
+        "[OptionList] `value` was provided without `onChange`. This makes OptionList controlled; selection will not update unless the parent updates `value`.",
+      );
+    }
+  }
+
   const effectiveMaxSelections = selectionMode === "single" ? 1 : maxSelections;
 
   const [uncontrolledSelected, setUncontrolledSelected] = useState<Set<string>>(

@@ -83,47 +83,55 @@ pnpm dlx shadcn@latest add button separator
 ## Usage
 
 ```tsx
-// Backend tool
-import { tool } from "ai";
-import { z } from "zod";
-import { serializableOptionListSchema } from "@/components/tool-ui/option-list/schema";
+"use client";
 
-const selectFormat = tool({
-  description: "Let user select export format(s)",
-  inputSchema: z.object({ formats: z.array(z.string()) }),
-  outputSchema: serializableOptionListSchema,
-  async execute({ formats }) {
-    return {
-      options: formats.map((f) => ({ id: f, label: f.toUpperCase() })),
-      selectionMode: "multi",
-      maxSelections: 2,
-    };
+// Frontend tool (recommended for decision surfaces like Option List):
+// - The model calls the tool with SerializableOptionList props as the args
+// - Your UI calls addResult(selection) when the user confirms
+import { makeAssistantTool } from "@assistant-ui/react";
+import {
+  OptionList,
+  OptionListErrorBoundary,
+  parseSerializableOptionList,
+  SerializableOptionListSchema,
+  type OptionListSelection,
+} from "@/components/tool-ui/option-list";
+
+export const SelectFormatTool = makeAssistantTool<unknown, OptionListSelection>(
+  {
+    toolName: "selectFormat",
+    description: "Let the user choose an output format.",
+    parameters: SerializableOptionListSchema,
+    render: ({ args, result, addResult, toolCallId }) => {
+      // Tool args can be incomplete while streaming; wait until required fields exist.
+      if (!Array.isArray((args as any)?.options)) return null;
+
+      // `id` is required and should be stable/meaningful.
+      const optionList = parseSerializableOptionList({
+        ...args,
+        id: (args as any)?.id ?? `format-selection-${toolCallId}`,
+      });
+
+      return (
+        <OptionListErrorBoundary>
+          {result !== undefined ? (
+            <OptionList {...optionList} value={undefined} confirmed={result} />
+          ) : (
+            <OptionList
+              {...optionList}
+              // Avoid controlled selection in LLM-driven payloads.
+              value={undefined}
+              onConfirm={(selection) => addResult(selection)}
+            />
+          )}
+        </OptionListErrorBoundary>
+      );
+    },
   },
-});
-
-// Frontend with assistant-ui
-import { makeAssistantToolUI } from "@assistant-ui/react";
-import { OptionList } from "@/components/tool-ui/option-list";
-
-export const SelectFormatUI = makeAssistantToolUI({
-  toolName: "selectFormat",
-  render: ({ result, addResult }) => {
-    // Receipt state: user already confirmed
-    if (result.confirmed) {
-      return <OptionList {...result} />;
-    }
-    // Interactive state: awaiting selection
-    return (
-      <OptionList
-        {...result}
-        onConfirm={(selection) =>
-          addResult({ ...result, confirmed: selection })
-        }
-      />
-    );
-  },
-});
+);
 ```
+
+Mount `<SelectFormatTool />` under `<AssistantRuntimeProvider>` to register the tool and its UI. For auto-continue after `addResult(...)`, see the **Frontend tools** section in [Quick Start](/docs/quick-start).
 
 ## Props
 
@@ -140,7 +148,8 @@ export const SelectFormatUI = makeAssistantToolUI({
       default: "'multi'",
     },
     value: {
-      description: "Controlled selection value",
+      description:
+        "Controlled selection value (runtime only; avoid in tool/LLM payloads—prefer defaultValue/confirmed)",
       type: "string | string[] | null",
     },
     defaultValue: {
