@@ -83,6 +83,8 @@ export type OptionListProps = Omit<
   onConfirm?: (value: OptionListSelection) => void | Promise<void>;
   onCancel?: () => void;
   responseActions?: ActionsProp;
+  onResponseAction?: (actionId: string) => void | Promise<void>;
+  onBeforeResponseAction?: (actionId: string) => boolean | Promise<boolean>;
   className?: string;
 };
 

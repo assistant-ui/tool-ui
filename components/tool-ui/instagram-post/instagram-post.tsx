@@ -23,7 +23,8 @@ export interface InstagramPostProps {
   className?: string;
   onAction?: (action: string, post: InstagramPostData) => void;
   responseActions?: ActionsProp;
-  onResponseAction?: (actionId: string) => void;
+  onResponseAction?: (actionId: string) => void | Promise<void>;
+  onBeforeResponseAction?: (actionId: string) => boolean | Promise<boolean>;
 }
 
 function InstagramLogo({ className }: { className?: string }) {
@@ -279,6 +280,7 @@ export function InstagramPost({
   onAction,
   responseActions,
   onResponseAction,
+  onBeforeResponseAction,
 }: InstagramPostProps) {
   const normalizedFooterActions = React.useMemo(
     () => normalizeActionsConfig(responseActions),
@@ -323,6 +325,7 @@ export function InstagramPost({
             align={normalizedFooterActions.align}
             confirmTimeout={normalizedFooterActions.confirmTimeout}
             onAction={(id) => onResponseAction?.(id)}
+            onBeforeAction={onBeforeResponseAction}
           />
         </div>
       )}

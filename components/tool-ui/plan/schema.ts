@@ -39,7 +39,11 @@ export const PlanPropsSchema = z.object({
     .optional(),
 });
 
-export type PlanProps = z.infer<typeof PlanPropsSchema>;
+export type PlanProps = z.infer<typeof PlanPropsSchema> & {
+  className?: string;
+  onResponseAction?: (actionId: string) => void | Promise<void>;
+  onBeforeResponseAction?: (actionId: string) => boolean | Promise<boolean>;
+};
 
 export const SerializablePlanSchema = PlanPropsSchema;
 

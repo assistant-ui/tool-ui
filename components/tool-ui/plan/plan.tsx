@@ -163,12 +163,6 @@ function ProgressBar({ progress, isCelebrating }: ProgressBarProps) {
   );
 }
 
-interface PlanClientProps {
-  className?: string;
-  onResponseAction?: (actionId: string) => void | Promise<void>;
-  onBeforeResponseAction?: (actionId: string) => boolean | Promise<boolean>;
-}
-
 export function Plan({
   id,
   title,
@@ -180,7 +174,7 @@ export function Plan({
   onResponseAction,
   onBeforeResponseAction,
   className,
-}: PlanProps & PlanClientProps) {
+}: PlanProps) {
   const { visibleTodos, hiddenTodos, completedCount, allComplete, progress } =
     useMemo(() => {
       const completed = todos.filter((t) => t.status === "completed").length;

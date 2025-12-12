@@ -25,7 +25,8 @@ export interface XPostProps {
   className?: string;
   onAction?: (action: string, post: XPostData) => void;
   responseActions?: ActionsProp;
-  onResponseAction?: (actionId: string) => void;
+  onResponseAction?: (actionId: string) => void | Promise<void>;
+  onBeforeResponseAction?: (actionId: string) => boolean | Promise<boolean>;
 }
 
 function Avatar({ src, alt }: { src: string; alt: string }) {
@@ -307,6 +308,7 @@ export function XPost({
   onAction,
   responseActions,
   onResponseAction,
+  onBeforeResponseAction,
 }: XPostProps) {
   const normalizedFooterActions = React.useMemo(
     () => normalizeActionsConfig(responseActions),
@@ -356,6 +358,7 @@ export function XPost({
             align={normalizedFooterActions.align}
             confirmTimeout={normalizedFooterActions.confirmTimeout}
             onAction={(id) => onResponseAction?.(id)}
+            onBeforeAction={onBeforeResponseAction}
           />
         </div>
       )}

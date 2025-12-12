@@ -1,6 +1,13 @@
 "use client";
 
-import { useMemo, useState, useCallback, useEffect, useRef, Fragment } from "react";
+import {
+  useMemo,
+  useState,
+  useCallback,
+  useEffect,
+  useRef,
+  Fragment,
+} from "react";
 import type { KeyboardEvent } from "react";
 import type {
   OptionListProps,
@@ -232,17 +239,28 @@ export function OptionList({
   onConfirm,
   onCancel,
   responseActions,
+  onResponseAction,
+  onBeforeResponseAction,
   className,
 }: OptionListProps) {
   const effectiveMaxSelections = selectionMode === "single" ? 1 : maxSelections;
 
   const [uncontrolledSelected, setUncontrolledSelected] = useState<Set<string>>(
-    () => parseSelectionToIdSet(defaultValue, selectionMode, effectiveMaxSelections),
+    () =>
+      parseSelectionToIdSet(
+        defaultValue,
+        selectionMode,
+        effectiveMaxSelections,
+      ),
   );
 
   useEffect(() => {
     setUncontrolledSelected((prev) =>
-      parseSelectionToIdSet(Array.from(prev), selectionMode, effectiveMaxSelections),
+      parseSelectionToIdSet(
+        Array.from(prev),
+        selectionMode,
+        effectiveMaxSelections,
+      ),
     );
   }, [selectionMode, effectiveMaxSelections]);
 
@@ -363,15 +381,21 @@ export function OptionList({
     onCancel?.();
   }, [onCancel, updateSelection]);
 
+  const hasCustomResponseActions = responseActions !== undefined;
+
   const handleFooterAction = useCallback(
     async (actionId: string) => {
+      if (hasCustomResponseActions) {
+        await onResponseAction?.(actionId);
+        return;
+      }
       if (actionId === "confirm") {
         await handleConfirm();
       } else if (actionId === "cancel") {
         handleCancel();
       }
     },
-    [handleConfirm, handleCancel],
+    [handleConfirm, handleCancel, hasCustomResponseActions, onResponseAction],
   );
 
   const normalizedFooterActions = useMemo(() => {
@@ -575,6 +599,9 @@ export function OptionList({
           align={normalizedFooterActions.align}
           confirmTimeout={normalizedFooterActions.confirmTimeout}
           onAction={handleFooterAction}
+          onBeforeAction={
+            hasCustomResponseActions ? onBeforeResponseAction : undefined
+          }
         />
       </div>
     </div>
