@@ -64,8 +64,8 @@ export function useActionButtons(
       const action = actions.find((a) => a.id === actionId);
       if (!action) return;
 
-      const isExecuting = executingActionId !== null;
-      if (action.disabled || action.loading || isExecuting) {
+      const isAnyActionExecuting = executingActionId !== null;
+      if (action.disabled || action.loading || isAnyActionExecuting) {
         return;
       }
 
@@ -97,10 +97,10 @@ export function useActionButtons(
     () =>
       actions.map((action) => {
         const isConfirming = confirmingActionId === action.id;
-        const isExecuting = executingActionId === action.id;
-        const isLoading = action.loading || isExecuting;
+        const isThisActionExecuting = executingActionId === action.id;
+        const isLoading = action.loading || isThisActionExecuting;
         const isDisabled =
-          action.disabled || (executingActionId !== null && !isExecuting);
+          action.disabled || (executingActionId !== null && !isThisActionExecuting);
         const currentLabel =
           isConfirming && action.confirmLabel
             ? action.confirmLabel
@@ -110,7 +110,7 @@ export function useActionButtons(
           ...action,
           currentLabel,
           isConfirming,
-          isExecuting,
+          isExecuting: isThisActionExecuting,
           isDisabled,
           isLoading,
         };

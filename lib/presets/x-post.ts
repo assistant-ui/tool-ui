@@ -67,14 +67,12 @@ export const xPostPresets: Record<XPostPresetName, Preset<XPostPresetData>> = {
           verified: true,
         },
         text: "The new MacBook Pro is here. First impressions thread:",
-        media: [
-          {
-            type: "image",
-            url: "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=800&h=450&fit=crop",
-            alt: "MacBook Pro on desk",
-            aspectRatio: "16:9",
-          },
-        ],
+        media: {
+          type: "image",
+          url: "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=800&h=450&fit=crop",
+          alt: "MacBook Pro on desk",
+          aspectRatio: "16:9",
+        },
         stats: { likes: 892 },
         createdAt: "2025-11-24T10:30:00.000Z",
       },

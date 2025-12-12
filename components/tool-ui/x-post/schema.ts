@@ -34,7 +34,7 @@ export interface XPostData {
   id: string;
   author: z.infer<typeof XPostAuthorSchema>;
   text?: string;
-  media?: z.infer<typeof XPostMediaSchema>[];
+  media?: z.infer<typeof XPostMediaSchema>;
   linkPreview?: z.infer<typeof XPostLinkPreviewSchema>;
   quotedPost?: XPostData;
   stats?: z.infer<typeof XPostStatsSchema>;
@@ -45,7 +45,7 @@ export const SerializableXPostSchema: z.ZodType<XPostData> = z.object({
   id: z.string(),
   author: XPostAuthorSchema,
   text: z.string().optional(),
-  media: z.array(XPostMediaSchema).optional(),
+  media: XPostMediaSchema.optional(),
   linkPreview: XPostLinkPreviewSchema.optional(),
   quotedPost: z.lazy(() => SerializableXPostSchema).optional(),
   stats: XPostStatsSchema.optional(),

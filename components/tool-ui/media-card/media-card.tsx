@@ -68,7 +68,7 @@ const BASE_CARD_STYLE = "border border-border bg-card text-sm shadow-xs";
 const DEFAULT_CONTENT_SPACING = "gap-4 p-5";
 const LINK_CONTENT_SPACING = "px-5 py-4 gap-2";
 
-export const DEFAULT_LOCALE = "en-US" as const;
+export const FALLBACK_LOCALE = "en-US" as const;
 
 export type MediaCardProps = SerializableMediaCard & MediaCardClientProps;
 
@@ -105,7 +105,7 @@ export function MediaCard(props: MediaCardProps) {
   } = props;
 
   const { href: rawHref, source, ...rest } = serializable;
-  const locale = providedLocale ?? DEFAULT_LOCALE;
+  const locale = providedLocale ?? FALLBACK_LOCALE;
 
   const sanitizedHref = sanitizeHref(rawHref);
   const sanitizedSourceUrl = sanitizeHref(source?.url);
@@ -189,7 +189,6 @@ export function MediaCard(props: MediaCardProps) {
     isImageCard || isVideoCard || isLinkCard || isAudioCard
       ? "p-0"
       : DEFAULT_CONTENT_SPACING;
-  const linkContentPadding = LINK_CONTENT_SPACING;
 
   const normalizedFooterActions = React.useMemo(
     () => normalizeActionsConfig(responseActions),
@@ -229,7 +228,7 @@ export function MediaCard(props: MediaCardProps) {
           ) : isLinkCard ? (
             <div className="flex flex-col">
               <MediaFrame />
-              <div className={cn("flex flex-col", linkContentPadding)}>
+              <div className={cn("flex flex-col", LINK_CONTENT_SPACING)}>
                 <MediaCardHeader />
                 <MediaCardBody />
                 <MediaCardFooter />

@@ -29,7 +29,7 @@ import {
 } from "./_ui";
 import { ActionButtons, normalizeActionsConfig } from "../shared";
 
-const DEFAULT_MAX_VISIBLE = 4;
+const INITIAL_VISIBLE_TODO_COUNT = 4;
 
 const SPIN_KEYFRAMES = `
   @keyframes plan-spin {
@@ -38,13 +38,13 @@ const SPIN_KEYFRAMES = `
   }
 `;
 
-interface StatusStyle {
+interface TodoStatusStyle {
   icon: LucideIcon;
   iconClassName: string;
   labelClassName: string;
 }
 
-const STATUS_STYLES: Record<PlanTodoStatus, StatusStyle> = {
+const TODO_STATUS_STYLES: Record<PlanTodoStatus, TodoStatusStyle> = {
   pending: {
     icon: Circle,
     iconClassName: "text-muted-foreground",
@@ -70,15 +70,15 @@ const STATUS_STYLES: Record<PlanTodoStatus, StatusStyle> = {
 function TodoIcon({
   icon: Icon,
   className,
-  animate,
+  isAnimating,
 }: {
   icon: LucideIcon;
   className: string;
-  animate?: boolean;
+  isAnimating?: boolean;
 }) {
   const iconElement = <Icon className={cn("h-4 w-4 shrink-0", className)} />;
 
-  if (animate) {
+  if (isAnimating) {
     return (
       <span className="mt-0.5 inline-flex shrink-0 motion-safe:animate-[plan-spin_8s_linear_infinite]">
         {iconElement}
@@ -94,18 +94,18 @@ interface PlanTodoItemProps {
 }
 
 function PlanTodoItem({ todo }: PlanTodoItemProps) {
-  const { icon, iconClassName, labelClassName } = STATUS_STYLES[todo.status];
-  const isActive = todo.status === "in_progress";
+  const { icon, iconClassName, labelClassName } = TODO_STATUS_STYLES[todo.status];
+  const isInProgress = todo.status === "in_progress";
 
-  const todoLabel = (
+  const labelElement = (
     <span className={cn("text-sm", labelClassName)}>{todo.label}</span>
   );
 
   if (!todo.description) {
     return (
       <li className="-mx-2 flex cursor-default items-start gap-2 rounded-md px-2 py-2">
-        <TodoIcon icon={icon} className={iconClassName} animate={isActive} />
-        {todoLabel}
+        <TodoIcon icon={icon} className={iconClassName} isAnimating={isInProgress} />
+        {labelElement}
       </li>
     );
   }
@@ -114,7 +114,7 @@ function PlanTodoItem({ todo }: PlanTodoItemProps) {
     <li className="hover:bg-muted -mx-2 cursor-default rounded-md">
       <Collapsible>
         <CollapsibleTrigger className="group/todo flex w-full cursor-default items-start gap-2 px-2 py-2 text-left">
-          <TodoIcon icon={icon} className={iconClassName} animate={isActive} />
+          <TodoIcon icon={icon} className={iconClassName} isAnimating={isInProgress} />
           <span className={cn("flex-1 text-sm text-pretty", labelClassName)}>
             {todo.label}
           </span>
@@ -174,7 +174,7 @@ export function Plan({
   title,
   description,
   todos,
-  maxVisibleTodos = DEFAULT_MAX_VISIBLE,
+  maxVisibleTodos = INITIAL_VISIBLE_TODO_COUNT,
   showProgress = true,
   responseActions,
   onResponseAction,
@@ -193,7 +193,7 @@ export function Plan({
       };
     }, [todos, maxVisibleTodos]);
 
-  const normalizedActions = useMemo(
+  const resolvedFooterActions = useMemo(
     () => normalizeActionsConfig(responseActions),
     [responseActions],
   );
@@ -254,12 +254,12 @@ export function Plan({
           </div>
         </CardContent>
 
-        {normalizedActions && (
+        {resolvedFooterActions && (
           <CardFooter className="@container/actions">
             <ActionButtons
-              actions={normalizedActions.items}
-              align={normalizedActions.align}
-              confirmTimeout={normalizedActions.confirmTimeout}
+              actions={resolvedFooterActions.items}
+              align={resolvedFooterActions.align}
+              confirmTimeout={resolvedFooterActions.confirmTimeout}
               onAction={(id) => onResponseAction?.(id)}
               onBeforeAction={onBeforeResponseAction}
             />

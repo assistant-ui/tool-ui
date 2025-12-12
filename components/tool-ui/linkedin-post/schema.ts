@@ -30,7 +30,7 @@ export interface LinkedInPostData {
   id: string;
   author: z.infer<typeof LinkedInPostAuthorSchema>;
   text?: string;
-  media?: z.infer<typeof LinkedInPostMediaSchema>[];
+  media?: z.infer<typeof LinkedInPostMediaSchema>;
   linkPreview?: z.infer<typeof LinkedInPostLinkPreviewSchema>;
   stats?: z.infer<typeof LinkedInPostStatsSchema>;
   createdAt?: string;
@@ -41,7 +41,7 @@ export const SerializableLinkedInPostSchema: z.ZodType<LinkedInPostData> =
     id: z.string(),
     author: LinkedInPostAuthorSchema,
     text: z.string().optional(),
-    media: z.array(LinkedInPostMediaSchema).optional(),
+    media: LinkedInPostMediaSchema.optional(),
     linkPreview: LinkedInPostLinkPreviewSchema.optional(),
     stats: LinkedInPostStatsSchema.optional(),
     createdAt: z.string().optional(),

@@ -23,7 +23,7 @@ export const mediaCardPresets: Record<MediaCardPresetName, Preset<MediaCardData>
         description: "A snapshot of when rooms were computers — not just what ran inside them.",
         ratio: "4:3",
         domain: "unsplash.com",
-        createdAtISO: "2025-02-10T15:30:00.000Z",
+        createdAt: "2025-02-10T15:30:00.000Z",
         fileSizeBytes: 2457600,
         source: {
           label: "Computing archives",
@@ -47,7 +47,7 @@ export const mediaCardPresets: Record<MediaCardPresetName, Preset<MediaCardData>
         ratio: "16:9",
         fit: "contain",
         durationMs: 128000,
-        createdAtISO: "2025-02-11T08:00:00.000Z",
+        createdAt: "2025-02-11T08:00:00.000Z",
         source: {
           label: "Retro demo",
           iconUrl: "https://api.dicebear.com/7.x/shapes/svg?seed=retro",
@@ -70,7 +70,7 @@ export const mediaCardPresets: Record<MediaCardPresetName, Preset<MediaCardData>
         fileSizeBytes: 215040,
         durationMs: 30000,
         domain: "samplelib.com",
-        createdAtISO: "2025-02-12T10:15:00.000Z",
+        createdAt: "2025-02-12T10:15:00.000Z",
         source: {
           label: "Archive reel",
           iconUrl: "https://api.dicebear.com/7.x/shapes/svg?seed=reel",
@@ -113,7 +113,7 @@ export const mediaCardPresets: Record<MediaCardPresetName, Preset<MediaCardData>
         description: "A detailed overview of the microprocessor layout and memory subsystem.",
         ratio: "16:9",
         domain: "unsplash.com",
-        createdAtISO: "2025-03-15T10:00:00.000Z",
+        createdAt: "2025-03-15T10:00:00.000Z",
         source: {
           label: "Tech archives",
           iconUrl: "https://api.dicebear.com/7.x/shapes/svg?seed=tech",

@@ -20,6 +20,9 @@ import { Button, Badge, Collapsible, CollapsibleTrigger } from "./_ui";
 import { cn } from "./_cn";
 import { TerminalProgress } from "./progress";
 
+const COPY_ID_COMMAND = "command";
+const COPY_ID_OUTPUT = "output";
+
 function formatDuration(ms: number): string {
   if (ms < 1000) return `${ms}ms`;
   if (ms < 60000) return `${(ms / 1000).toFixed(1)}s`;
@@ -61,11 +64,11 @@ export function Terminal({
   );
 
   const handleCopyCommand = useCallback(() => {
-    copy(command, "command");
+    copy(command, COPY_ID_COMMAND);
   }, [command, copy]);
 
   const handleCopyOutput = useCallback(() => {
-    copy(fullOutput, "output");
+    copy(fullOutput, COPY_ID_OUTPUT);
   }, [fullOutput, copy]);
 
   if (isLoading) {
@@ -124,9 +127,9 @@ export function Terminal({
               size="sm"
               onClick={handleCopyCommand}
               className="h-7 w-7 p-0 text-zinc-400 hover:bg-zinc-700 hover:text-zinc-100"
-              aria-label={copiedId === "command" ? "Copied" : "Copy command"}
+              aria-label={copiedId === COPY_ID_COMMAND ? "Copied" : "Copy command"}
             >
-              {copiedId === "command" ? (
+              {copiedId === COPY_ID_COMMAND ? (
                 <Check className="h-4 w-4 text-green-500" />
               ) : (
                 <Copy className="h-4 w-4" />
@@ -166,9 +169,9 @@ export function Terminal({
                 size="sm"
                 onClick={handleCopyOutput}
                 className="absolute top-2 right-2 h-7 w-7 p-0 text-zinc-500 hover:bg-zinc-800 hover:text-zinc-100"
-                aria-label={copiedId === "output" ? "Copied" : "Copy output"}
+                aria-label={copiedId === COPY_ID_OUTPUT ? "Copied" : "Copy output"}
               >
-                {copiedId === "output" ? (
+                {copiedId === COPY_ID_OUTPUT ? (
                   <Check className="h-4 w-4 text-green-500" />
                 ) : (
                   <Copy className="h-4 w-4" />

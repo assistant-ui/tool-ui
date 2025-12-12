@@ -168,8 +168,8 @@ export function MediaCardFooter() {
     meta.push(<span key="size">{formatFileSize(card.fileSizeBytes)}</span>);
   }
 
-  if (card.createdAtISO) {
-    const date = new Date(card.createdAtISO);
+  if (card.createdAt) {
+    const date = new Date(card.createdAt);
     if (!Number.isNaN(date.getTime())) {
       const formatter = new Intl.DateTimeFormat(locale ?? "en-US", {
         dateStyle: "medium",
@@ -178,7 +178,7 @@ export function MediaCardFooter() {
       meta.push(
         <time
           key="created"
-          dateTime={card.createdAtISO}
+          dateTime={card.createdAt}
           title={date.toISOString()}
         >
           {formatter.format(date)}

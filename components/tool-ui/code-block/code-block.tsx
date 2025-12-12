@@ -13,6 +13,8 @@ import { Button, Collapsible, CollapsibleTrigger } from "./_ui";
 import { cn } from "./_cn";
 import { CodeBlockProgress } from "./progress";
 
+const COPY_ID = "code";
+
 const LANGUAGE_DISPLAY_NAMES: Record<string, string> = {
   typescript: "TypeScript",
   javascript: "JavaScript",
@@ -99,7 +101,7 @@ export function CodeBlock({
   const [highlightedHtml, setHighlightedHtml] = useState<string | null>(null);
   const [isExpanded, setIsExpanded] = useState(false);
   const { copiedId, copy } = useCopyToClipboard();
-  const copied = copiedId === "code";
+  const copied = copiedId === COPY_ID;
 
   const theme = resolvedTheme === "dark" ? "github-dark" : "github-light";
 
@@ -148,7 +150,7 @@ export function CodeBlock({
   const isCollapsed = shouldCollapse && !isExpanded;
 
   const handleCopy = useCallback(() => {
-    copy(code, "code");
+    copy(code, COPY_ID);
   }, [code, copy]);
 
   if (isLoading) {

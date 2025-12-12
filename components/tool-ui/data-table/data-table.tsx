@@ -597,7 +597,7 @@ function categorizeColumns(columns: Column[]) {
   const primary: Column[] = [];
   const secondary: Column[] = [];
 
-  let seenVisible = 0;
+  let visibleColumnCount = 0;
   columns.forEach((col) => {
     if (col.hideOnMobile) return;
 
@@ -608,12 +608,12 @@ function categorizeColumns(columns: Column[]) {
     } else if (col.priority === "tertiary") {
       return;
     } else {
-      if (seenVisible < 2) {
+      if (visibleColumnCount < 2) {
         primary.push(col);
       } else {
         secondary.push(col);
       }
-      seenVisible++;
+      visibleColumnCount++;
     }
   });
 
@@ -645,7 +645,7 @@ function DataTableAccordionCard({
   }
 
   const primaryColumn = primary[0];
-  const secondaryPrimary = primary.slice(1);
+  const remainingPrimaryColumns = primary.slice(1);
 
   const stableRowId =
     getRowIdentifier(row, rowIdKey ? String(rowIdKey) : undefined) ||
@@ -653,7 +653,7 @@ function DataTableAccordionCard({
 
   const headingId = `row-${stableRowId}-heading`;
   const detailsId = `row-${stableRowId}-details`;
-  const secondaryDataIds = secondaryPrimary.map(
+  const remainingPrimaryDataIds = remainingPrimaryColumns.map(
     (col) => `row-${stableRowId}-${String(col.key)}`,
   );
 
@@ -661,7 +661,7 @@ function DataTableAccordionCard({
     ? String(row[primaryColumn.key] ?? "")
     : "";
   const rowLabel = `Row ${index + 1}: ${primaryValue}`;
-  const itemValue = `row-${stableRowId}`;
+  const accordionItemId = `row-${stableRowId}`;
 
   return (
     <Accordion
@@ -671,7 +671,7 @@ function DataTableAccordionCard({
       role="listitem"
       aria-label={rowLabel}
     >
-      <AccordionItem value={itemValue} className="group border-0">
+      <AccordionItem value={accordionItemId} className="group border-0">
         <AccordionTrigger
           className="group-data-[state=closed]:hover:bg-accent/50 active:bg-accent/50 group-data-[state=open]:bg-muted w-full rounded-none px-4 py-3 hover:no-underline"
           aria-controls={detailsId}
@@ -695,16 +695,16 @@ function DataTableAccordionCard({
               </div>
             )}
 
-            {secondaryPrimary.length > 0 && (
+            {remainingPrimaryColumns.length > 0 && (
               <div
                 className="text-muted-foreground flex w-full flex-wrap gap-x-4 gap-y-0.5"
                 role="group"
                 aria-label="Summary information"
               >
-                {secondaryPrimary.map((col, idx) => (
+                {remainingPrimaryColumns.map((col, idx) => (
                   <span
                     key={col.key}
-                    id={secondaryDataIds[idx]}
+                    id={remainingPrimaryDataIds[idx]}
                     className="flex min-w-0 gap-1 font-normal"
                     role="cell"
                     aria-label={`${col.label}: ${row[col.key]}`}

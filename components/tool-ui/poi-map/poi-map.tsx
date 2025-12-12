@@ -2,7 +2,7 @@
 
 import { useCallback } from "react";
 import { Maximize2, Minimize2, RefreshCw, Filter, Check } from "lucide-react";
-import type { POI, POIMapWidgetState, MapCenter, POICategory } from "./schema";
+import type { POI, POIMapViewState, MapCenter, POICategory } from "./schema";
 import { CATEGORY_LABELS } from "./schema";
 import { usePOIMap } from "./use-poi-map";
 import { POIListInline } from "./poi-list-inline";
@@ -31,9 +31,9 @@ export interface POIMapProps {
   title?: string;
   className?: string;
   displayMode: DisplayMode;
-  widgetState: POIMapWidgetState | null;
+  widgetState: POIMapViewState | null;
   theme: "light" | "dark";
-  onWidgetStateChange: (state: Partial<POIMapWidgetState>) => void;
+  onWidgetStateChange: (state: Partial<POIMapViewState>) => void;
   onRequestDisplayMode: (mode: DisplayMode) => void;
   onRefresh?: () => void;
   onToggleFavorite?: (poiId: string, isFavorite: boolean) => void;
@@ -65,7 +65,7 @@ export function POIMap({
     filteredPois,
     categories,
     selectPoi,
-    toggleFavorite: internalToggleFavorite,
+    toggleFavorite: toggleFavoriteInternal,
     setMapViewport,
     setCategoryFilter,
   } = usePOIMap({
@@ -78,10 +78,10 @@ export function POIMap({
 
   const handleToggleFavorite = useCallback(
     (poiId: string) => {
-      internalToggleFavorite(poiId);
+      toggleFavoriteInternal(poiId);
       onToggleFavorite?.(poiId, !favoriteIds.has(poiId));
     },
-    [internalToggleFavorite, onToggleFavorite, favoriteIds],
+    [toggleFavoriteInternal, onToggleFavorite, favoriteIds],
   );
 
   const handleMoveEnd = useCallback(

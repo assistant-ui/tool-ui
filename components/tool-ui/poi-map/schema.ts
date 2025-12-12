@@ -42,7 +42,7 @@ export const MapCenterSchema = z.object({
 
 export type MapCenter = z.infer<typeof MapCenterSchema>;
 
-export const POIMapWidgetStateSchema = z.object({
+export const POIMapViewStateSchema = z.object({
   selectedPoiId: z.string().nullable(),
   favoriteIds: z.array(z.string()),
   mapCenter: MapCenterSchema,
@@ -50,7 +50,7 @@ export const POIMapWidgetStateSchema = z.object({
   categoryFilter: POICategorySchema.nullable(),
 });
 
-export type POIMapWidgetState = z.infer<typeof POIMapWidgetStateSchema>;
+export type POIMapViewState = z.infer<typeof POIMapViewStateSchema>;
 
 export const POIMapPropsSchema = z.object({
   id: ToolUIIdSchema,

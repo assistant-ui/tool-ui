@@ -4,7 +4,7 @@ import { useCallback, useMemo } from "react";
 import {
   POIMap,
   parseSerializablePOIMap,
-  type POIMapWidgetState,
+  type POIMapViewState,
   type POICategory,
   DEFAULT_CENTER,
   DEFAULT_ZOOM,
@@ -19,7 +19,7 @@ import {
 } from "../openai-context";
 import type { DisplayMode } from "../types";
 
-const DEFAULT_WIDGET_STATE: POIMapWidgetState = {
+const DEFAULT_WIDGET_STATE: POIMapViewState = {
   selectedPoiId: null,
   favoriteIds: [],
   mapCenter: DEFAULT_CENTER,
@@ -30,13 +30,13 @@ const DEFAULT_WIDGET_STATE: POIMapWidgetState = {
 export function POIMapSDK(props: Record<string, unknown>) {
   const parsed = parseSerializablePOIMap(props);
   const { setWidgetState } = useOpenAI();
-  const [widgetState] = useWidgetState<POIMapWidgetState>(DEFAULT_WIDGET_STATE);
+  const [widgetState] = useWidgetState<POIMapViewState>(DEFAULT_WIDGET_STATE);
   const displayMode = useDisplayMode();
   const requestDisplayMode = useRequestDisplayMode();
   const callTool = useCallTool();
   const theme = useTheme();
 
-  const currentWidgetState = useMemo<POIMapWidgetState>(
+  const currentWidgetState = useMemo<POIMapViewState>(
     () => ({
       ...DEFAULT_WIDGET_STATE,
       mapCenter: parsed.initialCenter ?? DEFAULT_CENTER,
@@ -47,7 +47,7 @@ export function POIMapSDK(props: Record<string, unknown>) {
   );
 
   const handleWidgetStateChange = useCallback(
-    async (partialState: Partial<POIMapWidgetState>) => {
+    async (partialState: Partial<POIMapViewState>) => {
       await setWidgetState({
         ...currentWidgetState,
         ...partialState,

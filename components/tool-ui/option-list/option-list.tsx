@@ -12,7 +12,7 @@ import type { Action } from "../shared";
 import { cn, Button, Separator } from "./_ui";
 import { Check } from "lucide-react";
 
-function normalizeToSet(
+function parseSelectionToIdSet(
   value: OptionListSelection | undefined,
   mode: "multi" | "single",
   maxSelections?: number,
@@ -33,7 +33,7 @@ function normalizeToSet(
   return new Set(maxSelections ? arr.slice(0, maxSelections) : arr);
 }
 
-function setToSelection(
+function convertIdSetToSelection(
   selected: Set<string>,
   mode: "multi" | "single",
 ): OptionListSelection {
@@ -108,7 +108,7 @@ function OptionItem({
   onFocus,
   buttonRef,
 }: OptionItemProps) {
-  const isMiddle = !isFirst && !isLast;
+  const hasAdjacentOptions = !isFirst && !isLast;
 
   return (
     <Button
@@ -126,7 +126,7 @@ function OptionItem({
         "peer group relative h-auto min-h-[50px] w-full justify-start text-left text-sm font-medium",
         "rounded-none border-0 bg-transparent px-0 py-2 text-base shadow-none transition-none hover:bg-transparent! @md/option-list:text-sm",
         isFirst && "pb-2.5",
-        isMiddle && "py-2.5",
+        hasAdjacentOptions && "py-2.5",
       )}
     >
       <span
@@ -158,20 +158,20 @@ function OptionItem({
   );
 }
 
-interface OptionListReceiptProps {
+interface OptionListConfirmationProps {
   id: string;
   options: OptionListOption[];
-  confirmedIds: Set<string>;
+  selectedIds: Set<string>;
   className?: string;
 }
 
-function OptionListReceipt({
+function OptionListConfirmation({
   id,
   options,
-  confirmedIds,
+  selectedIds,
   className,
-}: OptionListReceiptProps) {
-  const confirmedOptions = options.filter((opt) => confirmedIds.has(opt.id));
+}: OptionListConfirmationProps) {
+  const confirmedOptions = options.filter((opt) => selectedIds.has(opt.id));
 
   return (
     <div
@@ -237,19 +237,19 @@ export function OptionList({
   const effectiveMaxSelections = selectionMode === "single" ? 1 : maxSelections;
 
   const [uncontrolledSelected, setUncontrolledSelected] = useState<Set<string>>(
-    () => normalizeToSet(defaultValue, selectionMode, effectiveMaxSelections),
+    () => parseSelectionToIdSet(defaultValue, selectionMode, effectiveMaxSelections),
   );
 
   useEffect(() => {
     setUncontrolledSelected((prev) =>
-      normalizeToSet(Array.from(prev), selectionMode, effectiveMaxSelections),
+      parseSelectionToIdSet(Array.from(prev), selectionMode, effectiveMaxSelections),
     );
   }, [selectionMode, effectiveMaxSelections]);
 
   const selectedIds = useMemo(
     () =>
       value !== undefined
-        ? normalizeToSet(value, selectionMode, effectiveMaxSelections)
+        ? parseSelectionToIdSet(value, selectionMode, effectiveMaxSelections)
         : uncontrolledSelected,
     [value, uncontrolledSelected, selectionMode, effectiveMaxSelections],
   );
@@ -300,7 +300,7 @@ export function OptionList({
 
   const updateSelection = useCallback(
     (next: Set<string>) => {
-      const normalizedNext = normalizeToSet(
+      const normalizedNext = parseSelectionToIdSet(
         Array.from(next),
         selectionMode,
         effectiveMaxSelections,
@@ -312,7 +312,7 @@ export function OptionList({
         }
       }
 
-      onChange?.(setToSelection(normalizedNext, selectionMode));
+      onChange?.(convertIdSetToSelection(normalizedNext, selectionMode));
     },
     [
       effectiveMaxSelections,
@@ -354,7 +354,7 @@ export function OptionList({
   const handleConfirm = useCallback(async () => {
     if (!onConfirm) return;
     if (selectedCount === 0 || selectedCount < minSelections) return;
-    await onConfirm(setToSelection(selectedIds, selectionMode));
+    await onConfirm(convertIdSetToSelection(selectedIds, selectionMode));
   }, [minSelections, onConfirm, selectedCount, selectedIds, selectionMode]);
 
   const handleCancel = useCallback(() => {
@@ -388,7 +388,7 @@ export function OptionList({
 
   const isConfirmDisabled =
     selectedCount < minSelections || selectedCount === 0;
-  const isCancelDisabled = selectedCount === 0;
+  const hasNothingToClear = selectedCount === 0;
 
   const focusOptionAt = useCallback((index: number) => {
     const el = optionRefs.current[index];
@@ -467,7 +467,7 @@ export function OptionList({
       if (key === "Escape") {
         e.preventDefault();
         e.stopPropagation();
-        if (!isCancelDisabled) {
+        if (!hasNothingToClear) {
           handleCancel();
         }
       }
@@ -479,7 +479,7 @@ export function OptionList({
       findNextEnabledIndex,
       focusOptionAt,
       handleCancel,
-      isCancelDisabled,
+      hasNothingToClear,
       optionStates,
       toggleSelection,
     ],
@@ -487,12 +487,12 @@ export function OptionList({
 
   const actionsWithDisabledState = useMemo((): Action[] => {
     return normalizedFooterActions.items.map((action) => {
-      const gatedDisabled =
+      const isDisabledByValidation =
         (action.id === "confirm" && isConfirmDisabled) ||
-        (action.id === "cancel" && isCancelDisabled);
+        (action.id === "cancel" && hasNothingToClear);
       return {
         ...action,
-        disabled: action.disabled || gatedDisabled,
+        disabled: action.disabled || isDisabledByValidation,
         label:
           action.id === "confirm" &&
           selectionMode === "multi" &&
@@ -504,18 +504,18 @@ export function OptionList({
   }, [
     normalizedFooterActions.items,
     isConfirmDisabled,
-    isCancelDisabled,
+    hasNothingToClear,
     selectionMode,
     selectedCount,
   ]);
 
   if (confirmed !== undefined && confirmed !== null) {
-    const confirmedIds = normalizeToSet(confirmed, selectionMode);
+    const selectedIds = parseSelectionToIdSet(confirmed, selectionMode);
     return (
-      <OptionListReceipt
+      <OptionListConfirmation
         id={id}
         options={options}
-        confirmedIds={confirmedIds}
+        selectedIds={selectedIds}
         className={className}
       />
     );

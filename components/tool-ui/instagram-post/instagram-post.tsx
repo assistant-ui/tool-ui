@@ -28,8 +28,8 @@ export interface InstagramPostProps {
 
 function InstagramLogo({ className }: { className?: string }) {
   const id = React.useId();
-  const gradC = `ig-c-${id}`;
-  const gradD = `ig-d-${id}`;
+  const gradientPrimaryId = `ig-primary-${id}`;
+  const gradientSecondaryId = `ig-secondary-${id}`;
 
   return (
     <svg
@@ -40,7 +40,7 @@ function InstagramLogo({ className }: { className?: string }) {
     >
       <defs>
         <radialGradient
-          id={gradC}
+          id={gradientPrimaryId}
           cx="158.429"
           cy="578.088"
           r="65"
@@ -53,7 +53,7 @@ function InstagramLogo({ className }: { className?: string }) {
           <stop offset="1" stopColor="#c837ab" />
         </radialGradient>
         <radialGradient
-          id={gradD}
+          id={gradientSecondaryId}
           cx="147.694"
           cy="473.455"
           r="65"
@@ -66,12 +66,12 @@ function InstagramLogo({ className }: { className?: string }) {
         </radialGradient>
       </defs>
       <path
-        fill={`url(#${gradC})`}
+        fill={`url(#${gradientPrimaryId})`}
         d="M65 0C37.9 0 30 .03 28.4.16c-5.6.46-9 1.34-12.8 3.22-2.9 1.44-5.2 3.12-7.5 5.47C4 13.1 1.5 18.4.6 24.66c-.44 3.04-.57 3.66-.6 19.2-.01 5.16 0 12 0 21.1 0 27.12.03 35.05.16 36.6.45 5.4 1.3 8.82 3.1 12.55 3.44 7.14 10 12.5 17.76 14.5 2.68.7 5.64 1.1 9.44 1.26 1.6.07 18 .12 34.44.12s32.84-.02 34.4-.1c4.4-.2 6.96-.55 9.8-1.28 7.78-2.01 14.23-7.3 17.74-14.53 1.76-3.64 2.66-7.18 3.07-12.32.08-1.12.12-18.97.12-36.8 0-17.85-.04-35.67-.13-36.8-.4-5.2-1.3-8.7-3.13-12.43-1.5-3.04-3.16-5.3-5.56-7.62C116.9 4 111.64 1.5 105.37.6 102.34.16 101.73.03 86.2 0H65z"
         transform="translate(1 1)"
       />
       <path
-        fill={`url(#${gradD})`}
+        fill={`url(#${gradientSecondaryId})`}
         d="M65 0C37.9 0 30 .03 28.4.16c-5.6.46-9 1.34-12.8 3.22-2.9 1.44-5.2 3.12-7.5 5.47C4 13.1 1.5 18.4.6 24.66c-.44 3.04-.57 3.66-.6 19.2-.01 5.16 0 12 0 21.1 0 27.12.03 35.05.16 36.6.45 5.4 1.3 8.82 3.1 12.55 3.44 7.14 10 12.5 17.76 14.5 2.68.7 5.64 1.1 9.44 1.26 1.6.07 18 .12 34.44.12s32.84-.02 34.4-.1c4.4-.2 6.96-.55 9.8-1.28 7.78-2.01 14.23-7.3 17.74-14.53 1.76-3.64 2.66-7.18 3.07-12.32.08-1.12.12-18.97.12-36.8 0-17.85-.04-35.67-.13-36.8-.4-5.2-1.3-8.7-3.13-12.43-1.5-3.04-3.16-5.3-5.56-7.62C116.9 4 111.64 1.5 105.37.6 102.34.16 101.73.03 86.2 0H65z"
         transform="translate(1 1)"
       />

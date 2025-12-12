@@ -7,10 +7,9 @@ import {
 } from "../shared";
 import type { Column, DataTableProps, RowData } from "./types";
 
-const alignEnum = z.enum(["left", "right", "center"]);
-const priorityEnum = z.enum(["primary", "secondary", "tertiary"]);
-
-const layoutEnum = z.enum(["auto", "table", "cards"]);
+const AlignEnum = z.enum(["left", "right", "center"]);
+const PriorityEnum = z.enum(["primary", "secondary", "tertiary"]);
+const LayoutEnum = z.enum(["auto", "table", "cards"]);
 
 const formatSchema = z.discriminatedUnion("kind", [
   z.object({ kind: z.literal("text") }),
@@ -86,15 +85,15 @@ export const serializableColumnSchema = z.object({
   label: z.string(),
   abbr: z.string().optional(),
   sortable: z.boolean().optional(),
-  align: alignEnum.optional(),
+  align: AlignEnum.optional(),
   width: z.string().optional(),
   truncate: z.boolean().optional(),
-  priority: priorityEnum.optional(),
+  priority: PriorityEnum.optional(),
   hideOnMobile: z.boolean().optional(),
   format: formatSchema.optional(),
 });
 
-const jsonPrimitive = z.union([z.string(), z.number(), z.boolean(), z.null()]);
+const JsonPrimitiveSchema = z.union([z.string(), z.number(), z.boolean(), z.null()]);
 
 /**
  * Schema for serializable row data.
@@ -124,7 +123,7 @@ const jsonPrimitive = z.union([z.string(), z.number(), z.boolean(), z.null()]);
  */
 export const serializableDataSchema = z.record(
   z.string(),
-  z.union([jsonPrimitive, z.array(jsonPrimitive)]),
+  z.union([JsonPrimitiveSchema, z.array(JsonPrimitiveSchema)]),
 );
 
 /**
@@ -153,7 +152,7 @@ export const SerializableDataTableSchema = z.object({
   receipt: ToolUIReceiptSchema.optional(),
   columns: z.array(serializableColumnSchema),
   data: z.array(serializableDataSchema),
-  layout: layoutEnum.optional(),
+  layout: LayoutEnum.optional(),
 });
 
 /**

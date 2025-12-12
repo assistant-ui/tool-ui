@@ -60,13 +60,11 @@ export const linkedInPostPresets: Record<LinkedInPostPresetName, Preset<LinkedIn
           headline: "CEO at StartupXYZ | Forbes 30 Under 30",
         },
         text: "Just wrapped up our company offsite. Nothing beats getting the whole team together in person!",
-        media: [
-          {
-            type: "image",
-            url: "https://images.unsplash.com/photo-1515187029135-18ee286d815b?w=800&h=450&fit=crop",
-            alt: "Team gathering at company offsite",
-          },
-        ],
+        media: {
+          type: "image",
+          url: "https://images.unsplash.com/photo-1515187029135-18ee286d815b?w=800&h=450&fit=crop",
+          alt: "Team gathering at company offsite",
+        },
         stats: { likes: 1205 },
         createdAt: "2025-11-22T16:00:00.000Z",
       },

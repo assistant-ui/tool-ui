@@ -6,16 +6,16 @@ import {
   parseWithSchema,
 } from "../shared";
 
-export const mediaKind = z.enum(["image", "video", "audio", "link"]);
-export type MediaCardKind = z.infer<typeof mediaKind>;
+export const MediaKindSchema = z.enum(["image", "video", "audio", "link"]);
+export type MediaCardKind = z.infer<typeof MediaKindSchema>;
 
-export const aspect = z
+export const AspectRatioSchema = z
   .enum(["auto", "1:1", "4:3", "16:9", "9:16"])
   .default("auto");
-export type Aspect = z.infer<typeof aspect>;
+export type Aspect = z.infer<typeof AspectRatioSchema>;
 
-export const fit = z.enum(["cover", "contain"]).default("cover");
-export type Fit = z.infer<typeof fit>;
+export const MediaFitSchema = z.enum(["cover", "contain"]).default("cover");
+export type Fit = z.infer<typeof MediaFitSchema>;
 
 export const SerializableMediaCardSchema = z
   .object({
@@ -45,10 +45,10 @@ export const SerializableMediaCardSchema = z
      * @example "asset-img-12345", "cdn-video-abc", "url-hash-xyz"
      */
     assetId: z.string(),
-    kind: mediaKind,
+    kind: MediaKindSchema,
     title: z.string().optional(),
     description: z.string().optional(),
-    createdAtISO: z.string().datetime().optional(),
+    createdAt: z.string().datetime().optional(),
     locale: z.string().optional(),
     href: z.string().url().optional(),
     domain: z.string().optional(),
@@ -59,8 +59,8 @@ export const SerializableMediaCardSchema = z
         url: z.string().url().optional(),
       })
       .optional(),
-    ratio: aspect.optional(),
-    fit: fit.optional(),
+    ratio: AspectRatioSchema.optional(),
+    fit: MediaFitSchema.optional(),
     src: z.string().url().optional(),
     thumb: z.string().url().optional(),
     alt: z.string().optional(),

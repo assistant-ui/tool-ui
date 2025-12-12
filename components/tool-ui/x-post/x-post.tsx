@@ -114,16 +114,13 @@ function PostMedia({
   media,
   onOpen,
 }: {
-  media: XPostMedia[];
-  onOpen?: (index: number) => void;
+  media: XPostMedia;
+  onOpen?: () => void;
 }) {
-  if (media.length === 0) return null;
-
-  const item = media[0];
   const aspectRatio =
-    item.aspectRatio === "1:1"
+    media.aspectRatio === "1:1"
       ? "1"
-      : item.aspectRatio === "4:3"
+      : media.aspectRatio === "4:3"
         ? "4/3"
         : "16/9";
 
@@ -132,19 +129,19 @@ function PostMedia({
       type="button"
       className="bg-muted mt-2 w-full overflow-hidden rounded-xl"
       style={{ aspectRatio }}
-      onClick={() => onOpen?.(0)}
+      onClick={() => onOpen?.()}
     >
-      {item.type === "image" ? (
+      {media.type === "image" ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img
-          src={item.url}
-          alt={item.alt}
+          src={media.url}
+          alt={media.alt}
           className="size-full object-cover"
           loading="lazy"
         />
       ) : (
         <video
-          src={item.url}
+          src={media.url}
           controls
           playsInline
           className="size-full object-contain"
@@ -217,11 +214,11 @@ function QuotedPostCard({ post }: { post: XPostData }) {
         )}
       </div>
       {post.text && <p className="mt-1.5">{post.text}</p>}
-      {post.media?.[0] && (
+      {post.media && (
         // eslint-disable-next-line @next/next/no-img-element
         <img
-          src={post.media[0].url}
-          alt={post.media[0].alt}
+          src={post.media.url}
+          alt={post.media.alt}
           className="mt-2 rounded-lg"
         />
       )}
@@ -339,9 +336,7 @@ export function XPost({
               <XLogo className="text-muted-foreground/40 size-4" />
             </div>
             <PostBody text={post.text} />
-            {post.media && post.media.length > 0 && (
-              <PostMedia media={post.media} />
-            )}
+            {post.media && <PostMedia media={post.media} />}
             {post.quotedPost && <QuotedPostCard post={post.quotedPost} />}
             {post.linkPreview && !post.quotedPost && (
               <PostLinkPreview preview={post.linkPreview} />

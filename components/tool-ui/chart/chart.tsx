@@ -50,15 +50,15 @@ export function Chart({
 }: ChartProps) {
   const palette = colors?.length ? colors : DEFAULT_COLORS;
   const seriesColors = series.map(
-    (s, i) => s.color ?? palette[i % palette.length],
+    (seriesItem, index) => seriesItem.color ?? palette[index % palette.length],
   );
 
   const chartConfig: ChartConfig = Object.fromEntries(
-    series.map((s, i) => [
-      s.key,
+    series.map((seriesItem, index) => [
+      seriesItem.key,
       {
-        label: s.label,
-        color: seriesColors[i],
+        label: seriesItem.label,
+        color: seriesColors[index],
       },
     ]),
   );

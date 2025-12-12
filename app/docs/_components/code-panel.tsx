@@ -171,8 +171,8 @@ export function CodePanel({
       props.push(`  fileSizeBytes={${card.fileSizeBytes}}`);
     }
 
-    if (card.createdAtISO) {
-      props.push(`  createdAtISO="${card.createdAtISO}"`);
+    if (card.createdAt) {
+      props.push(`  createdAt="${card.createdAt}"`);
     }
 
     if (card.locale) {
