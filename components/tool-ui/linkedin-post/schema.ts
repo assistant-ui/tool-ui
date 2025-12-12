@@ -26,26 +26,17 @@ export const LinkedInPostStatsSchema = z.object({
   isLiked: z.boolean().optional(),
 });
 
-export interface LinkedInPostData {
-  id: string;
-  author: z.infer<typeof LinkedInPostAuthorSchema>;
-  text?: string;
-  media?: z.infer<typeof LinkedInPostMediaSchema>;
-  linkPreview?: z.infer<typeof LinkedInPostLinkPreviewSchema>;
-  stats?: z.infer<typeof LinkedInPostStatsSchema>;
-  createdAt?: string;
-}
+export const SerializableLinkedInPostSchema = z.object({
+  id: z.string(),
+  author: LinkedInPostAuthorSchema,
+  text: z.string().optional(),
+  media: LinkedInPostMediaSchema.optional(),
+  linkPreview: LinkedInPostLinkPreviewSchema.optional(),
+  stats: LinkedInPostStatsSchema.optional(),
+  createdAt: z.string().optional(),
+});
 
-export const SerializableLinkedInPostSchema: z.ZodType<LinkedInPostData> =
-  z.object({
-    id: z.string(),
-    author: LinkedInPostAuthorSchema,
-    text: z.string().optional(),
-    media: LinkedInPostMediaSchema.optional(),
-    linkPreview: LinkedInPostLinkPreviewSchema.optional(),
-    stats: LinkedInPostStatsSchema.optional(),
-    createdAt: z.string().optional(),
-  });
+export type LinkedInPostData = z.infer<typeof SerializableLinkedInPostSchema>;
 
 export type LinkedInPostAuthor = z.infer<typeof LinkedInPostAuthorSchema>;
 export type LinkedInPostMedia = z.infer<typeof LinkedInPostMediaSchema>;

@@ -4,11 +4,11 @@ import * as React from "react";
 import type { SerializableMediaCard } from "./schema";
 import type { ActionsProp } from "../shared";
 
-export type MediaCardUIState = {
+export interface MediaCardUIState {
   playing?: boolean;
   muted?: boolean;
   selected?: boolean;
-};
+}
 
 export interface MediaCardClientProps {
   className?: string;

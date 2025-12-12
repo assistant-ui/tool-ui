@@ -103,11 +103,11 @@ export const SerializableActionsSchema = ActionButtonsPropsSchema.extend({
   actions: z.array(SerializableActionSchema),
 }).omit({ className: true });
 
-export type ActionsConfig = {
+export interface ActionsConfig {
   items: Action[];
   align?: "left" | "center" | "right";
   confirmTimeout?: number;
-};
+}
 
 export const SerializableActionsConfigSchema = z.object({
   items: z.array(SerializableActionSchema).min(1),

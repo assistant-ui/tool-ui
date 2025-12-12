@@ -727,7 +727,7 @@ function DataTableAccordionCard({
         </AccordionTrigger>
 
         <AccordionContent
-          className={cn("flex flex-col gap-4", "px-4 pb-4")}
+          className={"flex flex-col gap-4 px-4 pb-4"}
           id={detailsId}
           role="region"
           aria-labelledby={headingId}
@@ -784,7 +784,7 @@ function DataTableAccordionCard({
 }
 
 /**
- * Simple card (no accordion) for when there are only primary columns
+ * Simple card with no accordion,   for when there are only primary columns
  */
 function SimpleCard({
   row,
