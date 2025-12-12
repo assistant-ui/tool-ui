@@ -259,14 +259,12 @@ export function Actions() {
 }
 
 function useClipboardSupport() {
-  const [supported, setSupported] = React.useState(false);
-
-  React.useEffect(() => {
-    setSupported(
+  // Check clipboard support directly without useEffect
+  // This is safe because navigator is available at render time in browser
+  return React.useMemo(
+    () =>
       typeof navigator !== "undefined" &&
-        typeof navigator.clipboard?.writeText === "function",
-    );
-  }, []);
-
-  return supported;
+      typeof navigator.clipboard?.writeText === "function",
+    [],
+  );
 }

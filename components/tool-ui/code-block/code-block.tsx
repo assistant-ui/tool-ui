@@ -106,9 +106,12 @@ export function CodeBlock({
   const theme = resolvedTheme === "dark" ? "github-dark" : "github-light";
 
   useEffect(() => {
+    let cancelled = false;
+    setHighlightedHtml(null);
+
     async function highlight() {
       if (!code) {
-        setHighlightedHtml("");
+        if (!cancelled) setHighlightedHtml("");
         return;
       }
 
@@ -128,16 +131,19 @@ export function CodeBlock({
             },
           ],
         });
-        setHighlightedHtml(html);
+        if (!cancelled) setHighlightedHtml(html);
       } catch {
         const escaped = code
           .replace(/&/g, "&amp;")
           .replace(/</g, "&lt;")
           .replace(/>/g, "&gt;");
-        setHighlightedHtml(`<pre><code>${escaped}</code></pre>`);
+        if (!cancelled) setHighlightedHtml(`<pre><code>${escaped}</code></pre>`);
       }
     }
-    highlight();
+    void highlight();
+    return () => {
+      cancelled = true;
+    };
   }, [code, language, theme, highlightLines]);
 
   const normalizedFooterActions = useMemo(

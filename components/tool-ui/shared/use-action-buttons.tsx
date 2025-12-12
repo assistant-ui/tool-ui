@@ -49,8 +49,9 @@ export function useActionButtons(
   }, [confirmingActionId, confirmTimeout]);
 
   useEffect(() => {
+    if (!confirmingActionId) return;
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape" && confirmingActionId) {
+      if (e.key === "Escape") {
         setConfirmingActionId(null);
       }
     };

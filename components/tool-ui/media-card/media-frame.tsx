@@ -63,19 +63,27 @@ export function MediaFrame() {
     return;
   }, [card.kind, setMediaElement]);
 
+  // Sync muted state to media element
+  // Note: We use useEffect here because the muted prop on video/audio elements
+  // is not fully controlled - user interactions can change it, so we need to sync
   React.useEffect(() => {
     if (!ref.current) return;
     if (state.muted === undefined) return;
-    ref.current.muted = state.muted;
+    // Only update if different to avoid unnecessary DOM writes
+    if (ref.current.muted !== state.muted) {
+      ref.current.muted = state.muted;
+    }
   }, [state.muted]);
 
+  // Sync playing state to media element
+  // Note: We use useEffect here because play() is async and can fail,
+  // so we need to handle it imperatively rather than via controlled props
   React.useEffect(() => {
     if (!ref.current) return;
     if (state.playing === undefined) return;
     if (state.playing && ref.current.paused) {
       void ref.current.play().catch(() => undefined);
-    }
-    if (!state.playing && !ref.current.paused) {
+    } else if (!state.playing && !ref.current.paused) {
       ref.current.pause();
     }
   }, [state.playing]);

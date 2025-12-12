@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 import { MapPin } from "lucide-react";
 import type { POI, MapCenter, POICategory } from "./schema";
@@ -47,16 +46,10 @@ const LeafletMap = dynamic(() => import("./leaflet-map"), {
   loading: () => <MapSkeleton />,
 });
 
-export function MapView(props: MapViewProps) {
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  if (!mounted) {
-    return <MapSkeleton className={props.className} />;
-  }
-
-  return <LeafletMap {...props} />;
+export function MapView({ className, ...props }: MapViewProps) {
+  return (
+    <div className={cn("relative h-full w-full overflow-clip", className)}>
+      <LeafletMap {...props} />
+    </div>
+  );
 }

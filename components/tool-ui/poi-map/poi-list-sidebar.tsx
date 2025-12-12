@@ -23,20 +23,28 @@ export function POIListSidebar({
   className,
 }: POIListSidebarProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
+  const lastScrolledPoiIdRef = useRef<string | null>(null);
 
   useEffect(() => {
-    if (selectedPoiId && scrollRef.current) {
-      const selectedCard = scrollRef.current.querySelector(
-        `[data-poi-id="${selectedPoiId}"]`,
-      );
-      if (selectedCard) {
-        selectedCard.scrollIntoView({
-          behavior: "smooth",
-          block: "nearest",
-        });
-      }
+    if (!selectedPoiId) {
+      lastScrolledPoiIdRef.current = null;
+      return;
     }
-  }, [selectedPoiId]);
+
+    if (!scrollRef.current) return;
+    if (lastScrolledPoiIdRef.current === selectedPoiId) return;
+
+    const selectedCard = scrollRef.current.querySelector(
+      `[data-poi-id="${selectedPoiId}"]`,
+    );
+    if (selectedCard) {
+      selectedCard.scrollIntoView({
+        behavior: "smooth",
+        block: "nearest",
+      });
+      lastScrolledPoiIdRef.current = selectedPoiId;
+    }
+  }, [selectedPoiId, pois]);
 
   if (pois.length === 0) {
     return (

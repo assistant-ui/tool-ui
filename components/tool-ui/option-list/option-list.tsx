@@ -1,13 +1,6 @@
 "use client";
 
-import {
-  useMemo,
-  useState,
-  useCallback,
-  useEffect,
-  useRef,
-  Fragment,
-} from "react";
+import { useMemo, useState, useCallback, useEffect, useRef, Fragment } from "react";
 import type { KeyboardEvent } from "react";
 import type {
   OptionListProps,
@@ -246,22 +239,18 @@ export function OptionList({
   const effectiveMaxSelections = selectionMode === "single" ? 1 : maxSelections;
 
   const [uncontrolledSelected, setUncontrolledSelected] = useState<Set<string>>(
-    () =>
-      parseSelectionToIdSet(
-        defaultValue,
-        selectionMode,
-        effectiveMaxSelections,
-      ),
+    () => parseSelectionToIdSet(defaultValue, selectionMode, effectiveMaxSelections),
   );
 
   useEffect(() => {
-    setUncontrolledSelected((prev) =>
-      parseSelectionToIdSet(
+    setUncontrolledSelected((prev) => {
+      const normalized = parseSelectionToIdSet(
         Array.from(prev),
         selectionMode,
         effectiveMaxSelections,
-      ),
-    );
+      );
+      return areSetsEqual(prev, normalized) ? prev : normalized;
+    });
   }, [selectionMode, effectiveMaxSelections]);
 
   const selectedIds = useMemo(
@@ -599,9 +588,7 @@ export function OptionList({
           align={normalizedFooterActions.align}
           confirmTimeout={normalizedFooterActions.confirmTimeout}
           onAction={handleFooterAction}
-          onBeforeAction={
-            hasCustomResponseActions ? onBeforeResponseAction : undefined
-          }
+          onBeforeAction={hasCustomResponseActions ? onBeforeResponseAction : undefined}
         />
       </div>
     </div>

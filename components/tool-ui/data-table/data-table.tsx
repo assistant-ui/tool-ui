@@ -508,9 +508,12 @@ function DataTableHead({
 
 function DataTableBody() {
   const { data, rowIdKey } = useDataTable<DataTableRowData>();
+  const hasWarnedRowKeyRef = React.useRef(false);
 
   React.useEffect(() => {
+    if (hasWarnedRowKeyRef.current) return;
     if (process.env.NODE_ENV !== "production" && !rowIdKey && data.length > 0) {
+      hasWarnedRowKeyRef.current = true;
       console.warn(
         "[DataTable] Missing `rowIdKey` prop. Using array index as React key can cause reconciliation issues when data reorders (focus traps, animation glitches, incorrect state preservation). " +
           "Strongly recommended: Pass a `rowIdKey` prop that points to a unique identifier in your row data (e.g., 'id', 'uuid', 'symbol').\n" +
@@ -759,7 +762,7 @@ function DataTableAccordionCard({
                   </dt>
                   <dd
                     className={cn(
-                      "text-foreground min-w-0 text-pretty break-words",
+                      "text-foreground min-w-0 text-pretty wrap-break-word",
                       col.align === "right" && "text-right",
                       col.align === "center" && "text-center",
                     )}
@@ -845,7 +848,7 @@ function SimpleCard({
           </span>
           <span
             className={cn(
-              "min-w-0 break-words",
+              "min-w-0 wrap-break-word",
               col.align === "right" && "text-right",
               col.align === "center" && "text-center",
             )}
