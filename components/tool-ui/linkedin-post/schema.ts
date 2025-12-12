@@ -1,18 +1,19 @@
 import { z } from "zod";
+import { parseWithSchema } from "../shared";
 
-export const linkedInPostAuthorSchema = z.object({
+export const LinkedInPostAuthorSchema = z.object({
   name: z.string(),
   avatarUrl: z.string(),
   headline: z.string().optional(),
 });
 
-export const linkedInPostMediaSchema = z.object({
+export const LinkedInPostMediaSchema = z.object({
   type: z.enum(["image", "video"]),
   url: z.string(),
   alt: z.string(),
 });
 
-export const linkedInPostLinkPreviewSchema = z.object({
+export const LinkedInPostLinkPreviewSchema = z.object({
   url: z.string(),
   title: z.string().optional(),
   description: z.string().optional(),
@@ -20,38 +21,41 @@ export const linkedInPostLinkPreviewSchema = z.object({
   domain: z.string().optional(),
 });
 
-export const linkedInPostStatsSchema = z.object({
+export const LinkedInPostStatsSchema = z.object({
   likes: z.number().optional(),
   isLiked: z.boolean().optional(),
 });
 
 export interface LinkedInPostData {
   id: string;
-  author: z.infer<typeof linkedInPostAuthorSchema>;
+  author: z.infer<typeof LinkedInPostAuthorSchema>;
   text?: string;
-  media?: z.infer<typeof linkedInPostMediaSchema>[];
-  linkPreview?: z.infer<typeof linkedInPostLinkPreviewSchema>;
-  stats?: z.infer<typeof linkedInPostStatsSchema>;
+  media?: z.infer<typeof LinkedInPostMediaSchema>[];
+  linkPreview?: z.infer<typeof LinkedInPostLinkPreviewSchema>;
+  stats?: z.infer<typeof LinkedInPostStatsSchema>;
   createdAt?: string;
 }
 
-export const linkedInPostSchema: z.ZodType<LinkedInPostData> = z.object({
-  id: z.string(),
-  author: linkedInPostAuthorSchema,
-  text: z.string().optional(),
-  media: z.array(linkedInPostMediaSchema).optional(),
-  linkPreview: linkedInPostLinkPreviewSchema.optional(),
-  stats: linkedInPostStatsSchema.optional(),
-  createdAt: z.string().optional(),
-});
+export const SerializableLinkedInPostSchema: z.ZodType<LinkedInPostData> =
+  z.object({
+    id: z.string(),
+    author: LinkedInPostAuthorSchema,
+    text: z.string().optional(),
+    media: z.array(LinkedInPostMediaSchema).optional(),
+    linkPreview: LinkedInPostLinkPreviewSchema.optional(),
+    stats: LinkedInPostStatsSchema.optional(),
+    createdAt: z.string().optional(),
+  });
 
-export type LinkedInPostAuthor = z.infer<typeof linkedInPostAuthorSchema>;
-export type LinkedInPostMedia = z.infer<typeof linkedInPostMediaSchema>;
+export type LinkedInPostAuthor = z.infer<typeof LinkedInPostAuthorSchema>;
+export type LinkedInPostMedia = z.infer<typeof LinkedInPostMediaSchema>;
 export type LinkedInPostLinkPreview = z.infer<
-  typeof linkedInPostLinkPreviewSchema
+  typeof LinkedInPostLinkPreviewSchema
 >;
-export type LinkedInPostStats = z.infer<typeof linkedInPostStatsSchema>;
+export type LinkedInPostStats = z.infer<typeof LinkedInPostStatsSchema>;
 
-export function parseLinkedInPost(input: unknown): LinkedInPostData {
-  return linkedInPostSchema.parse(input);
+export function parseSerializableLinkedInPost(
+  input: unknown,
+): LinkedInPostData {
+  return parseWithSchema(SerializableLinkedInPostSchema, input, "LinkedInPost");
 }

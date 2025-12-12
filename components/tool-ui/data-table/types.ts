@@ -1,4 +1,9 @@
-import type { ActionsProp, ToolUIId } from "../shared";
+import type {
+  ActionsProp,
+  ToolUIId,
+  ToolUIReceipt,
+  ToolUIRole,
+} from "../shared";
 import type { FormatConfig } from "./formatters";
 
 /**
@@ -113,6 +118,10 @@ export interface DataTableSerializableProps<T extends object = RowData> {
    * @example "data-table-expenses-q3", "search-results-repos"
    */
   id: ToolUIId;
+  /** Optional surface role metadata (serializable) */
+  role?: ToolUIRole;
+  /** Optional receipt metadata for consequential outcomes (serializable) */
+  receipt?: ToolUIReceipt;
   /** Column definitions */
   columns: Column<T>[];
   /** Row data (primitives only - no functions or class instances) */

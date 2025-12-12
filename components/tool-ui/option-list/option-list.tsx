@@ -1,6 +1,7 @@
 "use client";
 
-import { useMemo, useState, useCallback, useEffect, Fragment } from "react";
+import { useMemo, useState, useCallback, useEffect, useRef, Fragment } from "react";
+import type { KeyboardEvent } from "react";
 import type {
   OptionListProps,
   OptionListSelection,
@@ -90,6 +91,9 @@ interface OptionItemProps {
   isFirst: boolean;
   isLast: boolean;
   onToggle: () => void;
+  tabIndex?: number;
+  onFocus?: () => void;
+  buttonRef?: (el: HTMLButtonElement | null) => void;
 }
 
 function OptionItem({
@@ -100,17 +104,23 @@ function OptionItem({
   isFirst,
   isLast,
   onToggle,
+  tabIndex,
+  onFocus,
+  buttonRef,
 }: OptionItemProps) {
   const isMiddle = !isFirst && !isLast;
 
   return (
     <Button
+      ref={buttonRef}
       data-id={option.id}
       variant="ghost"
       size="lg"
       role="option"
       aria-selected={isSelected}
       onClick={onToggle}
+      onFocus={onFocus}
+      tabIndex={tabIndex}
       disabled={isDisabled}
       className={cn(
         "peer group relative h-auto min-h-[50px] w-full justify-start text-left text-sm font-medium",
@@ -149,12 +159,14 @@ function OptionItem({
 }
 
 interface OptionListReceiptProps {
+  id: string;
   options: OptionListOption[];
   confirmedIds: Set<string>;
   className?: string;
 }
 
 function OptionListReceipt({
+  id,
   options,
   confirmedIds,
   className,
@@ -169,6 +181,7 @@ function OptionListReceipt({
         className,
       )}
       data-slot="option-list"
+      data-tool-ui-id={id}
       data-receipt="true"
       role="status"
       aria-label="Confirmed selection"
@@ -207,6 +220,7 @@ function OptionListReceipt({
 }
 
 export function OptionList({
+  id,
   options,
   selectionMode = "multi",
   minSelections = 1,
@@ -241,6 +255,48 @@ export function OptionList({
   );
 
   const selectedCount = selectedIds.size;
+
+  const optionStates = useMemo(() => {
+    return options.map((option) => {
+      const isSelected = selectedIds.has(option.id);
+      const isSelectionLocked =
+        selectionMode === "multi" &&
+        effectiveMaxSelections !== undefined &&
+        selectedCount >= effectiveMaxSelections &&
+        !isSelected;
+      const isDisabled = option.disabled || isSelectionLocked;
+
+      return { option, isSelected, isDisabled };
+    });
+  }, [
+    options,
+    selectedIds,
+    selectionMode,
+    effectiveMaxSelections,
+    selectedCount,
+  ]);
+
+  const optionRefs = useRef<Array<HTMLButtonElement | null>>([]);
+  const [activeIndex, setActiveIndex] = useState(() => {
+    const firstSelected = optionStates.findIndex(
+      (s) => s.isSelected && !s.isDisabled,
+    );
+    if (firstSelected >= 0) return firstSelected;
+    const firstEnabled = optionStates.findIndex((s) => !s.isDisabled);
+    return firstEnabled >= 0 ? firstEnabled : 0;
+  });
+
+  useEffect(() => {
+    if (optionStates.length === 0) return;
+    if (
+      activeIndex < 0 ||
+      activeIndex >= optionStates.length ||
+      optionStates[activeIndex].isDisabled
+    ) {
+      const firstEnabled = optionStates.findIndex((s) => !s.isDisabled);
+      setActiveIndex(firstEnabled >= 0 ? firstEnabled : 0);
+    }
+  }, [activeIndex, optionStates]);
 
   const updateSelection = useCallback(
     (next: Set<string>) => {
@@ -334,6 +390,101 @@ export function OptionList({
     selectedCount < minSelections || selectedCount === 0;
   const isCancelDisabled = selectedCount === 0;
 
+  const focusOptionAt = useCallback((index: number) => {
+    const el = optionRefs.current[index];
+    if (el) el.focus();
+    setActiveIndex(index);
+  }, []);
+
+  const findFirstEnabledIndex = useCallback(() => {
+    const idx = optionStates.findIndex((s) => !s.isDisabled);
+    return idx >= 0 ? idx : 0;
+  }, [optionStates]);
+
+  const findLastEnabledIndex = useCallback(() => {
+    for (let i = optionStates.length - 1; i >= 0; i--) {
+      if (!optionStates[i].isDisabled) return i;
+    }
+    return 0;
+  }, [optionStates]);
+
+  const findNextEnabledIndex = useCallback(
+    (start: number, direction: 1 | -1) => {
+      const len = optionStates.length;
+      if (len === 0) return 0;
+      for (let step = 1; step <= len; step++) {
+        const idx = (start + direction * step + len) % len;
+        if (!optionStates[idx].isDisabled) return idx;
+      }
+      return start;
+    },
+    [optionStates],
+  );
+
+  const handleListboxKeyDown = useCallback(
+    (e: KeyboardEvent<HTMLDivElement>) => {
+      if (optionStates.length === 0) return;
+
+      const key = e.key;
+
+      if (key === "ArrowDown") {
+        e.preventDefault();
+        e.stopPropagation();
+        focusOptionAt(findNextEnabledIndex(activeIndex, 1));
+        return;
+      }
+
+      if (key === "ArrowUp") {
+        e.preventDefault();
+        e.stopPropagation();
+        focusOptionAt(findNextEnabledIndex(activeIndex, -1));
+        return;
+      }
+
+      if (key === "Home") {
+        e.preventDefault();
+        e.stopPropagation();
+        focusOptionAt(findFirstEnabledIndex());
+        return;
+      }
+
+      if (key === "End") {
+        e.preventDefault();
+        e.stopPropagation();
+        focusOptionAt(findLastEnabledIndex());
+        return;
+      }
+
+      if (key === "Enter" || key === " ") {
+        e.preventDefault();
+        e.stopPropagation();
+        const current = optionStates[activeIndex];
+        if (!current || current.isDisabled) return;
+        toggleSelection(current.option.id);
+        return;
+      }
+
+      if (key === "Escape") {
+        e.preventDefault();
+        e.stopPropagation();
+        if (!isCancelDisabled) {
+          handleCancel();
+        }
+      }
+    },
+    [
+      activeIndex,
+      findFirstEnabledIndex,
+      findLastEnabledIndex,
+      findNextEnabledIndex,
+      focusOptionAt,
+      handleCancel,
+      isCancelDisabled,
+      optionStates,
+      toggleSelection,
+    ],
+  );
+
   const actionsWithDisabledState = useMemo((): Action[] => {
     return normalizedFooterActions.items.map((action) => {
       const gatedDisabled =
@@ -362,6 +513,7 @@ export function OptionList({
     const confirmedIds = normalizeToSet(confirmed, selectionMode);
     return (
       <OptionListReceipt
+        id={id}
         options={options}
         confirmedIds={confirmedIds}
         className={className}
@@ -377,6 +529,7 @@ export function OptionList({
         className,
       )}
       data-slot="option-list"
+      data-tool-ui-id={id}
       role="group"
       aria-label="Option list"
     >
@@ -386,16 +539,9 @@ export function OptionList({
         )}
         role="listbox"
         aria-multiselectable={selectionMode === "multi"}
+        onKeyDown={handleListboxKeyDown}
       >
-        {options.map((option, index) => {
-          const isSelected = selectedIds.has(option.id);
-          const isSelectionLocked =
-            selectionMode === "multi" &&
-            effectiveMaxSelections !== undefined &&
-            selectedCount >= effectiveMaxSelections &&
-            !isSelected;
-          const isDisabled = option.disabled || isSelectionLocked;
-
+        {optionStates.map(({ option, isSelected, isDisabled }, index) => {
           return (
             <Fragment key={option.id}>
               {index > 0 && (
@@ -410,7 +556,12 @@ export function OptionList({
                 isDisabled={isDisabled}
                 selectionMode={selectionMode}
                 isFirst={index === 0}
-                isLast={index === options.length - 1}
+                isLast={index === optionStates.length - 1}
+                tabIndex={index === activeIndex ? 0 : -1}
+                onFocus={() => setActiveIndex(index)}
+                buttonRef={(el) => {
+                  optionRefs.current[index] = el;
+                }}
                 onToggle={() => toggleSelection(option.id)}
               />
             </Fragment>

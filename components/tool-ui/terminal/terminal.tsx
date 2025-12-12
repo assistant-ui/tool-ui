@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, useCallback, useEffect } from "react";
+import { useMemo, useState, useCallback } from "react";
 import Ansi from "ansi-to-react";
 import {
   Copy,
@@ -11,7 +11,11 @@ import {
   Clock,
 } from "lucide-react";
 import type { TerminalProps } from "./schema";
-import { ActionButtons, normalizeActionsConfig } from "../shared";
+import {
+  ActionButtons,
+  normalizeActionsConfig,
+  useCopyToClipboard,
+} from "../shared";
 import { Button, Badge, Collapsible, CollapsibleTrigger } from "./_ui";
 import { cn } from "./_cn";
 import { TerminalProgress } from "./progress";
@@ -24,24 +28,6 @@ function formatDuration(ms: number): string {
   return `${minutes}m ${seconds}s`;
 }
 
-function useCopyToClipboard() {
-  const [copied, setCopied] = useState<string | null>(null);
-
-  const copy = useCallback(async (text: string, id: string) => {
-    await navigator.clipboard.writeText(text);
-    setCopied(id);
-  }, []);
-
-  useEffect(() => {
-    if (copied) {
-      const timeout = setTimeout(() => setCopied(null), 2000);
-      return () => clearTimeout(timeout);
-    }
-  }, [copied]);
-
-  return { copied, copy };
-}
-
 export function Terminal({
   id,
   command,
@@ -52,14 +38,14 @@ export function Terminal({
   cwd,
   truncated,
   maxCollapsedLines,
-  footerActions,
-  onFooterAction,
-  onBeforeFooterAction,
+  responseActions,
+  onResponseAction,
+  onBeforeResponseAction,
   isLoading,
   className,
 }: TerminalProps) {
   const [isExpanded, setIsExpanded] = useState(false);
-  const { copied, copy } = useCopyToClipboard();
+  const { copiedId, copy } = useCopyToClipboard();
 
   const isSuccess = exitCode === 0;
   const hasOutput = stdout || stderr;
@@ -70,8 +56,8 @@ export function Terminal({
   const isCollapsed = shouldCollapse && !isExpanded;
 
   const normalizedFooterActions = useMemo(
-    () => normalizeActionsConfig(footerActions),
-    [footerActions],
+    () => normalizeActionsConfig(responseActions),
+    [responseActions],
   );
 
   const handleCopyCommand = useCallback(() => {
@@ -85,7 +71,10 @@ export function Terminal({
   if (isLoading) {
     return (
       <div
-        className={cn("@container flex w-full min-w-80 flex-col gap-3", className)}
+        className={cn(
+          "@container flex w-full min-w-80 flex-col gap-3",
+          className,
+        )}
         data-tool-ui-id={id}
         aria-busy="true"
       >
@@ -98,12 +87,14 @@ export function Terminal({
 
   return (
     <div
-      className={cn("@container flex w-full min-w-80 flex-col gap-3", className)}
+      className={cn(
+        "@container flex w-full min-w-80 flex-col gap-3",
+        className,
+      )}
       data-tool-ui-id={id}
       data-slot="terminal"
     >
       <div className="overflow-hidden rounded-lg border border-zinc-700 shadow-xs">
-        {/* Header */}
         <div className="flex items-center justify-between bg-zinc-800 px-4 py-2">
           <div className="flex items-center gap-2 overflow-hidden">
             <TerminalIcon className="h-4 w-4 shrink-0 text-zinc-400" />
@@ -133,9 +124,9 @@ export function Terminal({
               size="sm"
               onClick={handleCopyCommand}
               className="h-7 w-7 p-0 text-zinc-400 hover:bg-zinc-700 hover:text-zinc-100"
-              aria-label={copied === "command" ? "Copied" : "Copy command"}
+              aria-label={copiedId === "command" ? "Copied" : "Copy command"}
             >
-              {copied === "command" ? (
+              {copiedId === "command" ? (
                 <Check className="h-4 w-4 text-green-500" />
               ) : (
                 <Copy className="h-4 w-4" />
@@ -144,7 +135,6 @@ export function Terminal({
           </div>
         </div>
 
-        {/* Output */}
         {hasOutput && (
           <Collapsible open={!isCollapsed}>
             <div
@@ -171,22 +161,20 @@ export function Terminal({
                 )}
               </div>
 
-              {/* Copy output button */}
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={handleCopyOutput}
                 className="absolute top-2 right-2 h-7 w-7 p-0 text-zinc-500 hover:bg-zinc-800 hover:text-zinc-100"
-                aria-label={copied === "output" ? "Copied" : "Copy output"}
+                aria-label={copiedId === "output" ? "Copied" : "Copy output"}
               >
-                {copied === "output" ? (
+                {copiedId === "output" ? (
                   <Check className="h-4 w-4 text-green-500" />
                 ) : (
                   <Copy className="h-4 w-4" />
                 )}
               </Button>
 
-              {/* Collapsed gradient overlay */}
               {isCollapsed && (
                 <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-zinc-900 to-transparent" />
               )}
@@ -217,7 +205,6 @@ export function Terminal({
           </Collapsible>
         )}
 
-        {/* No output state */}
         {!hasOutput && (
           <div className="bg-zinc-900 px-4 py-3 text-sm text-zinc-500 italic">
             No output
@@ -225,15 +212,14 @@ export function Terminal({
         )}
       </div>
 
-      {/* Footer actions */}
       {normalizedFooterActions && (
         <div className="@container/actions">
           <ActionButtons
             actions={normalizedFooterActions.items}
             align={normalizedFooterActions.align}
             confirmTimeout={normalizedFooterActions.confirmTimeout}
-            onAction={(id) => onFooterAction?.(id)}
-            onBeforeAction={onBeforeFooterAction}
+            onAction={(id) => onResponseAction?.(id)}
+            onBeforeAction={onBeforeResponseAction}
           />
         </div>
       )}

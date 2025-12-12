@@ -6,13 +6,14 @@ import {
   type ToolUIErrorBoundaryProps,
 } from "../shared";
 
-export function MediaCardErrorBoundary(
+export function ChartErrorBoundary(
   props: Omit<ToolUIErrorBoundaryProps, "componentName">,
 ) {
   const { children, ...rest } = props;
   return (
-    <ToolUIErrorBoundary componentName="MediaCard" {...rest}>
+    <ToolUIErrorBoundary componentName="Chart" {...rest}>
       {children}
     </ToolUIErrorBoundary>
   );
 }
+

@@ -145,11 +145,19 @@ export function Chart({
   );
 
   return (
-    <Card className={cn("w-full min-w-80", className)}>
+    <Card
+      className={cn("w-full min-w-80", className)}
+      data-tool-ui-id={id}
+      data-slot="chart"
+    >
       {(title || description) && (
         <CardHeader>
           {title && <CardTitle className="text-pretty">{title}</CardTitle>}
-          {description && <CardDescription className="text-pretty">{description}</CardDescription>}
+          {description && (
+            <CardDescription className="text-pretty">
+              {description}
+            </CardDescription>
+          )}
         </CardHeader>
       )}
       <CardContent>{chartContent}</CardContent>

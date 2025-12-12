@@ -266,7 +266,11 @@ export function LinkedInPost({
   );
 
   return (
-    <div className={cn("flex max-w-xl flex-col gap-3", className)}>
+    <div
+      className={cn("flex max-w-xl flex-col gap-3", className)}
+      data-tool-ui-id={post.id}
+      data-slot="linkedin-post"
+    >
       <article className="bg-card flex flex-col gap-3 rounded-lg border p-4 shadow-sm">
         <Header author={post.author} createdAt={post.createdAt} />
         <PostBody text={post.text} />

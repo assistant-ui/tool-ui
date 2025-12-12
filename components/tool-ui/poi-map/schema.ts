@@ -1,5 +1,10 @@
 import { z } from "zod";
-import { ToolUIIdSchema } from "../shared";
+import {
+  ToolUIIdSchema,
+  ToolUIReceiptSchema,
+  ToolUIRoleSchema,
+  parseWithSchema,
+} from "../shared";
 
 export const POICategorySchema = z.enum([
   "restaurant",
@@ -49,19 +54,21 @@ export type POIMapWidgetState = z.infer<typeof POIMapWidgetStateSchema>;
 
 export const POIMapPropsSchema = z.object({
   id: ToolUIIdSchema,
+  role: ToolUIRoleSchema.optional(),
+  receipt: ToolUIReceiptSchema.optional(),
   pois: z.array(POISchema),
   initialCenter: MapCenterSchema.optional(),
   initialZoom: z.number().min(1).max(20).optional(),
   title: z.string().optional(),
-  className: z.string().optional(),
 });
 
 export type POIMapProps = z.infer<typeof POIMapPropsSchema>;
 
-export function parseSerializablePOIMap(
-  props: Record<string, unknown>,
-): POIMapProps {
-  return POIMapPropsSchema.parse(props);
+export const SerializablePOIMapSchema = POIMapPropsSchema;
+export type SerializablePOIMap = z.infer<typeof SerializablePOIMapSchema>;
+
+export function parseSerializablePOIMap(input: unknown): SerializablePOIMap {
+  return parseWithSchema(SerializablePOIMapSchema, input, "POIMap");
 }
 
 export const DEFAULT_CENTER: MapCenter = { lat: 37.7749, lng: -122.4194 };

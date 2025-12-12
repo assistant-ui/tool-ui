@@ -6,6 +6,9 @@ import {
   SerializableActionSchema,
   SerializableActionsConfigSchema,
   ToolUIIdSchema,
+  ToolUIReceiptSchema,
+  ToolUIRoleSchema,
+  parseWithSchema,
 } from "../shared";
 
 export const OptionListOptionSchema = z.object({
@@ -30,14 +33,12 @@ export const OptionListPropsSchema = z.object({
    * @example "option-list-deploy-target", "format-selection"
    */
   id: ToolUIIdSchema,
+  role: ToolUIRoleSchema.optional(),
+  receipt: ToolUIReceiptSchema.optional(),
   options: z.array(OptionListOptionSchema).min(1),
   selectionMode: z.enum(["multi", "single"]).optional(),
-  value: z
-    .union([z.array(z.string()), z.string(), z.null()])
-    .optional(),
-  defaultValue: z
-    .union([z.array(z.string()), z.string(), z.null()])
-    .optional(),
+  value: z.union([z.array(z.string()), z.string(), z.null()]).optional(),
+  defaultValue: z.union([z.array(z.string()), z.string(), z.null()]).optional(),
   /**
    * When set, renders the component in receipt/confirmed state.
    *
@@ -56,15 +57,12 @@ export const OptionListPropsSchema = z.object({
    * }
    * ```
    */
-  confirmed: z
-    .union([z.array(z.string()), z.string(), z.null()])
-    .optional(),
+  confirmed: z.union([z.array(z.string()), z.string(), z.null()]).optional(),
   responseActions: z
     .union([z.array(ActionSchema), SerializableActionsConfigSchema])
     .optional(),
   minSelections: z.number().min(0).optional(),
   maxSelections: z.number().min(1).optional(),
-  className: z.string().optional(),
 });
 
 export type OptionListSelection = string[] | string | null;
@@ -85,6 +83,7 @@ export type OptionListProps = Omit<
   onConfirm?: (value: OptionListSelection) => void | Promise<void>;
   onCancel?: () => void;
   responseActions?: ActionsProp;
+  className?: string;
 };
 
 export const SerializableOptionListSchema = OptionListPropsSchema.extend({
@@ -94,14 +93,12 @@ export const SerializableOptionListSchema = OptionListPropsSchema.extend({
     .optional(),
 });
 
-export type SerializableOptionList = z.infer<typeof SerializableOptionListSchema>;
+export type SerializableOptionList = z.infer<
+  typeof SerializableOptionListSchema
+>;
 
 export function parseSerializableOptionList(
   input: unknown,
 ): SerializableOptionList {
-  const res = SerializableOptionListSchema.safeParse(input);
-  if (!res.success) {
-    throw new Error(`Invalid OptionList payload: ${res.error.message}`);
-  }
-  return res.data;
+  return parseWithSchema(SerializableOptionListSchema, input, "OptionList");
 }

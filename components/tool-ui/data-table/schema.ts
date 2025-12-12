@@ -1,5 +1,10 @@
 import { z } from "zod";
-import { ToolUIIdSchema } from "../shared";
+import {
+  ToolUIIdSchema,
+  ToolUIReceiptSchema,
+  ToolUIRoleSchema,
+  parseWithSchema,
+} from "../shared";
 import type { Column, DataTableProps, RowData } from "./types";
 
 const alignEnum = z.enum(["left", "right", "center"]);
@@ -136,14 +141,16 @@ export const serializableDataSchema = z.record(
  *
  * @example
  * ```ts
- * const result = serializableDataTableSchema.safeParse(llmResponse)
+ * const result = SerializableDataTableSchema.safeParse(llmResponse)
  * if (result.success) {
  *   // result.data contains validated id, columns, and data
  * }
  * ```
  */
-export const serializableDataTableSchema = z.object({
+export const SerializableDataTableSchema = z.object({
   id: ToolUIIdSchema,
+  role: ToolUIRoleSchema.optional(),
+  receipt: ToolUIReceiptSchema.optional(),
   columns: z.array(serializableColumnSchema),
   data: z.array(serializableDataSchema),
   layout: layoutEnum.optional(),
@@ -174,13 +181,13 @@ export const serializableDataTableSchema = z.object({
  * }
  * ```
  */
-export type SerializableDataTable = z.infer<typeof serializableDataTableSchema>;
+export type SerializableDataTable = z.infer<typeof SerializableDataTableSchema>;
 
 /**
  * Validates and parses a DataTable payload from unknown data (e.g., LLM tool call result).
  *
  * This function:
- * 1. Validates the input against the `serializableDataTableSchema`
+ * 1. Validates the input against the `SerializableDataTableSchema`
  * 2. Throws a descriptive error if validation fails
  * 3. Returns typed serializable props ready to pass to the `<DataTable>` component
  *
@@ -208,14 +215,19 @@ export type SerializableDataTable = z.infer<typeof serializableDataTableSchema>;
  */
 export function parseSerializableDataTable(
   input: unknown,
-): Pick<DataTableProps<RowData>, "id" | "columns" | "data" | "layout"> {
-  const res = serializableDataTableSchema.safeParse(input);
-  if (!res.success) {
-    throw new Error(`Invalid DataTable payload: ${res.error.message}`);
-  }
-  const { id, columns, data, layout } = res.data;
+): Pick<
+  DataTableProps<RowData>,
+  "id" | "role" | "receipt" | "columns" | "data" | "layout"
+> {
+  const { id, role, receipt, columns, data, layout } = parseWithSchema(
+    SerializableDataTableSchema,
+    input,
+    "DataTable",
+  );
   return {
     id,
+    role,
+    receipt,
     columns: columns as unknown as Column<RowData>[],
     data: data as RowData[],
     layout,

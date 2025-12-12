@@ -317,7 +317,11 @@ export function XPost({
   );
 
   return (
-    <div className={cn("flex max-w-xl flex-col gap-1.5", className)}>
+    <div
+      className={cn("flex max-w-xl flex-col gap-1.5", className)}
+      data-tool-ui-id={post.id}
+      data-slot="x-post"
+    >
       <article className="bg-card rounded-xl border p-3 shadow-sm">
         <div className="flex gap-3">
           <Avatar

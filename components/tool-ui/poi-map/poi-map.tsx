@@ -117,7 +117,12 @@ export function POIMap({
 
   if (isFullscreen) {
     return (
-      <div id={id} className={cn("flex h-full w-full gap-3", className)}>
+      <div
+        id={id}
+        className={cn("flex h-full w-full gap-3", className)}
+        data-tool-ui-id={id}
+        data-slot="poi-map"
+      >
         <div className="flex w-72 shrink-0 flex-col py-3 pl-3">
           <div className="mb-4">
             <div className="flex items-center justify-between">
@@ -230,6 +235,8 @@ export function POIMap({
         "border-border isolate relative h-full w-full overflow-hidden rounded-xl border",
         className,
       )}
+      data-tool-ui-id={id}
+      data-slot="poi-map"
     >
       <MapView
         pois={filteredPois}

@@ -1,4 +1,5 @@
 export { POIMap, type POIMapProps } from "./poi-map";
+export { POIMapErrorBoundary } from "./error-boundary";
 export {
   parseSerializablePOIMap,
   POIMapPropsSchema,

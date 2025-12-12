@@ -150,7 +150,6 @@ function MediaGrid({
     </button>
   );
 
-  // Single image
   if (media.length === 1) {
     return (
       <div className="aspect-square w-full overflow-hidden">
@@ -159,7 +158,6 @@ function MediaGrid({
     );
   }
 
-  // Two images (side by side)
   if (media.length === 2) {
     return (
       <div className="grid aspect-square w-full grid-cols-2 gap-0.5 overflow-hidden">
@@ -168,7 +166,6 @@ function MediaGrid({
     );
   }
 
-  // Three images (one big left, two small right)
   if (media.length === 3) {
     return (
       <div className="grid aspect-square w-full grid-cols-2 gap-0.5 overflow-hidden">
@@ -184,7 +181,6 @@ function MediaGrid({
     );
   }
 
-  // Four or more (grid)
   return (
     <div className="grid aspect-square w-full grid-cols-2 gap-0.5 overflow-hidden">
       {media.slice(0, 4).map((item, index) => (
@@ -290,7 +286,11 @@ export function InstagramPost({
   );
 
   return (
-    <div className={cn("flex max-w-xl flex-col gap-3", className)}>
+    <div
+      className={cn("flex max-w-xl flex-col gap-3", className)}
+      data-tool-ui-id={post.id}
+      data-slot="instagram-post"
+    >
       <article className="bg-card overflow-hidden rounded-lg border shadow-sm">
         <Header author={post.author} createdAt={post.createdAt} />
 

@@ -1,5 +1,10 @@
 import { z } from "zod";
-import { ToolUIIdSchema } from "../shared";
+import {
+  ToolUIIdSchema,
+  ToolUIReceiptSchema,
+  ToolUIRoleSchema,
+  parseWithSchema,
+} from "../shared";
 
 export const mediaKind = z.enum(["image", "video", "audio", "link"]);
 export type MediaCardKind = z.infer<typeof mediaKind>;
@@ -12,7 +17,7 @@ export type Aspect = z.infer<typeof aspect>;
 export const fit = z.enum(["cover", "contain"]).default("cover");
 export type Fit = z.infer<typeof fit>;
 
-export const serializableMediaCardSchema = z
+export const SerializableMediaCardSchema = z
   .object({
     /**
      * Unique identifier for this tool UI instance in the conversation.
@@ -27,6 +32,8 @@ export const serializableMediaCardSchema = z
      * @example "media-card-hero-image", "link-preview-article-123"
      */
     id: ToolUIIdSchema,
+    role: ToolUIRoleSchema.optional(),
+    receipt: ToolUIReceiptSchema.optional(),
     /**
      * The media asset's persistent identifier (e.g., database ID, CDN asset ID, URL hash).
      *
@@ -93,12 +100,8 @@ export const serializableMediaCardSchema = z
     }
   });
 
-export type SerializableMediaCard = z.infer<typeof serializableMediaCardSchema>;
+export type SerializableMediaCard = z.infer<typeof SerializableMediaCardSchema>;
 
 export function parseSerializableMediaCard(input: unknown) {
-  const result = serializableMediaCardSchema.safeParse(input);
-  if (!result.success) {
-    throw new Error(`Invalid MediaCard: ${result.error.message}`);
-  }
-  return result.data;
+  return parseWithSchema(SerializableMediaCardSchema, input, "MediaCard");
 }

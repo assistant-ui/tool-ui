@@ -20,7 +20,9 @@ import { ActionButtons, normalizeActionsConfig } from "../shared";
 
 function MediaCardProgress({ className }: { className?: string }) {
   return (
-    <div className={cn("flex w-full animate-pulse flex-col gap-3", className)}>
+    <div
+      className={cn("flex w-full motion-safe:animate-pulse flex-col gap-3", className)}
+    >
       <div className="flex items-center gap-3 text-xs">
         <div className="bg-muted h-6 w-6 rounded-full" />
         <div className="bg-muted h-3 w-28 rounded" />
@@ -200,6 +202,8 @@ export function MediaCard(props: MediaCardProps) {
       style={containerStyle}
       lang={locale}
       aria-busy={isLoading}
+      data-tool-ui-id={cardPayload.id}
+      data-slot="media-card"
       data-media-card-kind={cardPayload.kind}
     >
       <MediaCardProvider value={value}>

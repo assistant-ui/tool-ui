@@ -19,13 +19,13 @@ With `InferUITools` in AI SDK 5, you can infer tool input/output types from your
 ```ts title="lib/tools.ts"
 import { tool } from "ai";
 import { z } from "zod";
-import { serializableMediaCardSchema } from "@/components/tool-ui/media-card/schema";
+import { SerializableMediaCardSchema } from "@/components/tool-ui/media-card/schema";
 
 export const tools = {
   previewLink: tool({
     description: "Return a simple link preview",
     inputSchema: z.object({ url: z.string().url() }),
-    outputSchema: serializableMediaCardSchema,
+    outputSchema: SerializableMediaCardSchema,
     async execute({ url }) {
       return {
         id: "link-preview-1",

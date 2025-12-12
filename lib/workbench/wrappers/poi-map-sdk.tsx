@@ -96,7 +96,6 @@ export function POIMapSDK(props: Record<string, unknown>) {
       initialCenter={parsed.initialCenter}
       initialZoom={parsed.initialZoom}
       title={parsed.title}
-      className={parsed.className}
       displayMode={displayMode}
       widgetState={currentWidgetState}
       theme={theme}

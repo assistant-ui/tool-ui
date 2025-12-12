@@ -31,6 +31,7 @@ import type {
 } from "./types";
 import { ActionButtons, normalizeActionsConfig } from "../shared";
 import type { FormatConfig } from "./formatters";
+import { DataTableErrorBoundary } from "./error-boundary";
 
 export const DEFAULT_LOCALE = "en-US" as const;
 
@@ -52,10 +53,6 @@ function getAlignmentClass(
   return undefined;
 }
 
-// We intentionally use `any` here to store the context value,
-// then expose a strongly-typed hook via `useDataTable<T>()` that
-// casts to the caller's row type.
-// This keeps usage ergonomic while avoiding prop-drilling generics.
 const DataTableContext = React.createContext<
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   DataTableContextValue<any> | undefined
@@ -89,14 +86,7 @@ export function DataTable<T extends object = RowData>({
   onResponseAction,
   onBeforeResponseAction,
 }: DataTableProps<T>) {
-  /**
-   * Resolved locale with explicit default.
-   *
-   * We always use a defined locale (never undefined) to ensure consistent
-   * behavior across server and client rendering. Without this, SSR would use
-   * Node.js locale (often en-US) while client hydration uses browser locale,
-   * causing mismatches.
-   */
+  // Default locale avoids SSR/client formatting mismatches.
   const resolvedLocale = locale ?? DEFAULT_LOCALE;
 
   const [internalSortBy, setInternalSortBy] = React.useState<
@@ -114,15 +104,6 @@ export function DataTable<T extends object = RowData>({
     return sortData(rawData, sortBy, sortDirection, resolvedLocale);
   }, [rawData, sortBy, sortDirection, resolvedLocale]);
 
-  /**
-   * Tri-state sorting cycle implementation
-   *
-   * Cycle behavior:
-   * - none (unsorted) → asc → desc → none
-   * - Clicking different column resets to asc
-   *
-   * This allows users to return to the original data order.
-   */
   const handleSort = React.useCallback(
     (key: ColumnKey<T>) => {
       let newDirection: "asc" | "desc" | undefined;
@@ -183,9 +164,10 @@ export function DataTable<T extends object = RowData>({
     <DataTableContext.Provider value={contextValue}>
       <div
         className={cn("@container w-full min-w-80", className)}
+        data-tool-ui-id={id}
+        data-slot="data-table"
         data-layout={layout}
       >
-        {/* Table view: visible at @md+ in auto mode */}
         <div
           className={cn(
             layout === "table"
@@ -233,7 +215,6 @@ export function DataTable<T extends object = RowData>({
           </div>
         </div>
 
-        {/* Card view: visible below @md in auto mode */}
         <div
           className={cn(
             layout === "cards"
@@ -334,7 +315,7 @@ function DataTableSkeleton() {
           <TableRow key={i}>
             {columns.map((_, j) => (
               <TableCell key={j}>
-                <div className="bg-muted/50 h-4 animate-pulse rounded" />
+                <div className="bg-muted/50 h-4 rounded motion-safe:animate-pulse" />
               </TableCell>
             ))}
           </TableRow>
@@ -349,9 +330,9 @@ function DataTableSkeletonCards() {
     <>
       {Array.from({ length: 3 }).map((_, i) => (
         <div key={i} className="flex flex-col gap-2 rounded-lg border p-4">
-          <div className="bg-muted/50 h-5 w-1/2 animate-pulse rounded" />
-          <div className="bg-muted/50 h-4 w-3/4 animate-pulse rounded" />
-          <div className="bg-muted/50 h-4 w-2/3 animate-pulse rounded" />
+          <div className="bg-muted/50 h-5 w-1/2 rounded motion-safe:animate-pulse" />
+          <div className="bg-muted/50 h-4 w-3/4 rounded motion-safe:animate-pulse" />
+          <div className="bg-muted/50 h-4 w-2/3 rounded motion-safe:animate-pulse" />
         </div>
       ))}
     </>
@@ -755,10 +736,10 @@ function DataTableAccordionCard({
             <dl
               className={cn(
                 "flex flex-col gap-2 pt-4",
-                "group-data-[state=open]:animate-in group-data-[state=open]:fade-in-0",
-                "group-data-[state=open]:slide-in-from-top-1",
-                "group-data-[state=closed]:animate-out group-data-[state=closed]:fade-out-0",
-                "group-data-[state=closed]:slide-out-to-top-1",
+                "motion-safe:group-data-[state=open]:animate-in motion-safe:group-data-[state=open]:fade-in-0",
+                "motion-safe:group-data-[state=open]:slide-in-from-top-1",
+                "motion-safe:group-data-[state=closed]:animate-out motion-safe:group-data-[state=closed]:fade-out-0",
+                "motion-safe:group-data-[state=closed]:slide-out-to-top-1",
                 "duration-150",
               )}
               role="list"
@@ -882,49 +863,4 @@ function SimpleCard({
       ))}
     </div>
   );
-}
-
-interface ErrorBoundaryProps {
-  children: React.ReactNode;
-  fallback?: React.ReactNode;
-  onError?: (error: Error, errorInfo: React.ErrorInfo) => void;
-}
-
-interface ErrorBoundaryState {
-  hasError: boolean;
-  error?: Error;
-}
-
-class DataTableErrorBoundary extends React.Component<
-  ErrorBoundaryProps,
-  ErrorBoundaryState
-> {
-  constructor(props: ErrorBoundaryProps) {
-    super(props);
-    this.state = { hasError: false };
-  }
-
-  static getDerivedStateFromError(error: Error): ErrorBoundaryState {
-    return { hasError: true, error };
-  }
-
-  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    console.error("DataTable Error:", error, errorInfo);
-    this.props.onError?.(error, errorInfo);
-  }
-
-  render() {
-    if (this.state.hasError) {
-      return (
-        this.props.fallback ?? (
-          <div className="border-destructive text-destructive rounded-lg border p-4">
-            <p className="font-semibold">Something went wrong</p>
-            <p className="text-sm">{this.state.error?.message}</p>
-          </div>
-        )
-      );
-    }
-
-    return this.props.children;
-  }
 }

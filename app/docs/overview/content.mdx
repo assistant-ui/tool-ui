@@ -78,7 +78,7 @@ flowchart LR
 
 **What this demonstrates:**
 
-- `serializableMediaCardSchema` from `@tool-ui/media-card` ensures type-safe output
+- `SerializableMediaCardSchema` ensures type-safe output
 - Actions are defined with both UI labels and canonical sentences for conversation coherence
 - The schema guarantees the frontend receives reconstructable, addressable data
 
@@ -86,7 +86,7 @@ flowchart LR
 import { streamText, tool } from "ai";
 import { openai } from "@ai-sdk/openai";
 import { z } from "zod";
-import { serializableMediaCardSchema } from "@/components/tool-ui/media-card/schema";
+import { SerializableMediaCardSchema } from "@/components/tool-ui/media-card/schema";
 
 export async function POST(req: Request) {
   const { messages } = await req.json();
@@ -98,7 +98,7 @@ export async function POST(req: Request) {
       previewLink: tool({
         description: "Show a preview card for a URL",
         inputSchema: z.object({ url: z.string().url() }),
-        outputSchema: serializableMediaCardSchema,
+        outputSchema: SerializableMediaCardSchema,
         async execute({ url }) {
           return {
             id: "link-preview-1",
