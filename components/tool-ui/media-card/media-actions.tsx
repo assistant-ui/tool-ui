@@ -259,8 +259,6 @@ export function Actions() {
 }
 
 function useClipboardSupport() {
-  // Check clipboard support directly without useEffect
-  // This is safe because navigator is available at render time in browser
   return React.useMemo(
     () =>
       typeof navigator !== "undefined" &&
