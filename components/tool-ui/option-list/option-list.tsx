@@ -1,6 +1,13 @@
 "use client";
 
-import { useMemo, useState, useCallback, useEffect, useRef, Fragment } from "react";
+import {
+  useMemo,
+  useState,
+  useCallback,
+  useEffect,
+  useRef,
+  Fragment,
+} from "react";
 import type { KeyboardEvent } from "react";
 import type {
   OptionListProps,
@@ -239,7 +246,12 @@ export function OptionList({
   const effectiveMaxSelections = selectionMode === "single" ? 1 : maxSelections;
 
   const [uncontrolledSelected, setUncontrolledSelected] = useState<Set<string>>(
-    () => parseSelectionToIdSet(defaultValue, selectionMode, effectiveMaxSelections),
+    () =>
+      parseSelectionToIdSet(
+        defaultValue,
+        selectionMode,
+        effectiveMaxSelections,
+      ),
   );
 
   useEffect(() => {
@@ -295,15 +307,18 @@ export function OptionList({
 
   useEffect(() => {
     if (optionStates.length === 0) return;
-    if (
-      activeIndex < 0 ||
-      activeIndex >= optionStates.length ||
-      optionStates[activeIndex].isDisabled
-    ) {
-      const firstEnabled = optionStates.findIndex((s) => !s.isDisabled);
-      setActiveIndex(firstEnabled >= 0 ? firstEnabled : 0);
-    }
-  }, [activeIndex, optionStates]);
+    setActiveIndex((prev) => {
+      if (
+        prev < 0 ||
+        prev >= optionStates.length ||
+        optionStates[prev].isDisabled
+      ) {
+        const firstEnabled = optionStates.findIndex((s) => !s.isDisabled);
+        return firstEnabled >= 0 ? firstEnabled : 0;
+      }
+      return prev;
+    });
+  }, [optionStates]);
 
   const updateSelection = useCallback(
     (next: Set<string>) => {
@@ -588,7 +603,9 @@ export function OptionList({
           align={normalizedFooterActions.align}
           confirmTimeout={normalizedFooterActions.confirmTimeout}
           onAction={handleFooterAction}
-          onBeforeAction={hasCustomResponseActions ? onBeforeResponseAction : undefined}
+          onBeforeAction={
+            hasCustomResponseActions ? onBeforeResponseAction : undefined
+          }
         />
       </div>
     </div>
