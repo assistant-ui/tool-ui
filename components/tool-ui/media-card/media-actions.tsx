@@ -259,14 +259,10 @@ export function Actions() {
 }
 
 function useClipboardSupport() {
-  const [supported, setSupported] = React.useState(false);
-
-  React.useEffect(() => {
-    setSupported(
+  return React.useMemo(
+    () =>
       typeof navigator !== "undefined" &&
-        typeof navigator.clipboard?.writeText === "function",
-    );
-  }, []);
-
-  return supported;
+      typeof navigator.clipboard?.writeText === "function",
+    [],
+  );
 }

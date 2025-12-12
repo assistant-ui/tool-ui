@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 import { MapPin } from "lucide-react";
 import type { POI, MapCenter, POICategory } from "./schema";
@@ -35,7 +34,7 @@ export function MapSkeleton({ className }: { className?: string }) {
     <div className={cn("relative h-full w-full overflow-clip", className)}>
       <Skeleton className="absolute inset-0" />
       <div className="absolute inset-0 flex flex-col items-center justify-center gap-2">
-        <MapPin className="text-muted-foreground/50 size-8 animate-pulse" />
+        <MapPin className="text-muted-foreground/50 size-8 motion-safe:animate-pulse" />
         <span className="text-muted-foreground text-sm">Loading map...</span>
       </div>
     </div>
@@ -47,16 +46,10 @@ const LeafletMap = dynamic(() => import("./leaflet-map"), {
   loading: () => <MapSkeleton />,
 });
 
-export function MapView(props: MapViewProps) {
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  if (!mounted) {
-    return <MapSkeleton className={props.className} />;
-  }
-
-  return <LeafletMap {...props} />;
+export function MapView({ className, ...props }: MapViewProps) {
+  return (
+    <div className={cn("relative h-full w-full overflow-clip", className)}>
+      <LeafletMap {...props} />
+    </div>
+  );
 }

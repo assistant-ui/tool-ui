@@ -2,13 +2,18 @@
 
 import { useMemo, useState, useCallback, useEffect } from "react";
 import { codeToHtml } from "shiki";
-import { useTheme } from "next-themes";
 import { Copy, Check, ChevronDown, ChevronUp } from "lucide-react";
 import type { CodeBlockProps } from "./schema";
-import { ActionButtons, normalizeActionsConfig } from "../shared";
+import {
+  ActionButtons,
+  normalizeActionsConfig,
+  useCopyToClipboard,
+} from "../shared";
 import { Button, Collapsible, CollapsibleTrigger } from "./_ui";
 import { cn } from "./_cn";
 import { CodeBlockProgress } from "./progress";
+
+const COPY_ID = "code";
 
 const LANGUAGE_DISPLAY_NAMES: Record<string, string> = {
   typescript: "TypeScript",
@@ -33,22 +38,49 @@ function getLanguageDisplayName(lang: string): string {
   return LANGUAGE_DISPLAY_NAMES[lang.toLowerCase()] || lang.toUpperCase();
 }
 
-function useCopyToClipboard() {
-  const [copied, setCopied] = useState(false);
+function getSystemTheme(): "light" | "dark" {
+  if (typeof window === "undefined") return "light";
+  return window.matchMedia?.("(prefers-color-scheme: dark)").matches
+    ? "dark"
+    : "light";
+}
 
-  const copy = useCallback(async (text: string) => {
-    await navigator.clipboard.writeText(text);
-    setCopied(true);
-  }, []);
+function getDocumentTheme(): "light" | "dark" | null {
+  if (typeof document === "undefined") return null;
+  const root = document.documentElement;
+  if (root.classList.contains("dark")) return "dark";
+  if (root.classList.contains("light")) return "light";
+  return null;
+}
+
+function useResolvedTheme(): "light" | "dark" {
+  const [theme, setTheme] = useState<"light" | "dark">(() => {
+    return getDocumentTheme() ?? getSystemTheme();
+  });
 
   useEffect(() => {
-    if (copied) {
-      const timeout = setTimeout(() => setCopied(false), 2000);
-      return () => clearTimeout(timeout);
+    if (typeof window === "undefined" || typeof document === "undefined") {
+      return;
     }
-  }, [copied]);
 
-  return { copied, copy };
+    const update = () => setTheme(getDocumentTheme() ?? getSystemTheme());
+
+    const mql = window.matchMedia?.("(prefers-color-scheme: dark)");
+    mql?.addEventListener("change", update);
+
+    const observer = new MutationObserver(update);
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["class"],
+    });
+
+    return () => {
+      mql?.removeEventListener("change", update);
+      observer.disconnect();
+    };
+  }, []);
+
+  return theme;
 }
 
 export function CodeBlock({
@@ -59,24 +91,27 @@ export function CodeBlock({
   showLineNumbers = true,
   highlightLines,
   maxCollapsedLines,
-  footerActions,
-  onFooterAction,
-  onBeforeFooterAction,
+  responseActions,
+  onResponseAction,
+  onBeforeResponseAction,
   isLoading,
   className,
 }: CodeBlockProps) {
-  const { theme: browserTheme } = useTheme();
+  const resolvedTheme = useResolvedTheme();
   const [highlightedHtml, setHighlightedHtml] = useState<string | null>(null);
   const [isExpanded, setIsExpanded] = useState(false);
-  const { copied, copy } = useCopyToClipboard();
+  const { copiedId, copy } = useCopyToClipboard();
+  const copied = copiedId === COPY_ID;
 
-  const theme = browserTheme === "dark" ? "github-dark" : "github-light";
+  const theme = resolvedTheme === "dark" ? "github-dark" : "github-light";
 
-  // Generate highlighted HTML
   useEffect(() => {
+    let cancelled = false;
+    setHighlightedHtml(null);
+
     async function highlight() {
       if (!code) {
-        setHighlightedHtml("");
+        if (!cancelled) setHighlightedHtml("");
         return;
       }
 
@@ -87,9 +122,7 @@ export function CodeBlock({
           transformers: [
             {
               line(node, line) {
-                // Add line number data attribute
                 node.properties["data-line"] = line;
-                // Add highlight class if line is in highlightLines
                 if (highlightLines?.includes(line)) {
                   node.properties["class"] =
                     `${node.properties["class"] || ""} highlighted-line`;
@@ -98,22 +131,24 @@ export function CodeBlock({
             },
           ],
         });
-        setHighlightedHtml(html);
+        if (!cancelled) setHighlightedHtml(html);
       } catch {
-        // Fallback for unknown languages
         const escaped = code
           .replace(/&/g, "&amp;")
           .replace(/</g, "&lt;")
           .replace(/>/g, "&gt;");
-        setHighlightedHtml(`<pre><code>${escaped}</code></pre>`);
+        if (!cancelled) setHighlightedHtml(`<pre><code>${escaped}</code></pre>`);
       }
     }
-    highlight();
+    void highlight();
+    return () => {
+      cancelled = true;
+    };
   }, [code, language, theme, highlightLines]);
 
   const normalizedFooterActions = useMemo(
-    () => normalizeActionsConfig(footerActions),
-    [footerActions],
+    () => normalizeActionsConfig(responseActions),
+    [responseActions],
   );
 
   const lineCount = code.split("\n").length;
@@ -121,13 +156,16 @@ export function CodeBlock({
   const isCollapsed = shouldCollapse && !isExpanded;
 
   const handleCopy = useCallback(() => {
-    copy(code);
+    copy(code, COPY_ID);
   }, [code, copy]);
 
   if (isLoading) {
     return (
       <div
-        className={cn("@container flex w-full min-w-80 flex-col gap-3", className)}
+        className={cn(
+          "@container flex w-full min-w-80 flex-col gap-3",
+          className,
+        )}
         data-tool-ui-id={id}
         aria-busy="true"
       >
@@ -140,12 +178,14 @@ export function CodeBlock({
 
   return (
     <div
-      className={cn("@container flex w-full min-w-80 flex-col gap-3", className)}
+      className={cn(
+        "@container flex w-full min-w-80 flex-col gap-3",
+        className,
+      )}
       data-tool-ui-id={id}
       data-slot="code-block"
     >
       <div className="border-border bg-card overflow-hidden rounded-lg border shadow-xs">
-        {/* Header */}
         <div className="bg-muted/50 flex items-center justify-between border-b px-4 py-2">
           <div className="flex items-center gap-2">
             <span className="text-muted-foreground text-xs font-medium">
@@ -175,7 +215,6 @@ export function CodeBlock({
           </Button>
         </div>
 
-        {/* Code content */}
         <Collapsible open={!isCollapsed}>
           <div
             className={cn(
@@ -220,15 +259,14 @@ export function CodeBlock({
         </Collapsible>
       </div>
 
-      {/* Footer actions */}
       {normalizedFooterActions && (
         <div className="@container/actions">
           <ActionButtons
             actions={normalizedFooterActions.items}
             align={normalizedFooterActions.align}
             confirmTimeout={normalizedFooterActions.confirmTimeout}
-            onAction={(id) => onFooterAction?.(id)}
-            onBeforeAction={onBeforeFooterAction}
+            onAction={(id) => onResponseAction?.(id)}
+            onBeforeAction={onBeforeResponseAction}
           />
         </div>
       )}

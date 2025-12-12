@@ -66,7 +66,9 @@ export function MediaFrame() {
   React.useEffect(() => {
     if (!ref.current) return;
     if (state.muted === undefined) return;
-    ref.current.muted = state.muted;
+    if (ref.current.muted !== state.muted) {
+      ref.current.muted = state.muted;
+    }
   }, [state.muted]);
 
   React.useEffect(() => {
@@ -74,8 +76,7 @@ export function MediaFrame() {
     if (state.playing === undefined) return;
     if (state.playing && ref.current.paused) {
       void ref.current.play().catch(() => undefined);
-    }
-    if (!state.playing && !ref.current.paused) {
+    } else if (!state.playing && !ref.current.paused) {
       ref.current.pause();
     }
   }, [state.playing]);

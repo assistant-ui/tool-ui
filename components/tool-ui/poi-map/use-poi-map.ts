@@ -1,15 +1,15 @@
 "use client";
 
 import { useMemo, useCallback } from "react";
-import type { POI, POIMapWidgetState, MapCenter, POICategory } from "./schema";
+import type { POI, POIMapViewState, MapCenter, POICategory } from "./schema";
 import { DEFAULT_CENTER, DEFAULT_ZOOM } from "./schema";
 
 interface UsePOIMapOptions {
   pois: POI[];
-  widgetState: POIMapWidgetState | null;
+  widgetState: POIMapViewState | null;
   initialCenter?: MapCenter;
   initialZoom?: number;
-  onWidgetStateChange: (state: Partial<POIMapWidgetState>) => void;
+  onWidgetStateChange: (state: Partial<POIMapViewState>) => void;
 }
 
 export function usePOIMap({

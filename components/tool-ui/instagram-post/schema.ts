@@ -1,45 +1,53 @@
 import { z } from "zod";
+import { parseWithSchema } from "../shared";
 
-export const instagramPostAuthorSchema = z.object({
+export const InstagramPostAuthorSchema = z.object({
   name: z.string(),
   handle: z.string(),
   avatarUrl: z.string(),
   verified: z.boolean().optional(),
 });
 
-export const instagramPostMediaSchema = z.object({
+export const InstagramPostMediaSchema = z.object({
   type: z.enum(["image", "video"]),
   url: z.string(),
   alt: z.string(),
 });
 
-export const instagramPostStatsSchema = z.object({
+export const InstagramPostStatsSchema = z.object({
   likes: z.number().optional(),
   isLiked: z.boolean().optional(),
 });
 
 export interface InstagramPostData {
   id: string;
-  author: z.infer<typeof instagramPostAuthorSchema>;
+  author: z.infer<typeof InstagramPostAuthorSchema>;
   text?: string;
-  media?: z.infer<typeof instagramPostMediaSchema>[];
-  stats?: z.infer<typeof instagramPostStatsSchema>;
+  media?: z.infer<typeof InstagramPostMediaSchema>[];
+  stats?: z.infer<typeof InstagramPostStatsSchema>;
   createdAt?: string;
 }
 
-export const instagramPostSchema: z.ZodType<InstagramPostData> = z.object({
-  id: z.string(),
-  author: instagramPostAuthorSchema,
-  text: z.string().optional(),
-  media: z.array(instagramPostMediaSchema).optional(),
-  stats: instagramPostStatsSchema.optional(),
-  createdAt: z.string().optional(),
-});
+export const SerializableInstagramPostSchema: z.ZodType<InstagramPostData> =
+  z.object({
+    id: z.string(),
+    author: InstagramPostAuthorSchema,
+    text: z.string().optional(),
+    media: z.array(InstagramPostMediaSchema).optional(),
+    stats: InstagramPostStatsSchema.optional(),
+    createdAt: z.string().optional(),
+  });
 
-export type InstagramPostAuthor = z.infer<typeof instagramPostAuthorSchema>;
-export type InstagramPostMedia = z.infer<typeof instagramPostMediaSchema>;
-export type InstagramPostStats = z.infer<typeof instagramPostStatsSchema>;
+export type InstagramPostAuthor = z.infer<typeof InstagramPostAuthorSchema>;
+export type InstagramPostMedia = z.infer<typeof InstagramPostMediaSchema>;
+export type InstagramPostStats = z.infer<typeof InstagramPostStatsSchema>;
 
-export function parseInstagramPost(input: unknown): InstagramPostData {
-  return instagramPostSchema.parse(input);
+export function parseSerializableInstagramPost(
+  input: unknown,
+): InstagramPostData {
+  return parseWithSchema(
+    SerializableInstagramPostSchema,
+    input,
+    "InstagramPost",
+  );
 }

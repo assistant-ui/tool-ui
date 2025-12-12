@@ -200,7 +200,7 @@ export const workbenchComponents: WorkbenchComponentEntry[] = [
         "A beautiful sunrise illuminates the mountain peaks with golden light.",
       ratio: "16:9",
       domain: "unsplash.com",
-      createdAtISO: new Date().toISOString(),
+      createdAt: new Date().toISOString(),
       source: {
         label: "Nature Photography",
         iconUrl: "https://api.dicebear.com/7.x/shapes/svg?seed=nature",

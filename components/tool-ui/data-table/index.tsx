@@ -1,4 +1,5 @@
 export { DataTable, useDataTable } from "./data-table";
+export { DataTableErrorBoundary } from "./error-boundary";
 
 export { renderFormattedValue } from "./formatters";
 export {

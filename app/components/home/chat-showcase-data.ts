@@ -114,7 +114,7 @@ export const MEDIA_CARD: SerializableMediaCard = {
   domain: "react.dev",
   thumb:
     "https://images.unsplash.com/photo-1633356122544-f134324a6cee?auto=format&fit=crop&q=80&w=1200",
-  createdAtISO: "2025-01-15T10:30:00.000Z",
+  createdAt: "2025-01-15T10:30:00.000Z",
   source: {
     label: "React Docs",
     iconUrl: "https://api.dicebear.com/7.x/shapes/svg?seed=react",

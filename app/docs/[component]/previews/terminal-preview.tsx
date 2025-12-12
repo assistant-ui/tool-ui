@@ -55,8 +55,8 @@ export function TerminalPreview({
     [router, pathname, searchParams],
   );
 
-  const handleFooterAction = useCallback(async (actionId: string) => {
-    console.log("Footer action:", actionId);
+  const handleResponseAction = useCallback(async (actionId: string) => {
+    console.log("Response action:", actionId);
   }, []);
 
   return (
@@ -75,7 +75,7 @@ export function TerminalPreview({
         <Terminal
           {...currentData}
           id="terminal-preview"
-          onFooterAction={handleFooterAction}
+          onResponseAction={handleResponseAction}
           isLoading={isLoadingState}
         />
       )}

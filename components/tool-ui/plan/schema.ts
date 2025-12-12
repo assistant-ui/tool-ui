@@ -3,6 +3,9 @@ import {
   SerializableActionSchema,
   SerializableActionsConfigSchema,
   ToolUIIdSchema,
+  ToolUIReceiptSchema,
+  ToolUIRoleSchema,
+  parseWithSchema,
 } from "../shared";
 
 export const PlanTodoStatusSchema = z.enum([
@@ -24,6 +27,8 @@ export type PlanTodo = z.infer<typeof PlanTodoSchema>;
 
 export const PlanPropsSchema = z.object({
   id: ToolUIIdSchema,
+  role: ToolUIRoleSchema.optional(),
+  receipt: ToolUIReceiptSchema.optional(),
   title: z.string().min(1),
   description: z.string().optional(),
   todos: z.array(PlanTodoSchema).min(1),
@@ -32,19 +37,18 @@ export const PlanPropsSchema = z.object({
   responseActions: z
     .union([z.array(SerializableActionSchema), SerializableActionsConfigSchema])
     .optional(),
-  className: z.string().optional(),
 });
 
-export type PlanProps = z.infer<typeof PlanPropsSchema>;
+export type PlanProps = z.infer<typeof PlanPropsSchema> & {
+  className?: string;
+  onResponseAction?: (actionId: string) => void | Promise<void>;
+  onBeforeResponseAction?: (actionId: string) => boolean | Promise<boolean>;
+};
 
 export const SerializablePlanSchema = PlanPropsSchema;
 
 export type SerializablePlan = z.infer<typeof SerializablePlanSchema>;
 
 export function parseSerializablePlan(input: unknown): SerializablePlan {
-  const result = SerializablePlanSchema.safeParse(input);
-  if (!result.success) {
-    throw new Error(`Invalid Plan payload: ${result.error.message}`);
-  }
-  return result.data;
+  return parseWithSchema(SerializablePlanSchema, input, "Plan");
 }

@@ -123,12 +123,12 @@ Define a tool that returns Media Card props, then render the card with runtime v
 // Backend tool
 import { tool } from "ai";
 import { z } from "zod";
-import { serializableMediaCardSchema } from "@/components/tool-ui/media-card/schema";
+import { SerializableMediaCardSchema } from "@/components/tool-ui/media-card/schema";
 
 const previewLink = tool({
   description: "Show a preview card for a URL",
-  inputSchema: z.object({ url: z.string().url() }),
-  outputSchema: serializableMediaCardSchema,
+  inputSchema: z.object({ url: z.url() }),
+  outputSchema: SerializableMediaCardSchema,
   async execute({ url }) {
     // Fetch real metadata here
     return {
@@ -178,8 +178,16 @@ export const PreviewLinkUI = makeAssistantToolUI({
 
 <TypeTable
   type={{
-    id: { description: "Unique identifier for this tool UI instance", type: "string", required: true },
-    assetId: { description: "Persistent asset identifier (e.g., database ID)", type: "string", required: true },
+    id: {
+      description: "Unique identifier for this tool UI instance",
+      type: "string",
+      required: true,
+    },
+    assetId: {
+      description: "Persistent asset identifier (e.g., database ID)",
+      type: "string",
+      required: true,
+    },
     kind: {
       description: "Content type",
       type: "'link' | 'image' | 'video' | 'audio'",
@@ -189,28 +197,59 @@ export const PreviewLinkUI = makeAssistantToolUI({
     href: { description: "Target URL (for link cards)", type: "string" },
     title: { description: "Title text", type: "string" },
     description: { description: "Description", type: "string" },
-    alt: { description: "Alt text for images (required for kind='image')", type: "string" },
+    alt: {
+      description: "Alt text for images (required for kind='image')",
+      type: "string",
+    },
     thumb: { description: "Thumbnail/poster URL", type: "string" },
     ratio: {
       description: "Aspect ratio",
       type: "'auto' | '1:1' | '4:3' | '16:9' | '9:16'",
       default: "'auto'",
     },
-    fit: { description: "Object fit mode", type: "'cover' | 'contain'", default: "'cover'" },
+    fit: {
+      description: "Object fit mode",
+      type: "'cover' | 'contain'",
+      default: "'cover'",
+    },
     domain: { description: "Source domain label", type: "string" },
-    source: { description: "Source attribution", type: "{ label: string; iconUrl?: string; url?: string }" },
-    createdAtISO: { description: "Creation timestamp", type: "string (ISO 8601)" },
-    durationMs: { description: "Duration in milliseconds (video/audio)", type: "number" },
+    source: {
+      description: "Source attribution",
+      type: "{ label: string; iconUrl?: string; url?: string }",
+    },
+    createdAt: {
+      description: "Creation timestamp",
+      type: "string (ISO 8601)",
+    },
+    durationMs: {
+      description: "Duration in milliseconds (video/audio)",
+      type: "number",
+    },
     fileSizeBytes: { description: "File size in bytes", type: "number" },
-    og: { description: "OpenGraph fallback data", type: "{ title?: string; description?: string; imageUrl?: string }" },
+    og: {
+      description: "OpenGraph fallback data",
+      type: "{ title?: string; description?: string; imageUrl?: string }",
+    },
     maxWidth: {
       description: "Max width",
       type: "string (CSS)",
       default: "'100%'",
     },
-    responseActions: { description: "Response action buttons", type: "Action[]" },
-    onAction: { description: "Inline action handler", type: "(actionId: string) => void" },
-    onResponseAction: { description: "Response action handler", type: "(actionId: string) => void" },
-    onNavigate: { description: "Navigation handler", type: "(href: string, card: MediaCard) => void" },
+    responseActions: {
+      description: "Response action buttons",
+      type: "Action[]",
+    },
+    onAction: {
+      description: "Inline action handler",
+      type: "(actionId: string) => void",
+    },
+    onResponseAction: {
+      description: "Response action handler",
+      type: "(actionId: string) => void",
+    },
+    onNavigate: {
+      description: "Navigation handler",
+      type: "(href: string, card: MediaCard) => void",
+    },
   }}
 />

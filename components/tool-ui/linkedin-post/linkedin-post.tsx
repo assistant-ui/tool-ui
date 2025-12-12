@@ -24,15 +24,18 @@ import type {
   LinkedInPostLinkPreview,
 } from "./schema";
 
+const TEXT_PREVIEW_LENGTH = 280;
+
 export interface LinkedInPostProps {
   post: LinkedInPostData;
   className?: string;
   onAction?: (action: string, post: LinkedInPostData) => void;
   responseActions?: ActionsProp;
-  onResponseAction?: (actionId: string) => void;
+  onResponseAction?: (actionId: string) => void | Promise<void>;
+  onBeforeResponseAction?: (actionId: string) => boolean | Promise<boolean>;
 }
 
-function LinkedinLogo({ className }: { className?: string }) {
+function LinkedInLogo({ className }: { className?: string }) {
   return (
     <svg
       viewBox="0 0 72 72"
@@ -84,14 +87,14 @@ function Header({
           </div>
         )}
       </div>
-      <LinkedinLogo className="size-5 text-[#0077b5]" />
+      <LinkedInLogo className="size-5 text-[#0077b5]" />
     </header>
   );
 }
 
 function PostBody({ text }: { text?: string }) {
   const [isExpanded, setIsExpanded] = React.useState(false);
-  const shouldTruncate = text && text.length > 280;
+  const shouldTruncate = text && text.length > TEXT_PREVIEW_LENGTH;
 
   if (!text) return null;
 
@@ -99,7 +102,7 @@ function PostBody({ text }: { text?: string }) {
     <div className="text-sm leading-relaxed text-pretty wrap-break-word whitespace-pre-wrap">
       {shouldTruncate && !isExpanded ? (
         <>
-          {text.slice(0, 280)}
+          {text.slice(0, TEXT_PREVIEW_LENGTH)}
           ...
           <button
             onClick={() => setIsExpanded(true)}
@@ -115,24 +118,21 @@ function PostBody({ text }: { text?: string }) {
   );
 }
 
-function PostMedia({ media }: { media: LinkedInPostMedia[] }) {
-  if (media.length === 0) return null;
-
-  const item = media[0];
+function PostMedia({ media }: { media: LinkedInPostMedia }) {
   return (
     <div className="overflow-hidden rounded-lg">
-      {item.type === "image" ? (
+      {media.type === "image" ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img
-          src={item.url}
-          alt={item.alt}
+          src={media.url}
+          alt={media.alt}
           className="w-full object-cover"
           style={{ aspectRatio: "16/9" }}
           loading="lazy"
         />
       ) : (
         <video
-          src={item.url}
+          src={media.url}
           controls
           playsInline
           className="w-full object-contain"
@@ -259,6 +259,7 @@ export function LinkedInPost({
   onAction,
   responseActions,
   onResponseAction,
+  onBeforeResponseAction,
 }: LinkedInPostProps) {
   const normalizedFooterActions = React.useMemo(
     () => normalizeActionsConfig(responseActions),
@@ -266,16 +267,18 @@ export function LinkedInPost({
   );
 
   return (
-    <div className={cn("flex max-w-xl flex-col gap-3", className)}>
+    <div
+      className={cn("flex max-w-xl flex-col gap-3", className)}
+      data-tool-ui-id={post.id}
+      data-slot="linkedin-post"
+    >
       <article className="bg-card flex flex-col gap-3 rounded-lg border p-4 shadow-sm">
         <Header author={post.author} createdAt={post.createdAt} />
         <PostBody text={post.text} />
 
-        {post.media && post.media.length > 0 && (
-          <PostMedia media={post.media} />
-        )}
+        {post.media && <PostMedia media={post.media} />}
 
-        {post.linkPreview && !post.media?.length && (
+        {post.linkPreview && !post.media && (
           <PostLinkPreview preview={post.linkPreview} />
         )}
 
@@ -292,6 +295,7 @@ export function LinkedInPost({
             align={normalizedFooterActions.align}
             confirmTimeout={normalizedFooterActions.confirmTimeout}
             onAction={(id) => onResponseAction?.(id)}
+            onBeforeAction={onBeforeResponseAction}
           />
         </div>
       )}

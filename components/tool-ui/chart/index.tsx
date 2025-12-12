@@ -1,4 +1,5 @@
 export { Chart } from "./chart";
+export { ChartErrorBoundary } from "./error-boundary";
 export {
   ChartPropsSchema,
   ChartSeriesSchema,

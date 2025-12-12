@@ -1,6 +1,14 @@
 "use client";
 
-import { useMemo, useState, useCallback, useEffect, Fragment } from "react";
+import {
+  useMemo,
+  useState,
+  useCallback,
+  useEffect,
+  useRef,
+  Fragment,
+} from "react";
+import type { KeyboardEvent } from "react";
 import type {
   OptionListProps,
   OptionListSelection,
@@ -11,7 +19,7 @@ import type { Action } from "../shared";
 import { cn, Button, Separator } from "./_ui";
 import { Check } from "lucide-react";
 
-function normalizeToSet(
+function parseSelectionToIdSet(
   value: OptionListSelection | undefined,
   mode: "multi" | "single",
   maxSelections?: number,
@@ -32,7 +40,7 @@ function normalizeToSet(
   return new Set(maxSelections ? arr.slice(0, maxSelections) : arr);
 }
 
-function setToSelection(
+function convertIdSetToSelection(
   selected: Set<string>,
   mode: "multi" | "single",
 ): OptionListSelection {
@@ -90,6 +98,9 @@ interface OptionItemProps {
   isFirst: boolean;
   isLast: boolean;
   onToggle: () => void;
+  tabIndex?: number;
+  onFocus?: () => void;
+  buttonRef?: (el: HTMLButtonElement | null) => void;
 }
 
 function OptionItem({
@@ -100,23 +111,29 @@ function OptionItem({
   isFirst,
   isLast,
   onToggle,
+  tabIndex,
+  onFocus,
+  buttonRef,
 }: OptionItemProps) {
-  const isMiddle = !isFirst && !isLast;
+  const hasAdjacentOptions = !isFirst && !isLast;
 
   return (
     <Button
+      ref={buttonRef}
       data-id={option.id}
       variant="ghost"
       size="lg"
       role="option"
       aria-selected={isSelected}
       onClick={onToggle}
+      onFocus={onFocus}
+      tabIndex={tabIndex}
       disabled={isDisabled}
       className={cn(
         "peer group relative h-auto min-h-[50px] w-full justify-start text-left text-sm font-medium",
         "rounded-none border-0 bg-transparent px-0 py-2 text-base shadow-none transition-none hover:bg-transparent! @md/option-list:text-sm",
         isFirst && "pb-2.5",
-        isMiddle && "py-2.5",
+        hasAdjacentOptions && "py-2.5",
       )}
     >
       <span
@@ -148,18 +165,20 @@ function OptionItem({
   );
 }
 
-interface OptionListReceiptProps {
+interface OptionListConfirmationProps {
+  id: string;
   options: OptionListOption[];
-  confirmedIds: Set<string>;
+  selectedIds: Set<string>;
   className?: string;
 }
 
-function OptionListReceipt({
+function OptionListConfirmation({
+  id,
   options,
-  confirmedIds,
+  selectedIds,
   className,
-}: OptionListReceiptProps) {
-  const confirmedOptions = options.filter((opt) => confirmedIds.has(opt.id));
+}: OptionListConfirmationProps) {
+  const confirmedOptions = options.filter((opt) => selectedIds.has(opt.id));
 
   return (
     <div
@@ -169,6 +188,7 @@ function OptionListReceipt({
         className,
       )}
       data-slot="option-list"
+      data-tool-ui-id={id}
       data-receipt="true"
       role="status"
       aria-label="Confirmed selection"
@@ -207,6 +227,7 @@ function OptionListReceipt({
 }
 
 export function OptionList({
+  id,
   options,
   selectionMode = "multi",
   minSelections = 1,
@@ -218,33 +239,90 @@ export function OptionList({
   onConfirm,
   onCancel,
   responseActions,
+  onResponseAction,
+  onBeforeResponseAction,
   className,
 }: OptionListProps) {
   const effectiveMaxSelections = selectionMode === "single" ? 1 : maxSelections;
 
   const [uncontrolledSelected, setUncontrolledSelected] = useState<Set<string>>(
-    () => normalizeToSet(defaultValue, selectionMode, effectiveMaxSelections),
+    () =>
+      parseSelectionToIdSet(
+        defaultValue,
+        selectionMode,
+        effectiveMaxSelections,
+      ),
   );
 
   useEffect(() => {
-    setUncontrolledSelected((prev) =>
-      normalizeToSet(Array.from(prev), selectionMode, effectiveMaxSelections),
-    );
+    setUncontrolledSelected((prev) => {
+      const normalized = parseSelectionToIdSet(
+        Array.from(prev),
+        selectionMode,
+        effectiveMaxSelections,
+      );
+      return areSetsEqual(prev, normalized) ? prev : normalized;
+    });
   }, [selectionMode, effectiveMaxSelections]);
 
   const selectedIds = useMemo(
     () =>
       value !== undefined
-        ? normalizeToSet(value, selectionMode, effectiveMaxSelections)
+        ? parseSelectionToIdSet(value, selectionMode, effectiveMaxSelections)
         : uncontrolledSelected,
     [value, uncontrolledSelected, selectionMode, effectiveMaxSelections],
   );
 
   const selectedCount = selectedIds.size;
 
+  const optionStates = useMemo(() => {
+    return options.map((option) => {
+      const isSelected = selectedIds.has(option.id);
+      const isSelectionLocked =
+        selectionMode === "multi" &&
+        effectiveMaxSelections !== undefined &&
+        selectedCount >= effectiveMaxSelections &&
+        !isSelected;
+      const isDisabled = option.disabled || isSelectionLocked;
+
+      return { option, isSelected, isDisabled };
+    });
+  }, [
+    options,
+    selectedIds,
+    selectionMode,
+    effectiveMaxSelections,
+    selectedCount,
+  ]);
+
+  const optionRefs = useRef<Array<HTMLButtonElement | null>>([]);
+  const [activeIndex, setActiveIndex] = useState(() => {
+    const firstSelected = optionStates.findIndex(
+      (s) => s.isSelected && !s.isDisabled,
+    );
+    if (firstSelected >= 0) return firstSelected;
+    const firstEnabled = optionStates.findIndex((s) => !s.isDisabled);
+    return firstEnabled >= 0 ? firstEnabled : 0;
+  });
+
+  useEffect(() => {
+    if (optionStates.length === 0) return;
+    setActiveIndex((prev) => {
+      if (
+        prev < 0 ||
+        prev >= optionStates.length ||
+        optionStates[prev].isDisabled
+      ) {
+        const firstEnabled = optionStates.findIndex((s) => !s.isDisabled);
+        return firstEnabled >= 0 ? firstEnabled : 0;
+      }
+      return prev;
+    });
+  }, [optionStates]);
+
   const updateSelection = useCallback(
     (next: Set<string>) => {
-      const normalizedNext = normalizeToSet(
+      const normalizedNext = parseSelectionToIdSet(
         Array.from(next),
         selectionMode,
         effectiveMaxSelections,
@@ -256,7 +334,7 @@ export function OptionList({
         }
       }
 
-      onChange?.(setToSelection(normalizedNext, selectionMode));
+      onChange?.(convertIdSetToSelection(normalizedNext, selectionMode));
     },
     [
       effectiveMaxSelections,
@@ -298,7 +376,7 @@ export function OptionList({
   const handleConfirm = useCallback(async () => {
     if (!onConfirm) return;
     if (selectedCount === 0 || selectedCount < minSelections) return;
-    await onConfirm(setToSelection(selectedIds, selectionMode));
+    await onConfirm(convertIdSetToSelection(selectedIds, selectionMode));
   }, [minSelections, onConfirm, selectedCount, selectedIds, selectionMode]);
 
   const handleCancel = useCallback(() => {
@@ -307,15 +385,21 @@ export function OptionList({
     onCancel?.();
   }, [onCancel, updateSelection]);
 
+  const hasCustomResponseActions = responseActions !== undefined;
+
   const handleFooterAction = useCallback(
     async (actionId: string) => {
+      if (hasCustomResponseActions) {
+        await onResponseAction?.(actionId);
+        return;
+      }
       if (actionId === "confirm") {
         await handleConfirm();
       } else if (actionId === "cancel") {
         handleCancel();
       }
     },
-    [handleConfirm, handleCancel],
+    [handleConfirm, handleCancel, hasCustomResponseActions, onResponseAction],
   );
 
   const normalizedFooterActions = useMemo(() => {
@@ -332,16 +416,111 @@ export function OptionList({
 
   const isConfirmDisabled =
     selectedCount < minSelections || selectedCount === 0;
-  const isCancelDisabled = selectedCount === 0;
+  const hasNothingToClear = selectedCount === 0;
+
+  const focusOptionAt = useCallback((index: number) => {
+    const el = optionRefs.current[index];
+    if (el) el.focus();
+    setActiveIndex(index);
+  }, []);
+
+  const findFirstEnabledIndex = useCallback(() => {
+    const idx = optionStates.findIndex((s) => !s.isDisabled);
+    return idx >= 0 ? idx : 0;
+  }, [optionStates]);
+
+  const findLastEnabledIndex = useCallback(() => {
+    for (let i = optionStates.length - 1; i >= 0; i--) {
+      if (!optionStates[i].isDisabled) return i;
+    }
+    return 0;
+  }, [optionStates]);
+
+  const findNextEnabledIndex = useCallback(
+    (start: number, direction: 1 | -1) => {
+      const len = optionStates.length;
+      if (len === 0) return 0;
+      for (let step = 1; step <= len; step++) {
+        const idx = (start + direction * step + len) % len;
+        if (!optionStates[idx].isDisabled) return idx;
+      }
+      return start;
+    },
+    [optionStates],
+  );
+
+  const handleListboxKeyDown = useCallback(
+    (e: KeyboardEvent<HTMLDivElement>) => {
+      if (optionStates.length === 0) return;
+
+      const key = e.key;
+
+      if (key === "ArrowDown") {
+        e.preventDefault();
+        e.stopPropagation();
+        focusOptionAt(findNextEnabledIndex(activeIndex, 1));
+        return;
+      }
+
+      if (key === "ArrowUp") {
+        e.preventDefault();
+        e.stopPropagation();
+        focusOptionAt(findNextEnabledIndex(activeIndex, -1));
+        return;
+      }
+
+      if (key === "Home") {
+        e.preventDefault();
+        e.stopPropagation();
+        focusOptionAt(findFirstEnabledIndex());
+        return;
+      }
+
+      if (key === "End") {
+        e.preventDefault();
+        e.stopPropagation();
+        focusOptionAt(findLastEnabledIndex());
+        return;
+      }
+
+      if (key === "Enter" || key === " ") {
+        e.preventDefault();
+        e.stopPropagation();
+        const current = optionStates[activeIndex];
+        if (!current || current.isDisabled) return;
+        toggleSelection(current.option.id);
+        return;
+      }
+
+      if (key === "Escape") {
+        e.preventDefault();
+        e.stopPropagation();
+        if (!hasNothingToClear) {
+          handleCancel();
+        }
+      }
+    },
+    [
+      activeIndex,
+      findFirstEnabledIndex,
+      findLastEnabledIndex,
+      findNextEnabledIndex,
+      focusOptionAt,
+      handleCancel,
+      hasNothingToClear,
+      optionStates,
+      toggleSelection,
+    ],
+  );
 
   const actionsWithDisabledState = useMemo((): Action[] => {
     return normalizedFooterActions.items.map((action) => {
-      const gatedDisabled =
+      const isDisabledByValidation =
         (action.id === "confirm" && isConfirmDisabled) ||
-        (action.id === "cancel" && isCancelDisabled);
+        (action.id === "cancel" && hasNothingToClear);
       return {
         ...action,
-        disabled: action.disabled || gatedDisabled,
+        disabled: action.disabled || isDisabledByValidation,
         label:
           action.id === "confirm" &&
           selectionMode === "multi" &&
@@ -353,17 +532,18 @@ export function OptionList({
   }, [
     normalizedFooterActions.items,
     isConfirmDisabled,
-    isCancelDisabled,
+    hasNothingToClear,
     selectionMode,
     selectedCount,
   ]);
 
   if (confirmed !== undefined && confirmed !== null) {
-    const confirmedIds = normalizeToSet(confirmed, selectionMode);
+    const selectedIds = parseSelectionToIdSet(confirmed, selectionMode);
     return (
-      <OptionListReceipt
+      <OptionListConfirmation
+        id={id}
         options={options}
-        confirmedIds={confirmedIds}
+        selectedIds={selectedIds}
         className={className}
       />
     );
@@ -377,6 +557,7 @@ export function OptionList({
         className,
       )}
       data-slot="option-list"
+      data-tool-ui-id={id}
       role="group"
       aria-label="Option list"
     >
@@ -386,16 +567,9 @@ export function OptionList({
         )}
         role="listbox"
         aria-multiselectable={selectionMode === "multi"}
+        onKeyDown={handleListboxKeyDown}
       >
-        {options.map((option, index) => {
-          const isSelected = selectedIds.has(option.id);
-          const isSelectionLocked =
-            selectionMode === "multi" &&
-            effectiveMaxSelections !== undefined &&
-            selectedCount >= effectiveMaxSelections &&
-            !isSelected;
-          const isDisabled = option.disabled || isSelectionLocked;
-
+        {optionStates.map(({ option, isSelected, isDisabled }, index) => {
           return (
             <Fragment key={option.id}>
               {index > 0 && (
@@ -410,7 +584,12 @@ export function OptionList({
                 isDisabled={isDisabled}
                 selectionMode={selectionMode}
                 isFirst={index === 0}
-                isLast={index === options.length - 1}
+                isLast={index === optionStates.length - 1}
+                tabIndex={index === activeIndex ? 0 : -1}
+                onFocus={() => setActiveIndex(index)}
+                buttonRef={(el) => {
+                  optionRefs.current[index] = el;
+                }}
                 onToggle={() => toggleSelection(option.id)}
               />
             </Fragment>
@@ -424,6 +603,9 @@ export function OptionList({
           align={normalizedFooterActions.align}
           confirmTimeout={normalizedFooterActions.confirmTimeout}
           onAction={handleFooterAction}
+          onBeforeAction={
+            hasCustomResponseActions ? onBeforeResponseAction : undefined
+          }
         />
       </div>
     </div>

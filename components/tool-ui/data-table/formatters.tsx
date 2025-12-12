@@ -1,13 +1,7 @@
 "use client";
 
 import * as React from "react";
-import {
-  cn,
-  Badge,
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "./_ui";
+import { cn, Badge, Tooltip, TooltipContent, TooltipTrigger } from "./_ui";
 
 type Tone = "success" | "warning" | "danger" | "info" | "neutral";
 
@@ -149,13 +143,13 @@ export function PercentValue({ value, options }: PercentValueProps) {
   const basis = options?.basis ?? "fraction";
 
   const numeric = basis === "fraction" ? value * 100 : value;
-  const absFormatted = Math.abs(numeric).toFixed(decimals);
+  const absoluteFormatted = Math.abs(numeric).toFixed(decimals);
   const signed =
     numeric > 0 && showSign
-      ? `+${absFormatted}`
+      ? `+${absoluteFormatted}`
       : numeric < 0
-        ? `-${absFormatted}`
-        : absFormatted;
+        ? `-${absoluteFormatted}`
+        : absoluteFormatted;
 
   return <span className="font-mono tabular-nums">{signed}%</span>;
 }
@@ -381,7 +375,9 @@ export function ArrayValue({ value, options }: ArrayValueProps) {
             </span>
           </TooltipTrigger>
           <TooltipContent>
-            {hidden.map((item) => (item === null ? "null" : String(item))).join(", ")}
+            {hidden
+              .map((item) => (item === null ? "null" : String(item)))
+              .join(", ")}
           </TooltipContent>
         </Tooltip>
       )}

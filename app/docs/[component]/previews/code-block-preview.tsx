@@ -55,8 +55,8 @@ export function CodeBlockPreview({
     [router, pathname, searchParams],
   );
 
-  const handleFooterAction = useCallback(async (actionId: string) => {
-    console.log("Footer action:", actionId);
+  const handleResponseAction = useCallback(async (actionId: string) => {
+    console.log("Response action:", actionId);
   }, []);
 
   return (
@@ -75,7 +75,7 @@ export function CodeBlockPreview({
         <CodeBlock
           {...currentData}
           id="code-block-preview"
-          onFooterAction={handleFooterAction}
+          onResponseAction={handleResponseAction}
           isLoading={isLoadingState}
         />
       )}

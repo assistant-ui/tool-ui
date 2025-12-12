@@ -236,14 +236,15 @@ Define a tool that returns table data, then render with the DataTable component.
 ```tsx
 // Backend tool
 import { tool } from "ai";
-import { serializableDataTableSchema } from "@/components/tool-ui/data-table/schema";
+import { SerializableDataTableSchema } from "@/components/tool-ui/data-table/schema";
 
 const searchProducts = tool({
   description: "Search products and return results in a table",
-  outputSchema: serializableDataTableSchema,
+  outputSchema: SerializableDataTableSchema,
   async execute({ query }) {
     const results = await db.products.search(query);
     return {
+      id: "data-table-search-products",
       columns: [
         { key: "name", label: "Product", priority: "primary" },
         {
@@ -265,7 +266,10 @@ const searchProducts = tool({
 
 // Frontend with assistant-ui
 import { makeAssistantToolUI } from "@assistant-ui/react";
-import { DataTable, parseSerializableDataTable } from "@/components/tool-ui/data-table";
+import {
+  DataTable,
+  parseSerializableDataTable,
+} from "@/components/tool-ui/data-table";
 
 export const SearchProductsUI = makeAssistantToolUI({
   toolName: "searchProducts",

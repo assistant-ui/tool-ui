@@ -1,18 +1,23 @@
 import { z } from "zod";
-import { ToolUIIdSchema } from "../shared";
+import {
+  ToolUIIdSchema,
+  ToolUIReceiptSchema,
+  ToolUIRoleSchema,
+  parseWithSchema,
+} from "../shared";
 
-export const mediaKind = z.enum(["image", "video", "audio", "link"]);
-export type MediaCardKind = z.infer<typeof mediaKind>;
+export const MediaKindSchema = z.enum(["image", "video", "audio", "link"]);
+export type MediaCardKind = z.infer<typeof MediaKindSchema>;
 
-export const aspect = z
+export const AspectRatioSchema = z
   .enum(["auto", "1:1", "4:3", "16:9", "9:16"])
   .default("auto");
-export type Aspect = z.infer<typeof aspect>;
+export type Aspect = z.infer<typeof AspectRatioSchema>;
 
-export const fit = z.enum(["cover", "contain"]).default("cover");
-export type Fit = z.infer<typeof fit>;
+export const MediaFitSchema = z.enum(["cover", "contain"]).default("cover");
+export type Fit = z.infer<typeof MediaFitSchema>;
 
-export const serializableMediaCardSchema = z
+export const SerializableMediaCardSchema = z
   .object({
     /**
      * Unique identifier for this tool UI instance in the conversation.
@@ -27,6 +32,8 @@ export const serializableMediaCardSchema = z
      * @example "media-card-hero-image", "link-preview-article-123"
      */
     id: ToolUIIdSchema,
+    role: ToolUIRoleSchema.optional(),
+    receipt: ToolUIReceiptSchema.optional(),
     /**
      * The media asset's persistent identifier (e.g., database ID, CDN asset ID, URL hash).
      *
@@ -38,24 +45,24 @@ export const serializableMediaCardSchema = z
      * @example "asset-img-12345", "cdn-video-abc", "url-hash-xyz"
      */
     assetId: z.string(),
-    kind: mediaKind,
+    kind: MediaKindSchema,
     title: z.string().optional(),
     description: z.string().optional(),
-    createdAtISO: z.string().datetime().optional(),
+    createdAt: z.string().datetime().optional(),
     locale: z.string().optional(),
-    href: z.string().url().optional(),
+    href: z.url().optional(),
     domain: z.string().optional(),
     source: z
       .object({
         label: z.string(),
-        iconUrl: z.string().url().optional(),
-        url: z.string().url().optional(),
+        iconUrl: z.url().optional(),
+        url: z.url().optional(),
       })
       .optional(),
-    ratio: aspect.optional(),
-    fit: fit.optional(),
-    src: z.string().url().optional(),
-    thumb: z.string().url().optional(),
+    ratio: AspectRatioSchema.optional(),
+    fit: MediaFitSchema.optional(),
+    src: z.url().optional(),
+    thumb: z.url().optional(),
     alt: z.string().optional(),
     durationMs: z.number().int().positive().optional(),
     fileSizeBytes: z.number().int().positive().optional(),
@@ -63,7 +70,7 @@ export const serializableMediaCardSchema = z
       .object({
         title: z.string().optional(),
         description: z.string().optional(),
-        imageUrl: z.string().url().optional(),
+        imageUrl: z.url().optional(),
       })
       .optional(),
   })
@@ -93,12 +100,8 @@ export const serializableMediaCardSchema = z
     }
   });
 
-export type SerializableMediaCard = z.infer<typeof serializableMediaCardSchema>;
+export type SerializableMediaCard = z.infer<typeof SerializableMediaCardSchema>;
 
 export function parseSerializableMediaCard(input: unknown) {
-  const result = serializableMediaCardSchema.safeParse(input);
-  if (!result.success) {
-    throw new Error(`Invalid MediaCard: ${result.error.message}`);
-  }
-  return result.data;
+  return parseWithSchema(SerializableMediaCardSchema, input, "MediaCard");
 }
