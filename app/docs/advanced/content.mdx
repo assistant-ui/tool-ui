@@ -24,7 +24,7 @@ import { SerializableMediaCardSchema } from "@/components/tool-ui/media-card/sch
 export const tools = {
   previewLink: tool({
     description: "Return a simple link preview",
-    inputSchema: z.object({ url: z.string().url() }),
+    inputSchema: z.object({ url: z.url() }),
     outputSchema: SerializableMediaCardSchema,
     async execute({ url }) {
       return {

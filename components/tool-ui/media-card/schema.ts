@@ -50,19 +50,19 @@ export const SerializableMediaCardSchema = z
     description: z.string().optional(),
     createdAt: z.string().datetime().optional(),
     locale: z.string().optional(),
-    href: z.string().url().optional(),
+    href: z.url().optional(),
     domain: z.string().optional(),
     source: z
       .object({
         label: z.string(),
-        iconUrl: z.string().url().optional(),
-        url: z.string().url().optional(),
+        iconUrl: z.url().optional(),
+        url: z.url().optional(),
       })
       .optional(),
     ratio: AspectRatioSchema.optional(),
     fit: MediaFitSchema.optional(),
-    src: z.string().url().optional(),
-    thumb: z.string().url().optional(),
+    src: z.url().optional(),
+    thumb: z.url().optional(),
     alt: z.string().optional(),
     durationMs: z.number().int().positive().optional(),
     fileSizeBytes: z.number().int().positive().optional(),
@@ -70,7 +70,7 @@ export const SerializableMediaCardSchema = z
       .object({
         title: z.string().optional(),
         description: z.string().optional(),
-        imageUrl: z.string().url().optional(),
+        imageUrl: z.url().optional(),
       })
       .optional(),
   })

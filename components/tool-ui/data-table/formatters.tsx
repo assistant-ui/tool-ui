@@ -1,13 +1,7 @@
 "use client";
 
 import * as React from "react";
-import {
-  cn,
-  Badge,
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "./_ui";
+import { cn, Badge, Tooltip, TooltipContent, TooltipTrigger } from "./_ui";
 
 type Tone = "success" | "warning" | "danger" | "info" | "neutral";
 
@@ -381,7 +375,9 @@ export function ArrayValue({ value, options }: ArrayValueProps) {
             </span>
           </TooltipTrigger>
           <TooltipContent>
-            {hidden.map((item) => (item === null ? "null" : String(item))).join(", ")}
+            {hidden
+              .map((item) => (item === null ? "null" : String(item)))
+              .join(", ")}
           </TooltipContent>
         </Tooltip>
       )}

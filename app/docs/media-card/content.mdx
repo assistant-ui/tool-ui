@@ -127,7 +127,7 @@ import { SerializableMediaCardSchema } from "@/components/tool-ui/media-card/sch
 
 const previewLink = tool({
   description: "Show a preview card for a URL",
-  inputSchema: z.object({ url: z.string().url() }),
+  inputSchema: z.object({ url: z.url() }),
   outputSchema: SerializableMediaCardSchema,
   async execute({ url }) {
     // Fetch real metadata here

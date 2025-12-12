@@ -4,22 +4,22 @@ import { parseWithSchema } from "../shared";
 export const XPostAuthorSchema = z.object({
   name: z.string(),
   handle: z.string(),
-  avatarUrl: z.string().url(),
+  avatarUrl: z.url(),
   verified: z.boolean().optional(),
 });
 
 export const XPostMediaSchema = z.object({
   type: z.enum(["image", "video"]),
-  url: z.string().url(),
+  url: z.url(),
   alt: z.string(),
   aspectRatio: z.enum(["1:1", "4:3", "16:9", "9:16"]).optional(),
 });
 
 export const XPostLinkPreviewSchema = z.object({
-  url: z.string().url(),
+  url: z.url(),
   title: z.string().optional(),
   description: z.string().optional(),
-  imageUrl: z.string().url().optional(),
+  imageUrl: z.url().optional(),
   domain: z.string().optional(),
 });
 
