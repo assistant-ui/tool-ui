@@ -94,41 +94,43 @@ import {
   OptionListErrorBoundary,
   parseSerializableOptionList,
   SerializableOptionListSchema,
+  type SerializableOptionList,
   type OptionListSelection,
 } from "@/components/tool-ui/option-list";
 
-export const SelectFormatTool = makeAssistantTool<unknown, OptionListSelection>(
-  {
-    toolName: "selectFormat",
-    description: "Let the user choose an output format.",
-    parameters: SerializableOptionListSchema,
-    render: ({ args, result, addResult, toolCallId }) => {
-      // Tool args can be incomplete while streaming; wait until required fields exist.
-      if (!Array.isArray((args as any)?.options)) return null;
+export const SelectFormatTool = makeAssistantTool<
+  SerializableOptionList,
+  OptionListSelection
+>({
+  toolName: "selectFormat",
+  description: "Let the user choose an output format.",
+  parameters: SerializableOptionListSchema,
+  render: ({ args, result, addResult, toolCallId }) => {
+    // Tool args can be incomplete while streaming; wait until required fields exist.
+    if (!Array.isArray((args as any)?.options)) return null;
 
-      // `id` is required and should be stable/meaningful.
-      const optionList = parseSerializableOptionList({
-        ...args,
-        id: (args as any)?.id ?? `format-selection-${toolCallId}`,
-      });
+    // `id` is required and should be stable/meaningful.
+    const optionList = parseSerializableOptionList({
+      ...args,
+      id: (args as any)?.id ?? `format-selection-${toolCallId}`,
+    });
 
-      return (
-        <OptionListErrorBoundary>
-          {result !== undefined ? (
-            <OptionList {...optionList} value={undefined} confirmed={result} />
-          ) : (
-            <OptionList
-              {...optionList}
-              // Avoid controlled selection in LLM-driven payloads.
-              value={undefined}
-              onConfirm={(selection) => addResult(selection)}
-            />
-          )}
-        </OptionListErrorBoundary>
-      );
-    },
+    return (
+      <OptionListErrorBoundary>
+        {result !== undefined ? (
+          <OptionList {...optionList} value={undefined} confirmed={result} />
+        ) : (
+          <OptionList
+            {...optionList}
+            // Avoid controlled selection in LLM-driven payloads.
+            value={undefined}
+            onConfirm={(selection) => addResult(selection)}
+          />
+        )}
+      </OptionListErrorBoundary>
+    );
   },
-);
+});
 ```
 
 Mount `<SelectFormatTool />` under `<AssistantRuntimeProvider>` to register the tool and its UI. For auto-continue after `addResult(...)`, see the **Frontend tools** section in [Quick Start](/docs/quick-start).

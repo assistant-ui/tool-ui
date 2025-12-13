@@ -77,11 +77,37 @@ A syntax-highlighted code display component with copy functionality and collapsi
 
 ## Source and Install
 
-Copy `components/tool-ui/code-block` into your project:
+Copy `components/tool-ui/code-block` and the `shared` directory into your project. The `shared` folder contains utilities used by all Tool UI components. The `tool-ui` directory should sit alongside your shadcn `ui` directory.
+
+### Prerequisites
+
+This component requires the following [shadcn/ui](https://ui.shadcn.com) components:
+
+```bash
+pnpm dlx shadcn@latest add button
+```
+
+It also uses Radix Collapsible directly:
+
+```bash
+pnpm add @radix-ui/react-collapsible
+```
+
+### Directory Structure
 
 <Files>
   <Folder name="components" defaultOpen>
+    <Folder name="ui">
+      <File name="button.tsx" />
+      <File name="..." />
+    </Folder>
     <Folder name="tool-ui" defaultOpen>
+      <Folder name="shared" defaultOpen>
+        <File name="action-buttons.tsx" />
+        <File name="schema.ts" />
+        <File name="index.ts" />
+        <File name="..." />
+      </Folder>
       <Folder name="code-block" defaultOpen>
         <File name="code-block.tsx" />
         <File name="schema.ts" />
@@ -93,6 +119,11 @@ Copy `components/tool-ui/code-block` into your project:
     </Folder>
   </Folder>
 </Files>
+
+### Download
+
+- [**Shared Dependencies (GitHub)**](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/shared) ([ZIP](https://download-directory.github.io/?url=https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/shared))
+- [**Code Block (GitHub)**](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/code-block) ([ZIP](https://download-directory.github.io/?url=https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/code-block))
 
 Install dependencies:
 
@@ -118,6 +149,62 @@ export function MyComponent() {
     />
   );
 }
+```
+
+### With assistant-ui (tool output)
+
+Define a tool that returns Code Block props, then render the component with runtime validation.
+
+```tsx
+// Backend tool
+import { tool, jsonSchema } from "ai";
+
+const showCodeBlock = tool({
+  description: "Show a code snippet",
+  inputSchema: jsonSchema<{}>({
+    type: "object",
+    properties: {},
+    additionalProperties: false,
+  }),
+  async execute() {
+    return {
+      id: "code-block-1",
+      code: "console.log('hello');",
+      language: "javascript",
+      filename: "hello.js",
+      highlightLines: [1],
+    };
+  },
+});
+
+// Frontend with assistant-ui
+import { makeAssistantToolUI } from "@assistant-ui/react";
+import {
+  CodeBlock,
+  CodeBlockErrorBoundary,
+  parseSerializableCodeBlock,
+} from "@/components/tool-ui/code-block";
+
+function ParsedCodeBlock({ result }: { result: unknown }) {
+  const props = parseSerializableCodeBlock(result);
+  return <CodeBlock {...props} />;
+}
+
+export const ShowCodeBlockUI = makeAssistantToolUI({
+  toolName: "showCodeBlock",
+  render: ({ result }) => {
+    // Tool outputs stream in; `result` will be `undefined` until the tool resolves.
+    if (result === undefined) {
+      return <CodeBlock id="loading" code="" language="text" isLoading />;
+    }
+
+    return (
+      <CodeBlockErrorBoundary>
+        <ParsedCodeBlock result={result} />
+      </CodeBlockErrorBoundary>
+    );
+  },
+});
 ```
 
 ## Supported Languages

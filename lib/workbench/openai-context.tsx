@@ -43,6 +43,8 @@ export function OpenAIProvider({ children }: OpenAIProviderProps) {
         args,
       });
 
+      // User should get a prompt to provide the tool result for testing
+      // We don't want to hardcode the results
       const result = await handleMockToolCall(name, args);
 
       store.addConsoleEntry({
@@ -106,8 +108,14 @@ export function OpenAIProvider({ children }: OpenAIProviderProps) {
 
       const toFullscreen = args.mode === "fullscreen";
       const root = document.documentElement;
-      root.style.setProperty("--morph-radius-from", toFullscreen ? "0.75rem" : "0");
-      root.style.setProperty("--morph-radius-to", toFullscreen ? "0" : "0.75rem");
+      root.style.setProperty(
+        "--morph-radius-from",
+        toFullscreen ? "0.75rem" : "0",
+      );
+      root.style.setProperty(
+        "--morph-radius-to",
+        toFullscreen ? "0" : "0.75rem",
+      );
 
       (
         document as Document & {

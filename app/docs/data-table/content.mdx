@@ -235,12 +235,16 @@ Define a tool that returns table data, then render with the DataTable component.
 
 ```tsx
 // Backend tool
-import { tool } from "ai";
-import { SerializableDataTableSchema } from "@/components/tool-ui/data-table/schema";
+import { tool, jsonSchema } from "ai";
 
 const searchProducts = tool({
   description: "Search products and return results in a table",
-  outputSchema: SerializableDataTableSchema,
+  inputSchema: jsonSchema<{ query: string }>({
+    type: "object",
+    properties: { query: { type: "string" } },
+    required: ["query"],
+    additionalProperties: false,
+  }),
   async execute({ query }) {
     const results = await db.products.search(query);
     return {
@@ -268,14 +272,28 @@ const searchProducts = tool({
 import { makeAssistantToolUI } from "@assistant-ui/react";
 import {
   DataTable,
+  DataTableErrorBoundary,
   parseSerializableDataTable,
 } from "@/components/tool-ui/data-table";
 
 export const SearchProductsUI = makeAssistantToolUI({
   toolName: "searchProducts",
   render: ({ result }) => {
+    // Tool outputs stream in; `result` will be `undefined` until the tool resolves.
+    if (result === undefined) {
+      return (
+        <div className="w-full max-w-xl rounded-2xl border bg-card/60 px-5 py-4 text-sm text-muted-foreground shadow-xs">
+          Loading table…
+        </div>
+      );
+    }
+
     const props = parseSerializableDataTable(result);
-    return <DataTable rowIdKey="id" {...props} />;
+    return (
+      <DataTableErrorBoundary>
+        <DataTable rowIdKey="id" {...props} />
+      </DataTableErrorBoundary>
+    );
   },
 });
 ```

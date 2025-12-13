@@ -121,14 +121,16 @@ Define a tool that returns Media Card props, then render the card with runtime v
 
 ```tsx
 // Backend tool
-import { tool } from "ai";
-import { z } from "zod";
-import { SerializableMediaCardSchema } from "@/components/tool-ui/media-card/schema";
+import { tool, jsonSchema } from "ai";
 
 const previewLink = tool({
   description: "Show a preview card for a URL",
-  inputSchema: z.object({ url: z.url() }),
-  outputSchema: SerializableMediaCardSchema,
+  inputSchema: jsonSchema<{ url: string }>({
+    type: "object",
+    properties: { url: { type: "string", format: "uri" } },
+    required: ["url"],
+    additionalProperties: false,
+  }),
   async execute({ url }) {
     // Fetch real metadata here
     return {
@@ -148,27 +150,45 @@ const previewLink = tool({
 import { makeAssistantToolUI } from "@assistant-ui/react";
 import {
   MediaCard,
+  MediaCardErrorBoundary,
   parseSerializableMediaCard,
 } from "@/components/tool-ui/media-card";
+
+function ParsedMediaCard({ result }: { result: unknown }) {
+  const card = parseSerializableMediaCard(result);
+
+  return (
+    <MediaCard
+      {...card}
+      maxWidth="420px"
+      responseActions={[
+        { id: "open", label: "Open" },
+        { id: "save", label: "Save" },
+      ]}
+      onResponseAction={(id) => {
+        if (id === "open") window.open(card.href, "_blank");
+        // Handle other actions
+      }}
+    />
+  );
+}
 
 export const PreviewLinkUI = makeAssistantToolUI({
   toolName: "previewLink",
   render: ({ result }) => {
-    const card = parseSerializableMediaCard(result);
+    // Tool outputs stream in; `result` will be `undefined` until the tool resolves.
+    if (result === undefined) {
+      return (
+        <div className="bg-card/60 text-muted-foreground w-full max-w-md rounded-2xl border px-5 py-4 text-sm shadow-xs">
+          Loading preview…
+        </div>
+      );
+    }
 
     return (
-      <MediaCard
-        {...card}
-        maxWidth="420px"
-        responseActions={[
-          { id: "open", label: "Open" },
-          { id: "save", label: "Save" },
-        ]}
-        onResponseAction={(id) => {
-          if (id === "open") window.open(card.href, "_blank");
-          // Handle other actions
-        }}
-      />
+      <MediaCardErrorBoundary>
+        <ParsedMediaCard result={result} />
+      </MediaCardErrorBoundary>
     );
   },
 });

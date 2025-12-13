@@ -2,7 +2,6 @@ import { DocsHeader } from "../_components/docs-header";
 import { XPost } from "@/components/tool-ui/x-post";
 import { InstagramPost } from "@/components/tool-ui/instagram-post";
 import { LinkedInPost } from "@/components/tool-ui/linkedin-post";
-import { DataTable } from "@/components/tool-ui/data-table";
 
 <DocsHeader title="Social Posts" mdxPath="app/docs/social-post/content.mdx" />
 
@@ -120,7 +119,7 @@ Copy the component(s) you need from `components/tool-ui` into your project. The 
 These components require the following [shadcn/ui](https://ui.shadcn.com) components:
 
 ```bash
-pnpm dlx shadcn@latest add badge button dropdown-menu tooltip
+pnpm dlx shadcn@latest add button tooltip
 ```
 
 ### Directory Structure
@@ -128,9 +127,7 @@ pnpm dlx shadcn@latest add badge button dropdown-menu tooltip
 <Files>
   <Folder name="components" defaultOpen>
     <Folder name="ui">
-      <File name="badge.tsx" />
       <File name="button.tsx" />
-      <File name="dropdown-menu.tsx" />
       <File name="tooltip.tsx" />
       <File name="..." />
     </Folder>
@@ -144,16 +141,19 @@ pnpm dlx shadcn@latest add badge button dropdown-menu tooltip
         <File name="index.ts" />
       </Folder>
       <Folder name="x-post" defaultOpen>
+        <File name="_ui.tsx" />
         <File name="x-post.tsx" />
         <File name="schema.ts" />
         <File name="index.ts" />
       </Folder>
       <Folder name="instagram-post">
+        <File name="_ui.tsx" />
         <File name="instagram-post.tsx" />
         <File name="schema.ts" />
         <File name="index.ts" />
       </Folder>
       <Folder name="linkedin-post">
+        <File name="_ui.tsx" />
         <File name="linkedin-post.tsx" />
         <File name="schema.ts" />
         <File name="index.ts" />
@@ -212,6 +212,73 @@ import { LinkedInPost } from "@/components/tool-ui/linkedin-post";
   }}
 />
 ```
+
+### With assistant-ui (tool output)
+
+Define a tool that returns a post payload, then render the component with runtime validation.
+
+```tsx
+// Backend tool
+import { tool, jsonSchema } from "ai";
+
+const showXPost = tool({
+  description: "Show an X post",
+  inputSchema: jsonSchema<{}>({
+    type: "object",
+    properties: {},
+    additionalProperties: false,
+  }),
+  async execute() {
+    return {
+      id: "post-x-1",
+      author: {
+        name: "Tool UI",
+        handle: "assistant_ui",
+        avatarUrl: "https://api.dicebear.com/9.x/shapes/svg?seed=tool-ui",
+        verified: true,
+      },
+      text: "DX test: rendering an XPost tool UI inline in chat.",
+      stats: { likes: 12 },
+      createdAt: new Date().toISOString(),
+    };
+  },
+});
+
+// Frontend with assistant-ui
+import { makeAssistantToolUI } from "@assistant-ui/react";
+import {
+  XPost,
+  XPostErrorBoundary,
+  parseSerializableXPost,
+} from "@/components/tool-ui/x-post";
+
+function ParsedXPost({ result }: { result: unknown }) {
+  const post = parseSerializableXPost(result);
+  return <XPost post={post} />;
+}
+
+export const ShowXPostUI = makeAssistantToolUI({
+  toolName: "showXPost",
+  render: ({ result }) => {
+    // Tool outputs stream in; `result` will be `undefined` until the tool resolves.
+    if (result === undefined) {
+      return (
+        <div className="bg-card/60 text-muted-foreground w-full max-w-[540px] rounded-2xl border px-5 py-4 text-sm shadow-xs">
+          Loading post…
+        </div>
+      );
+    }
+
+    return (
+      <XPostErrorBoundary>
+        <ParsedXPost result={result} />
+      </XPostErrorBoundary>
+    );
+  },
+});
+```
+
+The same pattern works for `InstagramPost` and `LinkedInPost` by swapping the component and parser (`parseSerializableInstagramPost` / `parseSerializableLinkedInPost`).
 
 ## Props
 

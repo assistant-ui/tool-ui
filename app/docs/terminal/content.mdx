@@ -108,11 +108,38 @@ Common ANSI codes:
 
 ## Source and Install
 
-Copy `components/tool-ui/terminal` into your project:
+Copy `components/tool-ui/terminal` and the `shared` directory into your project. The `shared` folder contains utilities used by all Tool UI components. The `tool-ui` directory should sit alongside your shadcn `ui` directory.
+
+### Prerequisites
+
+This component requires the following [shadcn/ui](https://ui.shadcn.com) components:
+
+```bash
+pnpm dlx shadcn@latest add badge button
+```
+
+It also uses Radix Collapsible directly:
+
+```bash
+pnpm add @radix-ui/react-collapsible
+```
+
+### Directory Structure
 
 <Files>
   <Folder name="components" defaultOpen>
+    <Folder name="ui">
+      <File name="badge.tsx" />
+      <File name="button.tsx" />
+      <File name="..." />
+    </Folder>
     <Folder name="tool-ui" defaultOpen>
+      <Folder name="shared" defaultOpen>
+        <File name="action-buttons.tsx" />
+        <File name="schema.ts" />
+        <File name="index.ts" />
+        <File name="..." />
+      </Folder>
       <Folder name="terminal" defaultOpen>
         <File name="terminal.tsx" />
         <File name="schema.ts" />
@@ -124,6 +151,11 @@ Copy `components/tool-ui/terminal` into your project:
     </Folder>
   </Folder>
 </Files>
+
+### Download
+
+- [**Shared Dependencies (GitHub)**](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/shared) ([ZIP](https://download-directory.github.io/?url=https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/shared))
+- [**Terminal (GitHub)**](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/terminal) ([ZIP](https://download-directory.github.io/?url=https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/terminal))
 
 Install dependencies:
 
@@ -141,16 +173,73 @@ export function MyComponent() {
     <Terminal
       id="my-terminal-example"
       command="ls -la"
-      stdout="total 16
+      stdout={`total 16
 drwxr-xr-x  3 user user 4096 Dec  3 10:23 .
 drwxr-xr-x 12 user user 4096 Dec  3 10:20 ..
--rw-r--r--  1 user user  220 Dec  3 10:23 package.json"
+-rw-r--r--  1 user user  220 Dec  3 10:23 package.json`}
       exitCode={0}
       durationMs={45}
       cwd="~/project"
     />
   );
 }
+```
+
+### With assistant-ui (tool output)
+
+Define a tool that returns a terminal result payload, then render the component with runtime validation.
+
+```tsx
+// Backend tool
+import { tool, jsonSchema } from "ai";
+
+const showTerminal = tool({
+  description: "Show a command result",
+  inputSchema: jsonSchema<{}>({
+    type: "object",
+    properties: {},
+    additionalProperties: false,
+  }),
+  async execute() {
+    return {
+      id: "terminal-1",
+      command: "pnpm test",
+      cwd: "~/project",
+      exitCode: 0,
+      durationMs: 1288,
+      stdout: "\u001b[32m✓\u001b[0m 42 tests passed",
+    };
+  },
+});
+
+// Frontend with assistant-ui
+import { makeAssistantToolUI } from "@assistant-ui/react";
+import {
+  Terminal,
+  TerminalErrorBoundary,
+  parseSerializableTerminal,
+} from "@/components/tool-ui/terminal";
+
+function ParsedTerminal({ result }: { result: unknown }) {
+  const props = parseSerializableTerminal(result);
+  return <Terminal {...props} />;
+}
+
+export const ShowTerminalUI = makeAssistantToolUI({
+  toolName: "showTerminal",
+  render: ({ result }) => {
+    // Tool outputs stream in; `result` will be `undefined` until the tool resolves.
+    if (result === undefined) {
+      return <Terminal id="loading" command="…" exitCode={0} isLoading />;
+    }
+
+    return (
+      <TerminalErrorBoundary>
+        <ParsedTerminal result={result} />
+      </TerminalErrorBoundary>
+    );
+  },
+});
 ```
 
 ## Exit Code Meanings

@@ -186,14 +186,16 @@ pnpm dlx shadcn@latest add accordion button card collapsible
 
 ```tsx
 // Backend tool
-import { tool } from "ai";
-import { z } from "zod";
-import { SerializablePlanSchema } from "@/components/tool-ui/plan/schema";
+import { tool, jsonSchema } from "ai";
 
 const showPlan = tool({
   description: "Display an implementation plan to the user",
-  inputSchema: z.object({ task: z.string() }),
-  outputSchema: SerializablePlanSchema,
+  inputSchema: jsonSchema<{ task: string }>({
+    type: "object",
+    properties: { task: { type: "string" } },
+    required: ["task"],
+    additionalProperties: false,
+  }),
   async execute({ task }) {
     return {
       id: "plan-1",
@@ -210,24 +212,35 @@ const showPlan = tool({
 
 // Frontend with assistant-ui
 import { makeAssistantToolUI } from "@assistant-ui/react";
-import { Plan, parseSerializablePlan } from "@/components/tool-ui/plan";
+import { Plan, PlanErrorBoundary, parseSerializablePlan } from "@/components/tool-ui/plan";
 
 export const ShowPlanUI = makeAssistantToolUI({
   toolName: "showPlan",
   render: ({ result }) => {
+    // Tool outputs stream in; `result` will be `undefined` until the tool resolves.
+    if (result === undefined) {
+      return (
+        <div className="w-full max-w-xl rounded-2xl border bg-card/60 px-5 py-4 text-sm text-muted-foreground shadow-xs">
+          Loading plan…
+        </div>
+      );
+    }
+
     const plan = parseSerializablePlan(result);
     return (
-      <Plan
-        {...plan}
-        responseActions={[
-          { id: "approve", label: "Approve Plan" },
-          { id: "revise", label: "Request Changes", variant: "secondary" },
-        ]}
-        onResponseAction={(id) => {
-          if (id === "approve") console.log("Plan approved");
-          // Handle other actions
-        }}
-      />
+      <PlanErrorBoundary>
+        <Plan
+          {...plan}
+          responseActions={[
+            { id: "approve", label: "Approve Plan" },
+            { id: "revise", label: "Request Changes", variant: "secondary" },
+          ]}
+          onResponseAction={(id) => {
+            if (id === "approve") console.log("Plan approved");
+            // Handle other actions
+          }}
+        />
+      </PlanErrorBoundary>
     );
   },
 });

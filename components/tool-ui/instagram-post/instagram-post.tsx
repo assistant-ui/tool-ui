@@ -2,14 +2,14 @@
 
 import * as React from "react";
 import { BadgeCheck, Heart, Share } from "lucide-react";
-import { cn } from "@/lib/ui/cn";
-import { Button } from "@/components/ui/button";
 import {
+  cn,
+  Button,
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@/components/ui/tooltip";
+} from "./_ui";
 import {
   ActionButtons,
   normalizeActionsConfig,
