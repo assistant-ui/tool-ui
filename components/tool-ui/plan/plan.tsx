@@ -26,7 +26,7 @@ import {
   Collapsible,
   CollapsibleTrigger,
   CollapsibleContent,
-} from "./_ui";
+} from "./_adapter";
 import { ActionButtons, normalizeActionsConfig } from "../shared";
 
 const INITIAL_VISIBLE_TODO_COUNT = 4;

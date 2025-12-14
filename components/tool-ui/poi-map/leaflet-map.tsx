@@ -12,7 +12,7 @@ import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import type { POI, MapCenter, POICategory } from "./schema";
 import { CATEGORY_COLORS, type MapViewProps } from "./map-view";
-import { cn } from "./_ui";
+import { cn } from "./_adapter";
 
 function createMarkerIcon(
   category: POICategory,

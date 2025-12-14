@@ -17,7 +17,7 @@ import {
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "./_ui";
+} from "./_adapter";
 import { useMediaCard } from "./context";
 
 type MediaActionId =

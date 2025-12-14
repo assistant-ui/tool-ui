@@ -3,7 +3,7 @@
 import { useRef, useEffect } from "react";
 import type { POI } from "./schema";
 import { POICard } from "./poi-card";
-import { cn } from "./_ui";
+import { cn } from "./_adapter";
 
 interface POIListInlineProps {
   pois: POI[];

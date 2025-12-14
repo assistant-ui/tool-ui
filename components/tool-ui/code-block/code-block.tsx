@@ -9,7 +9,7 @@ import {
   normalizeActionsConfig,
   useCopyToClipboard,
 } from "../shared";
-import { Button, Collapsible, CollapsibleTrigger } from "./_ui";
+import { Button, Collapsible, CollapsibleTrigger } from "./_adapter";
 import { cn } from "./_cn";
 import { CodeBlockProgress } from "./progress";
 

@@ -3,7 +3,7 @@
 import { useRef, useEffect, Fragment } from "react";
 import type { POI } from "./schema";
 import { POICard } from "./poi-card";
-import { cn, Separator } from "./_ui";
+import { cn, Separator } from "./_adapter";
 
 interface POIListSidebarProps {
   pois: POI[];

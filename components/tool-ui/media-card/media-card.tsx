@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { cn, Card } from "./_ui";
+import { cn, Card } from "./_adapter";
 import {
   MediaCardProvider,
   useMediaCard,

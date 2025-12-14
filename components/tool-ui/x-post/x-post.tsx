@@ -9,7 +9,7 @@ import {
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "./_ui";
+} from "./_adapter";
 import {
   ActionButtons,
   normalizeActionsConfig,

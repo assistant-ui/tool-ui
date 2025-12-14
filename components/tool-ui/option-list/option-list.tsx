@@ -16,7 +16,7 @@ import type {
 } from "./schema";
 import { ActionButtons, normalizeActionsConfig } from "../shared";
 import type { Action } from "../shared";
-import { cn, Button, Separator } from "./_ui";
+import { cn, Button, Separator } from "./_adapter";
 import { Check } from "lucide-react";
 
 function parseSelectionToIdSet(

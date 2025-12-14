@@ -3,7 +3,7 @@
 
 import * as React from "react";
 import { Globe } from "lucide-react";
-import { cn, Badge } from "./_ui";
+import { cn, Badge } from "./_adapter";
 import { useMediaCard } from "./context";
 import { Actions } from "./media-actions";
 

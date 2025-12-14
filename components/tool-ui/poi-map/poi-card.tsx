@@ -26,7 +26,7 @@ import {
   Avatar,
   AvatarFallback,
   AvatarImage,
-} from "./_ui";
+} from "./_adapter";
 
 const CATEGORY_ICONS: Record<POICategory, typeof MapPin> = {
   restaurant: UtensilsCrossed,

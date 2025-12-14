@@ -18,7 +18,7 @@ import {
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "./_ui";
+} from "./_adapter";
 import { sortData, getRowIdentifier } from "./utilities";
 import { renderFormattedValue } from "./formatters";
 import type {

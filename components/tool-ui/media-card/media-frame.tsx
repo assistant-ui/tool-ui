@@ -2,7 +2,7 @@
 "use client";
 
 import * as React from "react";
-import { cn, Button } from "./_ui";
+import { cn, Button } from "./_adapter";
 import type { Aspect } from "./schema";
 import { useMediaCard } from "./context";
 import { Play } from "lucide-react";

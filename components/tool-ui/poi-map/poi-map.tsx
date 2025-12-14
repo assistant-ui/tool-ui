@@ -19,7 +19,7 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "./_ui";
+} from "./_adapter";
 
 type DisplayMode = "inline" | "pip" | "fullscreen";
 

@@ -16,7 +16,7 @@ import {
   normalizeActionsConfig,
   useCopyToClipboard,
 } from "../shared";
-import { Button, Badge, Collapsible, CollapsibleTrigger } from "./_ui";
+import { Button, Badge, Collapsible, CollapsibleTrigger } from "./_adapter";
 import { cn } from "./_cn";
 import { TerminalProgress } from "./progress";
 

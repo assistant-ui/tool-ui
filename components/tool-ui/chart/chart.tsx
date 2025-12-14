@@ -23,7 +23,7 @@ import {
   CardDescription,
   CardContent,
   type ChartConfig,
-} from "./_ui";
+} from "./_adapter";
 import type { ChartProps } from "./schema";
 
 const DEFAULT_COLORS = [

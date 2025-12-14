@@ -3,7 +3,7 @@
 import dynamic from "next/dynamic";
 import { MapPin } from "lucide-react";
 import type { POI, MapCenter, POICategory } from "./schema";
-import { cn, Skeleton } from "./_ui";
+import { cn, Skeleton } from "./_adapter";
 
 export const CATEGORY_COLORS: Record<POICategory, string> = {
   restaurant: "#ef4444",
