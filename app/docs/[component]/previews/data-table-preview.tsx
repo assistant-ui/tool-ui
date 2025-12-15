@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useRef, useState } from "react";
 import { ComponentPreviewShell } from "../component-preview-shell";
 import { PresetSelector } from "../../_components/preset-selector";
 import { CodePanel } from "../../_components/code-panel";
@@ -26,16 +26,22 @@ export function DataTablePreview({
     dataTablePresets[currentPreset].data.emptyMessage ?? "No data available",
   );
 
-  useEffect(() => {
+  const prevPresetRef = useRef(currentPreset);
+  if (prevPresetRef.current !== currentPreset) {
+    prevPresetRef.current = currentPreset;
     const data = dataTablePresets[currentPreset].data;
     setSort(data.defaultSort ?? {});
     setEmptyMessage(data.emptyMessage ?? "No data available");
-  }, [currentPreset]);
+  }
 
   const currentData = dataTablePresets[currentPreset].data;
 
   const handleSelectPreset = (preset: unknown) => {
-    setPreset(preset as DataTablePresetName);
+    const newPreset = preset as DataTablePresetName;
+    const data = dataTablePresets[newPreset].data;
+    setPreset(newPreset);
+    setSort(data.defaultSort ?? {});
+    setEmptyMessage(data.emptyMessage ?? "No data available");
     setIsLoading(false);
   };
 
@@ -44,6 +50,7 @@ export function DataTablePreview({
       withContainer={withContainer}
       isLoading={isLoading}
       onLoadingChange={setIsLoading}
+      supportsLoading
       presetSelector={
         <PresetSelector
           componentId="data-table"

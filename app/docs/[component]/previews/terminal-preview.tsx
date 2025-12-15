@@ -36,6 +36,7 @@ export function TerminalPreview({
       withContainer={withContainer}
       isLoading={isLoading}
       onLoadingChange={setIsLoading}
+      supportsLoading
       presetSelector={
         <PresetSelector
           componentId="terminal"
@@ -51,11 +52,12 @@ export function TerminalPreview({
           isLoading={isLoadingState}
         />
       )}
-      renderCodePanel={() => (
+      renderCodePanel={(loading) => (
         <CodePanel
           className="h-full w-full"
           componentId="terminal"
           terminalPreset={currentPreset}
+          isLoading={loading}
           mode="plain"
         />
       )}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useRef, useState } from "react";
 import { ComponentPreviewShell } from "../component-preview-shell";
 import { PresetSelector } from "../../_components/preset-selector";
 import { CodePanel } from "../../_components/code-panel";
@@ -21,14 +21,17 @@ export function OptionListPreview({
   const [isLoading, setIsLoading] = useState(false);
   const [selection, setSelection] = useState<string[] | string | null>(null);
 
-  useEffect(() => {
+  const prevPresetRef = useRef(currentPreset);
+  if (prevPresetRef.current !== currentPreset) {
+    prevPresetRef.current = currentPreset;
     setSelection(null);
-  }, [currentPreset]);
+  }
 
   const currentData = optionListPresets[currentPreset].data;
 
   const handleSelectPreset = (preset: unknown) => {
     setPreset(preset as OptionListPresetName);
+    setSelection(null);
     setIsLoading(false);
   };
 
@@ -44,7 +47,7 @@ export function OptionListPreview({
           onSelectPreset={handleSelectPreset}
         />
       }
-      renderPreview={() => (
+      renderPreview={(_isLoading) => (
         <OptionList
           {...currentData}
           id="option-list-preview"
@@ -56,7 +59,7 @@ export function OptionListPreview({
           }}
         />
       )}
-      renderCodePanel={() => (
+      renderCodePanel={(_isLoading) => (
         <CodePanel
           className="h-full w-full"
           componentId="option-list"

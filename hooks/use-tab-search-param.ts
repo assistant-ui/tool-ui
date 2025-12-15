@@ -29,13 +29,13 @@ export function useTabSearchParam<T extends string>({
   const [activeTab, setActiveTabState] = useState<T>(defaultTab);
   const isInitialMount = useRef(true);
 
-  const validTabsSet = useMemo(() => new Set(validTabs), [validTabs]);
+  const validTabsRef = useRef<Set<T>>(new Set(validTabs));
 
   const isValidTab = useCallback(
     (value: string | null): value is T => {
-      return value !== null && validTabsSet.has(value as T);
+      return value !== null && validTabsRef.current.has(value as T);
     },
-    [validTabsSet],
+    [],
   );
 
   const currentParamValue = useMemo(
@@ -83,13 +83,7 @@ export function useTabSearchParam<T extends string>({
 
     setActiveTabState((prev) => (prev === defaultTab ? prev : defaultTab));
     isInitialMount.current = false;
-  }, [
-    currentParamValue,
-    defaultTab,
-    isValidTab,
-    hashTrigger,
-    scrollTargetRef,
-  ]);
+  }, [currentParamValue, defaultTab, isValidTab, hashTrigger, scrollTargetRef]);
 
   const setActiveTab = useCallback(
     (newTab: T) => {

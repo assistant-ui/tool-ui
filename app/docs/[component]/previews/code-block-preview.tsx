@@ -36,6 +36,7 @@ export function CodeBlockPreview({
       withContainer={withContainer}
       isLoading={isLoading}
       onLoadingChange={setIsLoading}
+      supportsLoading
       presetSelector={
         <PresetSelector
           componentId="code-block"
@@ -51,11 +52,12 @@ export function CodeBlockPreview({
           isLoading={isLoadingState}
         />
       )}
-      renderCodePanel={() => (
+      renderCodePanel={(loading) => (
         <CodePanel
           className="h-full w-full"
           componentId="code-block"
           codeBlockPreset={currentPreset}
+          isLoading={loading}
           mode="plain"
         />
       )}

@@ -39,10 +39,10 @@ export function ChartPreview({
           onSelectPreset={handleSelectPreset}
         />
       }
-      renderPreview={() => (
+      renderPreview={(_isLoading) => (
         <Chart id={`chart-${currentPreset}`} {...currentData} />
       )}
-      renderCodePanel={() => (
+      renderCodePanel={(_isLoading) => (
         <CodePanel
           className="h-full w-full"
           componentId="chart"

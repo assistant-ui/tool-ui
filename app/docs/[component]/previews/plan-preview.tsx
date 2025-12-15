@@ -39,8 +39,8 @@ export function PlanPreview({
           onSelectPreset={handleSelectPreset}
         />
       }
-      renderPreview={() => <Plan {...currentData} id="plan-preview" />}
-      renderCodePanel={() => (
+      renderPreview={(_isLoading) => <Plan {...currentData} id="plan-preview" />}
+      renderCodePanel={(_isLoading) => (
         <CodePanel
           className="h-full w-full"
           componentId="plan"
