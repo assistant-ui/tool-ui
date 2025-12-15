@@ -28,17 +28,17 @@ function ContentSkeleton() {
   );
 }
 
-interface ComponentDocsExamplesProps {
+interface ComponentDocsTabsProps {
   docs: ReactNode;
   examples: ReactNode;
   defaultTab?: DocsTab;
 }
 
-export const ComponentDocsExamples = memo(function ComponentDocsExamples({
+export const ComponentDocsTabs = memo(function ComponentDocsTabs({
   docs,
   examples,
   defaultTab = "docs",
-}: ComponentDocsExamplesProps) {
+}: ComponentDocsTabsProps) {
   const contentRef = useRef<HTMLDivElement>(null);
 
   const { activeTab, setActiveTab } = useTabSearchParam<DocsTab>({
@@ -66,9 +66,9 @@ export const ComponentDocsExamples = memo(function ComponentDocsExamples({
       >
         <div
           className={cn(
-            "z-20 flex shrink-0 items-center justify-center border-b",
+            "z-20 flex shrink-0 items-center justify-center",
             "px-3 py-2 sm:px-6 sm:py-3",
-            "bg-background/95 supports-backdrop-filter:bg-background/60 backdrop-blur",
+            "bg-background/50 supports-backdrop-filter:bg-background/60 backdrop-blur",
           )}
         >
           <TabsList>

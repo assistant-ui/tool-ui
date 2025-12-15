@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Content from "./content.mdx";
-import { ComponentDocsExamples } from "../_components/component-docs-examples";
+import { ComponentDocsTabs } from "../_components/component-docs-tabs";
 import { OptionListPreview } from "../[component]/previews/option-list-preview";
 
 export const metadata: Metadata = {
@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 
 export default function OptionListDocsPage() {
   return (
-    <ComponentDocsExamples
+    <ComponentDocsTabs
       docs={<Content />}
       examples={<OptionListPreview withContainer={false} />}
       defaultTab="docs"
