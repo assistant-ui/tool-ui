@@ -25,7 +25,7 @@ Each component lives in `components/component-name/` with this file organization
 
 ### Utilities
 
-- `_adapter.tsx`: Re-exports shadcn/ui primitives (adapter pattern so consumers can swap them)
+- `_adapter.tsx`: Re-exports `cn` utility and shadcn/ui primitives (adapter pattern for portability)
 - `formatters.tsx`: Data formatting helpers (if needed)
 - `utilities.ts`: Component-specific helper functions
 
@@ -63,7 +63,7 @@ Implementation pattern:
 2. `types.ts`: Create:
    - Serializable props type (derived from the schema)
    - Client props type (serializable props + callbacks like `onAction`, `onBeforeAction`)
-3. `_adapter.tsx`: Re-export the shadcn/ui primitives you need (buttons, cards, and so on)
+3. `_adapter.tsx`: Re-export `cn` and the shadcn/ui primitives you need (Button, Card, etc.)
 4. `component-name.tsx`: Build the main component, focused on:
    - Single intent and role
    - Lifecycle states from [UI Guidelines](/docs/design-guidelines)
