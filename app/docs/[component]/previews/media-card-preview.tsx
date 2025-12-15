@@ -1,59 +1,31 @@
 "use client";
 
-import { useCallback, useState, useEffect } from "react";
-import { useSearchParams, usePathname, useRouter } from "next/navigation";
+import { useState } from "react";
 import { ComponentPreviewShell } from "../component-preview-shell";
 import { PresetSelector } from "../../_components/preset-selector";
 import { CodePanel } from "../../_components/code-panel";
 import { MediaCard } from "@/components/tool-ui/media-card";
-import { MediaCardPresetName, mediaCardPresets } from "@/lib/presets/media-card";
+import { type MediaCardPresetName, mediaCardPresets } from "@/lib/presets/media-card";
+import { usePresetParam } from "@/hooks/use-preset-param";
 
 export function MediaCardPreview({
   withContainer = true,
 }: {
   withContainer?: boolean;
 }) {
-  const router = useRouter();
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
+  const { currentPreset, setPreset } = usePresetParam<MediaCardPresetName>({
+    presets: mediaCardPresets,
+    defaultPreset: "image",
+  });
 
-  const presetParam = searchParams.get("preset");
-  const defaultPreset = "image";
-  const initialPreset: MediaCardPresetName =
-    presetParam && presetParam in mediaCardPresets
-      ? (presetParam as MediaCardPresetName)
-      : defaultPreset;
-
-  const [currentPreset, setCurrentPreset] =
-    useState<MediaCardPresetName>(initialPreset);
   const [isLoading, setIsLoading] = useState(false);
-
-  useEffect(() => {
-    const presetParam = searchParams.get("preset");
-    if (
-      presetParam &&
-      presetParam in mediaCardPresets &&
-      presetParam !== currentPreset
-    ) {
-      setCurrentPreset(presetParam as MediaCardPresetName);
-      setIsLoading(false);
-    }
-  }, [searchParams, currentPreset]);
 
   const { card, responseActions } = mediaCardPresets[currentPreset].data;
 
-  const handleSelectPreset = useCallback(
-    (preset: unknown) => {
-      const presetName = preset as MediaCardPresetName;
-      setCurrentPreset(presetName);
-      setIsLoading(false);
-
-      const params = new URLSearchParams(searchParams.toString());
-      params.set("preset", presetName);
-      router.push(`${pathname}?${params.toString()}`, { scroll: false });
-    },
-    [router, pathname, searchParams],
-  );
+  const handleSelectPreset = (preset: unknown) => {
+    setPreset(preset as MediaCardPresetName);
+    setIsLoading(false);
+  };
 
   return (
     <ComponentPreviewShell

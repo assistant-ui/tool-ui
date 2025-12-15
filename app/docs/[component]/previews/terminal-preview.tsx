@@ -1,59 +1,31 @@
 "use client";
 
-import { useCallback, useState, useEffect } from "react";
-import { useSearchParams, usePathname, useRouter } from "next/navigation";
+import { useCallback, useState } from "react";
 import { ComponentPreviewShell } from "../component-preview-shell";
 import { PresetSelector } from "../../_components/preset-selector";
 import { CodePanel } from "../../_components/code-panel";
 import { Terminal } from "@/components/tool-ui/terminal";
-import { TerminalPresetName, terminalPresets } from "@/lib/presets/terminal";
+import { type TerminalPresetName, terminalPresets } from "@/lib/presets/terminal";
+import { usePresetParam } from "@/hooks/use-preset-param";
 
 export function TerminalPreview({
   withContainer = true,
 }: {
   withContainer?: boolean;
 }) {
-  const router = useRouter();
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
+  const { currentPreset, setPreset } = usePresetParam<TerminalPresetName>({
+    presets: terminalPresets,
+    defaultPreset: "success",
+  });
 
-  const presetParam = searchParams.get("preset");
-  const defaultPreset = "success";
-  const initialPreset: TerminalPresetName =
-    presetParam && presetParam in terminalPresets
-      ? (presetParam as TerminalPresetName)
-      : defaultPreset;
-
-  const [currentPreset, setCurrentPreset] =
-    useState<TerminalPresetName>(initialPreset);
   const [isLoading, setIsLoading] = useState(false);
-
-  useEffect(() => {
-    const presetParam = searchParams.get("preset");
-    if (
-      presetParam &&
-      presetParam in terminalPresets &&
-      presetParam !== currentPreset
-    ) {
-      setCurrentPreset(presetParam as TerminalPresetName);
-      setIsLoading(false);
-    }
-  }, [searchParams, currentPreset]);
 
   const currentData = terminalPresets[currentPreset].data;
 
-  const handleSelectPreset = useCallback(
-    (preset: unknown) => {
-      const presetName = preset as TerminalPresetName;
-      setCurrentPreset(presetName);
-      setIsLoading(false);
-
-      const params = new URLSearchParams(searchParams.toString());
-      params.set("preset", presetName);
-      router.push(`${pathname}?${params.toString()}`, { scroll: false });
-    },
-    [router, pathname, searchParams],
-  );
+  const handleSelectPreset = (preset: unknown) => {
+    setPreset(preset as TerminalPresetName);
+    setIsLoading(false);
+  };
 
   const handleResponseAction = useCallback(async (actionId: string) => {
     console.log("Response action:", actionId);

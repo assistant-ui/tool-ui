@@ -1,70 +1,43 @@
 "use client";
 
-import { useCallback, useState, useEffect } from "react";
-import { useSearchParams, usePathname, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import { ComponentPreviewShell } from "../component-preview-shell";
 import { PresetSelector } from "../../_components/preset-selector";
 import { CodePanel } from "../../_components/code-panel";
 import { DataTable } from "@/components/tool-ui/data-table";
-import { DataTablePresetName, dataTablePresets, SortState } from "@/lib/presets/data-table";
+import { type DataTablePresetName, dataTablePresets, type SortState } from "@/lib/presets/data-table";
+import { usePresetParam } from "@/hooks/use-preset-param";
 
 export function DataTablePreview({
   withContainer = true,
 }: {
   withContainer?: boolean;
 }) {
-  const router = useRouter();
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
+  const { currentPreset, setPreset } = usePresetParam<DataTablePresetName>({
+    presets: dataTablePresets,
+    defaultPreset: "stocks",
+  });
 
-  const presetParam = searchParams.get("preset");
-  const defaultPreset = "stocks";
-  const initialPreset: DataTablePresetName =
-    presetParam && presetParam in dataTablePresets
-      ? (presetParam as DataTablePresetName)
-      : defaultPreset;
-
-  const [currentPreset, setCurrentPreset] = useState<DataTablePresetName>(initialPreset);
   const [isLoading, setIsLoading] = useState(false);
   const [sort, setSort] = useState<SortState>(
-    dataTablePresets[initialPreset].data.defaultSort ?? {},
+    dataTablePresets[currentPreset].data.defaultSort ?? {},
   );
   const [emptyMessage, setEmptyMessage] = useState(
-    dataTablePresets[initialPreset].data.emptyMessage ?? "No data available",
+    dataTablePresets[currentPreset].data.emptyMessage ?? "No data available",
   );
 
   useEffect(() => {
-    const presetParam = searchParams.get("preset");
-    if (
-      presetParam &&
-      presetParam in dataTablePresets &&
-      presetParam !== currentPreset
-    ) {
-      const nextData = dataTablePresets[presetParam as DataTablePresetName].data;
-      setCurrentPreset(presetParam as DataTablePresetName);
-      setSort(nextData.defaultSort ?? {});
-      setEmptyMessage(nextData.emptyMessage ?? "No data available");
-      setIsLoading(false);
-    }
-  }, [searchParams, currentPreset]);
+    const data = dataTablePresets[currentPreset].data;
+    setSort(data.defaultSort ?? {});
+    setEmptyMessage(data.emptyMessage ?? "No data available");
+  }, [currentPreset]);
 
   const currentData = dataTablePresets[currentPreset].data;
 
-  const handleSelectPreset = useCallback(
-    (preset: unknown) => {
-      const presetName = preset as DataTablePresetName;
-      const nextData = dataTablePresets[presetName].data;
-      setCurrentPreset(presetName);
-      setSort(nextData.defaultSort ?? {});
-      setEmptyMessage(nextData.emptyMessage ?? "No data available");
-      setIsLoading(false);
-
-      const params = new URLSearchParams(searchParams.toString());
-      params.set("preset", presetName);
-      router.push(`${pathname}?${params.toString()}`, { scroll: false });
-    },
-    [router, pathname, searchParams],
-  );
+  const handleSelectPreset = (preset: unknown) => {
+    setPreset(preset as DataTablePresetName);
+    setIsLoading(false);
+  };
 
   return (
     <ComponentPreviewShell

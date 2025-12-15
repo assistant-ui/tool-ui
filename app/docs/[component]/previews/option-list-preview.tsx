@@ -1,62 +1,36 @@
 "use client";
 
-import { useCallback, useState, useEffect } from "react";
-import { useSearchParams, usePathname, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import { ComponentPreviewShell } from "../component-preview-shell";
 import { PresetSelector } from "../../_components/preset-selector";
 import { CodePanel } from "../../_components/code-panel";
 import { OptionList } from "@/components/tool-ui/option-list";
-import { OptionListPresetName, optionListPresets } from "@/lib/presets/option-list";
+import { type OptionListPresetName, optionListPresets } from "@/lib/presets/option-list";
+import { usePresetParam } from "@/hooks/use-preset-param";
 
 export function OptionListPreview({
   withContainer = true,
 }: {
   withContainer?: boolean;
 }) {
-  const router = useRouter();
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
+  const { currentPreset, setPreset } = usePresetParam<OptionListPresetName>({
+    presets: optionListPresets,
+    defaultPreset: "export",
+  });
 
-  const presetParam = searchParams.get("preset");
-  const defaultPreset = "export";
-  const initialPreset: OptionListPresetName =
-    presetParam && presetParam in optionListPresets
-      ? (presetParam as OptionListPresetName)
-      : defaultPreset;
-
-  const [currentPreset, setCurrentPreset] =
-    useState<OptionListPresetName>(initialPreset);
   const [isLoading, setIsLoading] = useState(false);
   const [selection, setSelection] = useState<string[] | string | null>(null);
 
   useEffect(() => {
-    const presetParam = searchParams.get("preset");
-    if (
-      presetParam &&
-      presetParam in optionListPresets &&
-      presetParam !== currentPreset
-    ) {
-      setCurrentPreset(presetParam as OptionListPresetName);
-      setIsLoading(false);
-      setSelection(null);
-    }
-  }, [searchParams, currentPreset]);
+    setSelection(null);
+  }, [currentPreset]);
 
   const currentData = optionListPresets[currentPreset].data;
 
-  const handleSelectPreset = useCallback(
-    (preset: unknown) => {
-      const presetName = preset as OptionListPresetName;
-      setCurrentPreset(presetName);
-      setIsLoading(false);
-      setSelection(null);
-
-      const params = new URLSearchParams(searchParams.toString());
-      params.set("preset", presetName);
-      router.push(`${pathname}?${params.toString()}`, { scroll: false });
-    },
-    [router, pathname, searchParams],
-  );
+  const handleSelectPreset = (preset: unknown) => {
+    setPreset(preset as OptionListPresetName);
+    setIsLoading(false);
+  };
 
   return (
     <ComponentPreviewShell

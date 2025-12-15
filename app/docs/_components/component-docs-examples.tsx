@@ -1,84 +1,73 @@
 "use client";
 
-import { useSearchParams, usePathname, useRouter } from "next/navigation";
-import { type ReactNode, useEffect, useRef, useState, Suspense } from "react";
+import { memo, useCallback, useRef, type ReactNode, Suspense } from "react";
 import { cn } from "@/lib/ui/cn";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { DocsPager } from "./docs-pager";
+import { useTabSearchParam } from "@/hooks/use-tab-search-param";
+
+type DocsTab = "docs" | "examples";
+
+const VALID_TABS = ["docs", "examples"] as const;
+
+const SHELL_CLASSES = cn(
+  "bg-background relative box-border",
+  "flex h-full min-h-0 w-full flex-col",
+  "overflow-hidden rounded-t-lg border",
+);
+
+function ContentSkeleton() {
+  return (
+    <div className="animate-pulse space-y-4 p-6">
+      <div className="bg-muted h-8 w-3/4 rounded" />
+      <div className="bg-muted h-4 w-full rounded" />
+      <div className="bg-muted h-4 w-5/6 rounded" />
+      <div className="bg-muted h-4 w-4/5 rounded" />
+      <div className="bg-muted mt-6 h-32 w-full rounded" />
+    </div>
+  );
+}
 
 interface ComponentDocsExamplesProps {
   docs: ReactNode;
   examples: ReactNode;
-  defaultTab?: "docs" | "examples";
+  defaultTab?: DocsTab;
 }
 
-function ComponentDocsExamplesInner({
+const ComponentDocsExamplesInner = memo(function ComponentDocsExamplesInner({
   docs,
   examples,
   defaultTab = "docs",
 }: ComponentDocsExamplesProps) {
-  const router = useRouter();
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
   const contentRef = useRef<HTMLDivElement>(null);
-  const [active, setActive] = useState<"docs" | "examples">(defaultTab);
 
-  useEffect(() => {
-    const tabParam = searchParams.get("tab");
-    if (tabParam === "docs" || tabParam === "examples") {
-      setActive((prev) => (prev === tabParam ? prev : tabParam));
-      return;
-    }
+  const { activeTab, setActiveTab } = useTabSearchParam<DocsTab>({
+    defaultTab,
+    validTabs: VALID_TABS,
+    scrollTargetRef: contentRef,
+    hashTrigger: "#examples",
+  });
 
-    const hash = typeof window !== "undefined" ? window.location.hash : "";
-    if (hash === "#examples") {
-      setActive((prev) => (prev === "examples" ? prev : "examples"));
-      return;
-    }
-
-    setActive((prev) => (prev === defaultTab ? prev : defaultTab));
-  }, [searchParams, defaultTab]);
-
-  useEffect(() => {
-    if (
-      active === "examples" &&
-      typeof window !== "undefined" &&
-      window.location.hash === "#examples"
-    ) {
-      contentRef.current?.scrollIntoView({
-        behavior: "smooth",
-        block: "start",
-      });
-    }
-  }, [active]);
-
-  const pushTabParam = (newTab: "docs" | "examples") => {
-    const currentTab = searchParams.get("tab");
-    if (currentTab === newTab) {
-      return;
-    }
-    const params = new URLSearchParams(searchParams.toString());
-    params.set("tab", newTab);
-    router.push(`${pathname}?${params.toString()}`, { scroll: false });
-  };
-
-  const handleTabChange = (newTab: "docs" | "examples") => {
-    setActive(newTab);
-    pushTabParam(newTab);
-  };
+  const handleTabChange = useCallback(
+    (value: string) => {
+      if (value === "docs" || value === "examples") {
+        setActiveTab(value);
+      }
+    },
+    [setActiveTab],
+  );
 
   return (
-    <div className="bg-background relative box-border flex h-full min-h-0 w-full flex-col overflow-hidden rounded-t-lg border">
+    <div className={SHELL_CLASSES}>
       <Tabs
-        value={active}
-        onValueChange={(value) =>
-          handleTabChange((value as "docs" | "examples") ?? "docs")
-        }
+        value={activeTab}
+        onValueChange={handleTabChange}
         className="flex h-full min-h-0 flex-col gap-0"
       >
         <div
           className={cn(
-            "z-20 flex shrink-0 items-center justify-center border-b px-3 py-2 sm:px-6 sm:py-3",
+            "z-20 flex shrink-0 items-center justify-center border-b",
+            "px-3 py-2 sm:px-6 sm:py-3",
             "bg-background/95 supports-backdrop-filter:bg-background/60 backdrop-blur",
           )}
         >
@@ -99,7 +88,7 @@ function ComponentDocsExamplesInner({
           >
             <div className="z-0 min-h-0 flex-1 p-6 pb-24 sm:p-10 lg:p-12">
               <div className="prose dark:prose-invert mx-auto max-w-3xl">
-                {docs}
+                <Suspense fallback={<ContentSkeleton />}>{docs}</Suspense>
                 <DocsPager />
               </div>
             </div>
@@ -108,21 +97,17 @@ function ComponentDocsExamplesInner({
             value="examples"
             className="flex h-full min-h-0 flex-1 overflow-hidden"
           >
-            {examples}
+            <Suspense fallback={<ContentSkeleton />}>{examples}</Suspense>
           </TabsContent>
         </div>
       </Tabs>
     </div>
   );
-}
+});
 
 export function ComponentDocsExamples(props: ComponentDocsExamplesProps) {
   return (
-    <Suspense
-      fallback={
-        <div className="bg-background relative box-border flex h-full min-h-0 w-full flex-col overflow-hidden rounded-t-lg border" />
-      }
-    >
+    <Suspense fallback={<div className={SHELL_CLASSES} />}>
       <ComponentDocsExamplesInner {...props} />
     </Suspense>
   );

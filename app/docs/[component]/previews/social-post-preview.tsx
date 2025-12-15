@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useState, useEffect } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useSearchParams, usePathname, useRouter } from "next/navigation";
 import { ComponentPreviewShell } from "../component-preview-shell";
 import { XPost } from "@/components/tool-ui/x-post";
@@ -31,6 +31,8 @@ type PresetName =
   | InstagramPostPresetName
   | LinkedInPostPresetName;
 
+const VALID_PLATFORMS: readonly Platform[] = ["x", "instagram", "linkedin"];
+
 const platformConfig = {
   x: {
     label: "X (Twitter)",
@@ -48,6 +50,15 @@ const platformConfig = {
     presetNames: Object.keys(linkedInPostPresets) as LinkedInPostPresetName[],
   },
 } as const;
+
+function getValidPreset(platform: Platform, preset: string | null): PresetName {
+  const config = platformConfig[platform];
+  const presetNames = config.presetNames as readonly string[];
+  if (preset && presetNames.includes(preset)) {
+    return preset as PresetName;
+  }
+  return config.presetNames[0];
+}
 
 function PlatformSelector({
   currentPlatform,
@@ -146,36 +157,40 @@ export function SocialPostPreview({
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  const platformParam = searchParams.get("platform") as Platform | null;
+  const platformParam = searchParams.get("platform");
   const presetParam = searchParams.get("preset");
 
-  const initialPlatform: Platform =
-    platformParam && platformParam in platformConfig ? platformParam : "x";
-  const initialPreset = getValidPreset(initialPlatform, presetParam);
+  const initialPlatform = useMemo((): Platform => {
+    if (platformParam && VALID_PLATFORMS.includes(platformParam as Platform)) {
+      return platformParam as Platform;
+    }
+    return "x";
+  }, [platformParam]);
 
-  const [currentPlatform, setCurrentPlatform] =
-    useState<Platform>(initialPlatform);
+  const initialPreset = useMemo(
+    () => getValidPreset(initialPlatform, presetParam),
+    [initialPlatform, presetParam],
+  );
+
+  const [currentPlatform, setCurrentPlatform] = useState<Platform>(initialPlatform);
   const [currentPreset, setCurrentPreset] = useState<PresetName>(initialPreset);
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    const platformParam = searchParams.get("platform") as Platform | null;
-    const presetParam = searchParams.get("preset");
-
     if (
       platformParam &&
-      platformParam in platformConfig &&
+      VALID_PLATFORMS.includes(platformParam as Platform) &&
       platformParam !== currentPlatform
     ) {
-      setCurrentPlatform(platformParam);
-      setCurrentPreset(getValidPreset(platformParam, presetParam));
+      setCurrentPlatform(platformParam as Platform);
+      setCurrentPreset(getValidPreset(platformParam as Platform, presetParam));
     } else if (presetParam && presetParam !== currentPreset) {
       const validPreset = getValidPreset(currentPlatform, presetParam);
       if (validPreset !== currentPreset) {
         setCurrentPreset(validPreset);
       }
     }
-  }, [searchParams, currentPlatform, currentPreset]);
+  }, [platformParam, presetParam, currentPlatform, currentPreset]);
 
   const updateUrl = useCallback(
     (platform: Platform, preset: PresetName) => {
@@ -279,13 +294,4 @@ export function SocialPostPreview({
       )}
     />
   );
-}
-
-function getValidPreset(platform: Platform, preset: string | null): PresetName {
-  const config = platformConfig[platform];
-  const presetNames = config.presetNames as readonly string[];
-  if (preset && presetNames.includes(preset)) {
-    return preset as PresetName;
-  }
-  return config.presetNames[0];
 }
