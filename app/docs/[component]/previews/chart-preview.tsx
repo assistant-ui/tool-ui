@@ -31,7 +31,6 @@ export function ChartPreview({
     <ComponentPreviewShell
       withContainer={withContainer}
       isLoading={isLoading}
-      onLoadingChange={setIsLoading}
       presetSelector={
         <PresetSelector
           componentId="chart"

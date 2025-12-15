@@ -4,8 +4,6 @@ import { memo, useState, type ReactNode } from "react";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import type { ImperativePanelGroupHandle } from "react-resizable-panels";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Switch } from "@/components/ui/switch";
-import { Label } from "@/components/ui/label";
 import { Code, Eye } from "lucide-react";
 import { cn } from "@/lib/ui/cn";
 import { useResponsivePreview } from "@/hooks/use-responsive-preview";
@@ -95,8 +93,6 @@ interface ComponentPreviewShellProps {
   renderPreview: (isLoading: boolean) => ReactNode;
   renderCodePanel: (isLoading: boolean) => ReactNode;
   isLoading: boolean;
-  onLoadingChange: (loading: boolean) => void;
-  supportsLoading?: boolean;
   withContainer?: boolean;
 }
 
@@ -105,8 +101,6 @@ export function ComponentPreviewShell({
   renderPreview,
   renderCodePanel,
   isLoading,
-  onLoadingChange,
-  supportsLoading = false,
   withContainer = true,
 }: ComponentPreviewShellProps) {
   const [viewMode, setViewMode] = useState<ViewMode>("preview");
@@ -137,23 +131,10 @@ export function ComponentPreviewShell({
         <div
           className={cn(
             "absolute top-0 right-0 left-0 z-20",
-            "hidden items-center px-6 py-3",
-            supportsLoading ? "justify-between" : "justify-end",
+            "hidden items-center justify-end px-6 py-3",
             "lg:flex",
           )}
         >
-          {supportsLoading && (
-            <div className="flex items-center gap-2">
-              <Label htmlFor="preview-loading" className="text-sm">
-                Loading
-              </Label>
-              <Switch
-                id="preview-loading"
-                checked={isLoading}
-                onCheckedChange={onLoadingChange}
-              />
-            </div>
-          )}
           <ViewModeTabs value={viewMode} onValueChange={setViewMode} />
         </div>
 

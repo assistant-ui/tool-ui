@@ -35,8 +35,6 @@ export function TerminalPreview({
     <ComponentPreviewShell
       withContainer={withContainer}
       isLoading={isLoading}
-      onLoadingChange={setIsLoading}
-      supportsLoading
       presetSelector={
         <PresetSelector
           componentId="terminal"

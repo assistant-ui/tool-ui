@@ -224,7 +224,6 @@ export function SocialPostPreview({
     <ComponentPreviewShell
       withContainer={withContainer}
       isLoading={isLoading}
-      onLoadingChange={setIsLoading}
       presetSelector={
         <>
           <PlatformSelector

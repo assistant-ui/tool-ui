@@ -31,7 +31,6 @@ export function PlanPreview({
     <ComponentPreviewShell
       withContainer={withContainer}
       isLoading={isLoading}
-      onLoadingChange={setIsLoading}
       presetSelector={
         <PresetSelector
           componentId="plan"

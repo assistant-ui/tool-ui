@@ -31,8 +31,6 @@ export function MediaCardPreview({
     <ComponentPreviewShell
       withContainer={withContainer}
       isLoading={isLoading}
-      onLoadingChange={setIsLoading}
-      supportsLoading
       presetSelector={
         <PresetSelector
           componentId="media-card"

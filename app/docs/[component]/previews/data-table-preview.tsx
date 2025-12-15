@@ -49,8 +49,6 @@ export function DataTablePreview({
     <ComponentPreviewShell
       withContainer={withContainer}
       isLoading={isLoading}
-      onLoadingChange={setIsLoading}
-      supportsLoading
       presetSelector={
         <PresetSelector
           componentId="data-table"

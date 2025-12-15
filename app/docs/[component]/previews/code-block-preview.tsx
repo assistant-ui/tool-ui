@@ -35,8 +35,6 @@ export function CodeBlockPreview({
     <ComponentPreviewShell
       withContainer={withContainer}
       isLoading={isLoading}
-      onLoadingChange={setIsLoading}
-      supportsLoading
       presetSelector={
         <PresetSelector
           componentId="code-block"

@@ -39,7 +39,6 @@ export function OptionListPreview({
     <ComponentPreviewShell
       withContainer={withContainer}
       isLoading={isLoading}
-      onLoadingChange={setIsLoading}
       presetSelector={
         <PresetSelector
           componentId="option-list"
