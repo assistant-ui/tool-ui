@@ -26,10 +26,17 @@ export function useTabSearchParam<T extends string>({
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const [activeTab, setActiveTabState] = useState<T>(defaultTab);
   const isInitialMount = useRef(true);
 
   const validTabsRef = useRef<Set<T>>(new Set(validTabs));
+
+  const [activeTab, setActiveTabState] = useState<T>(() => {
+    const paramValue = searchParams.get(paramName);
+    if (paramValue !== null && validTabsRef.current.has(paramValue as T)) {
+      return paramValue as T;
+    }
+    return defaultTab;
+  });
 
   const isValidTab = useCallback(
     (value: string | null): value is T => {
