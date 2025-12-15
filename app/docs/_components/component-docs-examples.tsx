@@ -34,7 +34,7 @@ interface ComponentDocsExamplesProps {
   defaultTab?: DocsTab;
 }
 
-const ComponentDocsExamplesInner = memo(function ComponentDocsExamplesInner({
+export const ComponentDocsExamples = memo(function ComponentDocsExamples({
   docs,
   examples,
   defaultTab = "docs",
@@ -104,11 +104,3 @@ const ComponentDocsExamplesInner = memo(function ComponentDocsExamplesInner({
     </div>
   );
 });
-
-export function ComponentDocsExamples(props: ComponentDocsExamplesProps) {
-  return (
-    <Suspense fallback={<div className={SHELL_CLASSES} />}>
-      <ComponentDocsExamplesInner {...props} />
-    </Suspense>
-  );
-}

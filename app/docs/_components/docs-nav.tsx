@@ -2,7 +2,8 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { usePathname, useSearchParams } from "next/navigation";
+import { usePathname } from "next/navigation";
+import { useQueryState } from "nuqs";
 import { LayoutDashboardIcon } from "lucide-react";
 import { componentsRegistry } from "@/lib/docs/component-registry";
 import { cn } from "@/lib/ui/cn";
@@ -12,11 +13,9 @@ const STORAGE_KEY = "tool-ui-components-nav-collapsed";
 
 export function DocsNav() {
   const pathname = usePathname();
-  const searchParams = useSearchParams();
+  const [currentTab] = useQueryState("tab");
   const [collapsed, setCollapsed] = useState(false);
   const [isPressing, setIsPressing] = useState(false);
-
-  const currentTab = searchParams.get("tab");
 
   React.useEffect(() => {
     try {

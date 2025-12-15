@@ -7,7 +7,7 @@
   "sideEffects": false,
   "scripts": {
     "dev": "next dev --turbopack",
-    "build": "next build",
+    "build": "next build --experimental-build-mode=compile",
     "start": "next start",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
@@ -70,6 +70,7 @@
     "motion": "^12.23.25",
     "next": "16.0.8",
     "next-themes": "^0.4.6",
+    "nuqs": "^2.8.5",
     "postprocessing": "^6.38.0",
     "react": "19.2.1",
     "react-dom": "19.2.1",

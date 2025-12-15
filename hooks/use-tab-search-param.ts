@@ -1,7 +1,7 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState, type RefObject } from "react";
-import { useRouter, usePathname, useSearchParams } from "next/navigation";
+import { useCallback, useEffect, useRef, type RefObject } from "react";
+import { useQueryState } from "nuqs";
 
 interface UseTabSearchParamOptions<T extends string> {
   paramName?: string;
@@ -23,86 +23,52 @@ export function useTabSearchParam<T extends string>({
   scrollTargetRef,
   hashTrigger,
 }: UseTabSearchParamOptions<T>): UseTabSearchParamReturn<T> {
-  const router = useRouter();
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
   const isInitialMount = useRef(true);
+  const validTabsSet = useRef(new Set(validTabs));
 
-  const validTabsRef = useRef<Set<T>>(new Set(validTabs));
+  const [rawTab, setRawTab] = useQueryState(paramName);
 
-  const [activeTab, setActiveTabState] = useState<T>(() => {
-    const paramValue = searchParams.get(paramName);
-    if (paramValue !== null && validTabsRef.current.has(paramValue as T)) {
-      return paramValue as T;
-    }
-    return defaultTab;
-  });
+  const isValidTab = (value: string | null): value is T => {
+    return value !== null && validTabsSet.current.has(value as T);
+  };
 
-  const isValidTab = useCallback(
-    (value: string | null): value is T => {
-      return value !== null && validTabsRef.current.has(value as T);
-    },
-    [],
-  );
+  const activeTab = isValidTab(rawTab) ? rawTab : defaultTab;
 
-  const currentParamValue = useMemo(
-    () => searchParams.get(paramName),
-    [searchParams, paramName],
-  );
-
+  // Handle hash trigger (e.g., #examples in URL)
   useEffect(() => {
-    const getWindowHash = () =>
-      typeof window === "undefined" ? "" : window.location.hash;
+    if (!hashTrigger || typeof window === "undefined") return;
 
-    if (isValidTab(currentParamValue)) {
-      setActiveTabState((prev) =>
-        prev === currentParamValue ? prev : currentParamValue,
-      );
-
-      if (
-        scrollTargetRef?.current &&
-        hashTrigger &&
-        currentParamValue === hashTrigger.replace("#", "") &&
-        getWindowHash() === hashTrigger &&
-        !isInitialMount.current
-      ) {
-        scrollTargetRef.current.scrollIntoView({
-          behavior: "smooth",
-          block: "start",
-        });
-      }
-
-      isInitialMount.current = false;
-      return;
-    }
-
-    if (hashTrigger) {
-      const hash = getWindowHash();
-      if (hash === hashTrigger) {
-        const hashTab = hashTrigger.replace("#", "") as T;
-        if (isValidTab(hashTab)) {
-          setActiveTabState((prev) => (prev === hashTab ? prev : hashTab));
-          isInitialMount.current = false;
-          return;
-        }
+    const hash = window.location.hash;
+    if (hash === hashTrigger) {
+      const hashTab = hashTrigger.replace("#", "") as T;
+      if (validTabsSet.current.has(hashTab) && rawTab !== hashTab) {
+        setRawTab(hashTab);
       }
     }
+  }, [hashTrigger, rawTab, setRawTab]);
 
-    setActiveTabState((prev) => (prev === defaultTab ? prev : defaultTab));
+  // Handle scroll to target when switching to hash-triggered tab
+  useEffect(() => {
+    if (
+      scrollTargetRef?.current &&
+      hashTrigger &&
+      activeTab === hashTrigger.replace("#", "") &&
+      !isInitialMount.current
+    ) {
+      scrollTargetRef.current.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }
     isInitialMount.current = false;
-  }, [currentParamValue, defaultTab, isValidTab, hashTrigger, scrollTargetRef]);
+  }, [activeTab, hashTrigger, scrollTargetRef]);
 
   const setActiveTab = useCallback(
     (newTab: T) => {
-      setActiveTabState(newTab);
-
-      if (currentParamValue === newTab) return;
-
-      const params = new URLSearchParams(searchParams.toString());
-      params.set(paramName, newTab);
-      router.push(`${pathname}?${params.toString()}`, { scroll: false });
+      if (newTab === activeTab) return;
+      setRawTab(newTab);
     },
-    [router, pathname, searchParams, paramName, currentParamValue],
+    [activeTab, setRawTab],
   );
 
   return { activeTab, setActiveTab };
