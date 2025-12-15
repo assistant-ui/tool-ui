@@ -17,7 +17,7 @@ import {
   useCopyToClipboard,
 } from "../shared";
 import { Button, Badge, Collapsible, CollapsibleTrigger } from "./_adapter";
-import { cn } from "./_cn";
+import { cn } from "./_adapter";
 import { TerminalProgress } from "./progress";
 
 const COPY_ID_COMMAND = "command";
@@ -127,7 +127,9 @@ export function Terminal({
               size="sm"
               onClick={handleCopyCommand}
               className="h-7 w-7 p-0 text-zinc-400 hover:bg-zinc-700 hover:text-zinc-100"
-              aria-label={copiedId === COPY_ID_COMMAND ? "Copied" : "Copy command"}
+              aria-label={
+                copiedId === COPY_ID_COMMAND ? "Copied" : "Copy command"
+              }
             >
               {copiedId === COPY_ID_COMMAND ? (
                 <Check className="h-4 w-4 text-green-500" />
@@ -169,7 +171,9 @@ export function Terminal({
                 size="sm"
                 onClick={handleCopyOutput}
                 className="absolute top-2 right-2 h-7 w-7 p-0 text-zinc-500 hover:bg-zinc-800 hover:text-zinc-100"
-                aria-label={copiedId === COPY_ID_OUTPUT ? "Copied" : "Copy output"}
+                aria-label={
+                  copiedId === COPY_ID_OUTPUT ? "Copied" : "Copy output"
+                }
               >
                 {copiedId === COPY_ID_OUTPUT ? (
                   <Check className="h-4 w-4 text-green-500" />

@@ -1,4 +1,4 @@
-import { cn } from "./_cn";
+import { cn } from "./_adapter";
 
 export function CodeBlockProgress({ className }: { className?: string }) {
   return (

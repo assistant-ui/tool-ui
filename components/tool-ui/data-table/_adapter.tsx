@@ -5,7 +5,6 @@
  * copied to another project by updating these imports to match the target
  * project's paths.
  */
-"use client";
 
 import type { ClassValue } from "clsx";
 import { clsx } from "clsx";

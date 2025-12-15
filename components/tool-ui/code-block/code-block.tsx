@@ -9,8 +9,7 @@ import {
   normalizeActionsConfig,
   useCopyToClipboard,
 } from "../shared";
-import { Button, Collapsible, CollapsibleTrigger } from "./_adapter";
-import { cn } from "./_cn";
+import { Button, cn, Collapsible, CollapsibleTrigger } from "./_adapter";
 import { CodeBlockProgress } from "./progress";
 
 const COPY_ID = "code";
@@ -137,7 +136,8 @@ export function CodeBlock({
           .replace(/&/g, "&amp;")
           .replace(/</g, "&lt;")
           .replace(/>/g, "&gt;");
-        if (!cancelled) setHighlightedHtml(`<pre><code>${escaped}</code></pre>`);
+        if (!cancelled)
+          setHighlightedHtml(`<pre><code>${escaped}</code></pre>`);
       }
     }
     void highlight();
@@ -187,14 +187,14 @@ export function CodeBlock({
     >
       <div className="border-border bg-card overflow-hidden rounded-lg border shadow-xs">
         <div className="bg-muted/50 flex items-center justify-between border-b px-4 py-2">
-          <div className="flex items-center gap-2">
-            <span className="text-muted-foreground text-xs font-medium">
+          <div className="flex items-center gap-1">
+            <span className="text-muted-foreground text-sm">
               {getLanguageDisplayName(language)}
             </span>
             {filename && (
               <>
                 <span className="text-muted-foreground/50">•</span>
-                <span className="text-foreground text-xs font-medium">
+                <span className="text-foreground text-sm font-medium">
                   {filename}
                 </span>
               </>
@@ -219,9 +219,10 @@ export function CodeBlock({
           <div
             className={cn(
               "overflow-x-auto text-sm",
-              showLineNumbers && "[&_.line]:pl-4 [&_pre]:pl-0",
               "[&_pre]:m-0 [&_pre]:bg-transparent [&_pre]:p-4",
               "[&_.highlighted-line]:bg-primary/10 [&_.highlighted-line]:border-primary [&_.highlighted-line]:border-l-2",
+              showLineNumbers &&
+                "[&_.line]:before:text-muted-foreground/50 [&_.line]:relative [&_.line]:pl-12 [&_.line]:before:absolute [&_.line]:before:left-0 [&_.line]:before:w-8 [&_.line]:before:pr-4 [&_.line]:before:text-right [&_.line]:before:[content:attr(data-line)] [&_.line]:before:select-none",
               isCollapsed && "max-h-[200px] overflow-hidden",
             )}
           >

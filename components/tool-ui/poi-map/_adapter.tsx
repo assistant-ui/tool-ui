@@ -1,5 +1,3 @@
-"use client";
-
 /**
  * UI and utility re-exports for copy-standalone portability.
  */
