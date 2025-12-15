@@ -29,7 +29,7 @@ function ViewModeTabs({
         if (v === "preview" || v === "code") onValueChange(v);
       }}
     >
-      <TabsList className="bg-background shadow-md">
+      <TabsList>
         <TabsTrigger value="preview" className="gap-1.5">
           <Eye className="size-4" />
           <span className="sr-only sm:not-sr-only">Preview</span>
@@ -126,7 +126,7 @@ export function ComponentPreviewShell({
           "lg:flex",
         )}
       >
-        <div className="flex min-h-0 flex-1 flex-col gap-4 px-4 pt-4 pb-24">
+        <div className="z-10 flex min-h-0 flex-1 flex-col gap-4 px-4 pb-24">
           {presetSelector}
         </div>
       </aside>
@@ -167,16 +167,27 @@ export function ComponentPreviewShell({
           </div>
         </div>
 
-        {/* Preview/Code area */}
         <div
           className={cn(
             "relative flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden",
-            "lg:border-l",
+            "z-10",
+            "border lg:mr-4 lg:mb-4 lg:rounded-lg lg:border-l",
           )}
         >
           {viewMode === "preview" && (
             <div
-              className="bg-dot-grid bg-wash pointer-events-none absolute inset-0 z-0 opacity-60 dark:opacity-40"
+              className="bg-dot-grid pointer-events-none absolute inset-0 z-0 bg-neutral-200 opacity-70 dark:bg-neutral-900 dark:opacity-60"
+              aria-hidden="true"
+            />
+          )}
+
+          {viewMode === "code" && (
+            <div
+              className={cn(
+                "pointer-events-none absolute top-0 right-4 left-0 z-20 h-24",
+                "from-fd-card via-fd-card/80 bg-linear-to-b to-transparent",
+                "hidden lg:block",
+              )}
               aria-hidden="true"
             />
           )}
@@ -184,7 +195,10 @@ export function ComponentPreviewShell({
           <div
             className={cn(
               "scrollbar-subtle relative z-10",
-              "flex min-h-0 min-w-0 flex-1 items-start justify-center overflow-y-auto",
+              "flex min-h-0 min-w-0 flex-1",
+              viewMode === "preview"
+                ? "items-start justify-center overflow-y-auto"
+                : "flex-col",
             )}
           >
             {viewMode === "preview" ? (
@@ -197,9 +211,7 @@ export function ComponentPreviewShell({
                 </ResizablePreviewArea>
               </div>
             ) : (
-              <div className="relative h-full w-full min-w-0 p-4 lg:pt-16">
-                {renderCodePanel(isLoading)}
-              </div>
+              renderCodePanel(isLoading)
             )}
           </div>
         </div>
@@ -208,7 +220,9 @@ export function ComponentPreviewShell({
   );
 
   if (withContainer) {
-    return <div className="rounded-t-lg border">{content}</div>;
+    return (
+      <div className="relative isolate rounded-t-lg border">{content}</div>
+    );
   }
 
   return content;

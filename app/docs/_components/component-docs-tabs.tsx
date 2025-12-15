@@ -11,9 +11,9 @@ type DocsTab = "docs" | "examples";
 const VALID_TABS = ["docs", "examples"] as const;
 
 const SHELL_CLASSES = cn(
-  "bg-background relative box-border",
+  "bg-background relative relative",
   "flex h-full min-h-0 w-full flex-col",
-  "overflow-hidden rounded-t-lg border",
+  "overflow-hidden rounded-t-lg border border-b-0",
 );
 
 function ContentSkeleton() {
@@ -66,9 +66,14 @@ export const ComponentDocsTabs = memo(function ComponentDocsTabs({
       >
         <div
           className={cn(
-            "z-20 flex shrink-0 items-center justify-center",
+            "pointer-events-none absolute top-0 right-2 left-0 z-10 h-24",
+            "from-background via-background/80 bg-linear-to-b to-transparent",
+          )}
+        />
+        <div
+          className={cn(
+            "absolute top-0 right-0 left-0 z-20 flex shrink-0 items-center justify-center",
             "px-3 py-2 sm:px-6 sm:py-3",
-            "bg-background/50 supports-backdrop-filter:bg-background/60 backdrop-blur",
           )}
         >
           <TabsList>
@@ -84,7 +89,7 @@ export const ComponentDocsTabs = memo(function ComponentDocsTabs({
         >
           <TabsContent
             value="docs"
-            className="scrollbar-subtle h-full min-h-0 flex-1 overflow-y-auto"
+            className="scrollbar-subtle h-full min-h-0 flex-1 overflow-y-auto pt-12"
           >
             <div className="z-0 min-h-0 flex-1 p-6 pb-24 sm:p-10 lg:p-12">
               <div className="prose dark:prose-invert mx-auto max-w-3xl">
@@ -95,7 +100,7 @@ export const ComponentDocsTabs = memo(function ComponentDocsTabs({
           </TabsContent>
           <TabsContent
             value="examples"
-            className="flex h-full min-h-0 flex-1 overflow-hidden"
+            className="flex h-full min-h-0 flex-1 overflow-hidden pt-16"
           >
             <Suspense fallback={<ContentSkeleton />}>{examples}</Suspense>
           </TabsContent>

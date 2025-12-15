@@ -49,6 +49,49 @@ figure.shiki pre code {
   overflow-wrap: anywhere;
 }
 
+/* Full-bleed code panel with internal padding for floating tabs */
+.code-panel-fullbleed {
+  & figure.shiki {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-height: 0;
+    margin: 0;
+    border-radius: 0;
+    border: none;
+    overflow: hidden;
+  }
+
+  & figure.shiki pre {
+    flex: 1;
+    padding-top: 3.5rem; /* 56px - matches pt-14 */
+    margin: 0;
+    border-radius: 0;
+  }
+
+  /* Override max-height on scroll container to fill available height */
+  & .fd-scroll-container {
+    max-height: none !important;
+    height: 100%;
+    padding-bottom: 6rem; /* Extra scroll room at bottom */
+  }
+
+  /* Move copy button wrapper down to avoid floating tabs */
+  & figure.shiki > div.absolute {
+    top: 4rem; /* 64px */
+  }
+
+  @media (min-width: 1024px) {
+    & figure.shiki pre {
+      padding-top: 4rem; /* 64px - matches lg:pt-16 */
+    }
+
+    & figure.shiki > div.absolute {
+      top: 4.5rem; /* 72px */
+    }
+  }
+}
+
 @theme {
   --color-fd-background: hsl(0, 0%, 96%);
   --color-fd-foreground: hsl(0, 0%, 3.9%);

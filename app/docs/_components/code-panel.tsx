@@ -413,13 +413,8 @@ export function CodePanel({
   const code = generateCode();
 
   return (
-    <DynamicCodeBlock
-      lang="tsx"
-      code={code}
-      codeblock={{
-        "data-line-numbers": true,
-        "data-line-numbers-start": 1,
-      }}
-    />
+    <div className="code-panel-fullbleed scrollbar-subtle flex min-h-0 flex-1 flex-col overflow-auto">
+      <DynamicCodeBlock lang="tsx" code={code} />
+    </div>
   );
 }
