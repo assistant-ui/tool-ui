@@ -148,11 +148,7 @@ function PresetSelector({
   );
 }
 
-export function SocialPostPreview({
-  withContainer = true,
-}: {
-  withContainer?: boolean;
-}) {
+export function SocialPostPreview() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -172,9 +168,10 @@ export function SocialPostPreview({
     [initialPlatform, presetParam],
   );
 
-  const [currentPlatform, setCurrentPlatform] = useState<Platform>(initialPlatform);
+  const [currentPlatform, setCurrentPlatform] =
+    useState<Platform>(initialPlatform);
   const [currentPreset, setCurrentPreset] = useState<PresetName>(initialPreset);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, _setIsLoading] = useState(false);
 
   useEffect(() => {
     if (
@@ -222,7 +219,6 @@ export function SocialPostPreview({
 
   return (
     <ComponentPreviewShell
-      withContainer={withContainer}
       isLoading={isLoading}
       presetSelector={
         <>
@@ -286,7 +282,7 @@ export function SocialPostPreview({
           )}
         </div>
       )}
-      renderCodePanel={() => (
+      renderCodePanel={(_isLoading, _onCodeChange) => (
         <div className="text-muted-foreground flex h-full items-center justify-center">
           Code panel coming soon
         </div>

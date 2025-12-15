@@ -12,7 +12,7 @@ export default function PlanDocsPage() {
   return (
     <ComponentDocsTabs
       docs={<Content />}
-      examples={<PlanPreview withContainer={false} />}
+      examples={<PlanPreview />}
       defaultTab="docs"
     />
   );

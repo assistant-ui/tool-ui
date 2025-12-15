@@ -87,7 +87,7 @@ function PresetItem({
       className={cn(
         "group/item relative py-[2px] pb-[2px] lg:py-3!",
         isSelected
-          ? "bg-muted cursor-pointer border-transparent shadow-xs"
+          ? "bg-muted cursor-pointer border-transparent"
           : "hover:bg-primary/5 active:bg-primary/10 cursor-pointer transition-[colors,shadow,border,background] duration-150 ease-out",
       )}
       onClick={() => onSelect(preset)}

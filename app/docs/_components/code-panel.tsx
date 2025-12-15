@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import { DataTableData } from "@/lib/presets/data-table";
 import {
   mediaCardPresets,
@@ -34,6 +35,7 @@ interface CodePanelProps {
   emptyMessage?: string;
   className?: string;
   mode?: "details" | "plain";
+  onCodeChange?: (code: string) => void;
 }
 
 export function CodePanel({
@@ -50,6 +52,7 @@ export function CodePanel({
   sort,
   isLoading,
   emptyMessage,
+  onCodeChange,
 }: CodePanelProps) {
   const generateDataTableCode = () => {
     if (!config) return "";
@@ -411,6 +414,10 @@ export function CodePanel({
   };
 
   const code = generateCode();
+
+  useEffect(() => {
+    onCodeChange?.(code);
+  }, [code, onCodeChange]);
 
   return (
     <div className="code-panel-fullbleed scrollbar-subtle flex min-h-0 flex-1 flex-col overflow-auto">

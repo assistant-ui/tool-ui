@@ -12,7 +12,7 @@ export default function TerminalDocsPage() {
   return (
     <ComponentDocsTabs
       docs={<Content />}
-      examples={<TerminalPreview withContainer={false} />}
+      examples={<TerminalPreview />}
       defaultTab="docs"
     />
   );

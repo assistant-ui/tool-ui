@@ -12,7 +12,7 @@ export default function SocialPostDocsPage() {
   return (
     <ComponentDocsTabs
       docs={<Content />}
-      examples={<SocialPostPreview withContainer={false} />}
+      examples={<SocialPostPreview />}
       defaultTab="docs"
     />
   );

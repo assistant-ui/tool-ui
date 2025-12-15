@@ -8,11 +8,7 @@ import { DataTable } from "@/components/tool-ui/data-table";
 import { type DataTablePresetName, dataTablePresets, type SortState } from "@/lib/presets/data-table";
 import { usePresetParam } from "@/hooks/use-preset-param";
 
-export function DataTablePreview({
-  withContainer = true,
-}: {
-  withContainer?: boolean;
-}) {
+export function DataTablePreview() {
   const { currentPreset, setPreset } = usePresetParam<DataTablePresetName>({
     presets: dataTablePresets,
     defaultPreset: "stocks",
@@ -47,7 +43,6 @@ export function DataTablePreview({
 
   return (
     <ComponentPreviewShell
-      withContainer={withContainer}
       isLoading={isLoading}
       presetSelector={
         <PresetSelector
@@ -69,7 +64,7 @@ export function DataTablePreview({
           }}
         />
       )}
-      renderCodePanel={(loading) => (
+      renderCodePanel={(loading, onCodeChange) => (
         <CodePanel
           className="h-full w-full"
           componentId="data-table"
@@ -78,6 +73,7 @@ export function DataTablePreview({
           isLoading={loading}
           emptyMessage={emptyMessage}
           mode="plain"
+          onCodeChange={onCodeChange}
         />
       )}
     />

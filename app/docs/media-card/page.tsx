@@ -12,7 +12,7 @@ export default function MediaCardDocsPage() {
   return (
     <ComponentDocsTabs
       docs={<Content />}
-      examples={<MediaCardPreview withContainer={false} />}
+      examples={<MediaCardPreview />}
       defaultTab="docs"
     />
   );

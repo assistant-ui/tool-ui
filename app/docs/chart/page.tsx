@@ -12,7 +12,7 @@ export default function ChartDocsPage() {
   return (
     <ComponentDocsTabs
       docs={<Content />}
-      examples={<ChartPreview withContainer={false} />}
+      examples={<ChartPreview />}
       defaultTab="docs"
     />
   );

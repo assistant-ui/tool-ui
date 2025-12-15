@@ -8,11 +8,7 @@ import { Terminal } from "@/components/tool-ui/terminal";
 import { type TerminalPresetName, terminalPresets } from "@/lib/presets/terminal";
 import { usePresetParam } from "@/hooks/use-preset-param";
 
-export function TerminalPreview({
-  withContainer = true,
-}: {
-  withContainer?: boolean;
-}) {
+export function TerminalPreview() {
   const { currentPreset, setPreset } = usePresetParam<TerminalPresetName>({
     presets: terminalPresets,
     defaultPreset: "success",
@@ -33,7 +29,6 @@ export function TerminalPreview({
 
   return (
     <ComponentPreviewShell
-      withContainer={withContainer}
       isLoading={isLoading}
       presetSelector={
         <PresetSelector
@@ -50,13 +45,14 @@ export function TerminalPreview({
           isLoading={isLoadingState}
         />
       )}
-      renderCodePanel={(loading) => (
+      renderCodePanel={(loading, onCodeChange) => (
         <CodePanel
           className="h-full w-full"
           componentId="terminal"
           terminalPreset={currentPreset}
           isLoading={loading}
           mode="plain"
+          onCodeChange={onCodeChange}
         />
       )}
     />

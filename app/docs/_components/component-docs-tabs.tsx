@@ -73,12 +73,16 @@ export const ComponentDocsTabs = memo(function ComponentDocsTabs({
         <div
           className={cn(
             "absolute top-0 right-0 left-0 z-20 flex shrink-0 items-center justify-center",
-            "px-3 py-2 sm:px-6 sm:py-3",
+            "px-2 py-2 sm:px-3 sm:py-3",
           )}
         >
           <TabsList>
-            <TabsTrigger value="docs">Docs</TabsTrigger>
-            <TabsTrigger value="examples">Examples</TabsTrigger>
+            <TabsTrigger value="docs" className="min-w-24">
+              Docs
+            </TabsTrigger>
+            <TabsTrigger value="examples" className="min-w-24">
+              Examples
+            </TabsTrigger>
           </TabsList>
         </div>
 

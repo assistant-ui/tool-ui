@@ -12,7 +12,7 @@ export default function CodeBlockDocsPage() {
   return (
     <ComponentDocsTabs
       docs={<Content />}
-      examples={<CodeBlockPreview withContainer={false} />}
+      examples={<CodeBlockPreview />}
       defaultTab="docs"
     />
   );

@@ -8,11 +8,7 @@ import { MediaCard } from "@/components/tool-ui/media-card";
 import { type MediaCardPresetName, mediaCardPresets } from "@/lib/presets/media-card";
 import { usePresetParam } from "@/hooks/use-preset-param";
 
-export function MediaCardPreview({
-  withContainer = true,
-}: {
-  withContainer?: boolean;
-}) {
+export function MediaCardPreview() {
   const { currentPreset, setPreset } = usePresetParam<MediaCardPresetName>({
     presets: mediaCardPresets,
     defaultPreset: "image",
@@ -29,7 +25,6 @@ export function MediaCardPreview({
 
   return (
     <ComponentPreviewShell
-      withContainer={withContainer}
       isLoading={isLoading}
       presetSelector={
         <PresetSelector
@@ -56,7 +51,7 @@ export function MediaCardPreview({
           />
         </div>
       )}
-      renderCodePanel={(loading) => (
+      renderCodePanel={(loading, onCodeChange) => (
         <CodePanel
           className="h-full w-full"
           componentId="media-card"
@@ -64,6 +59,7 @@ export function MediaCardPreview({
           mediaCardMaxWidth="28rem"
           isLoading={loading}
           mode="plain"
+          onCodeChange={onCodeChange}
         />
       )}
     />

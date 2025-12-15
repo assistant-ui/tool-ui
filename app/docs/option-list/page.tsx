@@ -12,7 +12,7 @@ export default function OptionListDocsPage() {
   return (
     <ComponentDocsTabs
       docs={<Content />}
-      examples={<OptionListPreview withContainer={false} />}
+      examples={<OptionListPreview />}
       defaultTab="docs"
     />
   );

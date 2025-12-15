@@ -8,11 +8,7 @@ import { CodeBlock } from "@/components/tool-ui/code-block";
 import { type CodeBlockPresetName, codeBlockPresets } from "@/lib/presets/code-block";
 import { usePresetParam } from "@/hooks/use-preset-param";
 
-export function CodeBlockPreview({
-  withContainer = true,
-}: {
-  withContainer?: boolean;
-}) {
+export function CodeBlockPreview() {
   const { currentPreset, setPreset } = usePresetParam<CodeBlockPresetName>({
     presets: codeBlockPresets,
     defaultPreset: "typescript",
@@ -33,7 +29,6 @@ export function CodeBlockPreview({
 
   return (
     <ComponentPreviewShell
-      withContainer={withContainer}
       isLoading={isLoading}
       presetSelector={
         <PresetSelector
@@ -50,13 +45,14 @@ export function CodeBlockPreview({
           isLoading={isLoadingState}
         />
       )}
-      renderCodePanel={(loading) => (
+      renderCodePanel={(loading, onCodeChange) => (
         <CodePanel
           className="h-full w-full"
           componentId="code-block"
           codeBlockPreset={currentPreset}
           isLoading={loading}
           mode="plain"
+          onCodeChange={onCodeChange}
         />
       )}
     />

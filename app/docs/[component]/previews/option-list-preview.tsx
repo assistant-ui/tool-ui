@@ -8,11 +8,7 @@ import { OptionList } from "@/components/tool-ui/option-list";
 import { type OptionListPresetName, optionListPresets } from "@/lib/presets/option-list";
 import { usePresetParam } from "@/hooks/use-preset-param";
 
-export function OptionListPreview({
-  withContainer = true,
-}: {
-  withContainer?: boolean;
-}) {
+export function OptionListPreview() {
   const { currentPreset, setPreset } = usePresetParam<OptionListPresetName>({
     presets: optionListPresets,
     defaultPreset: "export",
@@ -37,7 +33,6 @@ export function OptionListPreview({
 
   return (
     <ComponentPreviewShell
-      withContainer={withContainer}
       isLoading={isLoading}
       presetSelector={
         <PresetSelector
@@ -58,13 +53,14 @@ export function OptionListPreview({
           }}
         />
       )}
-      renderCodePanel={(_isLoading) => (
+      renderCodePanel={(_isLoading, onCodeChange) => (
         <CodePanel
           className="h-full w-full"
           componentId="option-list"
           optionListPreset={currentPreset}
           optionListSelection={selection}
           mode="plain"
+          onCodeChange={onCodeChange}
         />
       )}
     />

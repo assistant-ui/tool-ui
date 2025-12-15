@@ -49,7 +49,7 @@ figure.shiki pre code {
   overflow-wrap: anywhere;
 }
 
-/* Full-bleed code panel with internal padding for floating tabs */
+/* Full-bleed code panel with internal padding for view mode toggle */
 .code-panel-fullbleed {
   & figure.shiki {
     display: flex;
@@ -64,7 +64,7 @@ figure.shiki pre code {
 
   & figure.shiki pre {
     flex: 1;
-    padding-top: 3.5rem; /* 56px - matches pt-14 */
+    padding-top: 4rem; /* 48px - space for toggle button */
     margin: 0;
     border-radius: 0;
   }
@@ -76,18 +76,14 @@ figure.shiki pre code {
     padding-bottom: 6rem; /* Extra scroll room at bottom */
   }
 
-  /* Move copy button wrapper down to avoid floating tabs */
+  /* Hide fumadocs' built-in copy button - we use our own */
   & figure.shiki > div.absolute {
-    top: 4rem; /* 64px */
+    display: none;
   }
 
   @media (min-width: 1024px) {
-    & figure.shiki pre {
-      padding-top: 4rem; /* 64px - matches lg:pt-16 */
-    }
-
-    & figure.shiki > div.absolute {
-      top: 4.5rem; /* 72px */
+    & figure.shiki {
+      border-radius: 0.5rem; /* matches rounded-lg */
     }
   }
 }

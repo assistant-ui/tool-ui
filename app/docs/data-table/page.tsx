@@ -12,7 +12,7 @@ export default function DataTableDocsPage() {
   return (
     <ComponentDocsTabs
       docs={<Content />}
-      examples={<DataTablePreview withContainer={false} />}
+      examples={<DataTablePreview />}
       defaultTab="docs"
     />
   );

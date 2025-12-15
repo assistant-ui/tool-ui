@@ -1,19 +1,21 @@
 "use client";
 
-import { memo, useState, type ReactNode } from "react";
+import { memo, useCallback, useState, type ReactNode } from "react";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import type { ImperativePanelGroupHandle } from "react-resizable-panels";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Code, Eye } from "lucide-react";
+import { Check, Code, Copy, Eye } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { cn } from "@/lib/ui/cn";
 import { useResponsivePreview } from "@/hooks/use-responsive-preview";
+import { useCopyToClipboard } from "@/components/tool-ui/shared";
 
 const PREVIEW_MIN_WIDTH = 40;
 const PREVIEW_MAX_WIDTH = 100;
 
 type ViewMode = "preview" | "code";
 
-function ViewModeTabs({
+function ViewModeToggle({
   value,
   onValueChange,
 }: {
@@ -21,23 +23,28 @@ function ViewModeTabs({
   onValueChange: (value: ViewMode) => void;
 }) {
   return (
-    <Tabs
+    <ToggleGroup
+      type="single"
       value={value}
-      onValueChange={(v) => {
-        if (v === "preview" || v === "code") onValueChange(v);
-      }}
+      onValueChange={(v) => v && onValueChange(v as ViewMode)}
+      size="sm"
+      className="bg-background shadow-sm"
     >
-      <TabsList>
-        <TabsTrigger value="preview" className="gap-1.5">
-          <Eye className="size-4" />
-          <span className="sr-only sm:not-sr-only">Preview</span>
-        </TabsTrigger>
-        <TabsTrigger value="code" className="gap-1.5">
-          <Code className="size-4" />
-          <span className="sr-only sm:not-sr-only">Code</span>
-        </TabsTrigger>
-      </TabsList>
-    </Tabs>
+      <ToggleGroupItem
+        value="preview"
+        aria-label="View preview"
+        className="data-[state=on]:bg-foreground data-[state=on]:text-background"
+      >
+        <Eye className="size-4" />
+      </ToggleGroupItem>
+      <ToggleGroupItem
+        value="code"
+        aria-label="View code"
+        className="data-[state=on]:bg-foreground data-[state=on]:text-background"
+      >
+        <Code className="size-4" />
+      </ToggleGroupItem>
+    </ToggleGroup>
   );
 }
 
@@ -91,23 +98,33 @@ const ResizablePreviewArea = memo(function ResizablePreviewArea({
 interface ComponentPreviewShellProps {
   presetSelector: ReactNode;
   renderPreview: (isLoading: boolean) => ReactNode;
-  renderCodePanel: (isLoading: boolean) => ReactNode;
+  renderCodePanel: (
+    isLoading: boolean,
+    onCodeChange: (code: string) => void,
+  ) => ReactNode;
   isLoading: boolean;
-  withContainer?: boolean;
 }
+
+const COPY_ID = "code-panel";
 
 export function ComponentPreviewShell({
   presetSelector,
   renderPreview,
   renderCodePanel,
   isLoading,
-  withContainer = true,
 }: ComponentPreviewShellProps) {
   const [viewMode, setViewMode] = useState<ViewMode>("preview");
+  const [code, setCode] = useState("");
+  const { copiedId, copy } = useCopyToClipboard();
+  const copied = copiedId === COPY_ID;
   const { panelGroupRef, handleLayout } = useResponsivePreview({
     minWidth: PREVIEW_MIN_WIDTH,
     maxWidth: PREVIEW_MAX_WIDTH,
   });
+
+  const handleCopy = useCallback(() => {
+    copy(code, COPY_ID);
+  }, [code, copy]);
 
   const content = (
     <div className="flex h-full min-h-0 w-full flex-1 flex-col overflow-clip lg:flex-row">
@@ -120,31 +137,20 @@ export function ComponentPreviewShell({
           "lg:flex",
         )}
       >
-        <div className="z-10 flex min-h-0 flex-1 flex-col gap-4 px-4 pb-24">
+        <div className="z-10 flex min-h-0 flex-1 flex-col gap-4 px-3 pb-24">
           {presetSelector}
         </div>
       </aside>
 
       {/* Main content area */}
       <div className="relative flex min-h-0 min-w-0 flex-1 flex-col">
-        {/* Desktop toolbar */}
-        <div
-          className={cn(
-            "absolute top-0 right-0 left-0 z-20",
-            "hidden items-center justify-end px-6 py-3",
-            "lg:flex",
-          )}
-        >
-          <ViewModeTabs value={viewMode} onValueChange={setViewMode} />
-        </div>
-
         {/* Mobile toolbar */}
         <div className="flex flex-col gap-3 border-b px-4 pt-3 pb-3 lg:hidden">
           <div className="scrollbar-subtle overflow-x-auto">
             {presetSelector}
           </div>
           <div className="flex items-center justify-end">
-            <ViewModeTabs value={viewMode} onValueChange={setViewMode} />
+            <ViewModeToggle value={viewMode} onValueChange={setViewMode} />
           </div>
         </div>
 
@@ -165,12 +171,37 @@ export function ComponentPreviewShell({
           {viewMode === "code" && (
             <div
               className={cn(
-                "pointer-events-none absolute top-0 right-4 left-0 z-20 h-24",
+                "pointer-events-none absolute top-0 right-12 left-0 z-20 h-24",
                 "from-fd-card via-fd-card/80 bg-linear-to-b to-transparent",
                 "hidden lg:block",
               )}
               aria-hidden="true"
             />
+          )}
+
+          {/* View mode toggle - top left corner */}
+          <div className="absolute top-3 left-3 z-30 hidden lg:block">
+            <ViewModeToggle value={viewMode} onValueChange={setViewMode} />
+          </div>
+
+          {/* Copy button - top right corner (code view only) */}
+          {viewMode === "code" && (
+            <div className="absolute top-3 right-3 z-30 hidden lg:block">
+              <Button
+                variant="secondary"
+                size="icon"
+                onClick={handleCopy}
+                aria-label={copied ? "Copied" : "Copy code"}
+                title={copied ? "Copied" : "Copy code"}
+                className="size-8 shadow-sm"
+              >
+                {copied ? (
+                  <Check className="size-4 text-green-500" />
+                ) : (
+                  <Copy className="size-4" />
+                )}
+              </Button>
+            </div>
           )}
 
           <div
@@ -183,7 +214,7 @@ export function ComponentPreviewShell({
             )}
           >
             {viewMode === "preview" ? (
-              <div className="relative h-fit w-full p-4 lg:pt-16">
+              <div className="relative h-fit w-full p-4 pt-24">
                 <ResizablePreviewArea
                   panelGroupRef={panelGroupRef}
                   handleLayout={handleLayout}
@@ -192,19 +223,13 @@ export function ComponentPreviewShell({
                 </ResizablePreviewArea>
               </div>
             ) : (
-              renderCodePanel(isLoading)
+              renderCodePanel(isLoading, setCode)
             )}
           </div>
         </div>
       </div>
     </div>
   );
-
-  if (withContainer) {
-    return (
-      <div className="relative isolate rounded-t-lg border">{content}</div>
-    );
-  }
 
   return content;
 }

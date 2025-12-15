@@ -8,11 +8,7 @@ import { Plan } from "@/components/tool-ui/plan";
 import { type PlanPresetName, planPresets } from "@/lib/presets/plan";
 import { usePresetParam } from "@/hooks/use-preset-param";
 
-export function PlanPreview({
-  withContainer = true,
-}: {
-  withContainer?: boolean;
-}) {
+export function PlanPreview() {
   const { currentPreset, setPreset } = usePresetParam<PlanPresetName>({
     presets: planPresets,
     defaultPreset: "comprehensive",
@@ -29,7 +25,6 @@ export function PlanPreview({
 
   return (
     <ComponentPreviewShell
-      withContainer={withContainer}
       isLoading={isLoading}
       presetSelector={
         <PresetSelector
@@ -39,12 +34,13 @@ export function PlanPreview({
         />
       }
       renderPreview={(_isLoading) => <Plan {...currentData} id="plan-preview" />}
-      renderCodePanel={(_isLoading) => (
+      renderCodePanel={(_isLoading, onCodeChange) => (
         <CodePanel
           className="h-full w-full"
           componentId="plan"
           planPreset={currentPreset}
           mode="plain"
+          onCodeChange={onCodeChange}
         />
       )}
     />

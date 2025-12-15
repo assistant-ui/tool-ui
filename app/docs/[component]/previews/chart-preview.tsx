@@ -8,11 +8,7 @@ import { Chart } from "@/components/tool-ui/chart";
 import { type ChartPresetName, chartPresets } from "@/lib/presets/chart";
 import { usePresetParam } from "@/hooks/use-preset-param";
 
-export function ChartPreview({
-  withContainer = true,
-}: {
-  withContainer?: boolean;
-}) {
+export function ChartPreview() {
   const { currentPreset, setPreset } = usePresetParam<ChartPresetName>({
     presets: chartPresets,
     defaultPreset: "revenue",
@@ -29,7 +25,6 @@ export function ChartPreview({
 
   return (
     <ComponentPreviewShell
-      withContainer={withContainer}
       isLoading={isLoading}
       presetSelector={
         <PresetSelector
@@ -41,12 +36,13 @@ export function ChartPreview({
       renderPreview={(_isLoading) => (
         <Chart id={`chart-${currentPreset}`} {...currentData} />
       )}
-      renderCodePanel={(_isLoading) => (
+      renderCodePanel={(_isLoading, onCodeChange) => (
         <CodePanel
           className="h-full w-full"
           componentId="chart"
           chartPreset={currentPreset}
           mode="plain"
+          onCodeChange={onCodeChange}
         />
       )}
     />
