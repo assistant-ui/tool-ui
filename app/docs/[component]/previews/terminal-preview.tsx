@@ -5,7 +5,10 @@ import { ComponentPreviewShell } from "../component-preview-shell";
 import { PresetSelector } from "../../_components/preset-selector";
 import { CodePanel } from "../../_components/code-panel";
 import { Terminal } from "@/components/tool-ui/terminal";
-import { type TerminalPresetName, terminalPresets } from "@/lib/presets/terminal";
+import {
+  type TerminalPresetName,
+  terminalPresets,
+} from "@/lib/presets/terminal";
 import { usePresetParam } from "@/hooks/use-preset-param";
 
 export function TerminalPreview() {

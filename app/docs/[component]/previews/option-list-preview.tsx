@@ -42,16 +42,18 @@ export function OptionListPreview() {
         />
       }
       renderPreview={(_isLoading) => (
-        <OptionList
-          {...currentData}
-          id="option-list-preview"
-          value={selection}
-          onChange={setSelection}
-          onConfirm={(sel) => {
-            console.log("OptionList confirmed:", sel);
-            alert(`Selection confirmed: ${JSON.stringify(sel)}`);
-          }}
-        />
+        <div className="mx-auto w-full max-w-md">
+          <OptionList
+            {...currentData}
+            id="option-list-preview"
+            value={selection}
+            onChange={setSelection}
+            onConfirm={(sel) => {
+              console.log("OptionList confirmed:", sel);
+              alert(`Selection confirmed: ${JSON.stringify(sel)}`);
+            }}
+          />
+        </div>
       )}
       renderCodePanel={(_isLoading, onCodeChange) => (
         <CodePanel

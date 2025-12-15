@@ -140,7 +140,7 @@ export function OptionListPresetExample({
   return (
     <Tabs items={["Preview", "Code"]}>
       <Tab value="Preview">
-        <div className="not-prose">
+        <div className="not-prose mx-auto max-w-md">
           <OptionList {...data} />
         </div>
       </Tab>
@@ -286,7 +286,7 @@ export function PlanPresetExample({ preset }: PlanPresetExampleProps) {
   return (
     <Tabs items={["Preview", "Code"]}>
       <Tab value="Preview">
-        <div className="not-prose">
+        <div className="not-prose mx-auto max-w-xl">
           <Plan {...data} />
         </div>
       </Tab>

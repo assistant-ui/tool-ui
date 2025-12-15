@@ -1,7 +1,6 @@
 import type { ReactNode } from "react";
-import { cn } from "@/lib/ui/cn";
-import { DocsPager } from "./docs-pager";
 import { DocsBorderedShell } from "./docs-bordered-shell";
+import { DocsContent } from "./docs-content";
 
 export function DocsArticle({
   children,
@@ -13,16 +12,7 @@ export function DocsArticle({
   return (
     <DocsBorderedShell>
       <div className="scrollbar-subtle z-10 min-h-0 flex-1 overflow-y-auto overscroll-contain p-6 pb-24 sm:p-10 lg:p-12 lg:pt-16">
-        <div
-          className={cn(
-            "prose dark:prose-invert mx-auto",
-            "max-w-3xl",
-            className,
-          )}
-        >
-          {children}
-          <DocsPager />
-        </div>
+        <DocsContent className={className}>{children}</DocsContent>
       </div>
     </DocsBorderedShell>
   );

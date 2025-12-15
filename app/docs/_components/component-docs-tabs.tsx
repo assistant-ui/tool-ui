@@ -3,18 +3,13 @@
 import { memo, useCallback, useRef, type ReactNode, Suspense } from "react";
 import { cn } from "@/lib/ui/cn";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { DocsPager } from "./docs-pager";
+import { DocsBorderedShell } from "./docs-bordered-shell";
+import { DocsContent } from "./docs-content";
 import { useTabSearchParam } from "@/hooks/use-tab-search-param";
 
 type DocsTab = "docs" | "examples";
 
 const VALID_TABS = ["docs", "examples"] as const;
-
-const SHELL_CLASSES = cn(
-  "bg-background relative relative",
-  "flex h-full min-h-0 w-full flex-col",
-  "overflow-hidden rounded-t-lg border border-b-0",
-);
 
 function ContentSkeleton() {
   return (
@@ -56,7 +51,7 @@ export const ComponentDocsTabs = memo(function ComponentDocsTabs({
   );
 
   return (
-    <div className={SHELL_CLASSES}>
+    <DocsBorderedShell>
       <Tabs
         value={activeTab}
         onValueChange={handleTabChange}
@@ -94,10 +89,9 @@ export const ComponentDocsTabs = memo(function ComponentDocsTabs({
             className="scrollbar-subtle h-full min-h-0 flex-1 overflow-y-auto pt-12"
           >
             <div className="z-0 min-h-0 flex-1 p-6 pb-24 sm:p-10 lg:p-12">
-              <div className="prose dark:prose-invert mx-auto max-w-3xl">
+              <DocsContent>
                 <Suspense fallback={<ContentSkeleton />}>{docs}</Suspense>
-                <DocsPager />
-              </div>
+              </DocsContent>
             </div>
           </TabsContent>
           <TabsContent
@@ -108,6 +102,6 @@ export const ComponentDocsTabs = memo(function ComponentDocsTabs({
           </TabsContent>
         </div>
       </Tabs>
-    </div>
+    </DocsBorderedShell>
   );
 });

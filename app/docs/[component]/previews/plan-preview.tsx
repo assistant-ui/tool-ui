@@ -33,7 +33,11 @@ export function PlanPreview() {
           onSelectPreset={handleSelectPreset}
         />
       }
-      renderPreview={(_isLoading) => <Plan {...currentData} id="plan-preview" />}
+      renderPreview={(_isLoading) => (
+        <div className="mx-auto w-full max-w-xl">
+          <Plan {...currentData} id="plan-preview" />
+        </div>
+      )}
       renderCodePanel={(_isLoading, onCodeChange) => (
         <CodePanel
           className="h-full w-full"
