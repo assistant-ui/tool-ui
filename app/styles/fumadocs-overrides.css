@@ -17,7 +17,6 @@
   .prose blockquote p::after {
     content: none !important;
   }
-
 }
 
 /* Center component previews in Tabs (outside @layer for higher specificity) */
@@ -28,6 +27,26 @@
 /* Make code blocks full-width in component preview shell */
 [data-state][role="tabpanel"] > figure:only-child {
   margin: -1rem !important;
+}
+
+/* Constrain fumadocs code blocks to prevent overflow from long strings.
+   The fumadocs Pre component uses w-max (width: max-content) which causes
+   overflow with long unbreakable strings like URLs. We override to allow
+   wrapping within the container bounds. */
+figure.shiki {
+  max-width: 100%;
+}
+
+figure.shiki pre {
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+}
+
+figure.shiki pre code {
+  white-space: pre-wrap;
+  word-break: break-all;
+  overflow-wrap: anywhere;
 }
 
 @theme {
@@ -67,4 +86,3 @@
   --color-fd-accent-foreground: hsl(0, 0%, 90%);
   --color-fd-ring: hsl(0, 0%, 54.9%);
 }
-

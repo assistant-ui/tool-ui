@@ -1,10 +1,19 @@
 "use client";
 
 import { DataTableData } from "@/lib/presets/data-table";
-import { mediaCardPresets, MediaCardPresetName } from "@/lib/presets/media-card";
-import { optionListPresets, OptionListPresetName } from "@/lib/presets/option-list";
+import {
+  mediaCardPresets,
+  MediaCardPresetName,
+} from "@/lib/presets/media-card";
+import {
+  optionListPresets,
+  OptionListPresetName,
+} from "@/lib/presets/option-list";
 import { chartPresets, ChartPresetName } from "@/lib/presets/chart";
-import { codeBlockPresets, CodeBlockPresetName } from "@/lib/presets/code-block";
+import {
+  codeBlockPresets,
+  CodeBlockPresetName,
+} from "@/lib/presets/code-block";
 import { terminalPresets, TerminalPresetName } from "@/lib/presets/terminal";
 import { planPresets, PlanPresetName } from "@/lib/presets/plan";
 import { DynamicCodeBlock } from "fumadocs-ui/components/dynamic-codeblock";

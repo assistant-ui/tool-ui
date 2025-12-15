@@ -170,7 +170,7 @@ export function ComponentPreviewShell({
         {/* Preview/Code area */}
         <div
           className={cn(
-            "relative flex min-h-0 flex-1 flex-col overflow-hidden",
+            "relative flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden",
             "lg:border-l",
           )}
         >
@@ -184,7 +184,7 @@ export function ComponentPreviewShell({
           <div
             className={cn(
               "scrollbar-subtle relative z-10",
-              "flex min-h-0 flex-1 items-start justify-center overflow-y-auto",
+              "flex min-h-0 min-w-0 flex-1 items-start justify-center overflow-y-auto",
             )}
           >
             {viewMode === "preview" ? (
@@ -197,7 +197,7 @@ export function ComponentPreviewShell({
                 </ResizablePreviewArea>
               </div>
             ) : (
-              <div className="relative h-full w-full p-4 lg:pt-16">
+              <div className="relative h-full w-full min-w-0 p-4 lg:pt-16">
                 {renderCodePanel(isLoading)}
               </div>
             )}
