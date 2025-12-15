@@ -121,9 +121,9 @@ export const mediaCardPresets: Record<MediaCardPresetName, Preset<MediaCardData>
         },
       },
       responseActions: [
+        { id: "delete", label: "Delete", confirmLabel: "Confirm delete", variant: "destructive" },
         { id: "download", label: "Download", variant: "secondary" },
         { id: "share", label: "Share", variant: "default" },
-        { id: "delete", label: "Delete", confirmLabel: "Confirm delete", variant: "destructive" },
       ],
     } satisfies MediaCardData,
   },

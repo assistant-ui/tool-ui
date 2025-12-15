@@ -85,8 +85,8 @@ export const linkedInPostPresets: Record<LinkedInPostPresetName, Preset<LinkedIn
         createdAt: "2025-11-24T10:00:00.000Z",
       },
       responseActions: [
-        { id: "view-jobs", label: "View Open Positions" },
-        { id: "apply", label: "Apply Now" },
+        { id: "view-jobs", label: "View Open Positions", variant: "secondary" },
+        { id: "apply", label: "Apply Now", variant: "default" },
       ],
     } satisfies LinkedInPostPresetData,
   },

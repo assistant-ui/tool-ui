@@ -66,7 +66,6 @@ export function DocsNav() {
       )}
     >
       <nav className="flex flex-1 flex-col py-4 pb-24">
-        {/* Gallery Link */}
         <div className="mb-4 flex flex-col gap-2 px-4">
           <Link
             href={galleryPath}
@@ -87,7 +86,6 @@ export function DocsNav() {
           </Link>
         </div>
 
-        {/* Docs Section */}
         <div className="flex flex-col gap-1 px-4 pt-4">
           {!collapsed && (
             <div className="text-primary/60 mb-3 cursor-default px-4 text-xs tracking-widest uppercase select-none">
@@ -114,7 +112,6 @@ export function DocsNav() {
           })}
         </div>
 
-        {/* Components Section */}
         <div className="flex flex-col gap-1 px-4 pt-8">
           {!collapsed && (
             <div className="text-primary/60 mb-3 cursor-default px-4 text-xs tracking-widest uppercase select-none">

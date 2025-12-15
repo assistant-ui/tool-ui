@@ -90,8 +90,8 @@ export const instagramPostPresets: Record<InstagramPostPresetName, Preset<Instag
         createdAt: "2025-11-23T09:30:00.000Z",
       },
       responseActions: [
-        { id: "save-location", label: "Save Location" },
-        { id: "view-more", label: "View More Posts" },
+        { id: "view-more", label: "View More Posts", variant: "secondary" },
+        { id: "save-location", label: "Save Location", variant: "default" },
       ],
     } satisfies InstagramPostPresetData,
   },

@@ -124,9 +124,9 @@ export const dataTablePresets: Record<DataTablePresetName, Preset<DataTableData>
       rowIdKey: "id",
       defaultSort: { by: "waitTime", direction: "desc" },
       responseActions: [
-        { id: "assign", label: "Assign to me", variant: "default" },
-        { id: "escalate", label: "Escalate", variant: "secondary" },
         { id: "close", label: "Close tickets", confirmLabel: "Confirm close", variant: "destructive" },
+        { id: "escalate", label: "Escalate", variant: "secondary" },
+        { id: "assign", label: "Assign to me", variant: "default" },
       ],
     },
   },

@@ -1,6 +1,5 @@
 "use client";
 
-import * as React from "react";
 import type { Action } from "./schema";
 import { cn, Button } from "./_adapter";
 import { useActionButtons } from "./use-action-buttons";
@@ -12,17 +11,6 @@ export interface ActionButtonsProps {
   confirmTimeout?: number;
   align?: "left" | "center" | "right";
   className?: string;
-}
-
-const VARIANT_SORT_PRIORITY: Record<string, number> = {
-  default: 0,
-  secondary: 1,
-  ghost: 2,
-  destructive: 3,
-};
-
-function getVariantPriority(variant: string | undefined): number {
-  return VARIANT_SORT_PRIORITY[variant ?? "default"] ?? 2;
 }
 
 export function ActionButtons({
@@ -40,33 +28,20 @@ export function ActionButtons({
     confirmTimeout,
   });
 
-  const sortedActions = React.useMemo(() => {
-    return [...resolvedActions].sort(
-      (a, b) => getVariantPriority(a.variant) - getVariantPriority(b.variant),
-    );
-  }, [resolvedActions]);
-
-  const hasDestructive = sortedActions.some((a) => a.variant === "destructive");
-  const destructiveIndex = sortedActions.findIndex(
-    (a) => a.variant === "destructive",
-  );
-
   return (
     <div
       className={cn(
-        "flex flex-col-reverse gap-3",
-        "@sm/actions:flex-row-reverse @sm/actions:flex-wrap @sm/actions:items-center @sm/actions:gap-2",
-        align === "left" && "@sm/actions:justify-end",
+        "flex flex-col gap-3",
+        "@sm/actions:flex-row @sm/actions:flex-wrap @sm/actions:items-center @sm/actions:gap-2",
+        align === "left" && "@sm/actions:justify-start",
         align === "center" && "@sm/actions:justify-center",
-        align === "right" && "@sm/actions:justify-start",
+        align === "right" && "@sm/actions:justify-end",
         className,
       )}
     >
-      {sortedActions.map((action, index) => {
+      {resolvedActions.map((action) => {
         const label = action.currentLabel;
         const variant = action.variant || "default";
-
-        const isFirstDestructive = hasDestructive && index === destructiveIndex;
 
         return (
           <Button
@@ -81,7 +56,6 @@ export function ActionButtons({
               "min-w-24",
               "min-h-11 w-full text-base",
               "@sm/actions:min-h-0 @sm/actions:w-auto @sm/actions:px-3 @sm/actions:py-2 @sm/actions:text-sm",
-              isFirstDestructive && "mt-2 @sm/actions:mt-0 @sm/actions:mr-2",
               action.isConfirming &&
                 "ring-destructive ring-2 ring-offset-2 motion-safe:animate-pulse",
             )}

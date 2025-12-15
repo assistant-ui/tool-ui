@@ -117,8 +117,8 @@ export const xPostPresets: Record<XPostPresetName, Preset<XPostPresetData>> = {
         createdAt: "2025-11-24T16:30:00.000Z",
       },
       responseActions: [
-        { id: "view-templates", label: "View Templates" },
         { id: "report", label: "Report", variant: "destructive" },
+        { id: "view-templates", label: "View Templates", variant: "default" },
       ],
     } satisfies XPostPresetData,
   },

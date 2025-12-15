@@ -308,6 +308,21 @@ const toolOutput = {
 />;
 ```
 
+## Positioning
+
+Actions render in **array order, left to right**. What you specify is what you get.
+
+```tsx
+// Visual order: Cancel | Preview | Deploy
+responseActions={[
+  { id: "cancel", label: "Cancel", variant: "ghost" },
+  { id: "preview", label: "Preview", variant: "secondary" },
+  { id: "deploy", label: "Deploy", variant: "default" },
+]}
+```
+
+Tab order matches visual order—keyboard users navigate left-to-right as expected.
+
 ## Design Guidance
 
 - Default to 2–3 CTAs tied directly to the content above; avoid toolbar sprawl
