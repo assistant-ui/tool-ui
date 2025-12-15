@@ -1,11 +1,18 @@
 import type { ReactNode } from "react";
+import type { Metadata } from "next";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import ContentLayout from "@/app/components/layout/page-shell";
 import { HeaderFrame } from "@/app/components/layout/app-shell";
 import { ThemeToggle } from "@/app/components/builder/theme-toggle";
 import { DocsNav } from "./_components/docs-nav";
 
-export const dynamic = "force-dynamic";
+export const metadata: Metadata = {
+  title: {
+    template: "%s | Tool UI",
+    default: "Docs | Tool UI",
+  },
+  description: "Documentation for Tool UI components",
+};
 
 export default function DocsLayout({ children }: { children: ReactNode }) {
   return (

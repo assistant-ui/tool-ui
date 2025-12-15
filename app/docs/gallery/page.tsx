@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { DocsBorderedShell } from "@/app/docs/_components/docs-bordered-shell";
 import { DataTable } from "@/components/tool-ui/data-table";
@@ -19,6 +20,11 @@ import { terminalPresets } from "@/lib/presets/terminal";
 import { codeBlockPresets } from "@/lib/presets/code-block";
 import { chartPresets } from "@/lib/presets/chart";
 import { ArrowRightIcon } from "lucide-react";
+
+export const metadata: Metadata = {
+  title: "Gallery",
+  description: "Browse all Tool UI components in a visual gallery",
+};
 
 export default function ComponentsGalleryPage() {
   return (
