@@ -1,20 +1,19 @@
 /**
- * UI and utility re-exports for copy-standalone portability.
+ * Adapter: UI and utility re-exports for copy-standalone portability.
  *
- * This file centralizes dependencies so the component can be easily
- * copied to another project by updating these imports to match the target
- * project's paths.
+ * When copying this component to another project, update these imports
+ * to match your project's paths:
+ *
+ *   cn           → Your Tailwind merge utility (e.g., "@/lib/utils", "~/lib/cn")
+ *   Card         → shadcn/ui Card
+ *   Button       → shadcn/ui Button
+ *   Badge        → shadcn/ui Badge
+ *   DropdownMenu → shadcn/ui DropdownMenu
+ *   Tooltip      → shadcn/ui Tooltip
  */
 "use client";
 
-import type { ClassValue } from "clsx";
-import { clsx } from "clsx";
-import { twMerge } from "tailwind-merge";
-
-export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs));
-}
-
+export { cn } from "../../../lib/ui/cn";
 export { Card, CardContent, CardFooter } from "../../ui/card";
 export { Button } from "../../ui/button";
 export { Badge } from "../../ui/badge";
