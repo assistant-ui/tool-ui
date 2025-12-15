@@ -10,10 +10,6 @@ export const metadata: Metadata = {
 
 export default function PlanDocsPage() {
   return (
-    <ComponentDocsTabs
-      docs={<Content />}
-      examples={<PlanPreview />}
-      defaultTab="docs"
-    />
+    <ComponentDocsTabs docs={<Content />} examples={<PlanPreview />} />
   );
 }

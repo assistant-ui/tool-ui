@@ -10,10 +10,6 @@ export const metadata: Metadata = {
 
 export default function OptionListDocsPage() {
   return (
-    <ComponentDocsTabs
-      docs={<Content />}
-      examples={<OptionListPreview />}
-      defaultTab="docs"
-    />
+    <ComponentDocsTabs docs={<Content />} examples={<OptionListPreview />} />
   );
 }

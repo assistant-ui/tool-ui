@@ -10,10 +10,6 @@ export const metadata: Metadata = {
 
 export default function DataTableDocsPage() {
   return (
-    <ComponentDocsTabs
-      docs={<Content />}
-      examples={<DataTablePreview />}
-      defaultTab="docs"
-    />
+    <ComponentDocsTabs docs={<Content />} examples={<DataTablePreview />} />
   );
 }

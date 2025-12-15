@@ -31,18 +31,16 @@ function ContentSkeleton() {
 interface ComponentDocsTabsProps {
   docs: ReactNode;
   examples: ReactNode;
-  defaultTab?: DocsTab;
 }
 
 export const ComponentDocsTabs = memo(function ComponentDocsTabs({
   docs,
   examples,
-  defaultTab = "docs",
 }: ComponentDocsTabsProps) {
   const contentRef = useRef<HTMLDivElement>(null);
 
   const { activeTab, setActiveTab } = useTabSearchParam<DocsTab>({
-    defaultTab,
+    defaultTab: "docs",
     validTabs: VALID_TABS,
     scrollTargetRef: contentRef,
     hashTrigger: "#examples",

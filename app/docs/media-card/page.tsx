@@ -10,10 +10,6 @@ export const metadata: Metadata = {
 
 export default function MediaCardDocsPage() {
   return (
-    <ComponentDocsTabs
-      docs={<Content />}
-      examples={<MediaCardPreview />}
-      defaultTab="docs"
-    />
+    <ComponentDocsTabs docs={<Content />} examples={<MediaCardPreview />} />
   );
 }

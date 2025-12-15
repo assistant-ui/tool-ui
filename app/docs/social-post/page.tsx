@@ -10,10 +10,6 @@ export const metadata: Metadata = {
 
 export default function SocialPostDocsPage() {
   return (
-    <ComponentDocsTabs
-      docs={<Content />}
-      examples={<SocialPostPreview />}
-      defaultTab="docs"
-    />
+    <ComponentDocsTabs docs={<Content />} examples={<SocialPostPreview />} />
   );
 }

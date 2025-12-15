@@ -10,10 +10,6 @@ export const metadata: Metadata = {
 
 export default function ChartDocsPage() {
   return (
-    <ComponentDocsTabs
-      docs={<Content />}
-      examples={<ChartPreview />}
-      defaultTab="docs"
-    />
+    <ComponentDocsTabs docs={<Content />} examples={<ChartPreview />} />
   );
 }

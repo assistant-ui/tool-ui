@@ -10,10 +10,6 @@ export const metadata: Metadata = {
 
 export default function CodeBlockDocsPage() {
   return (
-    <ComponentDocsTabs
-      docs={<Content />}
-      examples={<CodeBlockPreview />}
-      defaultTab="docs"
-    />
+    <ComponentDocsTabs docs={<Content />} examples={<CodeBlockPreview />} />
   );
 }

@@ -10,10 +10,6 @@ export const metadata: Metadata = {
 
 export default function TerminalDocsPage() {
   return (
-    <ComponentDocsTabs
-      docs={<Content />}
-      examples={<TerminalPreview />}
-      defaultTab="docs"
-    />
+    <ComponentDocsTabs docs={<Content />} examples={<TerminalPreview />} />
   );
 }
