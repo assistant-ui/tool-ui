@@ -1,9 +1,38 @@
 import type { SerializableCodeBlock } from "@/components/tool-ui/code-block";
-import type { Preset } from "./types";
+import type { PresetWithCodeGen } from "./types";
 
 export type CodeBlockPresetName = "typescript" | "python" | "json" | "bash" | "highlighted" | "collapsible";
 
-export const codeBlockPresets: Record<CodeBlockPresetName, Preset<SerializableCodeBlock>> = {
+function escape(value: string): string {
+  return value.replace(/\\/g, "\\\\").replace(/"/g, '\\"').replace(/`/g, "\\`");
+}
+
+function generateCodeBlockCode(data: SerializableCodeBlock): string {
+  const props: string[] = [];
+
+  props.push(`  code={\`${escape(data.code)}\`}`);
+  props.push(`  language="${data.language}"`);
+
+  if (data.filename) {
+    props.push(`  filename="${data.filename}"`);
+  }
+
+  if (data.showLineNumbers !== undefined) {
+    props.push(`  showLineNumbers={${data.showLineNumbers}}`);
+  }
+
+  if (data.highlightLines && data.highlightLines.length > 0) {
+    props.push(`  highlightLines={[${data.highlightLines.join(", ")}]}`);
+  }
+
+  if (data.maxCollapsedLines) {
+    props.push(`  maxCollapsedLines={${data.maxCollapsedLines}}`);
+  }
+
+  return `<CodeBlock\n${props.join("\n")}\n/>`;
+}
+
+export const codeBlockPresets: Record<CodeBlockPresetName, PresetWithCodeGen<SerializableCodeBlock>> = {
   typescript: {
     description: "TypeScript with filename header",
     data: {
@@ -23,6 +52,7 @@ export function Counter() {
       filename: "Counter.tsx",
       showLineNumbers: true,
     } satisfies SerializableCodeBlock,
+    generateExampleCode: generateCodeBlockCode,
   },
   python: {
     description: "Python function with docstring",
@@ -47,6 +77,7 @@ print(fibonacci(10))`,
       filename: "fibonacci.py",
       showLineNumbers: true,
     } satisfies SerializableCodeBlock,
+    generateExampleCode: generateCodeBlockCode,
   },
   json: {
     description: "JSON configuration file",
@@ -65,6 +96,7 @@ print(fibonacci(10))`,
       filename: "package.json",
       showLineNumbers: true,
     } satisfies SerializableCodeBlock,
+    generateExampleCode: generateCodeBlockCode,
   },
   bash: {
     description: "Bash script with comments",
@@ -87,6 +119,7 @@ echo "Done!"`,
       filename: "deploy.sh",
       showLineNumbers: true,
     } satisfies SerializableCodeBlock,
+    generateExampleCode: generateCodeBlockCode,
   },
   highlighted: {
     description: "Code with highlighted lines (bug indicator)",
@@ -107,6 +140,7 @@ echo "Done!"`,
       showLineNumbers: true,
       highlightLines: [5, 6],
     } satisfies SerializableCodeBlock,
+    generateExampleCode: generateCodeBlockCode,
   },
   collapsible: {
     description: "Long code with collapse/expand",
@@ -120,5 +154,6 @@ echo "Done!"`,
       showLineNumbers: true,
       maxCollapsedLines: 10,
     } satisfies SerializableCodeBlock,
+    generateExampleCode: generateCodeBlockCode,
   },
 };

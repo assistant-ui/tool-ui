@@ -96,25 +96,21 @@ const ResizablePreviewArea = memo(function ResizablePreviewArea({
 });
 
 interface ComponentPreviewShellProps {
-  presetSelector: ReactNode;
-  renderPreview: (isLoading: boolean) => ReactNode;
-  renderCodePanel: (
-    isLoading: boolean,
-    onCodeChange: (code: string) => void,
-  ) => ReactNode;
-  isLoading: boolean;
+  sidebar: ReactNode;
+  preview: ReactNode;
+  codePanel: ReactNode;
+  code: string;
 }
 
 const COPY_ID = "code-panel";
 
 export function ComponentPreviewShell({
-  presetSelector,
-  renderPreview,
-  renderCodePanel,
-  isLoading,
+  sidebar,
+  preview,
+  codePanel,
+  code,
 }: ComponentPreviewShellProps) {
   const [viewMode, setViewMode] = useState<ViewMode>("preview");
-  const [code, setCode] = useState("");
   const { copiedId, copy } = useCopyToClipboard();
   const copied = copiedId === COPY_ID;
   const { panelGroupRef, handleLayout } = useResponsivePreview({
@@ -126,7 +122,7 @@ export function ComponentPreviewShell({
     copy(code, COPY_ID);
   }, [code, copy]);
 
-  const content = (
+  return (
     <div className="flex h-full min-h-0 w-full flex-1 flex-col overflow-clip lg:flex-row">
       {/* Desktop sidebar */}
       <aside
@@ -138,7 +134,7 @@ export function ComponentPreviewShell({
         )}
       >
         <div className="z-10 flex min-h-0 flex-1 flex-col gap-4 px-3 pb-24">
-          {presetSelector}
+          {sidebar}
         </div>
       </aside>
 
@@ -146,9 +142,7 @@ export function ComponentPreviewShell({
       <div className="relative flex min-h-0 min-w-0 flex-1 flex-col">
         {/* Mobile toolbar */}
         <div className="flex flex-col gap-3 border-b px-4 pt-3 pb-3 lg:hidden">
-          <div className="scrollbar-subtle overflow-x-auto">
-            {presetSelector}
-          </div>
+          <div className="scrollbar-subtle overflow-x-auto">{sidebar}</div>
           <div className="flex items-center justify-end">
             <ViewModeToggle value={viewMode} onValueChange={setViewMode} />
           </div>
@@ -219,17 +213,15 @@ export function ComponentPreviewShell({
                   panelGroupRef={panelGroupRef}
                   handleLayout={handleLayout}
                 >
-                  {renderPreview(isLoading)}
+                  {preview}
                 </ResizablePreviewArea>
               </div>
             ) : (
-              renderCodePanel(isLoading, setCode)
+              codePanel
             )}
           </div>
         </div>
       </div>
     </div>
   );
-
-  return content;
 }

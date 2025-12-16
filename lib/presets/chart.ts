@@ -1,11 +1,50 @@
 import type { SerializableChart } from "@/components/tool-ui/chart";
-import type { Preset } from "./types";
+import type { PresetWithCodeGen } from "./types";
 
 type ChartData = Omit<SerializableChart, "id">;
 
 export type ChartPresetName = "revenue" | "performance" | "minimal";
 
-export const chartPresets: Record<ChartPresetName, Preset<ChartData>> = {
+function generateChartCode(data: ChartData): string {
+  const props: string[] = [];
+
+  props.push(`  id="chart-example"`);
+  props.push(`  type="${data.type}"`);
+
+  if (data.title) {
+    props.push(`  title="${data.title}"`);
+  }
+
+  if (data.description) {
+    props.push(`  description="${data.description}"`);
+  }
+
+  props.push(
+    `  data={${JSON.stringify(data.data, null, 4).replace(/\n/g, "\n  ")}}`,
+  );
+  props.push(`  xKey="${data.xKey}"`);
+  props.push(
+    `  series={${JSON.stringify(data.series, null, 4).replace(/\n/g, "\n  ")}}`,
+  );
+
+  if (data.colors) {
+    props.push(
+      `  colors={${JSON.stringify(data.colors, null, 4).replace(/\n/g, "\n  ")}}`,
+    );
+  }
+
+  if (data.showLegend) {
+    props.push(`  showLegend`);
+  }
+
+  if (data.showGrid) {
+    props.push(`  showGrid`);
+  }
+
+  return `<Chart\n${props.join("\n")}\n/>`;
+}
+
+export const chartPresets: Record<ChartPresetName, PresetWithCodeGen<ChartData>> = {
   revenue: {
     description: "Bar chart with revenue vs expenses",
     data: {
@@ -28,6 +67,7 @@ export const chartPresets: Record<ChartPresetName, Preset<ChartData>> = {
       showLegend: true,
       showGrid: true,
     } satisfies ChartData,
+    generateExampleCode: generateChartCode,
   },
   performance: {
     description: "Line chart with system metrics",
@@ -51,6 +91,7 @@ export const chartPresets: Record<ChartPresetName, Preset<ChartData>> = {
       showLegend: true,
       showGrid: true,
     } satisfies ChartData,
+    generateExampleCode: generateChartCode,
   },
   minimal: {
     description: "Simple bar chart without title or legend",
@@ -65,5 +106,6 @@ export const chartPresets: Record<ChartPresetName, Preset<ChartData>> = {
       xKey: "category",
       series: [{ key: "value", label: "Value" }],
     } satisfies ChartData,
+    generateExampleCode: generateChartCode,
   },
 };

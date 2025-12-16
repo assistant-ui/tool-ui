@@ -5,40 +5,15 @@ import {
   ItemGroup,
   ItemTitle,
 } from "@/components/ui/item";
-import { chartPresets } from "@/lib/presets/chart";
-import { codeBlockPresets } from "@/lib/presets/code-block";
-import { dataTablePresets } from "@/lib/presets/data-table";
-import { mediaCardPresets } from "@/lib/presets/media-card";
-import { optionListPresets } from "@/lib/presets/option-list";
-import { planPresets } from "@/lib/presets/plan";
-import { terminalPresets } from "@/lib/presets/terminal";
-import type { Preset } from "@/lib/presets/types";
+import { type ComponentId, previewConfigs } from "@/lib/docs/preview-config";
 import { cn } from "@/lib/ui/cn";
-
-type PresetMap = Record<string, Preset<unknown>>;
-
-const PRESET_REGISTRY: Record<string, PresetMap> = {
-  chart: chartPresets,
-  "code-block": codeBlockPresets,
-  "data-table": dataTablePresets,
-  "media-card": mediaCardPresets,
-  "option-list": optionListPresets,
-  plan: planPresets,
-  terminal: terminalPresets,
-};
-
-const DEFAULT_COMPONENT = "option-list";
-
-function getPresets(componentId: string): PresetMap {
-  return PRESET_REGISTRY[componentId] ?? PRESET_REGISTRY[DEFAULT_COMPONENT];
-}
 
 function formatPresetName(preset: string): string {
   return preset.replaceAll("-", " ").replaceAll("_", " ");
 }
 
 interface PresetSelectorProps {
-  componentId: string;
+  componentId: ComponentId;
   currentPreset: string;
   onSelectPreset: (preset: string) => void;
 }
@@ -48,7 +23,8 @@ export function PresetSelector({
   currentPreset,
   onSelectPreset,
 }: PresetSelectorProps) {
-  const presets = getPresets(componentId);
+  const config = previewConfigs[componentId];
+  const presets = config.presets;
   const presetNames = Object.keys(presets);
 
   return (

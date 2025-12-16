@@ -1,9 +1,38 @@
 import type { SerializablePlan } from "@/components/tool-ui/plan";
-import type { Preset } from "./types";
+import type { PresetWithCodeGen } from "./types";
 
 export type PlanPresetName = "simple" | "comprehensive" | "mixed_states" | "all_complete";
 
-export const planPresets: Record<PlanPresetName, Preset<SerializablePlan>> = {
+function escape(value: string): string {
+  return value.replace(/\\/g, "\\\\").replace(/"/g, '\\"');
+}
+
+function generatePlanCode(data: SerializablePlan): string {
+  const props: string[] = [];
+
+  props.push(`  id="${data.id}"`);
+  props.push(`  title="${escape(data.title)}"`);
+
+  if (data.description) {
+    props.push(`  description="${escape(data.description)}"`);
+  }
+
+  props.push(
+    `  todos={${JSON.stringify(data.todos, null, 4).replace(/\n/g, "\n  ")}}`,
+  );
+
+  if (data.maxVisibleTodos) {
+    props.push(`  maxVisibleTodos={${data.maxVisibleTodos}}`);
+  }
+
+  if (data.showProgress === false) {
+    props.push(`  showProgress={false}`);
+  }
+
+  return `<Plan\n${props.join("\n")}\n/>`;
+}
+
+export const planPresets: Record<PlanPresetName, PresetWithCodeGen<SerializablePlan>> = {
   simple: {
     description: "A minimal plan with 3 todos (no progress bar)",
     data: {
@@ -17,6 +46,7 @@ export const planPresets: Record<PlanPresetName, Preset<SerializablePlan>> = {
         { id: "3", label: "Run the app", status: "pending" },
       ],
     } satisfies SerializablePlan,
+    generateExampleCode: generatePlanCode,
   },
   comprehensive: {
     description: "Detailed plan with descriptions and progress bar",
@@ -57,6 +87,7 @@ export const planPresets: Record<PlanPresetName, Preset<SerializablePlan>> = {
         { id: "8", label: "Deploy to staging", status: "pending" },
       ],
     } satisfies SerializablePlan,
+    generateExampleCode: generatePlanCode,
   },
   mixed_states: {
     description: "All 4 status states with expandable details",
@@ -81,6 +112,7 @@ export const planPresets: Record<PlanPresetName, Preset<SerializablePlan>> = {
         { id: "5", label: "Switch DNS records", status: "pending" },
       ],
     } satisfies SerializablePlan,
+    generateExampleCode: generatePlanCode,
   },
   all_complete: {
     description: "Completion celebration state",
@@ -95,5 +127,6 @@ export const planPresets: Record<PlanPresetName, Preset<SerializablePlan>> = {
         { id: "4", label: "Update status page", status: "completed" },
       ],
     } satisfies SerializablePlan,
+    generateExampleCode: generatePlanCode,
   },
 };

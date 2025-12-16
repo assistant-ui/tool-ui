@@ -1,5 +1,5 @@
 import type { SerializableOptionList } from "@/components/tool-ui/option-list";
-import type { Preset } from "./types";
+import type { PresetWithCodeGen } from "./types";
 
 export type OptionListPresetName =
   | "export"
@@ -15,10 +15,43 @@ export type OptionListPresetName =
   | "ranking"
   | "edgeCases";
 
-export const optionListPresets: Record<
-  OptionListPresetName,
-  Preset<SerializableOptionList>
-> = {
+function generateOptionListCode(data: SerializableOptionList): string {
+  const props: string[] = [];
+
+  props.push(
+    `  options={${JSON.stringify(data.options, null, 4).replace(/\n/g, "\n  ")}}`,
+  );
+
+  if (data.selectionMode && data.selectionMode !== "multi") {
+    props.push(`  selectionMode="${data.selectionMode}"`);
+  }
+
+  if (data.minSelections && data.minSelections !== 1) {
+    props.push(`  minSelections={${data.minSelections}}`);
+  }
+
+  if (data.maxSelections) {
+    props.push(`  maxSelections={${data.maxSelections}}`);
+  }
+
+  if (data.confirmed) {
+    props.push(`  confirmed="${data.confirmed}"`);
+  }
+
+  if (data.responseActions) {
+    props.push(
+      `  responseActions={${JSON.stringify(data.responseActions, null, 4).replace(/\n/g, "\n  ")}}`,
+    );
+  }
+
+  props.push(
+    `  onConfirm={(selection) => {\n    console.log("Selection:", selection);\n  }}`,
+  );
+
+  return `<OptionList\n${props.join("\n")}\n/>`;
+}
+
+export const optionListPresets: Record<OptionListPresetName, PresetWithCodeGen<SerializableOptionList>> = {
   export: {
     description: "Pick two (you can't have all three)",
     data: {
@@ -36,6 +69,7 @@ export const optionListPresets: Record<
         { id: "confirm", label: "Confirm", variant: "default" },
       ],
     } satisfies SerializableOptionList,
+    generateExampleCode: generateOptionListCode,
   },
   travel: {
     description: "Single-select with radio styling",
@@ -60,6 +94,7 @@ export const optionListPresets: Record<
         { id: "confirm", label: "Continue", variant: "default" },
       ],
     } satisfies SerializableOptionList,
+    generateExampleCode: generateOptionListCode,
   },
   notifications: {
     description: "Multi-select with reset/confirm",
@@ -79,6 +114,7 @@ export const optionListPresets: Record<
         { id: "confirm", label: "Save", variant: "default" },
       ],
     } satisfies SerializableOptionList,
+    generateExampleCode: generateOptionListCode,
   },
   receipt: {
     description: "Confirmed selection (receipt state)",
@@ -100,6 +136,7 @@ export const optionListPresets: Record<
       selectionMode: "single",
       confirmed: "drive",
     } satisfies SerializableOptionList,
+    generateExampleCode: generateOptionListCode,
   },
   actions: {
     description: "Response actions with confirmation pattern",
@@ -134,6 +171,7 @@ export const optionListPresets: Record<
         },
       ],
     } satisfies SerializableOptionList,
+    generateExampleCode: generateOptionListCode,
   },
   approval: {
     description: "Release checklist (all items required)",
@@ -173,6 +211,7 @@ export const optionListPresets: Record<
         },
       ],
     } satisfies SerializableOptionList,
+    generateExampleCode: generateOptionListCode,
   },
   priority: {
     description: "Bug priority levels with impact descriptions",
@@ -206,6 +245,7 @@ export const optionListPresets: Record<
         { id: "set", label: "Set Priority", variant: "default" },
       ],
     } satisfies SerializableOptionList,
+    generateExampleCode: generateOptionListCode,
   },
   wizard: {
     description: "Step navigation with back/next",
@@ -234,6 +274,7 @@ export const optionListPresets: Record<
         { id: "next", label: "Next Step", variant: "default" },
       ],
     } satisfies SerializableOptionList,
+    generateExampleCode: generateOptionListCode,
   },
   destructive: {
     description: "Delete confirmation with safeguards",
@@ -267,6 +308,7 @@ export const optionListPresets: Record<
         },
       ],
     } satisfies SerializableOptionList,
+    generateExampleCode: generateOptionListCode,
   },
   settings: {
     description: "User preferences toggles",
@@ -300,6 +342,7 @@ export const optionListPresets: Record<
         { id: "save", label: "Save Preferences", variant: "default" },
       ],
     } satisfies SerializableOptionList,
+    generateExampleCode: generateOptionListCode,
   },
   ranking: {
     description: "Ordered choice selection",
@@ -328,6 +371,7 @@ export const optionListPresets: Record<
         { id: "submit", label: "Submit Vote", variant: "default" },
       ],
     } satisfies SerializableOptionList,
+    generateExampleCode: generateOptionListCode,
   },
   edgeCases: {
     description: "Disabled options, long text, missing descriptions",
@@ -361,5 +405,6 @@ export const optionListPresets: Record<
         { id: "confirm", label: "Confirm", variant: "default" },
       ],
     } satisfies SerializableOptionList,
+    generateExampleCode: generateOptionListCode,
   },
 };

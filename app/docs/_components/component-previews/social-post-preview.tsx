@@ -171,7 +171,6 @@ export function SocialPostPreview() {
   const [currentPlatform, setCurrentPlatform] =
     useState<Platform>(initialPlatform);
   const [currentPreset, setCurrentPreset] = useState<PresetName>(initialPreset);
-  const [isLoading, _setIsLoading] = useState(false);
 
   useEffect(() => {
     if (
@@ -217,10 +216,56 @@ export function SocialPostPreview() {
     [currentPlatform, updateUrl],
   );
 
+  const previewContent = (
+    <div className="mx-auto w-full max-w-[500px]">
+      {currentPlatform === "x" && (
+        <XPost
+          post={xPostPresets[currentPreset as XPostPresetName].data.post}
+          responseActions={
+            xPostPresets[currentPreset as XPostPresetName].data.responseActions
+          }
+          onAction={(action, post) => console.log("X action:", action, post.id)}
+          onResponseAction={(id) => alert(`Response action: ${id}`)}
+        />
+      )}
+      {currentPlatform === "instagram" && (
+        <InstagramPost
+          post={
+            instagramPostPresets[currentPreset as InstagramPostPresetName].data
+              .post
+          }
+          responseActions={
+            instagramPostPresets[currentPreset as InstagramPostPresetName].data
+              .responseActions
+          }
+          onAction={(action, post) =>
+            console.log("Instagram action:", action, post.id)
+          }
+          onResponseAction={(id) => alert(`Response action: ${id}`)}
+        />
+      )}
+      {currentPlatform === "linkedin" && (
+        <LinkedInPost
+          post={
+            linkedInPostPresets[currentPreset as LinkedInPostPresetName].data
+              .post
+          }
+          responseActions={
+            linkedInPostPresets[currentPreset as LinkedInPostPresetName].data
+              .responseActions
+          }
+          onAction={(action, post) =>
+            console.log("LinkedIn action:", action, post.id)
+          }
+          onResponseAction={(id) => alert(`Response action: ${id}`)}
+        />
+      )}
+    </div>
+  );
+
   return (
     <ComponentPreviewShell
-      isLoading={isLoading}
-      presetSelector={
+      sidebar={
         <>
           <PlatformSelector
             currentPlatform={currentPlatform}
@@ -233,60 +278,13 @@ export function SocialPostPreview() {
           />
         </>
       }
-      renderPreview={() => (
-        <div className="mx-auto w-full max-w-[500px]">
-          {currentPlatform === "x" && (
-            <XPost
-              post={xPostPresets[currentPreset as XPostPresetName].data.post}
-              responseActions={
-                xPostPresets[currentPreset as XPostPresetName].data
-                  .responseActions
-              }
-              onAction={(action, post) =>
-                console.log("X action:", action, post.id)
-              }
-              onResponseAction={(id) => alert(`Response action: ${id}`)}
-            />
-          )}
-          {currentPlatform === "instagram" && (
-            <InstagramPost
-              post={
-                instagramPostPresets[currentPreset as InstagramPostPresetName]
-                  .data.post
-              }
-              responseActions={
-                instagramPostPresets[currentPreset as InstagramPostPresetName]
-                  .data.responseActions
-              }
-              onAction={(action, post) =>
-                console.log("Instagram action:", action, post.id)
-              }
-              onResponseAction={(id) => alert(`Response action: ${id}`)}
-            />
-          )}
-          {currentPlatform === "linkedin" && (
-            <LinkedInPost
-              post={
-                linkedInPostPresets[currentPreset as LinkedInPostPresetName]
-                  .data.post
-              }
-              responseActions={
-                linkedInPostPresets[currentPreset as LinkedInPostPresetName]
-                  .data.responseActions
-              }
-              onAction={(action, post) =>
-                console.log("LinkedIn action:", action, post.id)
-              }
-              onResponseAction={(id) => alert(`Response action: ${id}`)}
-            />
-          )}
-        </div>
-      )}
-      renderCodePanel={(_isLoading, _onCodeChange) => (
+      preview={previewContent}
+      codePanel={
         <div className="text-muted-foreground flex h-full items-center justify-center">
           Code panel coming soon
         </div>
-      )}
+      }
+      code=""
     />
   );
 }

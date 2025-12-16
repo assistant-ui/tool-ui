@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Content from "./content.mdx";
 import { ComponentDocsTabs } from "../_components/component-docs-tabs";
-import { PlanPreview } from "../_components/component-previews/plan-preview";
+import { ComponentPreview } from "../_components/component-preview";
 
 export const metadata: Metadata = {
   title: "Plan",
@@ -10,6 +10,9 @@ export const metadata: Metadata = {
 
 export default function PlanDocsPage() {
   return (
-    <ComponentDocsTabs docs={<Content />} examples={<PlanPreview />} />
+    <ComponentDocsTabs
+      docs={<Content />}
+      examples={<ComponentPreview componentId="plan" />}
+    />
   );
 }

@@ -1,6 +1,6 @@
 import type { Column, RowPrimitive } from "@/components/tool-ui/data-table";
 import type { SerializableAction } from "@/components/tool-ui/shared";
-import type { Preset } from "./types";
+import type { PresetWithCodeGen } from "./types";
 
 type GenericRow = Record<string, RowPrimitive>;
 
@@ -16,6 +16,51 @@ export interface DataTableData {
   emptyMessage?: string;
   locale?: string;
   responseActions?: SerializableAction[];
+}
+
+function generateDataTableCode(data: DataTableData): string {
+  const props: string[] = [];
+
+  props.push(
+    `  columns={${JSON.stringify(data.columns, null, 4).replace(/\n/g, "\n  ")}}`,
+  );
+
+  props.push(
+    `  data={${JSON.stringify(data.data, null, 4).replace(/\n/g, "\n  ")}}`,
+  );
+
+  if (data.rowIdKey) {
+    props.push(`  rowIdKey="${data.rowIdKey}"`);
+  }
+
+  if (data.defaultSort) {
+    props.push(
+      `  defaultSort={${JSON.stringify(data.defaultSort, null, 4).replace(/\n/g, "\n  ")}}`,
+    );
+  }
+
+  if (data.emptyMessage && data.emptyMessage !== "No data available") {
+    props.push(`  emptyMessage="${data.emptyMessage}"`);
+  }
+
+  if (data.maxHeight) {
+    props.push(`  maxHeight="${data.maxHeight}"`);
+  }
+
+  if (data.locale) {
+    props.push(`  locale="${data.locale}"`);
+  }
+
+  if (data.responseActions && data.responseActions.length > 0) {
+    props.push(
+      `  responseActions={${JSON.stringify(data.responseActions, null, 4).replace(/\n/g, "\n  ")}}`,
+    );
+    props.push(
+      `  onResponseAction={(actionId) => console.log("Action:", actionId)}`,
+    );
+  }
+
+  return `<DataTable\n${props.join("\n")}\n/>`;
 }
 
 const stockColumns: Column<GenericRow>[] = [
@@ -87,7 +132,7 @@ const actionsData: GenericRow[] = [
 
 export type DataTablePresetName = "stocks" | "tasks" | "resources" | "actions";
 
-export const dataTablePresets: Record<DataTablePresetName, Preset<DataTableData>> = {
+export const dataTablePresets: Record<DataTablePresetName, PresetWithCodeGen<DataTableData>> = {
   stocks: {
     description: "Market data with currency, delta, and percent formatting",
     data: {
@@ -96,6 +141,7 @@ export const dataTablePresets: Record<DataTablePresetName, Preset<DataTableData>
       data: stockData,
       rowIdKey: "symbol",
     },
+    generateExampleCode: generateDataTableCode,
   },
   tasks: {
     description: "Status pills, boolean badges, and multiple date formats",
@@ -105,6 +151,7 @@ export const dataTablePresets: Record<DataTablePresetName, Preset<DataTableData>
       data: taskData,
       rowIdKey: "title",
     },
+    generateExampleCode: generateDataTableCode,
   },
   resources: {
     description: "External and internal links, tag arrays, badges, and relative dates",
@@ -114,6 +161,7 @@ export const dataTablePresets: Record<DataTablePresetName, Preset<DataTableData>
       data: resourceData,
       rowIdKey: "name",
     },
+    generateExampleCode: generateDataTableCode,
   },
   actions: {
     description: "Support queue with response actions and wait time indicators",
@@ -129,5 +177,6 @@ export const dataTablePresets: Record<DataTablePresetName, Preset<DataTableData>
         { id: "assign", label: "Assign to me", variant: "default" },
       ],
     },
+    generateExampleCode: generateDataTableCode,
   },
 };

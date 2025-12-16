@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Content from "./content.mdx";
 import { ComponentDocsTabs } from "../_components/component-docs-tabs";
-import { DataTablePreview } from "../_components/component-previews/data-table-preview";
+import { ComponentPreview } from "../_components/component-preview";
 
 export const metadata: Metadata = {
   title: "Data Table",
@@ -10,6 +10,9 @@ export const metadata: Metadata = {
 
 export default function DataTableDocsPage() {
   return (
-    <ComponentDocsTabs docs={<Content />} examples={<DataTablePreview />} />
+    <ComponentDocsTabs
+      docs={<Content />}
+      examples={<ComponentPreview componentId="data-table" />}
+    />
   );
 }

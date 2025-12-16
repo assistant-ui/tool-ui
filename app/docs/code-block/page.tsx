@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Content from "./content.mdx";
 import { ComponentDocsTabs } from "../_components/component-docs-tabs";
-import { CodeBlockPreview } from "../_components/component-previews/code-block-preview";
+import { ComponentPreview } from "../_components/component-preview";
 
 export const metadata: Metadata = {
   title: "Code Block",
@@ -10,6 +10,9 @@ export const metadata: Metadata = {
 
 export default function CodeBlockDocsPage() {
   return (
-    <ComponentDocsTabs docs={<Content />} examples={<CodeBlockPreview />} />
+    <ComponentDocsTabs
+      docs={<Content />}
+      examples={<ComponentPreview componentId="code-block" />}
+    />
   );
 }

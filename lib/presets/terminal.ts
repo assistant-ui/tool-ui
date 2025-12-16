@@ -1,9 +1,47 @@
 import type { SerializableTerminal } from "@/components/tool-ui/terminal";
-import type { Preset } from "./types";
+import type { PresetWithCodeGen } from "./types";
 
 export type TerminalPresetName = "success" | "error" | "build" | "ansiColors" | "collapsible" | "noOutput";
 
-export const terminalPresets: Record<TerminalPresetName, Preset<SerializableTerminal>> = {
+function escape(value: string): string {
+  return value.replace(/\\/g, "\\\\").replace(/"/g, '\\"').replace(/`/g, "\\`");
+}
+
+function generateTerminalCode(data: SerializableTerminal): string {
+  const props: string[] = [];
+
+  props.push(`  command="${escape(data.command)}"`);
+
+  if (data.stdout) {
+    props.push(`  stdout={\`${escape(data.stdout)}\`}`);
+  }
+
+  if (data.stderr) {
+    props.push(`  stderr={\`${escape(data.stderr)}\`}`);
+  }
+
+  props.push(`  exitCode={${data.exitCode}}`);
+
+  if (data.durationMs !== undefined) {
+    props.push(`  durationMs={${data.durationMs}}`);
+  }
+
+  if (data.cwd) {
+    props.push(`  cwd="${data.cwd}"`);
+  }
+
+  if (data.truncated) {
+    props.push(`  truncated={${data.truncated}}`);
+  }
+
+  if (data.maxCollapsedLines) {
+    props.push(`  maxCollapsedLines={${data.maxCollapsedLines}}`);
+  }
+
+  return `<Terminal\n${props.join("\n")}\n/>`;
+}
+
+export const terminalPresets: Record<TerminalPresetName, PresetWithCodeGen<SerializableTerminal>> = {
   success: {
     description: "Successful test run with duration",
     data: {
@@ -21,6 +59,7 @@ Test Files  3 passed (3)
       durationMs: 312,
       cwd: "~/project",
     } satisfies SerializableTerminal,
+    generateExampleCode: generateTerminalCode,
   },
   error: {
     description: "Failed build with TypeScript error",
@@ -40,6 +79,7 @@ Found 1 error in src/utils.ts:23`,
       durationMs: 1523,
       cwd: "~/project",
     } satisfies SerializableTerminal,
+    generateExampleCode: generateTerminalCode,
   },
   build: {
     description: "Docker build output",
@@ -64,6 +104,7 @@ Successfully built image myapp:latest`,
       exitCode: 0,
       durationMs: 45200,
     } satisfies SerializableTerminal,
+    generateExampleCode: generateTerminalCode,
   },
   ansiColors: {
     description: "ANSI colored lint output",
@@ -80,6 +121,7 @@ Successfully built image myapp:latest`,
       exitCode: 0,
       durationMs: 2341,
     } satisfies SerializableTerminal,
+    generateExampleCode: generateTerminalCode,
   },
   collapsible: {
     description: "Long output with collapse",
@@ -94,6 +136,7 @@ Successfully built image myapp:latest`,
       durationMs: 3200,
       maxCollapsedLines: 8,
     } satisfies SerializableTerminal,
+    generateExampleCode: generateTerminalCode,
   },
   noOutput: {
     description: "Command with no output",
@@ -104,5 +147,6 @@ Successfully built image myapp:latest`,
       durationMs: 12,
       cwd: "~/project",
     } satisfies SerializableTerminal,
+    generateExampleCode: generateTerminalCode,
   },
 };

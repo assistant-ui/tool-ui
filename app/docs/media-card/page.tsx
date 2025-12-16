@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Content from "./content.mdx";
 import { ComponentDocsTabs } from "../_components/component-docs-tabs";
-import { MediaCardPreview } from "../_components/component-previews/media-card-preview";
+import { ComponentPreview } from "../_components/component-preview";
 
 export const metadata: Metadata = {
   title: "Media Card",
@@ -10,6 +10,9 @@ export const metadata: Metadata = {
 
 export default function MediaCardDocsPage() {
   return (
-    <ComponentDocsTabs docs={<Content />} examples={<MediaCardPreview />} />
+    <ComponentDocsTabs
+      docs={<Content />}
+      examples={<ComponentPreview componentId="media-card" />}
+    />
   );
 }
