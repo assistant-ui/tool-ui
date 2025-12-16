@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState, useEffect, useCallback } from "react";
-import { cn, Button, Card, ChevronLeft, ChevronRight } from "./_ui";
+import { cn, Button, Card, ChevronLeft, ChevronRight } from "./_adapter";
 import { ProductCard } from "./product-card";
 import { prefersReducedMotion } from "../shared/utils";
 import type { ProductListProps } from "./schema";

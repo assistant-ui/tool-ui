@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { cn, Button, Card } from "./_ui";
+import { cn, Button, Card } from "./_adapter";
 import type { Product } from "./schema";
 
 interface ProductCardProps {

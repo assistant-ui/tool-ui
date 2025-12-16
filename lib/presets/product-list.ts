@@ -1,11 +1,28 @@
 import type { SerializableProductList } from "@/components/tool-ui/product-list";
-import type { Preset } from "./types";
+import type { PresetWithCodeGen } from "./types";
 
 export type ProductListPresetName = "keyboards" | "headphones" | "minimal";
 
+function generateProductListCode(data: SerializableProductList): string {
+  const props: string[] = [];
+
+  props.push(`  id="${data.id}"`);
+  props.push(
+    `  products={${JSON.stringify(data.products, null, 4).replace(/\n/g, "\n  ")}}`,
+  );
+  props.push(
+    `  onProductClick={(productId) => console.log("Clicked:", productId)}`,
+  );
+  props.push(
+    `  onProductAction={(productId, actionId) => console.log("Action:", productId, actionId)}`,
+  );
+
+  return `<ProductList\n${props.join("\n")}\n/>`;
+}
+
 export const productListPresets: Record<
   ProductListPresetName,
-  Preset<SerializableProductList>
+  PresetWithCodeGen<SerializableProductList>
 > = {
   keyboards: {
     description: "Mechanical keyboards for comparison shopping",
@@ -37,10 +54,7 @@ export const productListPresets: Record<
           name: "Ducky One 3",
           price: "$129.00",
           image: "https://placehold.co/300x400/0f3460/ffffff?text=Ducky+One",
-          available: false,
-          actions: [
-            { id: "notify", label: "Notify Me" },
-          ],
+          actions: [{ id: "notify", label: "Notify Me" }],
         },
         {
           id: "kb-4",
@@ -74,6 +88,7 @@ export const productListPresets: Record<
         },
       ],
     } satisfies SerializableProductList,
+    generateExampleCode: generateProductListCode,
   },
   headphones: {
     description: "Audio gear comparison for music lovers",
@@ -105,10 +120,7 @@ export const productListPresets: Record<
           name: "Apple AirPods Max",
           price: "$549.00",
           image: "https://placehold.co/300x400/4a235a/ffffff?text=AirPods",
-          available: false,
-          actions: [
-            { id: "notify", label: "Notify Me" },
-          ],
+          actions: [{ id: "notify", label: "Notify Me" }],
         },
         {
           id: "hp-4",
@@ -132,6 +144,7 @@ export const productListPresets: Record<
         },
       ],
     } satisfies SerializableProductList,
+    generateExampleCode: generateProductListCode,
   },
   minimal: {
     description: "Simple 3-product showcase",
@@ -161,5 +174,6 @@ export const productListPresets: Record<
         },
       ],
     } satisfies SerializableProductList,
+    generateExampleCode: generateProductListCode,
   },
 };

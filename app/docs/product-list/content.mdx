@@ -6,12 +6,6 @@ A horizontal carousel for displaying products in comparison shopping scenarios. 
 
 <ProductListPresetExample preset="keyboards" />
 
-## Out of Stock State
-
-Products with `available: false` display a visual "Out of Stock" indicator while remaining interactive. This lets users still view details or request notifications.
-
-<ProductListPresetExample preset="headphones" />
-
 ## When to Use Product List
 
 - **Good for:** Product comparisons, shopping recommendations, featured items
@@ -98,7 +92,6 @@ const searchProducts = tool({
         name: p.name,
         price: `$${p.price.toFixed(2)}`,
         image: p.imageUrl,
-        available: p.inStock,
         actions: [
           { id: "view", label: "View Details" },
           { id: "cart", label: "Add to Cart", variant: "default" },
@@ -180,11 +173,6 @@ export const SearchProductsUI = makeAssistantToolUI({
       description: "Product image URL",
       type: "string (URL)",
       required: true,
-    },
-    available: {
-      description: "Product availability",
-      type: "boolean",
-      default: "true",
     },
     actions: {
       description: "Action buttons for this product",

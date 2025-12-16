@@ -9,6 +9,7 @@ import { DataTable } from "@/components/tool-ui/data-table";
 import { MediaCard } from "@/components/tool-ui/media-card";
 import { OptionList } from "@/components/tool-ui/option-list";
 import { Plan } from "@/components/tool-ui/plan";
+import { ProductList } from "@/components/tool-ui/product-list";
 import { Terminal } from "@/components/tool-ui/terminal";
 
 import { chartPresets, type ChartPresetName } from "@/lib/presets/chart";
@@ -17,6 +18,7 @@ import { dataTablePresets, type DataTablePresetName, type SortState } from "@/li
 import { mediaCardPresets, type MediaCardPresetName } from "@/lib/presets/media-card";
 import { optionListPresets, type OptionListPresetName } from "@/lib/presets/option-list";
 import { planPresets, type PlanPresetName } from "@/lib/presets/plan";
+import { productListPresets, type ProductListPresetName } from "@/lib/presets/product-list";
 import { terminalPresets, type TerminalPresetName } from "@/lib/presets/terminal";
 
 export type ComponentId =
@@ -26,6 +28,7 @@ export type ComponentId =
   | "media-card"
   | "option-list"
   | "plan"
+  | "product-list"
   | "terminal";
 
 export interface PreviewConfig<TData, TPresetName extends string> {
@@ -116,6 +119,17 @@ export const previewConfigs: Record<ComponentId, PreviewConfig<unknown, string>>
     presets: planPresets as Record<string, PresetWithCodeGen<unknown>>,
     defaultPreset: "simple" satisfies PlanPresetName,
     renderComponent: ({ data }) => <Plan {...(data as Parameters<typeof Plan>[0])} />,
+  },
+  "product-list": {
+    presets: productListPresets as Record<string, PresetWithCodeGen<unknown>>,
+    defaultPreset: "keyboards" satisfies ProductListPresetName,
+    renderComponent: ({ data }) => (
+      <ProductList
+        {...(data as Parameters<typeof ProductList>[0])}
+        onProductClick={(productId) => console.log("Product clicked:", productId)}
+        onProductAction={(productId, actionId) => console.log("Product action:", productId, actionId)}
+      />
+    ),
   },
   terminal: {
     presets: terminalPresets as Record<string, PresetWithCodeGen<unknown>>,
