@@ -22,7 +22,7 @@ import {
   PLAN_TODO_LABELS,
   CODE_BLOCK_DATA,
   OPTION_LIST_OPTIONS,
-} from "./chat-showcase-data";
+} from "@/lib/mocks/chat-showcase-data";
 
 const TIMING = {
   durations: {
