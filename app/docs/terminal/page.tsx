@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Content from "./content.mdx";
 import { ComponentDocsTabs } from "../_components/component-docs-tabs";
-import { TerminalPreview } from "../[component]/previews/terminal-preview";
+import { TerminalPreview } from "../_components/component-previews/terminal-preview";
 
 export const metadata: Metadata = {
   title: "Terminal",

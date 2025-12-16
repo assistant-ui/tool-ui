@@ -2,8 +2,8 @@
 
 import { useCallback, useState } from "react";
 import { ComponentPreviewShell } from "../component-preview-shell";
-import { PresetSelector } from "../../_components/preset-selector";
-import { CodePanel } from "../../_components/code-panel";
+import { PresetSelector } from "../preset-selector";
+import { CodePanel } from "../code-panel";
 import { CodeBlock } from "@/components/tool-ui/code-block";
 import { type CodeBlockPresetName, codeBlockPresets } from "@/lib/presets/code-block";
 import { usePresetParam } from "@/hooks/use-preset-param";

@@ -2,24 +2,24 @@
 
 import { useState } from "react";
 import { ComponentPreviewShell } from "../component-preview-shell";
-import { PresetSelector } from "../../_components/preset-selector";
-import { CodePanel } from "../../_components/code-panel";
-import { Chart } from "@/components/tool-ui/chart";
-import { type ChartPresetName, chartPresets } from "@/lib/presets/chart";
+import { PresetSelector } from "../preset-selector";
+import { CodePanel } from "../code-panel";
+import { Plan } from "@/components/tool-ui/plan";
+import { type PlanPresetName, planPresets } from "@/lib/presets/plan";
 import { usePresetParam } from "@/hooks/use-preset-param";
 
-export function ChartPreview() {
-  const { currentPreset, setPreset } = usePresetParam<ChartPresetName>({
-    presets: chartPresets,
-    defaultPreset: "revenue",
+export function PlanPreview() {
+  const { currentPreset, setPreset } = usePresetParam<PlanPresetName>({
+    presets: planPresets,
+    defaultPreset: "comprehensive",
   });
 
   const [isLoading, setIsLoading] = useState(false);
 
-  const currentData = chartPresets[currentPreset].data;
+  const currentData = planPresets[currentPreset].data;
 
   const handleSelectPreset = (preset: unknown) => {
-    setPreset(preset as ChartPresetName);
+    setPreset(preset as PlanPresetName);
     setIsLoading(false);
   };
 
@@ -28,19 +28,21 @@ export function ChartPreview() {
       isLoading={isLoading}
       presetSelector={
         <PresetSelector
-          componentId="chart"
+          componentId="plan"
           currentPreset={currentPreset}
           onSelectPreset={handleSelectPreset}
         />
       }
       renderPreview={(_isLoading) => (
-        <Chart id={`chart-${currentPreset}`} {...currentData} />
+        <div className="mx-auto w-full max-w-xl">
+          <Plan {...currentData} id="plan-preview" />
+        </div>
       )}
       renderCodePanel={(_isLoading, onCodeChange) => (
         <CodePanel
           className="h-full w-full"
-          componentId="chart"
-          chartPreset={currentPreset}
+          componentId="plan"
+          planPreset={currentPreset}
           mode="plain"
           onCodeChange={onCodeChange}
         />

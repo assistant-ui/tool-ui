@@ -2,8 +2,8 @@
 
 import { useCallback, useState } from "react";
 import { ComponentPreviewShell } from "../component-preview-shell";
-import { PresetSelector } from "../../_components/preset-selector";
-import { CodePanel } from "../../_components/code-panel";
+import { PresetSelector } from "../preset-selector";
+import { CodePanel } from "../code-panel";
 import { Terminal } from "@/components/tool-ui/terminal";
 import {
   type TerminalPresetName,

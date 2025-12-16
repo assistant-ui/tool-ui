@@ -2,8 +2,8 @@
 
 import { useRef, useState } from "react";
 import { ComponentPreviewShell } from "../component-preview-shell";
-import { PresetSelector } from "../../_components/preset-selector";
-import { CodePanel } from "../../_components/code-panel";
+import { PresetSelector } from "../preset-selector";
+import { CodePanel } from "../code-panel";
 import { OptionList } from "@/components/tool-ui/option-list";
 import { type OptionListPresetName, optionListPresets } from "@/lib/presets/option-list";
 import { usePresetParam } from "@/hooks/use-preset-param";

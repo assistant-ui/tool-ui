@@ -2,24 +2,24 @@
 
 import { useState } from "react";
 import { ComponentPreviewShell } from "../component-preview-shell";
-import { PresetSelector } from "../../_components/preset-selector";
-import { CodePanel } from "../../_components/code-panel";
-import { Plan } from "@/components/tool-ui/plan";
-import { type PlanPresetName, planPresets } from "@/lib/presets/plan";
+import { PresetSelector } from "../preset-selector";
+import { CodePanel } from "../code-panel";
+import { Chart } from "@/components/tool-ui/chart";
+import { type ChartPresetName, chartPresets } from "@/lib/presets/chart";
 import { usePresetParam } from "@/hooks/use-preset-param";
 
-export function PlanPreview() {
-  const { currentPreset, setPreset } = usePresetParam<PlanPresetName>({
-    presets: planPresets,
-    defaultPreset: "comprehensive",
+export function ChartPreview() {
+  const { currentPreset, setPreset } = usePresetParam<ChartPresetName>({
+    presets: chartPresets,
+    defaultPreset: "revenue",
   });
 
   const [isLoading, setIsLoading] = useState(false);
 
-  const currentData = planPresets[currentPreset].data;
+  const currentData = chartPresets[currentPreset].data;
 
   const handleSelectPreset = (preset: unknown) => {
-    setPreset(preset as PlanPresetName);
+    setPreset(preset as ChartPresetName);
     setIsLoading(false);
   };
 
@@ -28,21 +28,19 @@ export function PlanPreview() {
       isLoading={isLoading}
       presetSelector={
         <PresetSelector
-          componentId="plan"
+          componentId="chart"
           currentPreset={currentPreset}
           onSelectPreset={handleSelectPreset}
         />
       }
       renderPreview={(_isLoading) => (
-        <div className="mx-auto w-full max-w-xl">
-          <Plan {...currentData} id="plan-preview" />
-        </div>
+        <Chart id={`chart-${currentPreset}`} {...currentData} />
       )}
       renderCodePanel={(_isLoading, onCodeChange) => (
         <CodePanel
           className="h-full w-full"
-          componentId="plan"
-          planPreset={currentPreset}
+          componentId="chart"
+          chartPreset={currentPreset}
           mode="plain"
           onCodeChange={onCodeChange}
         />

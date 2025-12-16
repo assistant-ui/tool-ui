@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Content from "./content.mdx";
 import { ComponentDocsTabs } from "../_components/component-docs-tabs";
-import { ChartPreview } from "../[component]/previews/chart-preview";
+import { ChartPreview } from "../_components/component-previews/chart-preview";
 
 export const metadata: Metadata = {
   title: "Chart",

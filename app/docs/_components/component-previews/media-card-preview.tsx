@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import { ComponentPreviewShell } from "../component-preview-shell";
-import { PresetSelector } from "../../_components/preset-selector";
-import { CodePanel } from "../../_components/code-panel";
+import { PresetSelector } from "../preset-selector";
+import { CodePanel } from "../code-panel";
 import { MediaCard } from "@/components/tool-ui/media-card";
 import { type MediaCardPresetName, mediaCardPresets } from "@/lib/presets/media-card";
 import { usePresetParam } from "@/hooks/use-preset-param";

@@ -2,8 +2,8 @@
 
 import { useRef, useState } from "react";
 import { ComponentPreviewShell } from "../component-preview-shell";
-import { PresetSelector } from "../../_components/preset-selector";
-import { CodePanel } from "../../_components/code-panel";
+import { PresetSelector } from "../preset-selector";
+import { CodePanel } from "../code-panel";
 import { DataTable } from "@/components/tool-ui/data-table";
 import { type DataTablePresetName, dataTablePresets, type SortState } from "@/lib/presets/data-table";
 import { usePresetParam } from "@/hooks/use-preset-param";
