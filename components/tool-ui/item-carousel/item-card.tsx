@@ -2,28 +2,24 @@
 
 import * as React from "react";
 import { cn, Button, Card } from "./_adapter";
-import type { Product } from "./schema";
+import type { Item } from "./schema";
 
-interface ProductCardProps {
-  product: Product;
-  onProductClick?: (productId: string) => void;
-  onProductAction?: (productId: string, actionId: string) => void;
+interface ItemCardProps {
+  item: Item;
+  onItemClick?: (itemId: string) => void;
+  onItemAction?: (itemId: string, actionId: string) => void;
 }
 
-export function ProductCard({
-  product,
-  onProductClick,
-  onProductAction,
-}: ProductCardProps) {
-  const { id, name, price, image, color, actions } = product;
-  const isCardInteractive = typeof onProductClick === "function";
+export function ItemCard({ item, onItemClick, onItemAction }: ItemCardProps) {
+  const { id, name, subtitle, image, color, actions } = item;
+  const isCardInteractive = typeof onItemClick === "function";
 
   const handleCardClick = (e: React.MouseEvent) => {
     if (!isCardInteractive) return;
     if ((e.target as HTMLElement).closest("button")) {
       return;
     }
-    onProductClick?.(id);
+    onItemClick?.(id);
   };
 
   const handleCardKeyDown = (e: React.KeyboardEvent) => {
@@ -31,14 +27,13 @@ export function ProductCard({
     if ((e.target as HTMLElement).closest("button")) return;
 
     if (e.key === " ") {
-      // Prevent the page from scrolling when the card is focused.
       e.preventDefault();
       return;
     }
 
     if (e.key === "Enter") {
       e.preventDefault();
-      onProductClick?.(id);
+      onItemClick?.(id);
     }
   };
 
@@ -48,19 +43,18 @@ export function ProductCard({
 
     if (e.key === " ") {
       e.preventDefault();
-      onProductClick?.(id);
+      onItemClick?.(id);
     }
   };
 
   const handleActionClick = (actionId: string) => {
-    onProductAction?.(id, actionId);
+    onItemAction?.(id, actionId);
   };
 
   return (
     <Card
       className={cn(
-        "group relative flex w-[168px] shrink-0 flex-col gap-0 overflow-hidden p-0 @md:w-[180px] @lg:w-[200px]",
-        "transition-shadow",
+        "group @container/card relative flex w-44 flex-col gap-0 self-stretch overflow-clip p-0 @lg:w-56",
         isCardInteractive && "cursor-pointer hover:shadow",
         isCardInteractive &&
           "focus-visible:ring-ring focus-visible:ring-offset-background focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none",
@@ -68,14 +62,14 @@ export function ProductCard({
       )}
       role={isCardInteractive ? "button" : undefined}
       tabIndex={isCardInteractive ? 0 : undefined}
-      aria-label={isCardInteractive ? `View product: ${name}` : undefined}
+      aria-label={isCardInteractive ? `View item: ${name}` : undefined}
       onClick={isCardInteractive ? handleCardClick : undefined}
       onKeyDown={isCardInteractive ? handleCardKeyDown : undefined}
       onKeyUp={isCardInteractive ? handleCardKeyUp : undefined}
     >
       <div className="bg-muted relative aspect-square w-full overflow-hidden">
         {image ? (
-          // eslint-disable-next-line @next/next/no-img-element -- copy-standalone portability (Next/Image requires app-level config)
+          // eslint-disable-next-line @next/next/no-img-element
           <img
             src={image}
             alt={name}
@@ -100,18 +94,23 @@ export function ProductCard({
         )}
       </div>
 
-      <div className="flex flex-1 flex-col gap-2 p-3">
-        <h3 className="line-clamp-2 text-sm leading-tight font-medium">
-          {name}
-        </h3>
+      <div className="flex flex-1 flex-col gap-1 p-3">
+        <div className="flex flex-col gap-1">
+          <h3 className="line-clamp-2 text-sm leading-tight font-medium">
+            {name}
+          </h3>
 
-        <p className="text-foreground text-sm font-semibold">{price}</p>
+          {subtitle && (
+            <p className="text-muted-foreground line-clamp-1 text-sm">
+              {subtitle}
+            </p>
+          )}
+        </div>
 
         {actions && actions.length > 0 && (
           <div
             className={cn(
-              "mt-auto flex flex-wrap justify-end gap-2 pt-1",
-              actions.length === 1 && "[&>button]:flex-1",
+              "mt-auto flex flex-col-reverse gap-2 pt-2 @[176px]/card:flex-row",
             )}
           >
             {actions.map((action) => (
@@ -121,7 +120,7 @@ export function ProductCard({
                 variant={action.variant ?? "default"}
                 size="sm"
                 disabled={action.disabled}
-                className="h-7 min-w-0 flex-1 px-2 text-xs"
+                className="min-h-11 w-full px-3 md:min-h-8 @[176px]/card:h-8 @[176px]/card:w-auto @[176px]/card:flex-1"
                 onClick={(e) => {
                   e.stopPropagation();
                   handleActionClick(action.id);

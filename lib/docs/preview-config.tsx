@@ -6,29 +6,29 @@ import type { PresetWithCodeGen } from "@/lib/presets/types";
 import { Chart } from "@/components/tool-ui/chart";
 import { CodeBlock } from "@/components/tool-ui/code-block";
 import { DataTable } from "@/components/tool-ui/data-table";
+import { ItemCarousel } from "@/components/tool-ui/item-carousel";
 import { MediaCard } from "@/components/tool-ui/media-card";
 import { OptionList } from "@/components/tool-ui/option-list";
 import { Plan } from "@/components/tool-ui/plan";
-import { ProductList } from "@/components/tool-ui/product-list";
 import { Terminal } from "@/components/tool-ui/terminal";
 
 import { chartPresets, type ChartPresetName } from "@/lib/presets/chart";
 import { codeBlockPresets, type CodeBlockPresetName } from "@/lib/presets/code-block";
 import { dataTablePresets, type DataTablePresetName, type SortState } from "@/lib/presets/data-table";
+import { itemCarouselPresets, type ItemCarouselPresetName } from "@/lib/presets/item-carousel";
 import { mediaCardPresets, type MediaCardPresetName } from "@/lib/presets/media-card";
 import { optionListPresets, type OptionListPresetName } from "@/lib/presets/option-list";
 import { planPresets, type PlanPresetName } from "@/lib/presets/plan";
-import { productListPresets, type ProductListPresetName } from "@/lib/presets/product-list";
 import { terminalPresets, type TerminalPresetName } from "@/lib/presets/terminal";
 
 export type ComponentId =
   | "chart"
   | "code-block"
   | "data-table"
+  | "item-carousel"
   | "media-card"
   | "option-list"
   | "plan"
-  | "product-list"
   | "terminal";
 
 export interface PreviewConfig<TData, TPresetName extends string> {
@@ -120,14 +120,14 @@ export const previewConfigs: Record<ComponentId, PreviewConfig<unknown, string>>
     defaultPreset: "simple" satisfies PlanPresetName,
     renderComponent: ({ data }) => <Plan {...(data as Parameters<typeof Plan>[0])} />,
   },
-  "product-list": {
-    presets: productListPresets as Record<string, PresetWithCodeGen<unknown>>,
-    defaultPreset: "keyboards" satisfies ProductListPresetName,
+  "item-carousel": {
+    presets: itemCarouselPresets as Record<string, PresetWithCodeGen<unknown>>,
+    defaultPreset: "recommendations" satisfies ItemCarouselPresetName,
     renderComponent: ({ data }) => (
-      <ProductList
-        {...(data as Parameters<typeof ProductList>[0])}
-        onProductClick={(productId) => console.log("Product clicked:", productId)}
-        onProductAction={(productId, actionId) => console.log("Product action:", productId, actionId)}
+      <ItemCarousel
+        {...(data as Parameters<typeof ItemCarousel>[0])}
+        onItemClick={(itemId) => console.log("Item clicked:", itemId)}
+        onItemAction={(itemId, actionId) => console.log("Item action:", itemId, actionId)}
       />
     ),
   },

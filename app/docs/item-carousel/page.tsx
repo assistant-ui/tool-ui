@@ -4,15 +4,15 @@ import { ComponentDocsTabs } from "../_components/component-docs-tabs";
 import { ComponentPreview } from "../_components/component-preview";
 
 export const metadata: Metadata = {
-  title: "Product List",
-  description: "Display products in a horizontal scrollable carousel",
+  title: "Item Carousel",
+  description: "Display items in a horizontal scrollable carousel",
 };
 
-export default function ProductListDocsPage() {
+export default function ItemCarouselDocsPage() {
   return (
     <ComponentDocsTabs
       docs={<Content />}
-      examples={<ComponentPreview componentId="product-list" />}
+      examples={<ComponentPreview componentId="item-carousel" />}
     />
   );
 }

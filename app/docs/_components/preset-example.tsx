@@ -18,11 +18,11 @@ import {
 import { terminalPresets, TerminalPresetName } from "@/lib/presets/terminal";
 import { Plan } from "@/components/tool-ui/plan";
 import { planPresets, PlanPresetName } from "@/lib/presets/plan";
-import { ProductList } from "@/components/tool-ui/product-list";
+import { ItemCarousel } from "@/components/tool-ui/item-carousel";
 import {
-  productListPresets,
-  ProductListPresetName,
-} from "@/lib/presets/product-list";
+  itemCarouselPresets,
+  ItemCarouselPresetName,
+} from "@/lib/presets/item-carousel";
 
 function generateOptionListCode(preset: OptionListPresetName): string {
   const list = optionListPresets[preset].data;
@@ -302,39 +302,39 @@ export function PlanPresetExample({ preset }: PlanPresetExampleProps) {
   );
 }
 
-function generateProductListCode(preset: ProductListPresetName): string {
-  const list = productListPresets[preset].data;
+function generateItemCarouselCode(preset: ItemCarouselPresetName): string {
+  const list = itemCarouselPresets[preset].data;
   const props: string[] = [];
 
   props.push(`  id="${list.id}"`);
   props.push(
-    `  products={${JSON.stringify(list.products, null, 4).replace(/\n/g, "\n  ")}}`,
+    `  items={${JSON.stringify(list.items, null, 4).replace(/\n/g, "\n  ")}}`,
   );
   props.push(
-    `  onProductClick={(productId) => console.log("Clicked:", productId)}`,
+    `  onItemClick={(itemId) => console.log("Clicked:", itemId)}`,
   );
   props.push(
-    `  onProductAction={(productId, actionId) => console.log("Action:", productId, actionId)}`,
+    `  onItemAction={(itemId, actionId) => console.log("Action:", itemId, actionId)}`,
   );
 
-  return `<ProductList\n${props.join("\n")}\n/>`;
+  return `<ItemCarousel\n${props.join("\n")}\n/>`;
 }
 
-interface ProductListPresetExampleProps {
-  preset: ProductListPresetName;
+interface ItemCarouselPresetExampleProps {
+  preset: ItemCarouselPresetName;
 }
 
-export function ProductListPresetExample({
+export function ItemCarouselPresetExample({
   preset,
-}: ProductListPresetExampleProps) {
-  const data = productListPresets[preset].data;
-  const code = generateProductListCode(preset);
+}: ItemCarouselPresetExampleProps) {
+  const data = itemCarouselPresets[preset].data;
+  const code = generateItemCarouselCode(preset);
 
   return (
     <Tabs items={["Preview", "Code"]}>
       <Tab value="Preview">
         <div className="not-prose">
-          <ProductList {...data} />
+          <ItemCarousel {...data} />
         </div>
       </Tab>
       <Tab value="Code">

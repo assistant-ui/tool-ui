@@ -43,10 +43,10 @@ export const componentsRegistry: ComponentMeta[] = [
     path: "/docs/plan",
   },
   {
-    id: "product-list",
-    label: "Product List",
-    description: "Horizontal carousel for product comparison",
-    path: "/docs/product-list",
+    id: "item-carousel",
+    label: "Item Carousel",
+    description: "Horizontal carousel for browsing collections",
+    path: "/docs/item-carousel",
   },
   {
     id: "social-post",

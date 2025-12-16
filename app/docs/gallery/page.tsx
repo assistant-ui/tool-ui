@@ -10,7 +10,9 @@ import { Plan } from "@/components/tool-ui/plan";
 import { Terminal } from "@/components/tool-ui/terminal";
 import { CodeBlock } from "@/components/tool-ui/code-block";
 import { Chart } from "@/components/tool-ui/chart";
+import { ItemCarousel } from "@/components/tool-ui/item-carousel";
 import { dataTablePresets } from "@/lib/presets/data-table";
+import { itemCarouselPresets } from "@/lib/presets/item-carousel";
 import { mediaCardPresets } from "@/lib/presets/media-card";
 import { xPostPresets } from "@/lib/presets/x-post";
 import { linkedInPostPresets } from "@/lib/presets/linkedin-post";
@@ -33,6 +35,10 @@ export default function ComponentsGalleryPage() {
         <div className="mx-auto columns-1 gap-5 pb-20 [column-fill:balance] md:columns-2 2xl:columns-3 2xl:gap-5">
           <div className="mb-5 [column-span:all] 2xl:mb-5">
             <DataTable {...dataTablePresets.stocks.data} />
+          </div>
+
+          <div className="mb-5 [column-span:all] 2xl:mb-5">
+            <ItemCarousel {...itemCarouselPresets.recommendations.data} />
           </div>
 
           <div className="mb-5 break-inside-avoid 2xl:mb-5">

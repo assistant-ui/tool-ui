@@ -2,9 +2,9 @@
 
 import { useRef, useState, useEffect, useCallback } from "react";
 import { cn, Button, Card, ChevronLeft, ChevronRight } from "./_adapter";
-import { ProductCard } from "./product-card";
+import { ItemCard } from "./item-card";
 import { prefersReducedMotion } from "../shared/utils";
-import type { ProductListProps } from "./schema";
+import type { ItemCarouselProps } from "./schema";
 
 const SCROLL_PADDING_STYLE = { scrollPaddingInline: "1rem" };
 
@@ -170,8 +170,8 @@ function CarouselNavButton({
       variant="secondary"
       size="icon-sm"
       className={cn(
-        "pointer-events-none scale-90 opacity-0",
-        "bg-background/60 absolute inset-y-0 z-20 my-auto hidden h-[6cqh] min-h-[50px] rounded-2xl shadow-md backdrop-blur-lg",
+        "pointer-events-none scale-90 border-none opacity-0",
+        "bg-background/60 absolute inset-y-0 z-20 my-auto hidden h-[6cqh] min-h-[50px] rounded-2xl backdrop-blur-lg",
         "transition-[opacity,transform] duration-250 ease-[cubic-bezier(0.16,1,0.3,1)] motion-reduce:transition-none",
         "@md:flex",
         isLeft ? "left-1.5" : "right-1.5",
@@ -188,7 +188,7 @@ function CarouselNavButton({
   );
 }
 
-function ProductListHeader({
+function ItemCarouselHeader({
   title,
   description,
 }: {
@@ -216,27 +216,27 @@ function ProductListHeader({
 function EmptyState({ className }: { className?: string }) {
   return (
     <Card className={cn("flex h-48 items-center justify-center", className)}>
-      <p className="text-muted-foreground text-sm">No products to display</p>
+      <p className="text-muted-foreground text-sm">No items to display</p>
     </Card>
   );
 }
 
-export function ProductList({
+export function ItemCarousel({
   id,
   title,
   description,
-  products,
+  items,
   className,
-  onProductClick,
-  onProductAction,
-}: ProductListProps) {
+  onItemClick,
+  onItemAction,
+}: ItemCarouselProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const targetIndexRef = useRef<number | null>(null);
 
   const { scrollTo, isAnimating } = useSmoothScroll();
   const { canScrollLeft, canScrollRight } = useScrollEdgeState(
     scrollRef,
-    products.length,
+    items.length,
   );
 
   const scroll = useCallback(
@@ -249,13 +249,13 @@ export function ProductList({
         ? Number.parseFloat(paddingValue)
         : 0;
 
-      const items = Array.from(
-        container.querySelectorAll<HTMLElement>("[data-product-item]"),
+      const itemElements = Array.from(
+        container.querySelectorAll<HTMLElement>("[data-carousel-item]"),
       );
-      if (items.length === 0) return;
+      if (itemElements.length === 0) return;
 
-      const snapPositions = items.map((item) =>
-        Math.max(0, item.offsetLeft - scrollPaddingLeft),
+      const snapPositions = itemElements.map((el) =>
+        Math.max(0, el.offsetLeft - scrollPaddingLeft),
       );
 
       const scrollLeft = Math.round(container.scrollLeft);
@@ -281,8 +281,11 @@ export function ProductList({
       }
 
       const itemStep =
-        items.length > 1 ? items[1].offsetLeft - items[0].offsetLeft : 0;
-      const safeStep = itemStep > 0 ? itemStep : items[0].offsetWidth || 1;
+        itemElements.length > 1
+          ? itemElements[1].offsetLeft - itemElements[0].offsetLeft
+          : 0;
+      const safeStep =
+        itemStep > 0 ? itemStep : itemElements[0].offsetWidth || 1;
 
       const pageIndexStep =
         container.clientWidth >= PAGE_SCROLL_BREAKPOINT_PX
@@ -296,7 +299,7 @@ export function ProductList({
 
       const targetIndex =
         direction === "right"
-          ? Math.min(currentIndex + pageIndexStep, items.length - 1)
+          ? Math.min(currentIndex + pageIndexStep, itemElements.length - 1)
           : Math.max(currentIndex - pageIndexStep, 0);
 
       targetIndexRef.current = targetIndex;
@@ -319,19 +322,19 @@ export function ProductList({
   const handleScrollLeft = useCallback(() => scroll("left"), [scroll]);
   const handleScrollRight = useCallback(() => scroll("right"), [scroll]);
 
-  if (products.length === 0) {
+  if (items.length === 0) {
     return <EmptyState className={className} />;
   }
 
   return (
     <div
-      data-product-list-id={id}
+      data-item-carousel-id={id}
       className={cn(
         "bg-background @container relative isolate w-full gap-0 overflow-hidden rounded-xl border p-0",
         className,
       )}
     >
-      <ProductListHeader title={title} description={description} />
+      <ItemCarouselHeader title={title} description={description} />
 
       <div className="group relative">
         <CarouselNavButton
@@ -348,24 +351,24 @@ export function ProductList({
         <div
           ref={scrollRef}
           className={cn(
-            "flex gap-4 overflow-x-auto overscroll-x-contain px-4 py-3",
+            "grid auto-cols-max grid-flow-col gap-4 overflow-x-auto overscroll-x-contain px-4 py-3",
             "snap-x snap-proximity",
           )}
           role="list"
           style={SCROLL_PADDING_STYLE}
         >
-          {products.map((product) => (
+          {items.map((item) => (
             <div
-              key={product.id}
-              data-product-item
-              data-product-id={product.id}
+              key={item.id}
+              data-carousel-item
+              data-item-id={item.id}
               role="listitem"
-              className="shrink-0 snap-start"
+              className="flex snap-start"
             >
-              <ProductCard
-                product={product}
-                onProductClick={onProductClick}
-                onProductAction={onProductAction}
+              <ItemCard
+                item={item}
+                onItemClick={onItemClick}
+                onItemAction={onItemAction}
               />
             </div>
           ))}

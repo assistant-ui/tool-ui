@@ -1,0 +1,192 @@
+import { DocsHeader } from "../_components/docs-header";
+
+<DocsHeader title="Item Carousel" mdxPath="app/docs/item-carousel/content.mdx" />
+
+A horizontal carousel for browsing collections of items. Optimized for surfacing recommendations and enabling comparison in chat interfaces.
+
+<ItemCarouselPresetExample preset="recommendations" />
+
+## When to Use Item Carousel
+
+- **Good for:** Product comparisons, recommendations, featured collections, browsable galleries
+- **Not for:** Long catalogs (use DataTable), single item details (use MediaCard)
+
+## Key Features
+
+<FeatureGrid>
+  <Feature icon="ShoppingCart" title="Collection browsing">
+    Display multiple items side-by-side for easy comparison
+  </Feature>
+  <Feature icon="ArrowLeftRight" title="Carousel navigation">
+    Smooth horizontal scrolling with optional arrow buttons
+  </Feature>
+  <Feature icon="MousePointer" title="Per-card actions">
+    Customizable action buttons on each item card
+  </Feature>
+</FeatureGrid>
+
+## Source and Install
+
+Copy `components/tool-ui/item-carousel` and the `shared` directory into your project. The `shared` folder contains utilities used by all Tool UI components.
+
+### Prerequisites
+
+This component requires the following [shadcn/ui](https://ui.shadcn.com) components:
+
+```bash
+pnpm dlx shadcn@latest add button card
+```
+
+### Directory Structure
+
+<Files>
+  <Folder name="components" defaultOpen>
+    <Folder name="ui">
+      <File name="button.tsx" />
+      <File name="card.tsx" />
+      <File name="..." />
+    </Folder>
+    <Folder name="tool-ui" defaultOpen>
+      <Folder name="shared" defaultOpen>
+        <File name="schema.ts" />
+        <File name="index.ts" />
+        <File name="..." />
+      </Folder>
+      <Folder name="item-carousel" defaultOpen>
+        <File name="item-carousel.tsx" />
+        <File name="item-card.tsx" />
+        <File name="schema.ts" />
+        <File name="index.tsx" />
+        <File name="..." />
+      </Folder>
+    </Folder>
+  </Folder>
+</Files>
+
+### Download
+
+- [**Shared Dependencies (GitHub)**](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/shared) ([ZIP](https://download-directory.github.io/?url=https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/shared))
+- [**Item Carousel (GitHub)**](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/item-carousel) ([ZIP](https://download-directory.github.io/?url=https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/item-carousel))
+
+## Usage
+
+```tsx
+// Backend tool
+import { tool } from "ai";
+import { z } from "zod";
+import { SerializableItemCarouselSchema } from "@/components/tool-ui/item-carousel";
+
+const searchItems = tool({
+  description: "Search for items matching criteria",
+  inputSchema: z.object({
+    query: z.string(),
+    maxPrice: z.number().optional(),
+  }),
+  outputSchema: SerializableItemCarouselSchema,
+  async execute({ query, maxPrice }) {
+    const items = await fetchItems(query, maxPrice);
+    return {
+      id: `item-search-${query}`,
+      items: items.map((item) => ({
+        id: item.id,
+        name: item.name,
+        subtitle: `$${item.price.toFixed(2)}`,
+        image: item.imageUrl,
+        actions: [
+          { id: "view", label: "View Details" },
+          { id: "select", label: "Select", variant: "default" },
+        ],
+      })),
+    };
+  },
+});
+
+// Frontend with assistant-ui
+import { makeAssistantToolUI } from "@assistant-ui/react";
+import { ItemCarousel } from "@/components/tool-ui/item-carousel";
+
+export const SearchItemsUI = makeAssistantToolUI({
+  toolName: "searchItems",
+  render: ({ result }) => (
+    <ItemCarousel
+      {...result}
+      onItemClick={(id) => router.push(`/items/${id}`)}
+      onItemAction={(itemId, actionId) => {
+        if (actionId === "select") {
+          selectItem(itemId);
+        }
+      }}
+    />
+  ),
+});
+```
+
+## Props
+
+<TypeTable
+  type={{
+    id: {
+      description: "Unique identifier for this component instance",
+      type: "string",
+      required: true,
+    },
+    items: {
+      description: "Array of items to display",
+      type: "Item[]",
+      required: true,
+    },
+    title: {
+      description: "Optional header title",
+      type: "string",
+    },
+    description: {
+      description: "Optional header description",
+      type: "string",
+    },
+    className: {
+      description: "Additional CSS classes",
+      type: "string",
+    },
+    onItemClick: {
+      description: "Handler when an item card is clicked",
+      type: "(itemId: string) => void",
+    },
+    onItemAction: {
+      description: "Handler when an item action button is clicked",
+      type: "(itemId: string, actionId: string) => void",
+    },
+  }}
+/>
+
+## Item Schema
+
+<TypeTable
+  type={{
+    id: {
+      description: "Unique item identifier",
+      type: "string",
+      required: true,
+    },
+    name: {
+      description: "Item display name",
+      type: "string",
+      required: true,
+    },
+    subtitle: {
+      description: "Secondary text (price, description, etc.)",
+      type: "string",
+    },
+    image: {
+      description: "Item image URL",
+      type: "string (URL)",
+    },
+    color: {
+      description: "Background color (hex) when no image is provided",
+      type: "string",
+    },
+    actions: {
+      description: "Action buttons for this item",
+      type: "Action[]",
+    },
+  }}
+/>
