@@ -35,8 +35,8 @@ export const productListPresets: Record<
           price: "$109.00",
           image: "https://placehold.co/300x400/1a1a2e/ffffff?text=K8+Pro",
           actions: [
-            { id: "view", label: "View" },
             { id: "compare", label: "Compare", variant: "secondary" },
+            { id: "view", label: "View" },
           ],
         },
         {
@@ -45,8 +45,8 @@ export const productListPresets: Record<
           price: "$169.99",
           image: "https://placehold.co/300x400/16213e/ffffff?text=GMMK+Pro",
           actions: [
-            { id: "view", label: "View" },
             { id: "compare", label: "Compare", variant: "secondary" },
+            { id: "view", label: "View" },
           ],
         },
         {
@@ -62,8 +62,8 @@ export const productListPresets: Record<
           price: "$119.00",
           image: "https://placehold.co/300x400/1a1a2e/ffffff?text=Leopold",
           actions: [
-            { id: "view", label: "View" },
             { id: "compare", label: "Compare", variant: "secondary" },
+            { id: "view", label: "View" },
           ],
         },
         {
@@ -72,8 +72,8 @@ export const productListPresets: Record<
           price: "$159.00",
           image: "https://placehold.co/300x400/16213e/ffffff?text=Varmilo",
           actions: [
-            { id: "view", label: "View" },
             { id: "compare", label: "Compare", variant: "secondary" },
+            { id: "view", label: "View" },
           ],
         },
         {
@@ -82,8 +82,8 @@ export const productListPresets: Record<
           price: "$169.00",
           image: "https://placehold.co/300x400/0f3460/ffffff?text=Das+KB",
           actions: [
-            { id: "view", label: "View" },
             { id: "compare", label: "Compare", variant: "secondary" },
+            { id: "view", label: "View" },
           ],
         },
       ],
@@ -101,8 +101,8 @@ export const productListPresets: Record<
           price: "$349.99",
           image: "https://placehold.co/300x400/2d132c/ffffff?text=Sony+XM5",
           actions: [
-            { id: "view", label: "Details" },
-            { id: "cart", label: "Add to Cart", variant: "default" },
+            { id: "view", label: "Details", variant: "secondary" },
+            { id: "cart", label: "Add to Cart" },
           ],
         },
         {
@@ -111,8 +111,8 @@ export const productListPresets: Record<
           price: "$429.00",
           image: "https://placehold.co/300x400/3d1c4c/ffffff?text=Bose+QC",
           actions: [
-            { id: "view", label: "Details" },
-            { id: "cart", label: "Add to Cart", variant: "default" },
+            { id: "view", label: "Details", variant: "secondary" },
+            { id: "cart", label: "Add to Cart" },
           ],
         },
         {
@@ -128,8 +128,8 @@ export const productListPresets: Record<
           price: "$379.95",
           image: "https://placehold.co/300x400/2d132c/ffffff?text=Sennheiser",
           actions: [
-            { id: "view", label: "Details" },
-            { id: "cart", label: "Add to Cart", variant: "default" },
+            { id: "view", label: "Details", variant: "secondary" },
+            { id: "cart", label: "Add to Cart" },
           ],
         },
         {
@@ -138,8 +138,8 @@ export const productListPresets: Record<
           price: "$149.00",
           image: "https://placehold.co/300x400/3d1c4c/ffffff?text=ATH-M50x",
           actions: [
-            { id: "view", label: "Details" },
-            { id: "cart", label: "Add to Cart", variant: "default" },
+            { id: "view", label: "Details", variant: "secondary" },
+            { id: "cart", label: "Add to Cart" },
           ],
         },
       ],

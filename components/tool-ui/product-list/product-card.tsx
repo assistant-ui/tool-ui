@@ -73,7 +73,7 @@ export function ProductCard({
       onKeyDown={isCardInteractive ? handleCardKeyDown : undefined}
       onKeyUp={isCardInteractive ? handleCardKeyUp : undefined}
     >
-      <div className="bg-muted relative aspect-3/4 w-full overflow-hidden">
+      <div className="bg-muted relative aspect-square w-full overflow-hidden">
         {/* eslint-disable-next-line @next/next/no-img-element -- copy-standalone portability (Next/Image requires app-level config) */}
         <img
           src={image}
@@ -98,8 +98,8 @@ export function ProductCard({
         {actions && actions.length > 0 && (
           <div
             className={cn(
-              "mt-auto grid gap-2 pt-1",
-              actions.length === 2 ? "grid-cols-2" : "grid-cols-1",
+              "mt-auto flex flex-wrap justify-end gap-2 pt-1",
+              actions.length === 1 && "[&>button]:flex-1",
             )}
           >
             {actions.map((action) => (
@@ -109,7 +109,7 @@ export function ProductCard({
                 variant={action.variant ?? "default"}
                 size="sm"
                 disabled={action.disabled}
-                className="h-7 w-full px-2 text-xs"
+                className="h-7 min-w-0 flex-1 px-2 text-xs"
                 onClick={(e) => {
                   e.stopPropagation();
                   handleActionClick(action.id);
