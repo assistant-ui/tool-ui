@@ -26,7 +26,7 @@ A command output display component with ANSI color support, exit codes, and dura
 ## When to Use
 
 - **Good for:** Build outputs, test results, command responses, CI/CD logs
-- **Not for:** Interactive terminal sessions (use xterm.js), real-time streaming
+- **Not for:** Interactive terminal sessions (use xterm.js), real-time log streaming, command input
 
 ## Source and Install
 
@@ -243,32 +243,6 @@ export const ShowTerminalUI = makeAssistantToolUI({
     },
   }}
 />
-
-## Examples
-
-### Successful Test Run
-
-<TerminalPresetExample preset="success" />
-
-### Failed Build with Error
-
-<TerminalPresetExample preset="error" />
-
-### Docker Build Output
-
-<TerminalPresetExample preset="build" />
-
-### ANSI Colored Output
-
-<TerminalPresetExample preset="ansiColors" />
-
-### Collapsible Long Output
-
-<TerminalPresetExample preset="collapsible" />
-
-### Command with No Output
-
-<TerminalPresetExample preset="noOutput" />
 
 ## ANSI Color Support
 

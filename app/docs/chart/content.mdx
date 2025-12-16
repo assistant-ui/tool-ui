@@ -2,7 +2,7 @@ import { DocsHeader } from "../_components/docs-header";
 
 <DocsHeader title="Chart" mdxPath="app/docs/chart/content.mdx" />
 
-Data visualization for bar and line charts.
+An interactive charting component for data visualization in chat. Supports bar and line charts with tooltips, legends, and multiple data series.
 
 <ChartPresetExample preset="revenue" />
 
@@ -15,15 +15,18 @@ Data visualization for bar and line charts.
   <Feature icon="Layers" title="Multiple series">
     Compare datasets side-by-side with automatic coloring
   </Feature>
-  <Feature icon="MousePointerClick" title="Interactive">
-    Click handlers and tooltips for deeper exploration
+  <Feature icon="MousePointerClick" title="Interactive tooltips">
+    Click handlers and hover tooltips for deeper exploration
+  </Feature>
+  <Feature icon="Settings2" title="Configurable display">
+    Toggle legends, grid lines, and custom color palettes
   </Feature>
 </FeatureGrid>
 
 ## When to Use
 
 - **Good for:** Trends, comparisons, distributions, time-series data
-- **Not for:** Single values (use text), complex dashboards (use multiple charts)
+- **Not for:** Single values (use text), detailed tabular data (use Data Table), complex dashboards
 
 ## Variants
 
