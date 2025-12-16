@@ -519,112 +519,110 @@ function AnimatedScene({
   });
 
   return (
-    <div className="h-full min-h-0 overflow-y-auto p-4 pr-3">
-      <div className="flex flex-col">
-        <AnimatePresence>
-          {shouldRenderItems && config.userMessage && (
+    <div className="flex flex-col">
+      <AnimatePresence>
+        {shouldRenderItems && config.userMessage && (
+          <motion.div
+            key={`${sceneId}-user`}
+            initial={{ opacity: 0, y: 16 }}
+            animate={{
+              opacity: 1,
+              y: 0,
+              transition: createEntryTransition(80),
+            }}
+            exit={{
+              opacity: 0,
+              y: -8,
+              transition: createExitTransition(TIMING.exitStagger.user),
+            }}
+            className="mb-11"
+          >
+            <ChatBubble role="user" className="px-6 py-3">
+              {config.userMessage}
+            </ChatBubble>
+          </motion.div>
+        )}
+
+        {shouldRenderItems && config.preamble && (
+          <motion.div
+            key={`${sceneId}-preamble-area`}
+            className="relative mb-3"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{
+              opacity: 0,
+              y: -8,
+              transition: createExitTransition(TIMING.exitStagger.preamble),
+            }}
+          >
+            <AnimatePresence>
+              {config.userMessage &&
+                !timeline.preambleReady &&
+                !reducedMotion && (
+                  <motion.div
+                    key={`${sceneId}-indicator`}
+                    className="absolute top-1.5 left-0"
+                    initial={{ opacity: 0, scale: 0.5 }}
+                    animate={{
+                      opacity: 1,
+                      scale: 1,
+                      transition: {
+                        ...SPRINGS.smooth,
+                        delay: TIMING.durations.userIn / 1000,
+                      },
+                    }}
+                    exit={{
+                      opacity: 0,
+                      transition: { duration: 0.15, ease: "easeOut" },
+                    }}
+                  >
+                    <TypingIndicator />
+                  </motion.div>
+                )}
+            </AnimatePresence>
+
+            {timeline.preambleReady && (
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+                <PreambleBubble
+                  text={config.preamble}
+                  reducedMotion={reducedMotion}
+                  onComplete={handlePreambleComplete}
+                />
+              </motion.div>
+            )}
+          </motion.div>
+        )}
+
+        {shouldRenderItems &&
+          timeline.preambleReady &&
+          shouldShowToolContent && (
             <motion.div
-              key={`${sceneId}-user`}
+              key={`${sceneId}-tool`}
               initial={{ opacity: 0, y: 16 }}
               animate={{
                 opacity: 1,
                 y: 0,
-                transition: createEntryTransition(80),
+                transition: createEntryTransition(
+                  config.preamble
+                    ? TIMING.beats.afterPreamble
+                    : TIMING.beats.beforeContent,
+                ),
               }}
               exit={{
                 opacity: 0,
                 y: -8,
-                transition: createExitTransition(TIMING.exitStagger.user),
+                transition: createExitTransition(TIMING.exitStagger.tool),
               }}
-              className="mb-11"
+              className={config.userMessage ? "" : "mb-11"}
             >
-              <ChatBubble role="user" className="px-6 py-3">
-                {config.userMessage}
-              </ChatBubble>
-            </motion.div>
-          )}
-
-          {shouldRenderItems && config.preamble && (
-            <motion.div
-              key={`${sceneId}-preamble-area`}
-              className="relative mb-3"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{
-                opacity: 0,
-                y: -8,
-                transition: createExitTransition(TIMING.exitStagger.preamble),
-              }}
-            >
-              <AnimatePresence>
-                {config.userMessage &&
-                  !timeline.preambleReady &&
-                  !reducedMotion && (
-                    <motion.div
-                      key={`${sceneId}-indicator`}
-                      className="absolute top-1.5 left-0"
-                      initial={{ opacity: 0, scale: 0.5 }}
-                      animate={{
-                        opacity: 1,
-                        scale: 1,
-                        transition: {
-                          ...SPRINGS.smooth,
-                          delay: TIMING.durations.userIn / 1000,
-                        },
-                      }}
-                      exit={{
-                        opacity: 0,
-                        transition: { duration: 0.15, ease: "easeOut" },
-                      }}
-                    >
-                      <TypingIndicator />
-                    </motion.div>
-                  )}
-              </AnimatePresence>
-
-              {timeline.preambleReady && (
-                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-                  <PreambleBubble
-                    text={config.preamble}
-                    reducedMotion={reducedMotion}
-                    onComplete={handlePreambleComplete}
-                  />
-                </motion.div>
-              )}
-            </motion.div>
-          )}
-
-          {shouldRenderItems &&
-            timeline.preambleReady &&
-            shouldShowToolContent && (
-              <motion.div
-                key={`${sceneId}-tool`}
-                initial={{ opacity: 0, y: 16 }}
-                animate={{
-                  opacity: 1,
-                  y: 0,
-                  transition: createEntryTransition(
-                    config.preamble
-                      ? TIMING.beats.afterPreamble
-                      : TIMING.beats.beforeContent,
-                  ),
-                }}
-                exit={{
-                  opacity: 0,
-                  y: -8,
-                  transition: createExitTransition(TIMING.exitStagger.tool),
-                }}
-                className={config.userMessage ? "" : "mb-11"}
-              >
-                <div className="flex w-full justify-start">
-                  <div className="w-full max-w-[720px] *:**:data-[slot=table]:min-w-0">
-                    <ToolReveal>{config.toolUI}</ToolReveal>
-                  </div>
+              <div className="flex w-full justify-start">
+                <div className="w-full max-w-[720px] *:**:data-[slot=table]:min-w-0">
+                  <ToolReveal>{config.toolUI}</ToolReveal>
                 </div>
-              </motion.div>
-            )}
-        </AnimatePresence>
-      </div>
+              </div>
+            </motion.div>
+          )}
+      </AnimatePresence>
     </div>
   );
 }
@@ -675,7 +673,7 @@ export function ChatShowcase() {
   }, [advanceToNextScene, goToPreviousScene]);
 
   return (
-    <div className="relative flex h-full w-full flex-col overflow-hidden">
+    <div className="relative flex h-full w-full flex-col">
       <div
         className="pointer-events-none absolute inset-0 opacity-60 dark:opacity-40"
         aria-hidden="true"

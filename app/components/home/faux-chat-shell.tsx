@@ -43,15 +43,17 @@ export function FauxChatShell({ className }: FauxChatShellProps) {
         ].join(", "),
       }}
     >
-      <div className="flex h-10 shrink-0 items-center px-4 pt-0.5">
-        <WindowDots />
+      <div className="bg-background/80 absolute z-20 w-full backdrop-blur-lg">
+        <div className="flex h-10 shrink-0 items-center px-4 pt-0.5">
+          <WindowDots />
+        </div>
+        <div className="gradient-line-header h-px" />
       </div>
-      <div className="gradient-line-header h-px" />
-      <div className="relative z-0 min-h-0 flex-1 overflow-hidden p-2 xl:p-6">
+      <div className="scrollbar-subtle relative z-0 grow overflow-y-auto px-6 pt-24 xl:p-6">
         <ChatShowcase />
       </div>
       <div
-        className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-24"
+        className="pointer-events-none absolute inset-x-0 right-3 bottom-0 z-10 h-24"
         style={{
           background:
             "linear-gradient(to top, var(--color-background) 0%, transparent 100%)",
