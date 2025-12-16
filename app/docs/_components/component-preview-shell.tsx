@@ -208,7 +208,7 @@ export function ComponentPreviewShell({
             )}
           >
             {viewMode === "preview" ? (
-              <div className="relative h-fit w-full p-4 pt-24">
+              <div className="relative h-fit w-full p-4 pt-12 lg:pt-24">
                 <ResizablePreviewArea
                   panelGroupRef={panelGroupRef}
                   handleLayout={handleLayout}

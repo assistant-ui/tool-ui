@@ -19,7 +19,7 @@ function WindowDots() {
 
 function ComposerBar() {
   return (
-    <div className="shrink-0 px-4 pb-4">
+    <div className="absolute inset-x-0 bottom-0 z-20 px-4 pb-4">
       <div className="border-gradient-glow border-gradient-glow-composer h-10 w-full rounded-full" />
     </div>
   );
@@ -29,7 +29,7 @@ export function FauxChatShell({ className }: FauxChatShellProps) {
   return (
     <div
       className={cn(
-        "border-gradient-glow flex h-full w-full flex-col overflow-hidden rounded-2xl",
+        "border-gradient-glow relative flex h-full w-full flex-col overflow-hidden rounded-2xl",
         className,
       )}
       style={{
@@ -47,9 +47,17 @@ export function FauxChatShell({ className }: FauxChatShellProps) {
         <WindowDots />
       </div>
       <div className="gradient-line-header h-px" />
-      <div className="relative min-h-0 flex-1 overflow-hidden p-2 xl:p-6">
+      <div className="relative z-0 min-h-0 flex-1 overflow-hidden p-2 xl:p-6">
         <ChatShowcase />
       </div>
+      <div
+        className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-24"
+        style={{
+          background:
+            "linear-gradient(to top, var(--color-background) 0%, transparent 100%)",
+        }}
+        aria-hidden="true"
+      />
       <ComposerBar />
     </div>
   );

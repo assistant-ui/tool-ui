@@ -476,6 +476,7 @@ type AnimatedSceneProps = {
   onComplete: () => void;
   sceneId: string;
   isExiting?: boolean;
+  composerPadding?: boolean;
 };
 
 function AnimatedScene({

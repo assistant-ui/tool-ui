@@ -172,8 +172,8 @@
   .gradient-line-header {
     background: linear-gradient(
       to right,
-      rgba(0, 0, 0, 0.1) 0%,
-      rgba(0, 0, 0, 0) 100%
+      rgba(0, 0, 0, 0.07) 0%,
+      rgba(0, 0, 0, 0) 140%
     );
   }
 
