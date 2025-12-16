@@ -12,7 +12,7 @@ Response Actions are lightweight CTAs for human-in-the-loop decision points. The
 
 ## Examples
 
-The following examples show Response Actions in context—each represents a moment where the AI has done its work and is waiting for human approval before proceeding.
+The following examples show Response Actions in context. Each represents a moment where the AI has done its work and is waiting for human approval before proceeding.
 
 ### DataTable: Flagged Expenses
 
@@ -65,7 +65,7 @@ AI detected anomalies in recent expenses. The user must approve or escalate befo
     ```tsx
     import { DataTable } from "@/components/tool-ui/data-table";
 
-    // AI flagged these expenses as anomalies — user decides before processing
+    // AI flagged these expenses as anomalies. User decides before processing.
     <DataTable
       id="flagged-expenses"
       rowIdKey="id"
@@ -141,7 +141,7 @@ AI generated a hero image for the blog post. The user must approve before it goe
     ```tsx
     import { MediaCard } from "@/components/tool-ui/media-card";
 
-    // AI generated this image — user approves before publishing
+    // AI generated this image. User approves before publishing.
     <MediaCard
       id="generated-hero"
       assetId="gen-img-7f3a"
@@ -198,7 +198,7 @@ AI drafted a post based on the user's notes. The user reviews and decides whethe
     ```tsx
     import { XPost } from "@/components/tool-ui/x-post";
 
-    // AI drafted this post — user approves before it goes live
+    // AI drafted this post. User approves before it goes live.
     <XPost
       post={{
         id: "draft-post-1",
@@ -279,7 +279,7 @@ responseActions={{
       type: "(actionId: string) => void",
     },
     onBeforeResponseAction: {
-      description: "Gate actions—return false to cancel",
+      description: "Gate actions. Return false to cancel.",
       type: "(actionId: string) => boolean | Promise<boolean>",
     },
   }}
@@ -321,12 +321,12 @@ responseActions={[
 ]}
 ```
 
-Tab order matches visual order—keyboard users navigate left-to-right as expected.
+Tab order matches visual order, so keyboard users navigate left-to-right as expected.
 
 ## Design Guidance
 
 - Default to 2–3 CTAs tied directly to the content above; avoid toolbar sprawl
 - Use `confirmLabel` for destructive or high-impact actions
 - Keep `confirmTimeout` short (default 3000ms) to avoid stale confirm states
-- ActionButtons are responsive by default—they stack on narrow containers
+- ActionButtons are responsive by default and stack on narrow containers
 - For richer controls, prefer dedicated components (Option List, filters) and keep this strip focused on decisions

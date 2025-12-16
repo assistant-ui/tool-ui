@@ -154,7 +154,7 @@ Mount `<SelectFormatTool />` under `<AssistantRuntimeProvider>` to register the 
     },
     value: {
       description:
-        "Controlled selection value (runtime only; avoid in tool/LLM payloads—prefer defaultValue/confirmed)",
+        "Controlled selection value (runtime only). Avoid in tool/LLM payloads; prefer defaultValue or confirmed.",
       type: "string | string[] | null",
     },
     defaultValue: {
@@ -205,3 +205,9 @@ Mount `<SelectFormatTool />` under `<AssistantRuntimeProvider>` to register the 
     disabled: { description: "Disable this option", type: "boolean" },
   }}
 />
+
+## Accessibility
+
+- Selection controls use Radix primitives with full keyboard support
+- Focus management follows WAI-ARIA listbox patterns
+- Confirm and cancel actions are keyboard-accessible

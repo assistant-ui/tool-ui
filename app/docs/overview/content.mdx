@@ -82,7 +82,7 @@ flowchart LR
 - Actions are defined with both UI labels and canonical sentences for conversation coherence
 - The schema guarantees the frontend receives reconstructable, addressable data
 
-```ts title="Server — define a tool with an output schema"
+```ts title="Server: define a tool with an output schema"
 import { streamText, tool, convertToModelMessages } from "ai";
 import { openai } from "@ai-sdk/openai";
 import { z } from "zod";
@@ -124,10 +124,10 @@ export async function POST(req: Request) {
 
 - `makeAssistantToolUI` connects the tool name to a React component
 - `parseSerializableMediaCard` validates the tool result at runtime and returns typed props
-- Simply mounting `<PreviewLinkUI />` registers it—no manual plumbing required
+- Simply mounting `<PreviewLinkUI />` registers it (no manual plumbing required)
 - assistant-ui manages the runtime, streaming, and tool call lifecycle
 
-```tsx title="Client — render with assistant-ui"
+```tsx title="Client: render with assistant-ui"
 "use client";
 import {
   AssistantRuntimeProvider,

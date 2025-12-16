@@ -21,7 +21,7 @@ A horizontal carousel for browsing collections of items. Optimized for surfacing
     motion support
   </Feature>
   <Feature icon="MousePointerClick" title="Per-card actions">
-    Buttons adapt via container queries—stacked on narrow cards, side-by-side
+    Buttons adapt via container queries: stacked on narrow cards, side-by-side
     when wider
   </Feature>
   <Feature icon="Keyboard" title="Full accessibility">
@@ -39,17 +39,17 @@ A horizontal carousel for browsing collections of items. Optimized for surfacing
 
 The Item Carousel is built with careful attention to interaction design:
 
-**Responsive button layout** — Each card is its own container (`@container/card`). When the card is narrow, buttons stack vertically with the primary action on top. Above 176px, they flow horizontally with primary on the right. This uses `flex-col-reverse` to maintain consistent DOM order while adapting visual hierarchy.
+**Responsive button layout:** Each card is its own container (`@container/card`). When the card is narrow, buttons stack vertically with the primary action on top. Above 176px, they flow horizontally with primary on the right. This uses `flex-col-reverse` to maintain consistent DOM order while adapting visual hierarchy.
 
-**Equal card heights** — Cards use CSS Grid (`grid-flow-col` with `auto-cols-max`) rather than flexbox. Grid cells in the same row automatically match heights, so a card with a two-line title aligns perfectly with one-line neighbors.
+**Equal card heights:** Cards use CSS Grid (`grid-flow-col` with `auto-cols-max`) rather than flexbox. Grid cells in the same row automatically match heights, so a card with a two-line title aligns perfectly with one-line neighbors.
 
-**Smooth scroll animation** — The carousel implements custom JavaScript scrolling with a cubic-bezier ease-out curve. It respects `prefers-reduced-motion` and falls back to instant scrolling. Navigation calculates snap positions dynamically based on actual card offsets.
+**Smooth scroll animation:** The carousel implements custom JavaScript scrolling with a cubic-bezier ease-out curve. It respects `prefers-reduced-motion` and falls back to instant scrolling. Navigation calculates snap positions dynamically based on actual card offsets.
 
-**Image handling** — Supports both image URLs and hex color fallbacks. Images use `loading="lazy"` and `decoding="async"` for performance. On hover, images scale up 5% with a 300ms transition.
+**Image handling:** Supports both image URLs and hex color fallbacks. Images use `loading="lazy"` and `decoding="async"` for performance. On hover, images scale up 5% with a 300ms transition.
 
-**Click delegation** — Cards can be interactive (`onItemClick`) while containing action buttons. Click handlers check if the event originated from a button and delegate appropriately—no double-firing.
+**Click delegation:** Cards can be interactive (`onItemClick`) while containing action buttons. Click handlers check if the event originated from a button and delegate appropriately, preventing double-firing.
 
-**Touch optimization** — Cards use `touch-manipulation` to eliminate the 300ms tap delay on iOS. Navigation buttons appear only on hover/focus (desktop) and use backdrop blur for visual polish.
+**Touch optimization:** Cards use `touch-manipulation` to eliminate the 300ms tap delay on iOS. Navigation buttons appear only on hover/focus (desktop) and use backdrop blur for visual polish.
 
 ## Source and Install
 
