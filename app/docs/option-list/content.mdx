@@ -6,23 +6,6 @@ A decision surface for single or multi-select choices. Optimized for inline sele
 
 <OptionListPresetExample preset="export" />
 
-## Receipt State
-
-When `confirmed` is set, the component renders in a read-only receipt state showing only the confirmed selection(s). This is useful for displaying the outcome of a decision in a conversation history.
-
-<OptionListPresetExample preset="receipt" />
-
-The receipt state:
-
-- Shows only the confirmed option(s) with a checkmark
-- Hides unselected options and response actions
-- Is read-only (no interaction)
-
-## When to Use Option List
-
-- **Good for:** File format selection, preference choices, confirmation prompts
-- **Not for:** Long lists (use DataTable), complex forms, free-text input
-
 ## Key Features
 
 <FeatureGrid>
@@ -36,6 +19,23 @@ The receipt state:
     Customize confirm, cancel, and other footer buttons
   </Feature>
 </FeatureGrid>
+
+## When to Use
+
+- **Good for:** File format selection, preference choices, confirmation prompts
+- **Not for:** Long lists (use DataTable), complex forms, free-text input
+
+## Receipt State
+
+When `confirmed` is set, the component renders in a read-only receipt state showing only the confirmed selection(s). This is useful for displaying the outcome of a decision in a conversation history.
+
+<OptionListPresetExample preset="receipt" />
+
+The receipt state:
+
+- Shows only the confirmed option(s) with a checkmark
+- Hides unselected options and response actions
+- Is read-only (no interaction)
 
 ## Source and Install
 

@@ -38,6 +38,8 @@ import {
   Eye,
   Maximize2,
   ListTodo,
+  GalleryHorizontalEnd,
+  Keyboard,
 } from "lucide-react";
 
 const ICON_MAP: Record<string, LucideIcon> = {
@@ -78,6 +80,8 @@ const ICON_MAP: Record<string, LucideIcon> = {
   Eye,
   Maximize2,
   ListTodo,
+  GalleryHorizontalEnd,
+  Keyboard,
 };
 
 interface FeatureGridProps {

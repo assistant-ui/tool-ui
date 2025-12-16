@@ -6,23 +6,6 @@ Data visualization for bar and line charts.
 
 <ChartPresetExample preset="revenue" />
 
-## Line Charts
-
-Switch to line charts for time-series or continuous data.
-
-<ChartPresetExample preset="performance" />
-
-## Minimal Configuration
-
-Charts work with just `data`, `xKey`, and `series`. Title, description, legend, and grid are optional.
-
-<ChartPresetExample preset="minimal" />
-
-## When to Use Chart
-
-- **Good for:** Trends, comparisons, distributions, time-series data
-- **Not for:** Single values (use text), complex dashboards (use multiple charts)
-
 ## Key Features
 
 <FeatureGrid>
@@ -36,6 +19,25 @@ Charts work with just `data`, `xKey`, and `series`. Title, description, legend, 
     Click handlers and tooltips for deeper exploration
   </Feature>
 </FeatureGrid>
+
+## When to Use
+
+- **Good for:** Trends, comparisons, distributions, time-series data
+- **Not for:** Single values (use text), complex dashboards (use multiple charts)
+
+## Variants
+
+### Line Charts
+
+Switch to line charts for time-series or continuous data.
+
+<ChartPresetExample preset="performance" />
+
+### Minimal Configuration
+
+Charts work with just `data`, `xKey`, and `series`. Title, description, legend, and grid are optional.
+
+<ChartPresetExample preset="minimal" />
 
 ## Source and Install
 
@@ -103,6 +105,65 @@ import { Chart } from "@/components/tool-ui/chart";
   showLegend
   showGrid
 />;
+```
+
+### With assistant-ui (tool output)
+
+Define a tool that returns chart data, then render the component with runtime validation.
+
+```tsx
+// Backend tool
+import { tool, jsonSchema } from "ai";
+
+const showChart = tool({
+  description: "Display data as a chart",
+  inputSchema: jsonSchema<{ metric: string }>({
+    type: "object",
+    properties: { metric: { type: "string" } },
+    required: ["metric"],
+    additionalProperties: false,
+  }),
+  async execute({ metric }) {
+    const data = await fetchMetricData(metric);
+    return {
+      id: `chart-${metric}`,
+      type: "line",
+      title: `${metric} Over Time`,
+      data,
+      xKey: "date",
+      series: [{ key: "value", label: metric }],
+      showGrid: true,
+    };
+  },
+});
+
+// Frontend with assistant-ui
+import { makeAssistantToolUI } from "@assistant-ui/react";
+import {
+  Chart,
+  ChartErrorBoundary,
+  parseSerializableChart,
+} from "@/components/tool-ui/chart";
+
+export const ShowChartUI = makeAssistantToolUI({
+  toolName: "showChart",
+  render: ({ result }) => {
+    if (result === undefined) {
+      return (
+        <div className="w-full max-w-xl rounded-2xl border bg-card/60 px-5 py-4 text-sm text-muted-foreground shadow-xs">
+          Loading chart…
+        </div>
+      );
+    }
+
+    const chart = parseSerializableChart(result);
+    return (
+      <ChartErrorBoundary>
+        <Chart {...chart} />
+      </ChartErrorBoundary>
+    );
+  },
+});
 ```
 
 ### With Custom Colors

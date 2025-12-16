@@ -1,29 +1,55 @@
 import { DocsHeader } from "../_components/docs-header";
 
-<DocsHeader title="Item Carousel" mdxPath="app/docs/item-carousel/content.mdx" />
+<DocsHeader
+  title="Item Carousel"
+  mdxPath="app/docs/item-carousel/content.mdx"
+/>
 
 A horizontal carousel for browsing collections of items. Optimized for surfacing recommendations and enabling comparison in chat interfaces.
 
 <ItemCarouselPresetExample preset="recommendations" />
 
-## When to Use Item Carousel
+## Key Features
+
+<FeatureGrid>
+  <Feature icon="Layers" title="Collection browsing">
+    Display multiple items side-by-side for easy comparison with equal-height
+    cards via CSS Grid
+  </Feature>
+  <Feature icon="GalleryHorizontalEnd" title="Smart scrolling">
+    Custom scroll animation with cubic-bezier easing, snap points, and reduced
+    motion support
+  </Feature>
+  <Feature icon="MousePointerClick" title="Per-card actions">
+    Buttons adapt via container queries—stacked on narrow cards, side-by-side
+    when wider
+  </Feature>
+  <Feature icon="Keyboard" title="Full accessibility">
+    Keyboard navigation (Enter/Space), focus rings, ARIA roles, and screen
+    reader labels
+  </Feature>
+</FeatureGrid>
+
+## When to Use
 
 - **Good for:** Product comparisons, recommendations, featured collections, browsable galleries
 - **Not for:** Long catalogs (use DataTable), single item details (use MediaCard)
 
-## Key Features
+## Design Details
 
-<FeatureGrid>
-  <Feature icon="ShoppingCart" title="Collection browsing">
-    Display multiple items side-by-side for easy comparison
-  </Feature>
-  <Feature icon="ArrowLeftRight" title="Carousel navigation">
-    Smooth horizontal scrolling with optional arrow buttons
-  </Feature>
-  <Feature icon="MousePointer" title="Per-card actions">
-    Customizable action buttons on each item card
-  </Feature>
-</FeatureGrid>
+The Item Carousel is built with careful attention to interaction design:
+
+**Responsive button layout** — Each card is its own container (`@container/card`). When the card is narrow, buttons stack vertically with the primary action on top. Above 176px, they flow horizontally with primary on the right. This uses `flex-col-reverse` to maintain consistent DOM order while adapting visual hierarchy.
+
+**Equal card heights** — Cards use CSS Grid (`grid-flow-col` with `auto-cols-max`) rather than flexbox. Grid cells in the same row automatically match heights, so a card with a two-line title aligns perfectly with one-line neighbors.
+
+**Smooth scroll animation** — The carousel implements custom JavaScript scrolling with a cubic-bezier ease-out curve. It respects `prefers-reduced-motion` and falls back to instant scrolling. Navigation calculates snap positions dynamically based on actual card offsets.
+
+**Image handling** — Supports both image URLs and hex color fallbacks. Images use `loading="lazy"` and `decoding="async"` for performance. On hover, images scale up 5% with a 300ms transition.
+
+**Click delegation** — Cards can be interactive (`onItemClick`) while containing action buttons. Click handlers check if the event originated from a button and delegate appropriately—no double-firing.
+
+**Touch optimization** — Cards use `touch-manipulation` to eliminate the 300ms tap delay on iOS. Navigation buttons appear only on hover/focus (desktop) and use backdrop blur for visual polish.
 
 ## Source and Install
 
@@ -190,3 +216,10 @@ export const SearchItemsUI = makeAssistantToolUI({
     },
   }}
 />
+
+## Accessibility
+
+- Scroll animations respect `prefers-reduced-motion` and fall back to instant scrolling
+- Cards are keyboard-navigable with Enter/Space activation
+- Proper ARIA roles and labels for screen reader announcements
+- Focus rings visible for keyboard navigation

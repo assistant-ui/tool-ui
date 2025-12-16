@@ -23,57 +23,10 @@ A syntax-highlighted code display component with copy functionality and collapsi
   </Feature>
 </FeatureGrid>
 
-## When to Use Code Block
+## When to Use
 
 - **Good for:** Code examples, configuration files, API responses, scripts
 - **Not for:** Interactive code editing (use CodeMirror), large files (consider linking)
-
-## Props
-
-### Core Props
-
-- `code` (string, required): The code content to display
-- `language` (string, default: "text"): Programming language for syntax highlighting
-- `filename` (string, optional): Filename to display in the header
-
-### Display Options
-
-- `showLineNumbers` (boolean, default: true): Show line numbers
-- `highlightLines` (number[], optional): Array of line numbers to highlight
-- `maxCollapsedLines` (number, optional): Auto-collapse if code exceeds this many lines
-
-### Standard Props
-
-- `id` (string, required): Unique identifier for this component
-- `responseActions` (Action[], optional): Response action buttons
-- `className` (string, optional): Additional CSS classes
-- `isLoading` (boolean, optional): Show loading skeleton state
-
-## Examples
-
-### Basic TypeScript
-
-<CodeBlockPresetExample preset="typescript" />
-
-### Python with Docstring
-
-<CodeBlockPresetExample preset="python" />
-
-### JSON Configuration
-
-<CodeBlockPresetExample preset="json" />
-
-### Bash Script
-
-<CodeBlockPresetExample preset="bash" />
-
-### Highlighted Lines
-
-<CodeBlockPresetExample preset="highlighted" />
-
-### Collapsible Long Code
-
-<CodeBlockPresetExample preset="collapsible" />
 
 ## Source and Install
 
@@ -205,6 +158,99 @@ export const ShowCodeBlockUI = makeAssistantToolUI({
   },
 });
 ```
+
+## Props
+
+### Core Props
+
+<TypeTable
+  type={{
+    code: {
+      description: "The code content to display",
+      type: "string",
+      required: true,
+    },
+    language: {
+      description: "Programming language for syntax highlighting",
+      type: "string",
+      default: '"text"',
+    },
+    filename: {
+      description: "Filename to display in the header",
+      type: "string",
+    },
+  }}
+/>
+
+### Display Options
+
+<TypeTable
+  type={{
+    showLineNumbers: {
+      description: "Show line numbers",
+      type: "boolean",
+      default: "true",
+    },
+    highlightLines: {
+      description: "Array of line numbers to highlight",
+      type: "number[]",
+    },
+    maxCollapsedLines: {
+      description: "Auto-collapse if code exceeds this many lines",
+      type: "number",
+    },
+  }}
+/>
+
+### Standard Props
+
+<TypeTable
+  type={{
+    id: {
+      description: "Unique identifier for this component",
+      type: "string",
+      required: true,
+    },
+    responseActions: {
+      description: "Response action buttons",
+      type: "Action[]",
+    },
+    className: {
+      description: "Additional CSS classes",
+      type: "string",
+    },
+    isLoading: {
+      description: "Show loading skeleton state",
+      type: "boolean",
+    },
+  }}
+/>
+
+## Examples
+
+### Basic TypeScript
+
+<CodeBlockPresetExample preset="typescript" />
+
+### Python with Docstring
+
+<CodeBlockPresetExample preset="python" />
+
+### JSON Configuration
+
+<CodeBlockPresetExample preset="json" />
+
+### Bash Script
+
+<CodeBlockPresetExample preset="bash" />
+
+### Highlighted Lines
+
+<CodeBlockPresetExample preset="highlighted" />
+
+### Collapsible Long Code
+
+<CodeBlockPresetExample preset="collapsible" />
 
 ## Supported Languages
 

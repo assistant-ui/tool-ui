@@ -23,88 +23,10 @@ A command output display component with ANSI color support, exit codes, and dura
   </Feature>
 </FeatureGrid>
 
-## When to Use Terminal
+## When to Use
 
 - **Good for:** Build outputs, test results, command responses, CI/CD logs
 - **Not for:** Interactive terminal sessions (use xterm.js), real-time streaming
-
-## Props
-
-### Core Props
-
-- `command` (string, required): The command that was executed
-- `stdout` (string, optional): Standard output content
-- `stderr` (string, optional): Standard error content
-- `exitCode` (number, required): Process exit code (0 = success)
-
-### Metadata
-
-- `durationMs` (number, optional): Command execution time in milliseconds
-- `cwd` (string, optional): Working directory where command ran
-- `truncated` (boolean, optional): Indicates output was truncated
-
-### Display Options
-
-- `maxCollapsedLines` (number, optional): Auto-collapse if output exceeds this many lines
-
-### Standard Props
-
-- `id` (string, required): Unique identifier for this component
-- `responseActions` (Action[], optional): Response action buttons
-- `className` (string, optional): Additional CSS classes
-- `isLoading` (boolean, optional): Show loading skeleton state
-
-## Examples
-
-### Successful Test Run
-
-<TerminalPresetExample preset="success" />
-
-### Failed Build with Error
-
-<TerminalPresetExample preset="error" />
-
-### Docker Build Output
-
-<TerminalPresetExample preset="build" />
-
-### ANSI Colored Output
-
-<TerminalPresetExample preset="ansiColors" />
-
-### Collapsible Long Output
-
-<TerminalPresetExample preset="collapsible" />
-
-### Command with No Output
-
-<TerminalPresetExample preset="noOutput" />
-
-## ANSI Color Support
-
-Terminal automatically renders ANSI escape codes for colored output:
-
-```tsx
-import { Terminal } from "@/components/tool-ui/terminal";
-
-const coloredOutput = "\x1b[32m✔\x1b[0m Success\n\x1b[31m✗\x1b[0m Error";
-
-<Terminal
-  id="my-terminal"
-  command="npm test"
-  stdout={coloredOutput}
-  exitCode={0}
-/>;
-```
-
-Common ANSI codes:
-
-- `\x1b[32m` - Green text
-- `\x1b[31m` - Red text
-- `\x1b[33m` - Yellow text
-- `\x1b[36m` - Cyan text
-- `\x1b[1m` - Bold text
-- `\x1b[0m` - Reset formatting
 
 ## Source and Install
 
@@ -241,6 +163,139 @@ export const ShowTerminalUI = makeAssistantToolUI({
 });
 ```
 
+## Props
+
+### Core Props
+
+<TypeTable
+  type={{
+    command: {
+      description: "The command that was executed",
+      type: "string",
+      required: true,
+    },
+    stdout: {
+      description: "Standard output content",
+      type: "string",
+    },
+    stderr: {
+      description: "Standard error content",
+      type: "string",
+    },
+    exitCode: {
+      description: "Process exit code (0 = success)",
+      type: "number",
+      required: true,
+    },
+  }}
+/>
+
+### Metadata
+
+<TypeTable
+  type={{
+    durationMs: {
+      description: "Command execution time in milliseconds",
+      type: "number",
+    },
+    cwd: {
+      description: "Working directory where command ran",
+      type: "string",
+    },
+    truncated: {
+      description: "Indicates output was truncated",
+      type: "boolean",
+    },
+  }}
+/>
+
+### Display Options
+
+<TypeTable
+  type={{
+    maxCollapsedLines: {
+      description: "Auto-collapse if output exceeds this many lines",
+      type: "number",
+    },
+  }}
+/>
+
+### Standard Props
+
+<TypeTable
+  type={{
+    id: {
+      description: "Unique identifier for this component",
+      type: "string",
+      required: true,
+    },
+    responseActions: {
+      description: "Response action buttons",
+      type: "Action[]",
+    },
+    className: {
+      description: "Additional CSS classes",
+      type: "string",
+    },
+    isLoading: {
+      description: "Show loading skeleton state",
+      type: "boolean",
+    },
+  }}
+/>
+
+## Examples
+
+### Successful Test Run
+
+<TerminalPresetExample preset="success" />
+
+### Failed Build with Error
+
+<TerminalPresetExample preset="error" />
+
+### Docker Build Output
+
+<TerminalPresetExample preset="build" />
+
+### ANSI Colored Output
+
+<TerminalPresetExample preset="ansiColors" />
+
+### Collapsible Long Output
+
+<TerminalPresetExample preset="collapsible" />
+
+### Command with No Output
+
+<TerminalPresetExample preset="noOutput" />
+
+## ANSI Color Support
+
+Terminal automatically renders ANSI escape codes for colored output:
+
+```tsx
+import { Terminal } from "@/components/tool-ui/terminal";
+
+const coloredOutput = "\x1b[32m✔\x1b[0m Success\n\x1b[31m✗\x1b[0m Error";
+
+<Terminal
+  id="my-terminal"
+  command="npm test"
+  stdout={coloredOutput}
+  exitCode={0}
+/>;
+```
+
+Common ANSI codes:
+
+- `\x1b[32m` - Green text
+- `\x1b[31m` - Red text
+- `\x1b[33m` - Yellow text
+- `\x1b[36m` - Cyan text
+- `\x1b[1m` - Bold text
+- `\x1b[0m` - Reset formatting
+
 ## Exit Code Meanings
 
 - `0` - Success (green badge)
@@ -250,3 +305,9 @@ export const ShowTerminalUI = makeAssistantToolUI({
 - `127` - Command not found (red badge)
 - `130` - Interrupted with Ctrl+C (red badge)
 - Any non-zero - Error (red badge)
+
+## Accessibility
+
+- ANSI colors maintain WCAG contrast ratios against both light and dark backgrounds
+- Screen readers announce the command, exit status, and output content
+- Collapsible sections are keyboard-accessible with proper ARIA attributes

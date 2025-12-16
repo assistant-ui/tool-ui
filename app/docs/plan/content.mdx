@@ -23,119 +23,10 @@ A structured plan display component for presenting step-by-step tasks with progr
   </Feature>
 </FeatureGrid>
 
-## When to Use Plan
+## When to Use
 
 - **Good for:** Implementation roadmaps, onboarding checklists, deployment steps, task breakdowns
 - **Not for:** Real-time task management (use interactive todo apps), single actions
-
-## Props
-
-<TypeTable
-  type={{
-    id: {
-      description: "Unique identifier for this component",
-      type: "string",
-      required: true,
-    },
-    title: {
-      description: "Plan title displayed as the header",
-      type: "string",
-      required: true,
-    },
-    description: {
-      description: "Context description below the title",
-      type: "string",
-    },
-    todos: {
-      description: "Array of todo items (min 1)",
-      type: "PlanTodo[]",
-      required: true,
-    },
-    maxVisibleTodos: {
-      description: "Items to show before collapsing",
-      type: "number",
-      default: "4",
-    },
-    showProgress: {
-      description: "Show/hide progress bar and summary",
-      type: "boolean",
-      default: "true",
-    },
-    responseActions: {
-      description: "Footer action buttons",
-      type: "Action[] | ActionsConfig",
-    },
-    className: { description: "Additional CSS classes", type: "string" },
-    onResponseAction: {
-      description: "Callback when action button clicked",
-      type: "(actionId: string) => void",
-    },
-    onBeforeResponseAction: {
-      description: "Validation before action executes",
-      type: "(actionId: string) => boolean",
-    },
-  }}
-/>
-
-## Todo Item Schema
-
-<TypeTable
-  type={{
-    id: {
-      description: "Unique todo identifier",
-      type: "string",
-      required: true,
-    },
-    label: { description: "Display text", type: "string", required: true },
-    status: {
-      description: "Current state",
-      type: "'pending' | 'in_progress' | 'completed' | 'cancelled'",
-      required: true,
-    },
-    description: { description: "Expandable detail text", type: "string" },
-  }}
-/>
-
-## Examples
-
-### Simple Plan (No Accordion)
-
-<PlanPresetExample preset="simple" />
-
-### Comprehensive Plan with Details
-
-<PlanPresetExample preset="comprehensive" />
-
-### Mixed Status States
-
-<PlanPresetExample preset="mixed_states" />
-
-### All Complete (Celebration State)
-
-<PlanPresetExample preset="all_complete" />
-
-## Status States
-
-<TypeTable
-  type={{
-    pending: {
-      description: "Circle outline icon, muted color",
-      type: "Not started",
-    },
-    in_progress: {
-      description: "Dashed circle (spinning) icon, shimmer text effect",
-      type: "Active",
-    },
-    completed: {
-      description: "Checkmark icon, emerald green with strikethrough",
-      type: "Done",
-    },
-    cancelled: {
-      description: "X circle icon, destructive color with strikethrough",
-      type: "Skipped",
-    },
-  }}
-/>
 
 ## Source and Install
 
@@ -246,7 +137,7 @@ export const ShowPlanUI = makeAssistantToolUI({
 });
 ```
 
-## With Expandable Details
+### With Expandable Details
 
 ```tsx
 <Plan
@@ -269,6 +160,115 @@ export const ShowPlanUI = makeAssistantToolUI({
   ]}
 />
 ```
+
+## Props
+
+<TypeTable
+  type={{
+    id: {
+      description: "Unique identifier for this component",
+      type: "string",
+      required: true,
+    },
+    title: {
+      description: "Plan title displayed as the header",
+      type: "string",
+      required: true,
+    },
+    description: {
+      description: "Context description below the title",
+      type: "string",
+    },
+    todos: {
+      description: "Array of todo items (min 1)",
+      type: "PlanTodo[]",
+      required: true,
+    },
+    maxVisibleTodos: {
+      description: "Items to show before collapsing",
+      type: "number",
+      default: "4",
+    },
+    showProgress: {
+      description: "Show/hide progress bar and summary",
+      type: "boolean",
+      default: "true",
+    },
+    responseActions: {
+      description: "Footer action buttons",
+      type: "Action[] | ActionsConfig",
+    },
+    className: { description: "Additional CSS classes", type: "string" },
+    onResponseAction: {
+      description: "Callback when action button clicked",
+      type: "(actionId: string) => void",
+    },
+    onBeforeResponseAction: {
+      description: "Validation before action executes",
+      type: "(actionId: string) => boolean",
+    },
+  }}
+/>
+
+## Todo Item Schema
+
+<TypeTable
+  type={{
+    id: {
+      description: "Unique todo identifier",
+      type: "string",
+      required: true,
+    },
+    label: { description: "Display text", type: "string", required: true },
+    status: {
+      description: "Current state",
+      type: "'pending' | 'in_progress' | 'completed' | 'cancelled'",
+      required: true,
+    },
+    description: { description: "Expandable detail text", type: "string" },
+  }}
+/>
+
+## Examples
+
+### Simple Plan (No Accordion)
+
+<PlanPresetExample preset="simple" />
+
+### Comprehensive Plan with Details
+
+<PlanPresetExample preset="comprehensive" />
+
+### Mixed Status States
+
+<PlanPresetExample preset="mixed_states" />
+
+### All Complete (Celebration State)
+
+<PlanPresetExample preset="all_complete" />
+
+## Status States
+
+<TypeTable
+  type={{
+    pending: {
+      description: "Circle outline icon, muted color",
+      type: "Not started",
+    },
+    in_progress: {
+      description: "Dashed circle (spinning) icon, shimmer text effect",
+      type: "Active",
+    },
+    completed: {
+      description: "Checkmark icon, emerald green with strikethrough",
+      type: "Done",
+    },
+    cancelled: {
+      description: "X circle icon, destructive color with strikethrough",
+      type: "Skipped",
+    },
+  }}
+/>
 
 ## Accessibility
 
