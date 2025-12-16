@@ -172,7 +172,10 @@ export const SearchProductsUI = makeAssistantToolUI({
     image: {
       description: "Product image URL",
       type: "string (URL)",
-      required: true,
+    },
+    color: {
+      description: "Background color (hex) when no image is provided",
+      type: "string",
     },
     actions: {
       description: "Action buttons for this product",

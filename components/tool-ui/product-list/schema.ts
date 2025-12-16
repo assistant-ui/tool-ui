@@ -9,7 +9,8 @@ export const ProductSchema = z.object({
   id: z.string().min(1),
   name: z.string().min(1),
   price: z.string().min(1),
-  image: z.string().url(),
+  image: z.url().optional(),
+  color: z.string().optional(),
   actions: z.array(ActionSchema).optional(),
 });
 

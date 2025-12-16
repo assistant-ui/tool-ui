@@ -15,7 +15,7 @@ export function ProductCard({
   onProductClick,
   onProductAction,
 }: ProductCardProps) {
-  const { id, name, price, image, actions } = product;
+  const { id, name, price, image, color, actions } = product;
   const isCardInteractive = typeof onProductClick === "function";
 
   const handleCardClick = (e: React.MouseEvent) => {
@@ -74,18 +74,30 @@ export function ProductCard({
       onKeyUp={isCardInteractive ? handleCardKeyUp : undefined}
     >
       <div className="bg-muted relative aspect-square w-full overflow-hidden">
-        {/* eslint-disable-next-line @next/next/no-img-element -- copy-standalone portability (Next/Image requires app-level config) */}
-        <img
-          src={image}
-          alt={name}
-          loading="lazy"
-          decoding="async"
-          draggable={false}
-          className={cn(
-            "h-full w-full object-cover transition-transform duration-300",
-            isCardInteractive && "group-hover:scale-105",
-          )}
-        />
+        {image ? (
+          // eslint-disable-next-line @next/next/no-img-element -- copy-standalone portability (Next/Image requires app-level config)
+          <img
+            src={image}
+            alt={name}
+            loading="lazy"
+            decoding="async"
+            draggable={false}
+            className={cn(
+              "h-full w-full object-cover transition-transform duration-300",
+              isCardInteractive && "group-hover:scale-105",
+            )}
+          />
+        ) : (
+          <div
+            className={cn(
+              "h-full w-full transition-transform duration-300",
+              isCardInteractive && "group-hover:scale-105",
+            )}
+            style={color ? { backgroundColor: color } : undefined}
+            role="img"
+            aria-label={name}
+          />
+        )}
       </div>
 
       <div className="flex flex-1 flex-col gap-2 p-3">
