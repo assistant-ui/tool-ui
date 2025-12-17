@@ -231,28 +231,21 @@ export function ConfigPanel({
         )}
 
         {view && (
-          <SettingRow label="View" className="items-start">
-            <div className="flex flex-col items-end gap-1">
-              <div className="flex items-center gap-2">
-                <div className="bg-primary/10 text-primary flex items-center gap-1.5 rounded-md px-2 py-1 text-xs font-medium">
-                  <Layers className="size-3" />
-                  {view.mode}
-                </div>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="text-muted-foreground hover:text-foreground size-6 p-0"
-                  onClick={() => setView(null)}
-                  title="Dismiss view"
-                >
-                  <X className="size-3.5" />
-                </Button>
+          <SettingRow label="View">
+            <div className="flex items-center gap-2">
+              <div className="bg-primary/10 text-primary flex items-center gap-1.5 rounded-md px-2 py-1 text-xs font-medium">
+                <Layers className="size-3" />
+                {view.mode}
               </div>
-              {view.params && Object.keys(view.params).length > 0 && (
-                <code className="text-muted-foreground max-w-48 truncate text-[10px]">
-                  {JSON.stringify(view.params)}
-                </code>
-              )}
+              <Button
+                variant="ghost"
+                size="sm"
+                className="text-muted-foreground hover:text-foreground size-6 p-0"
+                onClick={() => setView(null)}
+                title="Dismiss view"
+              >
+                <X className="size-3.5" />
+              </Button>
             </div>
           </SettingRow>
         )}
