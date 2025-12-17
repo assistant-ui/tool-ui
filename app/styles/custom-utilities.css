@@ -82,16 +82,21 @@
   }
 
   .scrollbar-subtle::-webkit-scrollbar {
-    width: 4px;
+    width: 20px;
+    height: 20px;
   }
 
   .scrollbar-subtle::-webkit-scrollbar-track {
     background: transparent;
+    /* Add padding to prevent thumb from being clipped by rounded corners */
+    margin: 0.25rem;
   }
 
   .scrollbar-subtle::-webkit-scrollbar-thumb {
-    background-color: oklch(0 0 0 / 0.2);
+    background-color: oklch(58.88% 0.23563 28.674 / 0.2);
     border-radius: 9999px;
+    /* Ensure thumb doesn't extend to edges */
+    border: 0 solid transparent;
   }
 
   .scrollbar-subtle:hover::-webkit-scrollbar-thumb {
@@ -99,15 +104,15 @@
   }
 
   .dark .scrollbar-subtle {
-    scrollbar-color: oklch(100% 0 271.152 / 0.25) transparent;
+    scrollbar-color: var(--color-neutral-500) transparent;
   }
 
   .dark .scrollbar-subtle::-webkit-scrollbar-thumb {
-    scrollbar-color: oklch(100% 0 271.152 / 0.25) transparent;
+    background-color: oklch(52.771% 0.21252 28.808 / 0.25);
   }
 
   .dark .scrollbar-subtle:hover::-webkit-scrollbar-thumb {
-    background-color: oklch(100% 0 271.152 / 0.55);
+    background-color: oklch(58.661% 0.23514 28.709 / 0.55);
   }
 
   .border-gradient-glow {
