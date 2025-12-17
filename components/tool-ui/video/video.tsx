@@ -23,7 +23,6 @@ function VideoProgress() {
 
 export interface VideoProps extends SerializableVideo {
   className?: string;
-  maxWidth?: string;
   isLoading?: boolean;
   autoPlay?: boolean;
   defaultMuted?: boolean;
@@ -50,7 +49,6 @@ export function Video(props: VideoProps) {
 function VideoInner(props: Omit<VideoProps, "defaultMuted">) {
   const {
     className,
-    maxWidth,
     isLoading,
     autoPlay = true,
     onNavigate,
@@ -103,10 +101,6 @@ function VideoInner(props: Omit<VideoProps, "defaultMuted">) {
     [responseActions],
   );
 
-  const containerStyle: React.CSSProperties = maxWidth
-    ? { maxWidth, width: "100%" }
-    : { width: "100%" };
-
   const handleWatch = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
     event.stopPropagation();
@@ -121,8 +115,7 @@ function VideoInner(props: Omit<VideoProps, "defaultMuted">) {
 
   return (
     <article
-      className="relative w-full"
-      style={containerStyle}
+      className={cn("relative w-full min-w-80 max-w-md", className)}
       lang={locale}
       aria-busy={isLoading}
       data-tool-ui-id={id}
@@ -132,7 +125,6 @@ function VideoInner(props: Omit<VideoProps, "defaultMuted">) {
         className={cn(
           "group @container relative isolate flex w-full min-w-0 flex-col overflow-hidden rounded-xl",
           "border border-border bg-card text-sm shadow-xs",
-          className,
         )}
       >
         {isLoading ? (

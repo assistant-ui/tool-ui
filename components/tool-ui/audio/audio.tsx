@@ -26,7 +26,6 @@ function AudioProgress() {
 
 export interface AudioProps extends SerializableAudio {
   className?: string;
-  maxWidth?: string;
   isLoading?: boolean;
   onMediaEvent?: (type: "play" | "pause" | "mute" | "unmute") => void;
   responseActions?: ActionsProp;
@@ -45,7 +44,6 @@ export function Audio(props: AudioProps) {
 function AudioInner(props: AudioProps) {
   const {
     className,
-    maxWidth,
     isLoading,
     onMediaEvent,
     responseActions,
@@ -96,10 +94,6 @@ function AudioInner(props: AudioProps) {
     [responseActions],
   );
 
-  const containerStyle: React.CSSProperties = maxWidth
-    ? { maxWidth, width: "100%" }
-    : { width: "100%" };
-
   const showText = Boolean(title || description);
   const gridClasses = cn(
     "grid gap-4",
@@ -112,8 +106,7 @@ function AudioInner(props: AudioProps) {
 
   return (
     <article
-      className="relative w-full"
-      style={containerStyle}
+      className={cn("relative w-full min-w-80 max-w-sm", className)}
       lang={locale}
       aria-busy={isLoading}
       data-tool-ui-id={id}

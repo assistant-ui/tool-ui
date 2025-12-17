@@ -61,6 +61,10 @@ function MaxWidthWrapper({ children }: { children: ReactNode }) {
   return <div className="mx-auto w-full max-w-md">{children}</div>;
 }
 
+function MaxWidthSmWrapper({ children }: { children: ReactNode }) {
+  return <div className="mx-auto w-full max-w-sm">{children}</div>;
+}
+
 export const previewConfigs: Record<ComponentId, PreviewConfig<unknown, string>> = {
   chart: {
     presets: chartPresets as Record<string, PresetWithCodeGen<unknown>>,
@@ -93,6 +97,7 @@ export const previewConfigs: Record<ComponentId, PreviewConfig<unknown, string>>
   image: {
     presets: imagePresets as Record<string, PresetWithCodeGen<unknown>>,
     defaultPreset: "with-source" satisfies ImagePresetName,
+    wrapper: MaxWidthWrapper,
     renderComponent: ({ data }) => {
       const { image, responseActions } = data as { image: Parameters<typeof Image>[0]; responseActions?: unknown[] };
       return (
@@ -107,6 +112,7 @@ export const previewConfigs: Record<ComponentId, PreviewConfig<unknown, string>>
   video: {
     presets: videoPresets as Record<string, PresetWithCodeGen<unknown>>,
     defaultPreset: "with-poster" satisfies VideoPresetName,
+    wrapper: MaxWidthWrapper,
     renderComponent: ({ data }) => {
       const { video, responseActions } = data as { video: Parameters<typeof Video>[0]; responseActions?: unknown[] };
       return (
@@ -121,6 +127,7 @@ export const previewConfigs: Record<ComponentId, PreviewConfig<unknown, string>>
   audio: {
     presets: audioPresets as Record<string, PresetWithCodeGen<unknown>>,
     defaultPreset: "with-artwork" satisfies AudioPresetName,
+    wrapper: MaxWidthSmWrapper,
     renderComponent: ({ data }) => {
       const { audio, responseActions } = data as { audio: Parameters<typeof Audio>[0]; responseActions?: unknown[] };
       return (
@@ -135,6 +142,7 @@ export const previewConfigs: Record<ComponentId, PreviewConfig<unknown, string>>
   "link-preview": {
     presets: linkPreviewPresets as Record<string, PresetWithCodeGen<unknown>>,
     defaultPreset: "with-image" satisfies LinkPreviewPresetName,
+    wrapper: MaxWidthWrapper,
     renderComponent: ({ data }) => {
       const { linkPreview, responseActions } = data as { linkPreview: Parameters<typeof LinkPreview>[0]; responseActions?: unknown[] };
       return (

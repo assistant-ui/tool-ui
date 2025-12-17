@@ -9,18 +9,16 @@ import { Audio } from "@/components/tool-ui/audio";
 
 <Tabs items={["Preview", "Code"]}>
   <Tab>
-    <div className="not-prose flex justify-center">
-      <div className="w-full max-w-md">
-        <Audio
-          id="audio-example"
-          assetId="sample-audio"
-          src="https://samplelib.com/lib/preview/mp3/sample-6s.mp3"
-          title="Bell Labs hallway recording"
-          description="Ambient sounds where UNIX, C, and more took shape."
-          artwork="https://images.unsplash.com/photo-1454165205744-3b78555e5572?w=400&auto=format&fit=crop"
-          durationMs={30000}
-        />
-      </div>
+    <div className="not-prose mx-auto max-w-sm">
+      <Audio
+        id="audio-example"
+        assetId="sample-audio"
+        src="https://samplelib.com/lib/preview/mp3/sample-6s.mp3"
+        title="Bell Labs hallway recording"
+        description="Ambient sounds where UNIX, C, and more took shape."
+        artwork="https://images.unsplash.com/photo-1454165205744-3b78555e5572?w=400&auto=format&fit=crop"
+        durationMs={30000}
+      />
     </div>
   </Tab>
   <Tab>

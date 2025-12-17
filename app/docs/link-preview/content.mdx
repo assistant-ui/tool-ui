@@ -9,18 +9,16 @@ import { LinkPreview } from "@/components/tool-ui/link-preview";
 
 <Tabs items={["Preview", "Code"]}>
   <Tab>
-    <div className="not-prose flex justify-center">
-      <div className="w-full max-w-md">
-        <LinkPreview
-          id="link-preview-example"
-          href="https://react.dev/reference/rsc/server-components"
-          title="React Server Components"
-          description="Server Components are a new type of Component that renders ahead of time."
-          image="https://images.unsplash.com/photo-1633356122544-f134324a6cee?auto=format&fit=crop&q=80&w=1200"
-          domain="react.dev"
-          ratio="16:9"
-        />
-      </div>
+    <div className="not-prose mx-auto max-w-md">
+      <LinkPreview
+        id="link-preview-example"
+        href="https://react.dev/reference/rsc/server-components"
+        title="React Server Components"
+        description="Server Components are a new type of Component that renders ahead of time."
+        image="https://images.unsplash.com/photo-1633356122544-f134324a6cee?auto=format&fit=crop&q=80&w=1200"
+        domain="react.dev"
+        ratio="16:9"
+      />
     </div>
   </Tab>
   <Tab>

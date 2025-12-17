@@ -29,7 +29,6 @@ function LinkPreviewProgress() {
 
 export interface LinkPreviewProps extends SerializableLinkPreview {
   className?: string;
-  maxWidth?: string;
   isLoading?: boolean;
   onNavigate?: (href: string, preview: SerializableLinkPreview) => void;
   responseActions?: ActionsProp;
@@ -40,7 +39,6 @@ export interface LinkPreviewProps extends SerializableLinkPreview {
 export function LinkPreview(props: LinkPreviewProps) {
   const {
     className,
-    maxWidth,
     isLoading,
     onNavigate,
     responseActions,
@@ -76,10 +74,6 @@ export function LinkPreview(props: LinkPreviewProps) {
     [responseActions],
   );
 
-  const containerStyle: React.CSSProperties = maxWidth
-    ? { maxWidth, width: "100%" }
-    : { width: "100%" };
-
   const handleClick = () => {
     if (!sanitizedHref) return;
     if (onNavigate) {
@@ -91,8 +85,7 @@ export function LinkPreview(props: LinkPreviewProps) {
 
   return (
     <article
-      className="relative w-full"
-      style={containerStyle}
+      className={cn("relative w-full min-w-80 max-w-md", className)}
       lang={locale}
       aria-busy={isLoading}
       data-tool-ui-id={id}
@@ -103,7 +96,6 @@ export function LinkPreview(props: LinkPreviewProps) {
           "group @container relative isolate flex w-full min-w-0 flex-col overflow-hidden rounded-xl",
           "border border-border bg-card text-sm shadow-xs",
           sanitizedHref && "cursor-pointer",
-          className,
         )}
         onClick={sanitizedHref ? handleClick : undefined}
         role={sanitizedHref ? "link" : undefined}

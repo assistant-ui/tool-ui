@@ -29,7 +29,6 @@ function ImageProgress() {
 
 export interface ImageProps extends SerializableImage {
   className?: string;
-  maxWidth?: string;
   isLoading?: boolean;
   onNavigate?: (href: string, image: SerializableImage) => void;
   responseActions?: ActionsProp;
@@ -40,7 +39,6 @@ export interface ImageProps extends SerializableImage {
 export function Image(props: ImageProps) {
   const {
     className,
-    maxWidth,
     isLoading,
     onNavigate,
     responseActions,
@@ -80,10 +78,6 @@ export function Image(props: ImageProps) {
     [responseActions],
   );
 
-  const containerStyle: React.CSSProperties = maxWidth
-    ? { maxWidth, width: "100%" }
-    : { width: "100%" };
-
   const sourceLabel = source?.label ?? domain;
   const fallbackInitial = (sourceLabel ?? "").trim().charAt(0).toUpperCase();
   const hasSource = Boolean(sourceLabel || source?.iconUrl);
@@ -111,8 +105,7 @@ export function Image(props: ImageProps) {
 
   return (
     <article
-      className="relative w-full"
-      style={containerStyle}
+      className={cn("relative w-full min-w-80 max-w-md", className)}
       lang={locale}
       aria-busy={isLoading}
       data-tool-ui-id={id}
@@ -122,7 +115,6 @@ export function Image(props: ImageProps) {
         className={cn(
           "group @container relative isolate flex w-full min-w-0 flex-col overflow-hidden rounded-xl",
           "border border-border bg-card text-sm shadow-xs",
-          className,
         )}
       >
         {isLoading ? (

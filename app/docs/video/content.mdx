@@ -9,19 +9,17 @@ import { Video } from "@/components/tool-ui/video";
 
 <Tabs items={["Preview", "Code"]}>
   <Tab>
-    <div className="not-prose flex justify-center">
-      <div className="w-full max-w-md">
-        <Video
-          id="video-example"
-          assetId="sample-video"
-          src="https://samplelib.com/lib/preview/mp4/sample-5s.mp4"
-          poster="https://images.unsplash.com/photo-1518770660439-4636190af475?w=900&auto=format&fit=crop"
-          title="The GUI moment"
-          description="From command lines to windows, icons, menus, and pointers."
-          ratio="16:9"
-          durationMs={128000}
-        />
-      </div>
+    <div className="not-prose mx-auto max-w-md">
+      <Video
+        id="video-example"
+        assetId="sample-video"
+        src="https://samplelib.com/lib/preview/mp4/sample-5s.mp4"
+        poster="https://images.unsplash.com/photo-1518770660439-4636190af475?w=900&auto=format&fit=crop"
+        title="The GUI moment"
+        description="From command lines to windows, icons, menus, and pointers."
+        ratio="16:9"
+        durationMs={128000}
+      />
     </div>
   </Tab>
   <Tab>
