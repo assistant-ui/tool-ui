@@ -5,27 +5,27 @@ import { useWorkbenchStore, useDisplayMode } from "@/lib/workbench/store";
 import { cn } from "@/lib/ui/cn";
 
 const LIGHT_THEME_VARS: CSSProperties = {
-  "--background": "240 5% 96%",
-  "--foreground": "240 10% 3.9%",
-  "--card": "0 0% 100%",
-  "--card-foreground": "240 10% 3.9%",
-  "--primary": "240 5.9% 10%",
-  "--primary-foreground": "0 0% 98%",
-  "--muted": "240 4.8% 95.9%",
-  "--muted-foreground": "240 3.8% 46.1%",
-  "--border": "240 5.9% 90%",
+  "--background": "oklch(1 0 0)",
+  "--foreground": "oklch(0.145 0 0)",
+  "--card": "oklch(1 0 0)",
+  "--card-foreground": "oklch(0.145 0 0)",
+  "--primary": "oklch(0.205 0 0)",
+  "--primary-foreground": "oklch(0.985 0 0)",
+  "--muted": "oklch(0.97 0 0)",
+  "--muted-foreground": "oklch(0.556 0 0)",
+  "--border": "oklch(0.922 0 0)",
 } as CSSProperties;
 
 const DARK_THEME_VARS: CSSProperties = {
-  "--background": "240 0% 8%",
-  "--foreground": "0 0% 98%",
-  "--card": "240 10% 3.9%",
-  "--card-foreground": "0 0% 98%",
-  "--primary": "0 0% 98%",
-  "--primary-foreground": "240 5.9% 10%",
-  "--muted": "240 3.7% 15.9%",
-  "--muted-foreground": "240 5% 64.9%",
-  "--border": "240 3.7% 15.9%",
+  "--background": "oklch(0.145 0 0)",
+  "--foreground": "oklch(0.985 0 0)",
+  "--card": "oklch(0.205 0 0)",
+  "--card-foreground": "oklch(0.985 0 0)",
+  "--primary": "oklch(0.922 0 0)",
+  "--primary-foreground": "oklch(0.205 0 0)",
+  "--muted": "oklch(0.269 0 0)",
+  "--muted-foreground": "oklch(0.708 0 0)",
+  "--border": "oklch(1 0 0 / 10%)",
 } as CSSProperties;
 
 const THEME_VARS = {
