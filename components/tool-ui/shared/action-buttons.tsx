@@ -47,13 +47,11 @@ export function ActionButtons({
           <Button
             key={action.id}
             variant={variant}
-            size="lg"
             onClick={() => runAction(action.id)}
             disabled={action.isDisabled}
             className={cn(
-              "rounded-full",
+              "rounded-full px-4!",
               "justify-center",
-              "min-w-24",
               "min-h-11 w-full text-base",
               "@sm/actions:min-h-0 @sm/actions:w-auto @sm/actions:px-3 @sm/actions:py-2 @sm/actions:text-sm",
               action.isConfirming &&
