@@ -81,7 +81,7 @@ export function Terminal({
         data-tool-ui-id={id}
         aria-busy="true"
       >
-        <div className="overflow-hidden rounded-lg border border-zinc-700 shadow-xs">
+        <div className="border-border bg-card overflow-hidden rounded-lg border shadow-xs">
           <TerminalProgress />
         </div>
       </div>
@@ -97,18 +97,18 @@ export function Terminal({
       data-tool-ui-id={id}
       data-slot="terminal"
     >
-      <div className="overflow-hidden rounded-lg border border-zinc-700 shadow-xs">
-        <div className="flex items-center justify-between bg-zinc-800 px-4 py-2">
+      <div className="border-border bg-card overflow-hidden rounded-lg border shadow-xs">
+        <div className="bg-muted/50 flex items-center justify-between border-b px-4 py-2">
           <div className="flex items-center gap-2 overflow-hidden">
-            <TerminalIcon className="h-4 w-4 shrink-0 text-zinc-400" />
-            <code className="truncate font-mono text-sm text-zinc-100">
-              {cwd && <span className="text-zinc-500">{cwd}$ </span>}
+            <TerminalIcon className="text-muted-foreground h-4 w-4 shrink-0" />
+            <code className="text-foreground truncate font-mono text-sm">
+              {cwd && <span className="text-muted-foreground">{cwd}$ </span>}
               {command}
             </code>
           </div>
           <div className="flex items-center gap-2">
             {durationMs !== undefined && (
-              <span className="flex items-center gap-1 text-xs text-zinc-400">
+              <span className="text-muted-foreground flex items-center gap-1 text-xs">
                 <Clock className="h-3 w-3" />
                 {formatDuration(durationMs)}
               </span>
@@ -117,7 +117,7 @@ export function Terminal({
               variant={isSuccess ? "default" : "destructive"}
               className={cn(
                 "font-mono text-xs",
-                isSuccess && "bg-green-600 hover:bg-green-600",
+                isSuccess && "bg-emerald-500 hover:bg-emerald-500",
               )}
             >
               {exitCode}
@@ -126,15 +126,15 @@ export function Terminal({
               variant="ghost"
               size="sm"
               onClick={handleCopyCommand}
-              className="h-7 w-7 p-0 text-zinc-400 hover:bg-zinc-700 hover:text-zinc-100"
+              className="h-7 w-7 p-0"
               aria-label={
                 copiedId === COPY_ID_COMMAND ? "Copied" : "Copy command"
               }
             >
               {copiedId === COPY_ID_COMMAND ? (
-                <Check className="h-4 w-4 text-green-500" />
+                <Check className="h-4 w-4 text-emerald-500" />
               ) : (
-                <Copy className="h-4 w-4" />
+                <Copy className="text-muted-foreground h-4 w-4" />
               )}
             </Button>
           </div>
@@ -144,23 +144,23 @@ export function Terminal({
           <Collapsible open={!isCollapsed}>
             <div
               className={cn(
-                "relative bg-zinc-900 font-mono text-sm",
+                "relative font-mono text-sm",
                 isCollapsed && "max-h-[200px] overflow-hidden",
               )}
             >
               <div className="overflow-x-auto p-4">
                 {stdout && (
-                  <div className="break-all whitespace-pre-wrap text-zinc-100">
+                  <div className="text-foreground break-all whitespace-pre-wrap">
                     <Ansi>{stdout}</Ansi>
                   </div>
                 )}
                 {stderr && (
-                  <div className="mt-2 break-all whitespace-pre-wrap text-red-400">
+                  <div className="mt-2 break-all whitespace-pre-wrap text-red-500 dark:text-red-400">
                     <Ansi>{stderr}</Ansi>
                   </div>
                 )}
                 {truncated && (
-                  <div className="mt-2 text-xs text-zinc-500 italic">
+                  <div className="text-muted-foreground mt-2 text-xs italic">
                     Output truncated...
                   </div>
                 )}
@@ -170,20 +170,20 @@ export function Terminal({
                 variant="ghost"
                 size="sm"
                 onClick={handleCopyOutput}
-                className="absolute top-2 right-2 h-7 w-7 p-0 text-zinc-500 hover:bg-zinc-800 hover:text-zinc-100"
+                className="absolute top-2 right-2 h-7 w-7 p-0"
                 aria-label={
                   copiedId === COPY_ID_OUTPUT ? "Copied" : "Copy output"
                 }
               >
                 {copiedId === COPY_ID_OUTPUT ? (
-                  <Check className="h-4 w-4 text-green-500" />
+                  <Check className="h-4 w-4 text-emerald-500" />
                 ) : (
-                  <Copy className="h-4 w-4" />
+                  <Copy className="text-muted-foreground h-4 w-4" />
                 )}
               </Button>
 
               {isCollapsed && (
-                <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-zinc-900 to-transparent" />
+                <div className="from-card absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t to-transparent" />
               )}
             </div>
 
@@ -193,7 +193,7 @@ export function Terminal({
                   variant="ghost"
                   size="sm"
                   onClick={() => setIsExpanded(!isExpanded)}
-                  className="w-full rounded-none border-t border-zinc-700 bg-zinc-800 py-2 text-zinc-400 hover:bg-zinc-700 hover:text-zinc-100"
+                  className="w-full rounded-none border-t py-2"
                 >
                   {isCollapsed ? (
                     <>
@@ -213,7 +213,7 @@ export function Terminal({
         )}
 
         {!hasOutput && (
-          <div className="bg-zinc-900 px-4 py-3 text-sm text-zinc-500 italic">
+          <div className="text-muted-foreground px-4 py-3 text-sm italic">
             No output
           </div>
         )}

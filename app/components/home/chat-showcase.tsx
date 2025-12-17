@@ -415,13 +415,13 @@ function createSceneConfigs(): SceneConfig[] {
     },
     {
       userMessage: "Run the tests for the auth module",
-      preamble: "Running tests:",
+      preamble: "Running tests...",
       toolUI: <AnimatedTerminal className="w-full max-w-[560px]" />,
       toolFallbackHeight: 200,
     },
     {
       userMessage: "Set up integrations for this project",
-      preamble: "Which integrations should I enable?",
+      preamble: "Which integrations should we enable?",
       toolUI: (
         <OptionList
           id="chat-showcase-option-list"
@@ -434,8 +434,8 @@ function createSceneConfigs(): SceneConfig[] {
       toolFallbackHeight: 320,
     },
     {
-      userMessage: "Write me a debounce hook",
-      preamble: "Here's a custom useDebounce hook:",
+      userMessage: "Need a debounce hook",
+      preamble: "Here's a solid useDebounce hook",
       toolUI: (
         <CodeBlock
           id="chat-showcase-code-block"
