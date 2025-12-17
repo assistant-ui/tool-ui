@@ -61,29 +61,16 @@
 figure.shiki {
   position: relative;
   max-width: 100%;
-  background-color: var(--color-neutral-100); /* TODO: Replace debug color */
+  background-color: var(--color-neutral-100);
   corner-shape: squircle;
+  height: 100%;
+  border: none;
+  padding-top: 4rem;
   border-radius: calc(var(--radius) * var(--border-radius-multiplier));
 }
 
 .dark figure.shiki {
   background-color: var(--color-neutral-900);
-}
-
-/* Faux glare effect - emulates overhead light source at high altitude */
-figure.shiki::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: 10;
-  border-radius: inherit;
-  pointer-events: none;
-  background: radial-gradient(
-    ellipse 100% 50% at 50% 0%,
-    oklch(1 0.01 90 / 50%) 0%,
-    oklch(1 0.005 90 / 25%) 50%,
-    transparent 100%
-  );
 }
 
 figure.shiki pre {

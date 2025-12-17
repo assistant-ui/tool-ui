@@ -351,7 +351,7 @@ export function ItemCarousel({
         <div
           ref={scrollRef}
           className={cn(
-            "grid auto-cols-max grid-flow-col gap-4 overflow-x-auto overscroll-x-contain p-3",
+            "grid auto-cols-max grid-flow-col gap-4 overflow-x-auto overscroll-x-contain p-4",
             "snap-x snap-proximity",
           )}
           role="list"

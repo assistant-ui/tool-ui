@@ -94,7 +94,8 @@ interface PlanTodoItemProps {
 }
 
 function PlanTodoItem({ todo }: PlanTodoItemProps) {
-  const { icon, iconClassName, labelClassName } = TODO_STATUS_STYLES[todo.status];
+  const { icon, iconClassName, labelClassName } =
+    TODO_STATUS_STYLES[todo.status];
   const isInProgress = todo.status === "in_progress";
 
   const labelElement = (
@@ -104,7 +105,11 @@ function PlanTodoItem({ todo }: PlanTodoItemProps) {
   if (!todo.description) {
     return (
       <li className="-mx-2 flex cursor-default items-start gap-2 rounded-md px-2 py-2">
-        <TodoIcon icon={icon} className={iconClassName} isAnimating={isInProgress} />
+        <TodoIcon
+          icon={icon}
+          className={iconClassName}
+          isAnimating={isInProgress}
+        />
         {labelElement}
       </li>
     );
@@ -114,7 +119,11 @@ function PlanTodoItem({ todo }: PlanTodoItemProps) {
     <li className="hover:bg-muted -mx-2 cursor-default rounded-md">
       <Collapsible>
         <CollapsibleTrigger className="group/todo flex w-full cursor-default items-start gap-2 px-2 py-2 text-left">
-          <TodoIcon icon={icon} className={iconClassName} isAnimating={isInProgress} />
+          <TodoIcon
+            icon={icon}
+            className={iconClassName}
+            isAnimating={isInProgress}
+          />
           <span className={cn("flex-1 text-sm text-pretty", labelClassName)}>
             {todo.label}
           </span>
@@ -196,12 +205,12 @@ export function Plan({
     <>
       <style>{SPIN_KEYFRAMES}</style>
       <Card
-        className={cn("w-full max-w-xl min-w-80", className)}
+        className={cn("w-full max-w-xl min-w-80 py-4", className)}
         data-tool-ui-id={id}
         data-slot="plan"
       >
         <CardHeader className="flex flex-row items-start justify-between gap-4">
-          <div className="space-y-2">
+          <div className="space-y-1.5">
             <CardTitle className="leading-5 font-medium text-pretty">
               {title}
             </CardTitle>
@@ -212,8 +221,8 @@ export function Plan({
           )}
         </CardHeader>
 
-        <CardContent>
-          <div className="bg-muted/50 rounded-lg border p-3">
+        <CardContent className="px-4">
+          <div className="bg-muted/50 rounded-lg border px-4 py-3">
             {showProgress && (
               <>
                 <div className="text-muted-foreground mb-2 text-sm">
