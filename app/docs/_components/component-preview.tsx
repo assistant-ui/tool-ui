@@ -3,9 +3,13 @@
 import { useCallback, useRef, useState } from "react";
 import { ComponentPreviewShell } from "./component-preview-shell";
 import { PresetSelector } from "./preset-selector";
-import { CodePanel } from "./code-panel";
-import { type ComponentId, getPreviewConfig, type PreviewState } from "@/lib/docs/preview-config";
+import {
+  type ComponentId,
+  getPreviewConfig,
+  type PreviewState,
+} from "@/lib/docs/preview-config";
 import { usePresetParam } from "@/hooks/use-preset-param";
+import { DynamicCodeBlock } from "fumadocs-ui/components/dynamic-codeblock";
 
 interface ComponentPreviewProps {
   componentId: ComponentId;
@@ -65,7 +69,7 @@ export function ComponentPreview({ componentId }: ComponentPreviewProps) {
         />
       }
       preview={wrappedPreview}
-      codePanel={<CodePanel code={code} />}
+      codePanel={<DynamicCodeBlock lang="tsx" code={code} />}
       code={code}
     />
   );
