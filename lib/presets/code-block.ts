@@ -1,7 +1,13 @@
 import type { SerializableCodeBlock } from "@/components/tool-ui/code-block";
 import type { PresetWithCodeGen } from "./types";
 
-export type CodeBlockPresetName = "typescript" | "python" | "json" | "bash" | "highlighted" | "collapsible";
+export type CodeBlockPresetName =
+  | "typescript"
+  | "python"
+  | "json"
+  | "bash"
+  | "highlighted"
+  | "collapsible";
 
 function escape(value: string): string {
   return value.replace(/\\/g, "\\\\").replace(/"/g, '\\"').replace(/`/g, "\\`");
@@ -32,7 +38,10 @@ function generateCodeBlockCode(data: SerializableCodeBlock): string {
   return `<CodeBlock\n${props.join("\n")}\n/>`;
 }
 
-export const codeBlockPresets: Record<CodeBlockPresetName, PresetWithCodeGen<SerializableCodeBlock>> = {
+export const codeBlockPresets: Record<
+  CodeBlockPresetName,
+  PresetWithCodeGen<SerializableCodeBlock>
+> = {
   typescript: {
     description: "TypeScript with filename header",
     data: {

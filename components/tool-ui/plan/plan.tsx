@@ -205,7 +205,7 @@ export function Plan({
     <>
       <style>{SPIN_KEYFRAMES}</style>
       <Card
-        className={cn("w-full max-w-xl min-w-80 py-4", className)}
+        className={cn("w-full max-w-xl min-w-80 gap-4 py-4", className)}
         data-tool-ui-id={id}
         data-slot="plan"
       >
@@ -222,7 +222,7 @@ export function Plan({
         </CardHeader>
 
         <CardContent className="px-4">
-          <div className="bg-muted/50 rounded-lg border px-4 py-3">
+          <div className="bg-muted/70 rounded-lg border px-4 py-3">
             {showProgress && (
               <>
                 <div className="text-muted-foreground mb-2 text-sm">

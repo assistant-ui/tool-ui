@@ -186,17 +186,29 @@ Time: 1.24s`,
 export const CODE_BLOCK_DATA: Omit<SerializableCodeBlock, "id"> = {
   language: "typescript",
   filename: "use-debounce.ts",
-  code: `import { useState, useEffect } from "react";
+  code: `import { useEffect, useState } from "react";
 
-export function useDebounce<T>(value: T, delay: number): T {
-  const [debouncedValue, setDebouncedValue] = useState(value);
+export function useDebounce<T>(value: T, delay = 250): T {
+  const [debounced, setDebounced] = useState(value);
 
   useEffect(() => {
-    const timer = setTimeout(() => setDebouncedValue(value), delay);
-    return () => clearTimeout(timer);
-  }, [value, delay]);
+    // Normalize delay (covers NaN/Infinity/negative)
+    const d = Number.isFinite(delay) ? Math.max(0, delay) : 0;
 
-  return debouncedValue;
+    // If no delay, update immediately.
+    if (d === 0) {
+      if (!Object.is(debounced, value)) setDebounced(value);
+      return;
+    }
+
+    const id = setTimeout(() => {
+      if (!Object.is(debounced, value)) setDebounced(value);
+    }, d);
+
+    return () => clearTimeout(id);
+  }, [value, delay, debounced]);
+
+  return debounced;
 }`,
   showLineNumbers: true,
 };
