@@ -74,7 +74,7 @@ export default function ComponentsGalleryPage() {
           </div>
 
           <div className="mb-5 break-inside-avoid 2xl:mb-5">
-            <OptionList {...optionListPresets.export.data} />
+            <OptionList {...optionListPresets["max-selections"].data} />
           </div>
 
           <div className="mb-5 break-inside-avoid 2xl:mb-5">

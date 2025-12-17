@@ -138,7 +138,7 @@ function OptionItem({
     >
       <span
         className={cn(
-          "bg-primary/5 absolute inset-0 -mx-3 -my-0.5 rounded-xl opacity-0 group-hover:opacity-100",
+          "bg-primary/5 absolute inset-0 -mx-3 -my-0.5 rounded-xl opacity-0 transition-opacity group-hover:opacity-100",
         )}
       />
       <div className="relative flex items-start gap-3">
@@ -587,7 +587,7 @@ export function OptionList({
             <Fragment key={option.id}>
               {index > 0 && (
                 <Separator
-                  className="[@media(hover:hover)]:[&:has(+_:hover)]:opacity-0 [@media(hover:hover)]:[.peer:hover+&]:opacity-0"
+                  className="transition-opacity [@media(hover:hover)]:[&:has(+_:hover)]:opacity-0 [@media(hover:hover)]:[.peer:hover+&]:opacity-0"
                   orientation="horizontal"
                 />
               )}

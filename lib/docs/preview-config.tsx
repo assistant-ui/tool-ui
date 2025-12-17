@@ -156,7 +156,7 @@ export const previewConfigs: Record<ComponentId, PreviewConfig<unknown, string>>
   },
   "option-list": {
     presets: optionListPresets as Record<string, PresetWithCodeGen<unknown>>,
-    defaultPreset: "export" satisfies OptionListPresetName,
+    defaultPreset: "max-selections" satisfies OptionListPresetName,
     wrapper: MaxWidthWrapper,
     renderComponent: ({ data, state, setState }) => {
       const listData = data as Parameters<typeof OptionList>[0];
