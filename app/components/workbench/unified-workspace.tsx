@@ -32,7 +32,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { TAB_LIST_CLASSES, TAB_TRIGGER_CLASSES } from "./styles";
+import { TAB_TRIGGER_CLASSES } from "./styles";
 import {
   VIEW_TRANSITION_NAME,
   VIEW_TRANSITION_PARENT_NAME,
@@ -393,7 +393,7 @@ function EditorPanel() {
             value={activeJsonTab}
             onValueChange={(v) => setActiveJsonTab(v as ActiveJsonTab)}
           >
-            <TabsList className={TAB_LIST_CLASSES}>
+            <TabsList className="bg-transparent">
               <TabsTrigger className={TAB_TRIGGER_CLASSES} value="toolInput">
                 Input
               </TabsTrigger>
