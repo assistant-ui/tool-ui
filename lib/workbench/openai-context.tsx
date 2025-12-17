@@ -17,7 +17,10 @@ import type {
   DisplayMode,
   CallToolResponse,
   ModalOptions,
+  UploadFileResponse,
+  GetFileDownloadUrlResponse,
 } from "./types";
+import { storeFile, getFileUrl } from "./file-store";
 
 interface OpenAIContextValue extends OpenAIGlobals, OpenAIAPI {}
 
@@ -187,6 +190,42 @@ export function OpenAIProvider({ children }: OpenAIProviderProps) {
     [store],
   );
 
+  const uploadFile = useCallback(
+    async (file: File): Promise<UploadFileResponse> => {
+      const fileId = storeFile(file);
+
+      store.addConsoleEntry({
+        type: "uploadFile",
+        method: `uploadFile("${file.name}")`,
+        args: { name: file.name, size: file.size, type: file.type },
+        result: { fileId },
+      });
+
+      return { fileId };
+    },
+    [store],
+  );
+
+  const getFileDownloadUrl = useCallback(
+    async (args: { fileId: string }): Promise<GetFileDownloadUrlResponse> => {
+      const downloadUrl = getFileUrl(args.fileId);
+
+      store.addConsoleEntry({
+        type: "getFileDownloadUrl",
+        method: `getFileDownloadUrl("${args.fileId}")`,
+        args,
+        result: downloadUrl ? { downloadUrl } : { error: "File not found" },
+      });
+
+      if (!downloadUrl) {
+        throw new Error(`File not found: ${args.fileId}`);
+      }
+
+      return { downloadUrl };
+    },
+    [store],
+  );
+
   const value = useMemo<OpenAIContextValue>(
     () => ({
       theme: globals.theme,
@@ -199,6 +238,7 @@ export function OpenAIProvider({ children }: OpenAIProviderProps) {
       widgetState: globals.widgetState,
       userAgent: globals.userAgent,
       safeArea: globals.safeArea,
+      view: globals.view,
       callTool,
       setWidgetState,
       requestDisplayMode,
@@ -207,6 +247,8 @@ export function OpenAIProvider({ children }: OpenAIProviderProps) {
       openExternal,
       notifyIntrinsicHeight,
       requestModal,
+      uploadFile,
+      getFileDownloadUrl,
     }),
     [
       globals,
@@ -218,6 +260,8 @@ export function OpenAIProvider({ children }: OpenAIProviderProps) {
       openExternal,
       notifyIntrinsicHeight,
       requestModal,
+      uploadFile,
+      getFileDownloadUrl,
     ],
   );
 
@@ -295,4 +339,18 @@ export function useRequestDisplayMode() {
 export function useSendFollowUpMessage() {
   const context = useOpenAI();
   return context.sendFollowUpMessage;
+}
+
+export function useView(): string | null {
+  return useOpenAiGlobal("view");
+}
+
+export function useUploadFile() {
+  const context = useOpenAI();
+  return context.uploadFile;
+}
+
+export function useGetFileDownloadUrl() {
+  const context = useOpenAI();
+  return context.getFileDownloadUrl;
 }

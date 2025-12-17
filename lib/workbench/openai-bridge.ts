@@ -86,6 +86,7 @@ export function generateBridgeScript(initialGlobals: OpenAIGlobals): string {
     get widgetState() { return globals.widgetState; },
     get userAgent() { return globals.userAgent; },
     get safeArea() { return globals.safeArea; },
+    get view() { return globals.view; },
 
     // API Methods
     callTool: function(name, args) {
@@ -121,6 +122,14 @@ export function generateBridgeScript(initialGlobals: OpenAIGlobals): string {
 
     requestModal: function(opts) {
       return sendMethodCall('requestModal', [opts]);
+    },
+
+    uploadFile: function(file) {
+      return sendMethodCall('uploadFile', [file]);
+    },
+
+    getFileDownloadUrl: function(opts) {
+      return sendMethodCall('getFileDownloadUrl', [opts]);
     }
   };
 

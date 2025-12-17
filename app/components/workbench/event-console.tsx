@@ -19,6 +19,8 @@ const typeColors: Record<ConsoleEntryType, string> = {
   openExternal: "text-neutral-500 dark:text-neutral-400",
   notifyIntrinsicHeight: "text-teal-600 dark:text-teal-400",
   requestModal: "text-pink-600 dark:text-pink-400",
+  uploadFile: "text-amber-600 dark:text-amber-400",
+  getFileDownloadUrl: "text-amber-600 dark:text-amber-400",
   event: "text-cyan-600 dark:text-cyan-400",
 };
 

@@ -38,6 +38,7 @@ export interface OpenAIGlobals {
   widgetState: Record<string, unknown> | null;
   userAgent: UserAgent;
   safeArea: SafeArea;
+  view: string | null;
 }
 
 export interface CallToolResponse {
@@ -50,6 +51,14 @@ export interface CallToolResponse {
 export interface ModalOptions {
   anchorRef?: { current: HTMLElement | null };
   content?: string;
+}
+
+export interface UploadFileResponse {
+  fileId: string;
+}
+
+export interface GetFileDownloadUrlResponse {
+  downloadUrl: string;
 }
 
 export interface OpenAIAPI {
@@ -66,6 +75,10 @@ export interface OpenAIAPI {
   setWidgetState: (state: Record<string, unknown>) => Promise<void>;
   notifyIntrinsicHeight: (height: number) => void;
   requestModal: (options: ModalOptions) => Promise<void>;
+  uploadFile: (file: File) => Promise<UploadFileResponse>;
+  getFileDownloadUrl: (args: {
+    fileId: string;
+  }) => Promise<GetFileDownloadUrlResponse>;
 }
 
 export type WindowOpenAI = OpenAIGlobals & OpenAIAPI;
@@ -101,6 +114,8 @@ export type ConsoleEntryType =
   | "openExternal"
   | "notifyIntrinsicHeight"
   | "requestModal"
+  | "uploadFile"
+  | "getFileDownloadUrl"
   | "event";
 
 export interface ConsoleEntry {

@@ -13,6 +13,7 @@ import type {
 } from "./types";
 import { DEVICE_PRESETS } from "./types";
 import { workbenchComponents } from "./component-registry";
+import { clearFiles } from "./file-store";
 
 const defaultComponent = workbenchComponents[0];
 
@@ -40,6 +41,7 @@ interface WorkbenchState {
   activeJsonTab: ActiveJsonTab;
   isTransitioning: boolean;
   transitionFrom: DisplayMode | null;
+  view: string | null;
 
   setSelectedComponent: (id: string) => void;
   setDisplayMode: (mode: DisplayMode) => void;
@@ -64,6 +66,7 @@ interface WorkbenchState {
   restoreConsoleLogs: (entries: ConsoleEntry[]) => void;
   toggleSection: (section: string) => void;
   setActiveJsonTab: (tab: ActiveJsonTab) => void;
+  setView: (view: string | null) => void;
   getOpenAIGlobals: () => OpenAIGlobals;
 }
 
@@ -80,6 +83,7 @@ function buildOpenAIGlobals(
     | "widgetState"
     | "deviceType"
     | "safeAreaInsets"
+    | "view"
   >,
 ): OpenAIGlobals {
   const preset = DEVICE_PRESETS[state.deviceType];
@@ -97,6 +101,7 @@ function buildOpenAIGlobals(
     safeArea: {
       insets: state.safeAreaInsets,
     },
+    view: state.view,
   };
 }
 
@@ -117,7 +122,9 @@ export const useWorkbenchStore = create<WorkbenchState>((set, get) => ({
   activeJsonTab: "toolInput",
   isTransitioning: false,
   transitionFrom: null,
-  setSelectedComponent: (id) =>
+  view: null,
+  setSelectedComponent: (id) => {
+    clearFiles();
     set(() => {
       const entry = workbenchComponents.find((comp) => comp.id === id) ?? null;
 
@@ -129,7 +136,8 @@ export const useWorkbenchStore = create<WorkbenchState>((set, get) => ({
         toolResponseMetadata: null,
         activeJsonTab: "toolInput",
       };
-    }),
+    });
+  },
   setDisplayMode: (mode) => set(() => ({ displayMode: mode })),
   setTransitioning: (transitioning) =>
     set((state) => ({
@@ -174,6 +182,7 @@ export const useWorkbenchStore = create<WorkbenchState>((set, get) => ({
       },
     })),
   setActiveJsonTab: (tab) => set(() => ({ activeJsonTab: tab })),
+  setView: (view) => set(() => ({ view })),
   getOpenAIGlobals: () => {
     const state = get();
     return buildOpenAIGlobals(state);
@@ -206,6 +215,7 @@ export const useOpenAIGlobals = (): OpenAIGlobals => {
   const widgetState = useWorkbenchStore((s) => s.widgetState);
   const deviceType = useWorkbenchStore((s) => s.deviceType);
   const safeAreaInsets = useWorkbenchStore((s) => s.safeAreaInsets);
+  const view = useWorkbenchStore((s) => s.view);
 
   return useMemo(
     () =>
@@ -220,6 +230,7 @@ export const useOpenAIGlobals = (): OpenAIGlobals => {
         widgetState,
         deviceType,
         safeAreaInsets,
+        view,
       }),
     [
       theme,
@@ -232,6 +243,7 @@ export const useOpenAIGlobals = (): OpenAIGlobals => {
       widgetState,
       deviceType,
       safeAreaInsets,
+      view,
     ],
   );
 };
