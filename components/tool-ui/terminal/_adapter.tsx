@@ -6,11 +6,9 @@
  *
  *   cn          → Your Tailwind merge utility (e.g., "@/lib/utils", "~/lib/cn")
  *   Button      → shadcn/ui Button
- *   Badge       → shadcn/ui Badge
  *   Collapsible → shadcn/ui Collapsible
  */
 
 export { cn } from "../../../lib/ui/cn";
 export { Button } from "../../ui/button";
-export { Badge } from "../../ui/badge";
 export { Collapsible, CollapsibleTrigger } from "../../ui/collapsible";

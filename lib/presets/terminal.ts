@@ -47,14 +47,14 @@ export const terminalPresets: Record<TerminalPresetName, PresetWithCodeGen<Seria
     data: {
       id: "terminal-preview-success",
       command: "pnpm test",
-      stdout: `✓ src/utils.test.ts (5 tests) 23ms
-✓ src/api.test.ts (12 tests) 156ms
-✓ src/components.test.ts (8 tests) 89ms
+      stdout: `\x1b[32m✓\x1b[0m src/utils.test.ts \x1b[90m(5 tests)\x1b[0m \x1b[33m23ms\x1b[0m
+\x1b[32m✓\x1b[0m src/api.test.ts \x1b[90m(12 tests)\x1b[0m \x1b[33m156ms\x1b[0m
+\x1b[32m✓\x1b[0m src/components.test.ts \x1b[90m(8 tests)\x1b[0m \x1b[33m89ms\x1b[0m
 
-Test Files  3 passed (3)
-     Tests  25 passed (25)
-  Start at  10:23:45
-  Duration  312ms`,
+\x1b[1mTest Files\x1b[0m  \x1b[32m3 passed\x1b[0m (3)
+\x1b[1m     Tests\x1b[0m  \x1b[32m25 passed\x1b[0m (25)
+\x1b[1m  Start at\x1b[0m  10:23:45
+\x1b[1m  Duration\x1b[0m  312ms`,
       exitCode: 0,
       durationMs: 312,
       cwd: "~/project",

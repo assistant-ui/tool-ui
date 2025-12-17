@@ -8,7 +8,7 @@ import {
   ChevronDown,
   ChevronUp,
   Terminal as TerminalIcon,
-  Clock,
+  Timer,
 } from "lucide-react";
 import type { TerminalProps } from "./schema";
 import {
@@ -16,12 +16,11 @@ import {
   normalizeActionsConfig,
   useCopyToClipboard,
 } from "../shared";
-import { Button, Badge, Collapsible, CollapsibleTrigger } from "./_adapter";
+import { Button, Collapsible, CollapsibleTrigger } from "./_adapter";
 import { cn } from "./_adapter";
 import { TerminalProgress } from "./progress";
 
-const COPY_ID_COMMAND = "command";
-const COPY_ID_OUTPUT = "output";
+const COPY_ID = "terminal-output";
 
 function formatDuration(ms: number): string {
   if (ms < 1000) return `${ms}ms`;
@@ -63,12 +62,8 @@ export function Terminal({
     [responseActions],
   );
 
-  const handleCopyCommand = useCallback(() => {
-    copy(command, COPY_ID_COMMAND);
-  }, [command, copy]);
-
-  const handleCopyOutput = useCallback(() => {
-    copy(fullOutput, COPY_ID_OUTPUT);
+  const handleCopy = useCallback(() => {
+    copy(fullOutput, COPY_ID);
   }, [fullOutput, copy]);
 
   if (isLoading) {
@@ -108,31 +103,30 @@ export function Terminal({
           </div>
           <div className="flex items-center gap-2">
             {durationMs !== undefined && (
-              <span className="text-muted-foreground flex items-center gap-1 text-xs">
-                <Clock className="h-3 w-3" />
+              <span className="text-muted-foreground flex items-center gap-1.5 font-mono text-xs tabular-nums">
+                <Timer className="size-3" />
                 {formatDuration(durationMs)}
               </span>
             )}
-            <Badge
-              variant={isSuccess ? "default" : "destructive"}
+            <span
               className={cn(
-                "font-mono text-xs",
-                isSuccess && "bg-emerald-500 hover:bg-emerald-500",
+                "font-mono text-sm tabular-nums",
+                isSuccess
+                  ? "text-emerald-600 dark:text-emerald-400"
+                  : "text-red-600 dark:text-red-400",
               )}
             >
               {exitCode}
-            </Badge>
+            </span>
             <Button
               variant="ghost"
               size="sm"
-              onClick={handleCopyCommand}
+              onClick={handleCopy}
               className="h-7 w-7 p-0"
-              aria-label={
-                copiedId === COPY_ID_COMMAND ? "Copied" : "Copy command"
-              }
+              aria-label={copiedId === COPY_ID ? "Copied" : "Copy output"}
             >
-              {copiedId === COPY_ID_COMMAND ? (
-                <Check className="h-4 w-4 text-emerald-500" />
+              {copiedId === COPY_ID ? (
+                <Check className="h-4 w-4 text-green-700 dark:text-green-400" />
               ) : (
                 <Copy className="text-muted-foreground h-4 w-4" />
               )}
@@ -166,22 +160,6 @@ export function Terminal({
                 )}
               </div>
 
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={handleCopyOutput}
-                className="absolute top-2 right-2 h-7 w-7 p-0"
-                aria-label={
-                  copiedId === COPY_ID_OUTPUT ? "Copied" : "Copy output"
-                }
-              >
-                {copiedId === COPY_ID_OUTPUT ? (
-                  <Check className="h-4 w-4 text-emerald-500" />
-                ) : (
-                  <Copy className="text-muted-foreground h-4 w-4" />
-                )}
-              </Button>
-
               {isCollapsed && (
                 <div className="from-card absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t to-transparent" />
               )}
@@ -191,18 +169,17 @@ export function Terminal({
               <CollapsibleTrigger asChild>
                 <Button
                   variant="ghost"
-                  size="sm"
                   onClick={() => setIsExpanded(!isExpanded)}
-                  className="w-full rounded-none border-t py-2"
+                  className="text-muted-foreground w-full rounded-none border-t font-normal"
                 >
                   {isCollapsed ? (
                     <>
-                      <ChevronDown className="mr-2 h-4 w-4" />
+                      <ChevronDown className="mr-1 size-4" />
                       Show all {lineCount} lines
                     </>
                   ) : (
                     <>
-                      <ChevronUp className="mr-2 h-4 w-4" />
+                      <ChevronUp className="mr-1 size-4" />
                       Collapse
                     </>
                   )}
@@ -213,7 +190,7 @@ export function Terminal({
         )}
 
         {!hasOutput && (
-          <div className="text-muted-foreground px-4 py-3 text-sm italic">
+          <div className="text-muted-foreground px-4 py-3 font-mono text-sm italic">
             No output
           </div>
         )}
