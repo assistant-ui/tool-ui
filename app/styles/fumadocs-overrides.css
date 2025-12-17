@@ -89,6 +89,7 @@ figure.shiki pre code {
 
 .code-panel-fullbleed {
   overflow-y: scroll;
+  height: 100%;
 
   & figure.shiki {
     display: flex;
@@ -99,6 +100,7 @@ figure.shiki pre code {
     border: none;
     border-radius: 0;
     height: 100%;
+    background: transparent;
   }
 
   & figure.shiki pre {

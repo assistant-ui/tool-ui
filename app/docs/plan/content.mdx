@@ -2,7 +2,7 @@ import { DocsHeader } from "../_components/docs-header";
 
 <DocsHeader
   title="Plan"
-  description="A structured plan display component for presenting step-by-step tasks with progress tracking, status indicators, and expandable details. Perfect for AI assistants presenting implementation plans, task breakdowns, or guided workflows."
+  description="A structured plan display component for presenting step-by-step tasks."
   mdxPath="app/docs/plan/content.mdx"
 />
 
@@ -105,7 +105,11 @@ const showPlan = tool({
 
 // Frontend with assistant-ui
 import { makeAssistantToolUI } from "@assistant-ui/react";
-import { Plan, PlanErrorBoundary, parseSerializablePlan } from "@/components/tool-ui/plan";
+import {
+  Plan,
+  PlanErrorBoundary,
+  parseSerializablePlan,
+} from "@/components/tool-ui/plan";
 
 export const ShowPlanUI = makeAssistantToolUI({
   toolName: "showPlan",
@@ -113,7 +117,7 @@ export const ShowPlanUI = makeAssistantToolUI({
     // Tool outputs stream in; `result` will be `undefined` until the tool resolves.
     if (result === undefined) {
       return (
-        <div className="w-full max-w-xl rounded-2xl border bg-card/60 px-5 py-4 text-sm text-muted-foreground shadow-xs">
+        <div className="bg-card/60 text-muted-foreground w-full max-w-xl rounded-2xl border px-5 py-4 text-sm shadow-xs">
           Loading plan…
         </div>
       );

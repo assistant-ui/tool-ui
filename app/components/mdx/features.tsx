@@ -117,7 +117,7 @@ export function Feature({ icon, title, children, className }: FeatureProps) {
   return (
     <div
       className={cn(
-        "border-border/50 bg-muted/50 flex flex-col justify-between gap-3 rounded-xl border p-4",
+        "border-border/50 bg-muted/50 flex min-h-26 flex-col justify-between gap-3 rounded-xl border p-4",
         className,
       )}
     >

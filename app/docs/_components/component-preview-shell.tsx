@@ -150,14 +150,14 @@ export function ComponentPreviewShell({
 
         <div
           className={cn(
-            "relative flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden",
+            "relative flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden bg-neutral-100 dark:bg-neutral-950",
             "z-10",
             "border lg:mr-4 lg:mb-4 lg:rounded-lg lg:border-l",
           )}
         >
           {viewMode === "preview" && (
             <div
-              className="bg-dot-grid pointer-events-none absolute inset-0 z-0 bg-neutral-200 dark:bg-neutral-950 dark:opacity-60"
+              className="bg-dot-grid pointer-events-none absolute inset-0 z-0 dark:opacity-60"
               aria-hidden="true"
             />
           )}
@@ -165,8 +165,8 @@ export function ComponentPreviewShell({
           {viewMode === "code" && (
             <div
               className={cn(
-                "pointer-events-none absolute top-0 right-12 left-0 z-20 h-24",
-                "from-fd-card via-fd-card/80 bg-linear-to-b to-transparent",
+                "pointer-events-none absolute top-0 right-12 left-0 z-20 h-20",
+                "bg-linear-to-b from-neutral-100 via-neutral-100/80 to-transparent dark:from-neutral-950 dark:via-neutral-950/80",
                 "hidden lg:block",
               )}
               aria-hidden="true"
@@ -208,7 +208,7 @@ export function ComponentPreviewShell({
             )}
           >
             {viewMode === "preview" ? (
-              <div className="relative h-fit w-full p-4 pt-12 lg:pt-24">
+              <div className="relative h-fit w-full p-4 pt-12 lg:pt-16">
                 <ResizablePreviewArea
                   panelGroupRef={panelGroupRef}
                   handleLayout={handleLayout}

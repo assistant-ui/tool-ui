@@ -16,7 +16,7 @@ import {
 
 <DocsHeader
   title="Data Table"
-  description="An information surface for tabular tool outputs with responsive layout, sorting, and declarative formatting."
+  description="Display tabular data."
   mdxPath="app/docs/data-table/content.mdx"
 />
 
@@ -284,7 +284,7 @@ export const SearchProductsUI = makeAssistantToolUI({
     // Tool outputs stream in; `result` will be `undefined` until the tool resolves.
     if (result === undefined) {
       return (
-        <div className="w-full max-w-xl rounded-2xl border bg-card/60 px-5 py-4 text-sm text-muted-foreground shadow-xs">
+        <div className="bg-card/60 text-muted-foreground w-full max-w-xl rounded-2xl border px-5 py-4 text-sm shadow-xs">
           Loading table…
         </div>
       );
