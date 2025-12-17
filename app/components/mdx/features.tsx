@@ -117,14 +117,16 @@ export function Feature({ icon, title, children, className }: FeatureProps) {
   return (
     <div
       className={cn(
-        "flex flex-col gap-3 rounded-xl border border-border/50 bg-muted/50 p-4",
+        "border-border/50 bg-muted/50 flex flex-col justify-between gap-3 rounded-xl border p-4",
         className,
       )}
     >
       <IconComponent className="text-muted-foreground h-5 w-5" />
       <div>
-        <div className="font-semibold leading-none">{title}</div>
-        <div className="text-muted-foreground mt-1.5 text-sm">{children}</div>
+        <div className="leading-none font-semibold text-pretty">{title}</div>
+        <div className="text-muted-foreground mt-1.5 text-sm text-pretty">
+          {children}
+        </div>
       </div>
     </div>
   );

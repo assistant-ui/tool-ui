@@ -66,6 +66,10 @@ figure.shiki {
   border-radius: calc(var(--radius) * var(--border-radius-multiplier));
 }
 
+.dark figure.shiki {
+  background-color: var(--color-neutral-900);
+}
+
 /* Faux glare effect - emulates overhead light source at high altitude */
 figure.shiki::after {
   content: "";
