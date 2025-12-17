@@ -1,8 +1,10 @@
 import { DocsHeader } from "../_components/docs-header";
 
-<DocsHeader title="Terminal" mdxPath="app/docs/terminal/content.mdx" />
-
-A command output display component with ANSI color support, exit codes, and duration tracking. Perfect for showing command results, build outputs, and terminal interactions.
+<DocsHeader
+  title="Terminal"
+  description="Display command output display, with ANSI color support."
+  mdxPath="app/docs/terminal/content.mdx"
+/>
 
 <TerminalPresetExample preset="success" />
 
@@ -26,11 +28,11 @@ A command output display component with ANSI color support, exit codes, and dura
 ## When to Use
 
 - **Good for:** Build outputs, test results, command responses, CI/CD logs
-- **Not for:** Interactive terminal sessions (use xterm.js), real-time log streaming, command input
+- **Not for:** Interactive terminal sessions (use [xterm.js](https://xtermjs.org/)), real-time log streaming, command input
 
 ## Source and Install
 
-Copy `components/tool-ui/terminal` and the `shared` directory into your project. The `shared` folder contains utilities used by all Tool UI components. The `tool-ui` directory should sit alongside your shadcn `ui` directory.
+Copy [`components/tool-ui/terminal`](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/terminal) and the [`shared`](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/shared) directory into your project. The `shared` folder contains utilities used by all Tool UI components. The `tool-ui` directory should sit alongside your shadcn `ui` directory.
 
 ### Prerequisites
 
@@ -40,7 +42,7 @@ This component requires the following [shadcn/ui](https://ui.shadcn.com) compone
 pnpm dlx shadcn@latest add badge button
 ```
 
-It also uses Radix Collapsible directly:
+It also uses [Radix Collapsible](https://www.radix-ui.com/primitives/docs/components/collapsible) directly:
 
 ```bash
 pnpm add @radix-ui/react-collapsible
@@ -78,7 +80,7 @@ pnpm add @radix-ui/react-collapsible
 - [**Shared Dependencies (GitHub)**](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/shared) ([ZIP](https://download-directory.github.io/?url=https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/shared))
 - [**Terminal (GitHub)**](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/terminal) ([ZIP](https://download-directory.github.io/?url=https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/terminal))
 
-Install dependencies:
+Install dependencies ([ansi-to-react](https://www.npmjs.com/package/ansi-to-react) for ANSI color parsing):
 
 ```bash
 pnpm add ansi-to-react

@@ -1,8 +1,10 @@
 import { DocsHeader } from "../_components/docs-header";
 
-<DocsHeader title="Chart" mdxPath="app/docs/chart/content.mdx" />
-
-An interactive charting component for data visualization in chat. Supports bar and line charts with tooltips, legends, and multiple data series.
+<DocsHeader
+  title="Chart"
+  description="An interactive charting component for data visualization in chat."
+  mdxPath="app/docs/chart/content.mdx"
+/>
 
 <ChartPresetExample preset="revenue" />
 
@@ -26,7 +28,7 @@ An interactive charting component for data visualization in chat. Supports bar a
 ## When to Use
 
 - **Good for:** Trends, comparisons, distributions, time-series data
-- **Not for:** Single values (use text), detailed tabular data (use Data Table), complex dashboards
+- **Not for:** Single values (use text), detailed tabular data (use [Data Table](/docs/data-table)), complex dashboards
 
 ## Variants
 
@@ -44,7 +46,7 @@ Charts work with just `data`, `xKey`, and `series`. Title, description, legend, 
 
 ## Source and Install
 
-Copy `components/tool-ui/chart` and the `shared` directory into your project. The `shared` folder contains utilities used by all Tool UI components. The `tool-ui` directory should sit alongside your shadcn `ui` directory.
+Copy [`components/tool-ui/chart`](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/chart) and the [`shared`](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/shared) directory into your project. The `shared` folder contains utilities used by all Tool UI components. The `tool-ui` directory should sit alongside your shadcn `ui` directory.
 
 ### Prerequisites
 
@@ -153,7 +155,7 @@ export const ShowChartUI = makeAssistantToolUI({
   render: ({ result }) => {
     if (result === undefined) {
       return (
-        <div className="w-full max-w-xl rounded-2xl border bg-card/60 px-5 py-4 text-sm text-muted-foreground shadow-xs">
+        <div className="bg-card/60 text-muted-foreground w-full max-w-xl rounded-2xl border px-5 py-4 text-sm shadow-xs">
           Loading chart…
         </div>
       );

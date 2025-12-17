@@ -1,7 +1,3 @@
-:root {
-  --dot-grid-color: 255 0% 10%;
-}
-
 @keyframes accordion-down {
   from {
     height: 0;
@@ -33,9 +29,10 @@
     background-color: hsl(var(--wash));
   }
   .bg-dot-grid {
+    --dot-grid-color: var(--border);
     background-image: radial-gradient(
       circle,
-      hsl(var(--dot-grid-color)) 1px,
+      var(--dot-grid-color) 1px,
       transparent 1px
     );
     background-position: 6px 6px;

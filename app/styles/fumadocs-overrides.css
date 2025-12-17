@@ -1,40 +1,85 @@
-/* Fumadocs UI overrides scoped to docs/MDX surfaces */
+/* =============================================================================
+   Fumadocs UI Overrides
+   Scoped to docs/MDX surfaces for consistent styling with shadcn theme
+   ============================================================================= */
+
+/* -----------------------------------------------------------------------------
+   Debug / Development Variables
+   TODO: Remove or replace these placeholder values before production
+   ----------------------------------------------------------------------------- */
+
+:root {
+  --shiki-light-bg: var(--color-neutral-100);
+  --shiki-dark-bg: var(--color-neutral-900);
+
+  .dark {
+    --color-fd-foreground: hsl(0 0% 98%);
+  }
+}
+
+/* -----------------------------------------------------------------------------
+   Prose Content Overrides
+   Styling adjustments for MDX content within .prose containers
+   ----------------------------------------------------------------------------- */
 
 @layer utilities {
-  /* Numbered step badge in <Steps>/<Step> */
+  /* Step component badges (<Steps>/<Step>) */
   .prose :where(.fd-step)::before {
-    /* Colors from shadcn tokens */
     @apply bg-muted text-primary size-8 text-lg;
   }
 
-  /* Remove quote marks around blockquoted text */
+  /* Remove decorative quote marks from blockquotes */
   .prose blockquote::before,
-  .prose blockquote::after {
-    content: none !important;
-  }
-
+  .prose blockquote::after,
   .prose blockquote p::before,
   .prose blockquote p::after {
     content: none !important;
   }
 }
 
-/* Center component previews in Tabs (outside @layer for higher specificity) */
+/* -----------------------------------------------------------------------------
+   Tab Panel Layout
+   Component preview and code block positioning within tab panels
+   ----------------------------------------------------------------------------- */
+
+/* Center component previews */
 [data-state][role="tabpanel"] > .not-prose {
   margin-inline: auto;
 }
 
-/* Make code blocks full-width in component preview shell */
+/* Full-width code blocks (negative margin compensates for panel padding) */
 [data-state][role="tabpanel"] > figure:only-child {
   margin: -1rem !important;
 }
 
-/* Constrain fumadocs code blocks to prevent overflow from long strings.
-   The fumadocs Pre component uses w-max (width: max-content) which causes
-   overflow with long unbreakable strings like URLs. We override to allow
-   wrapping within the container bounds. */
+/* -----------------------------------------------------------------------------
+   Shiki Code Block Constraints
+   Prevents overflow from long unbreakable strings (URLs, tokens, etc.)
+   Fumadocs Pre uses w-max which causes horizontal overflow
+   ----------------------------------------------------------------------------- */
+
 figure.shiki {
+  position: relative;
   max-width: 100%;
+  background-color: var(--color-neutral-100); /* TODO: Replace debug color */
+  corner-shape: squircle;
+  border-radius: calc(var(--radius) * var(--border-radius-multiplier));
+}
+
+/* Faux glare effect - emulates overhead light source at high altitude */
+figure.shiki::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  border-radius: inherit;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse 100% 50% at 50% 0%,
+    oklch(1 0.01 90 / 50%) 0%,
+    oklch(1 0.005 90 / 25%) 50%,
+    transparent 100%
+  );
 }
 
 figure.shiki pre {
@@ -49,7 +94,11 @@ figure.shiki pre code {
   overflow-wrap: anywhere;
 }
 
-/* Full-bleed code panel with internal padding for view mode toggle */
+/* -----------------------------------------------------------------------------
+   Full-Bleed Code Panel
+   Expanded code view with internal padding for view mode toggle
+   ----------------------------------------------------------------------------- */
+
 .code-panel-fullbleed {
   & figure.shiki {
     display: flex;
@@ -57,73 +106,42 @@ figure.shiki pre code {
     flex-direction: column;
     min-height: 0;
     margin: 0;
-    border-radius: 0;
     border: none;
+    border-radius: 0;
     overflow: hidden;
   }
 
   & figure.shiki pre {
     flex: 1;
-    padding-top: 4rem; /* 48px - space for toggle button */
     margin: 0;
+    padding-top: 4rem; /* Space for toggle button */
     border-radius: 0;
   }
 
-  /* Override max-height on scroll container to fill available height */
+  /* Fill available height instead of fumadocs default max-height */
   & .fd-scroll-container {
-    max-height: none !important;
     height: 100%;
+    max-height: none !important;
     padding-bottom: 6rem; /* Extra scroll room at bottom */
   }
 
-  /* Hide fumadocs' built-in copy button - we use our own */
+  /* Hide fumadocs copy button (we provide our own) */
   & figure.shiki > div.absolute {
     display: none;
   }
 
+  /* Restore squircle corners on larger screens */
   @media (min-width: 1024px) {
     & figure.shiki {
-      border-radius: 0.5rem; /* matches rounded-lg */
+      corner-shape: squircle;
+      border-radius: calc(var(--radius) * var(--border-radius-multiplier));
     }
   }
 }
 
-@theme {
-  /* Blue-gray palette (hue 240) to match shadcn theme */
-  --color-fd-background: hsl(0 0% 100%);
-  --color-fd-foreground: hsl(240 10% 3.9%);
-  --color-fd-muted: hsl(240 4.8% 95.9%);
-  --color-fd-muted-foreground: hsl(240 3.8% 46.1%);
-  --color-fd-popover: hsl(0 0% 100%);
-  --color-fd-popover-foreground: hsl(240 10% 3.9%);
-  --color-fd-card: hsl(0 0% 100%);
-  --color-fd-card-foreground: hsl(240 10% 3.9%);
-  --color-fd-border: hsl(240 5.9% 90%);
-  --color-fd-primary: hsl(240 5.9% 10%);
-  --color-fd-primary-foreground: hsl(0 0% 98%);
-  --color-fd-secondary: hsl(240 4.8% 95.9%);
-  --color-fd-secondary-foreground: hsl(240 5.9% 10%);
-  --color-fd-accent: hsl(240 4.8% 95.9%);
-  --color-fd-accent-foreground: hsl(240 5.9% 10%);
-  --color-fd-ring: hsl(240 5.9% 10%);
-}
-
-.dark {
-  /* Blue-gray palette (hue 240) to match shadcn dark theme */
-  --color-fd-background: hsl(240 10% 3.9%);
-  --color-fd-foreground: hsl(0 0% 98%);
-  --color-fd-muted: hsl(240 3.7% 15.9%);
-  --color-fd-muted-foreground: hsl(240 5% 64.9%);
-  --color-fd-popover: hsl(240 10% 3.9%);
-  --color-fd-popover-foreground: hsl(0 0% 98%);
-  --color-fd-card: hsl(240 10% 3.9%);
-  --color-fd-card-foreground: hsl(0 0% 98%);
-  --color-fd-border: hsl(240 3.7% 15.9%);
-  --color-fd-primary: hsl(0 0% 98%);
-  --color-fd-primary-foreground: hsl(240 5.9% 10%);
-  --color-fd-secondary: hsl(240 3.7% 8%);
-  --color-fd-secondary-foreground: hsl(0 0% 98%);
-  --color-fd-accent: hsl(240 3.7% 15.9%);
-  --color-fd-accent-foreground: hsl(0 0% 98%);
-  --color-fd-ring: hsl(240 4.9% 83.9%);
-}
+/* -----------------------------------------------------------------------------
+   Fumadocs Theme Tokens
+   NOTE: fumadocs-ui/css/shadcn.css automatically maps --color-fd-* to shadcn
+   variables (--background, --foreground, etc). No manual mapping needed here.
+   To customize fumadocs colors, edit shadcn-theme.css instead.
+   ----------------------------------------------------------------------------- */

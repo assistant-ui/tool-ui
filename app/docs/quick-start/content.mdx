@@ -1,8 +1,10 @@
 import { DocsHeader } from "../_components/docs-header";
 
-<DocsHeader title="Quick Start" mdxPath="app/docs/quick-start/content.mdx" />
-
-Get Tool UI working in your app in minutes. This guide uses assistant-ui (recommended) for the best experience.
+<DocsHeader
+  title="Quick Start"
+  description="Get Tool UI working in your app in minutes. This guide uses assistant-ui (recommended) for the best experience."
+  mdxPath="app/docs/quick-start/content.mdx"
+/>
 
 ## Setup
 
@@ -297,11 +299,11 @@ const runtime = useChatRuntime({
 
 Tool UI components work with any React app. Without assistant-ui, you'll need to manually parse tool outputs and render components. For the best experience, we recommend using assistant-ui.
 
-When copying components manually, always include the `shared` directory alongside the component you need. It contains utilities (action buttons, schemas, formatters) used by all Tool UI components.
+When copying components manually, always include the [`shared`](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/shared) directory alongside the component you need. It contains utilities (action buttons, schemas, formatters) used by all Tool UI components.
 
 ## Runtime Options
 
-assistant-ui supports multiple runtimes: AI SDK, LangGraph, LangServe, Mastra, or custom backends. The examples above use AI SDK v5.
+[assistant-ui](https://www.assistant-ui.com/) supports multiple runtimes: [AI SDK](https://ai-sdk.dev/), [LangGraph](https://langchain-ai.github.io/langgraphjs/), LangServe, [Mastra](https://mastra.dev/), or custom backends. The examples above use AI SDK v5.
 
 ## Next Steps
 

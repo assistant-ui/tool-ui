@@ -1,9 +1,11 @@
 import { DocsHeader } from "../_components/docs-header";
 import { MediaCard } from "@/components/tool-ui/media-card";
 
-<DocsHeader title="Media Card" mdxPath="app/docs/media-card/content.mdx" />
-
-An information surface for links, images, video, and audio. Optimized for inline previews in chat.
+<DocsHeader
+  title="Media Card"
+  description="An information surface for links, images, video, and audio. Optimized for inline previews in chat."
+  mdxPath="app/docs/media-card/content.mdx"
+/>
 
 <Tabs items={["Preview", "Code"]}>
   <Tab>
@@ -66,11 +68,11 @@ An information surface for links, images, video, and audio. Optimized for inline
 ## When to Use
 
 - **Good for:** Link previews, media thumbnails, file summaries
-- **Not for:** Multiple items at once (use Item Carousel), large galleries, long-form content editing
+- **Not for:** Multiple items at once (use [Item Carousel](/docs/item-carousel)), large galleries, long-form content editing
 
 ## Source and Install
 
-Copy `components/tool-ui/media-card` and the `shared` directory into your project. The `shared` folder contains utilities used by all Tool UI components. The `tool-ui` directory should sit alongside your shadcn `ui` directory.
+Copy [`components/tool-ui/media-card`](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/media-card) and the [`shared`](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/shared) directory into your project. The `shared` folder contains utilities used by all Tool UI components. The `tool-ui` directory should sit alongside your shadcn `ui` directory.
 
 ### Prerequisites
 

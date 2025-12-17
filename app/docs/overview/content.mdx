@@ -2,7 +2,11 @@ import { DocsHeader } from "../_components/docs-header";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { FlaskConical } from "lucide-react";
 
-<DocsHeader title="Overview" mdxPath="app/docs/overview/content.mdx" />
+<DocsHeader
+  title="Overview"
+  description="A React component framework for conversation-native UIs inside AI chats."
+  mdxPath="app/docs/overview/content.mdx"
+/>
 
 <Alert className="squircle my-6 flex max-w-2xl flex-col gap-3 rounded-4xl border-emerald-300 bg-emerald-50/50 p-5 dark:border-emerald-950 dark:bg-emerald-950/20">
   <AlertTitle className="mb-0! flex items-center gap-2 pb-0! font-mono text-emerald-700 dark:text-emerald-300">
@@ -28,7 +32,7 @@ Tools return **JSON**; Tool UI renders it as **inline, narrated, referenceable**
 
 ## Where it fits
 
-Radix/shadcn (primitives) → **Tool UI** (conversation‑native components & schema) → AI SDK / LangGraph / etc. (LLM orchestration)
+[Radix](https://www.radix-ui.com/)/[shadcn](https://ui.shadcn.com/) (primitives) → **Tool UI** (conversation‑native components & schema) → [AI SDK](https://ai-sdk.dev/) / [LangGraph](https://langchain-ai.github.io/langgraphjs/) / etc. (LLM orchestration)
 
 ## Who it’s for
 
@@ -41,7 +45,7 @@ Radix/shadcn (primitives) → **Tool UI** (conversation‑native components & sc
 - **Predictable rendering**: Tools emit schema‑validated JSON; components render consistently across themes/devices.
 - **Built for chat**: Mobile‑first, glanceable, minimal chrome; no in‑message navigation flows.
 - **Developer control**: Components render; **your app** owns side effects via callbacks/server actions.
-- **Type safety**: Serializable schemas on the server, parsers on the client; works great with AI SDK `InferUITools`.
+- **Type safety**: Serializable schemas on the server, parsers on the client; works great with AI SDK [`InferUITools`](https://ai-sdk.dev/docs/reference/ai-sdk-ui/infer-ui-tools).
 - **Lifecycle aware**: Clear phases from invocation through receipt; supersession behavior is explicit.
 
 ## Mental model

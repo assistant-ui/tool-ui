@@ -1,8 +1,10 @@
 import { DocsHeader } from "../_components/docs-header";
 
-<DocsHeader title="Option List" mdxPath="app/docs/option-list/content.mdx" />
-
-A decision surface for presenting single or multi-select choices. Optimized for inline selection prompts with confirmation and receipt states.
+<DocsHeader
+  title="Option List"
+  description="A decision surface for presenting single or multi-select choices."
+  mdxPath="app/docs/option-list/content.mdx"
+/>
 
 <OptionListPresetExample preset="export" />
 
@@ -26,7 +28,7 @@ A decision surface for presenting single or multi-select choices. Optimized for 
 ## When to Use
 
 - **Good for:** File format selection, preference choices, confirmation prompts
-- **Not for:** Long lists (use Data Table), complex multi-field forms, free-text input
+- **Not for:** Long lists (use [Data Table](/docs/data-table)), complex multi-field forms, free-text input
 
 ## Receipt State
 
@@ -42,7 +44,7 @@ The receipt state:
 
 ## Source and Install
 
-Copy `components/tool-ui/option-list` and the `shared` directory into your project. The `shared` folder contains utilities used by all Tool UI components. The `tool-ui` directory should sit alongside your shadcn `ui` directory.
+Copy [`components/tool-ui/option-list`](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/option-list) and the [`shared`](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/shared) directory into your project. The `shared` folder contains utilities used by all Tool UI components. The `tool-ui` directory should sit alongside your shadcn `ui` directory.
 
 ### Prerequisites
 

@@ -3,9 +3,11 @@ import { XPost } from "@/components/tool-ui/x-post";
 import { InstagramPost } from "@/components/tool-ui/instagram-post";
 import { LinkedInPost } from "@/components/tool-ui/linkedin-post";
 
-<DocsHeader title="Social Posts" mdxPath="app/docs/social-post/content.mdx" />
-
-Platform-specific social media cards for X, LinkedIn, and Instagram. Each component matches native styling while adding interactive features for chat interfaces.
+<DocsHeader
+  title="Social Posts"
+  description="Platform-specific social media cards for X, LinkedIn, and Instagram."
+  mdxPath="app/docs/social-post/content.mdx"
+/>
 
 <Tabs items={["X Post", "Instagram Post", "LinkedIn Post"]}>
   <Tab>
@@ -104,7 +106,8 @@ Each component is independent and can be imported separately, allowing for tree-
     Add custom actions below any post
   </Feature>
   <Feature icon="Layers" title="Component family">
-    Three independent components (XPost, InstagramPost, LinkedInPost) with shared patterns
+    Three independent components (XPost, InstagramPost, LinkedInPost) with
+    shared patterns
   </Feature>
   <Feature icon="Link" title="Deep linking">
     Profile and post links open directly to original content on each platform
@@ -114,11 +117,11 @@ Each component is independent and can be imported separately, allowing for tree-
 ## When to Use
 
 - **Good for:** Social media posts, activity feeds, external messages
-- **Not for:** Non-social content (use Media Card), dense event tables, editable rich text
+- **Not for:** Non-social content (use [Media Card](/docs/media-card)), dense event tables, editable rich text
 
 ## Source and Install
 
-Copy the component(s) you need from `components/tool-ui` into your project. The `shared` folder is required for all social post components. The `tool-ui` directory should sit alongside your shadcn `ui` directory.
+Copy the component(s) you need from [`components/tool-ui`](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui) into your project. The [`shared`](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/shared) folder is required for all social post components. The `tool-ui` directory should sit alongside your shadcn `ui` directory.
 
 ### Prerequisites
 

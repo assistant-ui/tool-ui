@@ -330,7 +330,7 @@ export function ItemCarousel({
     <div
       data-item-carousel-id={id}
       className={cn(
-        "bg-background @container relative isolate w-full gap-0 overflow-hidden rounded-xl border p-0",
+        "bg-background @container relative isolate w-full gap-0 overflow-hidden rounded-2xl border p-0",
         className,
       )}
     >
@@ -351,7 +351,7 @@ export function ItemCarousel({
         <div
           ref={scrollRef}
           className={cn(
-            "grid auto-cols-max grid-flow-col gap-4 overflow-x-auto overscroll-x-contain px-4 py-3",
+            "grid auto-cols-max grid-flow-col gap-4 overflow-x-auto overscroll-x-contain p-3",
             "snap-x snap-proximity",
           )}
           role="list"

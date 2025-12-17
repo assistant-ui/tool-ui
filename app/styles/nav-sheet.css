@@ -11,14 +11,20 @@
   inset: 0;
 }
 
-:root { --overlay-offset: 0px; }
+:root {
+  --overlay-offset: 0px;
+}
 /* Broad fallback: difference between legacy vh and dynamic dvh */
 @supports (height: 100dvh) {
-  :root { --overlay-offset: max(0px, calc(100vh - 100dvh)); }
+  :root {
+    --overlay-offset: max(0px, calc(100vh - 100dvh));
+  }
 }
 /* Preferred: largest vs dynamic viewport (captures iOS Safari toolbar) */
 @supports (height: 100lvh) and (height: 100dvh) {
-  :root { --overlay-offset: max(0px, calc(100lvh - 100dvh)); }
+  :root {
+    --overlay-offset: max(0px, calc(100lvh - 100dvh));
+  }
 }
 
 .MobileNavSheet-content {
@@ -78,7 +84,8 @@
   /* Older iOS fallback */
   padding: 0.75rem 1rem calc(0.75rem + constant(safe-area-inset-bottom));
   /* Modern: use the larger of safe-area or toolbar overlay (not both) */
-  padding: 0.75rem 1rem calc(0.75rem + max(env(safe-area-inset-bottom, 0px), var(--overlay-offset)));
+  padding: 0.75rem 1rem
+    calc(0.75rem + max(env(safe-area-inset-bottom, 0px), var(--overlay-offset)));
 }
 
 .MobileNavSheet-footerInner {

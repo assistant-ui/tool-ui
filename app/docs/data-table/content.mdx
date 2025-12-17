@@ -14,9 +14,11 @@ import {
   ArrayValue,
 } from "@/components/tool-ui/data-table";
 
-<DocsHeader title="Data Table" mdxPath="app/docs/data-table/content.mdx" />
-
-An information surface for tabular tool outputs with responsive layout, sorting, and declarative formatting.
+<DocsHeader
+  title="Data Table"
+  description="An information surface for tabular tool outputs with responsive layout, sorting, and declarative formatting."
+  mdxPath="app/docs/data-table/content.mdx"
+/>
 
 <Tabs items={["Preview", "Code"]}>
   <Tab>
@@ -179,11 +181,11 @@ An information surface for tabular tool outputs with responsive layout, sorting,
 ## When to Use
 
 - **Good for:** Search results, lists, dashboards, logs with sorting
-- **Not for:** Single-record details (use Media Card), simple choice lists (use Option List), complex multi-step forms
+- **Not for:** Single-record details (use [Media Card](/docs/media-card)), simple choice lists (use [Option List](/docs/option-list)), complex multi-step forms
 
 ## Source and Install
 
-Copy `components/tool-ui/data-table` and the `shared` directory into your project. The `shared` folder contains utilities used by all Tool UI components. The `tool-ui` directory should sit alongside your shadcn `ui` directory.
+Copy [`components/tool-ui/data-table`](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/data-table) and the [`shared`](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/shared) directory into your project. The `shared` folder contains utilities used by all Tool UI components. The `tool-ui` directory should sit alongside your shadcn `ui` directory.
 
 ### Prerequisites
 
