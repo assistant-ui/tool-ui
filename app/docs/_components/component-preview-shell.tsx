@@ -157,7 +157,7 @@ export function ComponentPreviewShell({
         >
           {viewMode === "preview" && (
             <div
-              className="bg-dot-grid pointer-events-none absolute inset-0 z-0 bg-neutral-200 opacity-70 dark:bg-neutral-900 dark:opacity-60"
+              className="bg-dot-grid pointer-events-none absolute inset-0 z-0 bg-neutral-200 dark:bg-neutral-950 dark:opacity-60"
               aria-hidden="true"
             />
           )}

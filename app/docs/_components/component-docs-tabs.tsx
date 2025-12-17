@@ -69,7 +69,7 @@ export const ComponentDocsTabs = memo(function ComponentDocsTabs({
             "px-2 py-2 sm:px-3 sm:py-3",
           )}
         >
-          <TabsList>
+          <TabsList className="bg-card">
             <TabsTrigger value="docs" className="min-w-24">
               Docs
             </TabsTrigger>

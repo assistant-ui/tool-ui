@@ -147,7 +147,7 @@
 }
 
 [data-theme="dark"][data-theme] {
-  --wash: 0 0% 5%;
+  --wash: 0 0% 3%;
   --background: 240 10% 3.9%;
   --foreground: 0 0% 98%;
   --card: 240 10% 3.9%;
