@@ -1,7 +1,7 @@
 /* Leaflet overrides for theme integration */
 
 .leaflet-container {
-  background: hsl(var(--muted));
+  background: var(--muted);
   /* Isolate Leaflet's high z-indices to prevent them from escaping the container */
   isolation: isolate;
 }
@@ -11,8 +11,8 @@
 }
 
 .leaflet-control-attribution {
-  background: hsl(var(--background) / 0.8) !important;
-  color: hsl(var(--muted-foreground));
+  background: oklch(from var(--background) l c h / 0.8) !important;
+  color: var(--muted-foreground);
 }
 
 [data-theme="dark"] .leaflet-control-attribution {
@@ -21,7 +21,7 @@
 }
 
 .leaflet-control-attribution a {
-  color: hsl(var(--muted-foreground));
+  color: var(--muted-foreground);
 }
 
 [data-theme="dark"] .leaflet-control-attribution a {
@@ -29,7 +29,7 @@
 }
 
 .leaflet-control-attribution a:hover {
-  color: hsl(var(--foreground));
+  color: var(--foreground);
 }
 
 [data-theme="dark"] .leaflet-control-attribution a:hover {

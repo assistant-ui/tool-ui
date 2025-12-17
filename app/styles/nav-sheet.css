@@ -57,7 +57,7 @@
 .MobileNavSheet-bleedingBackground {
   overflow: hidden;
   border-radius: 16px 16px 0 0;
-  background-color: hsl(var(--background));
+  background-color: var(--background);
   box-shadow:
     0 -4px 6px -1px rgb(0 0 0 / 0.1),
     0 -2px 4px -2px rgb(0 0 0 / 0.1);
@@ -72,13 +72,13 @@
   bottom: 0;
   height: 5rem; /* match visual density */
   z-index: 15; /* stays below the footer */
-  background: linear-gradient(to top, hsl(var(--background)), transparent);
+  background: linear-gradient(to top, var(--background), transparent);
 }
 
 /* Footer with safe-area padding, outside the scroll area */
 .MobileNavSheet-footer {
   flex-shrink: 0;
-  background-color: hsl(var(--background));
+  background-color: var(--background);
   position: relative;
   z-index: 20; /* above gradient */
   /* Older iOS fallback */

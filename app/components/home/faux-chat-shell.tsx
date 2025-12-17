@@ -49,7 +49,7 @@ export function FauxChatShell({ className }: FauxChatShellProps) {
         </div>
         <div className="gradient-line-header h-px" />
       </div>
-      <div className="scrollbar-subtle relative z-0 grow overflow-y-auto px-6 pt-24 xl:p-6">
+      <div className="scrollbar-subtle relative z-0 grow overflow-y-auto px-6 pt-24">
         <ChatShowcase />
       </div>
       <div

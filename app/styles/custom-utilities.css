@@ -122,8 +122,7 @@
       rgba(0, 0, 0, 0) 100%
     );
     background:
-      linear-gradient(hsl(var(--background)), hsl(var(--background)))
-        padding-box,
+      linear-gradient(var(--background), var(--background)) padding-box,
       var(--glow-gradient) border-box;
     border: 1px solid transparent;
   }
