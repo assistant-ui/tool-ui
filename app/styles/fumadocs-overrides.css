@@ -60,12 +60,9 @@
 
 figure.shiki {
   position: relative;
-  max-width: 100%;
   background-color: var(--color-neutral-100);
   corner-shape: squircle;
-  height: 100%;
   border: none;
-  padding-top: 4rem;
   border-radius: calc(var(--radius) * var(--border-radius-multiplier));
 }
 
@@ -91,6 +88,8 @@ figure.shiki pre code {
    ----------------------------------------------------------------------------- */
 
 .code-panel-fullbleed {
+  overflow-y: scroll;
+
   & figure.shiki {
     display: flex;
     flex: 1;
@@ -99,7 +98,7 @@ figure.shiki pre code {
     margin: 0;
     border: none;
     border-radius: 0;
-    overflow: hidden;
+    height: 100%;
   }
 
   & figure.shiki pre {

@@ -69,7 +69,11 @@ export function ComponentPreview({ componentId }: ComponentPreviewProps) {
         />
       }
       preview={wrappedPreview}
-      codePanel={<DynamicCodeBlock lang="tsx" code={code} />}
+      codePanel={
+        <div className="code-panel-fullbleed scrollbar-subtle">
+          <DynamicCodeBlock lang="tsx" code={code} />
+        </div>
+      }
       code={code}
     />
   );

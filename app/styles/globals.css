@@ -6,7 +6,6 @@
 @import "fumadocs-ui/css/preset.css";
 @import "fumadocs-ui/css/shadcn.css";
 @import "fumadocs-ui/css/shiki.css";
-@import "fumadocs-ui/css/neutral.css";
 
 /* Silk Sheet UI styles */
 @import "@silk-hq/components/layered-styles";
