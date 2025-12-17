@@ -38,6 +38,8 @@ import {
   PictureInPicture2,
   PanelLeftClose,
   PanelLeft,
+  X,
+  Layers,
   type LucideIcon,
 } from "lucide-react";
 import {
@@ -115,23 +117,27 @@ export function ConfigPanel({
     locale,
     maxHeight,
     safeAreaInsets,
+    view,
     setDisplayMode,
     setDeviceType,
     setTheme,
     setLocale,
     setMaxHeight,
     setSafeAreaInsets,
+    setView,
   } = useWorkbenchStore(
     useShallow((s) => ({
       locale: s.locale,
       maxHeight: s.maxHeight,
       safeAreaInsets: s.safeAreaInsets,
+      view: s.view,
       setDisplayMode: s.setDisplayMode,
       setDeviceType: s.setDeviceType,
       setTheme: s.setTheme,
       setLocale: s.setLocale,
       setMaxHeight: s.setMaxHeight,
       setSafeAreaInsets: s.setSafeAreaInsets,
+      setView: s.setView,
     })),
   );
 
@@ -221,6 +227,33 @@ export function ConfigPanel({
               value={safeAreaInsets}
               onChange={setSafeAreaInsets}
             />
+          </SettingRow>
+        )}
+
+        {view && (
+          <SettingRow label="View" className="items-start">
+            <div className="flex flex-col items-end gap-1">
+              <div className="flex items-center gap-2">
+                <div className="bg-primary/10 text-primary flex items-center gap-1.5 rounded-md px-2 py-1 text-xs font-medium">
+                  <Layers className="size-3" />
+                  {view.mode}
+                </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="text-muted-foreground hover:text-foreground size-6 p-0"
+                  onClick={() => setView(null)}
+                  title="Dismiss view"
+                >
+                  <X className="size-3.5" />
+                </Button>
+              </div>
+              {view.params && Object.keys(view.params).length > 0 && (
+                <code className="text-muted-foreground max-w-48 truncate text-[10px]">
+                  {JSON.stringify(view.params)}
+                </code>
+              )}
+            </div>
           </SettingRow>
         )}
 

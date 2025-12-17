@@ -27,6 +27,11 @@ export interface UserAgent {
   capabilities: DeviceCapabilities;
 }
 
+export interface View {
+  mode: "modal" | "inline";
+  params: Record<string, unknown> | null;
+}
+
 export interface OpenAIGlobals {
   theme: Theme;
   locale: string;
@@ -38,7 +43,7 @@ export interface OpenAIGlobals {
   widgetState: Record<string, unknown> | null;
   userAgent: UserAgent;
   safeArea: SafeArea;
-  view: string | null;
+  view: View | null;
 }
 
 export interface CallToolResponse {
@@ -49,8 +54,14 @@ export interface CallToolResponse {
 }
 
 export interface ModalOptions {
-  anchorRef?: { current: HTMLElement | null };
-  content?: string;
+  title?: string;
+  params?: Record<string, unknown>;
+  anchor?: {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+  };
 }
 
 export interface UploadFileResponse {

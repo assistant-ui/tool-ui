@@ -10,6 +10,7 @@ import type {
   ConsoleEntryType,
   OpenAIGlobals,
   SafeAreaInsets,
+  View,
 } from "./types";
 import { DEVICE_PRESETS } from "./types";
 import { workbenchComponents } from "./component-registry";
@@ -41,7 +42,7 @@ interface WorkbenchState {
   activeJsonTab: ActiveJsonTab;
   isTransitioning: boolean;
   transitionFrom: DisplayMode | null;
-  view: string | null;
+  view: View | null;
 
   setSelectedComponent: (id: string) => void;
   setDisplayMode: (mode: DisplayMode) => void;
@@ -66,7 +67,7 @@ interface WorkbenchState {
   restoreConsoleLogs: (entries: ConsoleEntry[]) => void;
   toggleSection: (section: string) => void;
   setActiveJsonTab: (tab: ActiveJsonTab) => void;
-  setView: (view: string | null) => void;
+  setView: (view: View | null) => void;
   getOpenAIGlobals: () => OpenAIGlobals;
 }
 

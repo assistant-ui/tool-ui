@@ -13,6 +13,7 @@ import {
   MapPin,
   Star,
   Heart,
+  Info,
 } from "lucide-react";
 import type { POI, POICategory } from "./schema";
 import { CATEGORY_LABELS } from "./schema";
@@ -47,6 +48,7 @@ interface POICardProps {
   variant: "compact" | "expanded";
   onSelect: (id: string) => void;
   onToggleFavorite: (id: string) => void;
+  onViewDetails?: (id: string) => void;
 }
 
 export const POICard = memo(function POICard({
@@ -56,6 +58,7 @@ export const POICard = memo(function POICard({
   variant,
   onSelect,
   onToggleFavorite,
+  onViewDetails,
 }: POICardProps) {
   const CategoryIcon = CATEGORY_ICONS[poi.category];
 
@@ -174,6 +177,21 @@ export const POICard = memo(function POICard({
           <p className="text-muted-foreground mt-1 truncate text-xs">
             {poi.address}
           </p>
+        )}
+
+        {onViewDetails && (
+          <Button
+            variant="ghost"
+            size="sm"
+            className="text-muted-foreground hover:text-foreground mt-1 h-7 gap-1.5 self-start px-2 text-xs"
+            onClick={(e) => {
+              e.stopPropagation();
+              onViewDetails(poi.id);
+            }}
+          >
+            <Info className="size-3" />
+            View details
+          </Button>
         )}
       </div>
     </div>

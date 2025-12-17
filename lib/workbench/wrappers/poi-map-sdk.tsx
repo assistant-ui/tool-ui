@@ -16,6 +16,7 @@ import {
   useRequestDisplayMode,
   useCallTool,
   useTheme,
+  useView,
 } from "../openai-context";
 import type { DisplayMode } from "../types";
 
@@ -29,12 +30,13 @@ const DEFAULT_WIDGET_STATE: POIMapViewState = {
 
 export function POIMapSDK(props: Record<string, unknown>) {
   const parsed = parseSerializablePOIMap(props);
-  const { setWidgetState } = useOpenAI();
+  const { setWidgetState, requestModal } = useOpenAI();
   const [widgetState] = useWidgetState<POIMapViewState>(DEFAULT_WIDGET_STATE);
   const displayMode = useDisplayMode();
   const requestDisplayMode = useRequestDisplayMode();
   const callTool = useCallTool();
   const theme = useTheme();
+  const view = useView();
 
   const currentWidgetState = useMemo<POIMapViewState>(
     () => ({
@@ -89,6 +91,17 @@ export function POIMapSDK(props: Record<string, unknown>) {
     [callTool],
   );
 
+  const handleViewDetails = useCallback(
+    async (poiId: string) => {
+      const poi = parsed.pois.find((p) => p.id === poiId);
+      await requestModal({
+        title: poi?.name ?? "Location Details",
+        params: { poiId },
+      });
+    },
+    [requestModal, parsed.pois],
+  );
+
   return (
     <POIMap
       id={parsed.id}
@@ -99,11 +112,13 @@ export function POIMapSDK(props: Record<string, unknown>) {
       displayMode={displayMode}
       widgetState={currentWidgetState}
       theme={theme}
+      view={view}
       onWidgetStateChange={handleWidgetStateChange}
       onRequestDisplayMode={handleRequestDisplayMode}
       onRefresh={handleRefresh}
       onToggleFavorite={handleToggleFavorite}
       onFilterCategory={handleFilterCategory}
+      onViewDetails={handleViewDetails}
     />
   );
 }

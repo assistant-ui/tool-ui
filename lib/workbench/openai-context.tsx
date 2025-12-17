@@ -19,6 +19,7 @@ import type {
   ModalOptions,
   UploadFileResponse,
   GetFileDownloadUrlResponse,
+  View,
 } from "./types";
 import { storeFile, getFileUrl } from "./file-store";
 
@@ -183,8 +184,13 @@ export function OpenAIProvider({ children }: OpenAIProviderProps) {
     async (options: ModalOptions): Promise<void> => {
       store.addConsoleEntry({
         type: "requestModal",
-        method: "requestModal",
+        method: `requestModal("${options.title ?? "Modal"}")`,
         args: options,
+      });
+
+      store.setView({
+        mode: "modal",
+        params: options.params ?? null,
       });
     },
     [store],
@@ -341,7 +347,7 @@ export function useSendFollowUpMessage() {
   return context.sendFollowUpMessage;
 }
 
-export function useView(): string | null {
+export function useView(): View | null {
   return useOpenAiGlobal("view");
 }
 

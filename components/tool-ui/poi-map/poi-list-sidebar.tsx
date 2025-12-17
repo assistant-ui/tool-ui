@@ -11,6 +11,7 @@ interface POIListSidebarProps {
   favoriteIds: Set<string>;
   onSelectPoi: (id: string) => void;
   onToggleFavorite: (id: string) => void;
+  onViewDetails?: (id: string) => void;
   className?: string;
 }
 
@@ -20,6 +21,7 @@ export function POIListSidebar({
   favoriteIds,
   onSelectPoi,
   onToggleFavorite,
+  onViewDetails,
   className,
 }: POIListSidebarProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -73,6 +75,7 @@ export function POIListSidebar({
                 variant="expanded"
                 onSelect={onSelectPoi}
                 onToggleFavorite={onToggleFavorite}
+                onViewDetails={onViewDetails}
               />
             </div>
           </Fragment>
