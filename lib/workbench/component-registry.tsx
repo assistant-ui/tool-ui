@@ -2,7 +2,10 @@
 
 import type { ComponentType } from "react";
 import { Chart } from "@/components/tool-ui/chart";
-import { MediaCard } from "@/components/tool-ui/media-card";
+import { Image } from "@/components/tool-ui/image";
+import { Video } from "@/components/tool-ui/video";
+import { Audio } from "@/components/tool-ui/audio";
+import { LinkPreview } from "@/components/tool-ui/link-preview";
 import { OptionListSDK, POIMapSDK } from "./wrappers";
 import {
   CodeBlock,
@@ -184,15 +187,14 @@ export const workbenchComponents: WorkbenchComponentEntry[] = [
     },
   },
   {
-    id: "media-card",
-    label: "Media Card",
-    description: "Rich media display with image, video, audio, or link content",
+    id: "image",
+    label: "Image",
+    description: "Display images with metadata and attribution",
     category: "cards",
-    component: MediaCard,
+    component: Image,
     defaultProps: {
-      id: "workbench-media-card",
-      assetId: "workbench-asset",
-      kind: "image",
+      id: "workbench-image",
+      assetId: "workbench-image-asset",
       src: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&auto=format&fit=crop",
       alt: "Mountain sunrise with golden light",
       title: "Mountain Sunrise",
@@ -205,6 +207,59 @@ export const workbenchComponents: WorkbenchComponentEntry[] = [
         label: "Nature Photography",
         iconUrl: "https://api.dicebear.com/7.x/shapes/svg?seed=nature",
       },
+    },
+  },
+  {
+    id: "video",
+    label: "Video",
+    description: "Video playback with controls and poster",
+    category: "cards",
+    component: Video,
+    defaultProps: {
+      id: "workbench-video",
+      assetId: "workbench-video-asset",
+      src: "https://samplelib.com/lib/preview/mp4/sample-5s.mp4",
+      poster:
+        "https://images.unsplash.com/photo-1518770660439-4636190af475?w=900&auto=format&fit=crop",
+      title: "Sample Video",
+      description: "A sample video demonstrating the component.",
+      ratio: "16:9",
+      durationMs: 5000,
+    },
+  },
+  {
+    id: "audio",
+    label: "Audio",
+    description: "Audio playback with artwork and metadata",
+    category: "cards",
+    component: Audio,
+    defaultProps: {
+      id: "workbench-audio",
+      assetId: "workbench-audio-asset",
+      src: "https://samplelib.com/lib/preview/mp3/sample-6s.mp3",
+      title: "Sample Audio",
+      description: "A sample audio clip demonstrating the component.",
+      artwork:
+        "https://images.unsplash.com/photo-1454165205744-3b78555e5572?w=400&auto=format&fit=crop",
+      durationMs: 6000,
+    },
+  },
+  {
+    id: "link-preview",
+    label: "Link Preview",
+    description: "Rich link previews with OG data",
+    category: "cards",
+    component: LinkPreview,
+    defaultProps: {
+      id: "workbench-link-preview",
+      href: "https://react.dev/reference/rsc/server-components",
+      title: "React Server Components",
+      description:
+        "Server Components are a new type of Component that renders ahead of time.",
+      image:
+        "https://images.unsplash.com/photo-1633356122544-f134324a6cee?auto=format&fit=crop&q=80&w=1200",
+      domain: "react.dev",
+      ratio: "16:9",
     },
   },
   {

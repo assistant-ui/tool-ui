@@ -1,0 +1,126 @@
+import { DocsHeader } from "../_components/docs-header";
+import { Video } from "@/components/tool-ui/video";
+
+<DocsHeader
+  title="Video"
+  description="Video playback with controls and poster."
+  mdxPath="app/docs/video/content.mdx"
+/>
+
+<Tabs items={["Preview", "Code"]}>
+  <Tab>
+    <div className="not-prose flex justify-center">
+      <div className="w-full max-w-md">
+        <Video
+          id="video-example"
+          assetId="sample-video"
+          src="https://samplelib.com/lib/preview/mp4/sample-5s.mp4"
+          poster="https://images.unsplash.com/photo-1518770660439-4636190af475?w=900&auto=format&fit=crop"
+          title="The GUI moment"
+          description="From command lines to windows, icons, menus, and pointers."
+          ratio="16:9"
+          durationMs={128000}
+        />
+      </div>
+    </div>
+  </Tab>
+  <Tab>
+    ```tsx
+    import { Video } from "@/components/tool-ui/video";
+
+    export function Example() {
+      return (
+        <Video
+          id="video-example"
+          assetId="sample-video"
+          src="https://samplelib.com/lib/preview/mp4/sample-5s.mp4"
+          poster="https://images.unsplash.com/photo-1518770660439-4636190af475"
+          title="The GUI moment"
+          description="From command lines to windows, icons, menus, and pointers."
+          ratio="16:9"
+          durationMs={128000}
+        />
+      );
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Key Features
+
+<FeatureGrid>
+  <Feature icon="Play" title="Native video controls">
+    Play, pause, seek, and volume with native browser controls
+  </Feature>
+  <Feature icon="Image" title="Poster support">
+    Display a thumbnail before video plays
+  </Feature>
+  <Feature icon="Settings2" title="Response actions">
+    Add share, download, or custom action buttons
+  </Feature>
+</FeatureGrid>
+
+## When to Use
+
+- **Good for:** Video previews, demo recordings, media playback
+- **Not for:** Audio content (use [Audio](/docs/audio)), image content (use [Image](/docs/image))
+
+## Source and Install
+
+Copy [`components/tool-ui/video`](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/video) and the [`shared`](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/shared) directory into your project.
+
+### Prerequisites
+
+```bash
+pnpm dlx shadcn@latest add badge button card tooltip
+```
+
+### Download
+
+- [**Shared Dependencies (GitHub)**](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/shared)
+- [**Video (GitHub)**](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/video)
+
+## Props
+
+<TypeTable
+  type={{
+    id: {
+      description: "Unique identifier for this tool UI instance",
+      type: "string",
+      required: true,
+    },
+    assetId: {
+      description: "Persistent asset identifier",
+      type: "string",
+      required: true,
+    },
+    src: {
+      description: "Video source URL",
+      type: "string",
+      required: true,
+    },
+    poster: { description: "Poster/thumbnail URL", type: "string" },
+    title: { description: "Title text", type: "string" },
+    description: { description: "Description", type: "string" },
+    ratio: {
+      description: "Aspect ratio",
+      type: "'auto' | '1:1' | '4:3' | '16:9' | '9:16'",
+      default: "'16:9'",
+    },
+    fit: {
+      description: "Object fit mode",
+      type: "'cover' | 'contain'",
+      default: "'contain'",
+    },
+    durationMs: { description: "Duration in milliseconds", type: "number" },
+    autoPlay: { description: "Auto-play video (muted)", type: "boolean", default: "false" },
+    muted: { description: "Mute video", type: "boolean", default: "false" },
+    source: {
+      description: "Source attribution",
+      type: "{ label: string; iconUrl?: string; url?: string }",
+    },
+    createdAt: { description: "Creation timestamp (ISO 8601)", type: "string" },
+    responseActions: { description: "Response action buttons", type: "Action[]" },
+    onResponseAction: { description: "Response action handler", type: "(actionId: string) => void" },
+  }}
+/>

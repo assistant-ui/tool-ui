@@ -4,10 +4,10 @@ import {
   contentType as ogContentType,
 } from "@/lib/og/og-image";
 
-export const alt = "Tool UI - Media Card";
+export const alt = "Tool UI - Audio";
 export const size = ogSize;
 export const contentType = ogContentType;
 
 export default async function Image() {
-  return generateOgImage("Media Card", "Showcase images and media content");
+  return generateOgImage("Audio", "Audio playback with artwork and metadata");
 }

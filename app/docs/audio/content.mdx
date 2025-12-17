@@ -1,0 +1,113 @@
+import { DocsHeader } from "../_components/docs-header";
+import { Audio } from "@/components/tool-ui/audio";
+
+<DocsHeader
+  title="Audio"
+  description="Audio playback with artwork and metadata."
+  mdxPath="app/docs/audio/content.mdx"
+/>
+
+<Tabs items={["Preview", "Code"]}>
+  <Tab>
+    <div className="not-prose flex justify-center">
+      <div className="w-full max-w-md">
+        <Audio
+          id="audio-example"
+          assetId="sample-audio"
+          src="https://samplelib.com/lib/preview/mp3/sample-6s.mp3"
+          title="Bell Labs hallway recording"
+          description="Ambient sounds where UNIX, C, and more took shape."
+          artwork="https://images.unsplash.com/photo-1454165205744-3b78555e5572?w=400&auto=format&fit=crop"
+          durationMs={30000}
+        />
+      </div>
+    </div>
+  </Tab>
+  <Tab>
+    ```tsx
+    import { Audio } from "@/components/tool-ui/audio";
+
+    export function Example() {
+      return (
+        <Audio
+          id="audio-example"
+          assetId="sample-audio"
+          src="https://samplelib.com/lib/preview/mp3/sample-6s.mp3"
+          title="Bell Labs hallway recording"
+          description="Ambient sounds where UNIX, C, and more took shape."
+          artwork="https://images.unsplash.com/photo-1454165205744-3b78555e5572"
+          durationMs={30000}
+        />
+      );
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Key Features
+
+<FeatureGrid>
+  <Feature icon="Music" title="Native audio controls">
+    Play, pause, seek, and volume with native browser controls
+  </Feature>
+  <Feature icon="Image" title="Artwork support">
+    Display album art or thumbnail alongside the player
+  </Feature>
+  <Feature icon="Settings2" title="Response actions">
+    Add share, download, or custom action buttons
+  </Feature>
+</FeatureGrid>
+
+## When to Use
+
+- **Good for:** Audio clips, podcasts, music previews, voice recordings
+- **Not for:** Video content (use [Video](/docs/video)), image content (use [Image](/docs/image))
+
+## Source and Install
+
+Copy [`components/tool-ui/audio`](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/audio) and the [`shared`](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/shared) directory into your project.
+
+### Prerequisites
+
+```bash
+pnpm dlx shadcn@latest add badge button card tooltip
+```
+
+### Download
+
+- [**Shared Dependencies (GitHub)**](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/shared)
+- [**Audio (GitHub)**](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/audio)
+
+## Props
+
+<TypeTable
+  type={{
+    id: {
+      description: "Unique identifier for this tool UI instance",
+      type: "string",
+      required: true,
+    },
+    assetId: {
+      description: "Persistent asset identifier",
+      type: "string",
+      required: true,
+    },
+    src: {
+      description: "Audio source URL",
+      type: "string",
+      required: true,
+    },
+    title: { description: "Title text", type: "string" },
+    description: { description: "Description", type: "string" },
+    artwork: { description: "Artwork/thumbnail URL", type: "string" },
+    durationMs: { description: "Duration in milliseconds", type: "number" },
+    fileSizeBytes: { description: "File size in bytes", type: "number" },
+    source: {
+      description: "Source attribution",
+      type: "{ label: string; iconUrl?: string; url?: string }",
+    },
+    createdAt: { description: "Creation timestamp (ISO 8601)", type: "string" },
+    responseActions: { description: "Response action buttons", type: "Action[]" },
+    onResponseAction: { description: "Response action handler", type: "(actionId: string) => void" },
+  }}
+/>

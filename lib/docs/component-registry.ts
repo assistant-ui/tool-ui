@@ -25,10 +25,28 @@ export const componentsRegistry: ComponentMeta[] = [
     path: "/docs/data-table",
   },
   {
-    id: "media-card",
-    label: "Media Card",
-    description: "Showcase images and media content",
-    path: "/docs/media-card",
+    id: "image",
+    label: "Image",
+    description: "Display images with metadata and attribution",
+    path: "/docs/image",
+  },
+  {
+    id: "video",
+    label: "Video",
+    description: "Video playback with controls and poster",
+    path: "/docs/video",
+  },
+  {
+    id: "audio",
+    label: "Audio",
+    description: "Audio playback with artwork and metadata",
+    path: "/docs/audio",
+  },
+  {
+    id: "link-preview",
+    label: "Link Preview",
+    description: "Rich link previews with OG data",
+    path: "/docs/link-preview",
   },
   {
     id: "option-list",

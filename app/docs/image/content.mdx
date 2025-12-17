@@ -1,0 +1,130 @@
+import { DocsHeader } from "../_components/docs-header";
+import { Image } from "@/components/tool-ui/image";
+
+<DocsHeader
+  title="Image"
+  description="Display images with metadata and attribution."
+  mdxPath="app/docs/image/content.mdx"
+/>
+
+<Tabs items={["Preview", "Code"]}>
+  <Tab>
+    <div className="not-prose flex justify-center">
+      <div className="w-full max-w-md">
+        <Image
+          id="image-example"
+          assetId="vintage-mainframe"
+          src="https://images.unsplash.com/photo-1504548840739-580b10ae7715?w=1200&auto=format&fit=crop"
+          alt="Vintage mainframe with blinking lights"
+          title="From mainframes to microchips"
+          description="A snapshot of when rooms were computers."
+          ratio="4:3"
+          domain="unsplash.com"
+        />
+      </div>
+    </div>
+  </Tab>
+  <Tab>
+    ```tsx
+    import { Image } from "@/components/tool-ui/image";
+
+    export function Example() {
+      return (
+        <Image
+          id="image-example"
+          assetId="vintage-mainframe"
+          src="https://images.unsplash.com/photo-1504548840739-580b10ae7715"
+          alt="Vintage mainframe with blinking lights"
+          title="From mainframes to microchips"
+          description="A snapshot of when rooms were computers."
+          ratio="4:3"
+          domain="unsplash.com"
+        />
+      );
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Key Features
+
+<FeatureGrid>
+  <Feature icon="Image" title="Rich metadata">
+    Display title, description, domain, and source attribution
+  </Feature>
+  <Feature icon="Maximize" title="Aspect ratio control">
+    Support for common ratios: 1:1, 4:3, 16:9, 9:16
+  </Feature>
+  <Feature icon="Settings2" title="Response actions">
+    Add download, share, or custom action buttons
+  </Feature>
+</FeatureGrid>
+
+## When to Use
+
+- **Good for:** Image thumbnails, photo previews, visual content with attribution
+- **Not for:** Image galleries (use [Item Carousel](/docs/item-carousel)), video content (use [Video](/docs/video))
+
+## Source and Install
+
+Copy [`components/tool-ui/image`](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/image) and the [`shared`](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/shared) directory into your project.
+
+### Prerequisites
+
+```bash
+pnpm dlx shadcn@latest add badge button card tooltip
+```
+
+### Download
+
+- [**Shared Dependencies (GitHub)**](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/shared)
+- [**Image (GitHub)**](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/image)
+
+## Props
+
+<TypeTable
+  type={{
+    id: {
+      description: "Unique identifier for this tool UI instance",
+      type: "string",
+      required: true,
+    },
+    assetId: {
+      description: "Persistent asset identifier",
+      type: "string",
+      required: true,
+    },
+    src: {
+      description: "Image source URL",
+      type: "string",
+      required: true,
+    },
+    alt: {
+      description: "Alt text for accessibility",
+      type: "string",
+      required: true,
+    },
+    title: { description: "Title text", type: "string" },
+    description: { description: "Description", type: "string" },
+    href: { description: "Makes image clickable with this URL", type: "string" },
+    domain: { description: "Source domain label", type: "string" },
+    ratio: {
+      description: "Aspect ratio",
+      type: "'auto' | '1:1' | '4:3' | '16:9' | '9:16'",
+      default: "'auto'",
+    },
+    fit: {
+      description: "Object fit mode",
+      type: "'cover' | 'contain'",
+      default: "'cover'",
+    },
+    source: {
+      description: "Source attribution",
+      type: "{ label: string; iconUrl?: string; url?: string }",
+    },
+    createdAt: { description: "Creation timestamp (ISO 8601)", type: "string" },
+    fileSizeBytes: { description: "File size in bytes", type: "number" },
+    responseActions: { description: "Response action buttons", type: "Action[]" },
+    onResponseAction: { description: "Response action handler", type: "(actionId: string) => void" },
+  }}
+/>

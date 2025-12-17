@@ -6,8 +6,11 @@ import type { PresetWithCodeGen } from "@/lib/presets/types";
 import { Chart } from "@/components/tool-ui/chart";
 import { CodeBlock } from "@/components/tool-ui/code-block";
 import { DataTable } from "@/components/tool-ui/data-table";
+import { Image } from "@/components/tool-ui/image";
+import { Video } from "@/components/tool-ui/video";
+import { Audio } from "@/components/tool-ui/audio";
+import { LinkPreview } from "@/components/tool-ui/link-preview";
 import { ItemCarousel } from "@/components/tool-ui/item-carousel";
-import { MediaCard } from "@/components/tool-ui/media-card";
 import { OptionList } from "@/components/tool-ui/option-list";
 import { Plan } from "@/components/tool-ui/plan";
 import { Terminal } from "@/components/tool-ui/terminal";
@@ -15,8 +18,11 @@ import { Terminal } from "@/components/tool-ui/terminal";
 import { chartPresets, type ChartPresetName } from "@/lib/presets/chart";
 import { codeBlockPresets, type CodeBlockPresetName } from "@/lib/presets/code-block";
 import { dataTablePresets, type DataTablePresetName, type SortState } from "@/lib/presets/data-table";
+import { imagePresets, type ImagePresetName } from "@/lib/presets/image";
+import { videoPresets, type VideoPresetName } from "@/lib/presets/video";
+import { audioPresets, type AudioPresetName } from "@/lib/presets/audio";
+import { linkPreviewPresets, type LinkPreviewPresetName } from "@/lib/presets/link-preview";
 import { itemCarouselPresets, type ItemCarouselPresetName } from "@/lib/presets/item-carousel";
-import { mediaCardPresets, type MediaCardPresetName } from "@/lib/presets/media-card";
 import { optionListPresets, type OptionListPresetName } from "@/lib/presets/option-list";
 import { planPresets, type PlanPresetName } from "@/lib/presets/plan";
 import { terminalPresets, type TerminalPresetName } from "@/lib/presets/terminal";
@@ -25,8 +31,11 @@ export type ComponentId =
   | "chart"
   | "code-block"
   | "data-table"
+  | "image"
+  | "video"
+  | "audio"
+  | "link-preview"
   | "item-carousel"
-  | "media-card"
   | "option-list"
   | "plan"
   | "terminal";
@@ -81,15 +90,57 @@ export const previewConfigs: Record<ComponentId, PreviewConfig<unknown, string>>
       );
     },
   },
-  "media-card": {
-    presets: mediaCardPresets as Record<string, PresetWithCodeGen<unknown>>,
-    defaultPreset: "image" satisfies MediaCardPresetName,
+  image: {
+    presets: imagePresets as Record<string, PresetWithCodeGen<unknown>>,
+    defaultPreset: "with-source" satisfies ImagePresetName,
     renderComponent: ({ data }) => {
-      const { card, responseActions } = data as { card: Parameters<typeof MediaCard>[0]; responseActions?: unknown[] };
+      const { image, responseActions } = data as { image: Parameters<typeof Image>[0]; responseActions?: unknown[] };
       return (
-        <MediaCard
-          {...card}
-          responseActions={responseActions as Parameters<typeof MediaCard>[0]["responseActions"]}
+        <Image
+          {...image}
+          responseActions={responseActions as Parameters<typeof Image>[0]["responseActions"]}
+          onResponseAction={(actionId) => console.log("Response action:", actionId)}
+        />
+      );
+    },
+  },
+  video: {
+    presets: videoPresets as Record<string, PresetWithCodeGen<unknown>>,
+    defaultPreset: "with-poster" satisfies VideoPresetName,
+    renderComponent: ({ data }) => {
+      const { video, responseActions } = data as { video: Parameters<typeof Video>[0]; responseActions?: unknown[] };
+      return (
+        <Video
+          {...video}
+          responseActions={responseActions as Parameters<typeof Video>[0]["responseActions"]}
+          onResponseAction={(actionId) => console.log("Response action:", actionId)}
+        />
+      );
+    },
+  },
+  audio: {
+    presets: audioPresets as Record<string, PresetWithCodeGen<unknown>>,
+    defaultPreset: "with-artwork" satisfies AudioPresetName,
+    renderComponent: ({ data }) => {
+      const { audio, responseActions } = data as { audio: Parameters<typeof Audio>[0]; responseActions?: unknown[] };
+      return (
+        <Audio
+          {...audio}
+          responseActions={responseActions as Parameters<typeof Audio>[0]["responseActions"]}
+          onResponseAction={(actionId) => console.log("Response action:", actionId)}
+        />
+      );
+    },
+  },
+  "link-preview": {
+    presets: linkPreviewPresets as Record<string, PresetWithCodeGen<unknown>>,
+    defaultPreset: "with-image" satisfies LinkPreviewPresetName,
+    renderComponent: ({ data }) => {
+      const { linkPreview, responseActions } = data as { linkPreview: Parameters<typeof LinkPreview>[0]; responseActions?: unknown[] };
+      return (
+        <LinkPreview
+          {...linkPreview}
+          responseActions={responseActions as Parameters<typeof LinkPreview>[0]["responseActions"]}
           onResponseAction={(actionId) => console.log("Response action:", actionId)}
         />
       );

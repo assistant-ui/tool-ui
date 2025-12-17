@@ -8,8 +8,11 @@ import {
 import { chartPresets } from "@/lib/presets/chart";
 import { codeBlockPresets } from "@/lib/presets/code-block";
 import { dataTablePresets } from "@/lib/presets/data-table";
+import { imagePresets } from "@/lib/presets/image";
+import { videoPresets } from "@/lib/presets/video";
+import { audioPresets } from "@/lib/presets/audio";
+import { linkPreviewPresets } from "@/lib/presets/link-preview";
 import { itemCarouselPresets } from "@/lib/presets/item-carousel";
-import { mediaCardPresets } from "@/lib/presets/media-card";
 import { optionListPresets } from "@/lib/presets/option-list";
 import { planPresets } from "@/lib/presets/plan";
 import { terminalPresets } from "@/lib/presets/terminal";
@@ -22,14 +25,17 @@ const PRESET_REGISTRY: Record<string, PresetMap> = {
   chart: chartPresets,
   "code-block": codeBlockPresets,
   "data-table": dataTablePresets,
+  image: imagePresets,
+  video: videoPresets,
+  audio: audioPresets,
+  "link-preview": linkPreviewPresets,
   "item-carousel": itemCarouselPresets,
-  "media-card": mediaCardPresets,
   "option-list": optionListPresets,
   plan: planPresets,
   terminal: terminalPresets,
 };
 
-const DEFAULT_COMPONENT = "option-list";
+const DEFAULT_COMPONENT = "chart";
 
 function getPresets(componentId: string): PresetMap {
   return PRESET_REGISTRY[componentId] ?? PRESET_REGISTRY[DEFAULT_COMPONENT];

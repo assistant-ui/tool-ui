@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion, type Transition } from "motion/react";
 import { cn } from "@/lib/ui/cn";
 import { DataTable } from "@/components/tool-ui/data-table";
-import { MediaCard } from "@/components/tool-ui/media-card";
+import { LinkPreview } from "@/components/tool-ui/link-preview";
 import { Chart } from "@/components/tool-ui/chart";
 import { XPost } from "@/components/tool-ui/x-post";
 import { Plan } from "@/components/tool-ui/plan";
@@ -15,7 +15,7 @@ import {
   type SupportTicket,
   TABLE_COLUMNS,
   TABLE_DATA,
-  MEDIA_CARD,
+  LINK_PREVIEW,
   X_POST,
   X_POST_ACTIONS,
   SIGNUP_CHART,
@@ -448,7 +448,7 @@ function createSceneConfigs(): SceneConfig[] {
     {
       userMessage: "Find that React Server Components guide",
       preamble: "Was it this one from yesterday?",
-      toolUI: <MediaCard {...MEDIA_CARD} maxWidth="420px" />,
+      toolUI: <LinkPreview {...LINK_PREVIEW} />,
       toolFallbackHeight: 260,
     },
     {

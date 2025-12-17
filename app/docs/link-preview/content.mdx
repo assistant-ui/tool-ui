@@ -1,0 +1,109 @@
+import { DocsHeader } from "../_components/docs-header";
+import { LinkPreview } from "@/components/tool-ui/link-preview";
+
+<DocsHeader
+  title="Link Preview"
+  description="Rich link previews with OG data."
+  mdxPath="app/docs/link-preview/content.mdx"
+/>
+
+<Tabs items={["Preview", "Code"]}>
+  <Tab>
+    <div className="not-prose flex justify-center">
+      <div className="w-full max-w-md">
+        <LinkPreview
+          id="link-preview-example"
+          href="https://react.dev/reference/rsc/server-components"
+          title="React Server Components"
+          description="Server Components are a new type of Component that renders ahead of time."
+          image="https://images.unsplash.com/photo-1633356122544-f134324a6cee?auto=format&fit=crop&q=80&w=1200"
+          domain="react.dev"
+          ratio="16:9"
+        />
+      </div>
+    </div>
+  </Tab>
+  <Tab>
+    ```tsx
+    import { LinkPreview } from "@/components/tool-ui/link-preview";
+
+    export function Example() {
+      return (
+        <LinkPreview
+          id="link-preview-example"
+          href="https://react.dev/reference/rsc/server-components"
+          title="React Server Components"
+          description="Server Components are a new type of Component that renders ahead of time."
+          image="https://images.unsplash.com/photo-1633356122544-f134324a6cee"
+          domain="react.dev"
+          ratio="16:9"
+        />
+      );
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Key Features
+
+<FeatureGrid>
+  <Feature icon="Link" title="Rich link cards">
+    Display OG image, title, description, and domain
+  </Feature>
+  <Feature icon="Globe" title="Favicon support">
+    Show site favicon alongside domain name
+  </Feature>
+  <Feature icon="Settings2" title="Response actions">
+    Add open, copy link, or custom action buttons
+  </Feature>
+</FeatureGrid>
+
+## When to Use
+
+- **Good for:** Link previews, article cards, URL references
+- **Not for:** Image galleries (use [Image](/docs/image)), media playback (use [Video](/docs/video) or [Audio](/docs/audio))
+
+## Source and Install
+
+Copy [`components/tool-ui/link-preview`](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/link-preview) and the [`shared`](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/shared) directory into your project.
+
+### Prerequisites
+
+```bash
+pnpm dlx shadcn@latest add badge button card tooltip
+```
+
+### Download
+
+- [**Shared Dependencies (GitHub)**](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/shared)
+- [**Link Preview (GitHub)**](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/link-preview)
+
+## Props
+
+<TypeTable
+  type={{
+    id: {
+      description: "Unique identifier for this tool UI instance",
+      type: "string",
+      required: true,
+    },
+    href: {
+      description: "Target URL",
+      type: "string",
+      required: true,
+    },
+    title: { description: "Link title", type: "string" },
+    description: { description: "Link description", type: "string" },
+    image: { description: "OG image URL", type: "string" },
+    domain: { description: "Source domain", type: "string" },
+    favicon: { description: "Favicon URL", type: "string" },
+    ratio: {
+      description: "Image aspect ratio",
+      type: "'auto' | '1:1' | '4:3' | '16:9' | '9:16'",
+      default: "'16:9'",
+    },
+    createdAt: { description: "Creation timestamp (ISO 8601)", type: "string" },
+    responseActions: { description: "Response action buttons", type: "Action[]" },
+    onResponseAction: { description: "Response action handler", type: "(actionId: string) => void" },
+  }}
+/>

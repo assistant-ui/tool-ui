@@ -1,5 +1,5 @@
 import type { Column } from "@/components/tool-ui/data-table";
-import type { SerializableMediaCard } from "@/components/tool-ui/media-card";
+import type { SerializableLinkPreview } from "@/components/tool-ui/link-preview";
 import type { SerializableChart } from "@/components/tool-ui/chart";
 import type { XPostData } from "@/components/tool-ui/x-post";
 import type { OptionListOption } from "@/components/tool-ui/option-list";
@@ -101,31 +101,17 @@ export const TABLE_DATA: SupportTicket[] = [...UNSORTED_TABLE_DATA].sort(
   (a, b) => PRIORITY_ORDER[a.priority] - PRIORITY_ORDER[b.priority],
 );
 
-export const MEDIA_CARD: SerializableMediaCard = {
-  id: "chat-showcase-media-card",
-  assetId: "rsc-guide",
-  kind: "link",
+export const LINK_PREVIEW: SerializableLinkPreview = {
+  id: "chat-showcase-link-preview",
   href: "https://react.dev/reference/rsc/server-components",
-  src: "https://react.dev/reference/rsc/server-components",
   title: "React Server Components",
   description:
     "Server Components are a new type of Component that renders ahead of time, before bundling. Learn how to use them in your app.",
-  ratio: "16:9",
-  domain: "react.dev",
-  thumb:
+  image:
     "https://images.unsplash.com/photo-1633356122544-f134324a6cee?auto=format&fit=crop&q=80&w=1200",
+  domain: "react.dev",
+  ratio: "16:9",
   createdAt: "2025-01-15T10:30:00.000Z",
-  source: {
-    label: "React Docs",
-    iconUrl: "https://api.dicebear.com/7.x/shapes/svg?seed=react",
-    url: "https://react.dev",
-  },
-  og: {
-    imageUrl:
-      "https://images.unsplash.com/photo-1633356122544-f134324a6cee?auto=format&fit=crop&q=80&w=1200",
-    description: "Official React documentation for Server Components.",
-    title: "React Server Components",
-  },
 };
 
 export const X_POST: XPostData = {

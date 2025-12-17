@@ -2,7 +2,10 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { DocsBorderedShell } from "@/app/docs/_components/docs-bordered-shell";
 import { DataTable } from "@/components/tool-ui/data-table";
-import { MediaCard } from "@/components/tool-ui/media-card";
+import { Image } from "@/components/tool-ui/image";
+import { Video } from "@/components/tool-ui/video";
+import { Audio } from "@/components/tool-ui/audio";
+import { LinkPreview } from "@/components/tool-ui/link-preview";
 import { XPost } from "@/components/tool-ui/x-post";
 import { LinkedInPost } from "@/components/tool-ui/linkedin-post";
 import { OptionList } from "@/components/tool-ui/option-list";
@@ -13,7 +16,10 @@ import { Chart } from "@/components/tool-ui/chart";
 import { ItemCarousel } from "@/components/tool-ui/item-carousel";
 import { dataTablePresets } from "@/lib/presets/data-table";
 import { itemCarouselPresets } from "@/lib/presets/item-carousel";
-import { mediaCardPresets } from "@/lib/presets/media-card";
+import { imagePresets } from "@/lib/presets/image";
+import { videoPresets } from "@/lib/presets/video";
+import { audioPresets } from "@/lib/presets/audio";
+import { linkPreviewPresets } from "@/lib/presets/link-preview";
 import { xPostPresets } from "@/lib/presets/x-post";
 import { linkedInPostPresets } from "@/lib/presets/linkedin-post";
 import { optionListPresets } from "@/lib/presets/option-list";
@@ -46,11 +52,11 @@ export default function ComponentsGalleryPage() {
           </div>
 
           <div className="mb-5 break-inside-avoid 2xl:mb-5">
-            <MediaCard {...mediaCardPresets.image.data.card} maxWidth="100%" />
+            <Image {...imagePresets["with-source"].data.image} />
           </div>
 
           <div className="mb-5 break-inside-avoid 2xl:mb-5">
-            <MediaCard {...mediaCardPresets.video.data.card} maxWidth="100%" />
+            <Video {...videoPresets["with-poster"].data.video} />
           </div>
 
           <div className="mb-5 break-inside-avoid 2xl:mb-5">
@@ -60,11 +66,11 @@ export default function ComponentsGalleryPage() {
           </div>
 
           <div className="mb-5 break-inside-avoid 2xl:mb-5">
-            <MediaCard {...mediaCardPresets.link.data.card} maxWidth="100%" />
+            <LinkPreview {...linkPreviewPresets["with-image"].data.linkPreview} />
           </div>
 
           <div className="mb-5 break-inside-avoid 2xl:mb-5">
-            <MediaCard {...mediaCardPresets.audio.data.card} maxWidth="100%" />
+            <Audio {...audioPresets["with-artwork"].data.audio} />
           </div>
 
           <div className="mb-5 break-inside-avoid 2xl:mb-5">

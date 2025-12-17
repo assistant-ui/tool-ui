@@ -4,15 +4,15 @@ import { ComponentDocsTabs } from "../_components/component-docs-tabs";
 import { ComponentPreview } from "../_components/component-preview";
 
 export const metadata: Metadata = {
-  title: "Media Card",
-  description: "Showcase images and media content",
+  title: "Image",
+  description: "Display images with metadata and attribution",
 };
 
-export default function MediaCardDocsPage() {
+export default function ImageDocsPage() {
   return (
     <ComponentDocsTabs
       docs={<Content />}
-      examples={<ComponentPreview componentId="media-card" />}
+      examples={<ComponentPreview componentId="image" />}
     />
   );
 }
