@@ -8,7 +8,7 @@ describe("Workbench Store", () => {
     const store = useWorkbenchStore.getState();
     // Reset to initial state by selecting the first component
     const defaultComponent = workbenchComponents[0];
-    store.setSelectedComponent(defaultComponent?.id ?? "media-card");
+    store.setSelectedComponent(defaultComponent?.id ?? "chart");
   });
 
   describe("setSelectedComponent", () => {

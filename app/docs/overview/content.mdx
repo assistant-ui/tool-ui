@@ -82,7 +82,7 @@ flowchart LR
 
 **What this demonstrates:**
 
-- `SerializableMediaCardSchema` ensures type-safe output
+- `SerializableLinkPreviewSchema` ensures type-safe output
 - Actions are defined with both UI labels and canonical sentences for conversation coherence
 - The schema guarantees the frontend receives reconstructable, addressable data
 
@@ -90,7 +90,7 @@ flowchart LR
 import { streamText, tool, convertToModelMessages } from "ai";
 import { openai } from "@ai-sdk/openai";
 import { z } from "zod";
-import { SerializableMediaCardSchema } from "@/components/tool-ui/media-card/schema";
+import { SerializableLinkPreviewSchema } from "@/components/tool-ui/link-preview/schema";
 
 export async function POST(req: Request) {
   const { messages } = await req.json();
@@ -102,16 +102,14 @@ export async function POST(req: Request) {
       previewLink: tool({
         description: "Show a preview card for a URL",
         inputSchema: z.object({ url: z.url() }),
-        outputSchema: SerializableMediaCardSchema,
+        outputSchema: SerializableLinkPreviewSchema,
         async execute({ url }) {
           return {
             id: "link-preview-1",
-            assetId: "link-1",
-            kind: "link",
             href: url,
             title: "Example Site",
             description: "A description of the linked content",
-            thumb: "https://example.com/image.jpg",
+            image: "https://example.com/image.jpg",
           };
         },
       }),
@@ -127,7 +125,7 @@ export async function POST(req: Request) {
 **What this demonstrates:**
 
 - `makeAssistantToolUI` connects the tool name to a React component
-- `parseSerializableMediaCard` validates the tool result at runtime and returns typed props
+- `parseSerializableLinkPreview` validates the tool result at runtime and returns typed props
 - Simply mounting `<PreviewLinkUI />` registers it (no manual plumbing required)
 - assistant-ui manages the runtime, streaming, and tool call lifecycle
 
@@ -142,15 +140,15 @@ import {
   AssistantChatTransport,
 } from "@assistant-ui/react-ai-sdk";
 import {
-  MediaCard,
-  parseSerializableMediaCard,
-} from "@/components/tool-ui/media-card";
+  LinkPreview,
+  parseSerializableLinkPreview,
+} from "@/components/tool-ui/link-preview";
 
 const PreviewLinkUI = makeAssistantToolUI({
   toolName: "previewLink",
   render: ({ result }) => {
-    const card = parseSerializableMediaCard(result);
-    return <MediaCard {...card} maxWidth="420px" />;
+    const preview = parseSerializableLinkPreview(result);
+    return <LinkPreview {...preview} maxWidth="420px" />;
   },
 });
 
@@ -197,4 +195,4 @@ Every Tool UI surface is addressable and reconstructable. Here's the common sche
 
 - **[Quick Start](/docs/quick-start)**: Wire your first Tool UI
 - **[UI Guidelines](/docs/design-guidelines)**: Patterns, roles, lifecycle, receipts
-- **[Components](/docs/data-table)**: Explore Data Table, Media Card, Option List, Social Post
+- **[Components](/docs/data-table)**: Explore Data Table, Image, Video, Link Preview, Option List, Social Post

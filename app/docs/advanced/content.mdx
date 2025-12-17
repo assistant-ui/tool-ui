@@ -21,21 +21,19 @@ With `InferUITools` in AI SDK 5, you can infer tool input/output types from your
 ```ts title="lib/tools.ts"
 import { tool } from "ai";
 import { z } from "zod";
-import { SerializableMediaCardSchema } from "@/components/tool-ui/media-card/schema";
+import { SerializableLinkPreviewSchema } from "@/components/tool-ui/link-preview/schema";
 
 export const tools = {
   previewLink: tool({
     description: "Return a simple link preview",
     inputSchema: z.object({ url: z.url() }),
-    outputSchema: SerializableMediaCardSchema,
+    outputSchema: SerializableLinkPreviewSchema,
     async execute({ url }) {
       return {
         id: "link-preview-1",
-        assetId: url,
-        kind: "link",
         href: url,
         title: "React Server Components",
-        thumb:
+        image:
           "https://images.unsplash.com/photo-1633356122544-f134324a6cee?auto=format&fit=crop&q=80&w=1200",
         domain: new URL(url).hostname,
       };
@@ -84,9 +82,9 @@ import { useChat } from "@ai-sdk/react";
 import { InferUITools } from "ai";
 import type { Tools } from "@/lib/tools";
 import {
-  MediaCard,
-  parseSerializableMediaCard,
-} from "@/components/tool-ui/media-card";
+  LinkPreview,
+  parseSerializableLinkPreview,
+} from "@/components/tool-ui/link-preview";
 
 type MyUITools = InferUITools<Tools>;
 
@@ -103,8 +101,8 @@ export default function Chat() {
               part.type === "tool-previewLink" &&
               part.state === "output-available"
             ) {
-              const card = parseSerializableMediaCard(part.output);
-              return <MediaCard key={i} {...card} />;
+              const preview = parseSerializableLinkPreview(part.output);
+              return <LinkPreview key={i} {...preview} />;
             }
             return null;
           })}

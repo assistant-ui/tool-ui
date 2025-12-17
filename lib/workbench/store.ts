@@ -101,7 +101,7 @@ function buildOpenAIGlobals(
 }
 
 export const useWorkbenchStore = create<WorkbenchState>((set, get) => ({
-  selectedComponent: defaultComponent?.id ?? "media-card",
+  selectedComponent: defaultComponent?.id ?? "chart",
   displayMode: "inline",
   theme: "light",
   locale: "en-US",

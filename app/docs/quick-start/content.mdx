@@ -45,13 +45,13 @@ function App() {
 
 <Step title="Define a backend tool">
 
-Create a tool on your server that the LLM can call. The tool returns structured JSON that matches a Tool UI component schema. Here we're creating a link preview tool that returns data for the MediaCard component.
+Create a tool on your server that the LLM can call. The tool returns structured JSON that matches a Tool UI component schema. Here we're creating a link preview tool that returns data for the LinkPreview component.
 
 **What this demonstrates:**
 
-- `SerializableMediaCardSchema` ensures your tool output matches the MediaCard component's expected format
-- `id` identifies this rendering in the conversation; `assetId` identifies the underlying resource
-- `parseSerializableMediaCard` on the frontend validates the result at runtime before rendering
+- `SerializableLinkPreviewSchema` ensures your tool output matches the LinkPreview component's expected format
+- `id` identifies this rendering in the conversation
+- `parseSerializableLinkPreview` on the frontend validates the result at runtime before rendering
 - Your tool can fetch real data (APIs, databases) and return it in the component schema format
 
 ```ts
@@ -77,12 +77,10 @@ export async function POST(req: Request) {
           // In production, you'd fetch real metadata here
           return {
             id: "link-preview-1",
-            assetId: url,
-            kind: "link",
             href: url,
             title: "Example Site",
             description: "A description of the linked content",
-            thumb: "https://example.com/image.jpg",
+            image: "https://example.com/image.jpg",
           };
         },
       }),
@@ -97,22 +95,22 @@ export async function POST(req: Request) {
 
 <Step title="Register the Tool UI">
 
-Connect your backend tool to a frontend component. When the LLM calls the `previewLink` tool, assistant-ui will automatically render the MediaCard component with the returned data.
+Connect your backend tool to a frontend component. When the LLM calls the `previewLink` tool, assistant-ui will automatically render the LinkPreview component with the returned data.
 
 **What this demonstrates:**
 
 - `makeAssistantToolUI` creates a component that listens for tool calls by name
-- `parseSerializableMediaCard` validates the result at runtime and returns typed props
+- `parseSerializableLinkPreview` validates the result at runtime and returns typed props
 - The `toolName` must exactly match your backend tool name
 - Simply including `<PreviewLinkUI />` in your app registers the UI for that tool
 
 ```tsx
 import { makeAssistantToolUI } from "@assistant-ui/react";
 import {
-  MediaCard,
-  MediaCardErrorBoundary,
-  parseSerializableMediaCard,
-} from "@/components/tool-ui/media-card";
+  LinkPreview,
+  LinkPreviewErrorBoundary,
+  parseSerializableLinkPreview,
+} from "@/components/tool-ui/link-preview";
 
 export const PreviewLinkUI = makeAssistantToolUI({
   toolName: "previewLink", // Must match backend tool name
@@ -126,11 +124,11 @@ export const PreviewLinkUI = makeAssistantToolUI({
       );
     }
 
-    const card = parseSerializableMediaCard(result);
+    const preview = parseSerializableLinkPreview(result);
     return (
-      <MediaCardErrorBoundary>
-        <MediaCard {...card} maxWidth="420px" />
-      </MediaCardErrorBoundary>
+      <LinkPreviewErrorBoundary>
+        <LinkPreview {...preview} maxWidth="420px" />
+      </LinkPreviewErrorBoundary>
     );
   },
 });
@@ -146,7 +144,7 @@ function App() {
 }
 ```
 
-That's it! When a user asks the assistant to preview a link, it will call your tool and render a beautiful MediaCard component.
+That's it! When a user asks the assistant to preview a link, it will call your tool and render a beautiful LinkPreview component.
 
 </Step>
 
@@ -307,6 +305,6 @@ When copying components manually, always include the [`shared`](https://github.c
 
 ## Next Steps
 
-- [**Explore Components**](/docs/data-table): Data Table, Media Card, Option List, Social Post
+- [**Explore Components**](/docs/data-table): Data Table, Image, Video, Link Preview, Option List, Social Post
 - [**UI Guidelines**](/docs/design-guidelines): Learn the interaction patterns
 - [**Examples**](https://github.com/assistant-ui/assistant-ui/tree/main/examples): Full implementations

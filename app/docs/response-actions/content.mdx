@@ -1,6 +1,6 @@
 import { DocsHeader } from "../_components/docs-header";
 import { DataTable } from "@/components/tool-ui/data-table";
-import { MediaCard } from "@/components/tool-ui/media-card";
+import { Image } from "@/components/tool-ui/image";
 import { XPost } from "@/components/tool-ui/x-post";
 
 <DocsHeader
@@ -111,17 +111,16 @@ AI detected anomalies in recent expenses. The user must approve or escalate befo
   </Tab>
 </Tabs>
 
-### MediaCard: Generated Hero Image
+### Image: Generated Hero Image
 
 AI generated a hero image for the blog post. The user must approve before it goes live.
 
 <Tabs items={["Preview", "Code"]}>
   <Tab>
     <div className="not-prose">
-      <MediaCard
+      <Image
         id="generated-hero"
         assetId="gen-img-7f3a"
-        kind="image"
         src="https://images.unsplash.com/photo-1620712943543-bcc4688e7485?auto=format&fit=crop&q=80&w=1200"
         alt="Abstract visualization of neural networks with glowing nodes"
         title="Generated: AI Infrastructure"
@@ -138,13 +137,12 @@ AI generated a hero image for the blog post. The user must approve before it goe
   </Tab>
   <Tab>
     ```tsx
-    import { MediaCard } from "@/components/tool-ui/media-card";
+    import { Image } from "@/components/tool-ui/image";
 
     // AI generated this image. User approves before publishing.
-    <MediaCard
+    <Image
       id="generated-hero"
       assetId="gen-img-7f3a"
-      kind="image"
       src="https://images.unsplash.com/photo-1620712943543-bcc4688e7485"
       alt="Abstract visualization of neural networks with glowing nodes"
       title="Generated: AI Infrastructure"
@@ -298,7 +296,7 @@ const toolOutput = {
 };
 
 // Runtime rendering (can add icons, handlers)
-<MediaCard
+<LinkPreview
   {...toolOutput}
   onResponseAction={(id) => {
     if (id === "open") window.open(url, "_blank");

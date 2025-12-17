@@ -16,7 +16,7 @@ const externalPatterns: Pattern[] = [
   { match: "Zod", href: "https://zod.dev" },
 ];
 
-// Build patterns for label (e.g., "Media Card"), camel ("MediaCard"), and id ("media-card").
+// Build patterns for label (e.g., "Link Preview"), camel ("LinkPreview"), and id ("link-preview").
 const patterns: Pattern[] = [
   ...externalPatterns,
   ...componentsRegistry
