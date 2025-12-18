@@ -25,8 +25,16 @@ import {
   useIsWidgetClosed,
   useActiveToolCall,
 } from "@/app/workbench/lib/store";
-import { DEVICE_PRESETS } from "@/app/workbench/lib/types";
+import {
+  DEVICE_PRESETS,
+  isStructuredWidgetState,
+  type StructuredWidgetState,
+} from "@/app/workbench/lib/types";
 import { getComponent } from "@/app/workbench/lib/component-registry";
+import {
+  StructuredWidgetStateEditor,
+  createEmptyStructuredState,
+} from "./structured-widget-state-editor";
 import { OpenAIProvider } from "@/app/workbench/lib/openai-context";
 import { JsonEditor } from "./json-editor";
 import { Button } from "@/components/ui/button";
@@ -537,6 +545,86 @@ function ToolCallLoadingIndicator() {
   );
 }
 
+interface WidgetStateSectionProps {
+  value: Record<string, unknown>;
+  onChange: (value: Record<string, unknown>) => void;
+}
+
+function WidgetStateSection({ value, onChange }: WidgetStateSectionProps) {
+  const [preferRawMode, setPreferRawMode] = useState(false);
+  const isStructured = isStructuredWidgetState(value);
+  const showStructured = isStructured && !preferRawMode;
+
+  const handleStructuredChange = useCallback(
+    (structured: StructuredWidgetState) => {
+      onChange(structured as unknown as Record<string, unknown>);
+    },
+    [onChange],
+  );
+
+  const handleConvertToStructured = useCallback(() => {
+    const structured = createEmptyStructuredState();
+    onChange(structured as unknown as Record<string, unknown>);
+    setPreferRawMode(false);
+  }, [onChange]);
+
+  const handleSwitchToRaw = useCallback(() => {
+    setPreferRawMode(true);
+  }, []);
+
+  if (showStructured) {
+    return (
+      <StructuredWidgetStateEditor
+        value={value as unknown as StructuredWidgetState}
+        onChange={handleStructuredChange}
+        onSwitchToRaw={handleSwitchToRaw}
+      />
+    );
+  }
+
+  const hasData = Object.keys(value).length > 0;
+
+  return (
+    <div className="flex flex-col gap-2">
+      <JsonEditor
+        label="Widget State"
+        value={value}
+        onChange={onChange}
+      />
+      {!isStructured && hasData && (
+        <Button
+          variant="ghost"
+          size="sm"
+          className="text-muted-foreground hover:text-foreground h-6 gap-1 self-start text-[10px]"
+          onClick={handleConvertToStructured}
+        >
+          Convert to structured
+        </Button>
+      )}
+      {!hasData && (
+        <Button
+          variant="ghost"
+          size="sm"
+          className="text-muted-foreground hover:text-foreground h-6 gap-1 self-start text-[10px]"
+          onClick={handleConvertToStructured}
+        >
+          Use structured format
+        </Button>
+      )}
+      {isStructured && preferRawMode && (
+        <Button
+          variant="ghost"
+          size="sm"
+          className="text-muted-foreground hover:text-foreground h-6 gap-1 self-start text-[10px]"
+          onClick={() => setPreferRawMode(false)}
+        >
+          Switch to structured view
+        </Button>
+      )}
+    </div>
+  );
+}
+
 function EditorPanel() {
   const { getActiveData, handleChange, handleReset } = useJsonEditorState();
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({
@@ -593,8 +681,7 @@ function EditorPanel() {
           isOpen={openSections.widgetState}
           onReset={() => handleReset("widgetState")}
         >
-          <JsonEditor
-            label="Widget State"
+          <WidgetStateSection
             value={getActiveData("widgetState")}
             onChange={(value) => handleChange("widgetState", value)}
           />

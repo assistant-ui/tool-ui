@@ -30,6 +30,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/ui/cn";
 import { useTheme } from "next-themes";
 import { ArrowLeft, Moon, Sun } from "lucide-react";
+import { OnboardingModal } from "./onboarding-modal";
 
 const WORKSPACE_MIN_SIZE = 50;
 const CONSOLE_DEFAULT_SIZE = 25;
@@ -215,6 +216,7 @@ export function WorkbenchShell() {
           </div>
         </aside>
       </div>
+      <OnboardingModal />
     </div>
   );
 }
