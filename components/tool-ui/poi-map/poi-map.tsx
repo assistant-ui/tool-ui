@@ -19,6 +19,7 @@ import {
   Ticket,
   Mountain,
   Train,
+  X,
 } from "lucide-react";
 import type { POI, POIMapViewState, MapCenter, POICategory } from "./schema";
 import { CATEGORY_LABELS } from "./schema";
@@ -38,9 +39,6 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
 } from "./_adapter";
 
 type DisplayMode = "inline" | "pip" | "fullscreen";
@@ -79,6 +77,7 @@ export interface POIMapProps {
   onToggleFavorite?: (poiId: string, isFavorite: boolean) => void;
   onFilterCategory?: (category: POICategory | null) => void;
   onViewDetails?: (poiId: string) => void;
+  onDismissModal?: () => void;
 }
 
 export function POIMap({
@@ -98,6 +97,7 @@ export function POIMap({
   onToggleFavorite,
   onFilterCategory,
   onViewDetails,
+  onDismissModal,
 }: POIMapProps) {
   const {
     selectedPoiId,
@@ -159,40 +159,61 @@ export function POIMap({
   const isFullscreen = displayMode === "fullscreen";
   const isModalView = view?.mode === "modal";
   const modalPoiId =
-    isModalView && view?.params?.poiId
-      ? String(view.params.poiId)
-      : null;
+    isModalView && view?.params?.poiId ? String(view.params.poiId) : null;
   const modalPoi = useMemo(
     () => (modalPoiId ? pois.find((p) => p.id === modalPoiId) : null),
     [pois, modalPoiId],
   );
 
-  if (isModalView && modalPoi) {
+  const renderModalOverlay = () => {
+    if (!isModalView || !modalPoi) return null;
+
     const CategoryIcon = CATEGORY_ICONS[modalPoi.category];
     const isFavorite = favoriteIds.has(modalPoi.id);
 
     return (
-      <div
-        id={id}
-        className={cn("flex flex-col gap-4 p-4", className)}
-        data-tool-ui-id={id}
-        data-slot="poi-map"
-      >
-        <div className="flex items-start gap-4">
-          <Avatar className="size-20 shrink-0 rounded-lg">
-            <AvatarImage
-              src={modalPoi.imageUrl}
-              alt={modalPoi.name}
-              className="object-cover"
-            />
-            <AvatarFallback className="rounded-lg">
-              <CategoryIcon className="text-muted-foreground size-8" />
-            </AvatarFallback>
-          </Avatar>
+      <div className="absolute inset-0 z-[1100] flex items-center justify-center p-6">
+        <div
+          className="absolute inset-0 bg-black/40"
+          onClick={onDismissModal}
+          aria-hidden="true"
+        />
+        <div className="bg-card relative z-10 flex max-h-full w-full max-w-sm flex-col overflow-hidden rounded-xl shadow-xl">
+          <button
+            onClick={onDismissModal}
+            className="bg-background/80 hover:bg-background absolute top-3 right-3 z-10 flex size-8 items-center justify-center rounded-full border shadow-sm backdrop-blur-sm transition-colors"
+            aria-label="Close"
+          >
+            <X className="size-4" />
+          </button>
 
-          <div className="flex min-w-0 flex-1 flex-col gap-2">
+          {modalPoi.imageUrl && (
+            <div className="relative h-48 shrink-0 overflow-hidden">
+              <img
+                src={modalPoi.imageUrl}
+                alt={modalPoi.name}
+                className="h-full w-full object-cover"
+              />
+            </div>
+          )}
+
+          <div className="scrollbar-subtle flex flex-col gap-3 overflow-y-auto p-4">
             <div className="flex items-start justify-between gap-2">
-              <h2 className="text-lg font-semibold">{modalPoi.name}</h2>
+              <div className="min-w-0 flex-1">
+                <h2 className="text-lg font-semibold">{modalPoi.name}</h2>
+                <div className="mt-1.5 flex flex-wrap items-center gap-2">
+                  <Badge variant="secondary" className="gap-1">
+                    <CategoryIcon className="size-3" />
+                    {CATEGORY_LABELS[modalPoi.category]}
+                  </Badge>
+                  {modalPoi.rating !== undefined && (
+                    <Badge variant="outline" className="gap-1">
+                      <Star className="size-3 fill-amber-400 text-amber-400" />
+                      {modalPoi.rating.toFixed(1)}
+                    </Badge>
+                  )}
+                </div>
+              </div>
               <Button
                 variant="ghost"
                 size="icon"
@@ -210,83 +231,57 @@ export function POIMap({
               </Button>
             </div>
 
-            <div className="flex flex-wrap items-center gap-2">
-              <Badge variant="secondary" className="gap-1">
-                <CategoryIcon className="size-3" />
-                {CATEGORY_LABELS[modalPoi.category]}
-              </Badge>
-              {modalPoi.rating !== undefined && (
-                <Badge variant="outline" className="gap-1">
-                  <Star className="size-3 fill-amber-400 text-amber-400" />
-                  {modalPoi.rating.toFixed(1)}
-                </Badge>
-              )}
-            </div>
+            {modalPoi.description && (
+              <p className="text-muted-foreground text-sm leading-relaxed">
+                {modalPoi.description}
+              </p>
+            )}
+
+            {modalPoi.address && (
+              <div className="flex items-start gap-2 text-sm">
+                <MapPin className="text-muted-foreground mt-0.5 size-4 shrink-0" />
+                <span>{modalPoi.address}</span>
+              </div>
+            )}
+
+            {modalPoi.tags && modalPoi.tags.length > 0 && (
+              <div className="flex flex-wrap gap-1.5">
+                {modalPoi.tags.map((tag) => (
+                  <Badge key={tag} variant="outline" className="text-xs">
+                    {tag}
+                  </Badge>
+                ))}
+              </div>
+            )}
+
+            <Button
+              variant="outline"
+              className="mt-1 w-full gap-2"
+              onClick={() =>
+                window.open(
+                  `https://maps.google.com/?q=${modalPoi.lat},${modalPoi.lng}`,
+                  "_blank",
+                )
+              }
+            >
+              <ExternalLink className="size-4" />
+              Open in Google Maps
+            </Button>
           </div>
         </div>
-
-        {modalPoi.description && (
-          <p className="text-muted-foreground text-sm leading-relaxed">
-            {modalPoi.description}
-          </p>
-        )}
-
-        {modalPoi.address && (
-          <div className="flex items-start gap-2 text-sm">
-            <MapPin className="text-muted-foreground mt-0.5 size-4 shrink-0" />
-            <span>{modalPoi.address}</span>
-          </div>
-        )}
-
-        {modalPoi.tags && modalPoi.tags.length > 0 && (
-          <div className="flex flex-wrap gap-1.5">
-            {modalPoi.tags.map((tag) => (
-              <Badge key={tag} variant="outline" className="text-xs">
-                {tag}
-              </Badge>
-            ))}
-          </div>
-        )}
-
-        <div className="border-border isolate mt-2 h-48 overflow-hidden rounded-lg border">
-          <MapView
-            pois={[modalPoi]}
-            center={{ lat: modalPoi.lat, lng: modalPoi.lng }}
-            zoom={15}
-            selectedPoiId={modalPoi.id}
-            favoriteIds={favoriteIds}
-            onSelectPoi={() => {}}
-            onMoveEnd={() => {}}
-            theme={theme}
-            className="h-full w-full"
-          />
-        </div>
-
-        <Button
-          variant="outline"
-          className="mt-2 w-full gap-2"
-          onClick={() =>
-            window.open(
-              `https://maps.google.com/?q=${modalPoi.lat},${modalPoi.lng}`,
-              "_blank",
-            )
-          }
-        >
-          <ExternalLink className="size-4" />
-          Open in Google Maps
-        </Button>
       </div>
     );
-  }
+  };
 
   if (isFullscreen) {
     return (
       <div
         id={id}
-        className={cn("flex h-full w-full gap-3", className)}
+        className={cn("relative flex h-full w-full gap-3", className)}
         data-tool-ui-id={id}
         data-slot="poi-map"
       >
+        {renderModalOverlay()}
         <div className="flex w-72 shrink-0 flex-col py-3 pl-3">
           <div className="mb-4">
             <div className="flex items-center justify-between">
@@ -341,7 +336,7 @@ export function POIMap({
           />
         </div>
 
-        <div className="border-border isolate relative min-w-0 flex-1 overflow-hidden rounded-xl border">
+        <div className="border-border relative isolate min-w-0 flex-1 overflow-hidden rounded-xl border">
           <MapView
             pois={filteredPois}
             center={mapCenter}
@@ -397,12 +392,13 @@ export function POIMap({
     <div
       id={id}
       className={cn(
-        "border-border isolate relative h-full w-full overflow-hidden rounded-xl border",
+        "border-border relative isolate h-full w-full overflow-hidden rounded-xl border",
         className,
       )}
       data-tool-ui-id={id}
       data-slot="poi-map"
     >
+      {renderModalOverlay()}
       <MapView
         pois={filteredPois}
         center={mapCenter}

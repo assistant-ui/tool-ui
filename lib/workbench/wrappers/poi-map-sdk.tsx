@@ -18,6 +18,7 @@ import {
   useTheme,
   useView,
 } from "../openai-context";
+import { useWorkbenchStore } from "../store";
 import type { DisplayMode } from "../types";
 
 const DEFAULT_WIDGET_STATE: POIMapViewState = {
@@ -37,6 +38,7 @@ export function POIMapSDK(props: Record<string, unknown>) {
   const callTool = useCallTool();
   const theme = useTheme();
   const view = useView();
+  const setView = useWorkbenchStore((s) => s.setView);
 
   const currentWidgetState = useMemo<POIMapViewState>(
     () => ({
@@ -102,6 +104,10 @@ export function POIMapSDK(props: Record<string, unknown>) {
     [requestModal, parsed.pois],
   );
 
+  const handleDismissModal = useCallback(() => {
+    setView(null);
+  }, [setView]);
+
   return (
     <POIMap
       id={parsed.id}
@@ -119,6 +125,7 @@ export function POIMapSDK(props: Record<string, unknown>) {
       onToggleFavorite={handleToggleFavorite}
       onFilterCategory={handleFilterCategory}
       onViewDetails={handleViewDetails}
+      onDismissModal={handleDismissModal}
     />
   );
 }
