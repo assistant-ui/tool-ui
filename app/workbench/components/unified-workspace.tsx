@@ -43,6 +43,7 @@ import { ComponentErrorBoundary } from "./component-error-boundary";
 import { IsolatedThemeWrapper } from "./isolated-theme-wrapper";
 import { PipView } from "./pip-view";
 import { MockComposer } from "./mock-composer";
+import { MockConfigPanel } from "./mock-config-panel";
 
 const PREVIEW_MIN_SIZE = 30;
 const PREVIEW_MAX_SIZE = 100;
@@ -53,6 +54,7 @@ const TAB_LABELS: Record<ActiveJsonTab, string> = {
   widgetState: "Widget State",
   toolResponseMetadata: "Metadata",
   window: "Window",
+  mocks: "Mocks",
 };
 
 function FallbackComponent({ componentId }: { componentId: string }) {
@@ -412,11 +414,16 @@ function EditorPanel() {
               >
                 Window
               </TabsTrigger>
+              <TabsTrigger className={TAB_TRIGGER_CLASSES} value="mocks">
+                Mocks
+              </TabsTrigger>
             </TabsList>
           </Tabs>
         </div>
 
-        {activeJsonTab === "window" ? (
+        {activeJsonTab === "mocks" ? (
+          <MockConfigPanel />
+        ) : activeJsonTab === "window" ? (
           <ReadOnlyJsonView value={globals} />
         ) : (
           <JsonEditor
@@ -432,7 +439,7 @@ function EditorPanel() {
         <div className="text-muted-foreground bg-background/60 absolute right-3 bottom-3 z-20 rounded-full border px-2.5 py-1 text-xs backdrop-blur-sm">
           Read only
         </div>
-      ) : (
+      ) : activeJsonTab === "mocks" ? null : (
         <Tooltip>
           <TooltipTrigger asChild>
             <Button

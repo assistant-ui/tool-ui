@@ -1,6 +1,11 @@
 import type { CallToolResponse } from "./types";
+import type { MockConfigState, MockResponse } from "./mock-config";
 
 type MockHandler = (args: Record<string, unknown>) => Promise<CallToolResponse>;
+
+export interface MockToolCallResult extends CallToolResponse {
+  _mockVariant?: string;
+}
 
 const mockHandlers: Record<string, MockHandler> = {
   search: async (args) => {
@@ -193,10 +198,49 @@ function simulateDelay(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+function convertMockResponse(response: MockResponse): CallToolResponse {
+  const result: CallToolResponse = {};
+
+  if (response.structuredContent) {
+    result.structuredContent = response.structuredContent;
+  }
+  if (response.content) {
+    result.content = response.content;
+  }
+  if (response.isError) {
+    result.isError = response.isError;
+  }
+  if (response._meta) {
+    result._meta = response._meta;
+  }
+
+  return result;
+}
+
 export async function handleMockToolCall(
   toolName: string,
-  args: Record<string, unknown>
-): Promise<CallToolResponse> {
+  args: Record<string, unknown>,
+  mockConfig?: MockConfigState,
+): Promise<MockToolCallResult> {
+  if (mockConfig?.globalEnabled) {
+    const toolConfig = mockConfig.tools[toolName];
+
+    if (toolConfig?.activeVariantId) {
+      const variant = toolConfig.variants.find(
+        (v) => v.id === toolConfig.activeVariantId,
+      );
+
+      if (variant) {
+        await simulateDelay(variant.delay);
+        const response = convertMockResponse(variant.response);
+        return {
+          ...response,
+          _mockVariant: variant.name,
+        };
+      }
+    }
+  }
+
   const handler = mockHandlers[toolName] || defaultHandler;
   return handler(args);
 }

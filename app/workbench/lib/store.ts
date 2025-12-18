@@ -15,6 +15,8 @@ import type {
 import { DEVICE_PRESETS } from "./types";
 import { workbenchComponents } from "./component-registry";
 import { clearFiles } from "./file-store";
+import type { MockConfigState, MockVariant } from "./mock-config";
+import { createToolMockConfig, createEmptyMockConfigState } from "./mock-config";
 
 const defaultComponent = workbenchComponents[0];
 
@@ -23,7 +25,8 @@ export type ActiveJsonTab =
   | "toolOutput"
   | "widgetState"
   | "toolResponseMetadata"
-  | "window";
+  | "window"
+  | "mocks";
 
 interface WorkbenchState {
   selectedComponent: string;
@@ -43,6 +46,7 @@ interface WorkbenchState {
   isTransitioning: boolean;
   transitionFrom: DisplayMode | null;
   view: View | null;
+  mockConfig: MockConfigState;
 
   setSelectedComponent: (id: string) => void;
   setDisplayMode: (mode: DisplayMode) => void;
@@ -69,6 +73,20 @@ interface WorkbenchState {
   setActiveJsonTab: (tab: ActiveJsonTab) => void;
   setView: (view: View | null) => void;
   getOpenAIGlobals: () => OpenAIGlobals;
+
+  setMocksEnabled: (enabled: boolean) => void;
+  registerTool: (toolName: string) => void;
+  removeTool: (toolName: string) => void;
+  setActiveVariant: (toolName: string, variantId: string | null) => void;
+  setInterceptMode: (toolName: string, enabled: boolean) => void;
+  addVariant: (toolName: string, variant: MockVariant) => void;
+  updateVariant: (
+    toolName: string,
+    variantId: string,
+    updates: Partial<MockVariant>,
+  ) => void;
+  removeVariant: (toolName: string, variantId: string) => void;
+  setMockConfig: (config: MockConfigState) => void;
 }
 
 function buildOpenAIGlobals(
@@ -124,6 +142,7 @@ export const useWorkbenchStore = create<WorkbenchState>((set, get) => ({
   isTransitioning: false,
   transitionFrom: null,
   view: null,
+  mockConfig: createEmptyMockConfigState(),
   setSelectedComponent: (id) => {
     clearFiles();
     set(() => {
@@ -188,6 +207,129 @@ export const useWorkbenchStore = create<WorkbenchState>((set, get) => ({
     const state = get();
     return buildOpenAIGlobals(state);
   },
+
+  setMocksEnabled: (enabled) =>
+    set((state) => ({
+      mockConfig: { ...state.mockConfig, globalEnabled: enabled },
+    })),
+
+  registerTool: (toolName) =>
+    set((state) => {
+      if (state.mockConfig.tools[toolName]) {
+        return state;
+      }
+      return {
+        mockConfig: {
+          ...state.mockConfig,
+          tools: {
+            ...state.mockConfig.tools,
+            [toolName]: createToolMockConfig(toolName),
+          },
+        },
+      };
+    }),
+
+  removeTool: (toolName) =>
+    set((state) => {
+      const { [toolName]: _, ...remainingTools } = state.mockConfig.tools;
+      return {
+        mockConfig: {
+          ...state.mockConfig,
+          tools: remainingTools,
+        },
+      };
+    }),
+
+  setActiveVariant: (toolName, variantId) =>
+    set((state) => {
+      const tool = state.mockConfig.tools[toolName];
+      if (!tool) return state;
+      return {
+        mockConfig: {
+          ...state.mockConfig,
+          tools: {
+            ...state.mockConfig.tools,
+            [toolName]: { ...tool, activeVariantId: variantId },
+          },
+        },
+      };
+    }),
+
+  setInterceptMode: (toolName, enabled) =>
+    set((state) => {
+      const tool = state.mockConfig.tools[toolName];
+      if (!tool) return state;
+      return {
+        mockConfig: {
+          ...state.mockConfig,
+          tools: {
+            ...state.mockConfig.tools,
+            [toolName]: { ...tool, interceptMode: enabled },
+          },
+        },
+      };
+    }),
+
+  addVariant: (toolName, variant) =>
+    set((state) => {
+      const tool = state.mockConfig.tools[toolName];
+      if (!tool) return state;
+      return {
+        mockConfig: {
+          ...state.mockConfig,
+          tools: {
+            ...state.mockConfig.tools,
+            [toolName]: {
+              ...tool,
+              variants: [...tool.variants, variant],
+            },
+          },
+        },
+      };
+    }),
+
+  updateVariant: (toolName, variantId, updates) =>
+    set((state) => {
+      const tool = state.mockConfig.tools[toolName];
+      if (!tool) return state;
+      return {
+        mockConfig: {
+          ...state.mockConfig,
+          tools: {
+            ...state.mockConfig.tools,
+            [toolName]: {
+              ...tool,
+              variants: tool.variants.map((v) =>
+                v.id === variantId ? { ...v, ...updates } : v,
+              ),
+            },
+          },
+        },
+      };
+    }),
+
+  removeVariant: (toolName, variantId) =>
+    set((state) => {
+      const tool = state.mockConfig.tools[toolName];
+      if (!tool) return state;
+      const newActiveId =
+        tool.activeVariantId === variantId ? null : tool.activeVariantId;
+      return {
+        mockConfig: {
+          ...state.mockConfig,
+          tools: {
+            ...state.mockConfig.tools,
+            [toolName]: {
+              ...tool,
+              activeVariantId: newActiveId,
+              variants: tool.variants.filter((v) => v.id !== variantId),
+            },
+          },
+        },
+      };
+    }),
+
+  setMockConfig: (config) => set(() => ({ mockConfig: config })),
 }));
 
 export const useSelectedComponent = () =>
@@ -204,6 +346,7 @@ export const useClearConsole = () => useWorkbenchStore((s) => s.clearConsole);
 export const useToolInput = () => useWorkbenchStore((s) => s.toolInput);
 export const useToolOutput = () => useWorkbenchStore((s) => s.toolOutput);
 export const useActiveJsonTab = () => useWorkbenchStore((s) => s.activeJsonTab);
+export const useMockConfig = () => useWorkbenchStore((s) => s.mockConfig);
 
 export const useOpenAIGlobals = (): OpenAIGlobals => {
   const theme = useWorkbenchStore((s) => s.theme);

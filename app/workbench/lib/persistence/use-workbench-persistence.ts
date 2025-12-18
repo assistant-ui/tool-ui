@@ -8,6 +8,8 @@ import {
   writeLocalStoragePreferences,
   readSessionStorageConsole,
   writeSessionStorageConsole,
+  readLocalStorageMockConfig,
+  writeLocalStorageMockConfig,
 } from "./storage";
 import { parseUrlParams, buildUrlParams } from "./url";
 import type { UrlState } from "./types";
@@ -32,6 +34,11 @@ export function useWorkbenchPersistence() {
     const consoleLogs = readSessionStorageConsole();
     if (consoleLogs.length > 0) {
       store.restoreConsoleLogs(consoleLogs);
+    }
+
+    const mockConfig = readLocalStorageMockConfig();
+    if (mockConfig) {
+      store.setMockConfig(mockConfig);
     }
 
     isUpdatingFromUrl.current = true;
@@ -90,4 +97,9 @@ export function useWorkbenchPersistence() {
     if (!isInitialized.current) return;
     writeSessionStorageConsole(store.consoleLogs);
   }, [store.consoleLogs]);
+
+  useEffect(() => {
+    if (!isInitialized.current) return;
+    writeLocalStorageMockConfig(store.mockConfig);
+  }, [store.mockConfig]);
 }

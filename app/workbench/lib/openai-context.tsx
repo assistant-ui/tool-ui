@@ -8,7 +8,7 @@ import {
   type ReactNode,
 } from "react";
 import { useWorkbenchStore } from "./store";
-import { handleMockToolCall } from "./mock-responses";
+import { handleMockToolCall, type MockToolCallResult } from "./mock-responses";
 import { MORPH_TIMING } from "./transition-config";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
 import type {
@@ -41,19 +41,29 @@ export function OpenAIProvider({ children }: OpenAIProviderProps) {
       name: string,
       args: Record<string, unknown>,
     ): Promise<CallToolResponse> => {
+      if (!store.mockConfig.tools[name]) {
+        store.registerTool(name);
+      }
+
       store.addConsoleEntry({
         type: "callTool",
         method: `callTool("${name}")`,
         args,
       });
 
-      // User should get a prompt to provide the tool result for testing
-      // We don't want to hardcode the results
-      const result = await handleMockToolCall(name, args);
+      const result: MockToolCallResult = await handleMockToolCall(
+        name,
+        args,
+        store.mockConfig,
+      );
+
+      const methodLabel = result._mockVariant
+        ? `callTool("${name}") → [MOCK: ${result._mockVariant}]`
+        : `callTool("${name}") → response`;
 
       store.addConsoleEntry({
         type: "callTool",
-        method: `callTool("${name}") → response`,
+        method: methodLabel,
         result,
       });
 

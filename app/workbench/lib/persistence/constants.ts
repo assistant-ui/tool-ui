@@ -1,6 +1,7 @@
 export const STORAGE_KEYS = {
   PREFERENCES: "workbench:preferences",
   CONSOLE: "workbench:console",
+  MOCK_CONFIG: "workbench:mock-config",
 } as const;
 
 export const URL_PARAMS = {

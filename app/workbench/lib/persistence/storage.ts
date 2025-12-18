@@ -1,5 +1,6 @@
 import type { LocalStoragePreferences } from "./types";
 import type { ConsoleEntry } from "../types";
+import type { MockConfigState } from "../mock-config";
 import { STORAGE_KEYS, CONSOLE_MAX_ENTRIES } from "./constants";
 
 function isBrowser(): boolean {
@@ -64,5 +65,31 @@ export function writeSessionStorageConsole(logs: ConsoleEntry[]): void {
     sessionStorage.setItem(STORAGE_KEYS.CONSOLE, JSON.stringify(trimmed));
   } catch (error) {
     console.warn("Failed to write console logs to sessionStorage", error);
+  }
+}
+
+export function readLocalStorageMockConfig(): MockConfigState | null {
+  if (!isBrowser()) return null;
+
+  try {
+    const raw = localStorage.getItem(STORAGE_KEYS.MOCK_CONFIG);
+    if (!raw) return null;
+    return JSON.parse(raw) as MockConfigState;
+  } catch (error) {
+    console.warn(
+      "Failed to read mock config from localStorage",
+      error,
+    );
+    return null;
+  }
+}
+
+export function writeLocalStorageMockConfig(config: MockConfigState): void {
+  if (!isBrowser()) return;
+
+  try {
+    localStorage.setItem(STORAGE_KEYS.MOCK_CONFIG, JSON.stringify(config));
+  } catch (error) {
+    console.warn("Failed to write mock config to localStorage", error);
   }
 }
