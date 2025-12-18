@@ -201,7 +201,7 @@ export function MockConfigPanel() {
             checked={mockConfig.globalEnabled}
             onCheckedChange={setMocksEnabled}
           />
-          Mocks Enabled
+          Simulation Mode
         </label>
       </div>
 
@@ -275,7 +275,7 @@ export function MockConfigPanel() {
           <div className="flex-1 space-y-4 overflow-auto">
             <div>
               <div className={cn(COMPACT_LABEL_CLASSES, "mb-2")}>
-                Active Response
+                Active Scenario
               </div>
               <MockVariantList
                 variants={toolConfig.variants}
@@ -291,7 +291,7 @@ export function MockConfigPanel() {
                 onClick={handleAddVariant}
               >
                 <Plus className="mr-1 size-3" />
-                Add Variant
+                Add Scenario
               </Button>
             </div>
 

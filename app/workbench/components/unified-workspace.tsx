@@ -423,12 +423,14 @@ function useJsonEditorState() {
 
 interface EditorSectionTriggerProps {
   title: string;
+  hint?: string;
   isOpen: boolean;
   onToggle: () => void;
 }
 
 function EditorSectionTrigger({
   title,
+  hint,
   isOpen,
   onToggle,
 }: EditorSectionTriggerProps) {
@@ -438,10 +440,15 @@ function EditorSectionTrigger({
       onClick={onToggle}
       className="border-border/40 hover:bg-muted/30 flex shrink-0 items-center justify-between gap-4 border-b px-3 py-2 text-left transition-colors"
     >
-      <span className="text-muted-foreground text-sm">{title}</span>
+      <div className="flex flex-col gap-0.5">
+        <span className="text-muted-foreground text-sm">{title}</span>
+        {hint && (
+          <span className="text-muted-foreground/60 text-[10px]">{hint}</span>
+        )}
+      </div>
       <ChevronDown
         className={cn(
-          "text-muted-foreground size-4 transition-transform duration-200",
+          "text-muted-foreground size-4 shrink-0 transition-transform duration-200",
           isOpen && "rotate-180",
         )}
       />
@@ -522,7 +529,7 @@ function EditorPanel() {
         style={{ gridTemplateRows: gridRows }}
       >
         <EditorSectionTrigger
-          title="Tool Input"
+          title="Component Props"
           isOpen={openSections.toolInput}
           onToggle={() => toggleSection("toolInput")}
         />
@@ -531,7 +538,7 @@ function EditorPanel() {
           onReset={() => handleReset("toolInput")}
         >
           <JsonEditor
-            label="Tool Input"
+            label="Component Props"
             value={getActiveData("toolInput")}
             onChange={(value) => handleChange("toolInput", value)}
           />
@@ -539,6 +546,7 @@ function EditorPanel() {
 
         <EditorSectionTrigger
           title="Widget State"
+          hint="Persisted between interactions"
           isOpen={openSections.widgetState}
           onToggle={() => toggleSection("widgetState")}
         />
@@ -554,7 +562,8 @@ function EditorPanel() {
         </EditorSectionContent>
 
         <EditorSectionTrigger
-          title="Response Metadata"
+          title="Widget Metadata (_meta)"
+          hint="Widget-only. Model never sees this."
           isOpen={openSections.toolResponseMetadata}
           onToggle={() => toggleSection("toolResponseMetadata")}
         />
@@ -563,7 +572,7 @@ function EditorPanel() {
           onReset={() => handleReset("toolResponseMetadata")}
         >
           <JsonEditor
-            label="Response Metadata"
+            label="Widget Metadata (_meta)"
             value={getActiveData("toolResponseMetadata")}
             onChange={(value) => handleChange("toolResponseMetadata", value)}
           />
@@ -572,7 +581,7 @@ function EditorPanel() {
 
       <div className="border-border/40 shrink-0 border-t bg-neutral-50/50 dark:bg-neutral-900/50">
         <div className="text-muted-foreground px-3 py-2 text-xs font-medium tracking-wider uppercase">
-          Mock Configuration
+          Tool Simulation
         </div>
         <MockConfigPanel />
       </div>

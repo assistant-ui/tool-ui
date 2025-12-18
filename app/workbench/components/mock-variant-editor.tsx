@@ -130,7 +130,7 @@ export function MockVariantEditor({
 
   return (
     <div className="border-t pt-4">
-      <div className={cn(COMPACT_LABEL_CLASSES, "mb-3")}>Edit Variant</div>
+      <div className={cn(COMPACT_LABEL_CLASSES, "mb-3")}>Edit Scenario</div>
 
       <div className="flex flex-col gap-3">
         <div className="flex gap-2">

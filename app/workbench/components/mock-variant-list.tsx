@@ -48,7 +48,7 @@ export function MockVariantList({
           htmlFor="default"
           className="flex-1 cursor-pointer text-xs font-normal"
         >
-          Default handler
+          Default response
         </Label>
       </div>
 
