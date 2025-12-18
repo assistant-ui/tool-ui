@@ -11,6 +11,7 @@ import {
   Star,
   Heart,
   ExternalLink,
+  MessageCircle,
   UtensilsCrossed,
   Coffee,
   Landmark,
@@ -78,6 +79,8 @@ export interface POIMapProps {
   onFilterCategory?: (category: POICategory | null) => void;
   onViewDetails?: (poiId: string) => void;
   onDismissModal?: () => void;
+  onOpenExternal?: (url: string) => void;
+  onSendFollowUpMessage?: (prompt: string) => void;
 }
 
 export function POIMap({
@@ -98,6 +101,8 @@ export function POIMap({
   onFilterCategory,
   onViewDetails,
   onDismissModal,
+  onOpenExternal,
+  onSendFollowUpMessage,
 }: POIMapProps) {
   const {
     selectedPoiId,
@@ -254,19 +259,37 @@ export function POIMap({
               </div>
             )}
 
-            <Button
-              variant="outline"
-              className="mt-1 w-full gap-2"
-              onClick={() =>
-                window.open(
-                  `https://maps.google.com/?q=${modalPoi.lat},${modalPoi.lng}`,
-                  "_blank",
-                )
-              }
-            >
-              <ExternalLink className="size-4" />
-              Open in Google Maps
-            </Button>
+            <div className="mt-1 flex flex-col gap-2">
+              <Button
+                variant="outline"
+                className="w-full gap-2"
+                onClick={() => {
+                  const url = `https://maps.google.com/?q=${modalPoi.lat},${modalPoi.lng}`;
+                  if (onOpenExternal) {
+                    onOpenExternal(url);
+                  } else {
+                    window.open(url, "_blank");
+                  }
+                }}
+              >
+                <ExternalLink className="size-4" />
+                Open in Google Maps
+              </Button>
+              {onSendFollowUpMessage && (
+                <Button
+                  variant="secondary"
+                  className="w-full gap-2"
+                  onClick={() =>
+                    onSendFollowUpMessage(
+                      `Tell me more about ${modalPoi.name} in ${modalPoi.address || "this location"}`,
+                    )
+                  }
+                >
+                  <MessageCircle className="size-4" />
+                  Ask ChatGPT about this place
+                </Button>
+              )}
+            </div>
           </div>
         </div>
       </div>

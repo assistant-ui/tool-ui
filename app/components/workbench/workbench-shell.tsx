@@ -14,12 +14,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useSelectedComponent, useWorkbenchStore } from "@/lib/workbench/store";
+import {
+  useSelectedComponent,
+  useWorkbenchStore,
+  useClearConsole,
+  useDisplayMode,
+} from "@/app/workbench/lib/store";
 import {
   useWorkbenchPersistence,
   PANEL_AUTO_SAVE_IDS,
-} from "@/lib/workbench/persistence";
-import { workbenchComponents } from "@/lib/workbench/component-registry";
+} from "@/app/workbench/lib/persistence";
+import { workbenchComponents } from "@/app/workbench/lib/component-registry";
 import { SELECT_CLASSES, COMPACT_SMALL_TEXT_CLASSES } from "./styles";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/ui/cn";
@@ -36,6 +41,9 @@ export function WorkbenchShell() {
   const [mounted, setMounted] = React.useState(false);
   const selectedComponent = useSelectedComponent();
   const setSelectedComponent = useWorkbenchStore((s) => s.setSelectedComponent);
+  const setDisplayMode = useWorkbenchStore((s) => s.setDisplayMode);
+  const displayMode = useDisplayMode();
+  const clearConsole = useClearConsole();
   const { setTheme, resolvedTheme } = useTheme();
 
   useWorkbenchPersistence();
@@ -46,7 +54,7 @@ export function WorkbenchShell() {
 
   const isDark = mounted && resolvedTheme === "dark";
 
-  const toggleTheme = () => {
+  const toggleTheme = React.useCallback(() => {
     if (!document.startViewTransition) {
       setTheme(isDark ? "light" : "dark");
       return;
@@ -54,7 +62,36 @@ export function WorkbenchShell() {
     document.startViewTransition(() => {
       setTheme(isDark ? "light" : "dark");
     });
-  };
+  }, [isDark, setTheme]);
+
+  const toggleFullscreen = React.useCallback(() => {
+    setDisplayMode(displayMode === "fullscreen" ? "inline" : "fullscreen");
+  }, [displayMode, setDisplayMode]);
+
+  React.useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const isMac = /mac/i.test(navigator.userAgent);
+      const modKey = isMac ? e.metaKey : e.ctrlKey;
+
+      if (modKey && e.shiftKey && e.key.toLowerCase() === "d") {
+        e.preventDefault();
+        toggleTheme();
+      }
+
+      if (modKey && e.shiftKey && e.key.toLowerCase() === "f") {
+        e.preventDefault();
+        toggleFullscreen();
+      }
+
+      if (modKey && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        clearConsole();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [toggleTheme, toggleFullscreen, clearConsole]);
 
   const handleToggleCollapse = () => {
     setIsFading(true);

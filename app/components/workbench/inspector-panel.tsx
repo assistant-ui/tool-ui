@@ -2,10 +2,10 @@
 
 import { useCallback, useState } from "react";
 import { EventConsole } from "./event-console";
-import { useConsoleLogs, useClearConsole } from "@/lib/workbench/store";
+import { useConsoleLogs, useClearConsole } from "@/app/workbench/lib/store";
 import { Button } from "@/components/ui/button";
 import { Terminal, Trash2, ArrowDownToLine, Copy, Check } from "lucide-react";
-import type { ConsoleEntry, ConsoleEntryType } from "@/lib/workbench/types";
+import type { ConsoleEntry, ConsoleEntryType } from "@/app/workbench/lib/types";
 
 function formatTimestamp(date: Date): string {
   const h = date.getHours().toString().padStart(2, "0");

@@ -6,12 +6,12 @@ import {
   useDisplayMode,
   useWorkbenchTheme,
   useDeviceType,
-} from "@/lib/workbench/store";
+} from "@/app/workbench/lib/store";
 import {
   LOCALE_OPTIONS,
   type DisplayMode,
   type DeviceType,
-} from "@/lib/workbench/types";
+} from "@/app/workbench/lib/types";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";

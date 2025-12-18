@@ -18,10 +18,10 @@ import {
   useOpenAIGlobals,
   useDeviceType,
   type ActiveJsonTab,
-} from "@/lib/workbench/store";
-import { DEVICE_PRESETS } from "@/lib/workbench/types";
-import { getComponent } from "@/lib/workbench/component-registry";
-import { OpenAIProvider } from "@/lib/workbench/openai-context";
+} from "@/app/workbench/lib/store";
+import { DEVICE_PRESETS } from "@/app/workbench/lib/types";
+import { getComponent } from "@/app/workbench/lib/component-registry";
+import { OpenAIProvider } from "@/app/workbench/lib/openai-context";
 import { JsonEditor, ReadOnlyJsonView } from "./json-editor";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
@@ -37,8 +37,8 @@ import {
   VIEW_TRANSITION_NAME,
   VIEW_TRANSITION_PARENT_NAME,
   VIEW_TRANSITION_ROOT_NAME,
-} from "@/lib/workbench/transition-config";
-import { PANEL_AUTO_SAVE_IDS } from "@/lib/workbench/persistence";
+} from "@/app/workbench/lib/transition-config";
+import { PANEL_AUTO_SAVE_IDS } from "@/app/workbench/lib/persistence";
 import { ComponentErrorBoundary } from "./component-error-boundary";
 import { IsolatedThemeWrapper } from "./isolated-theme-wrapper";
 import { PipView } from "./pip-view";

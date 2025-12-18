@@ -360,3 +360,8 @@ export function useGetFileDownloadUrl() {
   const context = useOpenAI();
   return context.getFileDownloadUrl;
 }
+
+export function useOpenExternal() {
+  const context = useOpenAI();
+  return context.openExternal;
+}

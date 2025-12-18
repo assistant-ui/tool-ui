@@ -1,7 +1,7 @@
 "use client";
 
 import type { ReactNode, CSSProperties } from "react";
-import { useWorkbenchStore, useDisplayMode } from "@/lib/workbench/store";
+import { useWorkbenchStore, useDisplayMode } from "@/app/workbench/lib/store";
 import { cn } from "@/lib/ui/cn";
 
 const LIGHT_THEME_VARS: CSSProperties = {

@@ -17,6 +17,8 @@ import {
   useCallTool,
   useTheme,
   useView,
+  useOpenExternal,
+  useSendFollowUpMessage,
 } from "../openai-context";
 import { useWorkbenchStore } from "../store";
 import type { DisplayMode } from "../types";
@@ -39,6 +41,8 @@ export function POIMapSDK(props: Record<string, unknown>) {
   const theme = useTheme();
   const view = useView();
   const setView = useWorkbenchStore((s) => s.setView);
+  const openExternal = useOpenExternal();
+  const sendFollowUpMessage = useSendFollowUpMessage();
 
   const currentWidgetState = useMemo<POIMapViewState>(
     () => ({
@@ -108,6 +112,20 @@ export function POIMapSDK(props: Record<string, unknown>) {
     setView(null);
   }, [setView]);
 
+  const handleOpenExternal = useCallback(
+    (url: string) => {
+      openExternal({ href: url });
+    },
+    [openExternal],
+  );
+
+  const handleSendFollowUpMessage = useCallback(
+    async (prompt: string) => {
+      await sendFollowUpMessage({ prompt });
+    },
+    [sendFollowUpMessage],
+  );
+
   return (
     <POIMap
       id={parsed.id}
@@ -126,6 +144,8 @@ export function POIMapSDK(props: Record<string, unknown>) {
       onFilterCategory={handleFilterCategory}
       onViewDetails={handleViewDetails}
       onDismissModal={handleDismissModal}
+      onOpenExternal={handleOpenExternal}
+      onSendFollowUpMessage={handleSendFollowUpMessage}
     />
   );
 }

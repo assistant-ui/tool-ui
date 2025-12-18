@@ -3,7 +3,7 @@
 import { useRef, useState, useCallback } from "react";
 import { ArrowUp } from "lucide-react";
 import { cn } from "@/lib/ui/cn";
-import { useDeviceType, useWorkbenchStore } from "@/lib/workbench/store";
+import { useDeviceType, useWorkbenchStore } from "@/app/workbench/lib/store";
 
 export function MockComposer() {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
