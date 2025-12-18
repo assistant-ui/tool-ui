@@ -11,11 +11,19 @@ import type {
   OpenAIGlobals,
   SafeAreaInsets,
   View,
+  WidgetState,
+  UserLocation,
 } from "./types";
 import { DEVICE_PRESETS } from "./types";
 import { workbenchComponents } from "./component-registry";
 import { clearFiles } from "./file-store";
-import type { MockConfigState, MockVariant } from "./mock-config";
+import type {
+  MockConfigState,
+  MockVariant,
+  ToolAnnotations,
+  ToolDescriptorMeta,
+  ToolSchemas,
+} from "./mock-config";
 import { createToolMockConfig, createEmptyMockConfigState } from "./mock-config";
 
 const defaultComponent = workbenchComponents[0];
@@ -36,7 +44,7 @@ interface WorkbenchState {
   deviceType: DeviceType;
   toolInput: Record<string, unknown>;
   toolOutput: Record<string, unknown> | null;
-  widgetState: Record<string, unknown> | null;
+  widgetState: WidgetState;
   maxHeight: number;
   toolResponseMetadata: Record<string, unknown> | null;
   safeAreaInsets: SafeAreaInsets;
@@ -47,6 +55,9 @@ interface WorkbenchState {
   transitionFrom: DisplayMode | null;
   view: View | null;
   mockConfig: MockConfigState;
+  userLocation: UserLocation | null;
+  isWidgetClosed: boolean;
+  widgetSessionId: string;
 
   setSelectedComponent: (id: string) => void;
   setDisplayMode: (mode: DisplayMode) => void;
@@ -56,7 +67,7 @@ interface WorkbenchState {
   setDeviceType: (type: DeviceType) => void;
   setToolInput: (input: Record<string, unknown>) => void;
   setToolOutput: (output: Record<string, unknown> | null) => void;
-  setWidgetState: (state: Record<string, unknown> | null) => void;
+  setWidgetState: (state: WidgetState) => void;
   updateWidgetState: (state: Record<string, unknown>) => void;
   setMaxHeight: (height: number) => void;
   setToolResponseMetadata: (metadata: Record<string, unknown> | null) => void;
@@ -73,6 +84,8 @@ interface WorkbenchState {
   setActiveJsonTab: (tab: ActiveJsonTab) => void;
   setView: (view: View | null) => void;
   getOpenAIGlobals: () => OpenAIGlobals;
+  setUserLocation: (location: UserLocation | null) => void;
+  setWidgetClosed: (closed: boolean) => void;
 
   setMocksEnabled: (enabled: boolean) => void;
   registerTool: (toolName: string) => void;
@@ -87,6 +100,12 @@ interface WorkbenchState {
   ) => void;
   removeVariant: (toolName: string, variantId: string) => void;
   setMockConfig: (config: MockConfigState) => void;
+  setToolAnnotations: (toolName: string, annotations: ToolAnnotations) => void;
+  setToolDescriptorMeta: (
+    toolName: string,
+    meta: ToolDescriptorMeta,
+  ) => void;
+  setToolSchemas: (toolName: string, schemas: ToolSchemas) => void;
 }
 
 function buildOpenAIGlobals(
@@ -103,6 +122,7 @@ function buildOpenAIGlobals(
     | "deviceType"
     | "safeAreaInsets"
     | "view"
+    | "userLocation"
   >,
 ): OpenAIGlobals {
   const preset = DEVICE_PRESETS[state.deviceType];
@@ -121,6 +141,7 @@ function buildOpenAIGlobals(
       insets: state.safeAreaInsets,
     },
     view: state.view,
+    userLocation: state.userLocation,
   };
 }
 
@@ -143,6 +164,9 @@ export const useWorkbenchStore = create<WorkbenchState>((set, get) => ({
   transitionFrom: null,
   view: null,
   mockConfig: createEmptyMockConfigState(),
+  userLocation: null,
+  isWidgetClosed: false,
+  widgetSessionId: crypto.randomUUID(),
   setSelectedComponent: (id) => {
     clearFiles();
     set(() => {
@@ -155,6 +179,8 @@ export const useWorkbenchStore = create<WorkbenchState>((set, get) => ({
         widgetState: null,
         toolResponseMetadata: null,
         activeJsonTab: "toolInput",
+        isWidgetClosed: false,
+        widgetSessionId: crypto.randomUUID(),
       };
     });
   },
@@ -207,6 +233,8 @@ export const useWorkbenchStore = create<WorkbenchState>((set, get) => ({
     const state = get();
     return buildOpenAIGlobals(state);
   },
+  setUserLocation: (location) => set(() => ({ userLocation: location })),
+  setWidgetClosed: (closed) => set(() => ({ isWidgetClosed: closed })),
 
   setMocksEnabled: (enabled) =>
     set((state) => ({
@@ -330,6 +358,51 @@ export const useWorkbenchStore = create<WorkbenchState>((set, get) => ({
     }),
 
   setMockConfig: (config) => set(() => ({ mockConfig: config })),
+
+  setToolAnnotations: (toolName, annotations) =>
+    set((state) => {
+      const tool = state.mockConfig.tools[toolName];
+      if (!tool) return state;
+      return {
+        mockConfig: {
+          ...state.mockConfig,
+          tools: {
+            ...state.mockConfig.tools,
+            [toolName]: { ...tool, annotations },
+          },
+        },
+      };
+    }),
+
+  setToolDescriptorMeta: (toolName, meta) =>
+    set((state) => {
+      const tool = state.mockConfig.tools[toolName];
+      if (!tool) return state;
+      return {
+        mockConfig: {
+          ...state.mockConfig,
+          tools: {
+            ...state.mockConfig.tools,
+            [toolName]: { ...tool, descriptorMeta: meta },
+          },
+        },
+      };
+    }),
+
+  setToolSchemas: (toolName, schemas) =>
+    set((state) => {
+      const tool = state.mockConfig.tools[toolName];
+      if (!tool) return state;
+      return {
+        mockConfig: {
+          ...state.mockConfig,
+          tools: {
+            ...state.mockConfig.tools,
+            [toolName]: { ...tool, schemas },
+          },
+        },
+      };
+    }),
 }));
 
 export const useSelectedComponent = () =>
@@ -360,6 +433,7 @@ export const useOpenAIGlobals = (): OpenAIGlobals => {
   const deviceType = useWorkbenchStore((s) => s.deviceType);
   const safeAreaInsets = useWorkbenchStore((s) => s.safeAreaInsets);
   const view = useWorkbenchStore((s) => s.view);
+  const userLocation = useWorkbenchStore((s) => s.userLocation);
 
   return useMemo(
     () =>
@@ -375,6 +449,7 @@ export const useOpenAIGlobals = (): OpenAIGlobals => {
         deviceType,
         safeAreaInsets,
         view,
+        userLocation,
       }),
     [
       theme,
@@ -388,6 +463,12 @@ export const useOpenAIGlobals = (): OpenAIGlobals => {
       deviceType,
       safeAreaInsets,
       view,
+      userLocation,
     ],
   );
 };
+
+export const useIsWidgetClosed = () =>
+  useWorkbenchStore((s) => s.isWidgetClosed);
+export const useWidgetSessionId = () =>
+  useWorkbenchStore((s) => s.widgetSessionId);

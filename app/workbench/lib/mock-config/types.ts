@@ -15,11 +15,35 @@ export interface MockVariant {
   delay: number;
 }
 
+export interface ToolAnnotations {
+  readOnlyHint?: boolean;
+  destructiveHint?: boolean;
+  openWorldHint?: boolean;
+  idempotentHint?: boolean;
+}
+
+export interface ToolDescriptorMeta {
+  "openai/outputTemplate"?: string;
+  "openai/widgetAccessible"?: boolean;
+  "openai/visibility"?: "public" | "private";
+  "openai/toolInvocation/invoking"?: string;
+  "openai/toolInvocation/invoked"?: string;
+  "openai/fileParams"?: string[];
+}
+
+export interface ToolSchemas {
+  inputSchema?: Record<string, unknown>;
+  outputSchema?: Record<string, unknown>;
+}
+
 export interface ToolMockConfig {
   toolName: string;
   activeVariantId: string | null;
   variants: MockVariant[];
   interceptMode: boolean;
+  annotations?: ToolAnnotations;
+  descriptorMeta?: ToolDescriptorMeta;
+  schemas?: ToolSchemas;
 }
 
 export interface MockConfigState {

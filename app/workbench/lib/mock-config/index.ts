@@ -4,6 +4,9 @@ export type {
   MockVariant,
   ToolMockConfig,
   MockConfigState,
+  ToolAnnotations,
+  ToolDescriptorMeta,
+  ToolSchemas,
 } from "./types";
 
 export {

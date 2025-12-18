@@ -5,6 +5,7 @@ import {
   useContext,
   useCallback,
   useMemo,
+  useEffect,
   type ReactNode,
 } from "react";
 import { useWorkbenchStore } from "./store";
@@ -20,7 +21,9 @@ import type {
   UploadFileResponse,
   GetFileDownloadUrlResponse,
   View,
+  WidgetState,
 } from "./types";
+import { SET_GLOBALS_EVENT_TYPE } from "./types";
 import { storeFile, getFileUrl } from "./file-store";
 
 interface OpenAIContextValue extends OpenAIGlobals, OpenAIAPI {}
@@ -57,6 +60,16 @@ export function OpenAIProvider({ children }: OpenAIProviderProps) {
         store.mockConfig,
       );
 
+      const enrichedMeta = {
+        ...(result._meta ?? {}),
+        "openai/widgetSessionId": store.widgetSessionId,
+      };
+
+      const enrichedResult: CallToolResponse = {
+        ...result,
+        _meta: enrichedMeta,
+      };
+
       const methodLabel = result._mockVariant
         ? `callTool("${name}") → [MOCK: ${result._mockVariant}]`
         : `callTool("${name}") → response`;
@@ -64,29 +77,35 @@ export function OpenAIProvider({ children }: OpenAIProviderProps) {
       store.addConsoleEntry({
         type: "callTool",
         method: methodLabel,
-        result,
+        result: enrichedResult,
       });
 
-      if (result.structuredContent) {
-        store.setToolOutput(result.structuredContent);
+      if (enrichedResult.structuredContent) {
+        store.setToolOutput(enrichedResult.structuredContent);
       }
-      if (result._meta) {
-        store.setToolResponseMetadata(result._meta);
+      if (enrichedResult._meta) {
+        store.setToolResponseMetadata(enrichedResult._meta);
+
+        if (enrichedResult._meta["openai/closeWidget"] === true) {
+          store.setWidgetClosed(true);
+        }
       }
 
-      return result;
+      return enrichedResult;
     },
     [store],
   );
 
   const setWidgetState = useCallback(
-    async (state: Record<string, unknown>): Promise<void> => {
+    async (state: WidgetState): Promise<void> => {
       store.addConsoleEntry({
         type: "setWidgetState",
         method: "setWidgetState",
         args: state,
       });
-      store.updateWidgetState(state);
+      if (state !== null) {
+        store.updateWidgetState(state as Record<string, unknown>);
+      }
     },
     [store],
   );
@@ -166,6 +185,7 @@ export function OpenAIProvider({ children }: OpenAIProviderProps) {
       type: "requestClose",
       method: "requestClose",
     });
+    store.setWidgetClosed(true);
   }, [store]);
 
   const openExternal = useCallback(
@@ -175,6 +195,7 @@ export function OpenAIProvider({ children }: OpenAIProviderProps) {
         method: `openExternal("${payload.href}")`,
         args: payload,
       });
+      window.open(payload.href, "_blank", "noopener,noreferrer");
     },
     [store],
   );
@@ -255,6 +276,7 @@ export function OpenAIProvider({ children }: OpenAIProviderProps) {
       userAgent: globals.userAgent,
       safeArea: globals.safeArea,
       view: globals.view,
+      userLocation: globals.userLocation,
       callTool,
       setWidgetState,
       requestDisplayMode,
@@ -280,6 +302,13 @@ export function OpenAIProvider({ children }: OpenAIProviderProps) {
       getFileDownloadUrl,
     ],
   );
+
+  useEffect(() => {
+    const event = new CustomEvent(SET_GLOBALS_EVENT_TYPE, {
+      detail: { globals },
+    });
+    window.dispatchEvent(event);
+  }, [globals]);
 
   return (
     <OpenAIContext.Provider value={value}>{children}</OpenAIContext.Provider>

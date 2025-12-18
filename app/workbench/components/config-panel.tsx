@@ -11,6 +11,7 @@ import {
   LOCALE_OPTIONS,
   type DisplayMode,
   type DeviceType,
+  type UserLocation,
 } from "@/app/workbench/lib/types";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
@@ -40,6 +41,8 @@ import {
   PanelLeft,
   X,
   Layers,
+  MapPin,
+  GalleryHorizontal,
   type LucideIcon,
 } from "lucide-react";
 import {
@@ -61,6 +64,7 @@ const DISPLAY_MODES: ReadonlyArray<{
   { id: "inline", label: "Inline", icon: Square },
   { id: "pip", label: "PiP", icon: PictureInPicture2 },
   { id: "fullscreen", label: "Full", icon: Maximize2 },
+  { id: "carousel", label: "Carousel", icon: GalleryHorizontal },
 ];
 
 const DEVICE_TYPES: ReadonlyArray<{
@@ -71,6 +75,62 @@ const DEVICE_TYPES: ReadonlyArray<{
   { id: "desktop", label: "Desktop", icon: Monitor },
   { id: "tablet", label: "Tablet", icon: Tablet },
   { id: "mobile", label: "Mobile", icon: Smartphone },
+];
+
+const LOCATION_PRESETS: ReadonlyArray<{
+  id: string;
+  label: string;
+  location: UserLocation | null;
+}> = [
+  { id: "none", label: "None", location: null },
+  {
+    id: "sf",
+    label: "San Francisco",
+    location: {
+      city: "San Francisco",
+      region: "California",
+      country: "US",
+      timezone: "America/Los_Angeles",
+      latitude: 37.7749,
+      longitude: -122.4194,
+    },
+  },
+  {
+    id: "nyc",
+    label: "New York",
+    location: {
+      city: "New York",
+      region: "New York",
+      country: "US",
+      timezone: "America/New_York",
+      latitude: 40.7128,
+      longitude: -74.006,
+    },
+  },
+  {
+    id: "london",
+    label: "London",
+    location: {
+      city: "London",
+      region: "England",
+      country: "GB",
+      timezone: "Europe/London",
+      latitude: 51.5074,
+      longitude: -0.1278,
+    },
+  },
+  {
+    id: "tokyo",
+    label: "Tokyo",
+    location: {
+      city: "Tokyo",
+      region: "Tokyo",
+      country: "JP",
+      timezone: "Asia/Tokyo",
+      latitude: 35.6762,
+      longitude: 139.6503,
+    },
+  },
 ];
 
 interface ConfigPanelProps {
@@ -118,6 +178,7 @@ export function ConfigPanel({
     maxHeight,
     safeAreaInsets,
     view,
+    userLocation,
     setDisplayMode,
     setDeviceType,
     setTheme,
@@ -125,12 +186,14 @@ export function ConfigPanel({
     setMaxHeight,
     setSafeAreaInsets,
     setView,
+    setUserLocation,
   } = useWorkbenchStore(
     useShallow((s) => ({
       locale: s.locale,
       maxHeight: s.maxHeight,
       safeAreaInsets: s.safeAreaInsets,
       view: s.view,
+      userLocation: s.userLocation,
       setDisplayMode: s.setDisplayMode,
       setDeviceType: s.setDeviceType,
       setTheme: s.setTheme,
@@ -138,6 +201,7 @@ export function ConfigPanel({
       setMaxHeight: s.setMaxHeight,
       setSafeAreaInsets: s.setSafeAreaInsets,
       setView: s.setView,
+      setUserLocation: s.setUserLocation,
     })),
   );
 
@@ -275,6 +339,53 @@ export function ConfigPanel({
               ))}
             </SelectContent>
           </Select>
+        </SettingRow>
+
+        <SettingRow label="Location">
+          <div className="flex items-center gap-2">
+            <Select
+              value={
+                LOCATION_PRESETS.find(
+                  (p) =>
+                    p.location?.city === userLocation?.city &&
+                    p.location?.country === userLocation?.country,
+                )?.id ?? "none"
+              }
+              onValueChange={(id) => {
+                const preset = LOCATION_PRESETS.find((p) => p.id === id);
+                setUserLocation(preset?.location ?? null);
+              }}
+            >
+              <SelectTrigger className={SELECT_CLASSES}>
+                <SelectValue placeholder="Select location" />
+              </SelectTrigger>
+              <SelectContent>
+                {LOCATION_PRESETS.map((preset) => (
+                  <SelectItem
+                    key={preset.id}
+                    value={preset.id}
+                    className="text-xs"
+                  >
+                    <div className="flex items-center gap-1.5">
+                      {preset.location && <MapPin className="size-3" />}
+                      {preset.label}
+                    </div>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {userLocation && (
+              <Button
+                variant="ghost"
+                size="sm"
+                className="text-muted-foreground hover:text-foreground size-6 p-0"
+                onClick={() => setUserLocation(null)}
+                title="Clear location"
+              >
+                <X className="size-3.5" />
+              </Button>
+            )}
+          </div>
         </SettingRow>
       </div>
 

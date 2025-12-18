@@ -1,6 +1,37 @@
-export type DisplayMode = "pip" | "inline" | "fullscreen";
+export type DisplayMode = "pip" | "inline" | "fullscreen" | "carousel";
 export type Theme = "light" | "dark";
 export type DeviceType = "mobile" | "tablet" | "desktop";
+
+export interface StructuredWidgetState {
+  modelContent: string | Record<string, unknown> | null;
+  privateContent: Record<string, unknown> | null;
+  imageIds: string[];
+}
+
+export type WidgetState =
+  | StructuredWidgetState
+  | Record<string, unknown>
+  | null;
+
+export function isStructuredWidgetState(
+  state: WidgetState,
+): state is StructuredWidgetState {
+  if (state === null || typeof state !== "object") return false;
+  return (
+    "modelContent" in state ||
+    "privateContent" in state ||
+    "imageIds" in state
+  );
+}
+
+export interface UserLocation {
+  city?: string;
+  region?: string;
+  country?: string;
+  timezone?: string;
+  longitude?: number;
+  latitude?: number;
+}
 
 export interface SafeAreaInsets {
   top: number;
@@ -40,10 +71,11 @@ export interface OpenAIGlobals {
   toolInput: Record<string, unknown>;
   toolOutput: Record<string, unknown> | null;
   toolResponseMetadata: Record<string, unknown> | null;
-  widgetState: Record<string, unknown> | null;
+  widgetState: WidgetState;
   userAgent: UserAgent;
   safeArea: SafeArea;
   view: View | null;
+  userLocation: UserLocation | null;
 }
 
 export interface CallToolResponse {
@@ -83,7 +115,7 @@ export interface OpenAIAPI {
   requestDisplayMode: (args: { mode: DisplayMode }) => Promise<{
     mode: DisplayMode;
   }>;
-  setWidgetState: (state: Record<string, unknown>) => Promise<void>;
+  setWidgetState: (state: WidgetState) => Promise<void>;
   notifyIntrinsicHeight: (height: number) => void;
   requestModal: (options: ModalOptions) => Promise<void>;
   uploadFile: (file: File) => Promise<UploadFileResponse>;

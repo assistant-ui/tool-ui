@@ -17,6 +17,7 @@ import {
   useToolInput,
   useOpenAIGlobals,
   useDeviceType,
+  useIsWidgetClosed,
   type ActiveJsonTab,
 } from "@/app/workbench/lib/store";
 import { DEVICE_PRESETS } from "@/app/workbench/lib/types";
@@ -26,7 +27,7 @@ import { JsonEditor, ReadOnlyJsonView } from "./json-editor";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/ui/cn";
-import { RotateCcw } from "lucide-react";
+import { RotateCcw, XCircle, RefreshCw } from "lucide-react";
 import {
   Tooltip,
   TooltipContent,
@@ -44,6 +45,7 @@ import { IsolatedThemeWrapper } from "./isolated-theme-wrapper";
 import { PipView } from "./pip-view";
 import { MockComposer } from "./mock-composer";
 import { MockConfigPanel } from "./mock-config-panel";
+import { ModalOverlay } from "./modal-overlay";
 
 const PREVIEW_MIN_SIZE = 30;
 const PREVIEW_MAX_SIZE = 100;
@@ -280,6 +282,50 @@ function FullscreenView() {
   );
 }
 
+function CarouselView() {
+  const maxHeight = useWorkbenchStore((s) => s.maxHeight);
+
+  return (
+    <div className="flex h-full items-center justify-center overflow-hidden p-4">
+      <div className="flex items-center gap-6">
+        <div className="bg-muted/30 h-48 w-32 shrink-0 rounded-lg opacity-40" />
+        <MorphContainer
+          className="shrink-0 overflow-hidden rounded-xl shadow-xl"
+          style={{ height: maxHeight, width: 320 }}
+        >
+          <ComponentContent className="h-full" />
+        </MorphContainer>
+        <div className="bg-muted/30 h-48 w-32 shrink-0 rounded-lg opacity-40" />
+      </div>
+    </div>
+  );
+}
+
+function WidgetClosedOverlay({ onReopen }: { onReopen: () => void }) {
+  return (
+    <div className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-black/60 backdrop-blur-sm">
+      <div className="flex flex-col items-center gap-4 rounded-xl bg-white/10 p-8 text-white">
+        <XCircle className="h-12 w-12 opacity-60" />
+        <div className="text-center">
+          <div className="text-lg font-medium">Widget Closed</div>
+          <div className="mt-1 text-sm opacity-70">
+            The widget has been closed by the server or user request
+          </div>
+        </div>
+        <Button
+          variant="secondary"
+          size="sm"
+          onClick={onReopen}
+          className="mt-2 gap-2"
+        >
+          <RefreshCw className="h-4 w-4" />
+          Reopen Widget
+        </Button>
+      </div>
+    </div>
+  );
+}
+
 function useJsonEditorState() {
   const selectedComponent = useSelectedComponent();
 
@@ -313,7 +359,7 @@ function useJsonEditorState() {
         case "toolOutput":
           return toolOutput ?? {};
         case "widgetState":
-          return widgetState ?? {};
+          return (widgetState as Record<string, unknown>) ?? {};
         case "toolResponseMetadata":
           return toolResponseMetadata ?? {};
         default:
@@ -464,10 +510,22 @@ function PreviewPanel() {
   const displayMode = useDisplayMode();
   const setDisplayMode = useWorkbenchStore((s) => s.setDisplayMode);
   const isTransitioning = useIsTransitioning();
+  const isWidgetClosed = useIsWidgetClosed();
+  const setWidgetClosed = useWorkbenchStore((s) => s.setWidgetClosed);
+  const view = useWorkbenchStore((s) => s.view);
+  const setView = useWorkbenchStore((s) => s.setView);
 
   const handlePipClose = useCallback(() => {
     setDisplayMode("inline");
   }, [setDisplayMode]);
+
+  const handleReopenWidget = useCallback(() => {
+    setWidgetClosed(false);
+  }, [setWidgetClosed]);
+
+  const handleModalClose = useCallback(() => {
+    setView(null);
+  }, [setView]);
 
   return (
     <div
@@ -490,6 +548,11 @@ function PreviewPanel() {
         </PipView>
       )}
       {displayMode === "fullscreen" && <FullscreenView />}
+      {displayMode === "carousel" && <CarouselView />}
+      {isWidgetClosed && <WidgetClosedOverlay onReopen={handleReopenWidget} />}
+      {view?.mode === "modal" && (
+        <ModalOverlay view={view} onClose={handleModalClose} />
+      )}
     </div>
   );
 }

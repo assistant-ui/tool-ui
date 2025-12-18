@@ -13,11 +13,64 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Plus, Trash2 } from "lucide-react";
+import { Plus, Trash2, ChevronDown } from "lucide-react";
 import { cn } from "@/lib/ui/cn";
 import { COMPACT_LABEL_CLASSES } from "./styles";
 import { MockVariantList } from "./mock-variant-list";
 import { MockVariantEditor } from "./mock-variant-editor";
+
+function CollapsibleSection({
+  title,
+  expanded,
+  onToggle,
+  children,
+}: {
+  title: string;
+  expanded?: boolean;
+  onToggle: () => void;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="border-border/50 rounded-lg border">
+      <button
+        type="button"
+        onClick={onToggle}
+        className="hover:bg-muted/50 flex w-full items-center justify-between px-3 py-2 text-left text-xs font-medium"
+      >
+        {title}
+        <ChevronDown
+          className={cn(
+            "size-3.5 transition-transform",
+            expanded && "rotate-180",
+          )}
+        />
+      </button>
+      {expanded && <div className="px-3 pb-3">{children}</div>}
+    </div>
+  );
+}
+
+function AnnotationToggle({
+  label,
+  hint,
+  checked,
+  onChange,
+}: {
+  label: string;
+  hint: string;
+  checked: boolean;
+  onChange: (checked: boolean) => void;
+}) {
+  return (
+    <label className="flex items-center justify-between gap-2">
+      <div>
+        <div className="text-xs font-medium">{label}</div>
+        <div className="text-muted-foreground text-[10px]">{hint}</div>
+      </div>
+      <Switch checked={checked} onCheckedChange={onChange} />
+    </label>
+  );
+}
 
 export function MockConfigPanel() {
   const mockConfig = useMockConfig();
@@ -31,6 +84,8 @@ export function MockConfigPanel() {
     addVariant,
     updateVariant,
     removeVariant,
+    setToolAnnotations,
+    setToolSchemas,
   } = useWorkbenchStore(
     useShallow((s) => ({
       setMocksEnabled: s.setMocksEnabled,
@@ -40,6 +95,8 @@ export function MockConfigPanel() {
       addVariant: s.addVariant,
       updateVariant: s.updateVariant,
       removeVariant: s.removeVariant,
+      setToolAnnotations: s.setToolAnnotations,
+      setToolSchemas: s.setToolSchemas,
     })),
   );
 
@@ -49,6 +106,13 @@ export function MockConfigPanel() {
   const [editingVariant, setEditingVariant] = useState<MockVariant | null>(null);
   const [newToolName, setNewToolName] = useState("");
   const [showAddTool, setShowAddTool] = useState(false);
+  const [expandedSections, setExpandedSections] = useState<
+    Record<string, boolean>
+  >({});
+
+  const toggleSection = useCallback((section: string) => {
+    setExpandedSections((prev) => ({ ...prev, [section]: !prev[section] }));
+  }, []);
 
   const toolConfig = selectedTool ? mockConfig.tools[selectedTool] : null;
 
@@ -208,26 +272,150 @@ export function MockConfigPanel() {
 
       {toolConfig && (
         <>
-          <div className="flex-1 overflow-auto">
-            <div className={cn(COMPACT_LABEL_CLASSES, "mb-2")}>
-              Active Response
+          <div className="flex-1 space-y-4 overflow-auto">
+            <div>
+              <div className={cn(COMPACT_LABEL_CLASSES, "mb-2")}>
+                Active Response
+              </div>
+              <MockVariantList
+                variants={toolConfig.variants}
+                activeVariantId={toolConfig.activeVariantId}
+                onSelectVariant={(id) => setActiveVariant(selectedTool!, id)}
+                onEditVariant={setEditingVariant}
+                onDeleteVariant={handleDeleteVariant}
+              />
+              <Button
+                variant="ghost"
+                size="sm"
+                className="mt-2 text-xs"
+                onClick={handleAddVariant}
+              >
+                <Plus className="mr-1 size-3" />
+                Add Variant
+              </Button>
             </div>
-            <MockVariantList
-              variants={toolConfig.variants}
-              activeVariantId={toolConfig.activeVariantId}
-              onSelectVariant={(id) => setActiveVariant(selectedTool!, id)}
-              onEditVariant={setEditingVariant}
-              onDeleteVariant={handleDeleteVariant}
-            />
-            <Button
-              variant="ghost"
-              size="sm"
-              className="mt-2 text-xs"
-              onClick={handleAddVariant}
+
+            <CollapsibleSection
+              title="Annotations"
+              expanded={expandedSections.annotations}
+              onToggle={() => toggleSection("annotations")}
             >
-              <Plus className="mr-1 size-3" />
-              Add Variant
-            </Button>
+              <div className="space-y-2">
+                <AnnotationToggle
+                  label="Read Only"
+                  hint="Indicates tool doesn't modify state"
+                  checked={toolConfig.annotations?.readOnlyHint ?? false}
+                  onChange={(checked) =>
+                    setToolAnnotations(selectedTool!, {
+                      ...toolConfig.annotations,
+                      readOnlyHint: checked,
+                    })
+                  }
+                />
+                <AnnotationToggle
+                  label="Destructive"
+                  hint="Indicates tool may delete data"
+                  checked={toolConfig.annotations?.destructiveHint ?? false}
+                  onChange={(checked) =>
+                    setToolAnnotations(selectedTool!, {
+                      ...toolConfig.annotations,
+                      destructiveHint: checked,
+                    })
+                  }
+                />
+                <AnnotationToggle
+                  label="Open World"
+                  hint="Indicates tool accesses external resources"
+                  checked={toolConfig.annotations?.openWorldHint ?? false}
+                  onChange={(checked) =>
+                    setToolAnnotations(selectedTool!, {
+                      ...toolConfig.annotations,
+                      openWorldHint: checked,
+                    })
+                  }
+                />
+                <AnnotationToggle
+                  label="Idempotent"
+                  hint="Indicates repeated calls produce same result"
+                  checked={toolConfig.annotations?.idempotentHint ?? false}
+                  onChange={(checked) =>
+                    setToolAnnotations(selectedTool!, {
+                      ...toolConfig.annotations,
+                      idempotentHint: checked,
+                    })
+                  }
+                />
+              </div>
+            </CollapsibleSection>
+
+            <CollapsibleSection
+              title="Schemas"
+              expanded={expandedSections.schemas}
+              onToggle={() => toggleSection("schemas")}
+            >
+              <div className="space-y-3">
+                <div>
+                  <div className="text-muted-foreground mb-1 text-xs">
+                    Input Schema (JSON)
+                  </div>
+                  <textarea
+                    className="bg-input/70 w-full rounded-md p-2 font-mono text-xs"
+                    rows={3}
+                    placeholder="{}"
+                    value={
+                      toolConfig.schemas?.inputSchema
+                        ? JSON.stringify(toolConfig.schemas.inputSchema, null, 2)
+                        : ""
+                    }
+                    onChange={(e) => {
+                      try {
+                        const parsed = e.target.value
+                          ? JSON.parse(e.target.value)
+                          : undefined;
+                        setToolSchemas(selectedTool!, {
+                          ...toolConfig.schemas,
+                          inputSchema: parsed,
+                        });
+                      } catch {
+                        // Ignore parse errors while typing
+                      }
+                    }}
+                  />
+                </div>
+                <div>
+                  <div className="text-muted-foreground mb-1 text-xs">
+                    Output Schema (JSON)
+                  </div>
+                  <textarea
+                    className="bg-input/70 w-full rounded-md p-2 font-mono text-xs"
+                    rows={3}
+                    placeholder="{}"
+                    value={
+                      toolConfig.schemas?.outputSchema
+                        ? JSON.stringify(
+                            toolConfig.schemas.outputSchema,
+                            null,
+                            2,
+                          )
+                        : ""
+                    }
+                    onChange={(e) => {
+                      try {
+                        const parsed = e.target.value
+                          ? JSON.parse(e.target.value)
+                          : undefined;
+                        setToolSchemas(selectedTool!, {
+                          ...toolConfig.schemas,
+                          outputSchema: parsed,
+                        });
+                      } catch {
+                        // Ignore parse errors while typing
+                      }
+                    }}
+                  />
+                </div>
+              </div>
+            </CollapsibleSection>
           </div>
 
           {editingVariant && (

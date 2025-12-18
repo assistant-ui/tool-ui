@@ -42,7 +42,7 @@ import {
   DropdownMenuTrigger,
 } from "./_adapter";
 
-type DisplayMode = "inline" | "pip" | "fullscreen";
+type DisplayMode = "inline" | "pip" | "fullscreen" | "carousel";
 
 interface View {
   mode: "modal" | "inline";
