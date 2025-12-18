@@ -1,7 +1,7 @@
 "use client";
 
 import { Suspense } from "react";
-import { WorkbenchShell } from "@/app/components/workbench/workbench-shell";
+import { WorkbenchShell } from "@/app/workbench/components/workbench-shell";
 
 function WorkbenchLoading() {
   return (

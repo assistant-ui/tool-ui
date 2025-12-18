@@ -6,7 +6,7 @@ A development environment for building and testing ChatGPT widget UIs. The workb
 
 ```tsx
 import { OpenAIProvider } from "@/app/workbench/lib/openai-context";
-import { WorkbenchShell } from "@/app/components/workbench";
+import { WorkbenchShell } from "@/app/workbench/components";
 
 function App() {
   return (
@@ -174,7 +174,7 @@ app/workbench/lib/
   component-registry.tsx # Widget registry
   wrappers/            # SDK wrapper components
 
-app/components/workbench/
+app/workbench/components/
   workbench-shell.tsx  # Main shell layout
   config-panel.tsx     # Settings sidebar
   unified-workspace.tsx # Widget preview area
