@@ -11,17 +11,19 @@ import { Plan } from "@/components/tool-ui/plan";
 import { Terminal } from "@/components/tool-ui/terminal";
 import { CodeBlock } from "@/components/tool-ui/code-block";
 import { OptionList } from "@/components/tool-ui/option-list";
+import { ItemCarousel } from "@/components/tool-ui/item-carousel";
 import {
-  type SupportTicket,
+  type Flight,
   TABLE_COLUMNS,
   TABLE_DATA,
   LINK_PREVIEW,
   X_POST,
   X_POST_ACTIONS,
-  SIGNUP_CHART,
+  SPENDING_CHART,
   PLAN_TODO_LABELS,
   CODE_BLOCK_DATA,
   OPTION_LIST_OPTIONS,
+  ITEM_CAROUSEL_DATA,
 } from "@/lib/mocks/chat-showcase-data";
 
 const TIMING = {
@@ -244,8 +246,8 @@ function AnimatedPlan({ className }: { className?: string }) {
   return (
     <Plan
       id="chat-showcase-plan"
-      title="Production Deployment"
-      description="Deploy the main branch to the production cluster"
+      title="Gift Research"
+      description="Finding the perfect birthday gift for Sarah"
       todos={todos}
       showProgress
       className={className}
@@ -381,34 +383,34 @@ function PreambleBubble({
 function createSceneConfigs(): SceneConfig[] {
   return [
     {
-      userMessage: "How did signups perform this quarter?",
-      preamble: "Here's the Q4 signup trend:",
+      userMessage: "How did I spend money this week?",
+      preamble: "Here's your spending breakdown:",
       toolUI: (
         <Chart
           id="chat-showcase-chart"
-          {...SIGNUP_CHART}
+          {...SPENDING_CHART}
           className="w-full max-w-[560px]"
         />
       ),
       toolFallbackHeight: 240,
     },
     {
-      userMessage: "Help me deploy this to production",
-      preamble: "Here's the plan. I'll get started now.",
+      userMessage: "Find me a birthday gift for Sarah",
+      preamble: "On it! Let me look into some options.",
       toolUI: <AnimatedPlan className="w-full max-w-[480px]" />,
       toolFallbackHeight: 280,
     },
     {
-      userMessage: "Show me high-priority support tickets from this week",
-      preamble: "Here are the most urgent tickets from this week",
+      userMessage: "Find me flights to Tokyo in March",
+      preamble: "Here are the best options:",
       toolUI: (
-        <DataTable<SupportTicket>
+        <DataTable<Flight>
           id="chat-showcase-data-table"
           rowIdKey="id"
           columns={TABLE_COLUMNS}
           data={TABLE_DATA}
           layout="table"
-          defaultSort={{ by: "priority", direction: "asc" }}
+          defaultSort={{ by: "price", direction: "asc" }}
         />
       ),
       toolFallbackHeight: 320,
@@ -420,15 +422,27 @@ function createSceneConfigs(): SceneConfig[] {
       toolFallbackHeight: 200,
     },
     {
-      userMessage: "Set up integrations for this project",
-      preamble: "Which integrations should we enable?",
+      userMessage: "Help me find a movie for tonight",
+      preamble: "What sounds good?",
       toolUI: (
         <OptionList
           id="chat-showcase-option-list"
           options={OPTION_LIST_OPTIONS}
           selectionMode="multi"
-          defaultValue={["slack", "github"]}
+          defaultValue={["comedy", "comfort"]}
           className="w-full max-w-[480px]"
+        />
+      ),
+      toolFallbackHeight: 320,
+    },
+    {
+      userMessage: "What should I listen to right now?",
+      preamble: "Here are some albums you might like:",
+      toolUI: (
+        <ItemCarousel
+          id="chat-showcase-item-carousel"
+          {...ITEM_CAROUSEL_DATA}
+          className="w-full max-w-[640px]"
         />
       ),
       toolFallbackHeight: 320,
@@ -446,14 +460,14 @@ function createSceneConfigs(): SceneConfig[] {
       toolFallbackHeight: 260,
     },
     {
-      userMessage: "Find that React Server Components guide",
-      preamble: "Was it this one from yesterday?",
+      userMessage: "Find that physics article from Quanta",
+      preamble: "Was it this one?",
       toolUI: <LinkPreview {...LINK_PREVIEW} />,
       toolFallbackHeight: 260,
     },
     {
-      userMessage: "Draft a tweet about our open-source release",
-      preamble: "Here's a draft announcement:",
+      userMessage: "Draft a review for that ramen place",
+      preamble: "Here's a draft:",
       toolUI: (
         <div className="w-full max-w-[600px] min-w-0">
           <XPost
@@ -468,7 +482,7 @@ function createSceneConfigs(): SceneConfig[] {
   ];
 }
 
-const SCENE_COUNT = 8;
+const SCENE_COUNT = 9;
 
 type AnimatedSceneProps = {
   config: SceneConfig;

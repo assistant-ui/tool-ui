@@ -5,124 +5,103 @@ import type { XPostData } from "@/components/tool-ui/x-post";
 import type { OptionListOption } from "@/components/tool-ui/option-list";
 import type { SerializableTerminal } from "@/components/tool-ui/terminal";
 import type { SerializableCodeBlock } from "@/components/tool-ui/code-block";
+import type { SerializableItemCarousel } from "@/components/tool-ui/item-carousel";
 
-export type SupportTicket = {
+export type Flight = {
   id: string;
-  customer: string;
-  issue: string;
-  priority: "high" | "medium" | "low";
-  status: "open" | "in-progress" | "waiting" | "done";
-  assignee: string;
-  created: string;
+  airline: string;
+  route: string;
+  departure: string;
+  duration: string;
+  stops: "Nonstop" | "1 stop" | "2 stops";
+  price: string;
 };
 
 type BadgeColor = "danger" | "warning" | "info" | "success" | "neutral";
 
-export const TABLE_COLUMNS: Column<SupportTicket>[] = [
-  { key: "id", label: "ID", sortable: true, priority: "primary" },
-  { key: "issue", label: "Issue", sortable: false, priority: "primary" },
+export const TABLE_COLUMNS: Column<Flight>[] = [
+  { key: "airline", label: "Airline", sortable: true, priority: "primary" },
+  { key: "route", label: "Route", sortable: false, priority: "primary" },
+  { key: "departure", label: "Departs", sortable: true, priority: "secondary" },
+  { key: "duration", label: "Duration", sortable: true, priority: "secondary" },
   {
-    key: "priority",
-    label: "Priority",
+    key: "stops",
+    label: "Stops",
     sortable: true,
     priority: "primary",
     format: {
       kind: "badge",
       colorMap: {
-        high: "danger",
-        medium: "warning",
-        low: "success",
+        Nonstop: "success",
+        "1 stop": "warning",
+        "2 stops": "neutral",
       } as Record<string, BadgeColor>,
     },
   },
-  {
-    key: "status",
-    label: "Status",
-    sortable: true,
-    priority: "primary",
-    format: {
-      kind: "badge",
-      colorMap: {
-        "in-progress": "info",
-        open: "warning",
-        waiting: "neutral",
-        done: "success",
-      } as Record<string, BadgeColor>,
-    },
-  },
+  { key: "price", label: "Price", sortable: true, priority: "primary" },
 ];
 
-const UNSORTED_TABLE_DATA: SupportTicket[] = [
+export const TABLE_DATA: Flight[] = [
   {
-    id: "TKT-2847",
-    customer: "Acme Corp",
-    issue: "API authentication failing intermittently",
-    priority: "high",
-    status: "in-progress",
-    assignee: "Sarah Chen",
-    created: "2h ago",
+    id: "fl-1",
+    airline: "ANA",
+    route: "LAX → NRT",
+    departure: "Mar 15, 11:30am",
+    duration: "11h 45m",
+    stops: "Nonstop",
+    price: "$892",
   },
   {
-    id: "TKT-2839",
-    customer: "TechStart Inc",
-    issue: "Unable to export data in CSV format",
-    priority: "medium",
-    status: "open",
-    assignee: "Mike Rodriguez",
-    created: "4h ago",
+    id: "fl-2",
+    airline: "JAL",
+    route: "LAX → HND",
+    departure: "Mar 15, 1:15pm",
+    duration: "12h 10m",
+    stops: "Nonstop",
+    price: "$945",
   },
   {
-    id: "TKT-2815",
-    customer: "CloudNine",
-    issue: "User permissions not syncing across teams",
-    priority: "low",
-    status: "done",
-    assignee: "Taylor Singh",
-    created: "12h ago",
+    id: "fl-3",
+    airline: "United",
+    route: "LAX → NRT",
+    departure: "Mar 15, 10:45am",
+    duration: "14h 20m",
+    stops: "1 stop",
+    price: "$724",
   },
   {
-    id: "TKT-2801",
-    customer: "Velocity Systems",
-    issue: "Email notifications delayed by 2+ hours",
-    priority: "medium",
-    status: "waiting",
-    assignee: "Alex Kim",
-    created: "16h ago",
+    id: "fl-4",
+    airline: "Delta",
+    route: "LAX → HND",
+    departure: "Mar 15, 9:00am",
+    duration: "16h 55m",
+    stops: "1 stop",
+    price: "$689",
   },
 ];
-
-const PRIORITY_ORDER: Record<SupportTicket["priority"], number> = {
-  high: 0,
-  medium: 1,
-  low: 2,
-};
-
-export const TABLE_DATA: SupportTicket[] = [...UNSORTED_TABLE_DATA].sort(
-  (a, b) => PRIORITY_ORDER[a.priority] - PRIORITY_ORDER[b.priority],
-);
 
 export const LINK_PREVIEW: SerializableLinkPreview = {
   id: "chat-showcase-link-preview",
-  href: "https://react.dev/reference/rsc/server-components",
-  title: "React Server Components",
+  href: "https://www.quantamagazine.org/the-year-in-physics-20251217/",
+  title: "The Year in Physics",
   description:
-    "Server Components are a new type of Component that renders ahead of time, before bundling. Learn how to use them in your app.",
+    "Physicists spotted a new black hole, doubled down on weakening dark energy, and debated the meaning of quantum mechanics.",
   image:
-    "https://images.unsplash.com/photo-1633356122544-f134324a6cee?auto=format&fit=crop&q=80&w=1200",
-  domain: "react.dev",
+    "https://www.quantamagazine.org/wp-content/uploads/2025/12/Year-in-review-2025-Physics-cr-Carlos-Arrojo-Lede-1-1720x968.webp",
+  domain: "quantamagazine.org",
   ratio: "16:9",
-  createdAt: "2025-01-15T10:30:00.000Z",
+  createdAt: "2025-12-17T10:00:00.000Z",
 };
 
 export const X_POST: XPostData = {
   id: "chat-showcase-x-post",
   author: {
-    name: "DevTools Team",
-    handle: "devtoolsco",
+    name: "Noodle Enthusiast",
+    handle: "ramenlover",
     avatarUrl:
       "https://images.unsplash.com/photo-1599566150163-29194dcaad36?auto=format&fit=crop&q=80&w=1200",
   },
-  text: "We're thrilled to announce that our component library is now open source! 🎉\n\nBuilt with React, TypeScript, and Tailwind. Fully accessible, customizable, and production-ready.\n\nStar us on GitHub and join the community ⭐️\n\ngithub.com/devtools/ui-kit",
+  text: "Finally tried Tsujita LA and wow 🍜\n\nThe tsukemen broth is impossibly rich—thick, porky, with this subtle citrus note. Noodles have the perfect chew. Worth the 45-minute wait.\n\nOrdering extra chashu next time. This is the one.",
   createdAt: "2025-11-10T14:30:00.000Z",
 };
 
@@ -132,29 +111,28 @@ export const X_POST_ACTIONS = [
   { id: "send", label: "Post Now", variant: "default" as const },
 ];
 
-const CHART_DATA = [
-  { month: "Oct", signups: 1240, activations: 890 },
-  { month: "Nov", signups: 1580, activations: 1190 },
-  { month: "Dec", signups: 2120, activations: 1720 },
+const SPENDING_DATA = [
+  { category: "Groceries", amount: 284 },
+  { category: "Dining", amount: 156 },
+  { category: "Transport", amount: 89 },
+  { category: "Entertainment", amount: 67 },
+  { category: "Shopping", amount: 124 },
 ];
 
-export const SIGNUP_CHART: Omit<SerializableChart, "id"> = {
-  type: "line",
-  title: "Q4 Signups",
-  data: CHART_DATA,
-  xKey: "month",
-  series: [
-    { key: "signups", label: "Signups" },
-    { key: "activations", label: "Activations" },
-  ],
-  showLegend: true,
+export const SPENDING_CHART: Omit<SerializableChart, "id"> = {
+  type: "bar",
+  title: "Weekly Spending",
+  data: SPENDING_DATA,
+  xKey: "category",
+  series: [{ key: "amount", label: "Amount" }],
+  showLegend: false,
 };
 
 export const PLAN_TODO_LABELS = [
-  "Run test suite",
-  "Build production bundle",
-  "Run database migrations",
-  "Deploy to cluster",
+  "Checking Sarah's interests",
+  "Searching gift ideas",
+  "Comparing top options",
+  "Finalizing recommendations",
 ];
 
 export const TERMINAL_DATA: Omit<SerializableTerminal, "id"> = {
@@ -200,10 +178,55 @@ export function useDebounce<T>(value: T, delay = 250): T {
 };
 
 export const OPTION_LIST_OPTIONS: OptionListOption[] = [
-  { id: "slack", label: "Slack", description: "Team notifications and alerts" },
-  { id: "github", label: "GitHub", description: "Code repository sync" },
-  { id: "linear", label: "Linear", description: "Issue tracking integration" },
-  { id: "figma", label: "Figma", description: "Design file previews" },
+  { id: "comedy", label: "Something funny", description: "I need a good laugh" },
+  { id: "thriller", label: "Edge-of-seat thriller", description: "Keep me guessing" },
+  { id: "comfort", label: "Feel-good classic", description: "Cozy and familiar" },
+  { id: "scifi", label: "Mind-bending sci-fi", description: "Make me think" },
 ];
 
-export const OPTION_LIST_CONFIRMED = ["slack", "github", "linear"];
+export const OPTION_LIST_CONFIRMED = ["comedy", "comfort"];
+
+export const ITEM_CAROUSEL_DATA: Omit<SerializableItemCarousel, "id"> = {
+  items: [
+    {
+      id: "ambient-1",
+      name: "Music for Airports",
+      subtitle: "Brian Eno · Ambient",
+      image:
+        "https://is1-ssl.mzstatic.com/image/thumb/Music125/v4/ee/71/42/ee71425d-6bc9-3df8-c90b-8539f59144ab/00724386649553.rgb.jpg/600x600bb.jpg",
+      actions: [{ id: "play", label: "Play", variant: "default" }],
+    },
+    {
+      id: "rock-1",
+      name: "In Rainbows",
+      subtitle: "Radiohead · Alt Rock",
+      image:
+        "https://is1-ssl.mzstatic.com/image/thumb/Music126/v4/dd/50/c7/dd50c790-99ac-d3d0-5ab8-e3891fb8fd52/634904032463.png/600x600bb.jpg",
+      actions: [{ id: "play", label: "Play", variant: "default" }],
+    },
+    {
+      id: "electronic-1",
+      name: "Async",
+      subtitle: "Ryuichi Sakamoto · Electronic",
+      image:
+        "https://is1-ssl.mzstatic.com/image/thumb/Music123/v4/82/e0/7b/82e07b9a-1d98-bbf4-d1e2-fb94312bbea2/731383683060.jpg/600x600bb.jpg",
+      actions: [{ id: "play", label: "Play", variant: "default" }],
+    },
+    {
+      id: "jazz-1",
+      name: "Kind of Blue",
+      subtitle: "Miles Davis · Jazz",
+      image:
+        "https://is1-ssl.mzstatic.com/image/thumb/Music/7f/9f/d6/mzi.vtnaewef.jpg/600x600bb.jpg",
+      actions: [{ id: "play", label: "Play", variant: "default" }],
+    },
+    {
+      id: "psychedelic-1",
+      name: "Currents",
+      subtitle: "Tame Impala · Psychedelic",
+      image:
+        "https://is1-ssl.mzstatic.com/image/thumb/Music115/v4/a8/2e/b4/a82eb490-f30a-a321-461a-0383c88fec95/15UMGIM23316.rgb.jpg/600x600bb.jpg",
+      actions: [{ id: "play", label: "Play", variant: "default" }],
+    },
+  ],
+};
