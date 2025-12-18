@@ -204,6 +204,7 @@ export function JsonEditor({
           foldGutter: false,
           highlightActiveLineGutter: true,
           highlightActiveLine: true,
+          allowMultipleSelections: true,
         }}
         className={cn(
           "h-full",

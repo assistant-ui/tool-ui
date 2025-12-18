@@ -28,14 +28,6 @@ import { createToolMockConfig, createEmptyMockConfigState } from "./mock-config"
 
 const defaultComponent = workbenchComponents[0];
 
-export type ActiveJsonTab =
-  | "toolInput"
-  | "toolOutput"
-  | "widgetState"
-  | "toolResponseMetadata"
-  | "window"
-  | "mocks";
-
 interface WorkbenchState {
   selectedComponent: string;
   displayMode: DisplayMode;
@@ -50,7 +42,6 @@ interface WorkbenchState {
   safeAreaInsets: SafeAreaInsets;
   consoleLogs: ConsoleEntry[];
   collapsedSections: Record<string, boolean>;
-  activeJsonTab: ActiveJsonTab;
   isTransitioning: boolean;
   transitionFrom: DisplayMode | null;
   view: View | null;
@@ -81,7 +72,6 @@ interface WorkbenchState {
   clearConsole: () => void;
   restoreConsoleLogs: (entries: ConsoleEntry[]) => void;
   toggleSection: (section: string) => void;
-  setActiveJsonTab: (tab: ActiveJsonTab) => void;
   setView: (view: View | null) => void;
   getOpenAIGlobals: () => OpenAIGlobals;
   setUserLocation: (location: UserLocation | null) => void;
@@ -159,7 +149,6 @@ export const useWorkbenchStore = create<WorkbenchState>((set, get) => ({
   safeAreaInsets: { top: 10, bottom: 100, left: 10, right: 10 },
   consoleLogs: [],
   collapsedSections: {},
-  activeJsonTab: "toolInput",
   isTransitioning: false,
   transitionFrom: null,
   view: null,
@@ -178,7 +167,6 @@ export const useWorkbenchStore = create<WorkbenchState>((set, get) => ({
         toolOutput: null,
         widgetState: null,
         toolResponseMetadata: null,
-        activeJsonTab: "toolInput",
         isWidgetClosed: false,
         widgetSessionId: crypto.randomUUID(),
       };
@@ -227,7 +215,6 @@ export const useWorkbenchStore = create<WorkbenchState>((set, get) => ({
         [section]: !state.collapsedSections[section],
       },
     })),
-  setActiveJsonTab: (tab) => set(() => ({ activeJsonTab: tab })),
   setView: (view) => set(() => ({ view })),
   getOpenAIGlobals: () => {
     const state = get();
@@ -418,7 +405,6 @@ export const useConsoleLogs = () => useWorkbenchStore((s) => s.consoleLogs);
 export const useClearConsole = () => useWorkbenchStore((s) => s.clearConsole);
 export const useToolInput = () => useWorkbenchStore((s) => s.toolInput);
 export const useToolOutput = () => useWorkbenchStore((s) => s.toolOutput);
-export const useActiveJsonTab = () => useWorkbenchStore((s) => s.activeJsonTab);
 export const useMockConfig = () => useWorkbenchStore((s) => s.mockConfig);
 
 export const useOpenAIGlobals = (): OpenAIGlobals => {

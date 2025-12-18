@@ -1,6 +1,13 @@
 "use client";
 
-import { useMemo, useCallback, useRef, useEffect, type ReactNode } from "react";
+import {
+  useMemo,
+  useCallback,
+  useRef,
+  useEffect,
+  useState,
+  type ReactNode,
+} from "react";
 import { useShallow } from "zustand/react/shallow";
 import {
   Panel,
@@ -10,30 +17,25 @@ import {
 } from "react-resizable-panels";
 import {
   useWorkbenchStore,
-  useActiveJsonTab,
   useDisplayMode,
   useIsTransitioning,
   useSelectedComponent,
   useToolInput,
-  useOpenAIGlobals,
   useDeviceType,
   useIsWidgetClosed,
-  type ActiveJsonTab,
 } from "@/app/workbench/lib/store";
 import { DEVICE_PRESETS } from "@/app/workbench/lib/types";
 import { getComponent } from "@/app/workbench/lib/component-registry";
 import { OpenAIProvider } from "@/app/workbench/lib/openai-context";
-import { JsonEditor, ReadOnlyJsonView } from "./json-editor";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { JsonEditor } from "./json-editor";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/ui/cn";
-import { RotateCcw, XCircle, RefreshCw } from "lucide-react";
+import { RotateCcw, XCircle, RefreshCw, ChevronDown } from "lucide-react";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { TAB_TRIGGER_CLASSES } from "./styles";
 import {
   VIEW_TRANSITION_NAME,
   VIEW_TRANSITION_PARENT_NAME,
@@ -47,17 +49,14 @@ import { MockComposer } from "./mock-composer";
 import { MockConfigPanel } from "./mock-config-panel";
 import { ModalOverlay } from "./modal-overlay";
 
+type JsonEditorTab =
+  | "toolInput"
+  | "toolOutput"
+  | "widgetState"
+  | "toolResponseMetadata";
+
 const PREVIEW_MIN_SIZE = 30;
 const PREVIEW_MAX_SIZE = 100;
-
-const TAB_LABELS: Record<ActiveJsonTab, string> = {
-  toolInput: "Tool Input",
-  toolOutput: "Tool Output",
-  widgetState: "Widget State",
-  toolResponseMetadata: "Metadata",
-  window: "Window",
-  mocks: "Mocks",
-};
 
 function FallbackComponent({ componentId }: { componentId: string }) {
   return (
@@ -352,7 +351,7 @@ function useJsonEditorState() {
   );
 
   const getActiveData = useCallback(
-    (tab: ActiveJsonTab): Record<string, unknown> => {
+    (tab: JsonEditorTab): Record<string, unknown> => {
       switch (tab) {
         case "toolInput":
           return toolInput;
@@ -370,7 +369,7 @@ function useJsonEditorState() {
   );
 
   const handleChange = useCallback(
-    (tab: ActiveJsonTab, value: Record<string, unknown>) => {
+    (tab: JsonEditorTab, value: Record<string, unknown>) => {
       const isEmpty = Object.keys(value).length === 0;
 
       switch (tab) {
@@ -392,7 +391,7 @@ function useJsonEditorState() {
   );
 
   const handleReset = useCallback(
-    (tab: ActiveJsonTab) => {
+    (tab: JsonEditorTab) => {
       switch (tab) {
         case "toolInput": {
           const component = getComponent(selectedComponent);
@@ -422,86 +421,161 @@ function useJsonEditorState() {
   return { getActiveData, handleChange, handleReset };
 }
 
+interface EditorSectionTriggerProps {
+  title: string;
+  isOpen: boolean;
+  onToggle: () => void;
+}
+
+function EditorSectionTrigger({
+  title,
+  isOpen,
+  onToggle,
+}: EditorSectionTriggerProps) {
+  return (
+    <button
+      type="button"
+      onClick={onToggle}
+      className="border-border/40 hover:bg-muted/30 flex shrink-0 items-center justify-between gap-4 border-b px-3 py-2 text-left transition-colors"
+    >
+      <span className="text-muted-foreground text-sm">{title}</span>
+      <ChevronDown
+        className={cn(
+          "text-muted-foreground size-4 transition-transform duration-200",
+          isOpen && "rotate-180",
+        )}
+      />
+    </button>
+  );
+}
+
+interface EditorSectionContentProps {
+  isOpen: boolean;
+  onReset?: () => void;
+  children: ReactNode;
+}
+
+function EditorSectionContent({
+  isOpen,
+  onReset,
+  children,
+}: EditorSectionContentProps) {
+  return (
+    <div
+      className={cn(
+        "border-border/40 relative grid min-h-0 border-b transition-[grid-template-rows,opacity] duration-200 ease-out",
+        isOpen
+          ? "grid-rows-[1fr] opacity-100"
+          : "pointer-events-none grid-rows-[0fr] opacity-0",
+      )}
+    >
+      <div className="min-h-0 overflow-hidden">
+        {onReset && (
+          <div className="absolute top-1 right-3 z-10">
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button
+                  type="button"
+                  className="text-muted-foreground hover:text-foreground rounded p-1 transition-colors"
+                  onClick={onReset}
+                >
+                  <RotateCcw className="size-3" />
+                </button>
+              </TooltipTrigger>
+              <TooltipContent side="left">Reset</TooltipContent>
+            </Tooltip>
+          </div>
+        )}
+        <div className="scrollbar-subtle h-full overflow-y-auto px-3 py-2">
+          {children}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function EditorPanel() {
-  const activeJsonTab = useActiveJsonTab();
-  const setActiveJsonTab = useWorkbenchStore((s) => s.setActiveJsonTab);
-  const globals = useOpenAIGlobals();
   const { getActiveData, handleChange, handleReset } = useJsonEditorState();
+  const [openSections, setOpenSections] = useState<Record<string, boolean>>({
+    toolInput: true,
+    widgetState: true,
+    toolResponseMetadata: false,
+  });
+
+  const toggleSection = (key: string) => {
+    setOpenSections((prev) => ({ ...prev, [key]: !prev[key] }));
+  };
+
+  const gridRows = [
+    "auto", // Tool Input trigger
+    openSections.toolInput ? "1fr" : "0fr", // Tool Input content
+    "auto", // Widget State trigger
+    openSections.widgetState ? "1fr" : "0fr", // Widget State content
+    "auto", // Response Metadata trigger
+    openSections.toolResponseMetadata ? "1fr" : "0fr", // Response Metadata content
+  ].join(" ");
 
   return (
-    <div className="relative flex h-full flex-col">
-      <div className="scrollbar-subtle h-full overflow-y-auto">
-        <div
-          className="pointer-events-none absolute top-0 z-10 h-20 w-full bg-linear-to-b from-neutral-100 via-neutral-100/90 to-transparent dark:from-neutral-950 dark:via-neutral-950"
-          aria-hidden="true"
+    <div className="flex h-full flex-col overflow-hidden">
+      <div
+        className="grid min-h-0 flex-1 transition-[grid-template-rows] duration-200 ease-out"
+        style={{ gridTemplateRows: gridRows }}
+      >
+        <EditorSectionTrigger
+          title="Tool Input"
+          isOpen={openSections.toolInput}
+          onToggle={() => toggleSection("toolInput")}
         />
-
-        <div className="sticky top-0 z-20 flex items-center gap-2 p-2">
-          <Tabs
-            value={activeJsonTab}
-            onValueChange={(v) => setActiveJsonTab(v as ActiveJsonTab)}
-          >
-            <TabsList className="bg-transparent">
-              <TabsTrigger className={TAB_TRIGGER_CLASSES} value="toolInput">
-                Input
-              </TabsTrigger>
-              <TabsTrigger
-                className={TAB_TRIGGER_CLASSES}
-                value="toolResponseMetadata"
-              >
-                Meta
-              </TabsTrigger>
-              <TabsTrigger className={TAB_TRIGGER_CLASSES} value="widgetState">
-                State
-              </TabsTrigger>
-              <TabsTrigger
-                className={`${TAB_TRIGGER_CLASSES} gap-1.5`}
-                value="window"
-              >
-                Window
-              </TabsTrigger>
-              <TabsTrigger className={TAB_TRIGGER_CLASSES} value="mocks">
-                Mocks
-              </TabsTrigger>
-            </TabsList>
-          </Tabs>
-        </div>
-
-        {activeJsonTab === "mocks" ? (
-          <MockConfigPanel />
-        ) : activeJsonTab === "window" ? (
-          <ReadOnlyJsonView value={globals} />
-        ) : (
+        <EditorSectionContent
+          isOpen={openSections.toolInput}
+          onReset={() => handleReset("toolInput")}
+        >
           <JsonEditor
-            key={activeJsonTab}
-            label={TAB_LABELS[activeJsonTab]}
-            value={getActiveData(activeJsonTab)}
-            onChange={(value) => handleChange(activeJsonTab, value)}
+            label="Tool Input"
+            value={getActiveData("toolInput")}
+            onChange={(value) => handleChange("toolInput", value)}
           />
-        )}
+        </EditorSectionContent>
+
+        <EditorSectionTrigger
+          title="Widget State"
+          isOpen={openSections.widgetState}
+          onToggle={() => toggleSection("widgetState")}
+        />
+        <EditorSectionContent
+          isOpen={openSections.widgetState}
+          onReset={() => handleReset("widgetState")}
+        >
+          <JsonEditor
+            label="Widget State"
+            value={getActiveData("widgetState")}
+            onChange={(value) => handleChange("widgetState", value)}
+          />
+        </EditorSectionContent>
+
+        <EditorSectionTrigger
+          title="Response Metadata"
+          isOpen={openSections.toolResponseMetadata}
+          onToggle={() => toggleSection("toolResponseMetadata")}
+        />
+        <EditorSectionContent
+          isOpen={openSections.toolResponseMetadata}
+          onReset={() => handleReset("toolResponseMetadata")}
+        >
+          <JsonEditor
+            label="Response Metadata"
+            value={getActiveData("toolResponseMetadata")}
+            onChange={(value) => handleChange("toolResponseMetadata", value)}
+          />
+        </EditorSectionContent>
       </div>
 
-      {activeJsonTab === "window" ? (
-        <div className="text-muted-foreground bg-background/60 absolute right-3 bottom-3 z-20 rounded-full border px-2.5 py-1 text-xs backdrop-blur-sm">
-          Read only
+      <div className="border-border/40 shrink-0 border-t bg-neutral-50/50 dark:bg-neutral-900/50">
+        <div className="text-muted-foreground px-3 py-2 text-xs font-medium tracking-wider uppercase">
+          Mock Configuration
         </div>
-      ) : activeJsonTab === "mocks" ? null : (
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              variant="outline"
-              size="icon"
-              className="absolute right-3 bottom-3 z-20 size-8 rounded-full opacity-60 hover:opacity-100"
-              onClick={() => handleReset(activeJsonTab)}
-            >
-              <RotateCcw className="size-3.5" />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent side="left">
-            Reset {TAB_LABELS[activeJsonTab].toLowerCase()}
-          </TooltipContent>
-        </Tooltip>
-      )}
+        <MockConfigPanel />
+      </div>
     </div>
   );
 }

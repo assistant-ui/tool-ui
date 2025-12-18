@@ -6,6 +6,7 @@ import {
   useDisplayMode,
   useWorkbenchTheme,
   useDeviceType,
+  useOpenAIGlobals,
 } from "@/app/workbench/lib/store";
 import {
   LOCALE_OPTIONS,
@@ -45,6 +46,12 @@ import {
   GalleryHorizontal,
   type LucideIcon,
 } from "lucide-react";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import {
   INPUT_GROUP_CLASSES,
   INPUT_CLASSES,
@@ -172,6 +179,7 @@ export function ConfigPanel({
   const displayMode = useDisplayMode();
   const theme = useWorkbenchTheme();
   const deviceType = useDeviceType();
+  const openAIGlobals = useOpenAIGlobals();
 
   const {
     locale,
@@ -388,6 +396,21 @@ export function ConfigPanel({
           </div>
         </SettingRow>
       </div>
+
+      <Accordion type="single" collapsible className="border-border/40 border-t">
+        <AccordionItem value="environment" className="border-0">
+          <AccordionTrigger className="hover:bg-muted/30 px-4 py-2.5 hover:no-underline">
+            <span className="text-muted-foreground text-xs font-medium uppercase tracking-wider">
+              Environment
+            </span>
+          </AccordionTrigger>
+          <AccordionContent className="scrollbar-subtle max-h-64 overflow-y-auto px-4">
+            <pre className="bg-muted/30 text-muted-foreground rounded-md p-3 font-mono text-[10px] leading-relaxed">
+              {JSON.stringify(openAIGlobals, null, 2)}
+            </pre>
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
 
       <div className="flex items-center justify-end px-2 py-2">
         <button

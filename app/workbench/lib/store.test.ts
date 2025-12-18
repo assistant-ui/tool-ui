@@ -92,24 +92,6 @@ describe("Workbench Store", () => {
       expect(useWorkbenchStore.getState().toolResponseMetadata).toBeNull();
     });
 
-    it("should reset activeJsonTab to 'toolInput'", () => {
-      const store = useWorkbenchStore.getState();
-
-      // First set activeJsonTab to something else
-      store.setActiveJsonTab("toolOutput");
-      expect(useWorkbenchStore.getState().activeJsonTab).toBe("toolOutput");
-
-      // Switch component - should reset to toolInput
-      const targetComponent = workbenchComponents[0];
-      if (!targetComponent) {
-        throw new Error("Test requires at least 1 component in registry");
-      }
-
-      store.setSelectedComponent(targetComponent.id);
-
-      expect(useWorkbenchStore.getState().activeJsonTab).toBe("toolInput");
-    });
-
     it("should handle non-existent component gracefully", () => {
       const store = useWorkbenchStore.getState();
 
@@ -246,30 +228,6 @@ describe("Workbench Store", () => {
 
       expect(globals.userAgent.capabilities.hover).toBe(true);
       expect(globals.userAgent.capabilities.touch).toBe(false);
-    });
-  });
-
-  describe("activeJsonTab", () => {
-    it("should default to 'toolInput'", () => {
-      const state = useWorkbenchStore.getState();
-
-      expect(state.activeJsonTab).toBe("toolInput");
-    });
-
-    it("should update when setActiveJsonTab is called", () => {
-      const store = useWorkbenchStore.getState();
-
-      store.setActiveJsonTab("toolOutput");
-      expect(useWorkbenchStore.getState().activeJsonTab).toBe("toolOutput");
-
-      store.setActiveJsonTab("widgetState");
-      expect(useWorkbenchStore.getState().activeJsonTab).toBe("widgetState");
-
-      store.setActiveJsonTab("toolResponseMetadata");
-      expect(useWorkbenchStore.getState().activeJsonTab).toBe("toolResponseMetadata");
-
-      store.setActiveJsonTab("toolInput");
-      expect(useWorkbenchStore.getState().activeJsonTab).toBe("toolInput");
     });
   });
 
