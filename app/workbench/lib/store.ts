@@ -28,6 +28,12 @@ import { createToolMockConfig, createEmptyMockConfigState } from "./mock-config"
 
 const defaultComponent = workbenchComponents[0];
 
+interface ActiveToolCall {
+  toolName: string;
+  delay: number;
+  startTime: number;
+}
+
 interface WorkbenchState {
   selectedComponent: string;
   displayMode: DisplayMode;
@@ -49,6 +55,7 @@ interface WorkbenchState {
   userLocation: UserLocation | null;
   isWidgetClosed: boolean;
   widgetSessionId: string;
+  activeToolCall: ActiveToolCall | null;
 
   setSelectedComponent: (id: string) => void;
   setDisplayMode: (mode: DisplayMode) => void;
@@ -76,6 +83,7 @@ interface WorkbenchState {
   getOpenAIGlobals: () => OpenAIGlobals;
   setUserLocation: (location: UserLocation | null) => void;
   setWidgetClosed: (closed: boolean) => void;
+  setActiveToolCall: (call: ActiveToolCall | null) => void;
 
   setMocksEnabled: (enabled: boolean) => void;
   registerTool: (toolName: string) => void;
@@ -156,6 +164,7 @@ export const useWorkbenchStore = create<WorkbenchState>((set, get) => ({
   userLocation: null,
   isWidgetClosed: false,
   widgetSessionId: crypto.randomUUID(),
+  activeToolCall: null,
   setSelectedComponent: (id) => {
     clearFiles();
     set(() => {
@@ -222,6 +231,7 @@ export const useWorkbenchStore = create<WorkbenchState>((set, get) => ({
   },
   setUserLocation: (location) => set(() => ({ userLocation: location })),
   setWidgetClosed: (closed) => set(() => ({ isWidgetClosed: closed })),
+  setActiveToolCall: (call) => set(() => ({ activeToolCall: call })),
 
   setMocksEnabled: (enabled) =>
     set((state) => ({
@@ -458,3 +468,5 @@ export const useIsWidgetClosed = () =>
   useWorkbenchStore((s) => s.isWidgetClosed);
 export const useWidgetSessionId = () =>
   useWorkbenchStore((s) => s.widgetSessionId);
+export const useActiveToolCall = () =>
+  useWorkbenchStore((s) => s.activeToolCall);

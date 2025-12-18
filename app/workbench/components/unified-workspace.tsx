@@ -23,6 +23,7 @@ import {
   useToolInput,
   useDeviceType,
   useIsWidgetClosed,
+  useActiveToolCall,
 } from "@/app/workbench/lib/store";
 import { DEVICE_PRESETS } from "@/app/workbench/lib/types";
 import { getComponent } from "@/app/workbench/lib/component-registry";
@@ -30,7 +31,7 @@ import { OpenAIProvider } from "@/app/workbench/lib/openai-context";
 import { JsonEditor } from "./json-editor";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/ui/cn";
-import { RotateCcw, XCircle, RefreshCw, ChevronDown } from "lucide-react";
+import { RotateCcw, XCircle, RefreshCw, ChevronDown, Loader2 } from "lucide-react";
 import {
   Tooltip,
   TooltipContent,
@@ -501,32 +502,70 @@ function EditorSectionContent({
   );
 }
 
+function SectionHeader({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="bg-muted/30 border-border/40 border-b px-3 py-1.5">
+      <span className="text-muted-foreground text-[10px] font-medium tracking-wider uppercase">
+        {children}
+      </span>
+    </div>
+  );
+}
+
+function formatDelay(ms: number): string {
+  if (ms >= 1000) {
+    return `${(ms / 1000).toFixed(1)}s`;
+  }
+  return `${ms}ms`;
+}
+
+function ToolCallLoadingIndicator() {
+  const activeToolCall = useActiveToolCall();
+
+  if (!activeToolCall) return null;
+
+  return (
+    <div className="border-border/40 bg-primary/5 flex items-center gap-2 border-b px-3 py-2">
+      <Loader2 className="text-primary size-3.5 animate-spin" />
+      <span className="text-muted-foreground text-xs">
+        <span className="font-medium">{activeToolCall.toolName}</span>
+        <span className="text-muted-foreground/60 ml-1.5">
+          ({formatDelay(activeToolCall.delay)} delay)
+        </span>
+      </span>
+    </div>
+  );
+}
+
 function EditorPanel() {
   const { getActiveData, handleChange, handleReset } = useJsonEditorState();
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({
     toolInput: true,
     widgetState: true,
     toolResponseMetadata: false,
+    toolSimulation: true,
   });
 
   const toggleSection = (key: string) => {
     setOpenSections((prev) => ({ ...prev, [key]: !prev[key] }));
   };
 
-  const gridRows = [
-    "auto", // Tool Input trigger
-    openSections.toolInput ? "1fr" : "0fr", // Tool Input content
+  const stateGridRows = [
+    "auto", // Component Props trigger
+    openSections.toolInput ? "1fr" : "0fr", // Component Props content
     "auto", // Widget State trigger
     openSections.widgetState ? "1fr" : "0fr", // Widget State content
-    "auto", // Response Metadata trigger
-    openSections.toolResponseMetadata ? "1fr" : "0fr", // Response Metadata content
+    "auto", // Widget Metadata trigger
+    openSections.toolResponseMetadata ? "1fr" : "0fr", // Widget Metadata content
   ].join(" ");
 
   return (
     <div className="flex h-full flex-col overflow-hidden">
+      <ToolCallLoadingIndicator />
+      <SectionHeader>Component State</SectionHeader>
       <div
         className="grid min-h-0 flex-1 transition-[grid-template-rows] duration-200 ease-out"
-        style={{ gridTemplateRows: gridRows }}
+        style={{ gridTemplateRows: stateGridRows }}
       >
         <EditorSectionTrigger
           title="Component Props"
@@ -579,11 +618,32 @@ function EditorPanel() {
         </EditorSectionContent>
       </div>
 
-      <div className="border-border/40 shrink-0 border-t bg-neutral-50/50 dark:bg-neutral-900/50">
-        <div className="text-muted-foreground px-3 py-2 text-xs font-medium tracking-wider uppercase">
-          Tool Simulation
+      <div className="border-border/40 shrink-0 border-t">
+        <button
+          type="button"
+          onClick={() => toggleSection("toolSimulation")}
+          className="bg-muted/30 hover:bg-muted/50 flex w-full items-center justify-between px-3 py-1.5 transition-colors"
+        >
+          <span className="text-muted-foreground text-[10px] font-medium tracking-wider uppercase">
+            Tool Simulation
+          </span>
+          <ChevronDown
+            className={cn(
+              "text-muted-foreground size-3.5 transition-transform duration-200",
+              openSections.toolSimulation && "rotate-180",
+            )}
+          />
+        </button>
+        <div
+          className={cn(
+            "grid transition-[grid-template-rows] duration-200 ease-out",
+            openSections.toolSimulation ? "grid-rows-[1fr]" : "grid-rows-[0fr]",
+          )}
+        >
+          <div className="min-h-0 overflow-hidden">
+            <MockConfigPanel />
+          </div>
         </div>
-        <MockConfigPanel />
       </div>
     </div>
   );

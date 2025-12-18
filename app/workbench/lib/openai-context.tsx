@@ -54,11 +54,25 @@ export function OpenAIProvider({ children }: OpenAIProviderProps) {
         args,
       });
 
-      const result: MockToolCallResult = await handleMockToolCall(
-        name,
-        args,
-        store.mockConfig,
-      );
+      const toolConfig = store.mockConfig.tools[name];
+      const activeVariant =
+        store.mockConfig.globalEnabled && toolConfig?.activeVariantId
+          ? toolConfig.variants.find((v) => v.id === toolConfig.activeVariantId)
+          : null;
+      const delay = activeVariant?.delay ?? 300;
+
+      store.setActiveToolCall({
+        toolName: name,
+        delay,
+        startTime: Date.now(),
+      });
+
+      let result: MockToolCallResult;
+      try {
+        result = await handleMockToolCall(name, args, store.mockConfig);
+      } finally {
+        store.setActiveToolCall(null);
+      }
 
       const enrichedMeta = {
         ...(result._meta ?? {}),

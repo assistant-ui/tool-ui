@@ -6,6 +6,7 @@ import { useWorkbenchStore, useMockConfig } from "@/app/workbench/lib/store";
 import type { MockVariant } from "@/app/workbench/lib/mock-config";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
+import { Slider } from "@/components/ui/slider";
 import {
   Select,
   SelectContent,
@@ -13,10 +14,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Plus, Trash2, ChevronDown } from "lucide-react";
+import { Plus, Trash2, ChevronDown, Pencil } from "lucide-react";
 import { cn } from "@/lib/ui/cn";
-import { COMPACT_LABEL_CLASSES } from "./styles";
-import { MockVariantList } from "./mock-variant-list";
 import { MockVariantEditor } from "./mock-variant-editor";
 
 function CollapsibleSection({
@@ -40,14 +39,30 @@ function CollapsibleSection({
         {title}
         <ChevronDown
           className={cn(
-            "size-3.5 transition-transform",
+            "size-3.5 transition-transform duration-200",
             expanded && "rotate-180",
           )}
         />
       </button>
-      {expanded && <div className="px-3 pb-3">{children}</div>}
+      <div
+        className={cn(
+          "grid transition-[grid-template-rows] duration-200 ease-out",
+          expanded ? "grid-rows-[1fr]" : "grid-rows-[0fr]",
+        )}
+      >
+        <div className="min-h-0 overflow-hidden">
+          <div className="px-3 pb-3">{children}</div>
+        </div>
+      </div>
     </div>
   );
+}
+
+function formatDelay(ms: number): string {
+  if (ms >= 1000) {
+    return `${(ms / 1000).toFixed(1)}s`;
+  }
+  return `${ms}ms`;
 }
 
 function AnnotationToggle({
@@ -272,147 +287,231 @@ export function MockConfigPanel() {
 
       {toolConfig && (
         <>
-          <div className="flex-1 space-y-4 overflow-auto">
-            <div>
-              <div className={cn(COMPACT_LABEL_CLASSES, "mb-2")}>
-                Active Scenario
+          <div className="flex-1 space-y-3 overflow-auto">
+            <div className="space-y-2">
+              <div className="flex items-center gap-2">
+                <Select
+                  value={toolConfig.activeVariantId ?? "default"}
+                  onValueChange={(value) =>
+                    setActiveVariant(selectedTool!, value === "default" ? null : value)
+                  }
+                >
+                  <SelectTrigger className="h-8 flex-1 text-xs">
+                    <SelectValue placeholder="Select scenario" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="default" className="text-xs">
+                      Default response
+                    </SelectItem>
+                    {toolConfig.variants.map((variant) => (
+                      <SelectItem
+                        key={variant.id}
+                        value={variant.id}
+                        className="text-xs"
+                      >
+                        <span
+                          className={cn(
+                            "mr-1.5 rounded px-1 py-0.5 text-[10px] font-medium uppercase",
+                            variant.type === "success" &&
+                              "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400",
+                            variant.type === "error" &&
+                              "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400",
+                            variant.type === "empty" &&
+                              "bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400",
+                            variant.type === "slow" &&
+                              "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400",
+                            variant.type === "custom" &&
+                              "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",
+                          )}
+                        >
+                          {variant.name}
+                        </span>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {toolConfig.activeVariantId && (
+                  <>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="size-8"
+                      onClick={() => {
+                        const variant = toolConfig.variants.find(
+                          (v) => v.id === toolConfig.activeVariantId,
+                        );
+                        if (variant) setEditingVariant(variant);
+                      }}
+                    >
+                      <Pencil className="size-3.5" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="text-destructive hover:text-destructive size-8"
+                      onClick={() => handleDeleteVariant(toolConfig.activeVariantId!)}
+                    >
+                      <Trash2 className="size-3.5" />
+                    </Button>
+                  </>
+                )}
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="size-8"
+                  onClick={handleAddVariant}
+                >
+                  <Plus className="size-4" />
+                </Button>
               </div>
-              <MockVariantList
-                variants={toolConfig.variants}
-                activeVariantId={toolConfig.activeVariantId}
-                onSelectVariant={(id) => setActiveVariant(selectedTool!, id)}
-                onEditVariant={setEditingVariant}
-                onDeleteVariant={handleDeleteVariant}
-              />
-              <Button
-                variant="ghost"
-                size="sm"
-                className="mt-2 text-xs"
-                onClick={handleAddVariant}
-              >
-                <Plus className="mr-1 size-3" />
-                Add Scenario
-              </Button>
+
+              {toolConfig.activeVariantId && (() => {
+                const activeVariant = toolConfig.variants.find(
+                  (v) => v.id === toolConfig.activeVariantId,
+                );
+                if (!activeVariant) return null;
+                return (
+                  <div className="flex items-center gap-2">
+                    <span className="text-muted-foreground text-[10px]">
+                      Delay: {formatDelay(activeVariant.delay)}
+                    </span>
+                    <Slider
+                      value={[activeVariant.delay]}
+                      onValueChange={(values) => {
+                        updateVariant(selectedTool!, activeVariant.id, {
+                          delay: values[0],
+                        });
+                      }}
+                      min={0}
+                      max={5000}
+                      step={100}
+                      className="flex-1"
+                    />
+                  </div>
+                );
+              })()}
             </div>
 
             <CollapsibleSection
-              title="Annotations"
-              expanded={expandedSections.annotations}
-              onToggle={() => toggleSection("annotations")}
+              title="Advanced"
+              expanded={expandedSections.advanced}
+              onToggle={() => toggleSection("advanced")}
             >
-              <div className="space-y-2">
-                <AnnotationToggle
-                  label="Read Only"
-                  hint="Indicates tool doesn't modify state"
-                  checked={toolConfig.annotations?.readOnlyHint ?? false}
-                  onChange={(checked) =>
-                    setToolAnnotations(selectedTool!, {
-                      ...toolConfig.annotations,
-                      readOnlyHint: checked,
-                    })
-                  }
-                />
-                <AnnotationToggle
-                  label="Destructive"
-                  hint="Indicates tool may delete data"
-                  checked={toolConfig.annotations?.destructiveHint ?? false}
-                  onChange={(checked) =>
-                    setToolAnnotations(selectedTool!, {
-                      ...toolConfig.annotations,
-                      destructiveHint: checked,
-                    })
-                  }
-                />
-                <AnnotationToggle
-                  label="Open World"
-                  hint="Indicates tool accesses external resources"
-                  checked={toolConfig.annotations?.openWorldHint ?? false}
-                  onChange={(checked) =>
-                    setToolAnnotations(selectedTool!, {
-                      ...toolConfig.annotations,
-                      openWorldHint: checked,
-                    })
-                  }
-                />
-                <AnnotationToggle
-                  label="Idempotent"
-                  hint="Indicates repeated calls produce same result"
-                  checked={toolConfig.annotations?.idempotentHint ?? false}
-                  onChange={(checked) =>
-                    setToolAnnotations(selectedTool!, {
-                      ...toolConfig.annotations,
-                      idempotentHint: checked,
-                    })
-                  }
-                />
-              </div>
-            </CollapsibleSection>
-
-            <CollapsibleSection
-              title="Schemas"
-              expanded={expandedSections.schemas}
-              onToggle={() => toggleSection("schemas")}
-            >
-              <div className="space-y-3">
-                <div>
-                  <div className="text-muted-foreground mb-1 text-xs">
-                    Input Schema (JSON)
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <div className="text-muted-foreground text-[10px] font-medium uppercase tracking-wider">
+                    Annotations
                   </div>
-                  <textarea
-                    className="bg-input/70 w-full rounded-md p-2 font-mono text-xs"
-                    rows={3}
-                    placeholder="{}"
-                    value={
-                      toolConfig.schemas?.inputSchema
-                        ? JSON.stringify(toolConfig.schemas.inputSchema, null, 2)
-                        : ""
+                  <AnnotationToggle
+                    label="Read Only"
+                    hint="Indicates tool doesn't modify state"
+                    checked={toolConfig.annotations?.readOnlyHint ?? false}
+                    onChange={(checked) =>
+                      setToolAnnotations(selectedTool!, {
+                        ...toolConfig.annotations,
+                        readOnlyHint: checked,
+                      })
                     }
-                    onChange={(e) => {
-                      try {
-                        const parsed = e.target.value
-                          ? JSON.parse(e.target.value)
-                          : undefined;
-                        setToolSchemas(selectedTool!, {
-                          ...toolConfig.schemas,
-                          inputSchema: parsed,
-                        });
-                      } catch {
-                        // Ignore parse errors while typing
-                      }
-                    }}
+                  />
+                  <AnnotationToggle
+                    label="Destructive"
+                    hint="Indicates tool may delete data"
+                    checked={toolConfig.annotations?.destructiveHint ?? false}
+                    onChange={(checked) =>
+                      setToolAnnotations(selectedTool!, {
+                        ...toolConfig.annotations,
+                        destructiveHint: checked,
+                      })
+                    }
+                  />
+                  <AnnotationToggle
+                    label="Open World"
+                    hint="Indicates tool accesses external resources"
+                    checked={toolConfig.annotations?.openWorldHint ?? false}
+                    onChange={(checked) =>
+                      setToolAnnotations(selectedTool!, {
+                        ...toolConfig.annotations,
+                        openWorldHint: checked,
+                      })
+                    }
+                  />
+                  <AnnotationToggle
+                    label="Idempotent"
+                    hint="Indicates repeated calls produce same result"
+                    checked={toolConfig.annotations?.idempotentHint ?? false}
+                    onChange={(checked) =>
+                      setToolAnnotations(selectedTool!, {
+                        ...toolConfig.annotations,
+                        idempotentHint: checked,
+                      })
+                    }
                   />
                 </div>
-                <div>
-                  <div className="text-muted-foreground mb-1 text-xs">
-                    Output Schema (JSON)
+
+                <div className="space-y-2">
+                  <div className="text-muted-foreground text-[10px] font-medium uppercase tracking-wider">
+                    Schemas
                   </div>
-                  <textarea
-                    className="bg-input/70 w-full rounded-md p-2 font-mono text-xs"
-                    rows={3}
-                    placeholder="{}"
-                    value={
-                      toolConfig.schemas?.outputSchema
-                        ? JSON.stringify(
-                            toolConfig.schemas.outputSchema,
-                            null,
-                            2,
-                          )
-                        : ""
-                    }
-                    onChange={(e) => {
-                      try {
-                        const parsed = e.target.value
-                          ? JSON.parse(e.target.value)
-                          : undefined;
-                        setToolSchemas(selectedTool!, {
-                          ...toolConfig.schemas,
-                          outputSchema: parsed,
-                        });
-                      } catch {
-                        // Ignore parse errors while typing
+                  <div>
+                    <div className="text-muted-foreground mb-1 text-xs">
+                      Input Schema (JSON)
+                    </div>
+                    <textarea
+                      className="bg-input/70 w-full rounded-md p-2 font-mono text-xs"
+                      rows={3}
+                      placeholder="{}"
+                      value={
+                        toolConfig.schemas?.inputSchema
+                          ? JSON.stringify(toolConfig.schemas.inputSchema, null, 2)
+                          : ""
                       }
-                    }}
-                  />
+                      onChange={(e) => {
+                        try {
+                          const parsed = e.target.value
+                            ? JSON.parse(e.target.value)
+                            : undefined;
+                          setToolSchemas(selectedTool!, {
+                            ...toolConfig.schemas,
+                            inputSchema: parsed,
+                          });
+                        } catch {
+                          // Ignore parse errors while typing
+                        }
+                      }}
+                    />
+                  </div>
+                  <div>
+                    <div className="text-muted-foreground mb-1 text-xs">
+                      Output Schema (JSON)
+                    </div>
+                    <textarea
+                      className="bg-input/70 w-full rounded-md p-2 font-mono text-xs"
+                      rows={3}
+                      placeholder="{}"
+                      value={
+                        toolConfig.schemas?.outputSchema
+                          ? JSON.stringify(
+                              toolConfig.schemas.outputSchema,
+                              null,
+                              2,
+                            )
+                          : ""
+                      }
+                      onChange={(e) => {
+                        try {
+                          const parsed = e.target.value
+                            ? JSON.parse(e.target.value)
+                            : undefined;
+                          setToolSchemas(selectedTool!, {
+                            ...toolConfig.schemas,
+                            outputSchema: parsed,
+                          });
+                        } catch {
+                          // Ignore parse errors while typing
+                        }
+                      }}
+                    />
+                  </div>
                 </div>
               </div>
             </CollapsibleSection>
