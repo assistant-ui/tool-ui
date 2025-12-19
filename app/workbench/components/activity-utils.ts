@@ -50,6 +50,14 @@ export function formatRelativeTime(date: Date): string {
   return `${days}d`;
 }
 
+export function formatTimestamp(date: Date): string {
+  return date.toLocaleTimeString([], {
+    hour: "numeric",
+    minute: "2-digit",
+    second: "2-digit",
+  });
+}
+
 export function formatMethodName(method: string): string {
   const match = method.match(/^(\w+)\(/);
   return match ? match[1] : method;

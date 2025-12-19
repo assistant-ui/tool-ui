@@ -1,11 +1,11 @@
 "use client";
 
 import type { ConsoleEntry } from "@/app/workbench/lib/types";
-import { useRelativeTime } from "@/app/workbench/hooks/use-relative-time";
 import {
   eventIcons,
   typeColors,
   formatMethodName,
+  formatTimestamp,
   extractToolName,
   extractKeyArg,
   isResponseEntry,
@@ -44,13 +44,12 @@ function CallToolEntry({
   entry,
   isExpanded,
   onToggle,
-  relativeTime,
 }: {
   entry: ConsoleEntry;
   isExpanded: boolean;
   onToggle: () => void;
-  relativeTime: string;
 }) {
+  const timestamp = formatTimestamp(entry.timestamp);
   const isResponse = isResponseEntry(entry.args, entry.result);
   const toolName = extractToolName(entry.method);
   const keyArg = !isResponse ? extractKeyArg(entry.args) : null;
@@ -75,8 +74,13 @@ function CallToolEntry({
         >
           <Icon className="size-3 shrink-0" />
           <span className="truncate text-xs">{resultPreview}</span>
-          <span className="text-muted-foreground/40 ml-auto shrink-0 text-[10px] tabular-nums">
-            {relativeTime}
+          <span
+            className={cn(
+              "text-muted-foreground/40 ml-auto shrink-0 text-[10px] tabular-nums transition-opacity",
+              isExpanded ? "opacity-100" : "opacity-0 group-hover:opacity-100",
+            )}
+          >
+            {timestamp}
           </span>
           {hasDetails && (
             <ChevronRight
@@ -125,8 +129,13 @@ function CallToolEntry({
             &quot;{keyArg}&quot;
           </span>
         )}
-        <span className="text-muted-foreground/60 ml-auto shrink-0 text-[10px] tabular-nums">
-          {relativeTime}
+        <span
+          className={cn(
+            "text-muted-foreground/60 ml-auto shrink-0 text-[10px] tabular-nums transition-opacity",
+            isExpanded ? "opacity-100" : "opacity-0 group-hover:opacity-100",
+          )}
+        >
+          {timestamp}
         </span>
         {hasDetails && (
           <ChevronRight
@@ -157,7 +166,7 @@ export function ActivityEntry({
   isExpanded,
   onToggle,
 }: ActivityEntryProps) {
-  const relativeTime = useRelativeTime(entry.timestamp);
+  const timestamp = formatTimestamp(entry.timestamp);
 
   if (entry.type === "callTool") {
     return (
@@ -165,7 +174,6 @@ export function ActivityEntry({
         entry={entry}
         isExpanded={isExpanded}
         onToggle={onToggle}
-        relativeTime={relativeTime}
       />
     );
   }
@@ -208,8 +216,13 @@ export function ActivityEntry({
             {metadataPreview}
           </span>
         )}
-        <span className="text-muted-foreground/60 ml-auto shrink-0 text-[10px] tabular-nums">
-          {relativeTime}
+        <span
+          className={cn(
+            "text-muted-foreground/60 ml-auto shrink-0 text-[10px] tabular-nums transition-opacity",
+            isExpanded ? "opacity-100" : "opacity-0 group-hover:opacity-100",
+          )}
+        >
+          {timestamp}
         </span>
         {hasDetails && (
           <ChevronRight
@@ -248,10 +261,8 @@ export function CallToolGroupEntry({
   onToggleRequest,
   onToggleResponse,
 }: CallToolGroupEntryProps) {
-  const requestRelativeTime = useRelativeTime(request.timestamp);
-  const responseRelativeTime = useRelativeTime(
-    response?.timestamp ?? request.timestamp,
-  );
+  const requestTimestamp = formatTimestamp(request.timestamp);
+  const responseTimestamp = response ? formatTimestamp(response.timestamp) : "";
 
   const toolName = extractToolName(request.method);
   const keyArg = extractKeyArg(request.args);
@@ -283,8 +294,15 @@ export function CallToolGroupEntry({
             &quot;{keyArg}&quot;
           </span>
         )}
-        <span className="text-muted-foreground/60 ml-auto shrink-0 text-[10px] tabular-nums">
-          {requestRelativeTime}
+        <span
+          className={cn(
+            "text-muted-foreground/60 ml-auto shrink-0 text-[10px] tabular-nums transition-opacity",
+            requestExpanded
+              ? "opacity-100"
+              : "opacity-0 group-hover/request:opacity-100",
+          )}
+        >
+          {requestTimestamp}
         </span>
         {hasRequestDetails && (
           <ChevronRight
@@ -327,8 +345,15 @@ export function CallToolGroupEntry({
               >
                 <CornerDownRight className="size-3 shrink-0" />
                 <span className="truncate text-xs">{resultPreview}</span>
-                <span className="text-muted-foreground/40 ml-auto shrink-0 text-[10px] tabular-nums">
-                  {responseRelativeTime}
+                <span
+                  className={cn(
+                    "text-muted-foreground/40 ml-auto shrink-0 text-[10px] tabular-nums transition-opacity",
+                    responseExpanded
+                      ? "opacity-100"
+                      : "opacity-0 group-hover/response:opacity-100",
+                  )}
+                >
+                  {responseTimestamp}
                 </span>
                 {hasResponseDetails && (
                   <ChevronRight
@@ -369,8 +394,15 @@ export function CallToolGroupEntry({
           >
             <CornerDownRight className="size-3 shrink-0" />
             <span className="truncate text-xs">{resultPreview}</span>
-            <span className="text-muted-foreground/40 ml-auto shrink-0 text-[10px] tabular-nums">
-              {responseRelativeTime}
+            <span
+              className={cn(
+                "text-muted-foreground/40 ml-auto shrink-0 text-[10px] tabular-nums transition-opacity",
+                responseExpanded
+                  ? "opacity-100"
+                  : "opacity-0 group-hover/response:opacity-100",
+              )}
+            >
+              {responseTimestamp}
             </span>
             {hasResponseDetails && (
               <ChevronRight
