@@ -42,8 +42,6 @@ import {
   Maximize2,
   Square,
   PictureInPicture2,
-  PanelLeftClose,
-  PanelLeft,
   X,
   Layers,
   MapPin,
@@ -72,7 +70,6 @@ import {
   SELECT_CLASSES,
   TOGGLE_BUTTON_CLASSES,
   TOGGLE_BUTTON_ACTIVE_CLASSES,
-  PANEL_TOGGLE_CLASSES,
 } from "./styles";
 
 const DISPLAY_MODES: ReadonlyArray<{
@@ -152,10 +149,6 @@ const LOCATION_PRESETS: ReadonlyArray<{
   },
 ];
 
-interface ConfigPanelProps {
-  isCollapsed?: boolean;
-  onToggleCollapse?: () => void;
-}
 
 interface SettingRowProps {
   label: string;
@@ -460,28 +453,11 @@ function SimulationTab() {
   );
 }
 
-export function ConfigPanel({
-  isCollapsed,
-  onToggleCollapse,
-}: ConfigPanelProps) {
-  if (isCollapsed) {
-    return (
-      <div className="flex h-full w-12 flex-col items-center py-3">
-        <button
-          onClick={onToggleCollapse}
-          className={`${PANEL_TOGGLE_CLASSES} p-2`}
-          aria-label="Expand sidebar"
-        >
-          <PanelLeft className="size-4" />
-        </button>
-      </div>
-    );
-  }
-
+export function ConfigPanel() {
   return (
-    <div className="flex h-full min-w-80 flex-col">
+    <div className="flex h-full flex-col pt-2">
       <Tabs defaultValue="environment" className="flex min-h-0 flex-1 flex-col">
-        <TabsList className="mx-4 mt-2 grid w-auto grid-cols-2">
+        <TabsList className="mx-4 grid w-auto grid-cols-2">
           <TabsTrigger value="environment" className="text-xs">
             Environment
           </TabsTrigger>
@@ -502,16 +478,6 @@ export function ConfigPanel({
           <SimulationTab />
         </TabsContent>
       </Tabs>
-
-      <div className="flex items-center justify-end px-2 py-2">
-        <button
-          onClick={onToggleCollapse}
-          className={`${PANEL_TOGGLE_CLASSES} p-1.5`}
-          aria-label="Collapse sidebar"
-        >
-          <PanelLeftClose className="size-4" />
-        </button>
-      </div>
     </div>
   );
 }

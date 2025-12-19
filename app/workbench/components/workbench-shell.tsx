@@ -2,8 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { ConfigPanel } from "./config-panel";
-import { UnifiedWorkspace } from "./unified-workspace";
+import { WorkbenchLayout } from "./workbench-layout";
 import { ConsoleSummaryBar } from "./console-summary-bar";
 import { ConsoleDrawer } from "./console-drawer";
 import { LogoMark } from "@/components/ui/logo";
@@ -31,8 +30,6 @@ import { ArrowLeft, Moon, Sun } from "lucide-react";
 import { OnboardingModal } from "./onboarding-modal";
 
 export function WorkbenchShell() {
-  const [isPanelCollapsed, setIsPanelCollapsed] = React.useState(false);
-  const [isFading, setIsFading] = React.useState(false);
   const [mounted, setMounted] = React.useState(false);
   const selectedComponent = useSelectedComponent();
   const setSelectedComponent = useWorkbenchStore((s) => s.setSelectedComponent);
@@ -92,15 +89,13 @@ export function WorkbenchShell() {
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [toggleTheme, toggleFullscreen, clearConsole, isConsoleOpen, setConsoleOpen]);
-
-  const handleToggleCollapse = () => {
-    setIsFading(true);
-    setTimeout(() => {
-      setIsPanelCollapsed(!isPanelCollapsed);
-      setIsFading(false);
-    }, 150);
-  };
+  }, [
+    toggleTheme,
+    toggleFullscreen,
+    clearConsole,
+    isConsoleOpen,
+    setConsoleOpen,
+  ]);
 
   return (
     <div className="flex h-full w-full flex-col overflow-hidden">
@@ -171,35 +166,13 @@ export function WorkbenchShell() {
         </div>
       </div>
 
-      <div className="flex min-h-0 flex-1 overflow-hidden">
-        <div className="flex min-w-0 flex-1 flex-col overflow-hidden rounded-tr-lg border-t border-r">
-          <div className="min-h-0 flex-1 overflow-hidden">
-            <UnifiedWorkspace />
-          </div>
-          <ConsoleSummaryBar onClick={() => setConsoleOpen(true)} />
+      <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
+        <div className="min-h-0 flex-1 overflow-hidden">
+          <WorkbenchLayout />
         </div>
-        <aside
-          className={`scrollbar-subtle flex h-full shrink-0 flex-col overflow-hidden transition-[width] duration-200 ease-in-out ${
-            isPanelCollapsed ? "w-12" : "w-80"
-          }`}
-        >
-          <div
-            className={`h-full pt-2 transition-opacity duration-150 ${
-              isFading ? "opacity-0" : "opacity-100"
-            }`}
-          >
-            <ConfigPanel
-              key={isPanelCollapsed ? "collapsed" : "expanded"}
-              isCollapsed={isPanelCollapsed}
-              onToggleCollapse={handleToggleCollapse}
-            />
-          </div>
-        </aside>
+        <ConsoleSummaryBar onClick={() => setConsoleOpen(true)} />
       </div>
-      <ConsoleDrawer
-        open={isConsoleOpen}
-        onOpenChange={setConsoleOpen}
-      />
+      <ConsoleDrawer open={isConsoleOpen} onOpenChange={setConsoleOpen} />
       <OnboardingModal />
     </div>
   );

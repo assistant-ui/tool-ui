@@ -1,5 +1,5 @@
 export { WorkbenchShell } from "./workbench-shell";
-export { UnifiedWorkspace } from "./unified-workspace";
+export { WorkbenchLayout } from "./workbench-layout";
 export { ConfigPanel } from "./config-panel";
 export { EventConsole } from "./event-console";
 export { JsonEditor } from "./json-editor";
