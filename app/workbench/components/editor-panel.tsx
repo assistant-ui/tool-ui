@@ -6,6 +6,7 @@ import {
   useWorkbenchStore,
   useSelectedComponent,
   useConsoleLogs,
+  useClearConsole,
 } from "@/app/workbench/lib/store";
 import {
   isStructuredWidgetState,
@@ -20,7 +21,7 @@ import { JsonEditor } from "./json-editor";
 import { ActivitySection } from "./activity-section";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/ui/cn";
-import { RotateCcw, ChevronDown } from "lucide-react";
+import { RotateCcw, ChevronDown, Trash2 } from "lucide-react";
 import { HintIcon } from "./hint-icon";
 import {
   Tooltip,
@@ -179,6 +180,9 @@ interface EditorSectionTriggerProps {
   tooltip?: string;
   isOpen: boolean;
   onToggle: () => void;
+  onAction?: () => void;
+  actionIcon?: React.ReactNode;
+  actionTooltip?: string;
 }
 
 function EditorSectionTrigger({
@@ -186,42 +190,58 @@ function EditorSectionTrigger({
   tooltip,
   isOpen,
   onToggle,
+  onAction,
+  actionIcon,
+  actionTooltip,
 }: EditorSectionTriggerProps) {
   return (
-    <button
-      type="button"
-      onClick={onToggle}
-      className="border-border/40 hover:bg-muted/30 flex shrink-0 items-center justify-between gap-4 border-b px-3 py-2 text-left transition-colors"
-    >
-      <div className="flex items-center gap-1.5">
-        <span className="text-muted-foreground text-sm">{title}</span>
+    <div className="border-border/40 hover:bg-muted/30 flex h-9 shrink-0 items-center justify-between gap-2 border-b px-3 transition-colors">
+      <button
+        type="button"
+        onClick={onToggle}
+        className="flex flex-1 items-center gap-1.5 text-left"
+      >
+        <ChevronDown
+          className={cn(
+            "text-muted-foreground/60 size-4 shrink-0 transition-transform duration-100 ease-[cubic-bezier(0.22,1,0.36,1)]",
+            isOpen ? "rotate-0" : "-rotate-90",
+          )}
+        />
+        <span className="text-sm">{title}</span>
         {tooltip && <HintIcon hint={tooltip} />}
-      </div>
-      <ChevronDown
-        className={cn(
-          "text-muted-foreground size-4 shrink-0 transition-transform duration-200",
-          isOpen && "rotate-180",
-        )}
-      />
-    </button>
+      </button>
+      {isOpen && onAction && (
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant="ghost"
+              size="icon-sm"
+              className="size-6"
+              onClick={(e) => {
+                e.stopPropagation();
+                onAction();
+              }}
+            >
+              {actionIcon}
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent side="left">{actionTooltip}</TooltipContent>
+        </Tooltip>
+      )}
+    </div>
   );
 }
 
 interface EditorSectionContentProps {
   isOpen: boolean;
-  onReset?: () => void;
   children: ReactNode;
 }
 
-function EditorSectionContent({
-  isOpen,
-  onReset,
-  children,
-}: EditorSectionContentProps) {
+function EditorSectionContent({ isOpen, children }: EditorSectionContentProps) {
   return (
     <div
       className={cn(
-        "border-border/40 relative min-h-0 overflow-hidden border-b",
+        "border-border/40 min-h-0 overflow-hidden border-b",
         !isOpen && "pointer-events-none",
       )}
     >
@@ -231,22 +251,6 @@ function EditorSectionContent({
           isOpen ? "opacity-100" : "opacity-0",
         )}
       >
-        {onReset && (
-          <div className="sticky top-1 z-10 flex justify-end pr-1">
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <button
-                  type="button"
-                  className="bg-background/80 text-muted-foreground hover:text-foreground rounded p-1 transition-colors"
-                  onClick={onReset}
-                >
-                  <RotateCcw className="size-3" />
-                </button>
-              </TooltipTrigger>
-              <TooltipContent side="left">Reset</TooltipContent>
-            </Tooltip>
-          </div>
-        )}
         <div className="px-3 pb-2">{children}</div>
       </div>
     </div>
@@ -329,6 +333,77 @@ function WidgetStateSection({ value, onChange }: WidgetStateSectionProps) {
   );
 }
 
+interface ActivitySectionPanelProps {
+  isOpen: boolean;
+  onToggle: () => void;
+  logCount: number;
+}
+
+function ActivitySectionPanel({
+  isOpen,
+  onToggle,
+  logCount,
+}: ActivitySectionPanelProps) {
+  const clearConsole = useClearConsole();
+
+  return (
+    <div className="contents">
+      <div className="border-border/40 hover:bg-muted/30 flex h-9 shrink-0 items-center justify-between gap-2 px-3 transition-colors">
+        <button
+          type="button"
+          onClick={onToggle}
+          className="flex flex-1 items-center gap-1.5 text-left"
+        >
+          <ChevronDown
+            className={cn(
+              "text-muted-foreground/60 size-4 shrink-0 transition-transform duration-100 ease-[cubic-bezier(0.22,1,0.36,1)]",
+              isOpen ? "rotate-0" : "-rotate-90",
+            )}
+          />
+          <span className="text-sm">Activity Log</span>
+          {logCount > 0 && (
+            <span className="bg-muted text-muted-foreground ml-1 rounded-full px-1.5 py-0.5 text-[10px] tabular-nums">
+              {logCount}
+            </span>
+          )}
+        </button>
+        {isOpen && logCount > 0 && (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon-sm"
+                className="size-6"
+                onClick={clearConsole}
+              >
+                <Trash2 className="size-3" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="left">Clear</TooltipContent>
+          </Tooltip>
+        )}
+      </div>
+      <div
+        className={cn(
+          "min-h-0 overflow-hidden",
+          !isOpen && "pointer-events-none",
+        )}
+      >
+        <div
+          className={cn(
+            `h-full transition-opacity ${PANEL_TRANSITION_CLASSES}`,
+            isOpen ? "opacity-100" : "opacity-0",
+          )}
+        >
+          <div className="h-full pr-3 pl-8">
+            <ActivitySection />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export function EditorPanel() {
   const { getActiveData, handleChange, handleReset } = useJsonEditorState();
   const consoleLogs = useConsoleLogs();
@@ -373,7 +448,7 @@ export function EditorPanel() {
   };
 
   return (
-    <div className="flex h-full flex-col overflow-hidden py-3">
+    <div className="flex h-full flex-col overflow-hidden pt-3">
       <div
         className={`grid min-h-0 flex-1 content-start transition-[grid-template-rows] ${PANEL_TRANSITION_CLASSES}`}
         style={{ gridTemplateRows: gridRows }}
@@ -385,55 +460,21 @@ export function EditorPanel() {
               tooltip={section.tooltip}
               isOpen={openSections[section.key]}
               onToggle={() => toggleSection(section.key)}
+              onAction={() => handleReset(section.tab)}
+              actionIcon={<RotateCcw className="size-3" />}
+              actionTooltip="Reset"
             />
-            <EditorSectionContent
-              isOpen={openSections[section.key]}
-              onReset={() => handleReset(section.tab)}
-            >
+            <EditorSectionContent isOpen={openSections[section.key]}>
               {renderSectionContent(section)}
             </EditorSectionContent>
           </div>
         ))}
 
-        <div className="contents">
-          <button
-            type="button"
-            onClick={() => toggleSection("activity")}
-            className="border-border/40 hover:bg-muted/30 flex shrink-0 items-center justify-between gap-4 border-b px-3 py-2 text-left transition-colors"
-          >
-            <div className="flex items-center gap-1.5">
-              <span className="text-muted-foreground text-sm">Activity</span>
-              {!openSections.activity && consoleLogs.length > 0 && (
-                <span className="bg-muted text-muted-foreground rounded-full px-1.5 py-0.5 text-[10px] tabular-nums">
-                  {consoleLogs.length}
-                </span>
-              )}
-            </div>
-            <ChevronDown
-              className={cn(
-                "text-muted-foreground size-4 shrink-0 transition-transform duration-200",
-                openSections.activity && "rotate-180",
-              )}
-            />
-          </button>
-          <div
-            className={cn(
-              "border-border/40 relative min-h-0 overflow-hidden border-b",
-              !openSections.activity && "pointer-events-none",
-            )}
-          >
-            <div
-              className={cn(
-                `h-full transition-opacity ${PANEL_TRANSITION_CLASSES}`,
-                openSections.activity ? "opacity-100" : "opacity-0",
-              )}
-            >
-              <div className="h-full px-3 pb-2">
-                <ActivitySection />
-              </div>
-            </div>
-          </div>
-        </div>
+        <ActivitySectionPanel
+          isOpen={openSections.activity}
+          onToggle={() => toggleSection("activity")}
+          logCount={consoleLogs.length}
+        />
       </div>
     </div>
   );

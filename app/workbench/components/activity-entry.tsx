@@ -121,7 +121,7 @@ function CallToolEntry({
         )}
       >
         <Icon className={cn("size-3.5 shrink-0", colorClass)} />
-        <span className={cn("truncate text-xs font-medium", colorClass)}>
+        <span className={cn("truncate text-xs", colorClass)}>
           {toolName || "callTool"}
         </span>
         {keyArg && (
@@ -208,9 +208,7 @@ export function ActivityEntry({
         )}
       >
         <Icon className={cn("size-3.5 shrink-0", colorClass)} />
-        <span className={cn("truncate text-xs font-medium", colorClass)}>
-          {methodName}
-        </span>
+        <span className={cn("truncate text-xs", colorClass)}>{methodName}</span>
         {metadataPreview && (
           <span className="text-muted-foreground truncate text-xs">
             {metadataPreview}
@@ -262,7 +260,6 @@ export function CallToolGroupEntry({
   onToggleResponse,
 }: CallToolGroupEntryProps) {
   const requestTimestamp = formatTimestamp(request.timestamp);
-  const responseTimestamp = response ? formatTimestamp(response.timestamp) : "";
 
   const toolName = extractToolName(request.method);
   const keyArg = extractKeyArg(request.args);
@@ -286,7 +283,7 @@ export function CallToolGroupEntry({
         )}
       >
         <Wrench className={cn("size-3.5 shrink-0", colorClass)} />
-        <span className={cn("truncate text-xs font-medium", colorClass)}>
+        <span className={cn("truncate text-xs", colorClass)}>
           {toolName || "callTool"}
         </span>
         {keyArg && (
@@ -297,7 +294,7 @@ export function CallToolGroupEntry({
         <span
           className={cn(
             "text-muted-foreground/60 ml-auto shrink-0 text-[10px] tabular-nums transition-opacity",
-            requestExpanded
+            requestExpanded || responseExpanded
               ? "opacity-100"
               : "opacity-0 group-hover/request:opacity-100",
           )}
@@ -345,20 +342,10 @@ export function CallToolGroupEntry({
               >
                 <CornerDownRight className="size-3 shrink-0" />
                 <span className="truncate text-xs">{resultPreview}</span>
-                <span
-                  className={cn(
-                    "text-muted-foreground/40 ml-auto shrink-0 text-[10px] tabular-nums transition-opacity",
-                    responseExpanded
-                      ? "opacity-100"
-                      : "opacity-0 group-hover/response:opacity-100",
-                  )}
-                >
-                  {responseTimestamp}
-                </span>
                 {hasResponseDetails && (
                   <ChevronRight
                     className={cn(
-                      "size-3 shrink-0 transition-transform duration-150",
+                      "ml-auto size-3 shrink-0 transition-transform duration-150",
                       "text-muted-foreground/30 group-hover/response:text-muted-foreground/50",
                       responseExpanded && "rotate-90",
                     )}
@@ -394,20 +381,10 @@ export function CallToolGroupEntry({
           >
             <CornerDownRight className="size-3 shrink-0" />
             <span className="truncate text-xs">{resultPreview}</span>
-            <span
-              className={cn(
-                "text-muted-foreground/40 ml-auto shrink-0 text-[10px] tabular-nums transition-opacity",
-                responseExpanded
-                  ? "opacity-100"
-                  : "opacity-0 group-hover/response:opacity-100",
-              )}
-            >
-              {responseTimestamp}
-            </span>
             {hasResponseDetails && (
               <ChevronRight
                 className={cn(
-                  "size-3 shrink-0 transition-transform duration-150",
+                  "ml-auto size-3 shrink-0 transition-transform duration-150",
                   "text-muted-foreground/30 group-hover/response:text-muted-foreground/50",
                   responseExpanded && "rotate-90",
                 )}
