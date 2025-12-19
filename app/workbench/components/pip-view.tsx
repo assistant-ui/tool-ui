@@ -5,6 +5,13 @@ import { motion, useMotionValue, animate } from "motion/react";
 import { GripHorizontal, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
+const PIP_ENTRANCE_ANIMATION = {
+  initial: { scale: 0.8, opacity: 0 },
+  animate: { scale: 1, opacity: 1 },
+  exit: { scale: 0.8, opacity: 0 },
+  transition: { type: "spring" as const, stiffness: 400, damping: 30 },
+};
+
 const PIP_WIDTH = 280;
 const PIP_HEIGHT = 180;
 const PIP_PADDING = 16;
@@ -166,6 +173,9 @@ export function PipView({ onClose, children }: PipViewProps) {
         dragElastic={0.1}
         onDragEnd={handleDragEnd}
         style={{ x, y, width: PIP_WIDTH }}
+        initial={PIP_ENTRANCE_ANIMATION.initial}
+        animate={PIP_ENTRANCE_ANIMATION.animate}
+        transition={PIP_ENTRANCE_ANIMATION.transition}
         className="group/pip absolute top-0 left-0 cursor-grab active:cursor-grabbing"
       >
         <div className="pointer-events-none flex justify-center pb-1.5 opacity-0 transition-opacity group-hover/pip:opacity-100">

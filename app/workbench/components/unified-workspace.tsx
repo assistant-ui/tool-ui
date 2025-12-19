@@ -39,6 +39,7 @@ import { JsonEditor } from "./json-editor";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/ui/cn";
 import { RotateCcw, XCircle, RefreshCw, ChevronDown } from "lucide-react";
+import { HintIcon } from "./hint-icon";
 import {
   Tooltip,
   TooltipContent,
@@ -55,6 +56,8 @@ import { IsolatedThemeWrapper } from "./isolated-theme-wrapper";
 import { PipView } from "./pip-view";
 import { MockComposer } from "./mock-composer";
 import { ModalOverlay } from "./modal-overlay";
+import { StatusBar } from "./status-bar";
+import { useReducedMotion } from "@/app/workbench/hooks/use-reduced-motion";
 
 type JsonEditorTab =
   | "toolInput"
@@ -131,10 +134,14 @@ function MorphContainer({
   style?: React.CSSProperties;
 }) {
   const isTransitioning = useIsTransitioning();
+  const prefersReducedMotion = useReducedMotion();
 
   return (
     <div
-      className={className}
+      className={cn(
+        className,
+        !prefersReducedMotion && "transition-all duration-300 ease-out",
+      )}
       style={
         {
           ...style,
@@ -430,14 +437,14 @@ function useJsonEditorState() {
 
 interface EditorSectionTriggerProps {
   title: string;
-  hint?: string;
+  tooltip?: string;
   isOpen: boolean;
   onToggle: () => void;
 }
 
 function EditorSectionTrigger({
   title,
-  hint,
+  tooltip,
   isOpen,
   onToggle,
 }: EditorSectionTriggerProps) {
@@ -447,11 +454,9 @@ function EditorSectionTrigger({
       onClick={onToggle}
       className="border-border/40 hover:bg-muted/30 flex shrink-0 items-center justify-between gap-4 border-b px-3 py-2 text-left transition-colors"
     >
-      <div className="flex flex-col gap-0.5">
+      <div className="flex items-center gap-1.5">
         <span className="text-muted-foreground text-sm">{title}</span>
-        {hint && (
-          <span className="text-muted-foreground/60 text-[10px]">{hint}</span>
-        )}
+        {tooltip && <HintIcon hint={tooltip} />}
       </div>
       <ChevronDown
         className={cn(
@@ -477,20 +482,23 @@ function EditorSectionContent({
   return (
     <div
       className={cn(
-        "border-border/40 relative grid min-h-0 border-b transition-[grid-template-rows,opacity] duration-200 ease-out",
-        isOpen
-          ? "grid-rows-[1fr] opacity-100"
-          : "pointer-events-none grid-rows-[0fr] opacity-0",
+        "border-border/40 relative min-h-0 overflow-hidden border-b",
+        !isOpen && "pointer-events-none",
       )}
     >
-      <div className="min-h-0 overflow-hidden">
+      <div
+        className={cn(
+          "scrollbar-subtle h-full overflow-y-auto transition-opacity duration-[250ms] ease-[cubic-bezier(0.22,1,0.36,1)]",
+          isOpen ? "opacity-100" : "opacity-0",
+        )}
+      >
         {onReset && (
-          <div className="absolute top-1 right-3 z-10">
+          <div className="sticky top-1 z-10 flex justify-end pr-1">
             <Tooltip>
               <TooltipTrigger asChild>
                 <button
                   type="button"
-                  className="text-muted-foreground hover:text-foreground rounded p-1 transition-colors"
+                  className="bg-background/80 text-muted-foreground hover:text-foreground rounded p-1 transition-colors"
                   onClick={onReset}
                 >
                   <RotateCcw className="size-3" />
@@ -500,9 +508,7 @@ function EditorSectionContent({
             </Tooltip>
           </div>
         )}
-        <div className="scrollbar-subtle h-full overflow-y-auto px-3 py-2">
-          {children}
-        </div>
+        <div className="px-3 pb-2">{children}</div>
       </div>
     </div>
   );
@@ -559,11 +565,7 @@ function WidgetStateSection({ value, onChange }: WidgetStateSectionProps) {
 
   return (
     <div className="flex flex-col gap-2">
-      <JsonEditor
-        label="Widget State"
-        value={value}
-        onChange={onChange}
-      />
+      <JsonEditor label="Widget State" value={value} onChange={onChange} />
       {!isStructured && hasData && (
         <Button
           variant="ghost"
@@ -598,11 +600,20 @@ function WidgetStateSection({ value, onChange }: WidgetStateSectionProps) {
   );
 }
 
+const SECTION_TOOLTIPS = {
+  props:
+    "Data passed to your widget when a tool is called. Edit to test different inputs.",
+  savedState:
+    "State your widget persists between interactions. Restored when the widget reopens.",
+  metadata:
+    "Data only your widget sees. Hidden from the model and not included in responses.",
+} as const;
+
 function EditorPanel() {
   const { getActiveData, handleChange, handleReset } = useJsonEditorState();
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({
     toolInput: true,
-    widgetState: true,
+    widgetState: false,
     toolResponseMetadata: false,
   });
 
@@ -610,24 +621,25 @@ function EditorPanel() {
     setOpenSections((prev) => ({ ...prev, [key]: !prev[key] }));
   };
 
-  const stateGridRows = [
-    "auto", // Component Props trigger
-    openSections.toolInput ? "1fr" : "0fr", // Component Props content
-    "auto", // Widget State trigger
-    openSections.widgetState ? "1fr" : "0fr", // Widget State content
-    "auto", // Widget Metadata trigger
-    openSections.toolResponseMetadata ? "1fr" : "0fr", // Widget Metadata content
+  const gridRows = [
+    "auto",
+    openSections.toolInput ? "1fr" : "0fr",
+    "auto",
+    openSections.widgetState ? "1fr" : "0fr",
+    "auto",
+    openSections.toolResponseMetadata ? "1fr" : "0fr",
   ].join(" ");
 
   return (
     <div className="flex h-full flex-col overflow-hidden">
       <SectionHeader>Component State</SectionHeader>
       <div
-        className="grid min-h-0 flex-1 transition-[grid-template-rows] duration-200 ease-out"
-        style={{ gridTemplateRows: stateGridRows }}
+        className="grid min-h-0 flex-1 content-start transition-[grid-template-rows] duration-[250ms] ease-[cubic-bezier(0.22,1,0.36,1)]"
+        style={{ gridTemplateRows: gridRows }}
       >
         <EditorSectionTrigger
-          title="Component Props"
+          title="Props"
+          tooltip={SECTION_TOOLTIPS.props}
           isOpen={openSections.toolInput}
           onToggle={() => toggleSection("toolInput")}
         />
@@ -636,15 +648,15 @@ function EditorPanel() {
           onReset={() => handleReset("toolInput")}
         >
           <JsonEditor
-            label="Component Props"
+            label="Props"
             value={getActiveData("toolInput")}
             onChange={(value) => handleChange("toolInput", value)}
           />
         </EditorSectionContent>
 
         <EditorSectionTrigger
-          title="Widget State"
-          hint="Persisted between interactions"
+          title="Saved State"
+          tooltip={SECTION_TOOLTIPS.savedState}
           isOpen={openSections.widgetState}
           onToggle={() => toggleSection("widgetState")}
         />
@@ -659,8 +671,8 @@ function EditorPanel() {
         </EditorSectionContent>
 
         <EditorSectionTrigger
-          title="Widget Metadata (_meta)"
-          hint="Widget-only. Model never sees this."
+          title="Hidden Metadata"
+          tooltip={SECTION_TOOLTIPS.metadata}
           isOpen={openSections.toolResponseMetadata}
           onToggle={() => toggleSection("toolResponseMetadata")}
         />
@@ -669,7 +681,7 @@ function EditorPanel() {
           onReset={() => handleReset("toolResponseMetadata")}
         >
           <JsonEditor
-            label="Widget Metadata (_meta)"
+            label="Hidden Metadata"
             value={getActiveData("toolResponseMetadata")}
             onChange={(value) => handleChange("toolResponseMetadata", value)}
           />
@@ -726,6 +738,9 @@ function PreviewPanel() {
       {view?.mode === "modal" && (
         <ModalOverlay view={view} onClose={handleModalClose} />
       )}
+      <div className="pointer-events-none absolute inset-x-0 bottom-4 flex justify-center">
+        <StatusBar className="pointer-events-auto" />
+      </div>
     </div>
   );
 }
@@ -737,7 +752,7 @@ export function UnifiedWorkspace() {
       className="flex h-full w-full flex-row"
       autoSaveId={PANEL_AUTO_SAVE_IDS.WORKSPACE_HORIZONTAL}
     >
-      <Panel defaultSize={40} minSize={20} maxSize={80}>
+      <Panel defaultSize={35} minSize={15} maxSize={75}>
         <EditorPanel />
       </Panel>
 
@@ -745,7 +760,7 @@ export function UnifiedWorkspace() {
         <div className="bg-border absolute inset-y-0 right-0 h-[calc(100%-1px)] w-px transition-colors group-hover:bg-neutral-400 group-data-resize-handle-active:bg-neutral-500 dark:group-hover:bg-neutral-500 dark:group-data-resize-handle-active:bg-neutral-400" />
       </PanelResizeHandle>
 
-      <Panel defaultSize={60} minSize={20} style={{ minWidth: 320 }}>
+      <Panel defaultSize={65} minSize={25} style={{ minWidth: 320 }}>
         <PreviewPanel />
       </Panel>
     </PanelGroup>

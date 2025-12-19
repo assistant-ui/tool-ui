@@ -2,10 +2,10 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import { ConfigPanel } from "./config-panel";
 import { UnifiedWorkspace } from "./unified-workspace";
-import { InspectorPanel } from "./inspector-panel";
+import { ConsoleSummaryBar } from "./console-summary-bar";
+import { ConsoleDrawer } from "./console-drawer";
 import { LogoMark } from "@/components/ui/logo";
 import {
   Select,
@@ -19,11 +19,9 @@ import {
   useWorkbenchStore,
   useClearConsole,
   useDisplayMode,
+  useIsConsoleOpen,
 } from "@/app/workbench/lib/store";
-import {
-  useWorkbenchPersistence,
-  PANEL_AUTO_SAVE_IDS,
-} from "@/app/workbench/lib/persistence";
+import { useWorkbenchPersistence } from "@/app/workbench/lib/persistence";
 import { workbenchComponents } from "@/app/workbench/lib/component-registry";
 import { SELECT_CLASSES, COMPACT_SMALL_TEXT_CLASSES } from "./styles";
 import { Button } from "@/components/ui/button";
@@ -32,10 +30,6 @@ import { useTheme } from "next-themes";
 import { ArrowLeft, Moon, Sun } from "lucide-react";
 import { OnboardingModal } from "./onboarding-modal";
 
-const WORKSPACE_MIN_SIZE = 50;
-const CONSOLE_DEFAULT_SIZE = 25;
-const CONSOLE_MIN_SIZE = 10;
-
 export function WorkbenchShell() {
   const [isPanelCollapsed, setIsPanelCollapsed] = React.useState(false);
   const [isFading, setIsFading] = React.useState(false);
@@ -43,7 +37,9 @@ export function WorkbenchShell() {
   const selectedComponent = useSelectedComponent();
   const setSelectedComponent = useWorkbenchStore((s) => s.setSelectedComponent);
   const setDisplayMode = useWorkbenchStore((s) => s.setDisplayMode);
+  const setConsoleOpen = useWorkbenchStore((s) => s.setConsoleOpen);
   const displayMode = useDisplayMode();
+  const isConsoleOpen = useIsConsoleOpen();
   const clearConsole = useClearConsole();
   const { setTheme, resolvedTheme } = useTheme();
 
@@ -86,13 +82,17 @@ export function WorkbenchShell() {
 
       if (modKey && e.key.toLowerCase() === "k") {
         e.preventDefault();
-        clearConsole();
+        if (e.shiftKey) {
+          clearConsole();
+        } else {
+          setConsoleOpen(!isConsoleOpen);
+        }
       }
     };
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [toggleTheme, toggleFullscreen, clearConsole]);
+  }, [toggleTheme, toggleFullscreen, clearConsole, isConsoleOpen, setConsoleOpen]);
 
   const handleToggleCollapse = () => {
     setIsFading(true);
@@ -173,30 +173,10 @@ export function WorkbenchShell() {
 
       <div className="flex min-h-0 flex-1 overflow-hidden">
         <div className="flex min-w-0 flex-1 flex-col overflow-hidden rounded-tr-lg border-t border-r">
-          <PanelGroup
-            direction="vertical"
-            autoSaveId={PANEL_AUTO_SAVE_IDS.SHELL_VERTICAL}
-          >
-            <Panel
-              defaultSize={100 - CONSOLE_DEFAULT_SIZE}
-              minSize={WORKSPACE_MIN_SIZE}
-              className="overflow-hidden"
-            >
-              <UnifiedWorkspace />
-            </Panel>
-
-            <PanelResizeHandle className="group relative z-20 h-px shrink-0">
-              <div className="bg-border absolute inset-x-0 top-1/2 h-px -translate-y-1/2 transition-colors group-hover:bg-neutral-400 group-data-resize-handle-active:bg-neutral-500 dark:group-hover:bg-neutral-500 dark:group-data-resize-handle-active:bg-neutral-400" />
-              <div className="absolute inset-x-0 -top-1.5 -bottom-1.5" />
-            </PanelResizeHandle>
-
-            <Panel
-              defaultSize={CONSOLE_DEFAULT_SIZE}
-              minSize={CONSOLE_MIN_SIZE}
-            >
-              <InspectorPanel />
-            </Panel>
-          </PanelGroup>
+          <div className="min-h-0 flex-1 overflow-hidden">
+            <UnifiedWorkspace />
+          </div>
+          <ConsoleSummaryBar onClick={() => setConsoleOpen(true)} />
         </div>
         <aside
           className={`scrollbar-subtle flex h-full shrink-0 flex-col overflow-hidden transition-[width] duration-200 ease-in-out ${
@@ -216,6 +196,10 @@ export function WorkbenchShell() {
           </div>
         </aside>
       </div>
+      <ConsoleDrawer
+        open={isConsoleOpen}
+        onOpenChange={setConsoleOpen}
+      />
       <OnboardingModal />
     </div>
   );

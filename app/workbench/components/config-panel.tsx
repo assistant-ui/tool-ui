@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useShallow } from "zustand/react/shallow";
 import {
   useWorkbenchStore,
@@ -48,6 +49,7 @@ import {
   MapPin,
   GalleryHorizontal,
   Loader2,
+  ChevronDown,
   type LucideIcon,
 } from "lucide-react";
 import {
@@ -56,6 +58,12 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
+import { cn } from "@/lib/ui/cn";
 import {
   INPUT_GROUP_CLASSES,
   INPUT_CLASSES,
@@ -206,6 +214,7 @@ function EnvironmentTab() {
   const theme = useWorkbenchTheme();
   const deviceType = useDeviceType();
   const openAIGlobals = useOpenAIGlobals();
+  const [showAdvanced, setShowAdvanced] = useState(false);
 
   const {
     locale,
@@ -242,6 +251,26 @@ function EnvironmentTab() {
   return (
     <div className="flex h-full flex-col">
       <div className="scrollbar-subtle flex-1 space-y-2 overflow-y-auto px-4 py-2">
+        {view && (
+          <SettingRow label="View">
+            <div className="flex items-center gap-2">
+              <div className="bg-primary/10 text-primary flex items-center gap-1.5 rounded-md px-2 py-1 text-xs font-medium">
+                <Layers className="size-3" />
+                {view.mode}
+              </div>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="text-muted-foreground hover:text-foreground size-6 p-0"
+                onClick={() => setView(null)}
+                title="Dismiss view"
+              >
+                <X className="size-3.5" />
+              </Button>
+            </div>
+          </SettingRow>
+        )}
+
         <SettingRow label="Device">
           <ButtonGroup>
             {DEVICE_TYPES.map(({ id, icon: Icon }) => (
@@ -283,58 +312,7 @@ function EnvironmentTab() {
           </ButtonGroup>
         </SettingRow>
 
-        {displayMode === "inline" && (
-          <SettingRow label="Inline max height" htmlFor="max-height">
-            <InputGroup className={INPUT_GROUP_CLASSES}>
-              <InputGroupInput
-                id="max-height"
-                type="number"
-                value={maxHeight}
-                onChange={(e) => {
-                  const clamped = clamp(Number(e.target.value), 100, 2000);
-                  setMaxHeight(clamped);
-                }}
-                min={100}
-                max={2000}
-                className={INPUT_CLASSES}
-              />
-              <InputGroupAddon align="inline-end" className={ADDON_CLASSES}>
-                px
-              </InputGroupAddon>
-            </InputGroup>
-          </SettingRow>
-        )}
-
-        {displayMode === "fullscreen" && (
-          <SettingRow label="Safe area">
-            <SafeAreaInsetsControl
-              value={safeAreaInsets}
-              onChange={setSafeAreaInsets}
-            />
-          </SettingRow>
-        )}
-
-        {view && (
-          <SettingRow label="View">
-            <div className="flex items-center gap-2">
-              <div className="bg-primary/10 text-primary flex items-center gap-1.5 rounded-md px-2 py-1 text-xs font-medium">
-                <Layers className="size-3" />
-                {view.mode}
-              </div>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="text-muted-foreground hover:text-foreground size-6 p-0"
-                onClick={() => setView(null)}
-                title="Dismiss view"
-              >
-                <X className="size-3.5" />
-              </Button>
-            </div>
-          </SettingRow>
-        )}
-
-        <SettingRow label="Dark theme" htmlFor="theme-toggle">
+        <SettingRow label="Dark mode" htmlFor="theme-toggle">
           <Switch
             id="theme-toggle"
             checked={theme === "dark"}
@@ -342,71 +320,115 @@ function EnvironmentTab() {
           />
         </SettingRow>
 
-        <SettingRow label="Locale">
-          <Select value={locale} onValueChange={setLocale}>
-            <SelectTrigger className={SELECT_CLASSES}>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {LOCALE_OPTIONS.map((opt) => (
-                <SelectItem
-                  key={opt.value}
-                  value={opt.value}
-                  className="text-xs"
-                >
-                  {opt.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </SettingRow>
-
-        <SettingRow label="Location">
-          <div className="flex items-center gap-2">
-            <Select
-              value={
-                LOCATION_PRESETS.find(
-                  (p) =>
-                    p.location?.city === userLocation?.city &&
-                    p.location?.country === userLocation?.country,
-                )?.id ?? "none"
-              }
-              onValueChange={(id) => {
-                const preset = LOCATION_PRESETS.find((p) => p.id === id);
-                setUserLocation(preset?.location ?? null);
-              }}
-            >
-              <SelectTrigger className={SELECT_CLASSES}>
-                <SelectValue placeholder="Select location" />
-              </SelectTrigger>
-              <SelectContent>
-                {LOCATION_PRESETS.map((preset) => (
-                  <SelectItem
-                    key={preset.id}
-                    value={preset.id}
-                    className="text-xs"
-                  >
-                    <div className="flex items-center gap-1.5">
-                      {preset.location && <MapPin className="size-3" />}
-                      {preset.label}
-                    </div>
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            {userLocation && (
-              <Button
-                variant="ghost"
-                size="sm"
-                className="text-muted-foreground hover:text-foreground size-6 p-0"
-                onClick={() => setUserLocation(null)}
-                title="Clear location"
-              >
-                <X className="size-3.5" />
-              </Button>
+        <Collapsible open={showAdvanced} onOpenChange={setShowAdvanced}>
+          <CollapsibleTrigger className="text-muted-foreground hover:text-foreground flex w-full items-center justify-between py-2 text-xs transition-colors">
+            <span>More options</span>
+            <ChevronDown
+              className={cn(
+                "size-3.5 transition-transform duration-200",
+                showAdvanced && "rotate-180",
+              )}
+            />
+          </CollapsibleTrigger>
+          <CollapsibleContent className="space-y-2">
+            {displayMode === "inline" && (
+              <SettingRow label="Max height" htmlFor="max-height">
+                <InputGroup className={INPUT_GROUP_CLASSES}>
+                  <InputGroupInput
+                    id="max-height"
+                    type="number"
+                    value={maxHeight}
+                    onChange={(e) => {
+                      const clamped = clamp(Number(e.target.value), 100, 2000);
+                      setMaxHeight(clamped);
+                    }}
+                    min={100}
+                    max={2000}
+                    className={INPUT_CLASSES}
+                  />
+                  <InputGroupAddon align="inline-end" className={ADDON_CLASSES}>
+                    px
+                  </InputGroupAddon>
+                </InputGroup>
+              </SettingRow>
             )}
-          </div>
-        </SettingRow>
+
+            {displayMode === "fullscreen" && (
+              <SettingRow label="Safe area">
+                <SafeAreaInsetsControl
+                  value={safeAreaInsets}
+                  onChange={setSafeAreaInsets}
+                />
+              </SettingRow>
+            )}
+
+            <SettingRow label="Locale">
+              <Select value={locale} onValueChange={setLocale}>
+                <SelectTrigger className={SELECT_CLASSES}>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {LOCALE_OPTIONS.map((opt) => (
+                    <SelectItem
+                      key={opt.value}
+                      value={opt.value}
+                      className="text-xs"
+                    >
+                      {opt.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </SettingRow>
+
+            <SettingRow label="Location">
+              <div className="flex items-center gap-2">
+                <Select
+                  value={
+                    LOCATION_PRESETS.find(
+                      (p) =>
+                        p.location?.city === userLocation?.city &&
+                        p.location?.country === userLocation?.country,
+                    )?.id ?? "none"
+                  }
+                  onValueChange={(id) => {
+                    const preset = LOCATION_PRESETS.find((p) => p.id === id);
+                    setUserLocation(preset?.location ?? null);
+                  }}
+                >
+                  <SelectTrigger className={SELECT_CLASSES}>
+                    <SelectValue placeholder="Select location" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {LOCATION_PRESETS.map((preset) => (
+                      <SelectItem
+                        key={preset.id}
+                        value={preset.id}
+                        className="text-xs"
+                      >
+                        <div className="flex items-center gap-1.5">
+                          {preset.location && <MapPin className="size-3" />}
+                          {preset.label}
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {userLocation && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="text-muted-foreground hover:text-foreground size-6 p-0"
+                    onClick={() => setUserLocation(null)}
+                    title="Clear location"
+                  >
+                    <X className="size-3.5" />
+                  </Button>
+                )}
+              </div>
+            </SettingRow>
+          </CollapsibleContent>
+        </Collapsible>
       </div>
 
       <Accordion type="single" collapsible className="border-border/40 border-t">

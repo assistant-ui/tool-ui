@@ -12,7 +12,6 @@ export const URL_PARAMS = {
 } as const;
 
 export const PANEL_AUTO_SAVE_IDS = {
-  SHELL_VERTICAL: "workbench-shell-vertical",
   WORKSPACE_HORIZONTAL: "workbench-workspace-horizontal",
 } as const;
 

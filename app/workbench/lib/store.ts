@@ -24,7 +24,10 @@ import type {
   ToolDescriptorMeta,
   ToolSchemas,
 } from "./mock-config";
-import { createToolMockConfig, createEmptyMockConfigState } from "./mock-config";
+import {
+  createToolMockConfig,
+  createEmptyMockConfigState,
+} from "./mock-config";
 
 const defaultComponent = workbenchComponents[0];
 
@@ -56,6 +59,7 @@ interface WorkbenchState {
   isWidgetClosed: boolean;
   widgetSessionId: string;
   activeToolCall: ActiveToolCall | null;
+  isConsoleOpen: boolean;
 
   setSelectedComponent: (id: string) => void;
   setDisplayMode: (mode: DisplayMode) => void;
@@ -84,6 +88,7 @@ interface WorkbenchState {
   setUserLocation: (location: UserLocation | null) => void;
   setWidgetClosed: (closed: boolean) => void;
   setActiveToolCall: (call: ActiveToolCall | null) => void;
+  setConsoleOpen: (open: boolean) => void;
 
   setMocksEnabled: (enabled: boolean) => void;
   registerTool: (toolName: string) => void;
@@ -99,10 +104,7 @@ interface WorkbenchState {
   removeVariant: (toolName: string, variantId: string) => void;
   setMockConfig: (config: MockConfigState) => void;
   setToolAnnotations: (toolName: string, annotations: ToolAnnotations) => void;
-  setToolDescriptorMeta: (
-    toolName: string,
-    meta: ToolDescriptorMeta,
-  ) => void;
+  setToolDescriptorMeta: (toolName: string, meta: ToolDescriptorMeta) => void;
   setToolSchemas: (toolName: string, schemas: ToolSchemas) => void;
 }
 
@@ -165,6 +167,7 @@ export const useWorkbenchStore = create<WorkbenchState>((set, get) => ({
   isWidgetClosed: false,
   widgetSessionId: crypto.randomUUID(),
   activeToolCall: null,
+  isConsoleOpen: false,
   setSelectedComponent: (id) => {
     clearFiles();
     set(() => {
@@ -232,6 +235,7 @@ export const useWorkbenchStore = create<WorkbenchState>((set, get) => ({
   setUserLocation: (location) => set(() => ({ userLocation: location })),
   setWidgetClosed: (closed) => set(() => ({ isWidgetClosed: closed })),
   setActiveToolCall: (call) => set(() => ({ activeToolCall: call })),
+  setConsoleOpen: (open) => set(() => ({ isConsoleOpen: open })),
 
   setMocksEnabled: (enabled) =>
     set((state) => ({
@@ -470,3 +474,4 @@ export const useWidgetSessionId = () =>
   useWorkbenchStore((s) => s.widgetSessionId);
 export const useActiveToolCall = () =>
   useWorkbenchStore((s) => s.activeToolCall);
+export const useIsConsoleOpen = () => useWorkbenchStore((s) => s.isConsoleOpen);
