@@ -39,69 +39,67 @@ export default function ComponentsGalleryPage() {
     <DocsBorderedShell>
       <div className="scrollbar-subtle z-10 min-h-0 flex-1 overflow-y-auto overscroll-contain p-6 sm:p-10 lg:p-12">
         <div className="mx-auto columns-1 gap-5 pb-20 [column-fill:balance] md:columns-2 2xl:columns-3 2xl:gap-5">
-          <div className="mb-5 [column-span:all] 2xl:mb-5">
+          <div className="mb-5 flex justify-center [column-span:all] 2xl:mb-5">
             <DataTable {...dataTablePresets.stocks.data} />
           </div>
 
-          <div className="mb-5 [column-span:all] 2xl:mb-5">
+          <div className="mb-5 flex justify-center [column-span:all] 2xl:mb-5">
             <ItemCarousel {...itemCarouselPresets.recommendations.data} />
           </div>
 
-          <div className="mb-5 break-inside-avoid 2xl:mb-5">
+          <div className="mb-5 flex justify-center break-inside-avoid 2xl:mb-5">
             <XPost post={xPostPresets.basic.data.post} />
           </div>
 
-          <div className="mb-5 break-inside-avoid 2xl:mb-5">
+          <div className="mb-5 flex justify-center break-inside-avoid 2xl:mb-5">
             <Image {...imagePresets["with-source"].data.image} />
           </div>
 
-          <div className="mb-5 break-inside-avoid 2xl:mb-5">
+          <div className="mb-5 flex justify-center break-inside-avoid 2xl:mb-5">
             <Video {...videoPresets["with-poster"].data.video} />
           </div>
 
-          <div className="mb-5 break-inside-avoid 2xl:mb-5">
-            <div className="w-full">
-              <DataTable layout="cards" {...dataTablePresets.tasks.data} />
-            </div>
+          <div className="mb-5 flex justify-center break-inside-avoid 2xl:mb-5">
+            <DataTable layout="cards" {...dataTablePresets.tasks.data} />
           </div>
 
-          <div className="mb-5 break-inside-avoid 2xl:mb-5">
+          <div className="mb-5 flex justify-center break-inside-avoid 2xl:mb-5">
             <LinkPreview {...linkPreviewPresets["with-image"].data.linkPreview} />
           </div>
 
-          <div className="mb-5 break-inside-avoid 2xl:mb-5">
+          <div className="mb-5 flex justify-center break-inside-avoid 2xl:mb-5">
             <Audio {...audioPresets["with-artwork"].data.audio} />
           </div>
 
-          <div className="mb-5 break-inside-avoid 2xl:mb-5">
+          <div className="mb-5 flex justify-center break-inside-avoid 2xl:mb-5">
             <OptionList {...optionListPresets["max-selections"].data} />
           </div>
 
-          <div className="mb-5 break-inside-avoid 2xl:mb-5">
+          <div className="mb-5 flex justify-center break-inside-avoid 2xl:mb-5">
             <Plan {...planPresets.comprehensive.data} />
           </div>
 
-          <div className="mb-5 break-inside-avoid 2xl:mb-5">
+          <div className="mb-5 flex justify-center break-inside-avoid 2xl:mb-5">
             <OptionList {...optionListPresets.travel.data} />
           </div>
 
-          <div className="mb-5 break-inside-avoid 2xl:mb-5">
+          <div className="mb-5 flex justify-center break-inside-avoid 2xl:mb-5">
             <LinkedInPost post={linkedInPostPresets.basic.data.post} />
           </div>
 
-          <div className="mb-5 break-inside-avoid 2xl:mb-5">
+          <div className="mb-5 flex justify-center break-inside-avoid 2xl:mb-5">
             <Terminal {...terminalPresets.success.data} />
           </div>
 
-          <div className="mb-5 break-inside-avoid 2xl:mb-5">
+          <div className="mb-5 flex justify-center break-inside-avoid 2xl:mb-5">
             <CodeBlock {...codeBlockPresets.typescript.data} />
           </div>
 
-          <div className="mb-5 break-inside-avoid 2xl:mb-5">
+          <div className="mb-5 flex justify-center break-inside-avoid 2xl:mb-5">
             <Chart id="gallery-chart" {...chartPresets.revenue.data} />
           </div>
 
-          <div className="mb-5 break-inside-avoid 2xl:mb-5">
+          <div className="mb-5 flex justify-center break-inside-avoid 2xl:mb-5">
             <Link
               href="/builder"
               className="bg-foreground/5 text-muted-foreground bg-dot-grid hover:text-foreground hover:bg-primary/7 group flex min-h-[180px] w-full flex-row items-center justify-center gap-2 rounded-2xl p-6 text-center shadow-[inset_0_6px_20px_rgba(0,0,0,0.09)] transition-colors duration-300"

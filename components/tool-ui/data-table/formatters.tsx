@@ -151,7 +151,7 @@ export function PercentValue({ value, options }: PercentValueProps) {
         ? `-${absoluteFormatted}`
         : absoluteFormatted;
 
-  return <span className="font-mono tabular-nums">{signed}%</span>;
+  return <span className="tabular-nums">{signed}%</span>;
 }
 
 interface DateValueProps {
@@ -194,7 +194,11 @@ export function DateValue({ value, options, locale }: DateValueProps) {
     minute: "2-digit",
   }).format(date);
 
-  return <span title={title}>{formatted}</span>;
+  return (
+    <span className="tabular-nums" title={title}>
+      {formatted}
+    </span>
+  );
 }
 
 function getRelativeTime(date: Date, locale?: string): string {
@@ -293,7 +297,7 @@ export function NumberValue({ value, options, locale }: NumberValueProps) {
   const display = showSign && value > 0 ? `+${formatted}` : formatted;
 
   return (
-    <span className="font-mono tabular-nums">
+    <span className="tabular-nums">
       {display}
       {unit}
     </span>

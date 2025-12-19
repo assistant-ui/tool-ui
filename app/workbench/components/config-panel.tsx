@@ -7,6 +7,7 @@ import {
   useWorkbenchTheme,
   useDeviceType,
   useOpenAIGlobals,
+  useActiveToolCall,
 } from "@/app/workbench/lib/store";
 import {
   LOCALE_OPTIONS,
@@ -30,7 +31,9 @@ import {
   InputGroupAddon,
   InputGroupInput,
 } from "@/components/ui/input-group";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { SafeAreaInsetsControl } from "./safe-area-insets-control";
+import { MockConfigPanel } from "./mock-config-panel";
 import {
   Monitor,
   Tablet,
@@ -44,6 +47,7 @@ import {
   Layers,
   MapPin,
   GalleryHorizontal,
+  Loader2,
   type LucideIcon,
 } from "lucide-react";
 import {
@@ -159,6 +163,31 @@ function clamp(value: number, min: number, max: number): number {
   return value;
 }
 
+function formatDelay(ms: number): string {
+  if (ms >= 1000) {
+    return `${(ms / 1000).toFixed(1)}s`;
+  }
+  return `${ms}ms`;
+}
+
+function ToolCallLoadingIndicator() {
+  const activeToolCall = useActiveToolCall();
+
+  if (!activeToolCall) return null;
+
+  return (
+    <div className="bg-primary/5 flex items-center gap-2 px-4 py-2">
+      <Loader2 className="text-primary size-3.5 animate-spin" />
+      <span className="text-muted-foreground text-xs">
+        <span className="font-medium">{activeToolCall.toolName}</span>
+        <span className="text-muted-foreground/60 ml-1.5">
+          ({formatDelay(activeToolCall.delay)} delay)
+        </span>
+      </span>
+    </div>
+  );
+}
+
 function SettingRow({ label, htmlFor, className, children }: SettingRowProps) {
   return (
     <div
@@ -172,10 +201,7 @@ function SettingRow({ label, htmlFor, className, children }: SettingRowProps) {
   );
 }
 
-export function ConfigPanel({
-  isCollapsed,
-  onToggleCollapse,
-}: ConfigPanelProps) {
+function EnvironmentTab() {
   const displayMode = useDisplayMode();
   const theme = useWorkbenchTheme();
   const deviceType = useDeviceType();
@@ -213,23 +239,9 @@ export function ConfigPanel({
     })),
   );
 
-  if (isCollapsed) {
-    return (
-      <div className="flex h-full w-12 flex-col items-center py-3">
-        <button
-          onClick={onToggleCollapse}
-          className={`${PANEL_TOGGLE_CLASSES} p-2`}
-          aria-label="Expand sidebar"
-        >
-          <PanelLeft className="size-4" />
-        </button>
-      </div>
-    );
-  }
-
   return (
-    <div className="flex h-full min-w-80 flex-col">
-      <div className="scrollbar-subtle flex-1 space-y-2 overflow-y-auto px-4">
+    <div className="flex h-full flex-col">
+      <div className="scrollbar-subtle flex-1 space-y-2 overflow-y-auto px-4 py-2">
         <SettingRow label="Device">
           <ButtonGroup>
             {DEVICE_TYPES.map(({ id, icon: Icon }) => (
@@ -401,7 +413,7 @@ export function ConfigPanel({
         <AccordionItem value="environment" className="border-0">
           <AccordionTrigger className="hover:bg-muted/30 px-4 py-2.5 hover:no-underline">
             <span className="text-muted-foreground text-xs font-medium uppercase tracking-wider">
-              Environment
+              Raw Environment
             </span>
           </AccordionTrigger>
           <AccordionContent className="scrollbar-subtle max-h-64 overflow-y-auto px-4">
@@ -411,6 +423,63 @@ export function ConfigPanel({
           </AccordionContent>
         </AccordionItem>
       </Accordion>
+    </div>
+  );
+}
+
+function SimulationTab() {
+  return (
+    <div className="flex h-full flex-col">
+      <ToolCallLoadingIndicator />
+      <div className="min-h-0 flex-1 overflow-hidden">
+        <MockConfigPanel />
+      </div>
+    </div>
+  );
+}
+
+export function ConfigPanel({
+  isCollapsed,
+  onToggleCollapse,
+}: ConfigPanelProps) {
+  if (isCollapsed) {
+    return (
+      <div className="flex h-full w-12 flex-col items-center py-3">
+        <button
+          onClick={onToggleCollapse}
+          className={`${PANEL_TOGGLE_CLASSES} p-2`}
+          aria-label="Expand sidebar"
+        >
+          <PanelLeft className="size-4" />
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex h-full min-w-80 flex-col">
+      <Tabs defaultValue="environment" className="flex min-h-0 flex-1 flex-col">
+        <TabsList className="mx-4 mt-2 grid w-auto grid-cols-2">
+          <TabsTrigger value="environment" className="text-xs">
+            Environment
+          </TabsTrigger>
+          <TabsTrigger value="simulation" className="text-xs">
+            Simulation
+          </TabsTrigger>
+        </TabsList>
+        <TabsContent
+          value="environment"
+          className="mt-0 min-h-0 flex-1 data-[state=inactive]:hidden"
+        >
+          <EnvironmentTab />
+        </TabsContent>
+        <TabsContent
+          value="simulation"
+          className="mt-0 min-h-0 flex-1 data-[state=inactive]:hidden"
+        >
+          <SimulationTab />
+        </TabsContent>
+      </Tabs>
 
       <div className="flex items-center justify-end px-2 py-2">
         <button

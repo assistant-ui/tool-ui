@@ -23,7 +23,6 @@ import {
   useToolInput,
   useDeviceType,
   useIsWidgetClosed,
-  useActiveToolCall,
 } from "@/app/workbench/lib/store";
 import {
   DEVICE_PRESETS,
@@ -39,7 +38,7 @@ import { OpenAIProvider } from "@/app/workbench/lib/openai-context";
 import { JsonEditor } from "./json-editor";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/ui/cn";
-import { RotateCcw, XCircle, RefreshCw, ChevronDown, Loader2 } from "lucide-react";
+import { RotateCcw, XCircle, RefreshCw, ChevronDown } from "lucide-react";
 import {
   Tooltip,
   TooltipContent,
@@ -55,7 +54,6 @@ import { ComponentErrorBoundary } from "./component-error-boundary";
 import { IsolatedThemeWrapper } from "./isolated-theme-wrapper";
 import { PipView } from "./pip-view";
 import { MockComposer } from "./mock-composer";
-import { MockConfigPanel } from "./mock-config-panel";
 import { ModalOverlay } from "./modal-overlay";
 
 type JsonEditorTab =
@@ -520,31 +518,6 @@ function SectionHeader({ children }: { children: React.ReactNode }) {
   );
 }
 
-function formatDelay(ms: number): string {
-  if (ms >= 1000) {
-    return `${(ms / 1000).toFixed(1)}s`;
-  }
-  return `${ms}ms`;
-}
-
-function ToolCallLoadingIndicator() {
-  const activeToolCall = useActiveToolCall();
-
-  if (!activeToolCall) return null;
-
-  return (
-    <div className="border-border/40 bg-primary/5 flex items-center gap-2 border-b px-3 py-2">
-      <Loader2 className="text-primary size-3.5 animate-spin" />
-      <span className="text-muted-foreground text-xs">
-        <span className="font-medium">{activeToolCall.toolName}</span>
-        <span className="text-muted-foreground/60 ml-1.5">
-          ({formatDelay(activeToolCall.delay)} delay)
-        </span>
-      </span>
-    </div>
-  );
-}
-
 interface WidgetStateSectionProps {
   value: Record<string, unknown>;
   onChange: (value: Record<string, unknown>) => void;
@@ -631,7 +604,6 @@ function EditorPanel() {
     toolInput: true,
     widgetState: true,
     toolResponseMetadata: false,
-    toolSimulation: true,
   });
 
   const toggleSection = (key: string) => {
@@ -649,7 +621,6 @@ function EditorPanel() {
 
   return (
     <div className="flex h-full flex-col overflow-hidden">
-      <ToolCallLoadingIndicator />
       <SectionHeader>Component State</SectionHeader>
       <div
         className="grid min-h-0 flex-1 transition-[grid-template-rows] duration-200 ease-out"
@@ -703,34 +674,6 @@ function EditorPanel() {
             onChange={(value) => handleChange("toolResponseMetadata", value)}
           />
         </EditorSectionContent>
-      </div>
-
-      <div className="border-border/40 shrink-0 border-t">
-        <button
-          type="button"
-          onClick={() => toggleSection("toolSimulation")}
-          className="bg-muted/30 hover:bg-muted/50 flex w-full items-center justify-between px-3 py-1.5 transition-colors"
-        >
-          <span className="text-muted-foreground text-[10px] font-medium tracking-wider uppercase">
-            Tool Simulation
-          </span>
-          <ChevronDown
-            className={cn(
-              "text-muted-foreground size-3.5 transition-transform duration-200",
-              openSections.toolSimulation && "rotate-180",
-            )}
-          />
-        </button>
-        <div
-          className={cn(
-            "grid transition-[grid-template-rows] duration-200 ease-out",
-            openSections.toolSimulation ? "grid-rows-[1fr]" : "grid-rows-[0fr]",
-          )}
-        >
-          <div className="min-h-0 overflow-hidden">
-            <MockConfigPanel />
-          </div>
-        </div>
       </div>
     </div>
   );
