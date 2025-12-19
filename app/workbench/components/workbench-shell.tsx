@@ -19,6 +19,8 @@ import {
   useClearConsole,
   useDisplayMode,
   useIsConsoleOpen,
+  useIsLeftPanelOpen,
+  useIsRightPanelOpen,
 } from "@/app/workbench/lib/store";
 import { useWorkbenchPersistence } from "@/app/workbench/lib/persistence";
 import { workbenchComponents } from "@/app/workbench/lib/component-registry";
@@ -28,6 +30,11 @@ import { cn } from "@/lib/ui/cn";
 import { useTheme } from "next-themes";
 import { ArrowLeft, Moon, Sun } from "lucide-react";
 import { OnboardingModal } from "./onboarding-modal";
+import {
+  LeftPanelIcon,
+  RightPanelIcon,
+  BottomPanelIcon,
+} from "./panel-toggle-icons";
 
 export function WorkbenchShell() {
   const [mounted, setMounted] = React.useState(false);
@@ -35,8 +42,12 @@ export function WorkbenchShell() {
   const setSelectedComponent = useWorkbenchStore((s) => s.setSelectedComponent);
   const setDisplayMode = useWorkbenchStore((s) => s.setDisplayMode);
   const setConsoleOpen = useWorkbenchStore((s) => s.setConsoleOpen);
+  const setLeftPanelOpen = useWorkbenchStore((s) => s.setLeftPanelOpen);
+  const setRightPanelOpen = useWorkbenchStore((s) => s.setRightPanelOpen);
   const displayMode = useDisplayMode();
   const isConsoleOpen = useIsConsoleOpen();
+  const isLeftPanelOpen = useIsLeftPanelOpen();
+  const isRightPanelOpen = useIsRightPanelOpen();
   const clearConsole = useClearConsole();
   const { setTheme, resolvedTheme } = useTheme();
 
@@ -99,7 +110,7 @@ export function WorkbenchShell() {
 
   return (
     <div className="flex h-full w-full flex-col overflow-hidden">
-      <div className="flex shrink-0 items-center px-4 pt-3 pb-2">
+      <div className="grid shrink-0 grid-cols-[1fr_auto_1fr] items-center px-4 pt-3 pb-2">
         <div className="flex items-center gap-3">
           <Link
             href="/"
@@ -112,36 +123,62 @@ export function WorkbenchShell() {
           <span className="font-mono select-none">Workbench</span>
         </div>
 
-        <div className="flex flex-1 justify-center">
-          <Select
-            value={selectedComponent}
-            onValueChange={setSelectedComponent}
-          >
-            <SelectTrigger className={`${SELECT_CLASSES} text-sm font-medium`}>
-              <SelectValue placeholder="Select component" />
-            </SelectTrigger>
-            <SelectContent>
-              {workbenchComponents.map((comp) => (
-                <SelectItem
-                  className={`${COMPACT_SMALL_TEXT_CLASSES} text-sm`}
-                  key={comp.id}
-                  value={comp.id}
-                >
-                  {comp.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
+        <Select
+          value={selectedComponent}
+          onValueChange={setSelectedComponent}
+        >
+          <SelectTrigger className={`${SELECT_CLASSES} text-sm font-medium`}>
+            <SelectValue placeholder="Select component" />
+          </SelectTrigger>
+          <SelectContent>
+            {workbenchComponents.map((comp) => (
+              <SelectItem
+                className={`${COMPACT_SMALL_TEXT_CLASSES} text-sm`}
+                key={comp.id}
+                value={comp.id}
+              >
+                {comp.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
 
-        <div className="flex items-center gap-3">
-          <div className="pointer-events-none invisible flex items-center gap-3">
-            <div className="-ml-1.5 p-1.5">
-              <ArrowLeft className="size-4" />
-            </div>
-            <LogoMark className="size-5 shrink-0" />
-            <span className="font-mono font-medium select-none">Workbench</span>
+        <div className="flex items-center justify-end gap-1">
+          <div className="flex items-center gap-0.5">
+            <Button
+              variant="ghost"
+              size="icon"
+              aria-label="Toggle left panel"
+              aria-pressed={isLeftPanelOpen}
+              className="text-muted-foreground hover:text-foreground hover:bg-muted size-7 rounded-md transition-colors"
+              onClick={() => setLeftPanelOpen(!isLeftPanelOpen)}
+            >
+              <LeftPanelIcon active={isLeftPanelOpen} />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              aria-label="Toggle console"
+              aria-pressed={isConsoleOpen}
+              className="text-muted-foreground hover:text-foreground hover:bg-muted size-7 rounded-md transition-colors"
+              onClick={() => setConsoleOpen(!isConsoleOpen)}
+            >
+              <BottomPanelIcon active={isConsoleOpen} />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              aria-label="Toggle right panel"
+              aria-pressed={isRightPanelOpen}
+              className="text-muted-foreground hover:text-foreground hover:bg-muted size-7 rounded-md transition-colors"
+              onClick={() => setRightPanelOpen(!isRightPanelOpen)}
+            >
+              <RightPanelIcon active={isRightPanelOpen} />
+            </Button>
           </div>
+
+          <div className="bg-border mx-2 h-4 w-px" />
+
           <Button
             variant="ghost"
             size="icon"

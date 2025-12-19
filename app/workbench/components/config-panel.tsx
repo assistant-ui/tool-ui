@@ -149,7 +149,6 @@ const LOCATION_PRESETS: ReadonlyArray<{
   },
 ];
 
-
 interface SettingRowProps {
   label: string;
   htmlFor?: string;
@@ -424,10 +423,14 @@ function EnvironmentTab() {
         </Collapsible>
       </div>
 
-      <Accordion type="single" collapsible className="border-border/40 border-t">
+      <Accordion
+        type="single"
+        collapsible
+        className="border-border/40 border-t"
+      >
         <AccordionItem value="environment" className="border-0">
           <AccordionTrigger className="hover:bg-muted/30 px-4 py-2.5 hover:no-underline">
-            <span className="text-muted-foreground text-xs font-medium uppercase tracking-wider">
+            <span className="text-muted-foreground text-xs font-medium tracking-wider uppercase">
               Raw Environment
             </span>
           </AccordionTrigger>
@@ -455,7 +458,7 @@ function SimulationTab() {
 
 export function ConfigPanel() {
   return (
-    <div className="flex h-full flex-col pt-2">
+    <div className="flex h-full flex-col py-3">
       <Tabs defaultValue="environment" className="flex min-h-0 flex-1 flex-col">
         <TabsList className="mx-4 grid w-auto grid-cols-2">
           <TabsTrigger value="environment" className="text-xs">

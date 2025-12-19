@@ -5,6 +5,7 @@ import { useShallow } from "zustand/react/shallow";
 import {
   useWorkbenchStore,
   useSelectedComponent,
+  useConsoleLogs,
 } from "@/app/workbench/lib/store";
 import {
   isStructuredWidgetState,
@@ -16,6 +17,7 @@ import {
   createEmptyStructuredState,
 } from "./structured-widget-state-editor";
 import { JsonEditor } from "./json-editor";
+import { ActivitySection } from "./activity-section";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/ui/cn";
 import { RotateCcw, ChevronDown } from "lucide-react";
@@ -39,7 +41,11 @@ const PANEL_ANIMATION = {
 
 const PANEL_TRANSITION_CLASSES = `${PANEL_ANIMATION.duration} ${PANEL_ANIMATION.easing}`;
 
-type EditorSectionKey = "toolInput" | "widgetState" | "toolResponseMetadata";
+type EditorSectionKey =
+  | "toolInput"
+  | "widgetState"
+  | "toolResponseMetadata"
+  | "activity";
 
 interface EditorSectionConfig {
   key: EditorSectionKey;
@@ -325,22 +331,28 @@ function WidgetStateSection({ value, onChange }: WidgetStateSectionProps) {
 
 export function EditorPanel() {
   const { getActiveData, handleChange, handleReset } = useJsonEditorState();
+  const consoleLogs = useConsoleLogs();
   const [openSections, setOpenSections] = useState<
     Record<EditorSectionKey, boolean>
   >({
     toolInput: true,
     widgetState: false,
     toolResponseMetadata: false,
+    activity: true,
   });
 
   const toggleSection = (key: EditorSectionKey) => {
     setOpenSections((prev) => ({ ...prev, [key]: !prev[key] }));
   };
 
-  const gridRows = EDITOR_SECTIONS.flatMap((section) => [
+  const editorGridRows = EDITOR_SECTIONS.flatMap((section) => [
     "auto",
     openSections[section.key] ? "1fr" : "0fr",
-  ]).join(" ");
+  ]);
+
+  const activityRows = ["auto", openSections.activity ? "1fr" : "0fr"];
+
+  const gridRows = [...editorGridRows, ...activityRows].join(" ");
 
   const renderSectionContent = (section: EditorSectionConfig) => {
     if (section.key === "widgetState") {
@@ -361,7 +373,7 @@ export function EditorPanel() {
   };
 
   return (
-    <div className="flex h-full flex-col overflow-hidden py-8">
+    <div className="flex h-full flex-col overflow-hidden py-3">
       <div
         className={`grid min-h-0 flex-1 content-start transition-[grid-template-rows] ${PANEL_TRANSITION_CLASSES}`}
         style={{ gridTemplateRows: gridRows }}
@@ -382,6 +394,46 @@ export function EditorPanel() {
             </EditorSectionContent>
           </div>
         ))}
+
+        <div className="contents">
+          <button
+            type="button"
+            onClick={() => toggleSection("activity")}
+            className="border-border/40 hover:bg-muted/30 flex shrink-0 items-center justify-between gap-4 border-b px-3 py-2 text-left transition-colors"
+          >
+            <div className="flex items-center gap-1.5">
+              <span className="text-muted-foreground text-sm">Activity</span>
+              {!openSections.activity && consoleLogs.length > 0 && (
+                <span className="bg-muted text-muted-foreground rounded-full px-1.5 py-0.5 text-[10px] tabular-nums">
+                  {consoleLogs.length}
+                </span>
+              )}
+            </div>
+            <ChevronDown
+              className={cn(
+                "text-muted-foreground size-4 shrink-0 transition-transform duration-200",
+                openSections.activity && "rotate-180",
+              )}
+            />
+          </button>
+          <div
+            className={cn(
+              "border-border/40 relative min-h-0 overflow-hidden border-b",
+              !openSections.activity && "pointer-events-none",
+            )}
+          >
+            <div
+              className={cn(
+                `h-full transition-opacity ${PANEL_TRANSITION_CLASSES}`,
+                openSections.activity ? "opacity-100" : "opacity-0",
+              )}
+            >
+              <div className="h-full px-3 pb-2">
+                <ActivitySection />
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
