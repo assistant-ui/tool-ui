@@ -1,7 +1,8 @@
 "use client";
 
 import type { ComponentType } from "react";
-import { OptionListSDK, POIMapSDK } from "./wrappers";
+import { OptionListSDK, POIMapSDK, PizzazAlbumsSDK } from "./wrappers";
+import { DEFAULT_ALBUMS } from "@/components/tool-ui/pizzaz-albums";
 
 export type ComponentCategory = "cards" | "lists" | "forms" | "data";
 
@@ -130,6 +131,17 @@ export const workbenchComponents: WorkbenchComponentEntry[] = [
         },
       ],
       selectionMode: "single",
+    },
+  },
+  {
+    id: "pizzaz-albums",
+    label: "Pizzaz Albums",
+    description:
+      "Album carousel that jumps into a fullscreen viewer (OpenAI example)",
+    category: "cards",
+    component: PizzazAlbumsSDK,
+    defaultProps: {
+      albums: DEFAULT_ALBUMS,
     },
   },
 ];
