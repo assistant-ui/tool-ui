@@ -16,7 +16,6 @@ import {
   useWorkbenchStore,
   useDisplayMode,
   useIsLeftPanelOpen,
-  useIsRightPanelOpen,
 } from "@/app/workbench/lib/store";
 import { useWorkbenchPersistence } from "@/app/workbench/lib/persistence";
 import { workbenchComponents } from "@/app/workbench/lib/component-registry";
@@ -26,7 +25,7 @@ import { cn } from "@/lib/ui/cn";
 import { useTheme } from "next-themes";
 import { ArrowLeft, Moon, Sun } from "lucide-react";
 import { OnboardingModal } from "./onboarding-modal";
-import { LeftPanelIcon, RightPanelIcon } from "./panel-toggle-icons";
+import { LeftPanelIcon } from "./panel-toggle-icons";
 
 export function WorkbenchShell() {
   const [mounted, setMounted] = React.useState(false);
@@ -34,10 +33,8 @@ export function WorkbenchShell() {
   const setSelectedComponent = useWorkbenchStore((s) => s.setSelectedComponent);
   const setDisplayMode = useWorkbenchStore((s) => s.setDisplayMode);
   const setLeftPanelOpen = useWorkbenchStore((s) => s.setLeftPanelOpen);
-  const setRightPanelOpen = useWorkbenchStore((s) => s.setRightPanelOpen);
   const displayMode = useDisplayMode();
   const isLeftPanelOpen = useIsLeftPanelOpen();
-  const isRightPanelOpen = useIsRightPanelOpen();
   const { setTheme, resolvedTheme } = useTheme();
 
   useWorkbenchPersistence();
@@ -115,28 +112,16 @@ export function WorkbenchShell() {
         </Select>
 
         <div className="flex items-center justify-end gap-1">
-          <div className="flex items-center gap-0.5">
-            <Button
-              variant="ghost"
-              size="icon"
-              aria-label="Toggle left panel"
-              aria-pressed={isLeftPanelOpen}
-              className="text-muted-foreground hover:text-foreground hover:bg-muted size-7 rounded-md transition-colors"
-              onClick={() => setLeftPanelOpen(!isLeftPanelOpen)}
-            >
-              <LeftPanelIcon active={isLeftPanelOpen} />
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              aria-label="Toggle right panel"
-              aria-pressed={isRightPanelOpen}
-              className="text-muted-foreground hover:text-foreground hover:bg-muted size-7 rounded-md transition-colors"
-              onClick={() => setRightPanelOpen(!isRightPanelOpen)}
-            >
-              <RightPanelIcon active={isRightPanelOpen} />
-            </Button>
-          </div>
+          <Button
+            variant="ghost"
+            size="icon"
+            aria-label="Toggle left panel"
+            aria-pressed={isLeftPanelOpen}
+            className="text-muted-foreground hover:text-foreground hover:bg-muted size-7 rounded-md transition-colors"
+            onClick={() => setLeftPanelOpen(!isLeftPanelOpen)}
+          >
+            <LeftPanelIcon active={isLeftPanelOpen} />
+          </Button>
 
           <div className="bg-border mx-2 h-4 w-px" />
 

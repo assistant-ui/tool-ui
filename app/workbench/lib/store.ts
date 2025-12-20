@@ -61,7 +61,6 @@ interface WorkbenchState {
   activeToolCall: ActiveToolCall | null;
   isConsoleOpen: boolean;
   isLeftPanelOpen: boolean;
-  isRightPanelOpen: boolean;
 
   setSelectedComponent: (id: string) => void;
   setDisplayMode: (mode: DisplayMode) => void;
@@ -92,7 +91,6 @@ interface WorkbenchState {
   setActiveToolCall: (call: ActiveToolCall | null) => void;
   setConsoleOpen: (open: boolean) => void;
   setLeftPanelOpen: (open: boolean) => void;
-  setRightPanelOpen: (open: boolean) => void;
 
   setMocksEnabled: (enabled: boolean) => void;
   registerTool: (toolName: string) => void;
@@ -173,7 +171,6 @@ export const useWorkbenchStore = create<WorkbenchState>((set, get) => ({
   activeToolCall: null,
   isConsoleOpen: false,
   isLeftPanelOpen: true,
-  isRightPanelOpen: true,
   setSelectedComponent: (id) => {
     clearFiles();
     set(() => {
@@ -243,7 +240,6 @@ export const useWorkbenchStore = create<WorkbenchState>((set, get) => ({
   setActiveToolCall: (call) => set(() => ({ activeToolCall: call })),
   setConsoleOpen: (open) => set(() => ({ isConsoleOpen: open })),
   setLeftPanelOpen: (open) => set(() => ({ isLeftPanelOpen: open })),
-  setRightPanelOpen: (open) => set(() => ({ isRightPanelOpen: open })),
 
   setMocksEnabled: (enabled) =>
     set((state) => ({
@@ -485,5 +481,3 @@ export const useActiveToolCall = () =>
 export const useIsConsoleOpen = () => useWorkbenchStore((s) => s.isConsoleOpen);
 export const useIsLeftPanelOpen = () =>
   useWorkbenchStore((s) => s.isLeftPanelOpen);
-export const useIsRightPanelOpen = () =>
-  useWorkbenchStore((s) => s.isRightPanelOpen);

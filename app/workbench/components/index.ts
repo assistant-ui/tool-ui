@@ -1,6 +1,6 @@
 export { WorkbenchShell } from "./workbench-shell";
 export { WorkbenchLayout } from "./workbench-layout";
-export { ConfigPanel } from "./config-panel";
+export { PreviewToolbar } from "./preview-toolbar";
 export { EventConsole } from "./event-console";
 export { JsonEditor } from "./json-editor";
 export { InspectorPanel } from "./inspector-panel";

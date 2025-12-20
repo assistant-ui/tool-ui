@@ -202,7 +202,7 @@ export function ActivityEntry({
         onClick={onToggle}
         disabled={!hasDetails}
         className={cn(
-          "flex w-full items-center gap-2 px-2 py-1.5 text-left transition-colors",
+          "flex flex-1 items-center gap-2 py-2 pl-9.5 text-left transition-colors",
           hasDetails && "hover:bg-muted/40",
           !hasDetails && "cursor-default",
         )}

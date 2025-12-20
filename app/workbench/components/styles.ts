@@ -19,9 +19,9 @@ export const COMPACT_ADDON_CLASSES =
 
 export const SELECT_CLASSES = `${TRANSPARENT_CONTROL_BG_CLASSES} w-fit text-xs shadow-none h-7! border-none select-none pl-2 pr-1`;
 
-export const TOGGLE_BUTTON_CLASSES = `${CONTROL_BG_CLASSES} flex-1 gap-2 border-none text-xs font-light h-7! select-none`;
+export const TOGGLE_BUTTON_CLASSES = `opacity-50 hover:opacity-100 hover:bg-transparent! flex-1 gap-2 border-none text-xs font-light h-7! select-none`;
 
-export const TOGGLE_BUTTON_ACTIVE_CLASSES = ` flex-1 gap-2 border-none text-xs font-light h-7! select-none bg-primary/20! hover:bg-primary/20!`;
+export const TOGGLE_BUTTON_ACTIVE_CLASSES = `opacity-100 flex-1 gap-2 border-none text-xs font-light h-7! select-none bg-primary/10! rounded-sm!`;
 
 export const INFO_BOX_CLASSES = `${CONTROL_BG_CLASSES} text-muted-foreground rounded-md p-2 text-xs`;
 

@@ -16,6 +16,7 @@ import { InlineView, FullscreenView, CarouselView } from "./preview-views";
 import { WidgetClosedOverlay } from "./widget-closed-overlay";
 import { PipView } from "./pip-view";
 import { ModalOverlay } from "./modal-overlay";
+import { PreviewToolbar } from "./preview-toolbar";
 
 export function PreviewPanel() {
   const displayMode = useDisplayMode();
@@ -52,18 +53,21 @@ export function PreviewPanel() {
         } as React.CSSProperties
       }
     >
-      {displayMode === "inline" && <InlineView />}
-      {displayMode === "pip" && (
-        <PipView onClose={handlePipClose}>
-          <ComponentContent className="h-full" />
-        </PipView>
-      )}
-      {displayMode === "fullscreen" && <FullscreenView />}
-      {displayMode === "carousel" && <CarouselView />}
-      {isWidgetClosed && <WidgetClosedOverlay onReopen={handleReopenWidget} />}
-      {view?.mode === "modal" && (
-        <ModalOverlay view={view} onClose={handleModalClose} />
-      )}
+      <PreviewToolbar />
+      <div className="relative min-h-0 flex-1">
+        {displayMode === "inline" && <InlineView />}
+        {displayMode === "pip" && (
+          <PipView onClose={handlePipClose}>
+            <ComponentContent className="h-full" />
+          </PipView>
+        )}
+        {displayMode === "fullscreen" && <FullscreenView />}
+        {displayMode === "carousel" && <CarouselView />}
+        {isWidgetClosed && <WidgetClosedOverlay onReopen={handleReopenWidget} />}
+        {view?.mode === "modal" && (
+          <ModalOverlay view={view} onClose={handleModalClose} />
+        )}
+      </div>
     </div>
   );
 }
