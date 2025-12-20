@@ -22,7 +22,7 @@ import { ActivitySection } from "./activity-section";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/ui/cn";
 import { RotateCcw, ChevronDown, Trash2 } from "lucide-react";
-import { HintIcon } from "./hint-icon";
+
 import {
   Tooltip,
   TooltipContent,
@@ -189,7 +189,7 @@ interface EditorSectionTriggerProps {
 
 function EditorSectionTrigger({
   title,
-  tooltip,
+
   badge,
   isOpen,
   onToggle,
@@ -211,8 +211,10 @@ function EditorSectionTrigger({
             isOpen ? "rotate-0" : "-rotate-90",
           )}
         />
-        <span className="mr-1 text-sm">{title}</span>
-        {tooltip && <HintIcon hint={tooltip} />}
+        <span className="text-muted-foreground mr-1 text-xs font-normal">
+          {title}
+        </span>
+
         {badge}
       </button>
       {showAction && onAction && (

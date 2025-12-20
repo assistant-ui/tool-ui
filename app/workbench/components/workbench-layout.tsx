@@ -80,7 +80,7 @@ export function WorkbenchLayout() {
         )}
         onClick={() => !isLeftPanelOpen && setLeftPanelOpen(true)}
       >
-        <div className={`${HIGHLIGHT_CLASSES} right-0 z-10`} />
+        <div className={`${HIGHLIGHT_CLASSES} -right-px z-10`} />
       </PanelResizeHandle>
 
       <Panel defaultSize={50} minSize={30}>
@@ -96,7 +96,7 @@ export function WorkbenchLayout() {
         )}
         onClick={() => !isRightPanelOpen && setRightPanelOpen(true)}
       >
-        <div className={`${HIGHLIGHT_CLASSES} left-0 z-10`} />
+        <div className={`${HIGHLIGHT_CLASSES} -left-px z-10`} />
       </PanelResizeHandle>
 
       <Panel
