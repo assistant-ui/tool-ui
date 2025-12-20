@@ -16,7 +16,6 @@ import { InlineView, FullscreenView, CarouselView } from "./preview-views";
 import { WidgetClosedOverlay } from "./widget-closed-overlay";
 import { PipView } from "./pip-view";
 import { ModalOverlay } from "./modal-overlay";
-import { StatusBar } from "./status-bar";
 
 export function PreviewPanel() {
   const displayMode = useDisplayMode();
@@ -65,9 +64,6 @@ export function PreviewPanel() {
       {view?.mode === "modal" && (
         <ModalOverlay view={view} onClose={handleModalClose} />
       )}
-      <div className="pointer-events-none absolute inset-x-0 bottom-4 flex justify-center">
-        <StatusBar className="pointer-events-auto" />
-      </div>
     </div>
   );
 }

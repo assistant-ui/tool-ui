@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { cn } from "@/lib/ui/cn";
 import {
   Panel,
   PanelGroup,
@@ -17,14 +18,10 @@ import { EditorPanel } from "./editor-panel";
 import { PreviewPanel } from "./preview-panel";
 import { ConfigPanel } from "./config-panel";
 
-const LEFT_HANDLE_CLASSES =
-  "group relative z-10 w-3 shrink-0 cursor-col-resize -mr-3";
+const HANDLE_CLASSES = "group relative w-4 shrink-0";
 
-const RIGHT_HANDLE_CLASSES =
-  "group relative z-10 w-3 shrink-0 cursor-col-resize -ml-3";
-
-const EDGE_HIGHLIGHT_CLASSES =
-  "absolute inset-0 transition-colors group-hover:bg-neutral-200/60 group-data-[resize-handle-active]:bg-neutral-300/60 dark:group-hover:bg-neutral-700/60 dark:group-data-[resize-handle-active]:bg-neutral-600/60";
+const HIGHLIGHT_CLASSES =
+  "absolute inset-y-0 w-px bg-linear-to-b from-transparent via-neutral-300 to-transparent opacity-0 group-hover:opacity-100 group-data-resize-handle-active:opacity-100  dark:via-neutral-500 transition-opacity duration-150";
 
 export function WorkbenchLayout() {
   const leftPanelRef = useRef<ImperativePanelHandle>(null);
@@ -67,31 +64,47 @@ export function WorkbenchLayout() {
         ref={leftPanelRef}
         collapsible
         defaultSize={25}
-        minSize={10}
+        minSize={20}
         collapsedSize={0}
+        maxSize={50}
         onCollapse={() => setLeftPanelOpen(false)}
         onExpand={() => setLeftPanelOpen(true)}
       >
         <EditorPanel />
       </Panel>
 
-      <PanelResizeHandle className={LEFT_HANDLE_CLASSES}>
-        <div className={`${EDGE_HIGHLIGHT_CLASSES} rounded-l-xl`} />
+      <PanelResizeHandle
+        className={cn(
+          HANDLE_CLASSES,
+          isLeftPanelOpen ? "cursor-[ew-resize]" : "cursor-[e-resize]!",
+        )}
+        onClick={() => !isLeftPanelOpen && setLeftPanelOpen(true)}
+      >
+        <div className={`${HIGHLIGHT_CLASSES} right-0 z-10`} />
       </PanelResizeHandle>
 
       <Panel defaultSize={50} minSize={30}>
-        <PreviewPanel />
+        <div className={cn("block h-full py-4 pt-0")}>
+          <PreviewPanel />
+        </div>
       </Panel>
 
-      <PanelResizeHandle className={RIGHT_HANDLE_CLASSES}>
-        <div className={`${EDGE_HIGHLIGHT_CLASSES} rounded-r-xl`} />
+      <PanelResizeHandle
+        className={cn(
+          HANDLE_CLASSES,
+          isRightPanelOpen ? "cursor-[ew-resize]" : "cursor-[w-resize]!",
+        )}
+        onClick={() => !isRightPanelOpen && setRightPanelOpen(true)}
+      >
+        <div className={`${HIGHLIGHT_CLASSES} left-0 z-10`} />
       </PanelResizeHandle>
 
       <Panel
         ref={rightPanelRef}
         collapsible
         defaultSize={25}
-        minSize={10}
+        minSize={20}
+        maxSize={25}
         collapsedSize={0}
         onCollapse={() => setRightPanelOpen(false)}
         onExpand={() => setRightPanelOpen(true)}

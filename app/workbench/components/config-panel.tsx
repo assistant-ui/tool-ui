@@ -242,7 +242,7 @@ function EnvironmentTab() {
 
   return (
     <div className="flex h-full flex-col">
-      <div className="scrollbar-subtle flex-1 space-y-2 overflow-y-auto px-4 py-2">
+      <div className="scrollbar-subtle flex-1 space-y-2 overflow-y-auto py-2 pr-4">
         {view && (
           <SettingRow label="View">
             <div className="flex items-center gap-2">

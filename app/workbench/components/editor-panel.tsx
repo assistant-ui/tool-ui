@@ -58,21 +58,21 @@ interface EditorSectionConfig {
 const EDITOR_SECTIONS: EditorSectionConfig[] = [
   {
     key: "toolInput",
-    title: "Props",
+    title: "Tool Input",
     tooltip:
       "Data passed to your widget when a tool is called. Edit to test different inputs.",
     tab: "toolInput",
   },
   {
     key: "widgetState",
-    title: "Saved State",
+    title: "Widget State",
     tooltip:
       "State your widget persists between interactions. Restored when the widget reopens.",
     tab: "widgetState",
   },
   {
     key: "toolResponseMetadata",
-    title: "Hidden Metadata",
+    title: "Private Metadata",
     tooltip:
       "Data only your widget sees. Hidden from the model and not included in responses.",
     tab: "toolResponseMetadata",
@@ -178,39 +178,44 @@ function useJsonEditorState() {
 interface EditorSectionTriggerProps {
   title: string;
   tooltip?: string;
+  badge?: React.ReactNode;
   isOpen: boolean;
   onToggle: () => void;
   onAction?: () => void;
   actionIcon?: React.ReactNode;
   actionTooltip?: string;
+  showAction?: boolean;
 }
 
 function EditorSectionTrigger({
   title,
   tooltip,
+  badge,
   isOpen,
   onToggle,
   onAction,
   actionIcon,
   actionTooltip,
+  showAction = isOpen,
 }: EditorSectionTriggerProps) {
   return (
-    <div className="border-border/40 hover:bg-muted/30 flex h-9 shrink-0 items-center justify-between gap-2 border-b px-3 transition-colors">
+    <div className="hover:bg-muted/30 flex h-9 shrink-0 items-center justify-between gap-2 px-3 transition-colors">
       <button
         type="button"
         onClick={onToggle}
-        className="flex flex-1 items-center gap-1.5 text-left"
+        className="flex h-full flex-1 items-center gap-1.5 text-left"
       >
         <ChevronDown
           className={cn(
-            "text-muted-foreground/60 size-4 shrink-0 transition-transform duration-100 ease-[cubic-bezier(0.22,1,0.36,1)]",
+            "text-muted-foreground/60 size-3.5 shrink-0 transition-transform duration-100 ease-[cubic-bezier(0.22,1,0.36,1)]",
             isOpen ? "rotate-0" : "-rotate-90",
           )}
         />
-        <span className="text-sm">{title}</span>
+        <span className="mr-1 text-sm">{title}</span>
         {tooltip && <HintIcon hint={tooltip} />}
+        {badge}
       </button>
-      {isOpen && onAction && (
+      {showAction && onAction && (
         <Tooltip>
           <TooltipTrigger asChild>
             <Button
@@ -251,7 +256,7 @@ function EditorSectionContent({ isOpen, children }: EditorSectionContentProps) {
           isOpen ? "opacity-100" : "opacity-0",
         )}
       >
-        <div className="px-3 pb-2">{children}</div>
+        <div>{children}</div>
       </div>
     </div>
   );
@@ -348,58 +353,27 @@ function ActivitySectionPanel({
 
   return (
     <div className="contents">
-      <div className="border-border/40 hover:bg-muted/30 flex h-9 shrink-0 items-center justify-between gap-2 px-3 transition-colors">
-        <button
-          type="button"
-          onClick={onToggle}
-          className="flex flex-1 items-center gap-1.5 text-left"
-        >
-          <ChevronDown
-            className={cn(
-              "text-muted-foreground/60 size-4 shrink-0 transition-transform duration-100 ease-[cubic-bezier(0.22,1,0.36,1)]",
-              isOpen ? "rotate-0" : "-rotate-90",
-            )}
-          />
-          <span className="text-sm">Activity Log</span>
-          {logCount > 0 && (
+      <EditorSectionTrigger
+        title="Activity Log"
+        badge={
+          logCount > 0 ? (
             <span className="bg-muted text-muted-foreground ml-1 rounded-full px-1.5 py-0.5 text-[10px] tabular-nums">
               {logCount}
             </span>
-          )}
-        </button>
-        {isOpen && logCount > 0 && (
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon-sm"
-                className="size-6"
-                onClick={clearConsole}
-              >
-                <Trash2 className="size-3" />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent side="left">Clear</TooltipContent>
-          </Tooltip>
-        )}
-      </div>
-      <div
-        className={cn(
-          "min-h-0 overflow-hidden",
-          !isOpen && "pointer-events-none",
-        )}
-      >
-        <div
-          className={cn(
-            `h-full transition-opacity ${PANEL_TRANSITION_CLASSES}`,
-            isOpen ? "opacity-100" : "opacity-0",
-          )}
-        >
-          <div className="h-full pr-3 pl-8">
-            <ActivitySection />
-          </div>
+          ) : undefined
+        }
+        isOpen={isOpen}
+        onToggle={onToggle}
+        onAction={clearConsole}
+        actionIcon={<Trash2 className="size-3" />}
+        actionTooltip="Clear"
+        showAction={isOpen && logCount > 0}
+      />
+      <EditorSectionContent isOpen={isOpen}>
+        <div className="h-full pl-5">
+          <ActivitySection />
         </div>
-      </div>
+      </EditorSectionContent>
     </div>
   );
 }

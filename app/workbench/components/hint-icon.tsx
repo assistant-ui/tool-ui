@@ -14,12 +14,12 @@ interface HintIconProps {
 
 export function HintIcon({ hint, side = "right" }: HintIconProps) {
   return (
-    <Tooltip>
+    <Tooltip delayDuration={500}>
       <TooltipTrigger asChild>
         <span
           role="button"
           tabIndex={0}
-          className="text-muted-foreground/40 hover:text-muted-foreground inline-flex cursor-help transition-colors"
+          className="text-muted-foreground/40 hover:text-muted-foreground inline-flex transition-colors"
           onClick={(e) => e.stopPropagation()}
           onKeyDown={(e) => {
             if (e.key === "Enter" || e.key === " ") {

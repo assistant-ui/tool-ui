@@ -3,8 +3,6 @@
 import * as React from "react";
 import Link from "next/link";
 import { WorkbenchLayout } from "./workbench-layout";
-import { ConsoleSummaryBar } from "./console-summary-bar";
-import { ConsoleDrawer } from "./console-drawer";
 import { LogoMark } from "@/components/ui/logo";
 import {
   Select,
@@ -16,9 +14,7 @@ import {
 import {
   useSelectedComponent,
   useWorkbenchStore,
-  useClearConsole,
   useDisplayMode,
-  useIsConsoleOpen,
   useIsLeftPanelOpen,
   useIsRightPanelOpen,
 } from "@/app/workbench/lib/store";
@@ -30,25 +26,18 @@ import { cn } from "@/lib/ui/cn";
 import { useTheme } from "next-themes";
 import { ArrowLeft, Moon, Sun } from "lucide-react";
 import { OnboardingModal } from "./onboarding-modal";
-import {
-  LeftPanelIcon,
-  RightPanelIcon,
-  BottomPanelIcon,
-} from "./panel-toggle-icons";
+import { LeftPanelIcon, RightPanelIcon } from "./panel-toggle-icons";
 
 export function WorkbenchShell() {
   const [mounted, setMounted] = React.useState(false);
   const selectedComponent = useSelectedComponent();
   const setSelectedComponent = useWorkbenchStore((s) => s.setSelectedComponent);
   const setDisplayMode = useWorkbenchStore((s) => s.setDisplayMode);
-  const setConsoleOpen = useWorkbenchStore((s) => s.setConsoleOpen);
   const setLeftPanelOpen = useWorkbenchStore((s) => s.setLeftPanelOpen);
   const setRightPanelOpen = useWorkbenchStore((s) => s.setRightPanelOpen);
   const displayMode = useDisplayMode();
-  const isConsoleOpen = useIsConsoleOpen();
   const isLeftPanelOpen = useIsLeftPanelOpen();
   const isRightPanelOpen = useIsRightPanelOpen();
-  const clearConsole = useClearConsole();
   const { setTheme, resolvedTheme } = useTheme();
 
   useWorkbenchPersistence();
@@ -87,26 +76,11 @@ export function WorkbenchShell() {
         e.preventDefault();
         toggleFullscreen();
       }
-
-      if (modKey && e.key.toLowerCase() === "k") {
-        e.preventDefault();
-        if (e.shiftKey) {
-          clearConsole();
-        } else {
-          setConsoleOpen(!isConsoleOpen);
-        }
-      }
     };
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [
-    toggleTheme,
-    toggleFullscreen,
-    clearConsole,
-    isConsoleOpen,
-    setConsoleOpen,
-  ]);
+  }, [toggleTheme, toggleFullscreen]);
 
   return (
     <div className="flex h-full w-full flex-col overflow-hidden">
@@ -123,10 +97,7 @@ export function WorkbenchShell() {
           <span className="font-mono select-none">Workbench</span>
         </div>
 
-        <Select
-          value={selectedComponent}
-          onValueChange={setSelectedComponent}
-        >
+        <Select value={selectedComponent} onValueChange={setSelectedComponent}>
           <SelectTrigger className={`${SELECT_CLASSES} text-sm font-medium`}>
             <SelectValue placeholder="Select component" />
           </SelectTrigger>
@@ -154,16 +125,6 @@ export function WorkbenchShell() {
               onClick={() => setLeftPanelOpen(!isLeftPanelOpen)}
             >
               <LeftPanelIcon active={isLeftPanelOpen} />
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              aria-label="Toggle console"
-              aria-pressed={isConsoleOpen}
-              className="text-muted-foreground hover:text-foreground hover:bg-muted size-7 rounded-md transition-colors"
-              onClick={() => setConsoleOpen(!isConsoleOpen)}
-            >
-              <BottomPanelIcon active={isConsoleOpen} />
             </Button>
             <Button
               variant="ghost"
@@ -203,13 +164,9 @@ export function WorkbenchShell() {
         </div>
       </div>
 
-      <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
-        <div className="min-h-0 flex-1 overflow-hidden">
-          <WorkbenchLayout />
-        </div>
-        <ConsoleSummaryBar onClick={() => setConsoleOpen(true)} />
+      <div className="min-h-0 flex-1 overflow-hidden">
+        <WorkbenchLayout />
       </div>
-      <ConsoleDrawer open={isConsoleOpen} onOpenChange={setConsoleOpen} />
       <OnboardingModal />
     </div>
   );
