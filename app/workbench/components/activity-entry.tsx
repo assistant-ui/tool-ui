@@ -11,10 +11,17 @@ import {
   isResponseEntry,
   extractDisplayMode,
   extractPrompt,
-  extractResultPreview,
 } from "./activity-utils";
 import { cn } from "@/lib/ui/cn";
-import { ChevronRight, CornerDownRight, Wrench } from "lucide-react";
+import { CornerDownRight, Wrench } from "lucide-react";
+import {
+  ExpandableRow,
+  ExpandedContent,
+  ArgsPreview,
+  ResultPreview,
+  ResponseRow,
+  Timestamp,
+} from "./activity-primitives";
 
 interface ActivityEntryProps {
   entry: ConsoleEntry;
@@ -31,12 +38,18 @@ interface CallToolGroupEntryProps {
   onToggleResponse: () => void;
 }
 
-function formatValue(value: unknown): string {
-  if (value === undefined) return "";
-  try {
-    return JSON.stringify(value, null, 2);
-  } catch {
-    return String(value);
+function hasEntryDetails(entry: ConsoleEntry): boolean {
+  return entry.args !== undefined || entry.result !== undefined;
+}
+
+function getMetadataPreview(entry: ConsoleEntry): string | null {
+  switch (entry.type) {
+    case "requestDisplayMode":
+      return extractDisplayMode(entry.method);
+    case "sendFollowUpMessage":
+      return extractPrompt(entry.args);
+    default:
+      return null;
   }
 }
 
@@ -53,72 +66,41 @@ function CallToolEntry({
   const isResponse = isResponseEntry(entry.args, entry.result);
   const toolName = extractToolName(entry.method);
   const keyArg = !isResponse ? extractKeyArg(entry.args) : null;
-
-  const Icon = isResponse ? CornerDownRight : eventIcons.callTool;
-  const hasDetails = entry.args !== undefined || entry.result !== undefined;
+  const hasDetails = hasEntryDetails(entry);
 
   if (isResponse) {
-    const resultPreview = extractResultPreview(entry.result);
-
     return (
       <div className="group">
-        <button
-          type="button"
+        <ExpandableRow
           onClick={onToggle}
           disabled={!hasDetails}
-          className={cn(
-            "flex w-full items-center gap-2 px-2 py-1 pl-8 text-left transition-colors",
-            hasDetails && "hover:bg-muted/40",
-            !hasDetails && "cursor-default",
-          )}
+          className="py-1 pr-2 pl-14"
         >
-          <Icon className="size-3 shrink-0" />
-          <span className="truncate text-xs">{resultPreview}</span>
-          <span
-            className={cn(
-              "text-muted-foreground/40 ml-auto shrink-0 text-[10px] tabular-nums transition-opacity",
-              isExpanded ? "opacity-100" : "opacity-0 group-hover:opacity-100",
-            )}
-          >
-            {timestamp}
+          <CornerDownRight className="size-3 shrink-0" />
+          <span className="text-muted-foreground truncate text-xs">
+            Response
           </span>
-          {hasDetails && (
-            <ChevronRight
-              className={cn(
-                "size-3 shrink-0 transition-transform duration-150",
-                "text-muted-foreground/30 group-hover:text-muted-foreground/50",
-                isExpanded && "rotate-90",
-              )}
-            />
-          )}
-        </button>
+          <Timestamp value={timestamp} isVisible={isExpanded} muted />
+        </ExpandableRow>
 
         {isExpanded && hasDetails && (
-          <div className="border-primary/30 ml-9 border-l pb-2 pl-3">
-            {entry.result !== undefined && (
-              <pre className="overflow-x-auto text-[10px] leading-relaxed text-emerald-600/80 dark:text-emerald-300">
-                {formatValue(entry.result)}
-              </pre>
-            )}
-          </div>
+          <ExpandedContent className="ml-14 pr-2 pb-2 pl-4">
+            <ResultPreview value={entry.result} />
+          </ExpandedContent>
         )}
       </div>
     );
   }
 
   const colorClass = typeColors.callTool;
+  const Icon = eventIcons.callTool;
 
   return (
     <div className="group">
-      <button
-        type="button"
+      <ExpandableRow
         onClick={onToggle}
         disabled={!hasDetails}
-        className={cn(
-          "flex w-full items-center gap-2 px-2 py-1.5 text-left transition-colors",
-          hasDetails && "hover:bg-muted/40",
-          !hasDetails && "cursor-default",
-        )}
+        className="py-1.5 pr-2 pl-8"
       >
         <Icon className={cn("size-3.5 shrink-0", colorClass)} />
         <span className={cn("truncate text-xs", colorClass)}>
@@ -129,33 +111,13 @@ function CallToolEntry({
             &quot;{keyArg}&quot;
           </span>
         )}
-        <span
-          className={cn(
-            "text-muted-foreground/60 ml-auto shrink-0 text-[10px] tabular-nums transition-opacity",
-            isExpanded ? "opacity-100" : "opacity-0 group-hover:opacity-100",
-          )}
-        >
-          {timestamp}
-        </span>
-        {hasDetails && (
-          <ChevronRight
-            className={cn(
-              "size-3 shrink-0 transition-transform duration-150",
-              "text-muted-foreground/40 group-hover:text-muted-foreground",
-              isExpanded && "rotate-90",
-            )}
-          />
-        )}
-      </button>
+        <Timestamp value={timestamp} isVisible={isExpanded} />
+      </ExpandableRow>
 
       {isExpanded && hasDetails && (
-        <div className="border-primary/30 ml-3 border-l pb-2 pl-4">
-          {entry.args !== undefined && (
-            <pre className="text-muted-foreground overflow-x-auto text-[10px] leading-relaxed">
-              {formatValue(entry.args)}
-            </pre>
-          )}
-        </div>
+        <ExpandedContent className="ml-9 pr-2 pb-2 pl-4">
+          <ArgsPreview value={entry.args} />
+        </ExpandedContent>
       )}
     </div>
   );
@@ -166,8 +128,6 @@ export function ActivityEntry({
   isExpanded,
   onToggle,
 }: ActivityEntryProps) {
-  const timestamp = formatTimestamp(entry.timestamp);
-
   if (entry.type === "callTool") {
     return (
       <CallToolEntry
@@ -178,34 +138,19 @@ export function ActivityEntry({
     );
   }
 
+  const timestamp = formatTimestamp(entry.timestamp);
   const Icon = eventIcons[entry.type];
   const colorClass = typeColors[entry.type];
   const methodName = formatMethodName(entry.method);
-
-  const hasDetails = entry.args !== undefined || entry.result !== undefined;
-
-  // Extract metadata preview based on entry type
-  let metadataPreview: string | null = null;
-  switch (entry.type) {
-    case "requestDisplayMode":
-      metadataPreview = extractDisplayMode(entry.method);
-      break;
-    case "sendFollowUpMessage":
-      metadataPreview = extractPrompt(entry.args);
-      break;
-  }
+  const hasDetails = hasEntryDetails(entry);
+  const metadataPreview = getMetadataPreview(entry);
 
   return (
     <div className="group">
-      <button
-        type="button"
+      <ExpandableRow
         onClick={onToggle}
         disabled={!hasDetails}
-        className={cn(
-          "flex flex-1 items-center gap-2 py-2 pl-9.5 text-left transition-colors",
-          hasDetails && "hover:bg-muted/40",
-          !hasDetails && "cursor-default",
-        )}
+        className="py-2 pr-6 pl-10"
       >
         <Icon className={cn("size-3.5 shrink-0", colorClass)} />
         <span className={cn("truncate text-xs", colorClass)}>{methodName}</span>
@@ -214,38 +159,18 @@ export function ActivityEntry({
             {metadataPreview}
           </span>
         )}
-        <span
-          className={cn(
-            "text-muted-foreground/60 ml-auto shrink-0 text-[10px] tabular-nums transition-opacity",
-            isExpanded ? "opacity-100" : "opacity-0 group-hover:opacity-100",
-          )}
-        >
-          {timestamp}
-        </span>
-        {hasDetails && (
-          <ChevronRight
-            className={cn(
-              "size-3 shrink-0 transition-transform duration-150",
-              "text-muted-foreground/40 group-hover:text-muted-foreground",
-              isExpanded && "rotate-90",
-            )}
-          />
-        )}
-      </button>
+        <Timestamp value={timestamp} isVisible={isExpanded} />
+      </ExpandableRow>
 
       {isExpanded && hasDetails && (
-        <div className="border-primary/30 ml-3.5 border-l pb-2 pl-4">
-          {entry.args !== undefined && (
-            <pre className="text-muted-foreground overflow-x-auto text-[10px] leading-relaxed">
-              {formatValue(entry.args)}
-            </pre>
-          )}
+        <ExpandedContent className="ml-11.5 pr-2 pb-2 pl-4">
+          <ArgsPreview value={entry.args} />
           {entry.result !== undefined && (
-            <pre className="mt-1 overflow-x-auto text-[10px] leading-relaxed text-emerald-600 dark:text-emerald-400">
-              → {formatValue(entry.result)}
+            <pre className="mt-1 overflow-x-auto text-[10px] leading-relaxed text-emerald-600/80 dark:text-emerald-300">
+              → {JSON.stringify(entry.result, null, 2)}
             </pre>
           )}
-        </div>
+        </ExpandedContent>
       )}
     </div>
   );
@@ -260,27 +185,18 @@ export function CallToolGroupEntry({
   onToggleResponse,
 }: CallToolGroupEntryProps) {
   const requestTimestamp = formatTimestamp(request.timestamp);
-
   const toolName = extractToolName(request.method);
   const keyArg = extractKeyArg(request.args);
   const hasRequestDetails = request.args !== undefined;
   const hasResponseDetails = response?.result !== undefined;
-  const resultPreview = response ? extractResultPreview(response.result) : "";
-
   const colorClass = typeColors.callTool;
 
   return (
     <div className="group/request">
-      {/* Request row */}
-      <button
-        type="button"
+      <ExpandableRow
         onClick={onToggleRequest}
         disabled={!hasRequestDetails}
-        className={cn(
-          "flex w-full items-center gap-2 px-2 py-1.5 text-left transition-colors",
-          hasRequestDetails && "hover:bg-muted/40",
-          !hasRequestDetails && "cursor-default",
-        )}
+        className="py-1.5 pr-2 pl-10"
       >
         <Wrench className={cn("size-3.5 shrink-0", colorClass)} />
         <span className={cn("truncate text-xs", colorClass)}>
@@ -301,106 +217,34 @@ export function CallToolGroupEntry({
         >
           {requestTimestamp}
         </span>
-        {hasRequestDetails && (
-          <ChevronRight
-            className={cn(
-              "size-3 shrink-0 transition-transform duration-150",
-              "text-muted-foreground/40 group-hover/request:text-muted-foreground",
-              requestExpanded && "rotate-90",
-            )}
-          />
-        )}
-      </button>
+      </ExpandableRow>
 
-      {/* Request expanded: border wraps args and response */}
       {requestExpanded && (
-        <div
+        <ExpandedContent
           className={cn(
-            "border-primary/30 ml-3.5 border-l pl-4",
+            "ml-11 pr-2 pl-4",
             !(responseExpanded && hasResponseDetails) && "pb-1",
           )}
         >
-          {/* Request args */}
-          {request.args !== undefined && (
-            <pre className="text-muted-foreground overflow-x-auto pb-2 text-[10px] leading-relaxed">
-              {formatValue(request.args)}
-            </pre>
-          )}
+          <ArgsPreview value={request.args} className="pb-2" />
 
-          {/* Response inside border */}
           {response && (
-            <div className="group/response -ml-1">
-              <button
-                type="button"
-                onClick={onToggleResponse}
-                disabled={!hasResponseDetails}
-                className={cn(
-                  "flex w-full items-center gap-2 py-1 text-left transition-colors",
-                  hasResponseDetails && "hover:bg-muted/40",
-                  !hasResponseDetails && "cursor-default",
-                )}
-              >
-                <CornerDownRight className="size-3 shrink-0" />
-                <span className="truncate text-xs">{resultPreview}</span>
-                {hasResponseDetails && (
-                  <ChevronRight
-                    className={cn(
-                      "ml-auto size-3 shrink-0 transition-transform duration-150",
-                      "text-muted-foreground/30 group-hover/response:text-muted-foreground/50",
-                      responseExpanded && "rotate-90",
-                    )}
-                  />
-                )}
-              </button>
-
-              {/* Response content */}
-              {responseExpanded && hasResponseDetails && (
-                <div className="border-primary/20 ml-1 border-l pb-1 pl-4">
-                  <pre className="overflow-x-auto text-[10px] leading-relaxed text-emerald-600/80 dark:text-emerald-300">
-                    {formatValue(response.result)}
-                  </pre>
-                </div>
-              )}
-            </div>
+            <ResponseRow
+              response={response}
+              isExpanded={responseExpanded}
+              onToggle={onToggleResponse}
+            />
           )}
-        </div>
+        </ExpandedContent>
       )}
 
-      {/* Response when request is collapsed - no outer border */}
       {!requestExpanded && response && (
-        <div className="group/response ml-6">
-          <button
-            type="button"
-            onClick={onToggleResponse}
-            disabled={!hasResponseDetails}
-            className={cn(
-              "flex w-full items-center gap-2 py-1 text-left transition-colors",
-              hasResponseDetails && "hover:bg-muted/40",
-              !hasResponseDetails && "cursor-default",
-            )}
-          >
-            <CornerDownRight className="size-3 shrink-0" />
-            <span className="truncate text-xs">{resultPreview}</span>
-            {hasResponseDetails && (
-              <ChevronRight
-                className={cn(
-                  "ml-auto size-3 shrink-0 transition-transform duration-150",
-                  "text-muted-foreground/30 group-hover/response:text-muted-foreground/50",
-                  responseExpanded && "rotate-90",
-                )}
-              />
-            )}
-          </button>
-
-          {/* Response content */}
-          {responseExpanded && hasResponseDetails && (
-            <div className="border-primary/20 ml-1 border-l pb-1 pl-4">
-              <pre className="overflow-x-auto text-[10px] leading-relaxed text-emerald-600/80 dark:text-emerald-300">
-                {formatValue(response.result)}
-              </pre>
-            </div>
-          )}
-        </div>
+        <ResponseRow
+          response={response}
+          isExpanded={responseExpanded}
+          onToggle={onToggleResponse}
+          standalone
+        />
       )}
     </div>
   );

@@ -352,7 +352,7 @@ export function PreviewToolbar() {
   const isDark = theme === "dark";
 
   return (
-    <div className="flex h-10 shrink-0 items-center justify-between gap-2 border-b px-3">
+    <div className="border-border/50 flex h-10 shrink-0 items-center justify-between gap-2 border-b px-3">
       <div className="flex items-center gap-4">
         <div className="flex items-center gap-1.5">
           <span className="text-muted-foreground/75 text-xs">Device</span>

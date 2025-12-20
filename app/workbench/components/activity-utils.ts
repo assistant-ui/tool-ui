@@ -134,7 +134,8 @@ export function extractPrompt(args: unknown): string | null {
 export function extractResultPreview(result: unknown): string {
   if (result === undefined || result === null) return "null";
   if (typeof result === "string") return truncateString(result, 40);
-  if (typeof result === "number" || typeof result === "boolean") return String(result);
+  if (typeof result === "number" || typeof result === "boolean")
+    return String(result);
   if (Array.isArray(result)) return `[${result.length} items]`;
   if (typeof result === "object") {
     const obj = result as Record<string, unknown>;
