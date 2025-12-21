@@ -7,8 +7,6 @@ import {
   useSelectedComponent,
   useConsoleLogs,
   useClearConsole,
-  useMockConfig,
-  useActiveToolCall,
 } from "@/app/workbench/lib/store";
 import {
   isStructuredWidgetState,
@@ -21,10 +19,9 @@ import {
 } from "./structured-widget-state-editor";
 import { JsonEditor } from "./json-editor";
 import { ActivitySection } from "./activity-section";
-import { MockConfigPanel } from "./mock-config-panel";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/ui/cn";
-import { RotateCcw, ChevronDown, Trash2, Loader2 } from "lucide-react";
+import { RotateCcw, ChevronDown, Trash2 } from "lucide-react";
 
 import {
   Tooltip,
@@ -49,8 +46,7 @@ type EditorSectionKey =
   | "toolInput"
   | "widgetState"
   | "toolResponseMetadata"
-  | "activity"
-  | "simulation";
+  | "activity";
 
 interface EditorSectionConfig {
   key: EditorSectionKey;
@@ -344,13 +340,6 @@ function WidgetStateSection({ value, onChange }: WidgetStateSectionProps) {
   );
 }
 
-function formatDelay(ms: number): string {
-  if (ms >= 1000) {
-    return `${(ms / 1000).toFixed(1)}s`;
-  }
-  return `${ms}ms`;
-}
-
 interface ActivitySectionPanelProps {
   isOpen: boolean;
   onToggle: () => void;
@@ -389,47 +378,6 @@ function ActivitySectionPanel({
   );
 }
 
-interface SimulationSectionPanelProps {
-  isOpen: boolean;
-  onToggle: () => void;
-}
-
-function SimulationSectionPanel({
-  isOpen,
-  onToggle,
-}: SimulationSectionPanelProps) {
-  const mockConfig = useMockConfig();
-  const activeToolCall = useActiveToolCall();
-  const toolCount = Object.keys(mockConfig.tools).length;
-
-  const badge = activeToolCall ? (
-    <span className="bg-primary/10 text-primary ml-1 flex items-center gap-1 rounded-full px-1.5 py-0.5 text-[10px]">
-      <Loader2 className="size-2.5 animate-spin" />
-      {activeToolCall.toolName} ({formatDelay(activeToolCall.delay)})
-    </span>
-  ) : toolCount > 0 ? (
-    <span className="bg-muted text-muted-foreground ml-1 rounded-full px-1.5 py-0.5 text-[10px] tabular-nums">
-      {toolCount}
-    </span>
-  ) : undefined;
-
-  return (
-    <div className="contents">
-      <EditorSectionTrigger
-        title="Simulation"
-        badge={badge}
-        isOpen={isOpen}
-        onToggle={onToggle}
-      />
-      <EditorSectionContent isOpen={isOpen}>
-        <div className="-mx-3 h-full">
-          <MockConfigPanel />
-        </div>
-      </EditorSectionContent>
-    </div>
-  );
-}
-
 export function EditorPanel() {
   const { getActiveData, handleChange, handleReset } = useJsonEditorState();
   const consoleLogs = useConsoleLogs();
@@ -440,7 +388,6 @@ export function EditorPanel() {
     widgetState: false,
     toolResponseMetadata: false,
     activity: true,
-    simulation: false,
   });
 
   const toggleSection = (key: EditorSectionKey) => {
@@ -453,11 +400,8 @@ export function EditorPanel() {
   ]);
 
   const activityRows = ["auto", openSections.activity ? "1fr" : "0fr"];
-  const simulationRows = ["auto", openSections.simulation ? "1fr" : "0fr"];
 
-  const gridRows = [...editorGridRows, ...activityRows, ...simulationRows].join(
-    " ",
-  );
+  const gridRows = [...editorGridRows, ...activityRows].join(" ");
 
   const renderSectionContent = (section: EditorSectionConfig) => {
     if (section.key === "widgetState") {
@@ -504,11 +448,6 @@ export function EditorPanel() {
           isOpen={openSections.activity}
           onToggle={() => toggleSection("activity")}
           logCount={consoleLogs.length}
-        />
-
-        <SimulationSectionPanel
-          isOpen={openSections.simulation}
-          onToggle={() => toggleSection("simulation")}
         />
       </div>
     </div>

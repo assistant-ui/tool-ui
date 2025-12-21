@@ -225,3 +225,17 @@ export const LOCALE_OPTIONS = [
   { value: "zh-CN", label: "Chinese (Simplified)" },
   { value: "pt-BR", label: "Portuguese (Brazil)" },
 ] as const;
+
+export type ResponseMode = "success" | "error" | "empty" | "hang";
+
+export interface SimulationState {
+  enabled: boolean;
+  responseMode: ResponseMode;
+  responseData: Record<string, unknown>;
+}
+
+export const DEFAULT_SIMULATION_STATE: SimulationState = {
+  enabled: false,
+  responseMode: "success",
+  responseData: { success: true },
+};

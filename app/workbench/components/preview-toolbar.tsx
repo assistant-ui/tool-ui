@@ -355,7 +355,9 @@ export function PreviewToolbar() {
     <div className="border-border/50 flex h-10 shrink-0 items-center justify-between gap-2 border-b px-3">
       <div className="flex items-center gap-4">
         <div className="flex items-center gap-1.5">
-          <span className="text-muted-foreground/75 text-xs">Device</span>
+          <span className="text-muted-foreground/75 cursor-default text-xs select-none">
+            Device
+          </span>
           <ButtonGroup>
             {DEVICE_TYPES.map(({ id, label, icon: Icon }) => (
               <Tooltip key={id} delayDuration={500}>
@@ -381,7 +383,9 @@ export function PreviewToolbar() {
         </div>
 
         <div className="flex items-center gap-1.5">
-          <span className="text-muted-foreground/75 text-xs">Mode</span>
+          <span className="text-muted-foreground/75 cursor-default text-xs select-none">
+            Mode
+          </span>
           <ButtonGroup>
             {DISPLAY_MODES.map(({ id, label, icon: Icon }) => (
               <Tooltip key={id} delayDuration={500}>

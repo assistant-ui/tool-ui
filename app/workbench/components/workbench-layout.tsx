@@ -11,10 +11,12 @@ import {
 import { PANEL_AUTO_SAVE_IDS } from "@/app/workbench/lib/persistence";
 import {
   useIsLeftPanelOpen,
+  useIsRightPanelOpen,
   useWorkbenchStore,
 } from "@/app/workbench/lib/store";
 import { EditorPanel } from "./editor-panel";
 import { PreviewPanel } from "./preview-panel";
+import { SimulationPanel } from "./simulation-panel";
 
 const HANDLE_CLASSES = "group relative w-4 shrink-0";
 
@@ -23,9 +25,12 @@ const HIGHLIGHT_CLASSES =
 
 export function WorkbenchLayout() {
   const leftPanelRef = useRef<ImperativePanelHandle>(null);
+  const rightPanelRef = useRef<ImperativePanelHandle>(null);
 
   const isLeftPanelOpen = useIsLeftPanelOpen();
+  const isRightPanelOpen = useIsRightPanelOpen();
   const setLeftPanelOpen = useWorkbenchStore((s) => s.setLeftPanelOpen);
+  const setRightPanelOpen = useWorkbenchStore((s) => s.setRightPanelOpen);
 
   useEffect(() => {
     const panel = leftPanelRef.current;
@@ -37,6 +42,17 @@ export function WorkbenchLayout() {
       panel.collapse();
     }
   }, [isLeftPanelOpen]);
+
+  useEffect(() => {
+    const panel = rightPanelRef.current;
+    if (!panel) return;
+
+    if (isRightPanelOpen && panel.isCollapsed()) {
+      panel.expand();
+    } else if (!isRightPanelOpen && panel.isExpanded()) {
+      panel.collapse();
+    }
+  }, [isRightPanelOpen]);
 
   return (
     <PanelGroup
@@ -60,20 +76,44 @@ export function WorkbenchLayout() {
       <PanelResizeHandle
         className={cn(
           HANDLE_CLASSES,
-          "z-20 -mr-px h-full w-px",
+          "z-20 -mr-2 h-full",
           isLeftPanelOpen ? "cursor-ew-resize" : "cursor-e-resize!",
         )}
         onClick={() => !isLeftPanelOpen && setLeftPanelOpen(true)}
       >
-        <div className={`${HIGHLIGHT_CLASSES} right-0 z-10`} />
+        <div className={`${HIGHLIGHT_CLASSES} right-2 z-10`} />
       </PanelResizeHandle>
 
-      <Panel defaultSize={75} minSize={50}>
+      <Panel defaultSize={50} minSize={30}>
         <div
           className={cn("block h-full py-4 pt-0", !isLeftPanelOpen && "pl-4")}
         >
           <PreviewPanel />
         </div>
+      </Panel>
+
+      <PanelResizeHandle
+        className={cn(
+          HANDLE_CLASSES,
+          "z-20 -ml-2 h-full",
+          isRightPanelOpen ? "cursor-ew-resize" : "cursor-w-resize!",
+        )}
+        onClick={() => !isRightPanelOpen && setRightPanelOpen(true)}
+      >
+        <div className={`${HIGHLIGHT_CLASSES} left-2 z-10`} />
+      </PanelResizeHandle>
+
+      <Panel
+        ref={rightPanelRef}
+        collapsible
+        defaultSize={25}
+        minSize={20}
+        collapsedSize={0}
+        maxSize={50}
+        onCollapse={() => setRightPanelOpen(false)}
+        onExpand={() => setRightPanelOpen(true)}
+      >
+        <SimulationPanel />
       </Panel>
     </PanelGroup>
   );

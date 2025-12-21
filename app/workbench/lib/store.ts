@@ -13,7 +13,10 @@ import type {
   View,
   WidgetState,
   UserLocation,
+  SimulationState,
+  ResponseMode,
 } from "./types";
+import { DEFAULT_SIMULATION_STATE } from "./types";
 import { DEVICE_PRESETS } from "./types";
 import { workbenchComponents } from "./component-registry";
 import { clearFiles } from "./file-store";
@@ -61,6 +64,8 @@ interface WorkbenchState {
   activeToolCall: ActiveToolCall | null;
   isConsoleOpen: boolean;
   isLeftPanelOpen: boolean;
+  isRightPanelOpen: boolean;
+  simulation: SimulationState;
 
   setSelectedComponent: (id: string) => void;
   setDisplayMode: (mode: DisplayMode) => void;
@@ -91,6 +96,10 @@ interface WorkbenchState {
   setActiveToolCall: (call: ActiveToolCall | null) => void;
   setConsoleOpen: (open: boolean) => void;
   setLeftPanelOpen: (open: boolean) => void;
+  setRightPanelOpen: (open: boolean) => void;
+  setSimulationEnabled: (enabled: boolean) => void;
+  setResponseMode: (mode: ResponseMode) => void;
+  setResponseData: (data: Record<string, unknown>) => void;
 
   setMocksEnabled: (enabled: boolean) => void;
   registerTool: (toolName: string) => void;
@@ -171,6 +180,8 @@ export const useWorkbenchStore = create<WorkbenchState>((set, get) => ({
   activeToolCall: null,
   isConsoleOpen: false,
   isLeftPanelOpen: true,
+  isRightPanelOpen: false,
+  simulation: DEFAULT_SIMULATION_STATE,
   setSelectedComponent: (id) => {
     clearFiles();
     set(() => {
@@ -240,6 +251,19 @@ export const useWorkbenchStore = create<WorkbenchState>((set, get) => ({
   setActiveToolCall: (call) => set(() => ({ activeToolCall: call })),
   setConsoleOpen: (open) => set(() => ({ isConsoleOpen: open })),
   setLeftPanelOpen: (open) => set(() => ({ isLeftPanelOpen: open })),
+  setRightPanelOpen: (open) => set(() => ({ isRightPanelOpen: open })),
+  setSimulationEnabled: (enabled) =>
+    set((state) => ({
+      simulation: { ...state.simulation, enabled },
+    })),
+  setResponseMode: (responseMode) =>
+    set((state) => ({
+      simulation: { ...state.simulation, responseMode },
+    })),
+  setResponseData: (responseData) =>
+    set((state) => ({
+      simulation: { ...state.simulation, responseData },
+    })),
 
   setMocksEnabled: (enabled) =>
     set((state) => ({
@@ -481,3 +505,6 @@ export const useActiveToolCall = () =>
 export const useIsConsoleOpen = () => useWorkbenchStore((s) => s.isConsoleOpen);
 export const useIsLeftPanelOpen = () =>
   useWorkbenchStore((s) => s.isLeftPanelOpen);
+export const useIsRightPanelOpen = () =>
+  useWorkbenchStore((s) => s.isRightPanelOpen);
+export const useSimulation = () => useWorkbenchStore((s) => s.simulation);

@@ -44,15 +44,75 @@ export function OpenAIProvider({ children }: OpenAIProviderProps) {
       name: string,
       args: Record<string, unknown>,
     ): Promise<CallToolResponse> => {
-      if (!store.mockConfig.tools[name]) {
-        store.registerTool(name);
-      }
-
       store.addConsoleEntry({
         type: "callTool",
         method: `callTool("${name}")`,
         args,
       });
+
+      const { simulation } = store;
+
+      if (simulation.enabled) {
+        store.setActiveToolCall({
+          toolName: name,
+          delay: 300,
+          startTime: Date.now(),
+        });
+
+        if (simulation.responseMode === "hang") {
+          store.addConsoleEntry({
+            type: "callTool",
+            method: `callTool("${name}") → [SIMULATED: hang]`,
+            result: { _note: "Response withheld to test loading state" },
+          });
+          return new Promise(() => {});
+        }
+
+        await new Promise((resolve) => setTimeout(resolve, 300));
+        store.setActiveToolCall(null);
+
+        let result: CallToolResponse;
+        const modeLabel = simulation.responseMode.toUpperCase();
+
+        switch (simulation.responseMode) {
+          case "error":
+            result = {
+              isError: true,
+              content: simulation.responseData.message as string ?? "Simulated error",
+              _meta: { "openai/widgetSessionId": store.widgetSessionId },
+            };
+            break;
+          case "empty":
+            result = {
+              structuredContent: {},
+              _meta: { "openai/widgetSessionId": store.widgetSessionId },
+            };
+            break;
+          case "success":
+          default:
+            result = {
+              structuredContent: simulation.responseData,
+              _meta: { "openai/widgetSessionId": store.widgetSessionId },
+            };
+            break;
+        }
+
+        store.addConsoleEntry({
+          type: "callTool",
+          method: `callTool("${name}") → [SIMULATED: ${modeLabel}]`,
+          result,
+        });
+
+        if (result.structuredContent) {
+          store.setToolOutput(result.structuredContent);
+        }
+
+        return result;
+      }
+
+      if (!store.mockConfig.tools[name]) {
+        store.registerTool(name);
+      }
 
       const toolConfig = store.mockConfig.tools[name];
       const activeVariant =
