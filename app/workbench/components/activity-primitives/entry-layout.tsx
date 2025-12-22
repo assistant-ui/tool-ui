@@ -22,7 +22,6 @@ import type { LucideIcon } from "lucide-react";
  */
 
 const GRID_TEMPLATE = "grid-cols-[2px_20px_1fr]";
-const CONTENT_OFFSET = "col-start-3"; // Details start at content column
 
 type EntryVariant = "default" | "nested" | "response";
 type IndicatorState = "none" | "configured" | "error";
@@ -43,7 +42,11 @@ interface EntryRootProps {
   className?: string;
 }
 
-function EntryRoot({ children, indicator = "none", className }: EntryRootProps) {
+function EntryRoot({
+  children,
+  indicator = "none",
+  className,
+}: EntryRootProps) {
   return (
     <div
       className={cn("group/entry", className)}
@@ -58,33 +61,56 @@ function EntryRoot({ children, indicator = "none", className }: EntryRootProps) 
 // Entry.Row - The main clickable row with grid layout
 // ─────────────────────────────────────────────────────────────────────────────
 
-interface EntryRowProps extends ComponentProps<"button"> {
+interface EntryRowProps extends Omit<ComponentProps<"div">, "onClick"> {
   children: ReactNode;
   indicator?: IndicatorState;
   variant?: EntryVariant;
+  disabled?: boolean;
+  onClick?: () => void;
 }
 
-const EntryRow = forwardRef<HTMLButtonElement, EntryRowProps>(
-  ({ children, indicator = "none", variant = "default", className, disabled, ...props }, ref) => {
+const EntryRow = forwardRef<HTMLDivElement, EntryRowProps>(
+  (
+    {
+      children,
+      indicator = "none",
+      variant = "default",
+      className,
+      disabled,
+      onClick,
+      ...props
+    },
+    ref,
+  ) => {
     const paddingY = variant === "response" ? "py-1" : "py-1.5";
 
+    const handleKeyDown = (e: React.KeyboardEvent) => {
+      if (disabled) return;
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        onClick?.();
+      }
+    };
+
     return (
-      <button
+      <div
         ref={ref}
-        type="button"
-        disabled={disabled}
+        role="button"
+        tabIndex={disabled ? -1 : 0}
+        aria-disabled={disabled}
+        onClick={disabled ? undefined : onClick}
+        onKeyDown={handleKeyDown}
         className={cn(
           "grid w-full items-center text-left transition-colors",
           GRID_TEMPLATE,
           paddingY,
           "pr-2",
-          !disabled && "hover:bg-muted/40",
+          !disabled && "hover:bg-muted/40 cursor-pointer",
           disabled && "cursor-default",
           className,
         )}
         {...props}
       >
-        {/* Indicator column */}
         <span
           className={cn(
             "h-full w-0.5 justify-self-start rounded-full",
@@ -92,10 +118,8 @@ const EntryRow = forwardRef<HTMLButtonElement, EntryRowProps>(
           )}
           aria-hidden
         />
-
-        {/* Icon + Content columns rendered by children */}
         {children}
-      </button>
+      </div>
     );
   },
 );
@@ -238,19 +262,13 @@ interface EntryDetailsProps {
 
 function EntryDetails({ children, className }: EntryDetailsProps) {
   return (
-    <div
-      className={cn(
-        "grid",
-        GRID_TEMPLATE,
-        className,
-      )}
-    >
+    <div className={cn("grid", GRID_TEMPLATE, className)}>
       {/* Empty indicator column */}
       <span aria-hidden />
       {/* Empty icon column */}
       <span aria-hidden />
       {/* Content spans the content column */}
-      <div className="border-primary/30 border-l pb-1 pl-3 pr-2">
+      <div className="border-primary/30 border-l pr-2 pb-1 pl-3">
         {children}
       </div>
     </div>
@@ -268,13 +286,7 @@ interface EntryNestedProps {
 
 function EntryNested({ children, className }: EntryNestedProps) {
   return (
-    <div
-      className={cn(
-        "grid",
-        GRID_TEMPLATE,
-        className,
-      )}
-    >
+    <div className={cn("grid", GRID_TEMPLATE, className)}>
       {/* Empty indicator column */}
       <span aria-hidden />
       {/* Empty icon column */}
