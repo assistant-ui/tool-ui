@@ -18,9 +18,7 @@ export function isStructuredWidgetState(
 ): state is StructuredWidgetState {
   if (state === null || typeof state !== "object") return false;
   return (
-    "modelContent" in state ||
-    "privateContent" in state ||
-    "imageIds" in state
+    "modelContent" in state || "privateContent" in state || "imageIds" in state
   );
 }
 
@@ -226,16 +224,24 @@ export const LOCALE_OPTIONS = [
   { value: "pt-BR", label: "Portuguese (Brazil)" },
 ] as const;
 
-export type ResponseMode = "success" | "error" | "empty" | "hang";
+export type ResponseMode = "success" | "error" | "hang";
 
-export interface SimulationState {
-  enabled: boolean;
+export interface ToolSimulationConfig {
   responseMode: ResponseMode;
   responseData: Record<string, unknown>;
 }
 
-export const DEFAULT_SIMULATION_STATE: SimulationState = {
-  enabled: false,
+export interface SimulationState {
+  selectedTool: string | null;
+  tools: Record<string, ToolSimulationConfig>;
+}
+
+export const DEFAULT_TOOL_CONFIG: ToolSimulationConfig = {
   responseMode: "success",
   responseData: { success: true },
+};
+
+export const DEFAULT_SIMULATION_STATE: SimulationState = {
+  selectedTool: null,
+  tools: {},
 };

@@ -1,9 +1,9 @@
 "use client";
 
-import { useRef, useEffect, Fragment } from "react";
+import { useRef, useEffect } from "react";
 import type { POI } from "./schema";
 import { POICard } from "./poi-card";
-import { cn, Separator } from "./_adapter";
+import { cn } from "./_adapter";
 
 interface POIListSidebarProps {
   pois: POI[];
@@ -61,24 +61,21 @@ export function POIListSidebar({
   return (
     <div
       ref={scrollRef}
-      className={cn("scrollbar-subtle h-full overflow-y-auto", className)}
+      className={cn("scrollbar-subtle h-full overflow-y-auto pr-1", className)}
     >
-      <div className="flex flex-col">
-        {pois.map((poi, index) => (
-          <Fragment key={poi.id}>
-            {index > 0 && <Separator />}
-            <div data-poi-id={poi.id}>
-              <POICard
-                poi={poi}
-                isSelected={poi.id === selectedPoiId}
-                isFavorite={favoriteIds.has(poi.id)}
-                variant="expanded"
-                onSelect={onSelectPoi}
-                onToggleFavorite={onToggleFavorite}
-                onViewDetails={onViewDetails}
-              />
-            </div>
-          </Fragment>
+      <div className="flex flex-col gap-0.5">
+        {pois.map((poi) => (
+          <div key={poi.id} data-poi-id={poi.id}>
+            <POICard
+              poi={poi}
+              isSelected={poi.id === selectedPoiId}
+              isFavorite={favoriteIds.has(poi.id)}
+              variant="expanded"
+              onSelect={onSelectPoi}
+              onToggleFavorite={onToggleFavorite}
+              onViewDetails={onViewDetails}
+            />
+          </div>
         ))}
       </div>
     </div>

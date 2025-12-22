@@ -20,31 +20,46 @@ function createMarkerIcon(
   isFavorite: boolean,
 ): L.DivIcon {
   const color = CATEGORY_COLORS[category];
-  const size = isSelected ? 28 : 20;
-  const borderWidth = isSelected ? 3 : 2;
+  const outerSize = 44;
+  const innerSize = isSelected ? 24 : 18;
+  const borderWidth = isSelected ? 2.5 : 2;
+
   const shadow = isSelected
-    ? "0 4px 12px rgba(0,0,0,0.3)"
-    : "0 2px 6px rgba(0,0,0,0.2)";
+    ? `0 0 0 4px ${color}33, 0 4px 12px rgba(0,0,0,0.25), 0 2px 4px rgba(0,0,0,0.1)`
+    : "0 2px 8px rgba(0,0,0,0.15), 0 1px 3px rgba(0,0,0,0.1)";
 
   return L.divIcon({
     className: "custom-marker",
-    iconSize: [size, size],
-    iconAnchor: [size / 2, size / 2],
-    popupAnchor: [0, -size / 2],
+    iconSize: [outerSize, outerSize],
+    iconAnchor: [outerSize / 2, outerSize / 2],
+    popupAnchor: [0, -innerSize / 2],
     html: `
       <div style="
-        width: ${size}px;
-        height: ${size}px;
-        background: ${color};
-        border: ${borderWidth}px solid white;
-        border-radius: 50%;
-        box-shadow: ${shadow};
+        width: ${outerSize}px;
+        height: ${outerSize}px;
         display: flex;
         align-items: center;
         justify-content: center;
-        transition: all 0.2s ease;
+        cursor: pointer;
       ">
-        ${isFavorite ? `<span style="color: white; font-size: ${size * 0.5}px; line-height: 1;">★</span>` : ""}
+        <div style="
+          width: ${innerSize}px;
+          height: ${innerSize}px;
+          background: ${color};
+          border: ${borderWidth}px solid white;
+          border-radius: 50%;
+          box-shadow: ${shadow};
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease;
+          transform: scale(${isSelected ? 1 : 1});
+        "
+        onmouseenter="this.style.transform='scale(1.15)'"
+        onmouseleave="this.style.transform='scale(1)'"
+        >
+          ${isFavorite ? `<span style="color: white; font-size: ${innerSize * 0.5}px; line-height: 1; margin-top: -1px;">★</span>` : ""}
+        </div>
       </div>
     `,
   });

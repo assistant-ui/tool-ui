@@ -50,16 +50,18 @@ export function OpenAIProvider({ children }: OpenAIProviderProps) {
         args,
       });
 
+      store.registerSimTool(name);
       const { simulation } = store;
+      const simConfig = simulation.tools[name];
 
-      if (simulation.enabled) {
+      if (simConfig) {
         store.setActiveToolCall({
           toolName: name,
           delay: 300,
           startTime: Date.now(),
         });
 
-        if (simulation.responseMode === "hang") {
+        if (simConfig.responseMode === "hang") {
           store.addConsoleEntry({
             type: "callTool",
             method: `callTool("${name}") → [SIMULATED: hang]`,
@@ -72,26 +74,20 @@ export function OpenAIProvider({ children }: OpenAIProviderProps) {
         store.setActiveToolCall(null);
 
         let result: CallToolResponse;
-        const modeLabel = simulation.responseMode.toUpperCase();
+        const modeLabel = simConfig.responseMode.toUpperCase();
 
-        switch (simulation.responseMode) {
+        switch (simConfig.responseMode) {
           case "error":
             result = {
               isError: true,
-              content: simulation.responseData.message as string ?? "Simulated error",
-              _meta: { "openai/widgetSessionId": store.widgetSessionId },
-            };
-            break;
-          case "empty":
-            result = {
-              structuredContent: {},
+              content: (simConfig.responseData.message as string) ?? "Simulated error",
               _meta: { "openai/widgetSessionId": store.widgetSessionId },
             };
             break;
           case "success":
           default:
             result = {
-              structuredContent: simulation.responseData,
+              structuredContent: simConfig.responseData,
               _meta: { "openai/widgetSessionId": store.widgetSessionId },
             };
             break;

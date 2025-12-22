@@ -44,11 +44,13 @@ export function DocsNav() {
 
   const buildLinkClasses = (isActive: boolean) =>
     cn(
-      "flex items-center gap-2 rounded-lg px-4 hover:bg-primary/5 bg-background text-primary  py-2 text-sm transition-[colors,background] duration-75",
+      "flex items-center gap-2 rounded-lg px-4  bg-background text-primary  py-2 text-sm transition-[colors,background] duration-75",
       {
         "justify-center px-0": collapsed,
 
         "bg-primary/5": isActive && !isPressing,
+        "hover:bg-primary/2": !isActive,
+        "hover:bg-primary/5": isPressing && !isActive,
       },
     );
 

@@ -14,9 +14,9 @@ import type {
   WidgetState,
   UserLocation,
   SimulationState,
-  ResponseMode,
+  ToolSimulationConfig,
 } from "./types";
-import { DEFAULT_SIMULATION_STATE } from "./types";
+import { DEFAULT_SIMULATION_STATE, DEFAULT_TOOL_CONFIG } from "./types";
 import { DEVICE_PRESETS } from "./types";
 import { workbenchComponents } from "./component-registry";
 import { clearFiles } from "./file-store";
@@ -97,9 +97,12 @@ interface WorkbenchState {
   setConsoleOpen: (open: boolean) => void;
   setLeftPanelOpen: (open: boolean) => void;
   setRightPanelOpen: (open: boolean) => void;
-  setSimulationEnabled: (enabled: boolean) => void;
-  setResponseMode: (mode: ResponseMode) => void;
-  setResponseData: (data: Record<string, unknown>) => void;
+  selectSimTool: (toolName: string | null) => void;
+  registerSimTool: (toolName: string) => void;
+  setSimToolConfig: (
+    toolName: string,
+    config: Partial<ToolSimulationConfig>,
+  ) => void;
 
   setMocksEnabled: (enabled: boolean) => void;
   registerTool: (toolName: string) => void;
@@ -252,18 +255,36 @@ export const useWorkbenchStore = create<WorkbenchState>((set, get) => ({
   setConsoleOpen: (open) => set(() => ({ isConsoleOpen: open })),
   setLeftPanelOpen: (open) => set(() => ({ isLeftPanelOpen: open })),
   setRightPanelOpen: (open) => set(() => ({ isRightPanelOpen: open })),
-  setSimulationEnabled: (enabled) =>
+  selectSimTool: (toolName) =>
     set((state) => ({
-      simulation: { ...state.simulation, enabled },
+      simulation: { ...state.simulation, selectedTool: toolName },
     })),
-  setResponseMode: (responseMode) =>
-    set((state) => ({
-      simulation: { ...state.simulation, responseMode },
-    })),
-  setResponseData: (responseData) =>
-    set((state) => ({
-      simulation: { ...state.simulation, responseData },
-    })),
+  registerSimTool: (toolName) =>
+    set((state) => {
+      if (state.simulation.tools[toolName]) return state;
+      return {
+        simulation: {
+          ...state.simulation,
+          tools: {
+            ...state.simulation.tools,
+            [toolName]: { ...DEFAULT_TOOL_CONFIG },
+          },
+        },
+      };
+    }),
+  setSimToolConfig: (toolName, config) =>
+    set((state) => {
+      const existing = state.simulation.tools[toolName] ?? DEFAULT_TOOL_CONFIG;
+      return {
+        simulation: {
+          ...state.simulation,
+          tools: {
+            ...state.simulation.tools,
+            [toolName]: { ...existing, ...config },
+          },
+        },
+      };
+    }),
 
   setMocksEnabled: (enabled) =>
     set((state) => ({

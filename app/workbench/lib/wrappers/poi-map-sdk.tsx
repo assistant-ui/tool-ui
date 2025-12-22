@@ -98,14 +98,13 @@ export function POIMapSDK(props: Record<string, unknown>) {
   );
 
   const handleViewDetails = useCallback(
-    async (poiId: string) => {
-      const poi = parsed.pois.find((p) => p.id === poiId);
-      await requestModal({
-        title: poi?.name ?? "Location Details",
+    (poiId: string) => {
+      setView({
+        mode: "modal",
         params: { poiId },
       });
     },
-    [requestModal, parsed.pois],
+    [setView],
   );
 
   const handleDismissModal = useCallback(() => {

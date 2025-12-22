@@ -6,6 +6,7 @@ import {
   useDisplayMode,
   useIsTransitioning,
   useIsWidgetClosed,
+  useSelectedComponent,
 } from "@/app/workbench/lib/store";
 import {
   VIEW_TRANSITION_PARENT_NAME,
@@ -18,6 +19,8 @@ import { PipView } from "./pip-view";
 import { ModalOverlay } from "./modal-overlay";
 import { PreviewToolbar } from "./preview-toolbar";
 
+const COMPONENTS_WITH_OWN_MODAL = new Set(["poi-map"]);
+
 export function PreviewPanel() {
   const displayMode = useDisplayMode();
   const setDisplayMode = useWorkbenchStore((s) => s.setDisplayMode);
@@ -26,6 +29,7 @@ export function PreviewPanel() {
   const setWidgetClosed = useWorkbenchStore((s) => s.setWidgetClosed);
   const view = useWorkbenchStore((s) => s.view);
   const setView = useWorkbenchStore((s) => s.setView);
+  const selectedComponent = useSelectedComponent();
 
   const handlePipClose = useCallback(() => {
     setDisplayMode("inline");
@@ -64,9 +68,10 @@ export function PreviewPanel() {
         {displayMode === "fullscreen" && <FullscreenView />}
         {displayMode === "carousel" && <CarouselView />}
         {isWidgetClosed && <WidgetClosedOverlay onReopen={handleReopenWidget} />}
-        {view?.mode === "modal" && (
-          <ModalOverlay view={view} onClose={handleModalClose} />
-        )}
+        {view?.mode === "modal" &&
+          !COMPONENTS_WITH_OWN_MODAL.has(selectedComponent) && (
+            <ModalOverlay view={view} onClose={handleModalClose} />
+          )}
       </div>
     </div>
   );
