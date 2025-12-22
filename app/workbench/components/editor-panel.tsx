@@ -5,8 +5,6 @@ import { useShallow } from "zustand/react/shallow";
 import {
   useWorkbenchStore,
   useSelectedComponent,
-  useConsoleLogs,
-  useClearConsole,
 } from "@/app/workbench/lib/store";
 import {
   isStructuredWidgetState,
@@ -18,10 +16,9 @@ import {
   createEmptyStructuredState,
 } from "./structured-widget-state-editor";
 import { JsonEditor } from "./json-editor";
-import { ActivitySection } from "./activity-section";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/ui/cn";
-import { RotateCcw, ChevronDown, Trash2 } from "lucide-react";
+import { RotateCcw, ChevronDown } from "lucide-react";
 
 import {
   Tooltip,
@@ -42,11 +39,7 @@ const PANEL_ANIMATION = {
 
 const PANEL_TRANSITION_CLASSES = `${PANEL_ANIMATION.duration} ${PANEL_ANIMATION.easing}`;
 
-type EditorSectionKey =
-  | "toolInput"
-  | "widgetState"
-  | "toolResponseMetadata"
-  | "activity";
+type EditorSectionKey = "toolInput" | "widgetState" | "toolResponseMetadata";
 
 interface EditorSectionConfig {
   key: EditorSectionKey;
@@ -340,68 +333,24 @@ function WidgetStateSection({ value, onChange }: WidgetStateSectionProps) {
   );
 }
 
-interface ActivitySectionPanelProps {
-  isOpen: boolean;
-  onToggle: () => void;
-  logCount: number;
-}
-
-function ActivitySectionPanel({
-  isOpen,
-  onToggle,
-  logCount,
-}: ActivitySectionPanelProps) {
-  const clearConsole = useClearConsole();
-
-  return (
-    <div className="contents">
-      <EditorSectionTrigger
-        title="Activity Log"
-        badge={
-          logCount > 0 ? (
-            <span className="bg-muted text-muted-foreground ml-1 rounded-full px-1.5 py-0.5 text-[10px] tabular-nums">
-              {logCount}
-            </span>
-          ) : undefined
-        }
-        isOpen={isOpen}
-        onToggle={onToggle}
-        onAction={clearConsole}
-        actionIcon={<Trash2 className="size-3" />}
-        actionTooltip="Clear"
-        showAction={isOpen && logCount > 0}
-      />
-      <EditorSectionContent isOpen={isOpen}>
-        <ActivitySection />
-      </EditorSectionContent>
-    </div>
-  );
-}
-
 export function EditorPanel() {
   const { getActiveData, handleChange, handleReset } = useJsonEditorState();
-  const consoleLogs = useConsoleLogs();
   const [openSections, setOpenSections] = useState<
     Record<EditorSectionKey, boolean>
   >({
     toolInput: true,
     widgetState: false,
     toolResponseMetadata: false,
-    activity: true,
   });
 
   const toggleSection = (key: EditorSectionKey) => {
     setOpenSections((prev) => ({ ...prev, [key]: !prev[key] }));
   };
 
-  const editorGridRows = EDITOR_SECTIONS.flatMap((section) => [
+  const gridRows = EDITOR_SECTIONS.flatMap((section) => [
     "auto",
     openSections[section.key] ? "1fr" : "0fr",
-  ]);
-
-  const activityRows = ["auto", openSections.activity ? "1fr" : "0fr"];
-
-  const gridRows = [...editorGridRows, ...activityRows].join(" ");
+  ]).join(" ");
 
   const renderSectionContent = (section: EditorSectionConfig) => {
     if (section.key === "widgetState") {
@@ -443,12 +392,6 @@ export function EditorPanel() {
             </EditorSectionContent>
           </div>
         ))}
-
-        <ActivitySectionPanel
-          isOpen={openSections.activity}
-          onToggle={() => toggleSection("activity")}
-          logCount={consoleLogs.length}
-        />
       </div>
     </div>
   );

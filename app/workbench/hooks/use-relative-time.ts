@@ -1,7 +1,18 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { formatRelativeTime } from "@/app/workbench/components/activity-utils";
+
+function formatRelativeTime(date: Date): string {
+  const now = Date.now();
+  const diff = now - date.getTime();
+  const seconds = Math.floor(diff / 1000);
+  const minutes = Math.floor(seconds / 60);
+  const hours = Math.floor(minutes / 60);
+
+  if (seconds < 60) return `${seconds}s ago`;
+  if (minutes < 60) return `${minutes}m ago`;
+  return `${hours}h ago`;
+}
 
 export function useRelativeTime(timestamp: Date): string {
   const [, forceUpdate] = useState(0);

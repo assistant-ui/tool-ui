@@ -1,41 +1,143 @@
 "use client";
 
-import type { ConsoleEntry } from "@/app/workbench/lib/types";
-import {
-  eventIcons,
-  typeColors,
-  formatMethodName,
-  formatTimestamp,
-  extractToolName,
-  extractKeyArg,
-  isResponseEntry,
-  extractDisplayMode,
-  extractPrompt,
-} from "./activity-utils";
+import { useState } from "react";
+import type { ConsoleEntry, ConsoleEntryType } from "@/app/workbench/lib/types";
 import { cn } from "@/lib/ui/cn";
-import { CornerDownRight, Wrench } from "lucide-react";
 import {
-  ExpandableRow,
-  ExpandedContent,
-  ArgsPreview,
-  ResultPreview,
-  ResponseRow,
-  Timestamp,
-} from "./activity-primitives";
+  Wrench,
+  CornerDownRight,
+  Database,
+  PanelTop,
+  ExternalLink,
+  MessageSquare,
+  FileIcon,
+  Activity,
+  Settings2,
+  Circle,
+  AlertCircle,
+  Loader2,
+} from "lucide-react";
+import type { LucideIcon } from "lucide-react";
+import { Entry } from "./activity-primitives/entry-layout";
+import { ArgsPreview, ResultPreview } from "./activity-primitives";
+import {
+  InlineResponseConfig,
+  useToolHasCustomConfig,
+} from "./inline-response-config";
 
-interface ActivityEntryProps {
-  entry: ConsoleEntry;
-  isExpanded: boolean;
-  onToggle: () => void;
+const ENTRY_CONFIG: Record<
+  ConsoleEntryType,
+  { icon: LucideIcon; color: string }
+> = {
+  callTool: {
+    icon: Wrench,
+    color: "text-blue-600 dark:text-blue-400",
+  },
+  setWidgetState: {
+    icon: Database,
+    color: "text-green-600 dark:text-green-400",
+  },
+  requestDisplayMode: {
+    icon: PanelTop,
+    color: "text-purple-600 dark:text-purple-400",
+  },
+  sendFollowUpMessage: {
+    icon: MessageSquare,
+    color: "text-orange-600 dark:text-orange-400",
+  },
+  requestClose: {
+    icon: ExternalLink,
+    color: "text-neutral-500 dark:text-neutral-400",
+  },
+  openExternal: {
+    icon: ExternalLink,
+    color: "text-neutral-500 dark:text-neutral-400",
+  },
+  notifyIntrinsicHeight: {
+    icon: PanelTop,
+    color: "text-teal-600 dark:text-teal-400",
+  },
+  requestModal: {
+    icon: PanelTop,
+    color: "text-pink-600 dark:text-pink-400",
+  },
+  uploadFile: {
+    icon: FileIcon,
+    color: "text-amber-600 dark:text-amber-400",
+  },
+  getFileDownloadUrl: {
+    icon: FileIcon,
+    color: "text-amber-600 dark:text-amber-400",
+  },
+  event: {
+    icon: Activity,
+    color: "text-cyan-600 dark:text-cyan-400",
+  },
+};
+
+function formatTimestamp(date: Date): string {
+  return date.toLocaleTimeString([], {
+    hour: "numeric",
+    minute: "2-digit",
+    second: "2-digit",
+  });
 }
 
-interface CallToolGroupEntryProps {
-  request: ConsoleEntry;
-  response: ConsoleEntry | null;
-  requestExpanded: boolean;
-  responseExpanded: boolean;
-  onToggleRequest: () => void;
-  onToggleResponse: () => void;
+function formatMethodName(method: string): string {
+  const match = method.match(/^(\w+)\(/);
+  return match ? match[1] : method;
+}
+
+function extractToolName(method: string): string | null {
+  const match = method.match(/callTool\("([^"]+)"\)/);
+  return match ? match[1] : null;
+}
+
+function extractKeyArg(args: unknown): string | null {
+  if (!args || typeof args !== "object") return null;
+  const obj = args as Record<string, unknown>;
+
+  const keyOrder = [
+    "query",
+    "prompt",
+    "message",
+    "name",
+    "title",
+    "text",
+    "input",
+    "search",
+    "q",
+  ];
+
+  for (const key of keyOrder) {
+    if (typeof obj[key] === "string" && obj[key]) {
+      const val = obj[key] as string;
+      return val.length > 30 ? val.slice(0, 29) + "…" : val;
+    }
+  }
+
+  for (const value of Object.values(obj)) {
+    if (typeof value === "string" && value) {
+      return value.length > 30 ? value.slice(0, 29) + "…" : value;
+    }
+  }
+
+  return null;
+}
+
+function extractDisplayMode(method: string): string | null {
+  const match = method.match(/requestDisplayMode\("([^"]+)"\)/);
+  return match ? match[1] : null;
+}
+
+function extractPrompt(args: unknown): string | null {
+  if (!args || typeof args !== "object") return null;
+  const obj = args as Record<string, unknown>;
+  if (typeof obj.prompt === "string") {
+    const val = obj.prompt;
+    return val.length > 30 ? val.slice(0, 29) + "…" : val;
+  }
+  return null;
 }
 
 function hasEntryDetails(entry: ConsoleEntry): boolean {
@@ -53,74 +155,117 @@ function getMetadataPreview(entry: ConsoleEntry): string | null {
   }
 }
 
-function CallToolEntry({
-  entry,
+type SimulatedMode = "SUCCESS" | "ERROR" | "hang";
+
+function parseSimulatedResponse(response: ConsoleEntry | null): {
+  isSimulated: boolean;
+  mode: SimulatedMode | null;
+} {
+  if (!response) return { isSimulated: false, mode: null };
+
+  const match = response.method.match(/\[SIMULATED: (\w+)\]/);
+  if (!match) return { isSimulated: false, mode: null };
+
+  return {
+    isSimulated: true,
+    mode: match[1] as SimulatedMode,
+  };
+}
+
+function SimulatedBadge({ mode }: { mode: SimulatedMode }) {
+  switch (mode) {
+    case "SUCCESS":
+      return (
+        <Entry.Badge variant="success" icon={Circle}>
+          Simulated
+        </Entry.Badge>
+      );
+    case "ERROR":
+      return (
+        <Entry.Badge variant="error" icon={AlertCircle}>
+          Simulated Error
+        </Entry.Badge>
+      );
+    case "hang":
+      return (
+        <Entry.Badge variant="warning" icon={Loader2}>
+          Hanging
+        </Entry.Badge>
+      );
+  }
+}
+
+interface ConfigButtonProps {
+  isOpen: boolean;
+  hasConfig: boolean;
+  onClick: () => void;
+}
+
+function ConfigButton({ isOpen, hasConfig, onClick }: ConfigButtonProps) {
+  return (
+    <button
+      type="button"
+      onClick={(e) => {
+        e.stopPropagation();
+        onClick();
+      }}
+      className={cn(
+        "rounded p-1 transition-all",
+        isOpen
+          ? "bg-muted text-foreground"
+          : hasConfig
+            ? "hover:bg-muted/50 text-blue-500"
+            : "text-muted-foreground/40 hover:text-muted-foreground hover:bg-muted/50 opacity-0 group-hover/entry:opacity-100",
+      )}
+      title="Configure response"
+    >
+      <Settings2 className="size-3.5" />
+    </button>
+  );
+}
+
+interface ResponseEntryProps {
+  response: ConsoleEntry;
+  isExpanded: boolean;
+  onToggle: () => void;
+  isSimulated?: boolean;
+  simulatedMode?: SimulatedMode | null;
+}
+
+function ResponseEntry({
+  response,
   isExpanded,
   onToggle,
-}: {
+  isSimulated = false,
+  simulatedMode = null,
+}: ResponseEntryProps) {
+  const hasDetails = response.result !== undefined;
+
+  return (
+    <Entry.Root>
+      <Entry.Row variant="response" onClick={onToggle} disabled={!hasDetails}>
+        <Entry.Icon icon={CornerDownRight} color="text-muted-foreground" />
+        <Entry.Content>
+          <Entry.Label color="text-muted-foreground">Response</Entry.Label>
+          {isSimulated && simulatedMode && (
+            <SimulatedBadge mode={simulatedMode} />
+          )}
+        </Entry.Content>
+      </Entry.Row>
+
+      {isExpanded && hasDetails && (
+        <Entry.Details>
+          <ResultPreview value={response.result} />
+        </Entry.Details>
+      )}
+    </Entry.Root>
+  );
+}
+
+interface ActivityEntryProps {
   entry: ConsoleEntry;
   isExpanded: boolean;
   onToggle: () => void;
-}) {
-  const timestamp = formatTimestamp(entry.timestamp);
-  const isResponse = isResponseEntry(entry.args, entry.result);
-  const toolName = extractToolName(entry.method);
-  const keyArg = !isResponse ? extractKeyArg(entry.args) : null;
-  const hasDetails = hasEntryDetails(entry);
-
-  if (isResponse) {
-    return (
-      <div className="group">
-        <ExpandableRow
-          onClick={onToggle}
-          disabled={!hasDetails}
-          className="py-1 pr-2 pl-14"
-        >
-          <CornerDownRight className="size-3 shrink-0" />
-          <span className="text-muted-foreground truncate text-xs">
-            Response
-          </span>
-          <Timestamp value={timestamp} isVisible={isExpanded} muted />
-        </ExpandableRow>
-
-        {isExpanded && hasDetails && (
-          <ExpandedContent className="ml-14 pr-2 pb-2 pl-4">
-            <ResultPreview value={entry.result} />
-          </ExpandedContent>
-        )}
-      </div>
-    );
-  }
-
-  const colorClass = typeColors.callTool;
-  const Icon = eventIcons.callTool;
-
-  return (
-    <div className="group">
-      <ExpandableRow
-        onClick={onToggle}
-        disabled={!hasDetails}
-        className="py-1.5 pr-2 pl-8"
-      >
-        <Icon className={cn("size-3.5 shrink-0", colorClass)} />
-        <span className={cn("truncate text-xs", colorClass)}>
-          {toolName || "callTool"}
-        </span>
-        {keyArg && (
-          <span className="text-muted-foreground truncate text-xs">
-            &quot;{keyArg}&quot;
-          </span>
-        )}
-        <Timestamp value={timestamp} isVisible={isExpanded} />
-      </ExpandableRow>
-
-      {isExpanded && hasDetails && (
-        <ExpandedContent className="ml-9 pr-2 pb-2 pl-4">
-          <ArgsPreview value={entry.args} />
-        </ExpandedContent>
-      )}
-    </div>
-  );
 }
 
 export function ActivityEntry({
@@ -128,52 +273,45 @@ export function ActivityEntry({
   isExpanded,
   onToggle,
 }: ActivityEntryProps) {
-  if (entry.type === "callTool") {
-    return (
-      <CallToolEntry
-        entry={entry}
-        isExpanded={isExpanded}
-        onToggle={onToggle}
-      />
-    );
-  }
-
+  const config = ENTRY_CONFIG[entry.type];
   const timestamp = formatTimestamp(entry.timestamp);
-  const Icon = eventIcons[entry.type];
-  const colorClass = typeColors[entry.type];
   const methodName = formatMethodName(entry.method);
   const hasDetails = hasEntryDetails(entry);
   const metadataPreview = getMetadataPreview(entry);
 
   return (
-    <div className="group">
-      <ExpandableRow
-        onClick={onToggle}
-        disabled={!hasDetails}
-        className="py-2 pr-6 pl-10"
-      >
-        <Icon className={cn("size-3.5 shrink-0", colorClass)} />
-        <span className={cn("truncate text-xs", colorClass)}>{methodName}</span>
-        {metadataPreview && (
-          <span className="text-muted-foreground truncate text-xs">
-            {metadataPreview}
-          </span>
-        )}
-        <Timestamp value={timestamp} isVisible={isExpanded} />
-      </ExpandableRow>
+    <Entry.Root>
+      <Entry.Row onClick={onToggle} disabled={!hasDetails}>
+        <Entry.Icon icon={config.icon} color={config.color} />
+        <Entry.Content>
+          <Entry.Label color={config.color}>{methodName}</Entry.Label>
+          {metadataPreview && <Entry.Meta>{metadataPreview}</Entry.Meta>}
+          <Entry.Spacer />
+          <Entry.Timestamp visible={isExpanded}>{timestamp}</Entry.Timestamp>
+        </Entry.Content>
+      </Entry.Row>
 
       {isExpanded && hasDetails && (
-        <ExpandedContent className="ml-11.5 pr-2 pb-2 pl-4">
+        <Entry.Details>
           <ArgsPreview value={entry.args} />
           {entry.result !== undefined && (
             <pre className="mt-1 overflow-x-auto text-[10px] leading-relaxed text-emerald-600/80 dark:text-emerald-300">
               → {JSON.stringify(entry.result, null, 2)}
             </pre>
           )}
-        </ExpandedContent>
+        </Entry.Details>
       )}
-    </div>
+    </Entry.Root>
   );
+}
+
+interface CallToolGroupEntryProps {
+  request: ConsoleEntry;
+  response: ConsoleEntry | null;
+  requestExpanded: boolean;
+  responseExpanded: boolean;
+  onToggleRequest: () => void;
+  onToggleResponse: () => void;
 }
 
 export function CallToolGroupEntry({
@@ -184,68 +322,69 @@ export function CallToolGroupEntry({
   onToggleRequest,
   onToggleResponse,
 }: CallToolGroupEntryProps) {
-  const requestTimestamp = formatTimestamp(request.timestamp);
+  const [isConfigOpen, setIsConfigOpen] = useState(false);
+
+  const config = ENTRY_CONFIG.callTool;
+  const timestamp = formatTimestamp(request.timestamp);
   const toolName = extractToolName(request.method);
   const keyArg = extractKeyArg(request.args);
   const hasRequestDetails = request.args !== undefined;
-  const hasResponseDetails = response?.result !== undefined;
-  const colorClass = typeColors.callTool;
+
+  const hasCustomConfig = useToolHasCustomConfig(toolName ?? "");
+  const { isSimulated, mode: simulatedMode } = parseSimulatedResponse(response);
 
   return (
-    <div className="group/request">
-      <ExpandableRow
+    <Entry.Root indicator={hasCustomConfig ? "configured" : "none"}>
+      <Entry.Row
+        indicator={hasCustomConfig ? "configured" : "none"}
         onClick={onToggleRequest}
         disabled={!hasRequestDetails}
-        className="py-1.5 pr-2 pl-10"
       >
-        <Wrench className={cn("size-3.5 shrink-0", colorClass)} />
-        <span className={cn("truncate text-xs", colorClass)}>
-          {toolName || "callTool"}
-        </span>
-        {keyArg && (
-          <span className="text-muted-foreground truncate text-xs">
-            &quot;{keyArg}&quot;
-          </span>
-        )}
-        <span
-          className={cn(
-            "text-muted-foreground/60 ml-auto shrink-0 text-[10px] tabular-nums transition-opacity",
-            requestExpanded || responseExpanded
-              ? "opacity-100"
-              : "opacity-0 group-hover/request:opacity-100",
+        <Entry.Icon icon={config.icon} color={config.color} />
+        <Entry.Content>
+          <Entry.Label color={config.color}>
+            {toolName || "callTool"}
+          </Entry.Label>
+          {keyArg && <Entry.Meta>&quot;{keyArg}&quot;</Entry.Meta>}
+          <Entry.Spacer />
+          <Entry.Timestamp visible={requestExpanded || responseExpanded}>
+            {timestamp}
+          </Entry.Timestamp>
+          {toolName && (
+            <Entry.Actions>
+              <ConfigButton
+                isOpen={isConfigOpen}
+                hasConfig={hasCustomConfig}
+                onClick={() => setIsConfigOpen(!isConfigOpen)}
+              />
+            </Entry.Actions>
           )}
-        >
-          {requestTimestamp}
-        </span>
-      </ExpandableRow>
+        </Entry.Content>
+      </Entry.Row>
+
+      {isConfigOpen && toolName && (
+        <Entry.Details>
+          <InlineResponseConfig toolName={toolName} />
+        </Entry.Details>
+      )}
 
       {requestExpanded && (
-        <ExpandedContent
-          className={cn(
-            "ml-11 pr-2 pl-4",
-            !(responseExpanded && hasResponseDetails) && "pb-1",
-          )}
-        >
+        <Entry.Details>
           <ArgsPreview value={request.args} className="pb-2" />
-
-          {response && (
-            <ResponseRow
-              response={response}
-              isExpanded={responseExpanded}
-              onToggle={onToggleResponse}
-            />
-          )}
-        </ExpandedContent>
+        </Entry.Details>
       )}
 
-      {!requestExpanded && response && (
-        <ResponseRow
-          response={response}
-          isExpanded={responseExpanded}
-          onToggle={onToggleResponse}
-          standalone
-        />
+      {response && (
+        <Entry.Nested>
+          <ResponseEntry
+            response={response}
+            isExpanded={responseExpanded}
+            onToggle={onToggleResponse}
+            isSimulated={isSimulated}
+            simulatedMode={simulatedMode}
+          />
+        </Entry.Nested>
       )}
-    </div>
+    </Entry.Root>
   );
 }

@@ -16,7 +16,7 @@ import {
 } from "@/app/workbench/lib/store";
 import { EditorPanel } from "./editor-panel";
 import { PreviewPanel } from "./preview-panel";
-import { SimulationPanel } from "./simulation-panel";
+import { ActivityPanel } from "./activity-panel";
 
 const HANDLE_CLASSES = "group relative w-4 shrink-0";
 
@@ -68,7 +68,7 @@ export function WorkbenchLayout() {
         defaultSize={DEFAULT_SIDE_PANEL_SIZE}
         minSize={20}
         collapsedSize={0}
-        maxSize={50}
+        maxSize={40}
         onCollapse={() => setLeftPanelOpen(false)}
         onExpand={() => setLeftPanelOpen(true)}
       >
@@ -78,7 +78,7 @@ export function WorkbenchLayout() {
       <PanelResizeHandle
         className={cn(
           HANDLE_CLASSES,
-          "-left-px z-20 h-full",
+          "z-80 h-full w-0",
           isLeftPanelOpen ? "cursor-ew-resize" : "cursor-e-resize!",
         )}
         onClick={() => !isLeftPanelOpen && setLeftPanelOpen(true)}
@@ -86,12 +86,16 @@ export function WorkbenchLayout() {
           leftPanelRef.current?.resize(DEFAULT_SIDE_PANEL_SIZE)
         }
       >
-        <div className={`${HIGHLIGHT_CLASSES} right-2 z-10`} />
+        <div className={`${HIGHLIGHT_CLASSES} absolute left-0 z-20`} />
       </PanelResizeHandle>
 
       <Panel defaultSize={50} minSize={30}>
         <div
-          className={cn("block h-full py-4 pt-0", !isLeftPanelOpen && "pl-4")}
+          className={cn(
+            "block h-full py-4 pt-0",
+            !isLeftPanelOpen && "pl-4",
+            !isRightPanelOpen && "pr-4",
+          )}
         >
           <PreviewPanel />
         </div>
@@ -100,7 +104,7 @@ export function WorkbenchLayout() {
       <PanelResizeHandle
         className={cn(
           HANDLE_CLASSES,
-          "z-20 -ml-2 h-full",
+          "z-20 h-full w-0",
           isRightPanelOpen ? "cursor-ew-resize" : "cursor-w-resize!",
         )}
         onClick={() => !isRightPanelOpen && setRightPanelOpen(true)}
@@ -108,7 +112,7 @@ export function WorkbenchLayout() {
           rightPanelRef.current?.resize(DEFAULT_SIDE_PANEL_SIZE)
         }
       >
-        <div className={`${HIGHLIGHT_CLASSES} left-2 z-10`} />
+        <div className={`${HIGHLIGHT_CLASSES} absolute -left-px z-20`} />
       </PanelResizeHandle>
 
       <Panel
@@ -117,11 +121,11 @@ export function WorkbenchLayout() {
         defaultSize={DEFAULT_SIDE_PANEL_SIZE}
         minSize={20}
         collapsedSize={0}
-        maxSize={50}
+        maxSize={40}
         onCollapse={() => setRightPanelOpen(false)}
         onExpand={() => setRightPanelOpen(true)}
       >
-        <SimulationPanel />
+        <ActivityPanel />
       </Panel>
     </PanelGroup>
   );
