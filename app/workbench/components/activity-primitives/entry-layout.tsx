@@ -16,12 +16,12 @@ import type { LucideIcon } from "lucide-react";
  * └──────────────────────────────────────────────────────────────────┘
  *
  * Grid columns:
- * - indicator: 2px (or 0 when inactive)
+ * - indicator: 8px (or 0 when inactive)
  * - icon: 20px fixed
  * - content: 1fr (contains label, meta, spacer, timestamp, actions)
  */
 
-const GRID_TEMPLATE = "grid-cols-[2px_20px_1fr]";
+const GRID_TEMPLATE = "grid-cols-[8px_20px_1fr]";
 
 type EntryVariant = "default" | "nested" | "response";
 type IndicatorState = "none" | "configured" | "error";
@@ -32,21 +32,15 @@ const indicatorStyles: Record<IndicatorState, string> = {
   error: "bg-red-400/60",
 };
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Entry.Root - The outermost container
-// ─────────────────────────────────────────────────────────────────────────────
-
-interface EntryRootProps {
-  children: ReactNode;
-  indicator?: IndicatorState;
-  className?: string;
-}
-
 function EntryRoot({
   children,
   indicator = "none",
   className,
-}: EntryRootProps) {
+}: {
+  children: ReactNode;
+  indicator?: IndicatorState;
+  className?: string;
+}) {
   return (
     <div
       className={cn("group/entry", className)}
@@ -56,10 +50,6 @@ function EntryRoot({
     </div>
   );
 }
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Entry.Row - The main clickable row with grid layout
-// ─────────────────────────────────────────────────────────────────────────────
 
 interface EntryRowProps extends Omit<ComponentProps<"div">, "onClick"> {
   children: ReactNode;
@@ -101,7 +91,7 @@ const EntryRow = forwardRef<HTMLDivElement, EntryRowProps>(
         onClick={disabled ? undefined : onClick}
         onKeyDown={handleKeyDown}
         className={cn(
-          "grid w-full items-center text-left transition-colors",
+          "grid w-full items-center px-4 text-left transition-colors",
           GRID_TEMPLATE,
           paddingY,
           "pr-2",
@@ -125,17 +115,15 @@ const EntryRow = forwardRef<HTMLDivElement, EntryRowProps>(
 );
 EntryRow.displayName = "EntryRow";
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Entry.Icon - The icon column
-// ─────────────────────────────────────────────────────────────────────────────
-
-interface EntryIconProps {
+function EntryIcon({
+  icon: Icon,
+  color,
+  className,
+}: {
   icon: LucideIcon;
   color?: string;
   className?: string;
-}
-
-function EntryIcon({ icon: Icon, color, className }: EntryIconProps) {
+}) {
   return (
     <span className="flex items-center justify-center">
       <Icon className={cn("size-3.5", color, className)} />
@@ -143,16 +131,13 @@ function EntryIcon({ icon: Icon, color, className }: EntryIconProps) {
   );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Entry.Content - The flexible content area (contains label, meta, etc.)
-// ─────────────────────────────────────────────────────────────────────────────
-
-interface EntryContentProps {
+function EntryContent({
+  children,
+  className,
+}: {
   children: ReactNode;
   className?: string;
-}
-
-function EntryContent({ children, className }: EntryContentProps) {
+}) {
   return (
     <span className={cn("flex min-w-0 items-center gap-2", className)}>
       {children}
@@ -160,34 +145,31 @@ function EntryContent({ children, className }: EntryContentProps) {
   );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Entry.Label - Primary text (tool name, method name)
-// ─────────────────────────────────────────────────────────────────────────────
-
-interface EntryLabelProps {
+function EntryLabel({
+  children,
+  color,
+  className,
+}: {
   children: ReactNode;
   color?: string;
   className?: string;
-}
-
-function EntryLabel({ children, color, className }: EntryLabelProps) {
+}) {
   return (
-    <span className={cn("shrink-0 truncate text-xs", color, className)}>
+    <span
+      className={cn("shrink-0 truncate text-xs select-none", color, className)}
+    >
       {children}
     </span>
   );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Entry.Meta - Secondary text (key arg, display mode value)
-// ─────────────────────────────────────────────────────────────────────────────
-
-interface EntryMetaProps {
+function EntryMeta({
+  children,
+  className,
+}: {
   children: ReactNode;
   className?: string;
-}
-
-function EntryMeta({ children, className }: EntryMetaProps) {
+}) {
   return (
     <span className={cn("text-muted-foreground truncate text-xs", className)}>
       {children}
@@ -195,23 +177,8 @@ function EntryMeta({ children, className }: EntryMetaProps) {
   );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Entry.Spacer - Pushes subsequent content to the right
-// ─────────────────────────────────────────────────────────────────────────────
-
 function EntrySpacer() {
   return <span className="flex-1" aria-hidden />;
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Entry.Timestamp - Right-aligned timestamp that fades on hover
-// ─────────────────────────────────────────────────────────────────────────────
-
-interface EntryTimestampProps {
-  children: ReactNode;
-  visible?: boolean;
-  muted?: boolean;
-  className?: string;
 }
 
 function EntryTimestamp({
@@ -219,7 +186,12 @@ function EntryTimestamp({
   visible = false,
   muted = false,
   className,
-}: EntryTimestampProps) {
+}: {
+  children: ReactNode;
+  visible?: boolean;
+  muted?: boolean;
+  className?: string;
+}) {
   return (
     <span
       className={cn(
@@ -234,16 +206,13 @@ function EntryTimestamp({
   );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Entry.Actions - Container for action buttons (settings, etc.)
-// ─────────────────────────────────────────────────────────────────────────────
-
-interface EntryActionsProps {
+function EntryActions({
+  children,
+  className,
+}: {
   children: ReactNode;
   className?: string;
-}
-
-function EntryActions({ children, className }: EntryActionsProps) {
+}) {
   return (
     <span className={cn("ml-1 flex shrink-0 items-center", className)}>
       {children}
@@ -251,55 +220,39 @@ function EntryActions({ children, className }: EntryActionsProps) {
   );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Entry.Details - Expanded content area (args, results)
-// ─────────────────────────────────────────────────────────────────────────────
-
-interface EntryDetailsProps {
+function EntryDetails({
+  children,
+  className,
+}: {
   children: ReactNode;
   className?: string;
-}
-
-function EntryDetails({ children, className }: EntryDetailsProps) {
+}) {
   return (
     <div className={cn("grid", GRID_TEMPLATE, className)}>
-      {/* Empty indicator column */}
       <span aria-hidden />
-      {/* Empty icon column */}
       <span aria-hidden />
-      {/* Content spans the content column */}
-      <div className="border-primary/30 border-l pr-2 pb-1 pl-3">
+      <div className="border-primary/30 -ml-2.5 border-l pr-2 pb-1 pl-3">
         {children}
       </div>
     </div>
   );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Entry.Nested - Container for nested entries (responses)
-// ─────────────────────────────────────────────────────────────────────────────
-
-interface EntryNestedProps {
+function EntryNested({
+  children,
+  className,
+}: {
   children: ReactNode;
   className?: string;
-}
-
-function EntryNested({ children, className }: EntryNestedProps) {
+}) {
   return (
-    <div className={cn("grid", GRID_TEMPLATE, className)}>
-      {/* Empty indicator column */}
+    <div className={cn("-ml-2.5 grid", GRID_TEMPLATE, className)}>
       <span aria-hidden />
-      {/* Empty icon column */}
       <span aria-hidden />
-      {/* Nested content */}
       <div>{children}</div>
     </div>
   );
 }
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Entry.Badge - Small status badge (e.g., "Simulated")
-// ─────────────────────────────────────────────────────────────────────────────
 
 type BadgeVariant = "success" | "error" | "warning" | "info";
 
@@ -310,19 +263,17 @@ const badgeStyles: Record<BadgeVariant, string> = {
   info: "bg-blue-500/10 text-blue-600 dark:text-blue-400",
 };
 
-interface EntryBadgeProps {
-  children: ReactNode;
-  variant?: BadgeVariant;
-  icon?: LucideIcon;
-  className?: string;
-}
-
 function EntryBadge({
   children,
   variant = "info",
   icon: Icon,
   className,
-}: EntryBadgeProps) {
+}: {
+  children: ReactNode;
+  variant?: BadgeVariant;
+  icon?: LucideIcon;
+  className?: string;
+}) {
   return (
     <span
       className={cn(
@@ -336,10 +287,6 @@ function EntryBadge({
     </span>
   );
 }
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Export as compound component
-// ─────────────────────────────────────────────────────────────────────────────
 
 export const Entry = {
   Root: EntryRoot,

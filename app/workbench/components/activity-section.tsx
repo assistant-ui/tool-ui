@@ -69,7 +69,8 @@ function ConfiguredToolsSummary() {
     return Object.entries(simulation.tools).filter(([, config]) => {
       return (
         config.responseMode !== "success" ||
-        JSON.stringify(config.responseData) !== JSON.stringify({ success: true })
+        JSON.stringify(config.responseData) !==
+          JSON.stringify({ success: true })
       );
     });
   }, [simulation.tools]);
@@ -81,7 +82,9 @@ function ConfiguredToolsSummary() {
   const getModeIcon = (mode: string) => {
     switch (mode) {
       case "success":
-        return <Circle className="size-1.5 fill-emerald-500 text-emerald-500" />;
+        return (
+          <Circle className="size-1.5 fill-emerald-500 text-emerald-500" />
+        );
       case "error":
         return <AlertCircle className="size-2.5 text-red-500" />;
       case "hang":
@@ -96,7 +99,7 @@ function ConfiguredToolsSummary() {
       <button
         type="button"
         onClick={() => setIsExpanded(!isExpanded)}
-        className="hover:bg-muted/30 flex w-full items-center gap-1.5 px-2.5 py-1.5 text-left transition-colors"
+        className="hover:bg-muted/40 flex w-full items-center gap-1.5 px-2.5 py-1.5 text-left transition-colors"
       >
         <ChevronDown
           className={cn(
@@ -104,10 +107,10 @@ function ConfiguredToolsSummary() {
             isExpanded ? "rotate-0" : "-rotate-90",
           )}
         />
-        <span className="text-muted-foreground text-[10px] font-medium uppercase tracking-wide">
+        <span className="text-muted-foreground text-[10px] font-medium tracking-wide uppercase">
           Configured Responses
         </span>
-        <span className="bg-blue-500/10 text-blue-600 dark:text-blue-400 ml-auto rounded-full px-1.5 py-0.5 text-[10px] font-medium tabular-nums">
+        <span className="ml-auto rounded-full bg-blue-500/10 px-1.5 py-0.5 text-[10px] font-medium text-blue-600 tabular-nums dark:text-blue-400">
           {configuredTools.length}
         </span>
       </button>

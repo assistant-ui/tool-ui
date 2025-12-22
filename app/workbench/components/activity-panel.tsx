@@ -16,14 +16,12 @@ export function ActivityPanel() {
   const logCount = consoleLogs.length;
 
   return (
-    <div className="flex h-full flex-col overflow-hidden">
-      <div className="border-border/40 flex h-9 shrink-0 items-center justify-between border-b px-3">
-        <div className="flex items-center gap-2">
-          <span className="text-muted-foreground text-xs font-medium">
-            Activity
-          </span>
+    <div className="flex h-full flex-col overflow-hidden pt-6">
+      <div className="border-border/40 flex h-9 shrink-0 items-center justify-between border-b px-4">
+        <div className="flex items-center gap-2 select-none">
+          <span className="text-muted-foreground text-sm">Activity</span>
           {logCount > 0 && (
-            <span className="bg-muted text-muted-foreground rounded-full px-1.5 py-0.5 text-[10px] tabular-nums">
+            <span className="text-muted-foreground squircle rounded-full border px-1.5 py-0.5 text-xs tabular-nums">
               {logCount}
             </span>
           )}
@@ -45,7 +43,7 @@ export function ActivityPanel() {
         )}
       </div>
 
-      <div className="min-h-0 flex-1 overflow-hidden px-3 pt-2">
+      <div className="min-h-0 flex-1 overflow-hidden pt-2">
         <ActivitySection />
       </div>
     </div>

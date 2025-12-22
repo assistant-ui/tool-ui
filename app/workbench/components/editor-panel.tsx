@@ -32,13 +32,6 @@ type JsonEditorTab =
   | "widgetState"
   | "toolResponseMetadata";
 
-const PANEL_ANIMATION = {
-  duration: "duration-[250ms]",
-  easing: "ease-[cubic-bezier(0.22,1,0.36,1)]",
-} as const;
-
-const PANEL_TRANSITION_CLASSES = `${PANEL_ANIMATION.duration} ${PANEL_ANIMATION.easing}`;
-
 type EditorSectionKey = "toolInput" | "widgetState" | "toolResponseMetadata";
 
 interface EditorSectionConfig {
@@ -182,7 +175,6 @@ interface EditorSectionTriggerProps {
 
 function EditorSectionTrigger({
   title,
-
   badge,
   isOpen,
   onToggle,
@@ -192,7 +184,7 @@ function EditorSectionTrigger({
   showAction = isOpen,
 }: EditorSectionTriggerProps) {
   return (
-    <div className="hover:bg-muted/30 flex h-9 shrink-0 items-center justify-between gap-2 px-3 transition-colors">
+    <div className="hover:bg-muted/30 flex h-10 shrink-0 items-center justify-between gap-2 px-3 transition-colors">
       <button
         type="button"
         onClick={onToggle}
@@ -204,7 +196,7 @@ function EditorSectionTrigger({
             isOpen ? "rotate-0" : "-rotate-90",
           )}
         />
-        <span className="text-muted-foreground mr-1 text-xs font-normal">
+        <span className="text-muted-foreground mr-1 text-sm font-normal">
           {title}
         </span>
 
@@ -238,21 +230,13 @@ interface EditorSectionContentProps {
 }
 
 function EditorSectionContent({ isOpen, children }: EditorSectionContentProps) {
+  if (!isOpen) {
+    return <div className="border-border/40 border-b" />;
+  }
+
   return (
-    <div
-      className={cn(
-        "border-border/40 min-h-0 overflow-hidden border-b",
-        !isOpen && "pointer-events-none",
-      )}
-    >
-      <div
-        className={cn(
-          `scrollbar-subtle h-full overflow-y-auto transition-opacity ${PANEL_TRANSITION_CLASSES}`,
-          isOpen ? "opacity-100" : "opacity-0",
-        )}
-      >
-        <div>{children}</div>
-      </div>
+    <div className="border-border/40 scrollbar-subtle min-h-0 flex-1 overflow-y-auto border-b">
+      {children}
     </div>
   );
 }
@@ -347,11 +331,6 @@ export function EditorPanel() {
     setOpenSections((prev) => ({ ...prev, [key]: !prev[key] }));
   };
 
-  const gridRows = EDITOR_SECTIONS.flatMap((section) => [
-    "auto",
-    openSections[section.key] ? "1fr" : "0fr",
-  ]).join(" ");
-
   const renderSectionContent = (section: EditorSectionConfig) => {
     if (section.key === "widgetState") {
       return (
@@ -371,28 +350,23 @@ export function EditorPanel() {
   };
 
   return (
-    <div className="flex h-full flex-col overflow-hidden pt-3">
-      <div
-        className={`grid min-h-0 flex-1 content-start transition-[grid-template-rows] ${PANEL_TRANSITION_CLASSES}`}
-        style={{ gridTemplateRows: gridRows }}
-      >
-        {EDITOR_SECTIONS.map((section) => (
-          <div key={section.key} className="contents">
-            <EditorSectionTrigger
-              title={section.title}
-              tooltip={section.tooltip}
-              isOpen={openSections[section.key]}
-              onToggle={() => toggleSection(section.key)}
-              onAction={() => handleReset(section.tab)}
-              actionIcon={<RotateCcw className="size-3" />}
-              actionTooltip="Reset"
-            />
-            <EditorSectionContent isOpen={openSections[section.key]}>
-              {renderSectionContent(section)}
-            </EditorSectionContent>
-          </div>
-        ))}
-      </div>
+    <div className="flex h-full flex-col overflow-hidden pt-6 pb-8">
+      {EDITOR_SECTIONS.map((section) => (
+        <div key={section.key} className="contents">
+          <EditorSectionTrigger
+            title={section.title}
+            tooltip={section.tooltip}
+            isOpen={openSections[section.key]}
+            onToggle={() => toggleSection(section.key)}
+            onAction={() => handleReset(section.tab)}
+            actionIcon={<RotateCcw className="size-3" />}
+            actionTooltip="Reset"
+          />
+          <EditorSectionContent isOpen={openSections[section.key]}>
+            {renderSectionContent(section)}
+          </EditorSectionContent>
+        </div>
+      ))}
     </div>
   );
 }
