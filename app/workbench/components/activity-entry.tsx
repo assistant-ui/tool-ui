@@ -364,7 +364,10 @@ export function CallToolGroupEntry({
 
       {isConfigOpen && toolName && (
         <Entry.Details>
-          <InlineResponseConfig toolName={toolName} />
+          <InlineResponseConfig
+            toolName={toolName}
+            lastResponseData={response?.result}
+          />
         </Entry.Details>
       )}
 

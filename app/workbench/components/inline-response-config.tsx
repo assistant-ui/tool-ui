@@ -1,10 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useShallow } from "zustand/react/shallow";
 import { useWorkbenchStore, useSimulation } from "@/app/workbench/lib/store";
-import type { ResponseMode } from "@/app/workbench/lib/types";
-import { DEFAULT_TOOL_CONFIG } from "@/app/workbench/lib/types";
+import type { ResponseMode, ToolSimulationConfig } from "@/app/workbench/lib/types";
 import { cn } from "@/lib/ui/cn";
 import { Circle, AlertCircle, Loader2, ChevronDown, RotateCcw } from "lucide-react";
 import { JsonEditor } from "./json-editor";
@@ -33,11 +32,13 @@ const RESPONSE_MODES: Array<{
 
 interface InlineResponseConfigProps {
   toolName: string;
+  lastResponseData?: unknown;
   className?: string;
 }
 
 export function InlineResponseConfig({
   toolName,
+  lastResponseData,
   className,
 }: InlineResponseConfigProps) {
   const simulation = useSimulation();
@@ -49,7 +50,24 @@ export function InlineResponseConfig({
     })),
   );
 
-  const config = simulation.tools[toolName] ?? DEFAULT_TOOL_CONFIG;
+  const existingConfig = simulation.tools[toolName];
+
+  useEffect(() => {
+    if (!existingConfig && lastResponseData && typeof lastResponseData === "object") {
+      setSimToolConfig(toolName, {
+        responseMode: "success",
+        responseData: lastResponseData as Record<string, unknown>,
+      });
+    }
+  }, [toolName, existingConfig, lastResponseData, setSimToolConfig]);
+
+  const config = existingConfig ?? {
+    responseMode: "success" as const,
+    responseData:
+      lastResponseData && typeof lastResponseData === "object"
+        ? (lastResponseData as Record<string, unknown>)
+        : { success: true },
+  };
   const isDefault =
     config.responseMode === "success" &&
     JSON.stringify(config.responseData) === JSON.stringify({ success: true });
