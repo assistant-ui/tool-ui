@@ -23,6 +23,8 @@ const HANDLE_CLASSES = "group relative w-4 shrink-0";
 const HIGHLIGHT_CLASSES =
   "absolute inset-y-0 w-px bg-linear-to-b from-transparent via-neutral-300 to-transparent opacity-0 group-hover:opacity-100 group-data-resize-handle-active:opacity-100 dark:via-neutral-500 transition-opacity duration-150";
 
+const DEFAULT_SIDE_PANEL_SIZE = 25;
+
 export function WorkbenchLayout() {
   const leftPanelRef = useRef<ImperativePanelHandle>(null);
   const rightPanelRef = useRef<ImperativePanelHandle>(null);
@@ -63,7 +65,7 @@ export function WorkbenchLayout() {
       <Panel
         ref={leftPanelRef}
         collapsible
-        defaultSize={25}
+        defaultSize={DEFAULT_SIDE_PANEL_SIZE}
         minSize={20}
         collapsedSize={0}
         maxSize={50}
@@ -76,10 +78,13 @@ export function WorkbenchLayout() {
       <PanelResizeHandle
         className={cn(
           HANDLE_CLASSES,
-          "z-20 -mr-2 h-full",
+          "-left-px z-20 h-full",
           isLeftPanelOpen ? "cursor-ew-resize" : "cursor-e-resize!",
         )}
         onClick={() => !isLeftPanelOpen && setLeftPanelOpen(true)}
+        onDoubleClick={() =>
+          leftPanelRef.current?.resize(DEFAULT_SIDE_PANEL_SIZE)
+        }
       >
         <div className={`${HIGHLIGHT_CLASSES} right-2 z-10`} />
       </PanelResizeHandle>
@@ -99,6 +104,9 @@ export function WorkbenchLayout() {
           isRightPanelOpen ? "cursor-ew-resize" : "cursor-w-resize!",
         )}
         onClick={() => !isRightPanelOpen && setRightPanelOpen(true)}
+        onDoubleClick={() =>
+          rightPanelRef.current?.resize(DEFAULT_SIDE_PANEL_SIZE)
+        }
       >
         <div className={`${HIGHLIGHT_CLASSES} left-2 z-10`} />
       </PanelResizeHandle>
@@ -106,7 +114,7 @@ export function WorkbenchLayout() {
       <Panel
         ref={rightPanelRef}
         collapsible
-        defaultSize={25}
+        defaultSize={DEFAULT_SIDE_PANEL_SIZE}
         minSize={20}
         collapsedSize={0}
         maxSize={50}

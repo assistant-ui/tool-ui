@@ -34,7 +34,7 @@ export function FauxChatShell({ className }: FauxChatShellProps) {
       )}
       style={{
         boxShadow: [
-          "0 1px 3px rgba(0, 0, 0, 0.005)",
+          "0 1px 3px rgba(0, 0, 0, 0.05)",
           "0 2px 4px rgba(0, 0, 0, 0.008)",
           "0 4px 8px rgba(0, 0, 0, 0.02)",
           "0 8px 16px rgba(0, 0, 0, 0.02)",
