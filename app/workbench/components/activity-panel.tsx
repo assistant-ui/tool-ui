@@ -43,7 +43,7 @@ export function ActivityPanel() {
         )}
       </div>
 
-      <div className="min-h-0 flex-1 overflow-hidden pt-2">
+      <div className="min-h-0 flex-1 overflow-clip">
         <ActivitySection />
       </div>
     </div>

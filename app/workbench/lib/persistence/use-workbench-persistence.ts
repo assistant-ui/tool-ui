@@ -30,6 +30,8 @@ export function useWorkbenchPersistence() {
     if (prefs.maxHeight !== undefined) store.setMaxHeight(prefs.maxHeight);
     if (prefs.safeAreaInsets) store.setSafeAreaInsets(prefs.safeAreaInsets);
     if (prefs.locale) store.setLocale(prefs.locale);
+    if (prefs.isLeftPanelOpen !== undefined) store.setLeftPanelOpen(prefs.isLeftPanelOpen);
+    if (prefs.isRightPanelOpen !== undefined) store.setRightPanelOpen(prefs.isRightPanelOpen);
 
     const consoleLogs = readSessionStorageConsole();
     if (consoleLogs.length > 0) {
@@ -85,12 +87,16 @@ export function useWorkbenchPersistence() {
       safeAreaInsets: store.safeAreaInsets,
       locale: store.locale,
       collapsedSections: store.collapsedSections,
+      isLeftPanelOpen: store.isLeftPanelOpen,
+      isRightPanelOpen: store.isRightPanelOpen,
     });
   }, [
     store.maxHeight,
     store.safeAreaInsets,
     store.locale,
     store.collapsedSections,
+    store.isLeftPanelOpen,
+    store.isRightPanelOpen,
   ]);
 
   useEffect(() => {

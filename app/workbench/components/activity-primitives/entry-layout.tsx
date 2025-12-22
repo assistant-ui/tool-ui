@@ -95,7 +95,7 @@ const EntryRow = forwardRef<HTMLDivElement, EntryRowProps>(
           GRID_TEMPLATE,
           paddingY,
           "pr-2",
-          !disabled && "hover:bg-muted/40 cursor-pointer",
+          !disabled && "hover:bg-muted/40",
           disabled && "cursor-default",
           className,
         )}

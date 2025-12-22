@@ -18,7 +18,8 @@ export interface LocalStoragePreferences {
   safeAreaInsets: SafeAreaInsets;
   locale: string;
   collapsedSections: Record<string, boolean>;
-  configPanelCollapsed: boolean;
+  isLeftPanelOpen: boolean;
+  isRightPanelOpen: boolean;
 }
 
 export interface SessionStorageState {
