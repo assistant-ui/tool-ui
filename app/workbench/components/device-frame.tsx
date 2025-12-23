@@ -13,28 +13,20 @@ interface DeviceFrameProps {
 const FRAME_CONFIG: Record<
   Exclude<DeviceType, "desktop">,
   {
-    bezelWidth: string;
     borderRadius: string;
-    screenRadius: string;
     showNotch: boolean;
   }
 > = {
   mobile: {
-    bezelWidth: "p-1",
     borderRadius: "rounded-[2rem]",
-    screenRadius: "rounded-[1.75rem]",
     showNotch: false,
   },
   tablet: {
-    bezelWidth: "p-1.5",
     borderRadius: "rounded-[1.25rem]",
-    screenRadius: "rounded-[1rem]",
     showNotch: false,
   },
   resizable: {
-    bezelWidth: "p-1",
     borderRadius: "rounded-[1rem]",
-    screenRadius: "rounded-[0.75rem]",
     showNotch: false,
   },
 };
@@ -70,26 +62,17 @@ export function DeviceFrame({ children, className, style }: DeviceFrameProps) {
   return (
     <div
       className={cn(
-        "flex flex-col shadow-xl transition-colors",
-        config.bezelWidth,
+        "relative flex flex-col overflow-hidden border shadow-xl transition-colors",
         config.borderRadius,
         isDark
-          ? "bg-neutral-800 shadow-black/30"
-          : "bg-neutral-200 shadow-black/10",
+          ? "border-neutral-700/50 bg-neutral-900 shadow-black/30"
+          : "border-neutral-300/50 bg-white shadow-black/10",
         className,
       )}
       style={style}
     >
-      <div
-        className={cn(
-          "relative flex-1 overflow-hidden transition-colors",
-          config.screenRadius,
-          isDark ? "bg-neutral-900" : "bg-white",
-        )}
-      >
-        {config.showNotch && <DynamicIsland isDark={isDark} />}
-        {children}
-      </div>
+      {config.showNotch && <DynamicIsland isDark={isDark} />}
+      {children}
     </div>
   );
 }

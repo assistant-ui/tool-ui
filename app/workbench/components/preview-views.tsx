@@ -126,7 +126,7 @@ function ResizablePreview() {
   return (
     <div
       ref={containerRef}
-      className="bg-background scrollbar-subtle bg-dot-grid h-full w-full overflow-hidden p-4 dark:bg-neutral-950"
+      className="scrollbar-subtle bg-dot-grid h-full w-full overflow-hidden bg-neutral-100 p-4 dark:bg-neutral-950"
     >
       <div className="flex h-full w-full items-start justify-center">
         <PanelGroup
@@ -190,7 +190,7 @@ function FramedPreview() {
   return (
     <div ref={containerRef} className="h-full w-full overflow-hidden">
       {showFrame ? (
-        <div className="bg-background bg-dot-grid flex h-full w-full items-center justify-center overflow-hidden p-4 dark:bg-neutral-950">
+        <div className="bg-dot-grid flex h-full w-full items-center justify-center overflow-hidden bg-neutral-100 p-4 dark:bg-neutral-950">
           <DeviceFrame
             className="max-h-full"
             style={{
