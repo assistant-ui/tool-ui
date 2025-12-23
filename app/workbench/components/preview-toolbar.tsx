@@ -51,11 +51,8 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { cn } from "@/lib/ui/cn";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+import * as TooltipPrimitive from "@radix-ui/react-tooltip";
+import { TooltipContent, TooltipProvider } from "@/components/ui/tooltip";
 import {
   INPUT_GROUP_CLASSES,
   INPUT_CLASSES,
@@ -198,8 +195,8 @@ function AdvancedSettingsPopover() {
 
   return (
     <Popover>
-      <Tooltip delayDuration={500}>
-        <TooltipTrigger asChild>
+      <TooltipPrimitive.Root delayDuration={500}>
+        <TooltipPrimitive.Trigger asChild>
           <PopoverTrigger asChild>
             <Button
               variant="ghost"
@@ -209,9 +206,9 @@ function AdvancedSettingsPopover() {
               <MoreHorizontal className="size-4" />
             </Button>
           </PopoverTrigger>
-        </TooltipTrigger>
+        </TooltipPrimitive.Trigger>
         <TooltipContent side="bottom">More options</TooltipContent>
-      </Tooltip>
+      </TooltipPrimitive.Root>
       <PopoverContent align="end" className="w-72 space-y-1">
         <div className="mb-4 text-sm font-medium">Environment Options</div>
 
@@ -352,93 +349,95 @@ export function PreviewToolbar() {
   const isDark = theme === "dark";
 
   return (
-    <div className="border-border/50 flex h-10 shrink-0 items-center justify-between gap-2 border-b px-3">
-      <div className="flex items-center gap-4">
-        <div className="flex items-center gap-1.5">
-          <span className="text-muted-foreground/60 cursor-default text-xs select-none">
-            Device
-          </span>
-          <ButtonGroup>
-            {DEVICE_TYPES.map(({ id, label, icon: Icon }) => (
-              <Tooltip key={id} delayDuration={500}>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className={cn(
-                      "size-7 p-0",
-                      deviceType === id
-                        ? TOGGLE_BUTTON_ACTIVE_CLASSES
-                        : TOGGLE_BUTTON_CLASSES,
-                    )}
-                    onClick={() => setDeviceType(id)}
-                  >
-                    <Icon className="size-3.5" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent side="bottom">{label}</TooltipContent>
-              </Tooltip>
-            ))}
-          </ButtonGroup>
+    <TooltipProvider delayDuration={500} skipDelayDuration={300}>
+      <div className="border-border/50 flex h-10 shrink-0 items-center justify-between gap-2 border-b px-3">
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-1.5">
+            <span className="text-muted-foreground/60 cursor-default text-xs select-none">
+              Device
+            </span>
+            <ButtonGroup>
+              {DEVICE_TYPES.map(({ id, label, icon: Icon }) => (
+                <TooltipPrimitive.Root key={id}>
+                  <TooltipPrimitive.Trigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className={cn(
+                        "size-7 p-0",
+                        deviceType === id
+                          ? TOGGLE_BUTTON_ACTIVE_CLASSES
+                          : TOGGLE_BUTTON_CLASSES,
+                      )}
+                      onClick={() => setDeviceType(id)}
+                    >
+                      <Icon className="size-3.5" />
+                    </Button>
+                  </TooltipPrimitive.Trigger>
+                  <TooltipContent side="bottom">{label}</TooltipContent>
+                </TooltipPrimitive.Root>
+              ))}
+            </ButtonGroup>
+          </div>
+
+          <div className="flex items-center gap-1.5">
+            <span className="text-muted-foreground/60 cursor-default text-xs select-none">
+              Mode
+            </span>
+            <ButtonGroup>
+              {DISPLAY_MODES.map(({ id, label, icon: Icon }) => (
+                <TooltipPrimitive.Root key={id}>
+                  <TooltipPrimitive.Trigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className={cn(
+                        "size-7 p-0",
+                        displayMode === id
+                          ? TOGGLE_BUTTON_ACTIVE_CLASSES
+                          : TOGGLE_BUTTON_CLASSES,
+                      )}
+                      onClick={() => setDisplayMode(id)}
+                    >
+                      <Icon className="size-3.5" />
+                    </Button>
+                  </TooltipPrimitive.Trigger>
+                  <TooltipContent side="bottom">{label}</TooltipContent>
+                </TooltipPrimitive.Root>
+              ))}
+            </ButtonGroup>
+          </div>
         </div>
 
-        <div className="flex items-center gap-1.5">
-          <span className="text-muted-foreground/60 cursor-default text-xs select-none">
-            Mode
-          </span>
-          <ButtonGroup>
-            {DISPLAY_MODES.map(({ id, label, icon: Icon }) => (
-              <Tooltip key={id} delayDuration={500}>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className={cn(
-                      "size-7 p-0",
-                      displayMode === id
-                        ? TOGGLE_BUTTON_ACTIVE_CLASSES
-                        : TOGGLE_BUTTON_CLASSES,
-                    )}
-                    onClick={() => setDisplayMode(id)}
-                  >
-                    <Icon className="size-3.5" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent side="bottom">{label}</TooltipContent>
-              </Tooltip>
-            ))}
-          </ButtonGroup>
+        <div className="flex items-center gap-1">
+          <TooltipPrimitive.Root>
+            <TooltipPrimitive.Trigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="text-muted-foreground hover:text-foreground relative size-7"
+                onClick={() => setTheme(isDark ? "light" : "dark")}
+              >
+                <Sun
+                  className={cn(
+                    "size-4 transition-all",
+                    isDark ? "scale-0 rotate-90" : "scale-100 rotate-0",
+                  )}
+                />
+                <Moon
+                  className={cn(
+                    "absolute size-4 transition-all",
+                    isDark ? "scale-100 rotate-0" : "scale-0 -rotate-90",
+                  )}
+                />
+              </Button>
+            </TooltipPrimitive.Trigger>
+            <TooltipContent side="bottom">Toggle theme</TooltipContent>
+          </TooltipPrimitive.Root>
+
+          <AdvancedSettingsPopover />
         </div>
       </div>
-
-      <div className="flex items-center gap-1">
-        <Tooltip delayDuration={500}>
-          <TooltipTrigger asChild>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="text-muted-foreground hover:text-foreground relative size-7"
-              onClick={() => setTheme(isDark ? "light" : "dark")}
-            >
-              <Sun
-                className={cn(
-                  "size-4 transition-all",
-                  isDark ? "scale-0 rotate-90" : "scale-100 rotate-0",
-                )}
-              />
-              <Moon
-                className={cn(
-                  "absolute size-4 transition-all",
-                  isDark ? "scale-100 rotate-0" : "scale-0 -rotate-90",
-                )}
-              />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent side="bottom">Toggle theme</TooltipContent>
-        </Tooltip>
-
-        <AdvancedSettingsPopover />
-      </div>
-    </div>
+    </TooltipProvider>
   );
 }
