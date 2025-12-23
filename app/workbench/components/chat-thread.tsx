@@ -173,7 +173,7 @@ function InlineLayout({
 
           <MorphContainer
             className={cn(
-              "w-full overflow-hidden rounded-xl border shadow-sm",
+              "w-full overflow-hidden rounded-2xl border shadow-sm",
               isDark ? "border-neutral-700" : "border-neutral-200",
             )}
             style={{ height: maxHeight, maxHeight }}
@@ -211,7 +211,7 @@ function PipLayout({
       <div className="pointer-events-none absolute inset-x-0 top-3 z-10 flex justify-center px-3">
         <MorphContainer
           className={cn(
-            "pointer-events-auto w-full max-w-[770px] overflow-hidden rounded-xl border shadow-lg transition-colors",
+            "pointer-events-auto w-full max-w-[770px] overflow-hidden rounded-2xl border shadow-lg transition-colors",
             isDark
               ? "border-neutral-700 bg-neutral-900"
               : "border-neutral-200 bg-white",
