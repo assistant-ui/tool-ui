@@ -2,25 +2,7 @@ export type DisplayMode = "pip" | "inline" | "fullscreen";
 export type Theme = "light" | "dark";
 export type DeviceType = "mobile" | "tablet" | "desktop" | "resizable";
 
-export interface StructuredWidgetState {
-  modelContent: string | Record<string, unknown> | null;
-  privateContent: Record<string, unknown> | null;
-  imageIds: string[];
-}
-
-export type WidgetState =
-  | StructuredWidgetState
-  | Record<string, unknown>
-  | null;
-
-export function isStructuredWidgetState(
-  state: WidgetState,
-): state is StructuredWidgetState {
-  if (state === null || typeof state !== "object") return false;
-  return (
-    "modelContent" in state || "privateContent" in state || "imageIds" in state
-  );
-}
+export type WidgetState = Record<string, unknown> | null;
 
 export interface UserLocation {
   city?: string;
