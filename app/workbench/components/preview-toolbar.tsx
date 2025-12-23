@@ -41,13 +41,13 @@ import {
   Maximize2,
   Square,
   PictureInPicture2,
-  GalleryHorizontal,
   Moon,
   Sun,
   MoreHorizontal,
   MapPin,
   X,
   Layers,
+  MoveHorizontal,
   type LucideIcon,
 } from "lucide-react";
 import { cn } from "@/lib/ui/cn";
@@ -74,7 +74,6 @@ const DISPLAY_MODES: ReadonlyArray<{
   { id: "inline", label: "Inline", icon: Square },
   { id: "pip", label: "PiP", icon: PictureInPicture2 },
   { id: "fullscreen", label: "Fullscreen", icon: Maximize2 },
-  { id: "carousel", label: "Carousel", icon: GalleryHorizontal },
 ];
 
 const DEVICE_TYPES: ReadonlyArray<{
@@ -85,6 +84,7 @@ const DEVICE_TYPES: ReadonlyArray<{
   { id: "desktop", label: "Desktop", icon: Monitor },
   { id: "tablet", label: "Tablet", icon: Tablet },
   { id: "mobile", label: "Mobile", icon: Smartphone },
+  { id: "resizable", label: "Resizable", icon: MoveHorizontal },
 ];
 
 const LOCATION_PRESETS: ReadonlyArray<{

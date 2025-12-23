@@ -119,13 +119,15 @@ function EntryIcon({
   icon: Icon,
   color,
   className,
+  style,
 }: {
   icon: LucideIcon;
   color?: string;
   className?: string;
+  style?: React.CSSProperties;
 }) {
   return (
-    <span className="flex items-center justify-center">
+    <span className="flex items-center justify-center" style={style}>
       <Icon className={cn("size-3.5", color, className)} />
     </span>
   );
@@ -149,14 +151,17 @@ function EntryLabel({
   children,
   color,
   className,
+  style,
 }: {
   children: ReactNode;
   color?: string;
   className?: string;
+  style?: React.CSSProperties;
 }) {
   return (
     <span
       className={cn("shrink-0 truncate text-xs select-none", color, className)}
+      style={style}
     >
       {children}
     </span>

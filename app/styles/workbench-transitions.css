@@ -44,6 +44,25 @@
     animation: workbench-morph-in 350ms cubic-bezier(0.32, 0.72, 0, 1) forwards;
   }
 
+  /*
+    Composer transition - stays visible and static during mode transitions.
+    Uses instant swap: old hides immediately, new shows immediately.
+    This prevents the composer from flickering or showing duplicates.
+  */
+  ::view-transition-group(workbench-composer) {
+    animation: none;
+  }
+
+  ::view-transition-old(workbench-composer) {
+    animation: none;
+    opacity: 0;
+  }
+
+  ::view-transition-new(workbench-composer) {
+    animation: none;
+    opacity: 1;
+  }
+
   @keyframes workbench-morph-out {
     0% {
       opacity: 1;

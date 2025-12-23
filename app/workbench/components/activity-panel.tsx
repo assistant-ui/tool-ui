@@ -43,8 +43,12 @@ export function ActivityPanel() {
         )}
       </div>
 
-      <div className="min-h-0 flex-1 overflow-clip">
+      <div className="relative min-h-0 flex-1 overflow-clip">
         <ActivitySection />
+        <div
+          className="from-background pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t to-transparent"
+          aria-hidden
+        />
       </div>
     </div>
   );

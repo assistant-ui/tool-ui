@@ -20,7 +20,7 @@ import {
   useOpenExternal,
   useSendFollowUpMessage,
 } from "../openai-context";
-import { useWorkbenchStore } from "../store";
+import { useWorkbenchStore, usePreviousDisplayMode } from "../store";
 import type { DisplayMode } from "../types";
 
 const DEFAULT_WIDGET_STATE: POIMapViewState = {
@@ -36,6 +36,7 @@ export function POIMapSDK(props: Record<string, unknown>) {
   const { setWidgetState, requestModal } = useOpenAI();
   const [widgetState] = useWidgetState<POIMapViewState>(DEFAULT_WIDGET_STATE);
   const displayMode = useDisplayMode();
+  const previousDisplayMode = usePreviousDisplayMode();
   const requestDisplayMode = useRequestDisplayMode();
   const callTool = useCallTool();
   const theme = useTheme();
@@ -133,6 +134,7 @@ export function POIMapSDK(props: Record<string, unknown>) {
       initialZoom={parsed.initialZoom}
       title={parsed.title}
       displayMode={displayMode}
+      previousDisplayMode={previousDisplayMode}
       widgetState={currentWidgetState}
       theme={theme}
       view={view}

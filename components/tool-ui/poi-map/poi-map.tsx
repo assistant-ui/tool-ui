@@ -42,7 +42,7 @@ import {
   DropdownMenuTrigger,
 } from "./_adapter";
 
-type DisplayMode = "inline" | "pip" | "fullscreen" | "carousel";
+type DisplayMode = "inline" | "pip" | "fullscreen";
 
 interface View {
   mode: "modal" | "inline";
@@ -69,6 +69,7 @@ export interface POIMapProps {
   title?: string;
   className?: string;
   displayMode: DisplayMode;
+  previousDisplayMode?: DisplayMode;
   widgetState: POIMapViewState | null;
   theme: "light" | "dark";
   view?: View | null;
@@ -91,6 +92,7 @@ export function POIMap({
   title,
   className,
   displayMode,
+  previousDisplayMode = "inline",
   widgetState,
   theme,
   view,
@@ -141,9 +143,9 @@ export function POIMap({
 
   const handleToggleFullscreen = useCallback(() => {
     onRequestDisplayMode(
-      displayMode === "fullscreen" ? "inline" : "fullscreen",
+      displayMode === "fullscreen" ? previousDisplayMode : "fullscreen",
     );
-  }, [displayMode, onRequestDisplayMode]);
+  }, [displayMode, previousDisplayMode, onRequestDisplayMode]);
 
   const handleFilterCategory = useCallback(
     (category: POICategory | null) => {

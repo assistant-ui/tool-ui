@@ -12,6 +12,15 @@ function extractToolName(method: string): string | null {
   return match ? match[1] : null;
 }
 
+function getRecencyOpacity(index: number): number {
+  const PLATEAU = 2;
+  const MIN_OPACITY = 0.4;
+  const DECAY_RATE = 0.08;
+
+  if (index < PLATEAU) return 1;
+  return Math.max(MIN_OPACITY, 1 - (index - PLATEAU) * DECAY_RATE);
+}
+
 function isResponseEntry(_args: unknown, result: unknown): boolean {
   return result !== undefined;
 }
@@ -168,7 +177,9 @@ export function ActivitySection() {
       <ConfiguredToolsSummary />
 
       <div className="divide-border/30 divide-y">
-        {groupedAndReversed.map((item) => {
+        {groupedAndReversed.map((item, index) => {
+          const recencyOpacity = getRecencyOpacity(index);
+
           if ("request" in item) {
             return (
               <CallToolGroupEntry
@@ -183,6 +194,7 @@ export function ActivitySection() {
                 onToggleResponse={() =>
                   item.response && toggleExpanded(item.response.id)
                 }
+                recencyOpacity={recencyOpacity}
               />
             );
           }
@@ -192,6 +204,7 @@ export function ActivitySection() {
               entry={item}
               isExpanded={expandedIds.has(item.id)}
               onToggle={() => toggleExpanded(item.id)}
+              recencyOpacity={recencyOpacity}
             />
           );
         })}

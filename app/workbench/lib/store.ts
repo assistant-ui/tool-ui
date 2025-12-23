@@ -43,9 +43,11 @@ interface ActiveToolCall {
 interface WorkbenchState {
   selectedComponent: string;
   displayMode: DisplayMode;
+  previousDisplayMode: DisplayMode;
   theme: Theme;
   locale: string;
   deviceType: DeviceType;
+  resizableWidth: number;
   toolInput: Record<string, unknown>;
   toolOutput: Record<string, unknown> | null;
   widgetState: WidgetState;
@@ -97,6 +99,7 @@ interface WorkbenchState {
   setConsoleOpen: (open: boolean) => void;
   setLeftPanelOpen: (open: boolean) => void;
   setRightPanelOpen: (open: boolean) => void;
+  setResizableWidth: (width: number) => void;
   selectSimTool: (toolName: string | null) => void;
   registerSimTool: (toolName: string) => void;
   setSimToolConfig: (
@@ -162,9 +165,11 @@ function buildOpenAIGlobals(
 export const useWorkbenchStore = create<WorkbenchState>((set, get) => ({
   selectedComponent: defaultComponent?.id ?? "chart",
   displayMode: "inline",
+  previousDisplayMode: "inline",
   theme: "light",
   locale: "en-US",
   deviceType: "desktop",
+  resizableWidth: 500,
   toolInput: defaultComponent?.defaultProps ?? {},
   toolOutput: null,
   widgetState: null,
@@ -201,7 +206,13 @@ export const useWorkbenchStore = create<WorkbenchState>((set, get) => ({
       };
     });
   },
-  setDisplayMode: (mode) => set(() => ({ displayMode: mode })),
+  setDisplayMode: (mode) =>
+    set((state) => {
+      if (mode === "fullscreen" && state.displayMode !== "fullscreen") {
+        return { displayMode: mode, previousDisplayMode: state.displayMode };
+      }
+      return { displayMode: mode };
+    }),
   setTransitioning: (transitioning) =>
     set((state) => ({
       isTransitioning: transitioning,
@@ -209,7 +220,16 @@ export const useWorkbenchStore = create<WorkbenchState>((set, get) => ({
     })),
   setTheme: (theme) => set(() => ({ theme })),
   setLocale: (locale) => set(() => ({ locale })),
-  setDeviceType: (type) => set(() => ({ deviceType: type })),
+  setDeviceType: (type) =>
+    set((state) => {
+      if (type === "resizable" && state.deviceType !== "resizable") {
+        const previousPreset = DEVICE_PRESETS[state.deviceType];
+        const previousWidth =
+          typeof previousPreset.width === "number" ? previousPreset.width : 500;
+        return { deviceType: type, resizableWidth: previousWidth };
+      }
+      return { deviceType: type };
+    }),
   setToolInput: (input) => set(() => ({ toolInput: input })),
   setToolOutput: (output) => set(() => ({ toolOutput: output })),
   setWidgetState: (state) => set(() => ({ widgetState: state })),
@@ -255,6 +275,7 @@ export const useWorkbenchStore = create<WorkbenchState>((set, get) => ({
   setConsoleOpen: (open) => set(() => ({ isConsoleOpen: open })),
   setLeftPanelOpen: (open) => set(() => ({ isLeftPanelOpen: open })),
   setRightPanelOpen: (open) => set(() => ({ isRightPanelOpen: open })),
+  setResizableWidth: (width) => set(() => ({ resizableWidth: width })),
   selectSimTool: (toolName) =>
     set((state) => ({
       simulation: { ...state.simulation, selectedTool: toolName },
@@ -458,6 +479,8 @@ export const useWorkbenchStore = create<WorkbenchState>((set, get) => ({
 export const useSelectedComponent = () =>
   useWorkbenchStore((s) => s.selectedComponent);
 export const useDisplayMode = () => useWorkbenchStore((s) => s.displayMode);
+export const usePreviousDisplayMode = () =>
+  useWorkbenchStore((s) => s.previousDisplayMode);
 export const useIsTransitioning = () =>
   useWorkbenchStore((s) => s.isTransitioning);
 export const useTransitionFrom = () =>
@@ -529,3 +552,5 @@ export const useIsLeftPanelOpen = () =>
 export const useIsRightPanelOpen = () =>
   useWorkbenchStore((s) => s.isRightPanelOpen);
 export const useSimulation = () => useWorkbenchStore((s) => s.simulation);
+export const useResizableWidth = () =>
+  useWorkbenchStore((s) => s.resizableWidth);

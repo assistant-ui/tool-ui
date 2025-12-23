@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useEffect, useCallback } from "react";
+import { useRef, useEffect, useCallback, useState } from "react";
 import {
   Panel,
   PanelGroup,
@@ -11,14 +11,21 @@ import {
   useWorkbenchStore,
   useIsTransitioning,
   useDeviceType,
+  useResizableWidth,
+  useDisplayMode,
 } from "@/app/workbench/lib/store";
 import { DEVICE_PRESETS } from "@/app/workbench/lib/types";
 import { cn } from "@/lib/ui/cn";
-import { ComponentContent, MorphContainer } from "./component-renderer";
+import { ComponentContent } from "./component-renderer";
+import { DeviceFrame } from "./device-frame";
+import { ChatThread } from "./chat-thread";
 import { MockComposer } from "./mock-composer";
 
 const PREVIEW_MIN_SIZE = 30;
 const PREVIEW_MAX_SIZE = 100;
+const RESIZABLE_MIN_WIDTH = 280;
+const RESIZABLE_MAX_WIDTH = 1200;
+const FRAME_VISIBILITY_THRESHOLD = 80;
 
 const RESIZE_HANDLE_CLASSES =
   "absolute top-1/2 left-1/2 h-12 w-1 -translate-x-1/2 -translate-y-1/2 rounded-full bg-gray-300 opacity-40 transition-all group-hover:bg-gray-400 group-hover:opacity-100 group-data-resize-handle-active:bg-gray-500 group-data-resize-handle-active:opacity-100 dark:bg-gray-600 dark:group-hover:bg-gray-500 dark:group-data-resize-handle-active:bg-gray-400";
@@ -40,74 +47,93 @@ function PreviewResizeHandle({
   );
 }
 
-export function InlineView() {
-  const maxHeight = useWorkbenchStore((s) => s.maxHeight);
-  const deviceType = useDeviceType();
+function ChatWithComposer() {
+  const displayMode = useDisplayMode();
+  const composerVariant = displayMode === "fullscreen" ? "overlay" : "bottom";
+
+  return (
+    <div className="relative h-full w-full">
+      <ChatThread>
+        <ComponentContent className="h-full" />
+      </ChatThread>
+      <MockComposer variant={composerVariant} />
+    </div>
+  );
+}
+
+function ResizablePreview() {
   const isTransitioning = useIsTransitioning();
+  const resizableWidth = useResizableWidth();
+  const setResizableWidth = useWorkbenchStore((s) => s.setResizableWidth);
   const panelGroupRef = useRef<ImperativePanelGroupHandle | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const isSyncingLayout = useRef(false);
-
-  const devicePreset = DEVICE_PRESETS[deviceType];
 
   useEffect(() => {
     if (!panelGroupRef.current || !containerRef.current) return;
 
     const containerWidth = containerRef.current.offsetWidth;
-    let centerSize: number;
-
-    if (devicePreset.width === "100%") {
-      centerSize = 90;
-    } else {
-      const targetWidth = devicePreset.width + 32;
-      centerSize = Math.min(
-        PREVIEW_MAX_SIZE,
-        Math.max(PREVIEW_MIN_SIZE, (targetWidth / containerWidth) * 100),
-      );
-    }
+    const targetWidth = resizableWidth + 32;
+    const centerSize = Math.min(
+      PREVIEW_MAX_SIZE,
+      Math.max(PREVIEW_MIN_SIZE, (targetWidth / containerWidth) * 100),
+    );
 
     const spacing = (100 - centerSize) / 2;
     isSyncingLayout.current = true;
     panelGroupRef.current.setLayout([spacing, centerSize, spacing]);
-  }, [devicePreset.width]);
+  }, [resizableWidth]);
 
-  const handleLayout = useCallback((sizes: number[]) => {
-    if (!panelGroupRef.current) return;
-    if (isSyncingLayout.current) {
-      isSyncingLayout.current = false;
-      return;
-    }
+  const handleLayout = useCallback(
+    (sizes: number[]) => {
+      if (!panelGroupRef.current || !containerRef.current) return;
+      if (isSyncingLayout.current) {
+        isSyncingLayout.current = false;
+        return;
+      }
 
-    const [left, center, right] = sizes;
-    const clampedCenter = Math.min(
-      PREVIEW_MAX_SIZE,
-      Math.max(PREVIEW_MIN_SIZE, center),
-    );
-    const spacing = Math.max(0, (100 - clampedCenter) / 2);
-    const epsilon = 0.5;
+      const [left, center, right] = sizes;
+      const clampedCenter = Math.min(
+        PREVIEW_MAX_SIZE,
+        Math.max(PREVIEW_MIN_SIZE, center),
+      );
+      const spacing = Math.max(0, (100 - clampedCenter) / 2);
+      const epsilon = 0.5;
 
-    const isSymmetric =
-      Math.abs(left - spacing) < epsilon &&
-      Math.abs(right - spacing) < epsilon &&
-      Math.abs(center - clampedCenter) < epsilon;
+      const isSymmetric =
+        Math.abs(left - spacing) < epsilon &&
+        Math.abs(right - spacing) < epsilon &&
+        Math.abs(center - clampedCenter) < epsilon;
 
-    if (!isSymmetric) {
-      isSyncingLayout.current = true;
-      panelGroupRef.current.setLayout([spacing, clampedCenter, spacing]);
-    }
-  }, []);
+      if (!isSymmetric) {
+        isSyncingLayout.current = true;
+        panelGroupRef.current.setLayout([spacing, clampedCenter, spacing]);
+      }
+
+      const containerWidth = containerRef.current.offsetWidth;
+      const newWidth = Math.round((clampedCenter / 100) * containerWidth - 32);
+      const clampedWidth = Math.max(
+        RESIZABLE_MIN_WIDTH,
+        Math.min(RESIZABLE_MAX_WIDTH, newWidth),
+      );
+      if (clampedWidth !== resizableWidth) {
+        setResizableWidth(clampedWidth);
+      }
+    },
+    [resizableWidth, setResizableWidth],
+  );
 
   return (
     <div
       ref={containerRef}
-      className="scrollbar-subtle h-full w-full overflow-auto p-4"
+      className="bg-background scrollbar-subtle bg-dot-grid h-full w-full overflow-hidden p-4 dark:bg-neutral-950"
     >
-      <div className="flex min-h-full w-full items-start justify-center">
+      <div className="flex h-full w-full items-start justify-center">
         <PanelGroup
           ref={panelGroupRef}
           direction="horizontal"
           onLayout={handleLayout}
-          className="w-full"
+          className="h-full w-full"
         >
           <Panel defaultSize={5} minSize={0} />
           <PreviewResizeHandle isTransitioning={isTransitioning} />
@@ -116,12 +142,9 @@ export function InlineView() {
             minSize={PREVIEW_MIN_SIZE}
             maxSize={PREVIEW_MAX_SIZE}
           >
-            <MorphContainer
-              className="overflow-hidden rounded-xl"
-              style={{ height: maxHeight }}
-            >
-              <ComponentContent className="h-full" />
-            </MorphContainer>
+            <DeviceFrame className="h-full">
+              <ChatWithComposer />
+            </DeviceFrame>
           </Panel>
           <PreviewResizeHandle isTransitioning={isTransitioning} />
           <Panel defaultSize={5} minSize={0} />
@@ -131,46 +154,70 @@ export function InlineView() {
   );
 }
 
-export function FullscreenView() {
-  const deviceType = useDeviceType();
-  const devicePreset = DEVICE_PRESETS[deviceType];
-  const isFixedWidth = typeof devicePreset.width === "number";
-
+function DesktopPreview() {
   return (
-    <div
-      className={cn(
-        "absolute inset-0 overflow-hidden",
-        isFixedWidth && "flex justify-center",
-      )}
-    >
-      <MorphContainer
-        className="relative h-full overflow-hidden"
-        style={isFixedWidth ? { width: devicePreset.width } : undefined}
-      >
-        <div className="isolate h-full">
-          <ComponentContent className="h-full p-4" />
-          <MockComposer />
-        </div>
-      </MorphContainer>
+    <div className="h-full w-full">
+      <ChatWithComposer />
     </div>
   );
 }
 
-export function CarouselView() {
-  const maxHeight = useWorkbenchStore((s) => s.maxHeight);
+function FramedPreview() {
+  const deviceType = useDeviceType();
+  const devicePreset = DEVICE_PRESETS[deviceType];
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [containerWidth, setContainerWidth] = useState(0);
+
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    const observer = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        setContainerWidth(entry.contentRect.width);
+      }
+    });
+    observer.observe(container);
+    return () => observer.disconnect();
+  }, []);
+
+  const deviceWidth =
+    typeof devicePreset.width === "number" ? devicePreset.width : 0;
+  const hasMeasured = containerWidth > 0;
+  const showFrame =
+    hasMeasured && containerWidth > deviceWidth + FRAME_VISIBILITY_THRESHOLD;
 
   return (
-    <div className="flex h-full items-center justify-center overflow-hidden p-4">
-      <div className="flex items-center gap-6">
-        <div className="bg-muted/30 h-48 w-32 shrink-0 rounded-lg opacity-40" />
-        <MorphContainer
-          className="shrink-0 overflow-hidden rounded-xl shadow-xl"
-          style={{ height: maxHeight, width: 320 }}
-        >
-          <ComponentContent className="h-full" />
-        </MorphContainer>
-        <div className="bg-muted/30 h-48 w-32 shrink-0 rounded-lg opacity-40" />
-      </div>
+    <div ref={containerRef} className="h-full w-full overflow-hidden">
+      {showFrame ? (
+        <div className="bg-background bg-dot-grid flex h-full w-full items-center justify-center p-4 dark:bg-neutral-950">
+          <DeviceFrame
+            className="max-h-full"
+            style={{
+              width: deviceWidth,
+              height: "100%",
+            }}
+          >
+            <ChatWithComposer />
+          </DeviceFrame>
+        </div>
+      ) : (
+        <ChatWithComposer />
+      )}
     </div>
   );
+}
+
+export function PreviewContent() {
+  const deviceType = useDeviceType();
+
+  if (deviceType === "resizable") {
+    return <ResizablePreview />;
+  }
+
+  if (deviceType === "desktop") {
+    return <DesktopPreview />;
+  }
+
+  return <FramedPreview />;
 }

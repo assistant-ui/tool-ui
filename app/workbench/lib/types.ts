@@ -1,6 +1,6 @@
-export type DisplayMode = "pip" | "inline" | "fullscreen" | "carousel";
+export type DisplayMode = "pip" | "inline" | "fullscreen";
 export type Theme = "light" | "dark";
-export type DeviceType = "mobile" | "tablet" | "desktop";
+export type DeviceType = "mobile" | "tablet" | "desktop" | "resizable";
 
 export interface StructuredWidgetState {
   modelContent: string | Record<string, unknown> | null;
@@ -204,6 +204,14 @@ export const DEVICE_PRESETS: Record<DeviceType, DevicePreset> = {
     },
   },
   desktop: {
+    width: "100%",
+    height: "100%",
+    userAgent: {
+      device: { type: "desktop" },
+      capabilities: { hover: true, touch: false },
+    },
+  },
+  resizable: {
     width: "100%",
     height: "100%",
     userAgent: {

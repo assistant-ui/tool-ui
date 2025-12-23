@@ -266,12 +266,14 @@ interface ActivityEntryProps {
   entry: ConsoleEntry;
   isExpanded: boolean;
   onToggle: () => void;
+  recencyOpacity?: number;
 }
 
 export function ActivityEntry({
   entry,
   isExpanded,
   onToggle,
+  recencyOpacity = 1,
 }: ActivityEntryProps) {
   const config = ENTRY_CONFIG[entry.type];
   const timestamp = formatTimestamp(entry.timestamp);
@@ -279,12 +281,14 @@ export function ActivityEntry({
   const hasDetails = hasEntryDetails(entry);
   const metadataPreview = getMetadataPreview(entry);
 
+  const opacityStyle = { opacity: recencyOpacity };
+
   return (
     <Entry.Root>
       <Entry.Row onClick={onToggle} disabled={!hasDetails}>
-        <Entry.Icon icon={config.icon} color={config.color} />
+        <Entry.Icon icon={config.icon} color={config.color} style={opacityStyle} />
         <Entry.Content>
-          <Entry.Label color={config.color}>{methodName}</Entry.Label>
+          <Entry.Label color={config.color} style={opacityStyle}>{methodName}</Entry.Label>
           {metadataPreview && <Entry.Meta>{metadataPreview}</Entry.Meta>}
           <Entry.Spacer />
           <Entry.Timestamp visible={isExpanded}>{timestamp}</Entry.Timestamp>
@@ -312,6 +316,7 @@ interface CallToolGroupEntryProps {
   responseExpanded: boolean;
   onToggleRequest: () => void;
   onToggleResponse: () => void;
+  recencyOpacity?: number;
 }
 
 export function CallToolGroupEntry({
@@ -321,6 +326,7 @@ export function CallToolGroupEntry({
   responseExpanded,
   onToggleRequest,
   onToggleResponse,
+  recencyOpacity = 1,
 }: CallToolGroupEntryProps) {
   const [isConfigOpen, setIsConfigOpen] = useState(false);
 
@@ -333,6 +339,8 @@ export function CallToolGroupEntry({
   const hasCustomConfig = useToolHasCustomConfig(toolName ?? "");
   const { isSimulated, mode: simulatedMode } = parseSimulatedResponse(response);
 
+  const opacityStyle = { opacity: recencyOpacity };
+
   return (
     <Entry.Root indicator={hasCustomConfig ? "configured" : "none"}>
       <Entry.Row
@@ -340,9 +348,9 @@ export function CallToolGroupEntry({
         onClick={onToggleRequest}
         disabled={!hasRequestDetails}
       >
-        <Entry.Icon icon={config.icon} color={config.color} />
+        <Entry.Icon icon={config.icon} color={config.color} style={opacityStyle} />
         <Entry.Content>
-          <Entry.Label color={config.color}>
+          <Entry.Label color={config.color} style={opacityStyle}>
             {toolName || "callTool"}
           </Entry.Label>
           {keyArg && <Entry.Meta>&quot;{keyArg}&quot;</Entry.Meta>}

@@ -3,13 +3,24 @@
 import { useRef, useState, useCallback } from "react";
 import { ArrowUp } from "lucide-react";
 import { cn } from "@/lib/ui/cn";
-import { useDeviceType, useWorkbenchStore } from "@/app/workbench/lib/store";
+import {
+  useDeviceType,
+  useWorkbenchStore,
+  useIsTransitioning,
+} from "@/app/workbench/lib/store";
 
-export function MockComposer() {
+type ComposerVariant = "bottom" | "overlay";
+
+interface MockComposerProps {
+  variant?: ComposerVariant;
+}
+
+export function MockComposer({ variant = "bottom" }: MockComposerProps) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [isMultiline, setIsMultiline] = useState(false);
   const deviceType = useDeviceType();
   const theme = useWorkbenchStore((s) => s.theme);
+  const isTransitioning = useIsTransitioning();
   const isMobile = deviceType === "mobile";
   const isDark = theme === "dark";
 
@@ -26,12 +37,22 @@ export function MockComposer() {
     setIsMultiline(scrollHeight > lineHeight * 1.5);
   }, []);
 
+  const isOverlay = variant === "overlay";
+
   return (
     <div
       className={cn(
-        "absolute inset-x-0 bottom-0 z-10 flex justify-center",
+        "absolute inset-x-0 bottom-0 z-20 flex justify-center",
         isMobile ? "px-3 pb-3" : "px-4 pb-4",
+        isOverlay && "pt-8",
+        isOverlay &&
+          (isDark
+            ? "bg-gradient-to-t from-neutral-900 via-neutral-900/90 to-transparent"
+            : "bg-gradient-to-t from-white via-white/90 to-transparent"),
       )}
+      style={{
+        viewTransitionName: isTransitioning ? "workbench-composer" : undefined,
+      }}
     >
       <div
         className={cn(

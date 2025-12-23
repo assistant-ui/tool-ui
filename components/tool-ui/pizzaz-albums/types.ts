@@ -1,4 +1,4 @@
-export type DisplayMode = "inline" | "pip" | "fullscreen" | "carousel";
+export type DisplayMode = "inline" | "pip" | "fullscreen";
 
 export interface AlbumPhoto {
   id: string;
