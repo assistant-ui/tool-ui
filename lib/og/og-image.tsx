@@ -12,12 +12,9 @@ export const contentType = "image/png";
 const ZINC_950 = "#09090b";
 const ZINC_400 = "#a1a1aa";
 
-async function loadGeistFont(weight: "Regular" | "SemiBold" | "Bold") {
-  const fontPath = join(
-    process.cwd(),
-    `node_modules/geist/dist/fonts/geist-sans/Geist-${weight}.ttf`,
-  );
-  return readFile(fontPath);
+async function loadGeistFont(weight: "Regular" | "Bold") {
+  // Per Next.js docs, `process.cwd()` is the Next.js project directory.
+  return readFile(join(process.cwd(), `assets/fonts/Geist-${weight}.ttf`));
 }
 
 export async function generateOgImage(title: string, description?: string) {

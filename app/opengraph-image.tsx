@@ -4,6 +4,7 @@ import {
   contentType as ogContentType,
 } from "@/lib/og/og-image";
 
+export const runtime = "nodejs";
 export const alt = "Tool UI - Beautiful UI components for AI tool calls";
 export const size = ogSize;
 export const contentType = ogContentType;
