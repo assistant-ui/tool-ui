@@ -352,7 +352,7 @@ export function ItemCarousel({
           ref={scrollRef}
           className={cn(
             "grid auto-cols-max grid-flow-col gap-4 overflow-x-auto overscroll-x-contain p-4",
-            "snap-x snap-proximity",
+            "snap-x snap-mandatory",
           )}
           role="list"
           style={SCROLL_PADDING_STYLE}
@@ -363,7 +363,7 @@ export function ItemCarousel({
               data-carousel-item
               data-item-id={item.id}
               role="listitem"
-              className="flex snap-start"
+              className="flex snap-start snap-always"
             >
               <ItemCard
                 item={item}
