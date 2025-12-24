@@ -106,8 +106,13 @@ export function ChatThread({ children, className }: ChatThreadProps) {
   const displayMode = useDisplayMode();
   const theme = useWorkbenchTheme();
   const maxHeight = useWorkbenchStore((s) => s.maxHeight);
+  const intrinsicHeight = useWorkbenchStore((s) => s.intrinsicHeight);
   const isDark = theme === "dark";
   const scrollRef = useRef<HTMLDivElement>(null);
+  const widgetHeight =
+    intrinsicHeight !== null
+      ? Math.min(Math.max(intrinsicHeight, 0), maxHeight)
+      : maxHeight;
 
   useEffect(() => {
     if (scrollRef.current && displayMode === "pip") {
@@ -129,7 +134,7 @@ export function ChatThread({ children, className }: ChatThreadProps) {
         className={className}
         isDark={isDark}
         scrollRef={scrollRef}
-        maxHeight={maxHeight}
+        widgetHeight={widgetHeight}
       >
         {children}
       </PipLayout>
@@ -137,7 +142,11 @@ export function ChatThread({ children, className }: ChatThreadProps) {
   }
 
   return (
-    <InlineLayout className={className} isDark={isDark} maxHeight={maxHeight}>
+    <InlineLayout
+      className={className}
+      isDark={isDark}
+      widgetHeight={widgetHeight}
+    >
       {children}
     </InlineLayout>
   );
@@ -150,14 +159,14 @@ interface LayoutProps {
 }
 
 interface InlineLayoutProps extends LayoutProps {
-  maxHeight: number;
+  widgetHeight: number;
 }
 
 function InlineLayout({
   children,
   className,
   isDark,
-  maxHeight,
+  widgetHeight,
 }: InlineLayoutProps) {
   return (
     <div
@@ -176,7 +185,7 @@ function InlineLayout({
               "w-full overflow-hidden rounded-2xl border shadow-sm",
               isDark ? "border-neutral-700" : "border-neutral-200",
             )}
-            style={{ height: maxHeight, maxHeight }}
+            style={{ height: widgetHeight, maxHeight: widgetHeight }}
           >
             <div className="h-full overflow-auto">{children}</div>
           </MorphContainer>
@@ -190,7 +199,7 @@ function InlineLayout({
 
 interface PipLayoutProps extends LayoutProps {
   scrollRef: React.RefObject<HTMLDivElement | null>;
-  maxHeight: number;
+  widgetHeight: number;
 }
 
 function PipLayout({
@@ -198,7 +207,7 @@ function PipLayout({
   className,
   isDark,
   scrollRef,
-  maxHeight,
+  widgetHeight,
 }: PipLayoutProps) {
   return (
     <div
@@ -209,23 +218,23 @@ function PipLayout({
       )}
     >
       <div className="pointer-events-none absolute inset-x-0 top-3 z-10 flex justify-center px-3">
-        <MorphContainer
-          className={cn(
-            "pointer-events-auto w-full max-w-[770px] overflow-hidden rounded-2xl border shadow-lg transition-colors",
-            isDark
-              ? "border-neutral-700 bg-neutral-900"
-              : "border-neutral-200 bg-white",
-          )}
-          style={{ height: maxHeight, maxHeight }}
-        >
-          <div className="h-full overflow-auto">{children}</div>
-        </MorphContainer>
-      </div>
+          <MorphContainer
+            className={cn(
+              "pointer-events-auto w-full max-w-[770px] overflow-hidden rounded-2xl border shadow-lg transition-colors",
+              isDark
+                ? "border-neutral-700 bg-neutral-900"
+                : "border-neutral-200 bg-white",
+            )}
+            style={{ height: widgetHeight, maxHeight: widgetHeight }}
+          >
+            <div className="h-full overflow-auto">{children}</div>
+          </MorphContainer>
+        </div>
 
       <div
         ref={scrollRef}
         className="scrollbar-subtle relative z-0 h-full overflow-y-auto"
-        style={{ paddingTop: maxHeight + 24 }}
+        style={{ paddingTop: widgetHeight + 24 }}
       >
         <div className="mx-auto flex max-w-[770px] flex-col gap-3 px-4 pb-24">
           <MessageList

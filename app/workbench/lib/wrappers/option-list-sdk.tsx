@@ -27,10 +27,11 @@ export function OptionListSDK(props: Record<string, unknown>) {
   const handleConfirm = useCallback(
     async (value: OptionListSelection) => {
       await setWidgetState({
+        ...(widgetState ?? {}),
         confirmedIds: value,
       });
     },
-    [setWidgetState],
+    [setWidgetState, widgetState],
   );
 
   return (

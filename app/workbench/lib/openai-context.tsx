@@ -6,7 +6,11 @@ import {
   useCallback,
   useMemo,
   useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
   type ReactNode,
+  type MutableRefObject,
 } from "react";
 import { useWorkbenchStore } from "./store";
 import { handleMockToolCall, type MockToolCallResult } from "./mock-responses";
@@ -22,6 +26,7 @@ import type {
   GetFileDownloadUrlResponse,
   View,
   WidgetState,
+  WindowOpenAI,
 } from "./types";
 import { SET_GLOBALS_EVENT_TYPE } from "./types";
 import { storeFile, getFileUrl } from "./file-store";
@@ -34,10 +39,129 @@ interface OpenAIProviderProps {
   children: ReactNode;
 }
 
+function isValueEqual(a: unknown, b: unknown): boolean {
+  if (Object.is(a, b)) return true;
+  try {
+    return JSON.stringify(a) === JSON.stringify(b);
+  } catch {
+    return false;
+  }
+}
+
+function buildChangedGlobals(
+  prev: OpenAIGlobals | null,
+  next: OpenAIGlobals,
+): Partial<OpenAIGlobals> {
+  if (!prev) return next;
+  const changed: Partial<OpenAIGlobals> = {};
+  const writable = changed as Record<
+    keyof OpenAIGlobals,
+    OpenAIGlobals[keyof OpenAIGlobals]
+  >;
+  (Object.keys(next) as Array<keyof OpenAIGlobals>).forEach((key) => {
+    if (!isValueEqual(prev[key], next[key])) {
+      writable[key] = next[key];
+    }
+  });
+  return changed;
+}
+
+function createOpenAIShim(
+  globalsRef: MutableRefObject<OpenAIGlobals>,
+  apiRef: MutableRefObject<OpenAIAPI | null>,
+): WindowOpenAI {
+  const withApi = <T,>(handler: (api: OpenAIAPI) => T, fallback: T): T => {
+    const api = apiRef.current;
+    return api ? handler(api) : fallback;
+  };
+
+  return {
+    get theme() {
+      return globalsRef.current.theme;
+    },
+    get locale() {
+      return globalsRef.current.locale;
+    },
+    get displayMode() {
+      return globalsRef.current.displayMode;
+    },
+    get maxHeight() {
+      return globalsRef.current.maxHeight;
+    },
+    get toolInput() {
+      return globalsRef.current.toolInput;
+    },
+    get toolOutput() {
+      return globalsRef.current.toolOutput;
+    },
+    get toolResponseMetadata() {
+      return globalsRef.current.toolResponseMetadata;
+    },
+    get widgetState() {
+      return globalsRef.current.widgetState;
+    },
+    get userAgent() {
+      return globalsRef.current.userAgent;
+    },
+    get safeArea() {
+      return globalsRef.current.safeArea;
+    },
+    get view() {
+      return globalsRef.current.view;
+    },
+    get userLocation() {
+      return globalsRef.current.userLocation;
+    },
+
+    callTool: (name, args) =>
+      withApi(
+        (api) => api.callTool(name, args),
+        Promise.reject(new Error("OpenAI API not ready")),
+      ),
+    setWidgetState: (state) => {
+      apiRef.current?.setWidgetState(state);
+    },
+    requestDisplayMode: (args) =>
+      withApi(
+        (api) => api.requestDisplayMode(args),
+        Promise.resolve({ mode: args.mode }),
+      ),
+    sendFollowUpMessage: (args) =>
+      withApi((api) => api.sendFollowUpMessage(args), Promise.resolve()),
+    requestClose: () => {
+      apiRef.current?.requestClose();
+    },
+    openExternal: (payload) => {
+      apiRef.current?.openExternal(payload);
+    },
+    notifyIntrinsicHeight: (height) => {
+      apiRef.current?.notifyIntrinsicHeight(height);
+    },
+    requestModal: (options) =>
+      withApi((api) => api.requestModal(options), Promise.resolve()),
+    uploadFile: (file) =>
+      withApi(
+        (api) => api.uploadFile(file),
+        Promise.reject(new Error("OpenAI API not ready")),
+      ),
+    getFileDownloadUrl: (args) =>
+      withApi(
+        (api) => api.getFileDownloadUrl(args),
+        Promise.reject(new Error("OpenAI API not ready")),
+      ),
+  };
+}
+
 export function OpenAIProvider({ children }: OpenAIProviderProps) {
   const store = useWorkbenchStore();
   const globals = store.getOpenAIGlobals();
   const reducedMotion = useReducedMotion();
+  const globalsRef = useRef(globals);
+  const prevGlobalsRef = useRef<OpenAIGlobals | null>(null);
+  const apiRef = useRef<OpenAIAPI | null>(null);
+  const [openaiReady, setOpenaiReady] = useState(false);
+
+  globalsRef.current = globals;
 
   const callTool = useCallback(
     async (
@@ -80,7 +204,8 @@ export function OpenAIProvider({ children }: OpenAIProviderProps) {
           case "error":
             result = {
               isError: true,
-              content: (simConfig.responseData.message as string) ?? "Simulated error",
+              content:
+                (simConfig.responseData.message as string) ?? "Simulated error",
               _meta: { "openai/widgetSessionId": store.widgetSessionId },
             };
             break;
@@ -99,8 +224,11 @@ export function OpenAIProvider({ children }: OpenAIProviderProps) {
           result,
         });
 
-        if (result.structuredContent) {
-          store.setToolOutput(result.structuredContent);
+        store.setToolOutput(result.structuredContent ?? null);
+        store.setToolResponseMetadata(result._meta ?? null);
+
+        if (result._meta?.["openai/closeWidget"] === true) {
+          store.setWidgetClosed(true);
         }
 
         return result;
@@ -150,15 +278,11 @@ export function OpenAIProvider({ children }: OpenAIProviderProps) {
         result: enrichedResult,
       });
 
-      if (enrichedResult.structuredContent) {
-        store.setToolOutput(enrichedResult.structuredContent);
-      }
-      if (enrichedResult._meta) {
-        store.setToolResponseMetadata(enrichedResult._meta);
+      store.setToolOutput(enrichedResult.structuredContent ?? null);
+      store.setToolResponseMetadata(enrichedResult._meta ?? null);
 
-        if (enrichedResult._meta["openai/closeWidget"] === true) {
-          store.setWidgetClosed(true);
-        }
+      if (enrichedResult._meta?.["openai/closeWidget"] === true) {
+        store.setWidgetClosed(true);
       }
 
       return enrichedResult;
@@ -167,15 +291,13 @@ export function OpenAIProvider({ children }: OpenAIProviderProps) {
   );
 
   const setWidgetState = useCallback(
-    async (state: WidgetState): Promise<void> => {
+    (state: WidgetState): void => {
       store.addConsoleEntry({
         type: "setWidgetState",
         method: "setWidgetState",
         args: state,
       });
-      if (state !== null) {
-        store.updateWidgetState(state as Record<string, unknown>);
-      }
+      store.setWidgetState(state);
     },
     [store],
   );
@@ -277,6 +399,8 @@ export function OpenAIProvider({ children }: OpenAIProviderProps) {
         method: `notifyIntrinsicHeight(${height})`,
         args: { height },
       });
+      const nextHeight = Number.isFinite(height) ? Math.max(0, height) : null;
+      store.setIntrinsicHeight(nextHeight);
     },
     [store],
   );
@@ -333,6 +457,47 @@ export function OpenAIProvider({ children }: OpenAIProviderProps) {
     [store],
   );
 
+  apiRef.current = {
+    callTool,
+    setWidgetState,
+    requestDisplayMode,
+    sendFollowUpMessage,
+    requestClose,
+    openExternal,
+    notifyIntrinsicHeight,
+    requestModal,
+    uploadFile,
+    getFileDownloadUrl,
+  };
+
+  useLayoutEffect(() => {
+    if (typeof window === "undefined") return;
+    const existing = (
+      window as Window & { openai?: WindowOpenAI & { __workbench?: boolean } }
+    ).openai;
+
+    if (existing?.__workbench) {
+      setOpenaiReady(true);
+      return;
+    }
+    if (existing) {
+      console.warn(
+        "[Workbench] window.openai already exists; skipping shim injection.",
+      );
+      setOpenaiReady(true);
+      return;
+    }
+
+    const shim = createOpenAIShim(globalsRef, apiRef);
+    Object.defineProperty(shim, "__workbench", { value: true });
+    Object.defineProperty(window, "openai", {
+      value: shim,
+      configurable: false,
+      writable: false,
+    });
+    setOpenaiReady(true);
+  }, []);
+
   const value = useMemo<OpenAIContextValue>(
     () => ({
       theme: globals.theme,
@@ -374,14 +539,21 @@ export function OpenAIProvider({ children }: OpenAIProviderProps) {
   );
 
   useEffect(() => {
+    if (typeof window === "undefined") return;
+    const changed = buildChangedGlobals(prevGlobalsRef.current, globals);
+    prevGlobalsRef.current = globals;
+
+    if (Object.keys(changed).length === 0) return;
     const event = new CustomEvent(SET_GLOBALS_EVENT_TYPE, {
-      detail: { globals },
+      detail: { globals: changed },
     });
     window.dispatchEvent(event);
   }, [globals]);
 
   return (
-    <OpenAIContext.Provider value={value}>{children}</OpenAIContext.Provider>
+    <OpenAIContext.Provider value={value}>
+      {openaiReady ? children : null}
+    </OpenAIContext.Provider>
   );
 }
 
@@ -422,13 +594,16 @@ export function useLocale(): string {
 
 export function useWidgetState<T extends Record<string, unknown>>(
   defaultState?: T,
-): readonly [T | null, (state: T | ((prev: T | null) => T)) => void] {
+): readonly [
+  T | null,
+  (state: T | null | ((prev: T | null) => T | null)) => void,
+] {
   const context = useOpenAI();
   const currentState =
     (context.widgetState as T | null) ?? defaultState ?? null;
 
   const setState = useCallback(
-    (stateOrUpdater: T | ((prev: T | null) => T)) => {
+    (stateOrUpdater: T | null | ((prev: T | null) => T | null)) => {
       const newState =
         typeof stateOrUpdater === "function"
           ? stateOrUpdater(currentState)

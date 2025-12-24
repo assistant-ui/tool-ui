@@ -52,6 +52,7 @@ interface WorkbenchState {
   toolOutput: Record<string, unknown> | null;
   widgetState: WidgetState;
   maxHeight: number;
+  intrinsicHeight: number | null;
   toolResponseMetadata: Record<string, unknown> | null;
   safeAreaInsets: SafeAreaInsets;
   consoleLogs: ConsoleEntry[];
@@ -80,6 +81,7 @@ interface WorkbenchState {
   setWidgetState: (state: WidgetState) => void;
   updateWidgetState: (state: Record<string, unknown>) => void;
   setMaxHeight: (height: number) => void;
+  setIntrinsicHeight: (height: number | null) => void;
   setToolResponseMetadata: (metadata: Record<string, unknown> | null) => void;
   setSafeAreaInsets: (insets: Partial<SafeAreaInsets>) => void;
   addConsoleEntry: (entry: {
@@ -174,6 +176,7 @@ export const useWorkbenchStore = create<WorkbenchState>((set, get) => ({
   toolOutput: null,
   widgetState: null,
   maxHeight: 500,
+  intrinsicHeight: null,
   toolResponseMetadata: null,
   safeAreaInsets: { top: 10, bottom: 100, left: 10, right: 10 },
   consoleLogs: [],
@@ -200,6 +203,7 @@ export const useWorkbenchStore = create<WorkbenchState>((set, get) => ({
         toolInput: entry?.defaultProps ?? {},
         toolOutput: null,
         widgetState: null,
+        intrinsicHeight: null,
         toolResponseMetadata: null,
         isWidgetClosed: false,
         widgetSessionId: crypto.randomUUID(),
@@ -238,6 +242,7 @@ export const useWorkbenchStore = create<WorkbenchState>((set, get) => ({
       widgetState: { ...(prev.widgetState ?? {}), ...state },
     })),
   setMaxHeight: (height) => set(() => ({ maxHeight: height })),
+  setIntrinsicHeight: (height) => set(() => ({ intrinsicHeight: height })),
   setToolResponseMetadata: (metadata) =>
     set(() => ({ toolResponseMetadata: metadata })),
   setSafeAreaInsets: (insets) =>

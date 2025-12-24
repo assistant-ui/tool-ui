@@ -95,7 +95,7 @@ export interface OpenAIAPI {
   requestDisplayMode: (args: { mode: DisplayMode }) => Promise<{
     mode: DisplayMode;
   }>;
-  setWidgetState: (state: WidgetState) => Promise<void>;
+  setWidgetState: (state: WidgetState) => void;
   notifyIntrinsicHeight: (height: number) => void;
   requestModal: (options: ModalOptions) => Promise<void>;
   uploadFile: (file: File) => Promise<UploadFileResponse>;

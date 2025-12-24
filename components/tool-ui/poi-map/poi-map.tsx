@@ -198,7 +198,7 @@ export function POIMap({
         >
           <button
             onClick={onDismissModal}
-            className="bg-background/90 hover:bg-background active:scale-95 absolute top-3 right-3 z-10 flex size-9 items-center justify-center rounded-full border shadow-sm backdrop-blur-md transition-all duration-150"
+            className="bg-background/90 hover:bg-background absolute top-3 right-3 z-10 flex size-9 items-center justify-center rounded-full border shadow-sm backdrop-blur-md transition-all duration-150 active:scale-95"
             aria-label="Close"
           >
             <X className="size-4" />
@@ -315,12 +315,12 @@ export function POIMap({
     return (
       <div
         id={id}
-        className={cn("relative flex h-full w-full gap-3", className)}
+        className={cn("relative flex h-full w-full", className)}
         data-tool-ui-id={id}
         data-slot="poi-map"
       >
         {renderModalOverlay()}
-        <div className="bg-card/50 flex w-72 shrink-0 flex-col rounded-xl py-3 pl-3 pr-1 backdrop-blur-sm">
+        <div className="bg-card/50 flex w-72 shrink-0 flex-col rounded-xl py-3 pr-1 backdrop-blur-sm">
           <div className="mb-3 pr-2">
             <div className="flex items-center justify-between">
               <span className="text-sm font-medium tracking-tight">
@@ -397,7 +397,7 @@ export function POIMap({
                   <Button
                     variant="secondary"
                     size="icon"
-                    className="bg-background/90 hover:bg-background active:scale-95 size-10 rounded-xl backdrop-blur-md transition-all"
+                    className="bg-background/90 hover:bg-background size-10 rounded-xl backdrop-blur-md transition-all active:scale-95"
                     onClick={onRefresh}
                   >
                     <RefreshCw className="size-4" />
@@ -413,7 +413,7 @@ export function POIMap({
                 <Button
                   variant="secondary"
                   size="icon"
-                  className="bg-background/90 hover:bg-background active:scale-95 size-10 rounded-xl backdrop-blur-md transition-all"
+                  className="bg-background/90 hover:bg-background size-10 rounded-xl backdrop-blur-md transition-all active:scale-95"
                   onClick={handleToggleFullscreen}
                 >
                   <Minimize2 className="size-4" />
@@ -467,7 +467,7 @@ export function POIMap({
               <Button
                 variant="secondary"
                 size="icon"
-                className="bg-background/90 hover:bg-background active:scale-95 size-10 rounded-xl backdrop-blur-md transition-all"
+                className="bg-background/90 hover:bg-background size-10 rounded-xl backdrop-blur-md transition-all active:scale-95"
                 onClick={onRefresh}
               >
                 <RefreshCw className="size-4" />
@@ -483,7 +483,7 @@ export function POIMap({
             <Button
               variant="secondary"
               size="icon"
-              className="bg-background/90 hover:bg-background active:scale-95 size-10 rounded-xl backdrop-blur-md transition-all"
+              className="bg-background/90 hover:bg-background size-10 rounded-xl backdrop-blur-md transition-all active:scale-95"
               onClick={handleToggleFullscreen}
             >
               <Maximize2 className="size-4" />

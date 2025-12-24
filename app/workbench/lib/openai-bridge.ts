@@ -87,6 +87,7 @@ export function generateBridgeScript(initialGlobals: OpenAIGlobals): string {
     get userAgent() { return globals.userAgent; },
     get safeArea() { return globals.safeArea; },
     get view() { return globals.view; },
+    get userLocation() { return globals.userLocation; },
 
     // API Methods
     callTool: function(name, args) {
@@ -95,7 +96,7 @@ export function generateBridgeScript(initialGlobals: OpenAIGlobals): string {
 
     setWidgetState: function(state) {
       // Update local state immediately
-      globals.widgetState = { ...globals.widgetState, ...state };
+      globals.widgetState = state == null ? null : state;
       // Notify parent (fire-and-forget style, but still logged)
       sendMethodCall('setWidgetState', [state]).catch(function() {});
     },
