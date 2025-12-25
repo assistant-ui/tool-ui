@@ -26,7 +26,7 @@ interface WorkbenchContext {
 
 function buildSystemPrompt(
   relevantDocs: string,
-  context: WorkbenchContext
+  context: WorkbenchContext,
 ): string {
   return `You are SDK Guide, an assistant that helps developers build ChatGPT Apps using the OpenAI Apps SDK.
 
@@ -77,7 +77,7 @@ export async function POST(req: Request) {
         {
           status: 500,
           headers: { "Content-Type": "application/json" },
-        }
+        },
       );
     }
 
@@ -102,7 +102,7 @@ export async function POST(req: Request) {
             "X-RateLimit-Remaining": rateLimitResult.remaining.toString(),
             "X-RateLimit-Reset": rateLimitResult.reset.toString(),
           },
-        }
+        },
       );
     }
 
@@ -114,7 +114,7 @@ export async function POST(req: Request) {
         {
           status: 400,
           headers: { "Content-Type": "application/json" },
-        }
+        },
       );
     }
 
@@ -141,7 +141,7 @@ export async function POST(req: Request) {
     const modelMessages = convertToModelMessages(messages);
 
     const result = streamText({
-      model: openai("gpt-4o-mini"),
+      model: openai("gpt-5-mini"),
       messages: modelMessages,
       system: buildSystemPrompt(formattedDocs, context),
       tools: {
@@ -157,16 +157,22 @@ export async function POST(req: Request) {
                   "toolOutput",
                   "widgetState",
                   "displayMode",
-                ])
+                ]),
               )
               .optional()
               .describe(
-                "Which parts of the configuration to include. Defaults to all."
+                "Which parts of the configuration to include. Defaults to all.",
               ),
           }),
           execute: async ({ include }) => {
             const includeSet = new Set(
-              include || ["component", "toolInput", "toolOutput", "widgetState", "displayMode"]
+              include || [
+                "component",
+                "toolInput",
+                "toolOutput",
+                "widgetState",
+                "displayMode",
+              ],
             );
 
             const config: Record<string, unknown> = {};
@@ -204,7 +210,7 @@ export async function POST(req: Request) {
               .string()
               .optional()
               .describe(
-                "Filter by method name (e.g., 'callTool', 'setWidgetState')"
+                "Filter by method name (e.g., 'callTool', 'setWidgetState')",
               ),
           }),
           execute: async ({ limit, method }) => {
@@ -276,7 +282,8 @@ export async function POST(req: Request) {
                   severity: "warning",
                   field: '_meta["openai/toolInvocation/invoking"]',
                   message: `Status text is ${invokingText.length} characters. Maximum is 64.`,
-                  suggestion: "Shorten the invoking status text to 64 characters or less.",
+                  suggestion:
+                    "Shorten the invoking status text to 64 characters or less.",
                 });
               }
             }
@@ -333,7 +340,7 @@ export async function POST(req: Request) {
       {
         status: 500,
         headers: { "Content-Type": "application/json" },
-      }
+      },
     );
   }
 }
