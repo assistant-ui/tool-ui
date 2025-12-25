@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useMemo } from "react";
+import { useMemo } from "react";
 import {
   AssistantRuntimeProvider,
   AssistantModalPrimitive,
@@ -68,16 +68,9 @@ export function SDKGuideModal() {
   const isOpen = useIsSDKGuideOpen();
   const setSDKGuideOpen = useWorkbenchStore((s) => s.setSDKGuideOpen);
 
-  const handleOpenChange = useCallback(
-    (open: boolean) => {
-      setSDKGuideOpen(open);
-    },
-    [setSDKGuideOpen]
-  );
-
   return (
     <SDKGuideRuntimeProvider>
-      <AssistantModalPrimitive.Root open={isOpen} onOpenChange={handleOpenChange}>
+      <AssistantModalPrimitive.Root open={isOpen} onOpenChange={setSDKGuideOpen}>
         <AssistantModalPrimitive.Anchor className="fixed right-4 bottom-4 size-0" />
         <AssistantModalPrimitive.Content
           side="top"

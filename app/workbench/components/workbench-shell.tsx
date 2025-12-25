@@ -28,7 +28,7 @@ import { useTheme } from "next-themes";
 import { ArrowLeft, Moon, Sun, Sparkles } from "lucide-react";
 import { OnboardingModal } from "./onboarding-modal";
 import { LeftPanelIcon, RightPanelIcon } from "./panel-toggle-icons";
-import { SDKGuideModal } from "./sdk-guide";
+import { SDKGuideModal } from "./sdk-guide/sdk-guide-modal";
 
 export function WorkbenchShell() {
   const [mounted, setMounted] = React.useState(false);

@@ -165,32 +165,29 @@ export async function POST(req: Request) {
               ),
           }),
           execute: async ({ include }) => {
-            const result: Record<string, unknown> = {};
-            const includeSet = new Set(include || [
-              "component",
-              "toolInput",
-              "toolOutput",
-              "widgetState",
-              "displayMode",
-            ]);
+            const includeSet = new Set(
+              include || ["component", "toolInput", "toolOutput", "widgetState", "displayMode"]
+            );
+
+            const config: Record<string, unknown> = {};
 
             if (includeSet.has("component")) {
-              result.component = context.selectedComponent;
+              config.component = context.selectedComponent;
             }
             if (includeSet.has("displayMode")) {
-              result.displayMode = context.displayMode;
+              config.displayMode = context.displayMode;
             }
             if (includeSet.has("toolInput")) {
-              result.toolInput = context.toolInput;
+              config.toolInput = context.toolInput;
             }
             if (includeSet.has("toolOutput")) {
-              result.toolOutput = context.toolOutput;
+              config.toolOutput = context.toolOutput;
             }
             if (includeSet.has("widgetState")) {
-              result.widgetState = context.widgetState;
+              config.widgetState = context.widgetState;
             }
 
-            return result;
+            return config;
           },
         },
 
