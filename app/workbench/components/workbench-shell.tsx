@@ -17,6 +17,7 @@ import {
   useDisplayMode,
   useIsLeftPanelOpen,
   useIsRightPanelOpen,
+  useIsSDKGuideOpen,
 } from "@/app/workbench/lib/store";
 import { useWorkbenchPersistence } from "@/app/workbench/lib/persistence";
 import { workbenchComponents } from "@/app/workbench/lib/component-registry";
@@ -24,9 +25,10 @@ import { SELECT_CLASSES, COMPACT_SMALL_TEXT_CLASSES } from "./styles";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/ui/cn";
 import { useTheme } from "next-themes";
-import { ArrowLeft, Moon, Sun } from "lucide-react";
+import { ArrowLeft, Moon, Sun, Sparkles } from "lucide-react";
 import { OnboardingModal } from "./onboarding-modal";
 import { LeftPanelIcon, RightPanelIcon } from "./panel-toggle-icons";
+import { SDKGuideModal } from "./sdk-guide";
 
 export function WorkbenchShell() {
   const [mounted, setMounted] = React.useState(false);
@@ -38,6 +40,8 @@ export function WorkbenchShell() {
   const displayMode = useDisplayMode();
   const isLeftPanelOpen = useIsLeftPanelOpen();
   const isRightPanelOpen = useIsRightPanelOpen();
+  const isSDKGuideOpen = useIsSDKGuideOpen();
+  const setSDKGuideOpen = useWorkbenchStore((s) => s.setSDKGuideOpen);
   const { setTheme, resolvedTheme } = useTheme();
 
   useWorkbenchPersistence();
@@ -62,6 +66,10 @@ export function WorkbenchShell() {
     setDisplayMode(displayMode === "fullscreen" ? "inline" : "fullscreen");
   }, [displayMode, setDisplayMode]);
 
+  const toggleSDKGuide = React.useCallback(() => {
+    setSDKGuideOpen(!isSDKGuideOpen);
+  }, [isSDKGuideOpen, setSDKGuideOpen]);
+
   React.useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       const isMac = /mac/i.test(navigator.userAgent);
@@ -76,11 +84,16 @@ export function WorkbenchShell() {
         e.preventDefault();
         toggleFullscreen();
       }
+
+      if (modKey && e.key === "/") {
+        e.preventDefault();
+        toggleSDKGuide();
+      }
     };
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [toggleTheme, toggleFullscreen]);
+  }, [toggleTheme, toggleFullscreen, toggleSDKGuide]);
 
   return (
     <div className="flex h-full w-full flex-col overflow-hidden">
@@ -142,6 +155,16 @@ export function WorkbenchShell() {
           <Button
             variant="ghost"
             size="icon"
+            aria-label="SDK Guide (⌘/)"
+            className="text-muted-foreground hover:text-foreground hover:bg-muted size-7 rounded-md transition-colors"
+            onClick={toggleSDKGuide}
+          >
+            <Sparkles className="size-4" />
+          </Button>
+
+          <Button
+            variant="ghost"
+            size="icon"
             aria-label="Toggle theme"
             aria-pressed={isDark}
             className="text-muted-foreground hover:text-foreground hover:bg-muted relative size-7 rounded-md transition-colors"
@@ -167,6 +190,7 @@ export function WorkbenchShell() {
         <WorkbenchLayout />
       </div>
       <OnboardingModal />
+      <SDKGuideModal />
     </div>
   );
 }

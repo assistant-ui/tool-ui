@@ -68,6 +68,7 @@ interface WorkbenchState {
   isConsoleOpen: boolean;
   isLeftPanelOpen: boolean;
   isRightPanelOpen: boolean;
+  isSDKGuideOpen: boolean;
   simulation: SimulationState;
 
   setSelectedComponent: (id: string) => void;
@@ -101,6 +102,7 @@ interface WorkbenchState {
   setConsoleOpen: (open: boolean) => void;
   setLeftPanelOpen: (open: boolean) => void;
   setRightPanelOpen: (open: boolean) => void;
+  setSDKGuideOpen: (open: boolean) => void;
   setResizableWidth: (width: number) => void;
   selectSimTool: (toolName: string | null) => void;
   registerSimTool: (toolName: string) => void;
@@ -192,6 +194,7 @@ export const useWorkbenchStore = create<WorkbenchState>((set, get) => ({
   isConsoleOpen: false,
   isLeftPanelOpen: true,
   isRightPanelOpen: false,
+  isSDKGuideOpen: false,
   simulation: DEFAULT_SIMULATION_STATE,
   setSelectedComponent: (id) => {
     clearFiles();
@@ -280,6 +283,7 @@ export const useWorkbenchStore = create<WorkbenchState>((set, get) => ({
   setConsoleOpen: (open) => set(() => ({ isConsoleOpen: open })),
   setLeftPanelOpen: (open) => set(() => ({ isLeftPanelOpen: open })),
   setRightPanelOpen: (open) => set(() => ({ isRightPanelOpen: open })),
+  setSDKGuideOpen: (open) => set(() => ({ isSDKGuideOpen: open })),
   setResizableWidth: (width) => set(() => ({ resizableWidth: width })),
   selectSimTool: (toolName) =>
     set((state) => ({
@@ -556,6 +560,8 @@ export const useIsLeftPanelOpen = () =>
   useWorkbenchStore((s) => s.isLeftPanelOpen);
 export const useIsRightPanelOpen = () =>
   useWorkbenchStore((s) => s.isRightPanelOpen);
+export const useIsSDKGuideOpen = () =>
+  useWorkbenchStore((s) => s.isSDKGuideOpen);
 export const useSimulation = () => useWorkbenchStore((s) => s.simulation);
 export const useResizableWidth = () =>
   useWorkbenchStore((s) => s.resizableWidth);
