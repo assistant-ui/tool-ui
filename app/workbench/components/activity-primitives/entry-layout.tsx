@@ -91,11 +91,11 @@ const EntryRow = forwardRef<HTMLDivElement, EntryRowProps>(
         onClick={disabled ? undefined : onClick}
         onKeyDown={handleKeyDown}
         className={cn(
-          "grid w-full items-center px-4 text-left transition-colors",
+          "grid w-full items-center px-4 text-left",
           GRID_TEMPLATE,
           paddingY,
           "pr-2",
-          !disabled && "hover:bg-muted/40",
+          !disabled && "hover:bg-muted/10",
           disabled && "cursor-default",
           className,
         )}

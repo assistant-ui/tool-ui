@@ -176,7 +176,7 @@ export function ActivitySection() {
     <div className="scrollbar-subtle -mx-2 h-full min-h-0 overflow-y-auto pb-24">
       <ConfiguredToolsSummary />
 
-      <div className="divide-border/30 divide-y">
+      <div className="divide-border/0 divide-y">
         {groupedAndReversed.map((item, index) => {
           const recencyOpacity = getRecencyOpacity(index);
 

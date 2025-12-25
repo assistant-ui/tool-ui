@@ -32,10 +32,10 @@ export function ActivityPanel() {
               <Button
                 variant="ghost"
                 size="icon-sm"
-                className="size-6"
+                className="h-7 w-9"
                 onClick={clearConsole}
               >
-                <Trash2 className="size-3" />
+                <Trash2 className="size-4 text-neutral-500 hover:text-neutral-600 dark:text-neutral-400 dark:hover:text-neutral-300" />
               </Button>
             </TooltipTrigger>
             <TooltipContent side="left">Clear</TooltipContent>
