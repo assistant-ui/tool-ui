@@ -9,50 +9,31 @@ import {
   AssistantChatTransport,
   useChatRuntime,
 } from "@assistant-ui/react-ai-sdk";
-import { useShallow } from "zustand/react/shallow";
 import { useWorkbenchStore, useIsSDKGuideOpen } from "@/app/workbench/lib/store";
 import { SDKGuideThread } from "./sdk-guide-thread";
 
+function getWorkbenchContext() {
+  const state = useWorkbenchStore.getState();
+  return {
+    selectedComponent: state.selectedComponent,
+    displayMode: state.displayMode,
+    toolInput: state.toolInput,
+    toolOutput: state.toolOutput,
+    widgetState: state.widgetState,
+    recentConsoleLogs: state.consoleLogs.slice(-10),
+  };
+}
+
 function SDKGuideRuntimeProvider({ children }: { children: React.ReactNode }) {
-  const {
-    selectedComponent,
-    displayMode,
-    toolInput,
-    toolOutput,
-    widgetState,
-    consoleLogs,
-  } = useWorkbenchStore(
-    useShallow((s) => ({
-      selectedComponent: s.selectedComponent,
-      displayMode: s.displayMode,
-      toolInput: s.toolInput,
-      toolOutput: s.toolOutput,
-      widgetState: s.widgetState,
-      consoleLogs: s.consoleLogs,
-    }))
-  );
-
-  const workbenchContext = useMemo(
-    () => ({
-      selectedComponent,
-      displayMode,
-      toolInput,
-      toolOutput,
-      widgetState,
-      recentConsoleLogs: consoleLogs.slice(-10),
-    }),
-    [selectedComponent, displayMode, toolInput, toolOutput, widgetState, consoleLogs]
-  );
-
   const transport = useMemo(
     () =>
       new AssistantChatTransport({
         api: "/api/sdk-guide",
         body: () => ({
-          workbenchContext,
+          workbenchContext: getWorkbenchContext(),
         }),
       }),
-    [workbenchContext]
+    []
   );
 
   const runtime = useChatRuntime({ transport });

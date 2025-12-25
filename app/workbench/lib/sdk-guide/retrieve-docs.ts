@@ -27,7 +27,7 @@ function computeScore(chunk: DocChunk, queryTokens: string[]): number {
       score += 2;
     }
 
-    const contentMatches = (contentLower.match(new RegExp(token, "g")) || []).length;
+    const contentMatches = contentLower.split(token).length - 1;
     score += Math.min(contentMatches, 5);
   }
 
