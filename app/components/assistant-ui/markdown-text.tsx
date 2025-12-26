@@ -123,10 +123,7 @@ const defaultComponents = memoizeMarkdownComponents({
   ),
   p: ({ className, ...props }) => (
     <p
-      className={cn(
-        "aui-md-p mt-5 mb-5 leading-7 first:mt-0 last:mb-0",
-        className,
-      )}
+      className={cn("aui-md-p mt-5 mb-5 first:mt-0 last:mb-0", className)}
       {...props}
     />
   ),
