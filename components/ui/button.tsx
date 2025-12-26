@@ -27,7 +27,7 @@ const buttonVariants = cva(
         icon: "size-9",
         "icon-sm": "size-8",
         "icon-lg": "size-10",
-        homeCTA: "group font-light tracking-wide",
+        homeCTA: "rounded-full px-6 py-3 text-lg w-fit text-start",
       },
     },
     defaultVariants: {
