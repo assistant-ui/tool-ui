@@ -44,6 +44,10 @@
     background-size: 16px 16px;
   }
 
+  .dark .bg-dot-grid {
+    --dot-grid-color: color-mix(in oklch, var(--border) 80%, transparent);
+  }
+
   .shadow-crisp-edge {
     position: relative;
     box-sizing: padding-box;

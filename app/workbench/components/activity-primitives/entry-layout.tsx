@@ -16,12 +16,12 @@ import type { LucideIcon } from "lucide-react";
  * └──────────────────────────────────────────────────────────────────┘
  *
  * Grid columns:
- * - indicator: 8px (or 0 when inactive)
- * - icon: 20px fixed
+ * - indicator: 4px (or 0 when inactive)
+ * - icon: 28px fixed
  * - content: 1fr (contains label, meta, spacer, timestamp, actions)
  */
 
-const GRID_TEMPLATE = "grid-cols-[8px_20px_1fr]";
+const GRID_TEMPLATE = "grid-cols-[4px_28px_1fr]";
 
 type EntryVariant = "default" | "nested" | "response";
 type IndicatorState = "none" | "configured" | "error";

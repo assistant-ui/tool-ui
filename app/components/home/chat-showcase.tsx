@@ -449,7 +449,7 @@ function createSceneConfigs(): SceneConfig[] {
     },
     {
       userMessage: "Need a debounce hook",
-      preamble: "Here's a solid useDebounce hook",
+      preamble: "Sure, here's a solid one with some often overlooked defenses:",
       toolUI: (
         <CodeBlock
           id="chat-showcase-code-block"

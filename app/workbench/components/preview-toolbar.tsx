@@ -156,7 +156,7 @@ interface SettingRowProps {
 function SettingRow({ label, htmlFor, children }: SettingRowProps) {
   return (
     <div className="flex min-h-8 items-center justify-between gap-4">
-      <Label htmlFor={htmlFor} className={`${LABEL_CLASSES} shrink-0 text-xs`}>
+      <Label htmlFor={htmlFor} className={`${LABEL_CLASSES} shrink-0`}>
         {label}
       </Label>
       <div className="shrink-0">{children}</div>
@@ -207,9 +207,9 @@ function AdvancedSettingsPopover() {
             </Button>
           </PopoverTrigger>
         </TooltipPrimitive.Trigger>
-        <TooltipContent side="bottom">More options</TooltipContent>
+        <TooltipContent side="top">More options</TooltipContent>
       </TooltipPrimitive.Root>
-      <PopoverContent align="end" className="w-72 space-y-1">
+      <PopoverContent align="end" className="w-72 space-y-1 pr-2">
         <div className="mb-4 text-sm font-medium">Environment Options</div>
 
         {view && (
@@ -374,7 +374,7 @@ export function PreviewToolbar() {
                       <Icon className="size-3.5" />
                     </Button>
                   </TooltipPrimitive.Trigger>
-                  <TooltipContent side="bottom">{label}</TooltipContent>
+                  <TooltipContent side="top">{label}</TooltipContent>
                 </TooltipPrimitive.Root>
               ))}
             </ButtonGroup>
@@ -402,7 +402,7 @@ export function PreviewToolbar() {
                       <Icon className="size-3.5" />
                     </Button>
                   </TooltipPrimitive.Trigger>
-                  <TooltipContent side="bottom">{label}</TooltipContent>
+                  <TooltipContent side="top">{label}</TooltipContent>
                 </TooltipPrimitive.Root>
               ))}
             </ButtonGroup>
@@ -432,7 +432,7 @@ export function PreviewToolbar() {
                 />
               </Button>
             </TooltipPrimitive.Trigger>
-            <TooltipContent side="bottom">Toggle theme</TooltipContent>
+            <TooltipContent side="top">Toggle theme</TooltipContent>
           </TooltipPrimitive.Root>
 
           <AdvancedSettingsPopover />
