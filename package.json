@@ -14,7 +14,8 @@
     "test": "vitest run",
     "test:watch": "vitest watch",
     "format": "prettier --write \"**/*.{js,jsx,ts,tsx,md,json}\"",
-    "format:check": "prettier --check \"**/*.{js,jsx,ts,tsx,md,json}\""
+    "format:check": "prettier --check \"**/*.{js,jsx,ts,tsx,md,json}\"",
+    "sync:workbench": "./scripts/sync-workbench.sh"
   },
   "dependencies": {
     "@ai-sdk/anthropic": "^2.0.56",
