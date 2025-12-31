@@ -9,11 +9,11 @@ export const metadata: Metadata = {
 
 function DemoBanner() {
   return (
-    <div className="bg-muted/80 text-muted-foreground flex h-8 shrink-0 items-center justify-center gap-1.5 border-b px-4 text-xs">
+    <div className="flex h-8 shrink-0 items-center justify-center gap-1.5 bg-emerald-600 px-4 text-xs text-white">
       <span>This is a demo.</span>
       <span>
         Get the full Workbench with{" "}
-        <code className="bg-background rounded px-1 py-0.5 font-mono text-[11px]">
+        <code className="rounded bg-emerald-800 px-1 py-0.5 font-mono text-[11px]">
           npx @assistant-ui/create-chatgpt-app
         </code>
       </span>
