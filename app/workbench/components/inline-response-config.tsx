@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { useShallow } from "zustand/react/shallow";
-import { useWorkbenchStore, useSimulation } from "@/app/workbench/lib/store";
-import type { ResponseMode, ToolSimulationConfig } from "@/app/workbench/lib/types";
+import { useWorkbenchStore, useSimulation } from "@/lib/workbench/store";
+import type { ResponseMode, ToolSimulationConfig } from "@/lib/workbench/types";
 import { cn } from "@/lib/ui/cn";
 import { Circle, AlertCircle, Loader2, ChevronDown, RotateCcw } from "lucide-react";
 import { JsonEditor } from "./json-editor";

@@ -1,6 +1,6 @@
 "use client";
 
-import { useConsoleLogs, useClearConsole } from "@/app/workbench/lib/store";
+import { useConsoleLogs, useClearConsole } from "@/lib/workbench/store";
 import { ActivitySection } from "./activity-section";
 import { Button } from "@/components/ui/button";
 import { Trash2 } from "lucide-react";
@@ -17,7 +17,7 @@ export function ActivityPanel() {
 
   return (
     <div className="flex h-full flex-col overflow-hidden pt-6">
-      <div className="border-border/40 flex h-9 shrink-0 items-center justify-between border-b px-4">
+      <div className="flex h-9 shrink-0 items-center justify-between border-b px-4">
         <div className="flex items-center gap-2 select-none">
           <span className="text-muted-foreground text-sm">Activity</span>
           {logCount > 0 && (

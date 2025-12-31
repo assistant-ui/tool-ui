@@ -15,7 +15,7 @@ import {
   InputGroupAddon,
   InputGroupInput,
 } from "@/components/ui/input-group";
-import type { SafeAreaInsets } from "@/app/workbench/lib/types";
+import type { SafeAreaInsets } from "@/lib/workbench/types";
 import {
   INPUT_GROUP_CLASSES,
   INPUT_CLASSES,

@@ -1,8 +1,7 @@
 "use client";
 
 import type { ComponentType } from "react";
-import { OptionListSDK, POIMapSDK, PizzazAlbumsSDK } from "./wrappers";
-import { DEFAULT_ALBUMS } from "@/components/tool-ui/pizzaz-albums";
+import { POIMapSDK } from "./wrappers";
 
 export type ComponentCategory = "cards" | "lists" | "forms" | "data";
 
@@ -98,50 +97,6 @@ export const workbenchComponents: WorkbenchComponentEntry[] = [
       ],
       initialCenter: { lat: 37.7749, lng: -122.4194 },
       initialZoom: 12,
-    },
-  },
-  {
-    id: "option-list",
-    label: "Option List",
-    description: "Interactive selection list with icons and descriptions",
-    category: "lists",
-    component: OptionListSDK,
-    defaultProps: {
-      id: "workbench-option-list",
-      options: [
-        {
-          id: "sf",
-          label: "San Francisco",
-          description: "California, USA",
-        },
-        {
-          id: "nyc",
-          label: "New York City",
-          description: "New York, USA",
-        },
-        {
-          id: "london",
-          label: "London",
-          description: "United Kingdom",
-        },
-        {
-          id: "tokyo",
-          label: "Tokyo",
-          description: "Japan",
-        },
-      ],
-      selectionMode: "single",
-    },
-  },
-  {
-    id: "pizzaz-albums",
-    label: "Pizzaz Albums",
-    description:
-      "Album carousel that jumps into a fullscreen viewer (OpenAI example)",
-    category: "cards",
-    component: PizzazAlbumsSDK,
-    defaultProps: {
-      albums: DEFAULT_ALBUMS,
     },
   },
 ];

@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import type { ConsoleEntry, ConsoleEntryType } from "@/app/workbench/lib/types";
+import type { ConsoleEntry, ConsoleEntryType } from "@/lib/workbench/types";
 import { cn } from "@/lib/ui/cn";
 import { ChevronDown, ChevronRight, Copy, Check } from "lucide-react";
 import {

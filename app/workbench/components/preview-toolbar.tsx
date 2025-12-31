@@ -6,13 +6,13 @@ import {
   useDisplayMode,
   useWorkbenchTheme,
   useDeviceType,
-} from "@/app/workbench/lib/store";
+} from "@/lib/workbench/store";
 import {
   LOCALE_OPTIONS,
   type DisplayMode,
   type DeviceType,
   type UserLocation,
-} from "@/app/workbench/lib/types";
+} from "@/lib/workbench/types";
 import { Button } from "@/components/ui/button";
 import { ButtonGroup } from "@/components/ui/button-group";
 import {
@@ -190,7 +190,7 @@ function AdvancedSettingsPopover() {
       setSafeAreaInsets: s.setSafeAreaInsets,
       setView: s.setView,
       setUserLocation: s.setUserLocation,
-    })),
+    }))
   );
 
   return (
@@ -289,7 +289,7 @@ function AdvancedSettingsPopover() {
                 LOCATION_PRESETS.find(
                   (p) =>
                     p.location?.city === userLocation?.city &&
-                    p.location?.country === userLocation?.country,
+                    p.location?.country === userLocation?.country
                 )?.id ?? "none"
               }
               onValueChange={(id) => {
@@ -343,14 +343,14 @@ export function PreviewToolbar() {
       setDisplayMode: s.setDisplayMode,
       setDeviceType: s.setDeviceType,
       setTheme: s.setTheme,
-    })),
+    }))
   );
 
   const isDark = theme === "dark";
 
   return (
     <TooltipProvider delayDuration={500} skipDelayDuration={300}>
-      <div className="border-border/50 flex h-10 shrink-0 items-center justify-between gap-2 border-b px-3">
+      <div className="border-border/50 flex h-9 shrink-0 items-center justify-between gap-2 border-b px-4">
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-1.5">
             <span className="text-muted-foreground/60 cursor-default text-xs select-none">
@@ -367,7 +367,7 @@ export function PreviewToolbar() {
                         "size-7 p-0",
                         deviceType === id
                           ? TOGGLE_BUTTON_ACTIVE_CLASSES
-                          : TOGGLE_BUTTON_CLASSES,
+                          : TOGGLE_BUTTON_CLASSES
                       )}
                       onClick={() => setDeviceType(id)}
                     >
@@ -395,7 +395,7 @@ export function PreviewToolbar() {
                         "size-7 p-0",
                         displayMode === id
                           ? TOGGLE_BUTTON_ACTIVE_CLASSES
-                          : TOGGLE_BUTTON_CLASSES,
+                          : TOGGLE_BUTTON_CLASSES
                       )}
                       onClick={() => setDisplayMode(id)}
                     >
@@ -421,13 +421,13 @@ export function PreviewToolbar() {
                 <Sun
                   className={cn(
                     "size-4 transition-all",
-                    isDark ? "scale-0 rotate-90" : "scale-100 rotate-0",
+                    isDark ? "scale-0 rotate-90" : "scale-100 rotate-0"
                   )}
                 />
                 <Moon
                   className={cn(
                     "absolute size-4 transition-all",
-                    isDark ? "scale-100 rotate-0" : "scale-0 -rotate-90",
+                    isDark ? "scale-100 rotate-0" : "scale-0 -rotate-90"
                   )}
                 />
               </Button>

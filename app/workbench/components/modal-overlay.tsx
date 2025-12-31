@@ -8,7 +8,7 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
-import type { View } from "@/app/workbench/lib/types";
+import type { View } from "@/lib/workbench/types";
 
 interface ModalOverlayProps {
   view: View;

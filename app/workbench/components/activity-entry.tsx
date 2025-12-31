@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import type { ConsoleEntry, ConsoleEntryType } from "@/app/workbench/lib/types";
+import type { ConsoleEntry, ConsoleEntryType } from "@/lib/workbench/types";
 import { cn } from "@/lib/ui/cn";
 import {
   Wrench,

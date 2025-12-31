@@ -1,6 +1,6 @@
 "use client";
 
-import type { MockVariant } from "@/app/workbench/lib/mock-config";
+import type { MockVariant } from "@/lib/workbench/mock-config";
 import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";

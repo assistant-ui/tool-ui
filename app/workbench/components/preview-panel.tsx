@@ -6,11 +6,11 @@ import {
   useIsTransitioning,
   useIsWidgetClosed,
   useSelectedComponent,
-} from "@/app/workbench/lib/store";
+} from "@/lib/workbench/store";
 import {
   VIEW_TRANSITION_PARENT_NAME,
   VIEW_TRANSITION_ROOT_NAME,
-} from "@/app/workbench/lib/transition-config";
+} from "@/lib/workbench/transition-config";
 import { PreviewContent } from "./preview-views";
 import { WidgetClosedOverlay } from "./widget-closed-overlay";
 import { ModalOverlay } from "./modal-overlay";
@@ -36,7 +36,7 @@ export function PreviewPanel() {
 
   return (
     <div
-      className="bg-background relative flex h-full flex-col overflow-hidden rounded-2xl border dark:bg-neutral-900"
+      className="bg-background relative flex h-full flex-col overflow-hidden rounded-lg border border-border/50 dark:bg-neutral-900/40"
       style={
         {
           viewTransitionName: isTransitioning

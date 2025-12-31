@@ -12,7 +12,7 @@ import {
 import {
   useWorkbenchStore,
   useIsSDKGuideOpen,
-} from "@/app/workbench/lib/store";
+} from "@/lib/workbench/store";
 import { SDKGuideThread } from "./sdk-guide-thread";
 
 function getWorkbenchContext() {

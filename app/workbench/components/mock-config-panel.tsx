@@ -2,8 +2,8 @@
 
 import { useState, useCallback } from "react";
 import { useShallow } from "zustand/react/shallow";
-import { useWorkbenchStore, useMockConfig } from "@/app/workbench/lib/store";
-import type { MockVariant } from "@/app/workbench/lib/mock-config";
+import { useWorkbenchStore, useMockConfig } from "@/lib/workbench/store";
+import type { MockVariant } from "@/lib/workbench/mock-config";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";

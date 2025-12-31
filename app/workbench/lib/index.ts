@@ -42,4 +42,4 @@ export {
   getAvailableMockTools,
 } from "./mock-responses";
 
-export { OptionListSDK } from "./wrappers";
+export { POIMapSDK } from "./wrappers";

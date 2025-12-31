@@ -1,8 +1,8 @@
 "use client";
 
 import { cn } from "@/lib/ui/cn";
-import { useWorkbenchTheme, useDeviceType } from "@/app/workbench/lib/store";
-import type { DeviceType } from "@/app/workbench/lib/types";
+import { useWorkbenchTheme, useDeviceType } from "@/lib/workbench/store";
+import type { DeviceType } from "@/lib/workbench/types";
 
 interface DeviceFrameProps {
   children: React.ReactNode;

@@ -1,8 +1,8 @@
 "use client";
 
 import { useCallback, useMemo, useState } from "react";
-import { useConsoleLogs, useSimulation } from "@/app/workbench/lib/store";
-import type { ConsoleEntry } from "@/app/workbench/lib/types";
+import { useConsoleLogs, useSimulation } from "@/lib/workbench/store";
+import type { ConsoleEntry } from "@/lib/workbench/types";
 import { ActivityEntry, CallToolGroupEntry } from "./activity-entry";
 import { cn } from "@/lib/ui/cn";
 import { ChevronDown, Circle, AlertCircle, Loader2 } from "lucide-react";

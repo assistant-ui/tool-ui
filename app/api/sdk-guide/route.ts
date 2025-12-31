@@ -5,7 +5,7 @@ import { checkRateLimit } from "@/lib/integrations/rate-limit/upstash";
 import {
   retrieveRelevantDocs,
   formatDocsForPrompt,
-} from "@/app/workbench/lib/sdk-guide/retrieve-docs";
+} from "@/lib/workbench/sdk-guide/retrieve-docs";
 
 export const runtime = "edge";
 
@@ -138,10 +138,10 @@ export async function POST(req: Request) {
     const relevantDocs = retrieveRelevantDocs(query, 5);
     const formattedDocs = formatDocsForPrompt(relevantDocs);
 
-    const modelMessages = convertToModelMessages(messages);
+    const modelMessages = await convertToModelMessages(messages);
 
     const result = streamText({
-      model: openai("gpt-5-mini"),
+      model: openai("gpt-4o-mini"),
       messages: modelMessages,
       system: buildSystemPrompt(formattedDocs, context),
       tools: {

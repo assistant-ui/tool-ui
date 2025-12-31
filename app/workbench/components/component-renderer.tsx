@@ -5,17 +5,17 @@ import {
   useIsTransitioning,
   useSelectedComponent,
   useToolInput,
-} from "@/app/workbench/lib/store";
-import { getComponent } from "@/app/workbench/lib/component-registry";
-import { OpenAIProvider } from "@/app/workbench/lib/openai-context";
+} from "@/lib/workbench/store";
+import { getComponent } from "@/lib/workbench/component-registry";
+import { OpenAIProvider } from "@/lib/workbench/openai-context";
 import { cn } from "@/lib/ui/cn";
 import {
   VIEW_TRANSITION_NAME,
   VIEW_TRANSITION_PARENT_NAME,
-} from "@/app/workbench/lib/transition-config";
+} from "@/lib/workbench/transition-config";
 import { ComponentErrorBoundary } from "./component-error-boundary";
 import { IsolatedThemeWrapper } from "./isolated-theme-wrapper";
-import { useReducedMotion } from "@/app/workbench/hooks/use-reduced-motion";
+import { useReducedMotion } from "@/hooks/use-reduced-motion";
 
 function FallbackComponent({ componentId }: { componentId: string }) {
   return (

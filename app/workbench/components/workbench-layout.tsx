@@ -8,12 +8,12 @@ import {
   PanelResizeHandle,
   type ImperativePanelHandle,
 } from "react-resizable-panels";
-import { PANEL_AUTO_SAVE_IDS } from "@/app/workbench/lib/persistence";
+import { PANEL_AUTO_SAVE_IDS } from "@/lib/workbench/persistence";
 import {
   useIsLeftPanelOpen,
   useIsRightPanelOpen,
   useWorkbenchStore,
-} from "@/app/workbench/lib/store";
+} from "@/lib/workbench/store";
 import { EditorPanel } from "./editor-panel";
 import { PreviewPanel } from "./preview-panel";
 import { ActivityPanel } from "./activity-panel";

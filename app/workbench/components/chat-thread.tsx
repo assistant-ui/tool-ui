@@ -6,7 +6,7 @@ import {
   useDisplayMode,
   useWorkbenchStore,
   useWorkbenchTheme,
-} from "@/app/workbench/lib/store";
+} from "@/lib/workbench/store";
 import { MorphContainer } from "./component-renderer";
 
 interface MockMessage {

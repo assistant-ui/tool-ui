@@ -7,7 +7,7 @@ import { linter, lintGutter, type Diagnostic } from "@codemirror/lint";
 import { EditorView, tooltips } from "@codemirror/view";
 import { githubLight, githubDark } from "@uiw/codemirror-theme-github";
 import { useTheme } from "next-themes";
-import type { MockVariant, MockVariantType, MockResponse } from "@/app/workbench/lib/mock-config";
+import type { MockVariant, MockVariantType, MockResponse } from "@/lib/workbench/mock-config";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";

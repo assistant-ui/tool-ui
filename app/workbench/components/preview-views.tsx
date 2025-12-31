@@ -13,8 +13,8 @@ import {
   useDeviceType,
   useResizableWidth,
   useDisplayMode,
-} from "@/app/workbench/lib/store";
-import { DEVICE_PRESETS } from "@/app/workbench/lib/types";
+} from "@/lib/workbench/store";
+import { DEVICE_PRESETS } from "@/lib/workbench/types";
 import { cn } from "@/lib/ui/cn";
 import { ComponentContent } from "./component-renderer";
 import { DeviceFrame } from "./device-frame";

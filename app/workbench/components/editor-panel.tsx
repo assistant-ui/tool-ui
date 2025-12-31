@@ -2,11 +2,8 @@
 
 import { useCallback, useState, type ReactNode } from "react";
 import { useShallow } from "zustand/react/shallow";
-import {
-  useWorkbenchStore,
-  useSelectedComponent,
-} from "@/app/workbench/lib/store";
-import { getComponent } from "@/app/workbench/lib/component-registry";
+import { useWorkbenchStore, useSelectedComponent } from "@/lib/workbench/store";
+import { getComponent } from "@/lib/workbench/component-registry";
 import { JsonEditor } from "./json-editor";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/ui/cn";
@@ -79,7 +76,7 @@ function useJsonEditorState() {
       setToolOutput: s.setToolOutput,
       setWidgetState: s.setWidgetState,
       setToolResponseMetadata: s.setToolResponseMetadata,
-    })),
+    }))
   );
 
   const getActiveData = useCallback(
@@ -97,7 +94,7 @@ function useJsonEditorState() {
           return {};
       }
     },
-    [toolInput, toolOutput, widgetState, toolResponseMetadata],
+    [toolInput, toolOutput, widgetState, toolResponseMetadata]
   );
 
   const handleChange = useCallback(
@@ -119,7 +116,7 @@ function useJsonEditorState() {
           break;
       }
     },
-    [setToolInput, setToolOutput, setWidgetState, setToolResponseMetadata],
+    [setToolInput, setToolOutput, setWidgetState, setToolResponseMetadata]
   );
 
   const handleReset = useCallback(
@@ -147,7 +144,7 @@ function useJsonEditorState() {
       setToolOutput,
       setWidgetState,
       setToolResponseMetadata,
-    ],
+    ]
   );
 
   return { getActiveData, handleChange, handleReset };
@@ -185,7 +182,7 @@ function EditorSectionTrigger({
         <ChevronDown
           className={cn(
             "text-muted-foreground/60 size-3.5 shrink-0 transition-transform duration-100 ease-[cubic-bezier(0.22,1,0.36,1)]",
-            isOpen ? "rotate-0" : "-rotate-90",
+            isOpen ? "rotate-0" : "-rotate-90"
           )}
         />
         <span className="text-muted-foreground mr-1 text-sm font-normal">
@@ -223,11 +220,11 @@ interface EditorSectionContentProps {
 
 function EditorSectionContent({ isOpen, children }: EditorSectionContentProps) {
   if (!isOpen) {
-    return <div className="border-border/40 border-b" />;
+    return <div className="border-b" />;
   }
 
   return (
-    <div className="border-border/40 scrollbar-subtle min-h-0 flex-1 overflow-y-auto border-b">
+    <div className="scrollbar-subtle min-h-0 flex-1 overflow-y-auto border-b">
       {children}
     </div>
   );

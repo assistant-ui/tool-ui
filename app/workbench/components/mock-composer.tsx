@@ -7,7 +7,7 @@ import {
   useDeviceType,
   useWorkbenchStore,
   useIsTransitioning,
-} from "@/app/workbench/lib/store";
+} from "@/lib/workbench/store";
 
 type ComposerVariant = "bottom" | "overlay";
 
