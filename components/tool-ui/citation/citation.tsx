@@ -188,10 +188,11 @@ export function Citation(props: CitationProps) {
             aria-label={title}
             data-tool-ui-id={id}
             data-slot="citation"
+            onClick={handleClick}
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
             className={cn(
-              "inline-flex items-center gap-1.5 rounded-md px-2 py-1",
+              "inline-flex cursor-pointer items-center gap-1.5 rounded-md px-2 py-1",
               "bg-muted/60 text-sm",
               "transition-colors duration-150",
               "hover:bg-muted",
@@ -206,12 +207,13 @@ export function Citation(props: CitationProps) {
         <PopoverContent
           side="top"
           align="start"
-          className="w-72 p-3"
+          className="w-72 cursor-pointer p-0"
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
           onOpenAutoFocus={(e) => e.preventDefault()}
+          onClick={handleClick}
         >
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-2 p-3 transition-colors hover:bg-muted/50">
             <div className="flex items-start gap-2">
               {iconElement}
               <span className="text-muted-foreground text-xs">{domain}</span>
