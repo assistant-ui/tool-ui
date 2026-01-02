@@ -193,10 +193,10 @@ export function Citation(props: CitationProps) {
             onMouseLeave={handleMouseLeave}
             className={cn(
               "inline-flex cursor-pointer items-center gap-1.5 rounded-md px-2 py-1",
-              "bg-muted/60 text-sm",
+              "bg-muted/60 text-sm outline-none",
               "transition-colors duration-150",
               "hover:bg-muted",
-              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+              "focus-visible:ring-2 focus-visible:ring-ring",
               className,
             )}
           >
@@ -211,6 +211,7 @@ export function Citation(props: CitationProps) {
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
           onOpenAutoFocus={(e) => e.preventDefault()}
+          onCloseAutoFocus={(e) => e.preventDefault()}
           onClick={handleClick}
         >
           <div className="flex flex-col gap-2 p-3 transition-colors hover:bg-muted/50">
