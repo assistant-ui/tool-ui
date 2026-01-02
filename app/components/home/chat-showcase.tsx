@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion, type Transition } from "motion/react";
 import { cn } from "@/lib/ui/cn";
+import { Citation } from "@/components/tool-ui/citation";
 import { DataTable } from "@/components/tool-ui/data-table";
 import { LinkPreview } from "@/components/tool-ui/link-preview";
 import { Chart } from "@/components/tool-ui/chart";
@@ -24,6 +25,7 @@ import {
   CODE_BLOCK_DATA,
   OPTION_LIST_OPTIONS,
   ITEM_CAROUSEL_DATA,
+  CITATION,
 } from "@/lib/mocks/chat-showcase-data";
 
 const TIMING = {
@@ -460,6 +462,14 @@ function createSceneConfigs(): SceneConfig[] {
       toolFallbackHeight: 260,
     },
     {
+      userMessage: "What does React docs say about useEffect?",
+      preamble: "According to the official documentation:",
+      toolUI: (
+        <Citation {...CITATION} className="w-full max-w-[480px]" />
+      ),
+      toolFallbackHeight: 180,
+    },
+    {
       userMessage: "Find that physics article from Quanta",
       preamble: "Was it this one?",
       toolUI: <LinkPreview {...LINK_PREVIEW} />,
@@ -482,7 +492,7 @@ function createSceneConfigs(): SceneConfig[] {
   ];
 }
 
-const SCENE_COUNT = 9;
+const SCENE_COUNT = 10;
 
 type AnimatedSceneProps = {
   config: SceneConfig;

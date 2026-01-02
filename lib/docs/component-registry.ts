@@ -13,6 +13,12 @@ export const componentsRegistry: ComponentMeta[] = [
     path: "/docs/chart",
   },
   {
+    id: "citation",
+    label: "Citation",
+    description: "Display source references with attribution",
+    path: "/docs/citation",
+  },
+  {
     id: "code-block",
     label: "Code Block",
     description: "Display syntax-highlighted code snippets",

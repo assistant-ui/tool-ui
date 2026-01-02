@@ -1,0 +1,39 @@
+import { z } from "zod";
+import {
+  ToolUIIdSchema,
+  ToolUIReceiptSchema,
+  ToolUIRoleSchema,
+  parseWithSchema,
+} from "../shared";
+
+export const CitationTypeSchema = z.enum([
+  "webpage",
+  "document",
+  "article",
+  "api",
+  "code",
+  "other",
+]);
+
+export type CitationType = z.infer<typeof CitationTypeSchema>;
+
+export const SerializableCitationSchema = z.object({
+  id: ToolUIIdSchema,
+  role: ToolUIRoleSchema.optional(),
+  receipt: ToolUIReceiptSchema.optional(),
+  href: z.string().url(),
+  title: z.string(),
+  snippet: z.string().optional(),
+  domain: z.string().optional(),
+  favicon: z.string().url().optional(),
+  author: z.string().optional(),
+  publishedAt: z.string().datetime().optional(),
+  type: CitationTypeSchema.optional(),
+  locale: z.string().optional(),
+});
+
+export type SerializableCitation = z.infer<typeof SerializableCitationSchema>;
+
+export function parseSerializableCitation(input: unknown): SerializableCitation {
+  return parseWithSchema(SerializableCitationSchema, input, "Citation");
+}

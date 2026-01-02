@@ -7,6 +7,7 @@ import {
   Highlighter,
   FoldVertical,
   FileCode,
+  FileText,
   Moon,
   BarChart3,
   LineChart,
@@ -43,6 +44,7 @@ import {
   Keyboard,
   Globe,
   ExternalLink,
+  Quote,
 } from "lucide-react";
 
 const ICON_MAP: Record<string, LucideIcon> = {
@@ -52,6 +54,7 @@ const ICON_MAP: Record<string, LucideIcon> = {
   Highlighter,
   FoldVertical,
   FileCode,
+  FileText,
   Moon,
   BarChart3,
   LineChart,
@@ -88,6 +91,7 @@ const ICON_MAP: Record<string, LucideIcon> = {
   Keyboard,
   Globe,
   ExternalLink,
+  Quote,
 };
 
 interface FeatureGridProps {

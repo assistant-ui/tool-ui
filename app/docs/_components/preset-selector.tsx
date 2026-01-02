@@ -6,6 +6,7 @@ import {
   ItemTitle,
 } from "@/components/ui/item";
 import { chartPresets } from "@/lib/presets/chart";
+import { citationPresets } from "@/lib/presets/citation";
 import { codeBlockPresets } from "@/lib/presets/code-block";
 import { dataTablePresets } from "@/lib/presets/data-table";
 import { imagePresets } from "@/lib/presets/image";
@@ -23,6 +24,7 @@ type PresetMap = Record<string, Preset<unknown>>;
 
 const PRESET_REGISTRY: Record<string, PresetMap> = {
   chart: chartPresets,
+  citation: citationPresets,
   "code-block": codeBlockPresets,
   "data-table": dataTablePresets,
   image: imagePresets,

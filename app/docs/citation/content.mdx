@@ -1,0 +1,169 @@
+import { DocsHeader } from "../_components/docs-header";
+import { Citation } from "@/components/tool-ui/citation";
+
+<DocsHeader
+  title="Citation"
+  description="Display source references with clear attribution for RAG and research applications."
+  mdxPath="app/docs/citation/content.mdx"
+/>
+
+<Tabs items={["Preview", "Code"]}>
+  <Tab>
+    <div className="not-prose mx-auto max-w-md">
+      <Citation
+        id="citation-example"
+        href="https://react.dev/reference/react/useState"
+        title="useState – React"
+        snippet="useState is a React Hook that lets you add a state variable to your component. Call useState at the top level of your component to declare a state variable."
+        domain="react.dev"
+        type="document"
+      />
+    </div>
+  </Tab>
+  <Tab>
+    ```tsx
+    import { Citation } from "@/components/tool-ui/citation";
+
+    export function Example() {
+      return (
+        <Citation
+          id="citation-example"
+          href="https://react.dev/reference/react/useState"
+          title="useState – React"
+          snippet="useState is a React Hook that lets you add a state variable to your component."
+          domain="react.dev"
+          type="document"
+        />
+      );
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Key Features
+
+<FeatureGrid>
+  <Feature icon="FileText" title="Source attribution">
+    Display title, domain, author, and publication date
+  </Feature>
+  <Feature icon="Quote" title="Snippet preview">
+    Show relevant excerpts from the source
+  </Feature>
+  <Feature icon="Link" title="Click to navigate">
+    Open source in new tab with proper security
+  </Feature>
+</FeatureGrid>
+
+## When to Use
+
+- **Good for:** RAG citations, research references, documentation sources, API documentation links
+- **Not for:** Link previews with OG images (use [Link Preview](/docs/link-preview)), generic URL cards
+
+## Source Types
+
+The `type` prop customizes the icon displayed:
+
+- `webpage` — General web pages (default)
+- `document` — Documentation, guides, manuals
+- `article` — News, blog posts, research papers
+- `api` — API documentation, endpoints
+- `code` — Code repositories, snippets
+- `other` — Miscellaneous sources
+
+## Source and Install
+
+This component requires the following [shadcn/ui](https://ui.shadcn.com) components:
+
+```bash
+pnpm dlx shadcn@latest add button tooltip
+```
+
+### Directory Structure
+
+<Files>
+  <Folder name="components" defaultOpen>
+    <Folder name="ui">
+      <File name="button.tsx" />
+      <File name="tooltip.tsx" />
+      <File name="..." />
+    </Folder>
+    <Folder name="tool-ui" defaultOpen>
+      <Folder name="shared" defaultOpen>
+        <File name="action-buttons.tsx" />
+        <File name="schema.ts" />
+        <File name="index.ts" />
+        <File name="..." />
+      </Folder>
+      <Folder name="citation" defaultOpen>
+        <File name="citation.tsx" />
+        <File name="schema.ts" />
+        <File name="index.ts" />
+        <File name="_adapter.tsx" />
+      </Folder>
+    </Folder>
+  </Folder>
+</Files>
+
+### Download
+
+- [**Shared Dependencies (GitHub)**](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/shared)
+- [**Citation (GitHub)**](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/citation)
+
+## Props
+
+<TypeTable
+  type={{
+    id: {
+      description: "Unique identifier for this tool UI instance",
+      type: "string",
+      required: true,
+    },
+    href: {
+      description: "Source URL",
+      type: "string",
+      required: true,
+    },
+    title: {
+      description: "Source title",
+      type: "string",
+      required: true,
+    },
+    snippet: {
+      description: "Relevant excerpt from the source",
+      type: "string",
+    },
+    domain: {
+      description: "Source domain (auto-extracted from href if not provided)",
+      type: "string",
+    },
+    favicon: {
+      description: "Favicon URL",
+      type: "string",
+    },
+    author: {
+      description: "Author or organization name",
+      type: "string",
+    },
+    publishedAt: {
+      description: "Publication date (ISO 8601)",
+      type: "string",
+    },
+    type: {
+      description: "Source type for icon selection",
+      type: "'webpage' | 'document' | 'article' | 'api' | 'code' | 'other'",
+      default: "'webpage'",
+    },
+    responseActions: {
+      description: "Response action buttons",
+      type: "Action[]",
+    },
+    onResponseAction: {
+      description: "Response action handler",
+      type: "(actionId: string) => void",
+    },
+    onNavigate: {
+      description: "Custom navigation handler",
+      type: "(href: string, citation: SerializableCitation) => void",
+    },
+  }}
+/>

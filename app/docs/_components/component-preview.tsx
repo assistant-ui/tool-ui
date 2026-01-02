@@ -43,7 +43,7 @@ export function ComponentPreview({ componentId }: ComponentPreviewProps) {
     setState((prev) => ({ ...prev, ...newState }));
   }, []);
 
-  const preset = config.presets[currentPreset];
+  const preset = config.presets[currentPreset] ?? config.presets[config.defaultPreset];
   const code = preset.generateExampleCode(preset.data);
 
   const previewContent = config.renderComponent({

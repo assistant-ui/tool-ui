@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 
 import { DocsBorderedShell } from "@/app/docs/_components/docs-bordered-shell";
+import { Citation } from "@/components/tool-ui/citation";
 import { DataTable } from "@/components/tool-ui/data-table";
 import { Image } from "@/components/tool-ui/image";
 import { Video } from "@/components/tool-ui/video";
@@ -14,6 +15,7 @@ import { Terminal } from "@/components/tool-ui/terminal";
 import { CodeBlock } from "@/components/tool-ui/code-block";
 import { Chart } from "@/components/tool-ui/chart";
 import { ItemCarousel } from "@/components/tool-ui/item-carousel";
+import { citationPresets } from "@/lib/presets/citation";
 import { dataTablePresets } from "@/lib/presets/data-table";
 import { itemCarouselPresets } from "@/lib/presets/item-carousel";
 import { imagePresets } from "@/lib/presets/image";
@@ -65,6 +67,12 @@ export default function ComponentsGalleryPage() {
           <div className="mb-5 flex break-inside-avoid justify-center 2xl:mb-5">
             <LinkPreview
               {...linkPreviewPresets["with-image"].data.linkPreview}
+            />
+          </div>
+
+          <div className="mb-5 flex break-inside-avoid justify-center 2xl:mb-5">
+            <Citation
+              {...citationPresets["with-relevance"].data.citation}
             />
           </div>
 
