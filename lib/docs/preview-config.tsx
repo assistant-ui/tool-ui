@@ -4,7 +4,7 @@ import type { ComponentType, ReactNode } from "react";
 import type { PresetWithCodeGen } from "@/lib/presets/types";
 
 import { Chart } from "@/components/tool-ui/chart";
-import { Citation } from "@/components/tool-ui/citation";
+import { Citation, CitationList } from "@/components/tool-ui/citation";
 import { CodeBlock } from "@/components/tool-ui/code-block";
 import { DataTable } from "@/components/tool-ui/data-table";
 import { Image } from "@/components/tool-ui/image";
@@ -80,15 +80,41 @@ export const previewConfigs: Record<ComponentId, PreviewConfig<unknown, string>>
   citation: {
     presets: citationPresets as Record<string, PresetWithCodeGen<unknown>>,
     defaultPreset: "documentation" satisfies CitationPresetName,
-    wrapper: MaxWidthWrapper,
-    renderComponent: ({ data }) => {
-      const { citation, responseActions } = data as { citation: Parameters<typeof Citation>[0]; responseActions?: unknown[] };
+    renderComponent: ({ data, presetName }) => {
+      const { citations, variant, maxVisible, responseActions } = data as {
+        citations: Parameters<typeof Citation>[0][];
+        variant?: Parameters<typeof Citation>[0]["variant"];
+        maxVisible?: number;
+        responseActions?: unknown[];
+      };
+
+      // Single citation without list
+      if (citations.length === 1 && !maxVisible) {
+        return (
+          <div className="mx-auto w-full max-w-md">
+            <Citation
+              {...citations[0]}
+              variant={variant}
+              responseActions={responseActions as Parameters<typeof Citation>[0]["responseActions"]}
+              onResponseAction={(actionId) => console.log("Response action:", actionId)}
+            />
+          </div>
+        );
+      }
+
+      // Multiple citations or truncated list
+      const wrapperClass =
+        variant === "inline" ? "mx-auto max-w-xl" : "mx-auto max-w-lg";
+
       return (
-        <Citation
-          {...citation}
-          responseActions={responseActions as Parameters<typeof Citation>[0]["responseActions"]}
-          onResponseAction={(actionId) => console.log("Response action:", actionId)}
-        />
+        <div className={wrapperClass}>
+          <CitationList
+            id={`citation-list-${presetName}`}
+            citations={citations}
+            variant={variant}
+            maxVisible={maxVisible}
+          />
+        </div>
       );
     },
   },

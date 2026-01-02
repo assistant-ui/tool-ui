@@ -16,6 +16,7 @@ import { Citation } from "@/components/tool-ui/citation";
         title="useState – React"
         snippet="useState is a React Hook that lets you add a state variable to your component. Call useState at the top level of your component to declare a state variable."
         domain="react.dev"
+        favicon="https://www.google.com/s2/favicons?domain=react.dev&sz=32"
         type="document"
       />
     </div>
@@ -32,6 +33,7 @@ import { Citation } from "@/components/tool-ui/citation";
           title="useState – React"
           snippet="useState is a React Hook that lets you add a state variable to your component."
           domain="react.dev"
+          favicon="https://www.google.com/s2/favicons?domain=react.dev&sz=32"
           type="document"
         />
       );
@@ -49,6 +51,9 @@ import { Citation } from "@/components/tool-ui/citation";
   <Feature icon="Quote" title="Snippet preview">
     Show relevant excerpts from the source
   </Feature>
+  <Feature icon="Layers" title="Two variants">
+    Default card or inline chip with hover popover
+  </Feature>
   <Feature icon="Link" title="Click to navigate">
     Open source in new tab with proper security
   </Feature>
@@ -59,50 +64,15 @@ import { Citation } from "@/components/tool-ui/citation";
 - **Good for:** RAG citations, research references, documentation sources, API documentation links
 - **Not for:** Link previews with OG images (use [Link Preview](/docs/link-preview)), generic URL cards
 
-## Source Types
-
-The `type` prop customizes the icon displayed:
-
-- `webpage` — General web pages (default)
-- `document` — Documentation, guides, manuals
-- `article` — News, blog posts, research papers
-- `api` — API documentation, endpoints
-- `code` — Code repositories, snippets
-- `other` — Miscellaneous sources
-
 ## Source and Install
 
-This component requires the following [shadcn/ui](https://ui.shadcn.com) components:
+Copy [`components/tool-ui/citation`](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/citation) and the [`shared`](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/shared) directory into your project.
+
+### Prerequisites
 
 ```bash
-pnpm dlx shadcn@latest add button tooltip
+pnpm dlx shadcn@latest add button tooltip popover
 ```
-
-### Directory Structure
-
-<Files>
-  <Folder name="components" defaultOpen>
-    <Folder name="ui">
-      <File name="button.tsx" />
-      <File name="tooltip.tsx" />
-      <File name="..." />
-    </Folder>
-    <Folder name="tool-ui" defaultOpen>
-      <Folder name="shared" defaultOpen>
-        <File name="action-buttons.tsx" />
-        <File name="schema.ts" />
-        <File name="index.ts" />
-        <File name="..." />
-      </Folder>
-      <Folder name="citation" defaultOpen>
-        <File name="citation.tsx" />
-        <File name="schema.ts" />
-        <File name="index.ts" />
-        <File name="_adapter.tsx" />
-      </Folder>
-    </Folder>
-  </Folder>
-</Files>
 
 ### Download
 
@@ -117,6 +87,11 @@ pnpm dlx shadcn@latest add button tooltip
       description: "Unique identifier for this tool UI instance",
       type: "string",
       required: true,
+    },
+    variant: {
+      description: "Visual style",
+      type: "'default' | 'inline'",
+      default: "'default'",
     },
     href: {
       description: "Source URL",
@@ -154,7 +129,7 @@ pnpm dlx shadcn@latest add button tooltip
       default: "'webpage'",
     },
     responseActions: {
-      description: "Response action buttons",
+      description: "Response action buttons (default variant only)",
       type: "Action[]",
     },
     onResponseAction: {

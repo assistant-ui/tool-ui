@@ -17,6 +17,10 @@ export const CitationTypeSchema = z.enum([
 
 export type CitationType = z.infer<typeof CitationTypeSchema>;
 
+export const CitationVariantSchema = z.enum(["default", "inline"]);
+
+export type CitationVariant = z.infer<typeof CitationVariantSchema>;
+
 export const SerializableCitationSchema = z.object({
   id: ToolUIIdSchema,
   role: ToolUIRoleSchema.optional(),

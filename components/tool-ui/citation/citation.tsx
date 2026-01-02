@@ -10,11 +10,17 @@ import {
   Newspaper,
   Database,
   File,
+  ExternalLink,
 } from "lucide-react";
-import { cn } from "./_adapter";
+import {
+  cn,
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "./_adapter";
 import { ActionButtons, normalizeActionsConfig, type ActionsProp } from "../shared";
 import { sanitizeHref } from "../shared/media";
-import type { SerializableCitation, CitationType } from "./schema";
+import type { SerializableCitation, CitationType, CitationVariant } from "./schema";
 
 const FALLBACK_LOCALE = "en-US";
 
@@ -64,7 +70,31 @@ function formatDate(isoString: string, locale: string): string {
   }
 }
 
+function useHoverPopover(delay = 100) {
+  const [open, setOpen] = React.useState(false);
+  const timeoutRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const handleMouseEnter = React.useCallback(() => {
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    timeoutRef.current = setTimeout(() => setOpen(true), delay);
+  }, [delay]);
+
+  const handleMouseLeave = React.useCallback(() => {
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    timeoutRef.current = setTimeout(() => setOpen(false), delay);
+  }, [delay]);
+
+  React.useEffect(() => {
+    return () => {
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    };
+  }, []);
+
+  return { open, setOpen, handleMouseEnter, handleMouseLeave };
+}
+
 export interface CitationProps extends SerializableCitation {
+  variant?: CitationVariant;
   className?: string;
   isLoading?: boolean;
   onNavigate?: (href: string, citation: SerializableCitation) => void;
@@ -75,6 +105,7 @@ export interface CitationProps extends SerializableCitation {
 
 export function Citation(props: CitationProps) {
   const {
+    variant = "default",
     className,
     isLoading,
     onNavigate,
@@ -131,6 +162,73 @@ export function Citation(props: CitationProps) {
     }
   };
 
+  const iconElement = favicon ? (
+    <img
+      src={favicon}
+      alt=""
+      aria-hidden="true"
+      className="bg-muted size-3.5 shrink-0 rounded object-cover"
+    />
+  ) : (
+    <TypeIcon
+      className="size-3.5 shrink-0 opacity-60"
+      aria-hidden="true"
+    />
+  );
+
+  const { open, handleMouseEnter, handleMouseLeave } = useHoverPopover();
+
+  // Inline variant: compact chip with hover popover
+  if (variant === "inline") {
+    return (
+      <Popover open={open}>
+        <PopoverTrigger asChild>
+          <button
+            type="button"
+            aria-label={title}
+            data-tool-ui-id={id}
+            data-slot="citation"
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+            className={cn(
+              "inline-flex items-center gap-1.5 rounded-md px-2 py-1",
+              "bg-muted/60 text-sm",
+              "transition-colors duration-150",
+              "hover:bg-muted",
+              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+              className,
+            )}
+          >
+            {iconElement}
+            <span className="text-muted-foreground">{domain}</span>
+          </button>
+        </PopoverTrigger>
+        <PopoverContent
+          side="top"
+          align="start"
+          className="w-72 p-3"
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
+          onOpenAutoFocus={(e) => e.preventDefault()}
+        >
+          <div className="flex flex-col gap-2">
+            <div className="flex items-start gap-2">
+              {iconElement}
+              <span className="text-muted-foreground text-xs">{domain}</span>
+            </div>
+            <p className="text-sm font-medium leading-snug">{title}</p>
+            {snippet && (
+              <p className="text-muted-foreground text-xs leading-relaxed line-clamp-2">
+                {snippet}
+              </p>
+            )}
+          </div>
+        </PopoverContent>
+      </Popover>
+    );
+  }
+
+  // Default variant: full card
   return (
     <article
       className={cn("relative w-full min-w-72 max-w-md", className)}
@@ -159,48 +257,39 @@ export function Citation(props: CitationProps) {
           <CitationProgress />
         ) : (
           <div className="flex flex-col gap-2 p-4">
-            <div className="text-muted-foreground flex min-w-0 items-center gap-1.5 text-xs">
-              {favicon ? (
-                <img
-                  src={favicon}
-                  alt=""
-                  aria-hidden="true"
-                  className="size-3.5 shrink-0 rounded object-cover"
-                  loading="lazy"
-                  decoding="async"
-                />
-              ) : (
-                <TypeIcon className="size-3.5 shrink-0 opacity-60" aria-hidden="true" />
-              )}
-              <span className="truncate font-medium">{domain}</span>
-              {(author || publishedAt) && (
-                <span className="opacity-70">
-                  <span className="opacity-60"> — </span>
-                  {author}
-                  {author && publishedAt && ", "}
-                  {publishedAt && (
-                    <time dateTime={publishedAt} className="tabular-nums">
-                      {formatDate(publishedAt, locale)}
-                    </time>
-                  )}
-                </span>
+            <div className="text-muted-foreground flex min-w-0 items-center justify-between gap-1.5 text-xs">
+              <div className="flex min-w-0 items-center gap-1.5">
+                {iconElement}
+                <span className="truncate font-medium">{domain}</span>
+                {(author || publishedAt) && (
+                  <span className="opacity-70">
+                    <span className="opacity-60"> — </span>
+                    {author}
+                    {author && publishedAt && ", "}
+                    {publishedAt && (
+                      <time dateTime={publishedAt} className="tabular-nums">
+                        {formatDate(publishedAt, locale)}
+                      </time>
+                    )}
+                  </span>
+                )}
+              </div>
+              {sanitizedHref && (
+                <ExternalLink className="size-3.5 shrink-0 opacity-0 transition-opacity group-hover:opacity-100" />
               )}
             </div>
 
-            {/* Title */}
             <h3 className="text-foreground text-pretty text-[15px] font-medium leading-snug">
               <span className="line-clamp-2 group-hover:underline group-hover:decoration-foreground/30 group-hover:underline-offset-2">
                 {title}
               </span>
             </h3>
 
-            {/* Snippet */}
             {snippet && (
               <p className="text-muted-foreground text-pretty text-[13px] leading-relaxed">
                 <span className="line-clamp-3">{snippet}</span>
               </p>
             )}
-
           </div>
         )}
       </div>
