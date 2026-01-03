@@ -357,10 +357,17 @@ function StackedCitations({
                 </div>
               );
             })}
+            {remainingCount > 0 && (
+              <div
+                className="-ml-2 relative flex size-6 items-center justify-center rounded-full border-2 border-background bg-muted"
+                style={{ zIndex: 0 }}
+              >
+                <span className="text-[10px] font-medium text-muted-foreground tracking-tight">•••</span>
+              </div>
+            )}
           </div>
           <span className="text-muted-foreground text-sm tabular-nums">
             {citations.length} source{citations.length !== 1 && "s"}
-            {remainingCount > 0 && ` (+${remainingCount})`}
           </span>
         </button>
       </PopoverTrigger>
