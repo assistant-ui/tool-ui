@@ -90,24 +90,22 @@ function generateCitationCode(data: CitationData): string {
 }
 
 export type CitationPresetName =
-  | "documentation"
-  | "research"
-  | "api-reference"
-  | "inline-list"
+  | "default"
+  | "with-metadata"
+  | "inline"
   | "stacked"
-  | "truncated-list"
   | "with-actions";
 
 export const citationPresets: Record<
   CitationPresetName,
   PresetWithCodeGen<CitationData>
 > = {
-  documentation: {
-    description: "Technical documentation source",
+  default: {
+    description: "Single citation card",
     data: {
       citations: [
         {
-          id: "citation-docs",
+          id: "citation-default",
           href: "https://react.dev/reference/react/useState",
           title: "useState – React",
           snippet:
@@ -120,12 +118,12 @@ export const citationPresets: Record<
     } satisfies CitationData,
     generateExampleCode: generateCitationCode,
   },
-  research: {
-    description: "Research article with author and date",
+  "with-metadata": {
+    description: "Citation with author and date",
     data: {
       citations: [
         {
-          id: "citation-research",
+          id: "citation-metadata",
           href: "https://arxiv.org/abs/2303.08774",
           title: "GPT-4 Technical Report",
           snippet:
@@ -140,28 +138,11 @@ export const citationPresets: Record<
     } satisfies CitationData,
     generateExampleCode: generateCitationCode,
   },
-  "api-reference": {
-    description: "API documentation reference",
-    data: {
-      citations: [
-        {
-          id: "citation-api",
-          href: "https://platform.openai.com/docs/api-reference/chat/create",
-          title: "Create chat completion - OpenAI API",
-          snippet:
-            "Creates a model response for the given chat conversation. Learn more about text generation on the text generation guide.",
-          domain: "platform.openai.com",
-          favicon: favicon("platform.openai.com"),
-          type: "api",
-        },
-      ],
-    } satisfies CitationData,
-    generateExampleCode: generateCitationCode,
-  },
-  "inline-list": {
-    description: "Chip list for high-density sources",
+  inline: {
+    description: "Inline chips with overflow",
     data: {
       variant: "inline",
+      maxVisible: 4,
       citations: [
         {
           id: "citation-inline-1",
@@ -222,7 +203,7 @@ export const citationPresets: Record<
     generateExampleCode: generateCitationCode,
   },
   stacked: {
-    description: "Overlapping favicons with popover",
+    description: "Compact stacked favicons",
     data: {
       variant: "stacked",
       citations: [
@@ -279,88 +260,6 @@ export const citationPresets: Record<
           domain: "tailwindcss.com",
           favicon: favicon("tailwindcss.com"),
           type: "document",
-        },
-      ],
-    } satisfies CitationData,
-    generateExampleCode: generateCitationCode,
-  },
-  "truncated-list": {
-    description: "List with overflow indicator",
-    data: {
-      variant: "inline",
-      maxVisible: 3,
-      citations: [
-        {
-          id: "citation-trunc-1",
-          href: "https://react.dev/reference/react/useState",
-          title: "useState – React",
-          snippet: "useState is a React Hook that lets you add a state variable.",
-          domain: "react.dev",
-          favicon: favicon("react.dev"),
-          type: "document",
-        },
-        {
-          id: "citation-trunc-2",
-          href: "https://developer.mozilla.org/en-US/docs/Web/JavaScript",
-          title: "JavaScript - MDN Web Docs",
-          snippet: "JavaScript is a lightweight interpreted programming language.",
-          domain: "developer.mozilla.org",
-          favicon: favicon("developer.mozilla.org"),
-          type: "document",
-        },
-        {
-          id: "citation-trunc-3",
-          href: "https://www.typescriptlang.org/docs/",
-          title: "TypeScript Documentation",
-          snippet: "TypeScript is a strongly typed programming language.",
-          domain: "typescriptlang.org",
-          favicon: favicon("typescriptlang.org"),
-          type: "document",
-        },
-        {
-          id: "citation-trunc-4",
-          href: "https://nodejs.org/docs/latest/api/",
-          title: "Node.js Documentation",
-          snippet: "Node.js is a JavaScript runtime built on Chrome's V8 engine.",
-          domain: "nodejs.org",
-          favicon: favicon("nodejs.org"),
-          type: "api",
-        },
-        {
-          id: "citation-trunc-5",
-          href: "https://nextjs.org/docs",
-          title: "Next.js Documentation",
-          snippet: "Next.js is a React framework for production.",
-          domain: "nextjs.org",
-          favicon: favicon("nextjs.org"),
-          type: "document",
-        },
-        {
-          id: "citation-trunc-6",
-          href: "https://tailwindcss.com/docs",
-          title: "Tailwind CSS Documentation",
-          snippet: "A utility-first CSS framework for rapid UI development.",
-          domain: "tailwindcss.com",
-          favicon: favicon("tailwindcss.com"),
-          type: "document",
-        },
-        {
-          id: "citation-trunc-7",
-          href: "https://www.prisma.io/docs",
-          title: "Prisma Documentation",
-          snippet: "Prisma is an open-source ORM for Node.js and TypeScript.",
-          domain: "prisma.io",
-          favicon: favicon("prisma.io"),
-          type: "document",
-        },
-        {
-          id: "citation-trunc-8",
-          href: "https://trpc.io/docs",
-          title: "tRPC Documentation",
-          snippet: "End-to-end typesafe APIs made easy.",
-          domain: "trpc.io",
-          favicon: favicon("trpc.io"),
-          type: "api",
         },
       ],
     } satisfies CitationData,
