@@ -346,11 +346,11 @@ function StackedCitations({
                       src={citation.favicon}
                       alt=""
                       aria-hidden="true"
-                      className="size-5 rounded-full object-cover"
+                      className="size-4.5 rounded-full object-cover"
                     />
                   ) : (
                     <TypeIcon
-                      className="size-3.5 text-muted-foreground"
+                      className="size-3 text-muted-foreground"
                       aria-hidden="true"
                     />
                   )}
