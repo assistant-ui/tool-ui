@@ -51,8 +51,8 @@ import { Citation } from "@/components/tool-ui/citation";
   <Feature icon="Quote" title="Snippet preview">
     Show relevant excerpts from the source
   </Feature>
-  <Feature icon="Layers" title="Two variants">
-    Default card or inline chip with hover popover
+  <Feature icon="Layers" title="Three variants">
+    Default card, inline chips, or stacked favicons
   </Feature>
   <Feature icon="Link" title="Click to navigate">
     Open source in new tab with proper security
@@ -90,7 +90,7 @@ pnpm dlx shadcn@latest add button tooltip popover
     },
     variant: {
       description: "Visual style",
-      type: "'default' | 'inline'",
+      type: "'default' | 'inline' | 'stacked'",
       default: "'default'",
     },
     href: {

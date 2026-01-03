@@ -82,6 +82,18 @@ export function CitationList(props: CitationListProps) {
       ? "flex flex-wrap items-center gap-1.5"
       : "flex flex-col gap-2";
 
+  // Stacked variant: overlapping favicons with popover
+  if (variant === "stacked") {
+    return (
+      <StackedCitations
+        id={id}
+        citations={citations}
+        className={className}
+        onNavigate={onNavigate}
+      />
+    );
+  }
+
   if (variant === "default") {
     return (
       <div
@@ -270,5 +282,107 @@ function OverflowItem({ citation, onClick }: OverflowItemProps) {
       </div>
       <ExternalLink className="size-3.5 shrink-0 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100" />
     </button>
+  );
+}
+
+interface StackedCitationsProps {
+  id: string;
+  citations: SerializableCitation[];
+  className?: string;
+  onNavigate?: (href: string, citation: SerializableCitation) => void;
+}
+
+function StackedCitations({
+  id,
+  citations,
+  className,
+  onNavigate,
+}: StackedCitationsProps) {
+  const { open, handleMouseEnter, handleMouseLeave } = useHoverPopover();
+  const maxIcons = 4;
+  const visibleCitations = citations.slice(0, maxIcons);
+  const remainingCount = Math.max(0, citations.length - maxIcons);
+
+  const handleClick = (citation: SerializableCitation) => {
+    if (onNavigate) {
+      onNavigate(citation.href, citation);
+    } else if (typeof window !== "undefined") {
+      window.open(citation.href, "_blank", "noopener,noreferrer");
+    }
+  };
+
+  return (
+    <Popover open={open}>
+      <PopoverTrigger asChild>
+        <button
+          type="button"
+          data-tool-ui-id={id}
+          data-slot="citation-list"
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
+          className={cn(
+            "inline-flex cursor-pointer items-center gap-2 rounded-lg px-3 py-2",
+            "bg-muted/40 outline-none",
+            "transition-colors duration-150",
+            "hover:bg-muted/70",
+            "focus-visible:ring-2 focus-visible:ring-ring",
+            className,
+          )}
+        >
+          <div className="flex items-center">
+            {visibleCitations.map((citation, index) => {
+              const TypeIcon = TYPE_ICONS[citation.type ?? "webpage"] ?? Globe;
+              return (
+                <div
+                  key={citation.id}
+                  className={cn(
+                    "relative flex size-6 items-center justify-center rounded-full border-2 border-background bg-muted",
+                    index > 0 && "-ml-2",
+                  )}
+                  style={{ zIndex: maxIcons - index }}
+                >
+                  {citation.favicon ? (
+                    <img
+                      src={citation.favicon}
+                      alt=""
+                      aria-hidden="true"
+                      className="size-4 rounded-full object-cover"
+                    />
+                  ) : (
+                    <TypeIcon
+                      className="size-3 text-muted-foreground"
+                      aria-hidden="true"
+                    />
+                  )}
+                </div>
+              );
+            })}
+          </div>
+          <span className="text-muted-foreground text-sm tabular-nums">
+            {citations.length} source{citations.length !== 1 && "s"}
+            {remainingCount > 0 && ` (+${remainingCount})`}
+          </span>
+        </button>
+      </PopoverTrigger>
+      <PopoverContent
+        side="bottom"
+        align="start"
+        className="w-80 p-1"
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+        onOpenAutoFocus={(e) => e.preventDefault()}
+        onCloseAutoFocus={(e) => e.preventDefault()}
+      >
+        <div className="flex max-h-72 flex-col overflow-y-auto">
+          {citations.map((citation) => (
+            <OverflowItem
+              key={citation.id}
+              citation={citation}
+              onClick={() => handleClick(citation)}
+            />
+          ))}
+        </div>
+      </PopoverContent>
+    </Popover>
   );
 }

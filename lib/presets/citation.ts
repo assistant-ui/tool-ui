@@ -94,6 +94,7 @@ export type CitationPresetName =
   | "research"
   | "api-reference"
   | "inline-list"
+  | "stacked"
   | "truncated-list"
   | "with-actions";
 
@@ -209,6 +210,69 @@ export const citationPresets: Record<
         },
         {
           id: "citation-inline-6",
+          href: "https://tailwindcss.com/docs",
+          title: "Tailwind CSS Documentation",
+          snippet: "A utility-first CSS framework for rapid UI development.",
+          domain: "tailwindcss.com",
+          favicon: favicon("tailwindcss.com"),
+          type: "document",
+        },
+      ],
+    } satisfies CitationData,
+    generateExampleCode: generateCitationCode,
+  },
+  stacked: {
+    description: "Overlapping favicons with popover",
+    data: {
+      variant: "stacked",
+      citations: [
+        {
+          id: "citation-stacked-1",
+          href: "https://react.dev/reference/react/useState",
+          title: "useState – React",
+          snippet: "useState is a React Hook that lets you add a state variable.",
+          domain: "react.dev",
+          favicon: favicon("react.dev"),
+          type: "document",
+        },
+        {
+          id: "citation-stacked-2",
+          href: "https://developer.mozilla.org/en-US/docs/Web/JavaScript",
+          title: "JavaScript - MDN Web Docs",
+          snippet: "JavaScript is a lightweight interpreted programming language.",
+          domain: "developer.mozilla.org",
+          favicon: favicon("developer.mozilla.org"),
+          type: "document",
+        },
+        {
+          id: "citation-stacked-3",
+          href: "https://www.typescriptlang.org/docs/",
+          title: "TypeScript Documentation",
+          snippet: "TypeScript is a strongly typed programming language.",
+          domain: "typescriptlang.org",
+          favicon: favicon("typescriptlang.org"),
+          type: "document",
+        },
+        {
+          id: "citation-stacked-4",
+          href: "https://nodejs.org/docs/latest/api/",
+          title: "Node.js Documentation",
+          snippet: "Node.js is a JavaScript runtime built on Chrome's V8 engine.",
+          domain: "nodejs.org",
+          favicon: favicon("nodejs.org"),
+          type: "api",
+        },
+        {
+          id: "citation-stacked-5",
+          href: "https://nextjs.org/docs",
+          title: "Next.js Documentation",
+          snippet: "Next.js is a React framework for production.",
+          domain: "nextjs.org",
+          favicon: favicon("nextjs.org"),
+          type: "document",
+        },
+        {
+          id: "citation-stacked-6",
           href: "https://tailwindcss.com/docs",
           title: "Tailwind CSS Documentation",
           snippet: "A utility-first CSS framework for rapid UI development.",
