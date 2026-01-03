@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 import { DocsBorderedShell } from "@/app/docs/_components/docs-bordered-shell";
-import { Citation } from "@/components/tool-ui/citation";
+import { CitationList } from "@/components/tool-ui/citation";
 import { DataTable } from "@/components/tool-ui/data-table";
 import { Image } from "@/components/tool-ui/image";
 import { Video } from "@/components/tool-ui/video";
@@ -71,8 +71,10 @@ export default function ComponentsGalleryPage() {
           </div>
 
           <div className="mb-5 flex break-inside-avoid justify-center 2xl:mb-5">
-            <Citation
-              {...citationPresets["with-metadata"].data.citations[0]}
+            <CitationList
+              id="gallery-citations"
+              citations={citationPresets.stacked.data.citations}
+              variant="stacked"
             />
           </div>
 

@@ -33,6 +33,7 @@ const TYPE_ICONS: Record<CitationType, LucideIcon> = {
 function useHoverPopover(delay = 100) {
   const [open, setOpen] = React.useState(false);
   const timeoutRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
+  const containerRef = React.useRef<HTMLDivElement>(null);
 
   const handleMouseEnter = React.useCallback(() => {
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
@@ -44,13 +45,41 @@ function useHoverPopover(delay = 100) {
     timeoutRef.current = setTimeout(() => setOpen(false), delay);
   }, [delay]);
 
+  const handleFocus = React.useCallback(() => {
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    setOpen(true);
+  }, []);
+
+  const handleBlur = React.useCallback(
+    (e: React.FocusEvent) => {
+      const relatedTarget = e.relatedTarget as HTMLElement | null;
+      if (containerRef.current?.contains(relatedTarget)) {
+        return;
+      }
+      if (relatedTarget?.closest("[data-radix-popper-content-wrapper]")) {
+        return;
+      }
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+      timeoutRef.current = setTimeout(() => setOpen(false), delay);
+    },
+    [delay],
+  );
+
   React.useEffect(() => {
     return () => {
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
     };
   }, []);
 
-  return { open, setOpen, handleMouseEnter, handleMouseLeave };
+  return {
+    open,
+    setOpen,
+    containerRef,
+    handleMouseEnter,
+    handleMouseLeave,
+    handleFocus,
+    handleBlur,
+  };
 }
 
 export interface CitationListProps {
@@ -280,7 +309,7 @@ function OverflowItem({ citation, onClick }: OverflowItemProps) {
         </p>
         <p className="truncate text-xs text-muted-foreground">{citation.domain}</p>
       </div>
-      <ExternalLink className="size-3.5 shrink-0 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100" />
+      <ExternalLink className="mt-0.5 size-3.5 shrink-0 self-start text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100" />
     </button>
   );
 }
@@ -298,7 +327,15 @@ function StackedCitations({
   className,
   onNavigate,
 }: StackedCitationsProps) {
-  const { open, handleMouseEnter, handleMouseLeave } = useHoverPopover();
+  const {
+    open,
+    setOpen,
+    containerRef,
+    handleMouseEnter,
+    handleMouseLeave,
+    handleFocus,
+    handleBlur,
+  } = useHoverPopover();
   const maxIcons = 4;
   const visibleCitations = citations.slice(0, maxIcons);
   const remainingCount = Math.max(0, citations.length - maxIcons);
@@ -312,23 +349,30 @@ function StackedCitations({
   };
 
   return (
-    <Popover open={open}>
-      <PopoverTrigger asChild>
-        <button
-          type="button"
-          data-tool-ui-id={id}
-          data-slot="citation-list"
-          onMouseEnter={handleMouseEnter}
-          onMouseLeave={handleMouseLeave}
-          className={cn(
-            "inline-flex cursor-pointer items-center gap-2 rounded-lg px-3 py-2",
-            "bg-muted/40 outline-none",
-            "transition-colors duration-150",
-            "hover:bg-muted/70",
-            "focus-visible:ring-2 focus-visible:ring-ring",
-            className,
-          )}
-        >
+    <div ref={containerRef} onBlur={handleBlur} className="inline-flex">
+      <Popover open={open}>
+        <PopoverTrigger asChild>
+          <button
+            type="button"
+            data-tool-ui-id={id}
+            data-slot="citation-list"
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                setOpen(true);
+              }
+            }}
+            className={cn(
+              "inline-flex cursor-pointer items-center gap-2 rounded-lg px-3 py-2",
+              "bg-muted/40 outline-none",
+              "transition-colors duration-150",
+              "hover:bg-muted/70",
+              "focus-visible:ring-2 focus-visible:ring-ring",
+              className,
+            )}
+          >
           <div className="flex items-center">
             {visibleCitations.map((citation, index) => {
               const TypeIcon = TYPE_ICONS[citation.type ?? "webpage"] ?? Globe;
@@ -336,7 +380,7 @@ function StackedCitations({
                 <div
                   key={citation.id}
                   className={cn(
-                    "relative flex size-6 items-center justify-center rounded-full border border-border bg-background shadow-xs dark:bg-muted",
+                    "relative flex size-6 items-center justify-center rounded-full border border-border bg-background shadow-xs dark:border-foreground/20",
                     index > 0 && "-ml-2",
                   )}
                   style={{ zIndex: maxIcons - index }}
@@ -359,7 +403,7 @@ function StackedCitations({
             })}
             {remainingCount > 0 && (
               <div
-                className="-ml-2 relative flex size-6 items-center justify-center rounded-full border border-border bg-background shadow-xs dark:bg-muted"
+                className="-ml-2 relative flex size-6 items-center justify-center rounded-full border border-border bg-background shadow-xs dark:border-foreground/20"
                 style={{ zIndex: 0 }}
               >
                 <span className="text-[10px] font-medium text-muted-foreground tracking-tight">•••</span>
@@ -377,8 +421,8 @@ function StackedCitations({
         className="w-80 p-1"
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
-        onOpenAutoFocus={(e) => e.preventDefault()}
-        onCloseAutoFocus={(e) => e.preventDefault()}
+        onBlur={handleBlur}
+        onEscapeKeyDown={() => setOpen(false)}
       >
         <div className="flex max-h-72 flex-col overflow-y-auto">
           {citations.map((citation) => (
@@ -390,6 +434,7 @@ function StackedCitations({
           ))}
         </div>
       </PopoverContent>
-    </Popover>
+      </Popover>
+    </div>
   );
 }
