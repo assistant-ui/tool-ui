@@ -79,7 +79,7 @@ export const previewConfigs: Record<ComponentId, PreviewConfig<unknown, string>>
   },
   citation: {
     presets: citationPresets as Record<string, PresetWithCodeGen<unknown>>,
-    defaultPreset: "default" satisfies CitationPresetName,
+    defaultPreset: "stacked" satisfies CitationPresetName,
     renderComponent: ({ data, presetName }) => {
       const { citations, variant, maxVisible, responseActions } = data as {
         citations: Parameters<typeof Citation>[0][];

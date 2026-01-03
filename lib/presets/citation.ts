@@ -90,49 +90,74 @@ function generateCitationCode(data: CitationData): string {
 }
 
 export type CitationPresetName =
-  | "default"
-  | "with-metadata"
-  | "inline"
   | "stacked"
+  | "inline"
+  | "card"
+  | "with-metadata"
   | "with-actions";
 
 export const citationPresets: Record<
   CitationPresetName,
   PresetWithCodeGen<CitationData>
 > = {
-  default: {
-    description: "Single citation card",
+  stacked: {
+    description: "Compact stacked favicons",
     data: {
+      variant: "stacked",
       citations: [
         {
-          id: "citation-default",
+          id: "citation-stacked-1",
           href: "https://react.dev/reference/react/useState",
           title: "useState – React",
-          snippet:
-            "useState is a React Hook that lets you add a state variable to your component. Call useState at the top level of your component to declare a state variable.",
+          snippet: "useState is a React Hook that lets you add a state variable.",
           domain: "react.dev",
           favicon: favicon("react.dev"),
           type: "document",
         },
-      ],
-    } satisfies CitationData,
-    generateExampleCode: generateCitationCode,
-  },
-  "with-metadata": {
-    description: "Citation with author and date",
-    data: {
-      citations: [
         {
-          id: "citation-metadata",
-          href: "https://arxiv.org/abs/2303.08774",
-          title: "GPT-4 Technical Report",
-          snippet:
-            "We report the development of GPT-4, a large-scale, multimodal model which can accept image and text inputs and produce text outputs.",
-          domain: "arxiv.org",
-          favicon: favicon("arxiv.org"),
-          author: "OpenAI",
-          publishedAt: "2023-03-15T00:00:00Z",
-          type: "article",
+          id: "citation-stacked-2",
+          href: "https://developer.mozilla.org/en-US/docs/Web/JavaScript",
+          title: "JavaScript - MDN Web Docs",
+          snippet: "JavaScript is a lightweight interpreted programming language.",
+          domain: "developer.mozilla.org",
+          favicon: favicon("developer.mozilla.org"),
+          type: "document",
+        },
+        {
+          id: "citation-stacked-3",
+          href: "https://www.typescriptlang.org/docs/",
+          title: "TypeScript Documentation",
+          snippet: "TypeScript is a strongly typed programming language.",
+          domain: "typescriptlang.org",
+          favicon: favicon("typescriptlang.org"),
+          type: "document",
+        },
+        {
+          id: "citation-stacked-4",
+          href: "https://nodejs.org/docs/latest/api/",
+          title: "Node.js Documentation",
+          snippet: "Node.js is a JavaScript runtime built on Chrome's V8 engine.",
+          domain: "nodejs.org",
+          favicon: favicon("nodejs.org"),
+          type: "api",
+        },
+        {
+          id: "citation-stacked-5",
+          href: "https://nextjs.org/docs",
+          title: "Next.js Documentation",
+          snippet: "Next.js is a React framework for production.",
+          domain: "nextjs.org",
+          favicon: favicon("nextjs.org"),
+          type: "document",
+        },
+        {
+          id: "citation-stacked-6",
+          href: "https://tailwindcss.com/docs",
+          title: "Tailwind CSS Documentation",
+          snippet: "A utility-first CSS framework for rapid UI development.",
+          domain: "tailwindcss.com",
+          favicon: favicon("tailwindcss.com"),
+          type: "document",
         },
       ],
     } satisfies CitationData,
@@ -202,71 +227,46 @@ export const citationPresets: Record<
     } satisfies CitationData,
     generateExampleCode: generateCitationCode,
   },
-  stacked: {
-    description: "Compact stacked favicons",
+  card: {
+    description: "Full citation card",
     data: {
-      variant: "stacked",
       citations: [
         {
-          id: "citation-stacked-1",
+          id: "citation-card",
           href: "https://react.dev/reference/react/useState",
           title: "useState – React",
-          snippet: "useState is a React Hook that lets you add a state variable.",
+          snippet:
+            "useState is a React Hook that lets you add a state variable to your component. Call useState at the top level of your component to declare a state variable.",
           domain: "react.dev",
           favicon: favicon("react.dev"),
-          type: "document",
-        },
-        {
-          id: "citation-stacked-2",
-          href: "https://developer.mozilla.org/en-US/docs/Web/JavaScript",
-          title: "JavaScript - MDN Web Docs",
-          snippet: "JavaScript is a lightweight interpreted programming language.",
-          domain: "developer.mozilla.org",
-          favicon: favicon("developer.mozilla.org"),
-          type: "document",
-        },
-        {
-          id: "citation-stacked-3",
-          href: "https://www.typescriptlang.org/docs/",
-          title: "TypeScript Documentation",
-          snippet: "TypeScript is a strongly typed programming language.",
-          domain: "typescriptlang.org",
-          favicon: favicon("typescriptlang.org"),
-          type: "document",
-        },
-        {
-          id: "citation-stacked-4",
-          href: "https://nodejs.org/docs/latest/api/",
-          title: "Node.js Documentation",
-          snippet: "Node.js is a JavaScript runtime built on Chrome's V8 engine.",
-          domain: "nodejs.org",
-          favicon: favicon("nodejs.org"),
-          type: "api",
-        },
-        {
-          id: "citation-stacked-5",
-          href: "https://nextjs.org/docs",
-          title: "Next.js Documentation",
-          snippet: "Next.js is a React framework for production.",
-          domain: "nextjs.org",
-          favicon: favicon("nextjs.org"),
-          type: "document",
-        },
-        {
-          id: "citation-stacked-6",
-          href: "https://tailwindcss.com/docs",
-          title: "Tailwind CSS Documentation",
-          snippet: "A utility-first CSS framework for rapid UI development.",
-          domain: "tailwindcss.com",
-          favicon: favicon("tailwindcss.com"),
           type: "document",
         },
       ],
     } satisfies CitationData,
     generateExampleCode: generateCitationCode,
   },
+  "with-metadata": {
+    description: "Card with author and date",
+    data: {
+      citations: [
+        {
+          id: "citation-metadata",
+          href: "https://arxiv.org/abs/2303.08774",
+          title: "GPT-4 Technical Report",
+          snippet:
+            "We report the development of GPT-4, a large-scale, multimodal model which can accept image and text inputs and produce text outputs.",
+          domain: "arxiv.org",
+          favicon: favicon("arxiv.org"),
+          author: "OpenAI",
+          publishedAt: "2023-03-15T00:00:00Z",
+          type: "article",
+        },
+      ],
+    } satisfies CitationData,
+    generateExampleCode: generateCitationCode,
+  },
   "with-actions": {
-    description: "Citation with response actions",
+    description: "Card with response actions",
     data: {
       citations: [
         {
