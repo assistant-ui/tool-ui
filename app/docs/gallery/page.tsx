@@ -72,7 +72,7 @@ export default function ComponentsGalleryPage() {
 
           <div className="mb-5 flex break-inside-avoid justify-center 2xl:mb-5">
             <Citation
-              {...citationPresets["with-relevance"].data.citation}
+              {...citationPresets["with-metadata"].data.citations[0]}
             />
           </div>
 
