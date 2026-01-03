@@ -54,8 +54,8 @@ import { Citation } from "@/components/tool-ui/citation";
   <Feature icon="Layers" title="Three variants">
     Default card, inline chips, or stacked favicons
   </Feature>
-  <Feature icon="Link" title="Click to navigate">
-    Open source in new tab with proper security
+  <Feature icon="Keyboard" title="Keyboard accessible">
+    Full keyboard navigation for stacked variant popover
   </Feature>
 </FeatureGrid>
 
@@ -142,3 +142,15 @@ pnpm dlx shadcn@latest add button tooltip popover
     },
   }}
 />
+
+## Accessibility
+
+The stacked variant popover supports full keyboard navigation:
+
+| Key | Action |
+| --- | --- |
+| <kbd>Enter</kbd> / <kbd>Space</kbd> | Open popover |
+| <kbd>Tab</kbd> | Navigate between citations |
+| <kbd>Escape</kbd> | Close popover and return focus to trigger |
+
+Mouse users can hover to reveal the popover. All variants open links in new tabs with `noopener,noreferrer` for security.
