@@ -402,14 +402,13 @@ export function OptionList({
 
   const handleFooterAction = useCallback(
     async (actionId: string) => {
-      if (hasCustomResponseActions) {
-        await onResponseAction?.(actionId);
-        return;
-      }
       if (actionId === "confirm") {
         await handleConfirm();
       } else if (actionId === "cancel") {
         handleCancel();
+      }
+      if (hasCustomResponseActions) {
+        await onResponseAction?.(actionId);
       }
     },
     [handleConfirm, handleCancel, hasCustomResponseActions, onResponseAction],
