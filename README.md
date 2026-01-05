@@ -24,15 +24,6 @@ Responsive, accessible, typed, copy-pasteable. Built on Radix, shadcn/ui, and Ta
 
 👀 [Browse components](https://tool-ui.com/components)
 
-## Builder
-
-- Prompt -> Tool UI
-- Connect an MCP server (HTTP or SSE) and auto-discover tools
-- Auto-generate UI from a tool’s JSON schema
-- Toggle between rendered preview and code; just copy/paste the generated component
-
-🏗️ [Builder](https://tool-ui.com/builder)
-
 ## Contributing
 
 Contributions are welcome!
