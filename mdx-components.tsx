@@ -15,6 +15,7 @@ import * as React from "react";
 import { AutoLinkChildren, withAutoLink } from "@/lib/docs/auto-link";
 import { Mermaid } from "@/app/components/mdx/mermaid";
 import {
+  ApprovalCardPresetExample,
   ChartPresetExample,
   OptionListPresetExample,
   CodeBlockPresetExample,
@@ -92,6 +93,7 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
     Folder,
     AutoLinkChildren,
     Mermaid,
+    ApprovalCardPresetExample,
     ChartPresetExample,
     OptionListPresetExample,
     CodeBlockPresetExample,

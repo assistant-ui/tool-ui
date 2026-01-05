@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 
 import { DocsBorderedShell } from "@/app/docs/_components/docs-bordered-shell";
+import { ApprovalCard } from "@/components/tool-ui/approval-card";
 import { CitationList } from "@/components/tool-ui/citation";
 import { DataTable } from "@/components/tool-ui/data-table";
 import { Image } from "@/components/tool-ui/image";
@@ -15,6 +16,7 @@ import { Terminal } from "@/components/tool-ui/terminal";
 import { CodeBlock } from "@/components/tool-ui/code-block";
 import { Chart } from "@/components/tool-ui/chart";
 import { ItemCarousel } from "@/components/tool-ui/item-carousel";
+import { approvalCardPresets } from "@/lib/presets/approval-card";
 import { citationPresets } from "@/lib/presets/citation";
 import { dataTablePresets } from "@/lib/presets/data-table";
 import { itemCarouselPresets } from "@/lib/presets/item-carousel";
@@ -84,6 +86,10 @@ export default function ComponentsGalleryPage() {
 
           <div className="mb-5 flex break-inside-avoid justify-center 2xl:mb-5">
             <OptionList {...optionListPresets["max-selections"].data} />
+          </div>
+
+          <div className="mb-5 flex break-inside-avoid justify-center 2xl:mb-5">
+            <ApprovalCard {...approvalCardPresets["with-metadata"].data} />
           </div>
 
           <div className="mb-5 flex break-inside-avoid justify-center 2xl:mb-5">

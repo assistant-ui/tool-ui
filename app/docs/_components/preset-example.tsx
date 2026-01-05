@@ -23,6 +23,11 @@ import {
   itemCarouselPresets,
   ItemCarouselPresetName,
 } from "@/lib/presets/item-carousel";
+import { ApprovalCard } from "@/components/tool-ui/approval-card";
+import {
+  approvalCardPresets,
+  ApprovalCardPresetName,
+} from "@/lib/presets/approval-card";
 
 function generateOptionListCode(preset: OptionListPresetName): string {
   const list = optionListPresets[preset].data;
@@ -335,6 +340,70 @@ export function ItemCarouselPresetExample({
       <Tab value="Preview">
         <div className="not-prose">
           <ItemCarousel {...data} />
+        </div>
+      </Tab>
+      <Tab value="Code">
+        <DynamicCodeBlock lang="tsx" code={code} />
+      </Tab>
+    </Tabs>
+  );
+}
+
+function generateApprovalCardCode(preset: ApprovalCardPresetName): string {
+  const data = approvalCardPresets[preset].data;
+  const props: string[] = [];
+
+  props.push(`  id="${data.id}"`);
+  props.push(`  title="${data.title}"`);
+
+  if (data.description) {
+    props.push(`  description="${data.description}"`);
+  }
+
+  if (data.icon) {
+    props.push(`  icon="${data.icon}"`);
+  }
+
+  if (data.metadata && data.metadata.length > 0) {
+    props.push(
+      `  metadata={${JSON.stringify(data.metadata, null, 4).replace(/\n/g, "\n  ")}}`,
+    );
+  }
+
+  if (data.variant) {
+    props.push(`  variant="${data.variant}"`);
+  }
+
+  if (data.confirmLabel) {
+    props.push(`  confirmLabel="${data.confirmLabel}"`);
+  }
+
+  if (data.cancelLabel) {
+    props.push(`  cancelLabel="${data.cancelLabel}"`);
+  }
+
+  if (data.confirmed) {
+    props.push(`  confirmed="${data.confirmed}"`);
+  }
+
+  return `<ApprovalCard\n${props.join("\n")}\n/>`;
+}
+
+interface ApprovalCardPresetExampleProps {
+  preset: ApprovalCardPresetName;
+}
+
+export function ApprovalCardPresetExample({
+  preset,
+}: ApprovalCardPresetExampleProps) {
+  const data = approvalCardPresets[preset].data;
+  const code = generateApprovalCardCode(preset);
+
+  return (
+    <Tabs items={["Preview", "Code"]}>
+      <Tab value="Preview">
+        <div className="not-prose mx-auto max-w-sm">
+          <ApprovalCard {...data} />
         </div>
       </Tab>
       <Tab value="Code">

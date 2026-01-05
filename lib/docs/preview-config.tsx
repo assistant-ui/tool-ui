@@ -3,6 +3,7 @@
 import type { ComponentType, ReactNode } from "react";
 import type { PresetWithCodeGen } from "@/lib/presets/types";
 
+import { ApprovalCard } from "@/components/tool-ui/approval-card";
 import { Chart } from "@/components/tool-ui/chart";
 import { Citation, CitationList } from "@/components/tool-ui/citation";
 import { CodeBlock } from "@/components/tool-ui/code-block";
@@ -16,6 +17,7 @@ import { OptionList } from "@/components/tool-ui/option-list";
 import { Plan } from "@/components/tool-ui/plan";
 import { Terminal } from "@/components/tool-ui/terminal";
 
+import { approvalCardPresets, type ApprovalCardPresetName } from "@/lib/presets/approval-card";
 import { chartPresets, type ChartPresetName } from "@/lib/presets/chart";
 import { citationPresets, type CitationPresetName } from "@/lib/presets/citation";
 import { codeBlockPresets, type CodeBlockPresetName } from "@/lib/presets/code-block";
@@ -30,6 +32,7 @@ import { planPresets, type PlanPresetName } from "@/lib/presets/plan";
 import { terminalPresets, type TerminalPresetName } from "@/lib/presets/terminal";
 
 export type ComponentId =
+  | "approval-card"
   | "chart"
   | "citation"
   | "code-block"
@@ -69,6 +72,21 @@ function MaxWidthSmWrapper({ children }: { children: ReactNode }) {
 }
 
 export const previewConfigs: Record<ComponentId, PreviewConfig<unknown, string>> = {
+  "approval-card": {
+    presets: approvalCardPresets as Record<string, PresetWithCodeGen<unknown>>,
+    defaultPreset: "deploy" satisfies ApprovalCardPresetName,
+    wrapper: MaxWidthSmWrapper,
+    renderComponent: ({ data }) => {
+      const cardData = data as Parameters<typeof ApprovalCard>[0];
+      return (
+        <ApprovalCard
+          {...cardData}
+          onConfirm={() => console.log("Approved")}
+          onCancel={() => console.log("Denied")}
+        />
+      );
+    },
+  },
   chart: {
     presets: chartPresets as Record<string, PresetWithCodeGen<unknown>>,
     defaultPreset: "revenue" satisfies ChartPresetName,

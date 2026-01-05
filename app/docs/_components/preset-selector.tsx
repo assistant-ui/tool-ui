@@ -5,6 +5,7 @@ import {
   ItemGroup,
   ItemTitle,
 } from "@/components/ui/item";
+import { approvalCardPresets } from "@/lib/presets/approval-card";
 import { chartPresets } from "@/lib/presets/chart";
 import { citationPresets } from "@/lib/presets/citation";
 import { codeBlockPresets } from "@/lib/presets/code-block";
@@ -23,6 +24,7 @@ import { cn } from "@/lib/ui/cn";
 type PresetMap = Record<string, Preset<unknown>>;
 
 const PRESET_REGISTRY: Record<string, PresetMap> = {
+  "approval-card": approvalCardPresets,
   chart: chartPresets,
   citation: citationPresets,
   "code-block": codeBlockPresets,

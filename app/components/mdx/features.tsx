@@ -21,6 +21,7 @@ import {
   Terminal,
   Timer,
   AlertCircle,
+  AlertTriangle,
   Code,
   FileOutput,
   Smartphone,
@@ -40,11 +41,13 @@ import {
   Eye,
   Maximize2,
   ListTodo,
+  List,
   GalleryHorizontalEnd,
   Keyboard,
   Globe,
   ExternalLink,
   Quote,
+  ShieldCheck,
 } from "lucide-react";
 
 const ICON_MAP: Record<string, LucideIcon> = {
@@ -68,6 +71,7 @@ const ICON_MAP: Record<string, LucideIcon> = {
   Terminal,
   Timer,
   AlertCircle,
+  AlertTriangle,
   Code,
   FileOutput,
   Smartphone,
@@ -87,11 +91,13 @@ const ICON_MAP: Record<string, LucideIcon> = {
   Eye,
   Maximize2,
   ListTodo,
+  List,
   GalleryHorizontalEnd,
   Keyboard,
   Globe,
   ExternalLink,
   Quote,
+  ShieldCheck,
 };
 
 interface FeatureGridProps {

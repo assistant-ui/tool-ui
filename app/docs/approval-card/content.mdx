@@ -1,0 +1,239 @@
+import { DocsHeader } from "../_components/docs-header";
+import { ApprovalCard } from "@/components/tool-ui/approval-card";
+
+<DocsHeader
+  title="Approval Card"
+  description="Binary confirmation for agent actions."
+  mdxPath="app/docs/approval-card/content.mdx"
+/>
+
+<Tabs items={["Preview", "Code"]}>
+  <Tab>
+    <div className="not-prose mx-auto max-w-sm">
+      <ApprovalCard
+        id="approval-card-example"
+        title="Deploy to Production?"
+        description="This will push the latest changes to all users."
+        icon="rocket"
+        confirmLabel="Deploy"
+      />
+    </div>
+  </Tab>
+  <Tab>
+    ```tsx
+    import { ApprovalCard } from "@/components/tool-ui/approval-card";
+
+    export function Example() {
+      return (
+        <ApprovalCard
+          id="approval-card-example"
+          title="Deploy to Production?"
+          description="This will push the latest changes to all users."
+          icon="rocket"
+          confirmLabel="Deploy"
+          onConfirm={() => console.log("Approved")}
+          onCancel={() => console.log("Denied")}
+        />
+      );
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Key Features
+
+<FeatureGrid>
+  <Feature icon="ShieldCheck" title="Human-in-the-loop">
+    Gate agent actions with explicit user approval
+  </Feature>
+  <Feature icon="AlertTriangle" title="Destructive variant">
+    Warning styling for dangerous operations
+  </Feature>
+  <Feature icon="List" title="Contextual metadata">
+    Show key-value details about what's being approved
+  </Feature>
+  <Feature icon="CheckCircle2" title="Receipt state">
+    Display the decision outcome in conversation history
+  </Feature>
+</FeatureGrid>
+
+## When to Use
+
+- **Good for:** Deployment approvals, delete confirmations, send actions, permission grants
+- **Not for:** Multi-option decisions (use [Option List](/docs/option-list)), complex forms, informational displays
+
+## Source and Install
+
+Copy [`components/tool-ui/approval-card`](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/approval-card) and the [`shared`](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/shared) directory into your project. The `shared` folder contains utilities used by all Tool UI components. The `tool-ui` directory should sit alongside your shadcn `ui` directory.
+
+### Prerequisites
+
+This component requires the following [shadcn/ui](https://ui.shadcn.com) components:
+
+```bash
+pnpm dlx shadcn@latest add button
+```
+
+### Directory Structure
+
+<Files>
+  <Folder name="components" defaultOpen>
+    <Folder name="ui">
+      <File name="button.tsx" />
+      <File name="..." />
+    </Folder>
+    <Folder name="tool-ui" defaultOpen>
+      <Folder name="shared" defaultOpen>
+        <File name="schema.ts" />
+        <File name="parse.ts" />
+        <File name="error-boundary.tsx" />
+        <File name="index.ts" />
+        <File name="..." />
+      </Folder>
+      <Folder name="approval-card" defaultOpen>
+        <File name="approval-card.tsx" />
+        <File name="schema.ts" />
+        <File name="index.tsx" />
+        <File name="..." />
+      </Folder>
+    </Folder>
+  </Folder>
+</Files>
+
+### Download
+
+- [**Shared Dependencies (GitHub)**](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/shared) ([ZIP](https://download-directory.github.io/?url=https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/shared))
+- [**Approval Card (GitHub)**](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/approval-card) ([ZIP](https://download-directory.github.io/?url=https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/approval-card))
+
+## Usage
+
+```tsx
+"use client";
+
+import { makeAssistantTool } from "@assistant-ui/react";
+import {
+  ApprovalCard,
+  ApprovalCardErrorBoundary,
+  parseSerializableApprovalCard,
+  SerializableApprovalCardSchema,
+  type SerializableApprovalCard,
+  type ApprovalDecision,
+} from "@/components/tool-ui/approval-card";
+
+export const ApprovalTool = makeAssistantTool<
+  SerializableApprovalCard,
+  ApprovalDecision
+>({
+  toolName: "requestApproval",
+  description: "Request user approval before performing an action.",
+  parameters: SerializableApprovalCardSchema,
+  render: ({ args, result, addResult, toolCallId }) => {
+    if (!(args as any)?.title) return null;
+
+    const approvalCard = parseSerializableApprovalCard({
+      ...args,
+      id: (args as any)?.id ?? `approval-${toolCallId}`,
+    });
+
+    return (
+      <ApprovalCardErrorBoundary>
+        {result !== undefined ? (
+          <ApprovalCard {...approvalCard} confirmed={result} />
+        ) : (
+          <ApprovalCard
+            {...approvalCard}
+            onConfirm={() => addResult("approved")}
+            onCancel={() => addResult("denied")}
+          />
+        )}
+      </ApprovalCardErrorBoundary>
+    );
+  },
+});
+```
+
+Mount `<ApprovalTool />` under `<AssistantRuntimeProvider>` to register the tool and its UI.
+
+## Props
+
+<TypeTable
+  type={{
+    id: {
+      description: "Unique identifier for the approval card",
+      type: "string",
+      required: true,
+    },
+    title: {
+      description: "The action being approved",
+      type: "string",
+      required: true,
+    },
+    description: {
+      description: "Additional context about the action",
+      type: "string",
+    },
+    icon: {
+      description: "Lucide icon name to display",
+      type: "string",
+    },
+    metadata: {
+      description: "Key-value pairs providing context",
+      type: "MetadataItem[]",
+    },
+    variant: {
+      description: "Visual style variant",
+      type: "'default' | 'destructive'",
+      default: "'default'",
+    },
+    confirmLabel: {
+      description: "Label for the confirm button",
+      type: "string",
+      default: "'Approve'",
+    },
+    cancelLabel: {
+      description: "Label for the cancel button",
+      type: "string",
+      default: "'Deny'",
+    },
+    isLoading: {
+      description: "Show loading state on confirm button",
+      type: "boolean",
+    },
+    confirmed: {
+      description: "Decision result (renders receipt state)",
+      type: "'approved' | 'denied' | null",
+    },
+    onConfirm: {
+      description: "Handler when user approves",
+      type: "() => void | Promise<void>",
+    },
+    onCancel: {
+      description: "Handler when user denies",
+      type: "() => void | Promise<void>",
+    },
+  }}
+/>
+
+## Metadata Schema
+
+<TypeTable
+  type={{
+    key: {
+      description: "Label for the metadata item",
+      type: "string",
+      required: true,
+    },
+    value: {
+      description: "Value to display",
+      type: "string",
+      required: true,
+    },
+  }}
+/>
+
+## Accessibility
+
+- Uses `role="dialog"` with `aria-labelledby` and `aria-describedby`
+- Buttons are keyboard accessible (Tab, Enter, Space)
+- Loading state disables buttons to prevent double-submission
+- Receipt state uses `role="status"` for screen reader announcements

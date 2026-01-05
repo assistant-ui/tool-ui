@@ -7,6 +7,12 @@ export interface ComponentMeta {
 
 export const componentsRegistry: ComponentMeta[] = [
   {
+    id: "approval-card",
+    label: "Approval Card",
+    description: "Binary confirmation for agent actions",
+    path: "/docs/approval-card",
+  },
+  {
     id: "chart",
     label: "Chart",
     description: "Visualize data with interactive charts",

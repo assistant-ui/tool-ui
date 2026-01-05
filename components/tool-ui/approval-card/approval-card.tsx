@@ -1,0 +1,246 @@
+"use client";
+
+import * as React from "react";
+import { cn } from "./_adapter";
+import type { ApprovalCardProps, ApprovalDecision } from "./schema";
+import { ActionButtons } from "../shared";
+import type { Action } from "../shared";
+import { icons, Check, X } from "lucide-react";
+
+type LucideIcon = React.ComponentType<{ className?: string }>;
+
+function getLucideIcon(name: string): LucideIcon | null {
+  const pascalName = name
+    .split("-")
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join("");
+
+  const Icon = icons[pascalName as keyof typeof icons];
+  return Icon ?? null;
+}
+
+interface ApprovalCardReceiptProps {
+  id: string;
+  title: string;
+  decision: ApprovalDecision;
+  actionLabel?: string;
+  className?: string;
+}
+
+function ApprovalCardReceipt({
+  id,
+  title,
+  decision,
+  actionLabel,
+  className,
+}: ApprovalCardReceiptProps) {
+  const isApproved = decision === "approved";
+  const displayLabel = actionLabel ?? (isApproved ? "Approved" : "Denied");
+
+  return (
+    <div
+      className={cn(
+        "flex w-full min-w-64 max-w-sm flex-col",
+        "text-foreground",
+        "animate-in fade-in-0 duration-200",
+        className,
+      )}
+      data-slot="approval-card"
+      data-tool-ui-id={id}
+      data-receipt="true"
+      role="status"
+      aria-label={displayLabel}
+    >
+      <div
+        className={cn(
+          "bg-card/60 flex w-full items-center gap-3 rounded-2xl border px-4 py-3 shadow-xs",
+        )}
+      >
+        <span
+          className={cn(
+            "flex size-8 shrink-0 items-center justify-center rounded-full",
+            isApproved
+              ? "bg-primary/10 text-primary"
+              : "bg-muted text-muted-foreground",
+          )}
+        >
+          {isApproved ? (
+            <Check className="size-4" />
+          ) : (
+            <X className="size-4" />
+          )}
+        </span>
+        <div className="flex flex-col">
+          <span className="text-sm font-medium">{displayLabel}</span>
+          <span className="text-muted-foreground text-sm">{title}</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ApprovalCardSkeleton({ className }: { className?: string }) {
+  return (
+    <div
+      className={cn(
+        "flex w-full min-w-64 max-w-sm flex-col",
+        className,
+      )}
+      data-slot="approval-card-progress"
+      aria-busy="true"
+    >
+      <div className="bg-card flex w-full flex-col gap-4 rounded-2xl border p-5 shadow-xs">
+        <div className="flex items-start gap-3">
+          <div className="bg-muted size-10 animate-pulse rounded-xl" />
+          <div className="flex flex-1 flex-col gap-2">
+            <div className="bg-muted h-5 w-3/4 animate-pulse rounded" />
+            <div className="bg-muted h-4 w-full animate-pulse rounded" />
+          </div>
+        </div>
+        <div className="flex justify-end gap-2">
+          <div className="bg-muted h-9 w-16 animate-pulse rounded-full" />
+          <div className="bg-muted h-9 w-20 animate-pulse rounded-full" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export function ApprovalCardProgress({ className }: { className?: string }) {
+  return <ApprovalCardSkeleton className={className} />;
+}
+
+export function ApprovalCard({
+  id,
+  title,
+  description,
+  icon,
+  metadata,
+  variant,
+  confirmLabel,
+  cancelLabel,
+  className,
+  isLoading,
+  confirmed,
+  onConfirm,
+  onCancel,
+}: ApprovalCardProps) {
+  const resolvedVariant = variant ?? "default";
+  const resolvedConfirmLabel = confirmLabel ?? "Approve";
+  const resolvedCancelLabel = cancelLabel ?? "Deny";
+  const Icon = icon ? getLucideIcon(icon) : null;
+
+  const handleAction = React.useCallback(
+    async (actionId: string) => {
+      if (actionId === "confirm") {
+        await onConfirm?.();
+      } else if (actionId === "cancel") {
+        await onCancel?.();
+      }
+    },
+    [onConfirm, onCancel],
+  );
+
+  const handleKeyDown = React.useCallback(
+    (event: React.KeyboardEvent) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        onCancel?.();
+      }
+    },
+    [onCancel],
+  );
+
+  if (confirmed) {
+    const actionLabel =
+      confirmed === "approved" ? resolvedConfirmLabel : resolvedCancelLabel;
+    return (
+      <ApprovalCardReceipt
+        id={id}
+        title={title}
+        decision={confirmed}
+        actionLabel={actionLabel}
+        className={className}
+      />
+    );
+  }
+
+  const isDestructive = resolvedVariant === "destructive";
+
+  const actions: Action[] = [
+    {
+      id: "cancel",
+      label: resolvedCancelLabel,
+      variant: "ghost",
+      disabled: isLoading,
+    },
+    {
+      id: "confirm",
+      label: resolvedConfirmLabel,
+      variant: isDestructive ? "destructive" : "default",
+      disabled: isLoading,
+    },
+  ];
+
+  return (
+    <article
+      className={cn(
+        "@container/actions flex w-full min-w-64 max-w-sm flex-col",
+        "text-foreground",
+        className,
+      )}
+      data-slot="approval-card"
+      data-tool-ui-id={id}
+      role="dialog"
+      aria-labelledby={`${id}-title`}
+      aria-describedby={description ? `${id}-description` : undefined}
+      onKeyDown={handleKeyDown}
+    >
+      <div className="bg-card flex w-full flex-col gap-4 rounded-2xl border p-5 shadow-xs">
+        <div className="flex items-start gap-3">
+          {Icon && (
+            <span
+              className={cn(
+                "flex size-10 shrink-0 items-center justify-center rounded-xl",
+                isDestructive
+                  ? "bg-destructive/10 text-destructive"
+                  : "bg-primary/10 text-primary",
+              )}
+            >
+              <Icon className="size-5" />
+            </span>
+          )}
+          <div className="flex flex-1 flex-col gap-1">
+            <h2
+              id={`${id}-title`}
+              className="text-base font-semibold leading-tight"
+            >
+              {title}
+            </h2>
+            {description && (
+              <p
+                id={`${id}-description`}
+                className="text-muted-foreground text-sm"
+              >
+                {description}
+              </p>
+            )}
+          </div>
+        </div>
+
+        {metadata && metadata.length > 0 && (
+          <dl className="bg-muted/50 divide-border/60 flex flex-col divide-y rounded-lg px-3 text-sm">
+            {metadata.map((item, index) => (
+              <div key={index} className="flex justify-between gap-4 py-2">
+                <dt className="text-muted-foreground shrink-0">{item.key}</dt>
+                <dd className="min-w-0 truncate font-medium">{item.value}</dd>
+              </div>
+            ))}
+          </dl>
+        )}
+
+        <ActionButtons actions={actions} onAction={handleAction} />
+      </div>
+    </article>
+  );
+}
