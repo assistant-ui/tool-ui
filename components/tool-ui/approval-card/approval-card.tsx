@@ -121,7 +121,7 @@ export function ApprovalCard({
   cancelLabel,
   className,
   isLoading,
-  confirmed,
+  decision,
   onConfirm,
   onCancel,
 }: ApprovalCardProps) {
@@ -151,14 +151,14 @@ export function ApprovalCard({
     [onCancel],
   );
 
-  if (confirmed) {
+  if (decision) {
     const actionLabel =
-      confirmed === "approved" ? resolvedConfirmLabel : resolvedCancelLabel;
+      decision === "approved" ? resolvedConfirmLabel : resolvedCancelLabel;
     return (
       <ApprovalCardReceipt
         id={id}
         title={title}
-        decision={confirmed}
+        decision={decision}
         actionLabel={actionLabel}
         className={className}
       />

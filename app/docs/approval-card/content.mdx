@@ -40,6 +40,8 @@ import { ApprovalCard } from "@/components/tool-ui/approval-card";
   </Tab>
 </Tabs>
 
+> **Note:** Buttons use a responsive layout—they appear as compact pills at wider widths and stack full-width on narrow containers.
+
 ## Key Features
 
 <FeatureGrid>
@@ -61,6 +63,77 @@ import { ApprovalCard } from "@/components/tool-ui/approval-card";
 
 - **Good for:** Deployment approvals, delete confirmations, send actions, permission grants
 - **Not for:** Multi-option decisions (use [Option List](/docs/option-list)), complex forms, informational displays
+
+## Receipt State
+
+When `decision` is set, the component renders in a compact receipt state showing the approval decision. This is useful for displaying the outcome in conversation history.
+
+<Tabs items={["Approved", "Denied"]}>
+  <Tab>
+    <div className="not-prose mx-auto max-w-sm">
+      <ApprovalCard
+        id="receipt-approved-example"
+        title="Deploy to Production"
+        decision="approved"
+        confirmLabel="Deploy"
+      />
+    </div>
+  </Tab>
+  <Tab>
+    <div className="not-prose mx-auto max-w-sm">
+      <ApprovalCard
+        id="receipt-denied-example"
+        title="Delete Project"
+        decision="denied"
+        variant="destructive"
+        confirmLabel="Delete"
+        cancelLabel="Keep"
+      />
+    </div>
+  </Tab>
+</Tabs>
+
+The receipt state:
+
+- Shows the decision (approved/denied) with a checkmark or X icon
+- Displays the custom button label used (e.g., "Deploy" instead of generic "Approved")
+- Fades in with a subtle animation
+- Is read-only (no interaction)
+
+## Destructive Variant
+
+Use `variant="destructive"` for dangerous or irreversible actions. This changes the icon background and confirm button to destructive styling.
+
+<Tabs items={["Preview", "Code"]}>
+  <Tab>
+    <div className="not-prose mx-auto max-w-sm">
+      <ApprovalCard
+        id="destructive-example"
+        title="Delete Project?"
+        description="This action cannot be undone. All data will be permanently removed."
+        icon="trash-2"
+        variant="destructive"
+        confirmLabel="Delete"
+        cancelLabel="Keep"
+      />
+    </div>
+  </Tab>
+  <Tab>
+    ```tsx
+    <ApprovalCard
+      id="destructive-example"
+      title="Delete Project?"
+      description="This action cannot be undone."
+      icon="trash-2"
+      variant="destructive"
+      confirmLabel="Delete"
+      cancelLabel="Keep"
+      onConfirm={() => deleteProject()}
+      onCancel={() => console.log("Kept")}
+    />
+    ```
+  </Tab>
+</Tabs>
 
 ## Source and Install
 
@@ -84,9 +157,9 @@ pnpm dlx shadcn@latest add button
     </Folder>
     <Folder name="tool-ui" defaultOpen>
       <Folder name="shared" defaultOpen>
+        <File name="action-buttons.tsx" />
         <File name="schema.ts" />
         <File name="parse.ts" />
-        <File name="error-boundary.tsx" />
         <File name="index.ts" />
         <File name="..." />
       </Folder>
@@ -138,7 +211,7 @@ export const ApprovalTool = makeAssistantTool<
     return (
       <ApprovalCardErrorBoundary>
         {result !== undefined ? (
-          <ApprovalCard {...approvalCard} confirmed={result} />
+          <ApprovalCard {...approvalCard} decision={result} />
         ) : (
           <ApprovalCard
             {...approvalCard}
@@ -173,7 +246,7 @@ Mount `<ApprovalTool />` under `<AssistantRuntimeProvider>` to register the tool
       type: "string",
     },
     icon: {
-      description: "Lucide icon name to display",
+      description: "Lucide icon name in kebab-case (e.g., \"rocket\", \"trash-2\", \"alert-triangle\")",
       type: "string",
     },
     metadata: {
@@ -196,12 +269,12 @@ Mount `<ApprovalTool />` under `<AssistantRuntimeProvider>` to register the tool
       default: "'Deny'",
     },
     isLoading: {
-      description: "Show loading state on confirm button",
+      description: "Disables both buttons while an external operation is in progress",
       type: "boolean",
     },
-    confirmed: {
-      description: "Decision result (renders receipt state)",
-      type: "'approved' | 'denied' | null",
+    decision: {
+      description: "The finalized decision (renders receipt state when set)",
+      type: "'approved' | 'denied'",
     },
     onConfirm: {
       description: "Handler when user approves",
@@ -231,9 +304,15 @@ Mount `<ApprovalTool />` under `<AssistantRuntimeProvider>` to register the tool
   }}
 />
 
+Long metadata values are automatically truncated with an ellipsis. Keep values concise for best results.
+
 ## Accessibility
 
 - Uses `role="dialog"` with `aria-labelledby` and `aria-describedby`
-- Buttons are keyboard accessible (Tab, Enter, Space)
-- Loading state disables buttons to prevent double-submission
+- **Keyboard navigation:**
+  - `Tab` to move between buttons
+  - `Enter` or `Space` to activate focused button
+  - `Escape` triggers the cancel action
+- Loading state disables both buttons to prevent double-submission
 - Receipt state uses `role="status"` for screen reader announcements
+- Fade-in animation respects `prefers-reduced-motion`

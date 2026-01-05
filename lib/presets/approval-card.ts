@@ -40,8 +40,8 @@ function generateApprovalCardCode(data: SerializableApprovalCard): string {
     props.push(`  cancelLabel="${data.cancelLabel}"`);
   }
 
-  if (data.confirmed) {
-    props.push(`  confirmed="${data.confirmed}"`);
+  if (data.decision) {
+    props.push(`  decision="${data.decision}"`);
   } else {
     props.push(`  onConfirm={() => console.log("Approved")}`);
     props.push(`  onCancel={() => console.log("Denied")}`);
@@ -100,7 +100,7 @@ export const approvalCardPresets: Record<
     data: {
       id: "approval-card-receipt-approved",
       title: "Deploy to Production",
-      confirmed: "approved",
+      decision: "approved",
     } satisfies SerializableApprovalCard,
     generateExampleCode: generateApprovalCardCode,
   },
@@ -109,7 +109,7 @@ export const approvalCardPresets: Record<
     data: {
       id: "approval-card-receipt-denied",
       title: "Delete Project",
-      confirmed: "denied",
+      decision: "denied",
     } satisfies SerializableApprovalCard,
     generateExampleCode: generateApprovalCardCode,
   },

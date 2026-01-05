@@ -382,8 +382,8 @@ function generateApprovalCardCode(preset: ApprovalCardPresetName): string {
     props.push(`  cancelLabel="${data.cancelLabel}"`);
   }
 
-  if (data.confirmed) {
-    props.push(`  confirmed="${data.confirmed}"`);
+  if (data.decision) {
+    props.push(`  decision="${data.decision}"`);
   }
 
   return `<ApprovalCard\n${props.join("\n")}\n/>`;

@@ -30,7 +30,7 @@ export const SerializableApprovalCardSchema = z.object({
   confirmLabel: z.string().optional(),
   cancelLabel: z.string().optional(),
 
-  confirmed: ApprovalDecisionSchema.optional(),
+  decision: ApprovalDecisionSchema.optional(),
 });
 
 export type SerializableApprovalCard = z.infer<
