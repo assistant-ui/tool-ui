@@ -48,6 +48,8 @@ import {
   ExternalLink,
   Quote,
   ShieldCheck,
+  DollarSign,
+  Package,
 } from "lucide-react";
 
 const ICON_MAP: Record<string, LucideIcon> = {
@@ -98,6 +100,8 @@ const ICON_MAP: Record<string, LucideIcon> = {
   ExternalLink,
   Quote,
   ShieldCheck,
+  DollarSign,
+  Package,
 };
 
 interface FeatureGridProps {

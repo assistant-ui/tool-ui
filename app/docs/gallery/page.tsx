@@ -11,6 +11,7 @@ import { LinkPreview } from "@/components/tool-ui/link-preview";
 import { XPost } from "@/components/tool-ui/x-post";
 import { LinkedInPost } from "@/components/tool-ui/linkedin-post";
 import { OptionList } from "@/components/tool-ui/option-list";
+import { OrderSummary } from "@/components/tool-ui/order-summary";
 import { Plan } from "@/components/tool-ui/plan";
 import { Terminal } from "@/components/tool-ui/terminal";
 import { CodeBlock } from "@/components/tool-ui/code-block";
@@ -27,6 +28,7 @@ import { linkPreviewPresets } from "@/lib/presets/link-preview";
 import { xPostPresets } from "@/lib/presets/x-post";
 import { linkedInPostPresets } from "@/lib/presets/linkedin-post";
 import { optionListPresets } from "@/lib/presets/option-list";
+import { orderSummaryPresets } from "@/lib/presets/order-summary";
 import { planPresets } from "@/lib/presets/plan";
 import { terminalPresets } from "@/lib/presets/terminal";
 import { codeBlockPresets } from "@/lib/presets/code-block";
@@ -90,6 +92,13 @@ export default function ComponentsGalleryPage() {
 
           <div className="mb-5 flex break-inside-avoid justify-center 2xl:mb-5">
             <ApprovalCard {...approvalCardPresets["with-metadata"].data} />
+          </div>
+
+          <div className="mb-5 break-inside-avoid 2xl:mb-5">
+            <OrderSummary
+              {...orderSummaryPresets.default.data}
+              className="max-w-none"
+            />
           </div>
 
           <div className="mb-5 flex break-inside-avoid justify-center 2xl:mb-5">

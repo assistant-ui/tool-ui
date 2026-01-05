@@ -16,6 +16,7 @@ import { audioPresets } from "@/lib/presets/audio";
 import { linkPreviewPresets } from "@/lib/presets/link-preview";
 import { itemCarouselPresets } from "@/lib/presets/item-carousel";
 import { optionListPresets } from "@/lib/presets/option-list";
+import { orderSummaryPresets } from "@/lib/presets/order-summary";
 import { planPresets } from "@/lib/presets/plan";
 import { terminalPresets } from "@/lib/presets/terminal";
 import type { Preset } from "@/lib/presets/types";
@@ -35,6 +36,7 @@ const PRESET_REGISTRY: Record<string, PresetMap> = {
   "link-preview": linkPreviewPresets,
   "item-carousel": itemCarouselPresets,
   "option-list": optionListPresets,
+  "order-summary": orderSummaryPresets,
   plan: planPresets,
   terminal: terminalPresets,
 };

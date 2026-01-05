@@ -14,6 +14,7 @@ import { Audio } from "@/components/tool-ui/audio";
 import { LinkPreview } from "@/components/tool-ui/link-preview";
 import { ItemCarousel } from "@/components/tool-ui/item-carousel";
 import { OptionList } from "@/components/tool-ui/option-list";
+import { OrderSummary } from "@/components/tool-ui/order-summary";
 import { Plan } from "@/components/tool-ui/plan";
 import { Terminal } from "@/components/tool-ui/terminal";
 
@@ -28,6 +29,7 @@ import { audioPresets, type AudioPresetName } from "@/lib/presets/audio";
 import { linkPreviewPresets, type LinkPreviewPresetName } from "@/lib/presets/link-preview";
 import { itemCarouselPresets, type ItemCarouselPresetName } from "@/lib/presets/item-carousel";
 import { optionListPresets, type OptionListPresetName } from "@/lib/presets/option-list";
+import { orderSummaryPresets, type OrderSummaryPresetName } from "@/lib/presets/order-summary";
 import { planPresets, type PlanPresetName } from "@/lib/presets/plan";
 import { terminalPresets, type TerminalPresetName } from "@/lib/presets/terminal";
 
@@ -43,6 +45,7 @@ export type ComponentId =
   | "link-preview"
   | "item-carousel"
   | "option-list"
+  | "order-summary"
   | "plan"
   | "terminal";
 
@@ -232,6 +235,20 @@ export const previewConfigs: Record<ComponentId, PreviewConfig<unknown, string>>
             console.log("OptionList confirmed:", sel);
             alert(`Selection confirmed: ${JSON.stringify(sel)}`);
           }}
+        />
+      );
+    },
+  },
+  "order-summary": {
+    presets: orderSummaryPresets as Record<string, PresetWithCodeGen<unknown>>,
+    defaultPreset: "default" satisfies OrderSummaryPresetName,
+    wrapper: MaxWidthWrapper,
+    renderComponent: ({ data }) => {
+      const orderData = data as Parameters<typeof OrderSummary>[0];
+      return (
+        <OrderSummary
+          {...orderData}
+          onResponseAction={(actionId) => console.log("Response action:", actionId)}
         />
       );
     },

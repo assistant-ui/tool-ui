@@ -67,6 +67,12 @@ export const componentsRegistry: ComponentMeta[] = [
     path: "/docs/option-list",
   },
   {
+    id: "order-summary",
+    label: "Order Summary",
+    description: "Display purchases with itemized pricing",
+    path: "/docs/order-summary",
+  },
+  {
     id: "plan",
     label: "Plan",
     description: "Display step-by-step task workflows",

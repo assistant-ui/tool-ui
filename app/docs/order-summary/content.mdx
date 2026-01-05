@@ -1,0 +1,442 @@
+import { DocsHeader } from "../_components/docs-header";
+import { OrderSummary } from "@/components/tool-ui/order-summary";
+
+<DocsHeader
+  title="Order Summary"
+  description="Display agent-suggested purchases with itemized pricing for user confirmation."
+  mdxPath="app/docs/order-summary/content.mdx"
+/>
+
+<Tabs items={["Preview", "Code"]}>
+  <Tab>
+    <div className="not-prose mx-auto max-w-md">
+      <OrderSummary
+        id="order-summary-example"
+        items={[
+          {
+            id: "item-1",
+            name: "Wireless Earbuds Pro",
+            description: "Active noise cancellation",
+            imageUrl: "https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=100&h=100&fit=crop",
+            quantity: 1,
+            unitPrice: 149.99,
+          },
+          {
+            id: "item-2",
+            name: "USB-C Charging Cable",
+            description: "2m braided",
+            quantity: 2,
+            unitPrice: 19.99,
+          },
+        ]}
+        pricing={{
+          subtotal: 189.97,
+          tax: 16.62,
+          shipping: 0,
+          total: 206.59,
+          currency: "USD",
+        }}
+      />
+    </div>
+  </Tab>
+  <Tab>
+    ```tsx
+    import { OrderSummary } from "@/components/tool-ui/order-summary";
+
+    export function Example() {
+      return (
+        <OrderSummary
+          id="order-summary-example"
+          items={[
+            {
+              id: "item-1",
+              name: "Wireless Earbuds Pro",
+              description: "Active noise cancellation",
+              imageUrl: "https://example.com/earbuds.jpg",
+              quantity: 1,
+              unitPrice: 149.99,
+            },
+            {
+              id: "item-2",
+              name: "USB-C Charging Cable",
+              description: "2m braided",
+              quantity: 2,
+              unitPrice: 19.99,
+            },
+          ]}
+          pricing={{
+            subtotal: 189.97,
+            tax: 16.62,
+            shipping: 0,
+            total: 206.59,
+            currency: "USD",
+          }}
+          onResponseAction={(actionId) => {
+            console.log("Action:", actionId);
+          }}
+        />
+      );
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Key Features
+
+<FeatureGrid>
+  <Feature icon="DollarSign" title="Currency Formatting">
+    Prices formatted with `Intl.NumberFormat` for any currency code
+  </Feature>
+  <Feature icon="List" title="Pricing Breakdown">
+    Shows subtotal, tax, shipping, discounts, and total
+  </Feature>
+  <Feature icon="CheckCircle2" title="Receipt State">
+    Dims and shows confirmation after purchase is confirmed
+  </Feature>
+  <Feature icon="Package" title="Image Fallbacks">
+    Placeholder icon when product images aren't available
+  </Feature>
+</FeatureGrid>
+
+## When to Use
+
+- **Good for:** Shopping carts, subscription purchases, service bookings, expense approvals
+- **Not for:** Simple yes/no confirmations (use [Approval Card](/docs/approval-card)), multi-option selections (use [Option List](/docs/option-list))
+
+## Receipt State
+
+When `decision` is set, the component renders in a dimmed receipt state showing the confirmed order with order ID and timestamp.
+
+<Tabs items={["Preview", "Code"]}>
+  <Tab>
+    <div className="not-prose mx-auto max-w-md">
+      <OrderSummary
+        id="receipt-example"
+        title="Order Confirmed"
+        items={[
+          {
+            id: "item-1",
+            name: "Running Shoes",
+            description: "Lightweight cushioning",
+            imageUrl: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=100&h=100&fit=crop",
+            quantity: 1,
+            unitPrice: 129.00,
+          },
+        ]}
+        pricing={{
+          subtotal: 129.00,
+          tax: 10.32,
+          total: 139.32,
+          currency: "USD",
+        }}
+        decision={{
+          action: "confirm",
+          orderId: "ORD-2024-8847",
+          confirmedAt: "2024-12-15T14:32:00Z",
+        }}
+      />
+    </div>
+  </Tab>
+  <Tab>
+    ```tsx
+    <OrderSummary
+      id="receipt-example"
+      title="Order Confirmed"
+      items={[...]}
+      pricing={{...}}
+      decision={{
+        action: "confirm",
+        orderId: "ORD-2024-8847",
+        confirmedAt: "2024-12-15T14:32:00Z",
+      }}
+    />
+    ```
+  </Tab>
+</Tabs>
+
+## With Discount
+
+Use the `discount` and `discountLabel` fields in pricing to show promotional savings.
+
+<Tabs items={["Preview", "Code"]}>
+  <Tab>
+    <div className="not-prose mx-auto max-w-md">
+      <OrderSummary
+        id="discount-example"
+        title="Your Cart"
+        items={[
+          {
+            id: "item-1",
+            name: "Standing Desk Frame",
+            description: "Electric height adjustable",
+            imageUrl: "https://images.unsplash.com/photo-1595515106969-1ce29566ff1c?w=100&h=100&fit=crop",
+            quantity: 1,
+            unitPrice: 449.00,
+          },
+        ]}
+        pricing={{
+          subtotal: 449.00,
+          discount: 44.90,
+          discountLabel: "SAVE10 (10% off)",
+          tax: 35.92,
+          shipping: 0,
+          total: 440.02,
+          currency: "USD",
+        }}
+      />
+    </div>
+  </Tab>
+  <Tab>
+    ```tsx
+    <OrderSummary
+      id="discount-example"
+      pricing={{
+        subtotal: 449.00,
+        discount: 44.90,
+        discountLabel: "SAVE10 (10% off)",
+        tax: 35.92,
+        shipping: 0,
+        total: 440.02,
+        currency: "USD",
+      }}
+      // ...
+    />
+    ```
+  </Tab>
+</Tabs>
+
+## Source and Install
+
+Copy [`components/tool-ui/order-summary`](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/order-summary) and the [`shared`](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/shared) directory into your project. The `shared` folder contains utilities used by all Tool UI components. The `tool-ui` directory should sit alongside your shadcn `ui` directory.
+
+### Prerequisites
+
+This component requires the following [shadcn/ui](https://ui.shadcn.com) components:
+
+```bash
+pnpm dlx shadcn@latest add button separator skeleton
+```
+
+### Directory Structure
+
+<Files>
+  <Folder name="components" defaultOpen>
+    <Folder name="ui">
+      <File name="button.tsx" />
+      <File name="separator.tsx" />
+      <File name="skeleton.tsx" />
+      <File name="..." />
+    </Folder>
+    <Folder name="tool-ui" defaultOpen>
+      <Folder name="shared" defaultOpen>
+        <File name="action-buttons.tsx" />
+        <File name="schema.ts" />
+        <File name="parse.ts" />
+        <File name="index.ts" />
+        <File name="..." />
+      </Folder>
+      <Folder name="order-summary" defaultOpen>
+        <File name="order-summary.tsx" />
+        <File name="schema.ts" />
+        <File name="index.tsx" />
+        <File name="error-boundary.tsx" />
+        <File name="_adapter.tsx" />
+      </Folder>
+    </Folder>
+  </Folder>
+</Files>
+
+### Download
+
+- [**Shared Dependencies (GitHub)**](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/shared) ([ZIP](https://download-directory.github.io/?url=https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/shared))
+- [**Order Summary (GitHub)**](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/order-summary) ([ZIP](https://download-directory.github.io/?url=https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/order-summary))
+
+## Usage
+
+```tsx
+"use client";
+
+import { makeAssistantTool } from "@assistant-ui/react";
+import {
+  OrderSummary,
+  OrderSummaryErrorBoundary,
+  parseSerializableOrderSummary,
+  SerializableOrderSummarySchema,
+  type SerializableOrderSummary,
+  type OrderDecision,
+} from "@/components/tool-ui/order-summary";
+
+export const OrderSummaryTool = makeAssistantTool<
+  SerializableOrderSummary,
+  OrderDecision
+>({
+  toolName: "createOrder",
+  description: "Display a purchase order for user confirmation",
+  parameters: SerializableOrderSummarySchema,
+  render: ({ args, result, addResult, toolCallId }) => {
+    if (!args?.items?.length || !args?.pricing) return null;
+
+    const data = parseSerializableOrderSummary({
+      ...args,
+      id: args?.id ?? `order-${toolCallId}`,
+    });
+
+    return (
+      <OrderSummaryErrorBoundary>
+        {result !== undefined ? (
+          <OrderSummary {...data} decision={result} />
+        ) : (
+          <OrderSummary
+            {...data}
+            onResponseAction={(actionId) => {
+              if (actionId === "confirm") {
+                addResult({
+                  action: "confirm",
+                  orderId: `ORD-${Date.now()}`,
+                  confirmedAt: new Date().toISOString(),
+                });
+              }
+            }}
+          />
+        )}
+      </OrderSummaryErrorBoundary>
+    );
+  },
+});
+```
+
+Mount `<OrderSummaryTool />` under `<AssistantRuntimeProvider>` to register the tool and its UI.
+
+## Props
+
+<TypeTable
+  type={{
+    id: {
+      description: "Unique identifier for the order summary",
+      type: "string",
+      required: true,
+    },
+    title: {
+      description: "Header text displayed at the top",
+      type: "string",
+      default: '"Order Summary"',
+    },
+    items: {
+      description: "Array of items in the order",
+      type: "OrderItem[]",
+      required: true,
+    },
+    pricing: {
+      description: "Pricing breakdown for the order",
+      type: "Pricing",
+      required: true,
+    },
+    decision: {
+      description: "When set, renders the receipt state",
+      type: "OrderDecision",
+    },
+    className: {
+      description: "Additional CSS classes",
+      type: "string",
+    },
+    isLoading: {
+      description: "Shows loading skeleton when true",
+      type: "boolean",
+    },
+    responseActions: {
+      description: "Custom action buttons (defaults to Purchase/Cancel)",
+      type: "ResponseAction[]",
+    },
+    onResponseAction: {
+      description: "Handler when user clicks an action button",
+      type: "(actionId: string) => void",
+    },
+  }}
+/>
+
+## OrderItem Schema
+
+<TypeTable
+  type={{
+    id: {
+      description: "Unique identifier for the item",
+      type: "string",
+      required: true,
+    },
+    name: {
+      description: "Product or service name",
+      type: "string",
+      required: true,
+    },
+    description: {
+      description: "Additional details (size, color, options)",
+      type: "string",
+    },
+    imageUrl: {
+      description: "URL to product image (shows placeholder if missing)",
+      type: "string",
+    },
+    quantity: {
+      description: "Number of units (hidden when 1)",
+      type: "number",
+      default: "1",
+    },
+    unitPrice: {
+      description: "Price per unit in decimal (e.g., 29.99)",
+      type: "number",
+      required: true,
+    },
+  }}
+/>
+
+## Pricing Schema
+
+<TypeTable
+  type={{
+    subtotal: {
+      description: "Sum of all item prices before tax/shipping",
+      type: "number",
+      required: true,
+    },
+    tax: {
+      description: "Tax amount",
+      type: "number",
+    },
+    taxLabel: {
+      description: "Custom tax label (e.g., \"VAT (19%)\")",
+      type: "string",
+      default: '"Tax"',
+    },
+    shipping: {
+      description: "Shipping cost (shows \"Free\" when 0)",
+      type: "number",
+    },
+    discount: {
+      description: "Discount amount (displayed as negative)",
+      type: "number",
+    },
+    discountLabel: {
+      description: "Discount label (e.g., \"SAVE10 (10% off)\")",
+      type: "string",
+      default: '"Discount"',
+    },
+    total: {
+      description: "Final amount due",
+      type: "number",
+      required: true,
+    },
+    currency: {
+      description: "ISO 4217 currency code",
+      type: "string",
+      default: '"USD"',
+    },
+  }}
+/>
+
+## Accessibility
+
+- Uses semantic `<article>` with `aria-labelledby` pointing to the title
+- `aria-busy="true"` during loading states
+- Action buttons are keyboard accessible with visible focus states
+- Images use `alt=""` since item names provide the description
+- Receipt state shows clear visual indication of confirmation
