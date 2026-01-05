@@ -8,3 +8,4 @@
  */
 
 export { cn } from "../../../lib/ui/cn";
+export { Separator } from "@/components/ui/separator";

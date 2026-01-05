@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { cn } from "./_adapter";
+import { cn, Separator } from "./_adapter";
 import type { ApprovalCardProps, ApprovalDecision } from "./schema";
 import { ActionButtons } from "../shared";
 import type { Action } from "../shared";
@@ -42,7 +42,6 @@ function ApprovalCardReceipt({
       className={cn(
         "flex w-full min-w-64 max-w-sm flex-col",
         "text-foreground",
-        "animate-in fade-in-0 duration-200",
         className,
       )}
       data-slot="approval-card"
@@ -229,14 +228,17 @@ export function ApprovalCard({
         </div>
 
         {metadata && metadata.length > 0 && (
-          <dl className="bg-muted/50 divide-border/60 flex flex-col divide-y rounded-lg px-3 text-sm">
+          <>
+            <Separator />
+            <dl className="flex flex-col gap-2 text-sm">
             {metadata.map((item, index) => (
-              <div key={index} className="flex justify-between gap-4 py-2">
+              <div key={index} className="flex justify-between gap-4">
                 <dt className="text-muted-foreground shrink-0">{item.key}</dt>
-                <dd className="min-w-0 truncate font-medium">{item.value}</dd>
+                <dd className="min-w-0 truncate">{item.value}</dd>
               </div>
             ))}
-          </dl>
+            </dl>
+          </>
         )}
 
         <ActionButtons actions={actions} onAction={handleAction} />

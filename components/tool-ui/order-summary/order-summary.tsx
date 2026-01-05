@@ -203,7 +203,7 @@ export function OrderSummary({
     >
       <div
         className={cn(
-          "bg-card text-card-foreground rounded-lg border shadow-sm transition-opacity",
+          "bg-card text-card-foreground rounded-lg border shadow-sm",
           isLoading && "pointer-events-none opacity-70",
         )}
       >
