@@ -26,7 +26,10 @@ Responsive, accessible, typed, copy-pasteable. Built on Radix, shadcn/ui, and Ta
 
 ## Contributing
 
-Contributions are welcome!
+Contributions are welcome! Before submitting a PR, please read:
+
+- [UI Guidelines](https://tool-ui.com/docs/design-guidelines) — Design philosophy and principles
+- [Contributing Guide](https://tool-ui.com/docs/contributing) — Component structure and implementation checklist
 
 ## License
 
