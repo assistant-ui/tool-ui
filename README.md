@@ -26,7 +26,9 @@ Responsive, accessible, typed, copy-pasteable. Built on Radix, shadcn/ui, and Ta
 
 ## Contributing
 
-Contributions are welcome! Before submitting a PR, please read:
+Contributions are welcome! Before investing time building something, please [open an issue](https://github.com/assistant-ui/tool-ui/issues) to discuss your idea first.
+
+When you're ready to submit a PR, please read:
 
 - [UI Guidelines](https://tool-ui.com/docs/design-guidelines) — Design philosophy and principles
 - [Contributing Guide](https://tool-ui.com/docs/contributing) — Component structure and implementation checklist
