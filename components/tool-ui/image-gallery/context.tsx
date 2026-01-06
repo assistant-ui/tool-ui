@@ -13,7 +13,8 @@ interface ImageGalleryContextValue {
   images: ImageGalleryItem[];
   activeIndex: number | null;
   exitingIndex: number | null;
-  openLightbox: (index: number) => void;
+  activeCoverScale: number;
+  openLightbox: (index: number, coverScale: number) => void;
   closeLightbox: () => void;
   clearExitingIndex: () => void;
 }
@@ -41,9 +42,11 @@ export function ImageGalleryProvider({
 }: ImageGalleryProviderProps) {
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const [exitingIndex, setExitingIndex] = useState<number | null>(null);
+  const [activeCoverScale, setActiveCoverScale] = useState<number>(1);
 
-  const openLightbox = useCallback((index: number) => {
+  const openLightbox = useCallback((index: number, coverScale: number) => {
     setActiveIndex(index);
+    setActiveCoverScale(coverScale);
   }, []);
 
   const closeLightbox = useCallback(() => {
@@ -64,11 +67,12 @@ export function ImageGalleryProvider({
       images,
       activeIndex,
       exitingIndex,
+      activeCoverScale,
       openLightbox,
       closeLightbox,
       clearExitingIndex,
     }),
-    [images, activeIndex, exitingIndex, openLightbox, closeLightbox, clearExitingIndex],
+    [images, activeIndex, exitingIndex, activeCoverScale, openLightbox, closeLightbox, clearExitingIndex],
   );
 
   return (

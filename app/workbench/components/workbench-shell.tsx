@@ -56,8 +56,12 @@ export function WorkbenchShell() {
       setTheme(isDark ? "light" : "dark");
       return;
     }
-    document.startViewTransition(() => {
+    document.documentElement.dataset.themeTransition = "";
+    const transition = document.startViewTransition(() => {
       setTheme(isDark ? "light" : "dark");
+    });
+    transition.finished.then(() => {
+      delete document.documentElement.dataset.themeTransition;
     });
   }, [isDark, setTheme]);
 

@@ -16,8 +16,12 @@ export function ThemeToggle() {
       return;
     }
 
-    document.startViewTransition(() => {
+    document.documentElement.dataset.themeTransition = "";
+    const transition = document.startViewTransition(() => {
       setTheme(newTheme);
+    });
+    transition.finished.then(() => {
+      delete document.documentElement.dataset.themeTransition;
     });
   }
 

@@ -15,7 +15,7 @@ const BORDER_RADIUS = 12;
 
 const SPRING_TRANSITION = {
   type: "spring" as const,
-  stiffness: 400,
+  stiffness: 300,
   damping: 30,
 };
 
@@ -28,14 +28,20 @@ export function GalleryLightbox() {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const lastOpenedIndexRef = useRef(0);
 
-  const { images, activeIndex, exitingIndex, closeLightbox, clearExitingIndex } =
-    useImageGallery();
+  const {
+    images,
+    activeIndex,
+    exitingIndex,
+    closeLightbox,
+    clearExitingIndex,
+  } = useImageGallery();
 
   const isOpen = activeIndex !== null;
   const isAnimatingOut = exitingIndex !== null;
   const shouldKeepDialogOpen = isOpen || isAnimatingOut;
 
-  const displayIndex = activeIndex ?? exitingIndex ?? lastOpenedIndexRef.current;
+  const displayIndex =
+    activeIndex ?? exitingIndex ?? lastOpenedIndexRef.current;
   const currentImage = images[displayIndex] ?? null;
 
   if (activeIndex !== null) {
@@ -81,7 +87,7 @@ export function GalleryLightbox() {
       )}
       aria-label="Image lightbox"
     >
-      <AnimatePresence onExitComplete={handleExitComplete}>
+      <AnimatePresence initial={false} onExitComplete={handleExitComplete}>
         {isOpen && currentImage && (
           <LightboxContent image={currentImage} onClose={closeLightbox} />
         )}
@@ -127,18 +133,26 @@ interface LightboxContentProps {
 
 function LightboxContent({ image, onClose }: LightboxContentProps) {
   return (
-    <div key="lightbox-container" className="relative h-full w-full">
-      <LightboxBackdrop />
+    <motion.div
+      layoutRoot
+      key="lightbox-container"
+      className="relative h-full w-full"
+    >
+      <LightboxBackdrop onClose={onClose} />
       <LightboxCloseButton onClose={onClose} />
       <div className="relative z-10 flex h-full w-full flex-col items-center justify-center gap-4 p-8">
         <LightboxImage image={image} />
         <LightboxMetadata image={image} />
       </div>
-    </div>
+    </motion.div>
   );
 }
 
-function LightboxBackdrop() {
+interface LightboxBackdropProps {
+  onClose: () => void;
+}
+
+function LightboxBackdrop({ onClose }: LightboxBackdropProps) {
   return (
     <motion.div
       key="lightbox-backdrop"
@@ -146,6 +160,8 @@ function LightboxBackdrop() {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={FADE_TRANSITION}
+      onClick={onClose}
+      aria-hidden="true"
       className="absolute inset-0 bg-black/90"
     />
   );
@@ -163,7 +179,7 @@ function LightboxCloseButton({ onClose }: LightboxCloseButtonProps) {
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.96 }}
       transition={FADE_TRANSITION}
-      className="absolute right-4 top-4 z-20"
+      className="absolute top-4 right-4 z-20"
     >
       <Button
         type="button"
@@ -185,6 +201,7 @@ interface LightboxImageProps {
 
 function LightboxImage({ image }: LightboxImageProps) {
   const [hasError, setHasError] = useState(false);
+  const { activeCoverScale } = useImageGallery();
   const layoutId = `gallery-image-${image.id}`;
 
   if (hasError) {
@@ -202,17 +219,24 @@ function LightboxImage({ image }: LightboxImageProps) {
   }
 
   return (
-    <motion.img
-      layout
+    <motion.div
       layoutId={layoutId}
-      src={image.src}
-      alt={image.alt}
-      draggable={false}
-      onError={() => setHasError(true)}
       style={{ borderRadius: BORDER_RADIUS }}
       transition={SPRING_TRANSITION}
-      className="max-h-[80vh] max-w-full object-contain shadow-2xl select-none !opacity-100"
-    />
+      className="overflow-hidden shadow-2xl"
+    >
+      <motion.img
+        src={image.src}
+        alt={image.alt}
+        draggable={false}
+        onError={() => setHasError(true)}
+        initial={{ scale: activeCoverScale }}
+        animate={{ scale: 1 }}
+        exit={{ scale: activeCoverScale }}
+        transition={SPRING_TRANSITION}
+        className="block max-h-[80vh] max-w-full object-contain !opacity-100 select-none"
+      />
+    </motion.div>
   );
 }
 

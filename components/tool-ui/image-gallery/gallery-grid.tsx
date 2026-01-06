@@ -33,21 +33,24 @@ export function GalleryGrid({ maxVisible, onImageClick }: GalleryGridProps) {
   );
 
   const handleImageClick = useCallback(
-    (index: number) => {
+    (index: number, coverScale: number) => {
       const image = images[index];
       if (image && onImageClick) {
         onImageClick(image.id);
       }
-      openLightbox(index);
+      openLightbox(index, coverScale);
     },
     [images, onImageClick, openLightbox],
   );
 
-  const handleOverflowClick = useCallback(() => {
-    if (maxVisible) {
-      openLightbox(maxVisible);
-    }
-  }, [maxVisible, openLightbox]);
+  const handleOverflowClick = useCallback(
+    (coverScale: number) => {
+      if (maxVisible) {
+        openLightbox(maxVisible, coverScale);
+      }
+    },
+    [maxVisible, openLightbox],
+  );
 
   return (
     <div
@@ -90,7 +93,7 @@ function computeVisibility(images: GridImage[], maxVisible?: number) {
 interface GridImageCardProps {
   image: GridImage;
   index: number;
-  onClick: (index: number) => void;
+  onClick: (index: number, coverScale: number) => void;
   overlayCount?: number;
 }
 
@@ -101,9 +104,14 @@ function GridImageCard({
   overlayCount,
 }: GridImageCardProps) {
   const [hasError, setHasError] = useState(false);
-  const { shouldSpanTwoRows } = computeImageLayout(image);
+  const { images, activeIndex } = useImageGallery();
+  const { shouldSpanTwoRows, coverScale } = computeImageLayout(image);
 
-  const handleClick = useCallback(() => onClick(index), [onClick, index]);
+  const imageIndex = images.findIndex((img) => img.id === image.id);
+  // Hide only while OPEN. During close we need a visible target to animate back to.
+  const isActive = imageIndex === activeIndex;
+
+  const handleClick = useCallback(() => onClick(index, coverScale), [onClick, index, coverScale]);
 
   return (
     <div
@@ -123,25 +131,37 @@ function GridImageCard({
       />
 
       {hasError ? (
-        <ImageErrorState alt={image.alt} />
-      ) : (
-        <motion.img
-          layout
+        <motion.div
           layoutId={`gallery-image-${image.id}`}
-          src={image.src}
-          alt={image.alt}
-          width={image.width}
-          height={image.height}
-          tabIndex={-1}
-          loading="lazy"
-          decoding="async"
-          onError={() => setHasError(true)}
-          style={{ borderRadius: BORDER_RADIUS }}
-          className="relative h-full w-full object-cover !opacity-100"
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 1 }}
           transition={SPRING_TRANSITION}
-        />
+          style={{ borderRadius: BORDER_RADIUS, opacity: isActive ? 0 : 1 }}
+          className="relative h-full w-full overflow-hidden"
+        >
+          <ImageErrorState alt={image.alt} />
+        </motion.div>
+      ) : (
+        <motion.div
+          layoutId={`gallery-image-${image.id}`}
+          transition={SPRING_TRANSITION}
+          style={{ borderRadius: BORDER_RADIUS, opacity: isActive ? 0 : 1 }}
+          className="relative h-full w-full overflow-hidden"
+        >
+          <motion.img
+            src={image.src}
+            alt={image.alt}
+            width={image.width}
+            height={image.height}
+            tabIndex={-1}
+            loading="lazy"
+            decoding="async"
+            onError={() => setHasError(true)}
+            whileHover={{ scale: coverScale * 1.02 }}
+            whileTap={{ scale: coverScale }}
+            style={{ scale: coverScale }}
+            className="relative h-full w-full object-contain"
+            transition={SPRING_TRANSITION}
+          />
+        </motion.div>
       )}
 
       {overlayCount && <OverflowOverlay count={overlayCount} />}
@@ -150,12 +170,27 @@ function GridImageCard({
 }
 
 function computeImageLayout(image: GridImage) {
-  const aspectRatio = image.width / image.height;
-  const isPortrait = aspectRatio < 1;
-  const isSquarish = aspectRatio >= 0.9 && aspectRatio <= 1.1;
+  const imageAspect = image.width / image.height;
+  const isPortrait = imageAspect < 1;
+  const isSquarish = imageAspect >= 0.9 && imageAspect <= 1.1;
+  const shouldSpanTwoRows = isPortrait && !isSquarish;
+
+  // Container aspect ratio:
+  // - Square cells (1:1) for non-spanning items
+  // - ~1:2 cells for spanning items (row-span-2 where each row is roughly square)
+  const containerAspect = shouldSpanTwoRows ? 0.5 : 1;
+
+  // Scale needed to simulate object-cover using object-contain
+  // If image is wider than container: scale up to fill width
+  // If image is taller than container: scale up to fill height
+  const coverScale =
+    imageAspect > containerAspect
+      ? imageAspect / containerAspect
+      : containerAspect / imageAspect;
 
   return {
-    shouldSpanTwoRows: isPortrait && !isSquarish,
+    shouldSpanTwoRows,
+    coverScale,
   };
 }
 
