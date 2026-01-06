@@ -48,66 +48,42 @@ export function GalleryLightbox() {
     lastOpenedIndexRef.current = activeIndex;
   }
 
-  useDialogSync(dialogRef, shouldKeepDialogOpen);
   useEscapeKey(isOpen, closeLightbox);
 
   const handleExitComplete = useCallback(() => {
-    dialogRef.current?.close();
     clearExitingIndex();
   }, [clearExitingIndex]);
 
   const handleBackdropClick = useCallback(
     (e: React.MouseEvent<HTMLDialogElement>) => {
-      const clickedBackdrop = e.target === dialogRef.current;
-      if (clickedBackdrop) {
+      if (e.target === dialogRef.current) {
         closeLightbox();
       }
     },
     [closeLightbox],
   );
 
-  const handleDialogCancel = useCallback(
-    (e: React.SyntheticEvent) => {
-      e.preventDefault();
-      closeLightbox();
-    },
-    [closeLightbox],
-  );
-
   return (
-    <dialog
+    <motion.dialog
       ref={dialogRef}
+      layoutRoot
+      open={shouldKeepDialogOpen}
       onClick={handleBackdropClick}
-      onCancel={handleDialogCancel}
       className={cn(
-        "fixed inset-0 m-0 h-full max-h-full w-full max-w-full",
+        "fixed inset-0 z-50 m-0 h-full max-h-full w-full max-w-full",
         "overflow-hidden p-0",
         "bg-transparent backdrop:bg-transparent",
         "focus:outline-none",
       )}
       aria-label="Image lightbox"
     >
-      <AnimatePresence initial={false} onExitComplete={handleExitComplete}>
+      <AnimatePresence onExitComplete={handleExitComplete}>
         {isOpen && currentImage && (
           <LightboxContent image={currentImage} onClose={closeLightbox} />
         )}
       </AnimatePresence>
-    </dialog>
+    </motion.dialog>
   );
-}
-
-function useDialogSync(
-  dialogRef: React.RefObject<HTMLDialogElement | null>,
-  shouldBeOpen: boolean,
-) {
-  useEffect(() => {
-    const dialog = dialogRef.current;
-    if (!dialog) return;
-
-    if (shouldBeOpen && !dialog.open) {
-      dialog.showModal();
-    }
-  }, [dialogRef, shouldBeOpen]);
 }
 
 function useEscapeKey(isActive: boolean, onEscape: () => void) {
@@ -134,7 +110,6 @@ interface LightboxContentProps {
 function LightboxContent({ image, onClose }: LightboxContentProps) {
   return (
     <motion.div
-      layoutRoot
       key="lightbox-container"
       className="relative h-full w-full"
     >
@@ -201,8 +176,9 @@ interface LightboxImageProps {
 
 function LightboxImage({ image }: LightboxImageProps) {
   const [hasError, setHasError] = useState(false);
-  const { activeCoverScale } = useImageGallery();
-  const layoutId = `gallery-image-${image.id}`;
+  const { activeCoverScale, getLayoutId } = useImageGallery();
+
+  const layoutId = getLayoutId(image.id);
 
   if (hasError) {
     return (
@@ -210,7 +186,7 @@ function LightboxImage({ image }: LightboxImageProps) {
         layoutId={layoutId}
         style={{ borderRadius: BORDER_RADIUS }}
         transition={SPRING_TRANSITION}
-        className="flex flex-col items-center gap-3 text-white/60 !opacity-100"
+        className="flex flex-col items-center gap-3 text-white/60"
       >
         <ImageOff className="h-12 w-12" />
         <span className="max-w-xs text-center text-sm">{image.alt}</span>
@@ -223,18 +199,21 @@ function LightboxImage({ image }: LightboxImageProps) {
       layoutId={layoutId}
       style={{ borderRadius: BORDER_RADIUS }}
       transition={SPRING_TRANSITION}
-      className="overflow-hidden shadow-2xl"
+      className="relative w-fit max-w-full overflow-hidden shadow-2xl"
     >
       <motion.img
         src={image.src}
         alt={image.alt}
+        width={image.width}
+        height={image.height}
         draggable={false}
         onError={() => setHasError(true)}
         initial={{ scale: activeCoverScale }}
         animate={{ scale: 1 }}
         exit={{ scale: activeCoverScale }}
         transition={SPRING_TRANSITION}
-        className="block max-h-[80vh] max-w-full object-contain !opacity-100 select-none"
+        style={{ transformOrigin: "center" }}
+        className="block max-h-[80vh] max-w-full object-contain select-none"
       />
     </motion.div>
   );

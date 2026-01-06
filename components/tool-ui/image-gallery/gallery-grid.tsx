@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef, useLayoutEffect } from "react";
 import { motion } from "motion/react";
 import { cn, ImageOff } from "./_adapter";
 import { useImageGallery } from "./context";
@@ -19,6 +19,60 @@ const SPRING_TRANSITION = {
   damping: 30,
 };
 
+function calcCoverScale(imageAspect: number, containerAspect: number): number {
+  if (!isFinite(imageAspect) || !isFinite(containerAspect) || containerAspect <= 0) {
+    return 1;
+  }
+  return imageAspect > containerAspect
+    ? imageAspect / containerAspect
+    : containerAspect / imageAspect;
+}
+
+function useMeasuredCoverScale(
+  ref: React.RefObject<HTMLElement | null>,
+  imageWidth: number,
+  imageHeight: number,
+  fallbackContainerAspect: number,
+): number {
+  const imageAspect = imageWidth / imageHeight;
+
+  const [coverScale, setCoverScale] = useState(() =>
+    calcCoverScale(imageAspect, fallbackContainerAspect),
+  );
+
+  useLayoutEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+
+    let raf = 0;
+    const measure = () => {
+      const rect = el.getBoundingClientRect();
+      if (!rect.width || !rect.height) return;
+
+      const containerAspect = rect.width / rect.height;
+      const next = calcCoverScale(imageAspect, containerAspect);
+
+      setCoverScale((prev) => (Math.abs(prev - next) > 0.001 ? next : prev));
+    };
+
+    measure();
+
+    const ro = new ResizeObserver(() => {
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(measure);
+    });
+
+    ro.observe(el);
+
+    return () => {
+      cancelAnimationFrame(raf);
+      ro.disconnect();
+    };
+  }, [ref, imageAspect]);
+
+  return coverScale;
+}
+
 interface GalleryGridProps {
   maxVisible?: number;
   onImageClick?: (imageId: string) => void;
@@ -32,7 +86,7 @@ export function GalleryGrid({ maxVisible, onImageClick }: GalleryGridProps) {
     maxVisible,
   );
 
-  const handleImageClick = useCallback(
+  const handleOpen = useCallback(
     (index: number, coverScale: number) => {
       const image = images[index];
       if (image && onImageClick) {
@@ -41,15 +95,6 @@ export function GalleryGrid({ maxVisible, onImageClick }: GalleryGridProps) {
       openLightbox(index, coverScale);
     },
     [images, onImageClick, openLightbox],
-  );
-
-  const handleOverflowClick = useCallback(
-    (coverScale: number) => {
-      if (maxVisible) {
-        openLightbox(maxVisible, coverScale);
-      }
-    },
-    [maxVisible, openLightbox],
   );
 
   return (
@@ -65,7 +110,7 @@ export function GalleryGrid({ maxVisible, onImageClick }: GalleryGridProps) {
             key={image.id}
             image={image}
             index={index}
-            onClick={isOverflowTrigger ? handleOverflowClick : handleImageClick}
+            onClick={handleOpen}
             overlayCount={isOverflowTrigger ? hiddenCount + 1 : undefined}
           />
         );
@@ -104,21 +149,35 @@ function GridImageCard({
   overlayCount,
 }: GridImageCardProps) {
   const [hasError, setHasError] = useState(false);
-  const { images, activeIndex } = useImageGallery();
-  const { shouldSpanTwoRows, coverScale } = computeImageLayout(image);
+  const frameRef = useRef<HTMLDivElement>(null);
+
+  const { images, activeIndex, getLayoutId } = useImageGallery();
 
   const imageIndex = images.findIndex((img) => img.id === image.id);
-  // Hide only while OPEN. During close we need a visible target to animate back to.
+  // Hide only while lightbox is OPEN for this image.
+  // During close, we must be visible so it can morph TO this thumbnail.
   const isActive = imageIndex === activeIndex;
 
-  const handleClick = useCallback(() => onClick(index, coverScale), [onClick, index, coverScale]);
+  const { shouldSpanTwoRows, fallbackContainerAspect } = computeImageLayout(image);
+
+  const coverScale = useMeasuredCoverScale(
+    frameRef,
+    image.width,
+    image.height,
+    fallbackContainerAspect,
+  );
+
+  const layoutId = getLayoutId(image.id);
+
+  const handleClick = useCallback(() => {
+    onClick(index, coverScale);
+  }, [onClick, index, coverScale]);
 
   return (
     <div
       role="listitem"
       className={cn(
-        "group relative cursor-pointer overflow-hidden",
-        "bg-muted rounded-lg",
+        "group relative cursor-pointer",
         shouldSpanTwoRows && "row-span-2",
       )}
       style={{ aspectRatio: shouldSpanTwoRows ? undefined : "1 / 1" }}
@@ -130,22 +189,19 @@ function GridImageCard({
         aria-label={overlayCount ? `View ${overlayCount} more images` : image.alt}
       />
 
-      {hasError ? (
-        <motion.div
-          layoutId={`gallery-image-${image.id}`}
-          transition={SPRING_TRANSITION}
-          style={{ borderRadius: BORDER_RADIUS, opacity: isActive ? 0 : 1 }}
-          className="relative h-full w-full overflow-hidden"
-        >
+      <motion.div
+        ref={frameRef}
+        layoutId={layoutId}
+        transition={SPRING_TRANSITION}
+        style={{
+          borderRadius: BORDER_RADIUS,
+          visibility: isActive ? "hidden" : "visible",
+        }}
+        className="relative h-full w-full overflow-hidden rounded-lg bg-muted"
+      >
+        {hasError ? (
           <ImageErrorState alt={image.alt} />
-        </motion.div>
-      ) : (
-        <motion.div
-          layoutId={`gallery-image-${image.id}`}
-          transition={SPRING_TRANSITION}
-          style={{ borderRadius: BORDER_RADIUS, opacity: isActive ? 0 : 1 }}
-          className="relative h-full w-full overflow-hidden"
-        >
+        ) : (
           <motion.img
             src={image.src}
             alt={image.alt}
@@ -154,15 +210,14 @@ function GridImageCard({
             tabIndex={-1}
             loading="lazy"
             decoding="async"
+            draggable={false}
             onError={() => setHasError(true)}
-            whileHover={{ scale: coverScale * 1.02 }}
-            whileTap={{ scale: coverScale }}
-            style={{ scale: coverScale }}
-            className="relative h-full w-full object-contain"
+            style={{ scale: coverScale, transformOrigin: "center" }}
             transition={SPRING_TRANSITION}
+            className="h-full w-full object-contain"
           />
-        </motion.div>
-      )}
+        )}
+      </motion.div>
 
       {overlayCount && <OverflowOverlay count={overlayCount} />}
     </div>
@@ -175,22 +230,9 @@ function computeImageLayout(image: GridImage) {
   const isSquarish = imageAspect >= 0.9 && imageAspect <= 1.1;
   const shouldSpanTwoRows = isPortrait && !isSquarish;
 
-  // Container aspect ratio:
-  // - Square cells (1:1) for non-spanning items
-  // - ~1:2 cells for spanning items (row-span-2 where each row is roughly square)
-  const containerAspect = shouldSpanTwoRows ? 0.5 : 1;
-
-  // Scale needed to simulate object-cover using object-contain
-  // If image is wider than container: scale up to fill width
-  // If image is taller than container: scale up to fill height
-  const coverScale =
-    imageAspect > containerAspect
-      ? imageAspect / containerAspect
-      : containerAspect / imageAspect;
-
   return {
     shouldSpanTwoRows,
-    coverScale,
+    fallbackContainerAspect: shouldSpanTwoRows ? 0.5 : 1,
   };
 }
 

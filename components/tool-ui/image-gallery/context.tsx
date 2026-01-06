@@ -6,6 +6,7 @@ import {
   useState,
   useCallback,
   useMemo,
+  useId,
 } from "react";
 import type { ImageGalleryItem } from "./schema";
 
@@ -17,6 +18,7 @@ interface ImageGalleryContextValue {
   openLightbox: (index: number, coverScale: number) => void;
   closeLightbox: () => void;
   clearExitingIndex: () => void;
+  getLayoutId: (imageId: string) => string;
 }
 
 const ImageGalleryContext = createContext<ImageGalleryContextValue | null>(
@@ -40,6 +42,7 @@ export function ImageGalleryProvider({
   images,
   children,
 }: ImageGalleryProviderProps) {
+  const galleryId = useId();
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const [exitingIndex, setExitingIndex] = useState<number | null>(null);
   const [activeCoverScale, setActiveCoverScale] = useState<number>(1);
@@ -62,6 +65,11 @@ export function ImageGalleryProvider({
     setExitingIndex(null);
   }, []);
 
+  const getLayoutId = useCallback(
+    (imageId: string) => `image-gallery-${galleryId}-${imageId}`,
+    [galleryId],
+  );
+
   const value = useMemo<ImageGalleryContextValue>(
     () => ({
       images,
@@ -71,8 +79,9 @@ export function ImageGalleryProvider({
       openLightbox,
       closeLightbox,
       clearExitingIndex,
+      getLayoutId,
     }),
-    [images, activeIndex, exitingIndex, activeCoverScale, openLightbox, closeLightbox, clearExitingIndex],
+    [images, activeIndex, exitingIndex, activeCoverScale, openLightbox, closeLightbox, clearExitingIndex, getLayoutId],
   );
 
   return (
