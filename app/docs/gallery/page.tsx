@@ -5,6 +5,7 @@ import { ApprovalCard } from "@/components/tool-ui/approval-card";
 import { CitationList } from "@/components/tool-ui/citation";
 import { DataTable } from "@/components/tool-ui/data-table";
 import { Image } from "@/components/tool-ui/image";
+import { ImageGallery } from "@/components/tool-ui/image-gallery";
 import { Video } from "@/components/tool-ui/video";
 import { Audio } from "@/components/tool-ui/audio";
 import { LinkPreview } from "@/components/tool-ui/link-preview";
@@ -22,6 +23,7 @@ import { citationPresets } from "@/lib/presets/citation";
 import { dataTablePresets } from "@/lib/presets/data-table";
 import { itemCarouselPresets } from "@/lib/presets/item-carousel";
 import { imagePresets } from "@/lib/presets/image";
+import { imageGalleryPresets } from "@/lib/presets/image-gallery";
 import { videoPresets } from "@/lib/presets/video";
 import { audioPresets } from "@/lib/presets/audio";
 import { linkPreviewPresets } from "@/lib/presets/link-preview";
@@ -58,6 +60,10 @@ export default function ComponentsGalleryPage() {
 
           <div className="mb-5 flex break-inside-avoid justify-center 2xl:mb-5">
             <Image {...imagePresets["with-source"].data.image} />
+          </div>
+
+          <div className="mb-5 flex break-inside-avoid justify-center 2xl:mb-5">
+            <ImageGallery {...imageGalleryPresets["search-results"].data} />
           </div>
 
           <div className="mb-5 flex break-inside-avoid justify-center 2xl:mb-5">

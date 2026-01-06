@@ -43,6 +43,12 @@ export const componentsRegistry: ComponentMeta[] = [
     path: "/docs/image",
   },
   {
+    id: "image-gallery",
+    label: "Image Gallery",
+    description: "Masonry grid with fullscreen carousel viewer",
+    path: "/docs/image-gallery",
+  },
+  {
     id: "video",
     label: "Video",
     description: "Video playback with controls and poster",

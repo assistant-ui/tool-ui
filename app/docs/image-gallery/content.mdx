@@ -1,0 +1,206 @@
+import { DocsHeader } from "../_components/docs-header";
+import { ImageGallery } from "@/components/tool-ui/image-gallery";
+
+<DocsHeader
+  title="Image Gallery"
+  description="Display multiple images in a masonry grid with fullscreen carousel."
+  mdxPath="app/docs/image-gallery/content.mdx"
+/>
+
+<Tabs items={["Preview", "Code"]}>
+  <Tab>
+    <div className="not-prose">
+      <ImageGallery
+        id="image-gallery-example"
+        title="Mountain landscapes"
+        description="Here are some images matching your search"
+        images={[
+          {
+            id: "img-1",
+            src: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=600&fit=crop",
+            alt: "Dramatic mountain peaks at sunrise with golden light",
+            width: 800,
+            height: 600,
+            title: "Alpine Sunrise",
+            caption: "Dolomites, Italy",
+          },
+          {
+            id: "img-2",
+            src: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=800&h=1200&fit=crop",
+            alt: "Misty mountain valley with evergreen trees",
+            width: 800,
+            height: 1200,
+            title: "Misty Valley",
+          },
+          {
+            id: "img-3",
+            src: "https://images.unsplash.com/photo-1519681393784-d120267933ba?w=800&h=600&fit=crop",
+            alt: "Snow-covered mountain peak under starry night sky",
+            width: 800,
+            height: 600,
+            title: "Night Summit",
+            caption: "Mount Hood, Oregon",
+          },
+          {
+            id: "img-4",
+            src: "https://images.unsplash.com/photo-1454496522488-7a8e488e8606?w=800&h=600&fit=crop",
+            alt: "Reflection of mountains in a crystal clear lake",
+            width: 800,
+            height: 600,
+          },
+        ]}
+      />
+    </div>
+  </Tab>
+  <Tab>
+    ```tsx
+    import { ImageGallery } from "@/components/tool-ui/image-gallery";
+
+    export function Example() {
+      return (
+        <ImageGallery
+          id="image-gallery-example"
+          title="Mountain landscapes"
+          description="Here are some images matching your search"
+          images={[
+            {
+              id: "img-1",
+              src: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=600&fit=crop",
+              alt: "Dramatic mountain peaks at sunrise",
+              width: 800,
+              height: 600,
+              title: "Alpine Sunrise",
+              caption: "Dolomites, Italy",
+            },
+            {
+              id: "img-2",
+              src: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=800&h=1200&fit=crop",
+              alt: "Misty mountain valley",
+              width: 800,
+              height: 1200,
+              title: "Misty Valley",
+            },
+            // ... more images
+          ]}
+          onImageClick={(id, image) => console.log("Clicked:", id, image)}
+        />
+      );
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Key Features
+
+<FeatureGrid>
+  <Feature icon="LayoutGrid" title="Masonry grid">
+    Responsive grid that adapts to image aspect ratios
+  </Feature>
+  <Feature icon="Maximize" title="Fullscreen carousel">
+    Click any image to view in a fullscreen lightbox
+  </Feature>
+  <Feature icon="Navigation" title="Swipe and keyboard">
+    Navigate with touch gestures, arrows, or keyboard
+  </Feature>
+  <Feature icon="Image" title="Overflow indicator">
+    Cap visible images with a "+N more" overlay
+  </Feature>
+</FeatureGrid>
+
+## When to Use
+
+- **Good for:** Image search results, photo galleries, product images, AI-generated images
+- **Not for:** Single images (use [Image](/docs/image)), carousel browsing (use [Item Carousel](/docs/item-carousel))
+
+## Source and Install
+
+Copy [`components/tool-ui/image-gallery`](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/image-gallery) and the [`shared`](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/shared) directory into your project.
+
+### Prerequisites
+
+```bash
+pnpm dlx shadcn@latest add button
+```
+
+### Download
+
+- [**Shared Dependencies (GitHub)**](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/shared)
+- [**Image Gallery (GitHub)**](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/image-gallery)
+
+## Props
+
+<TypeTable
+  type={{
+    id: {
+      description: "Unique identifier for this tool UI instance",
+      type: "string",
+      required: true,
+    },
+    images: {
+      description: "Array of image objects to display",
+      type: "ImageGalleryItem[]",
+      required: true,
+    },
+    title: { description: "Gallery header title", type: "string" },
+    description: { description: "Gallery header description", type: "string" },
+    maxVisible: {
+      description: "Maximum images to show in grid (rest shown in carousel)",
+      type: "number",
+    },
+    responseActions: { description: "Response action buttons (shown in lightbox)", type: "Action[]" },
+    onResponseAction: { description: "Response action handler", type: "(actionId: string) => void" },
+    onImageClick: { description: "Image click handler", type: "(imageId: string, image: ImageGalleryItem) => void" },
+  }}
+/>
+
+### ImageGalleryItem
+
+<TypeTable
+  type={{
+    id: {
+      description: "Unique identifier for this image",
+      type: "string",
+      required: true,
+    },
+    src: {
+      description: "Image source URL",
+      type: "string",
+      required: true,
+    },
+    alt: {
+      description: "Alt text for accessibility",
+      type: "string",
+      required: true,
+    },
+    width: {
+      description: "Image width in pixels (for layout calculation)",
+      type: "number",
+      required: true,
+    },
+    height: {
+      description: "Image height in pixels (for layout calculation)",
+      type: "number",
+      required: true,
+    },
+    title: { description: "Image title (shown in lightbox)", type: "string" },
+    caption: { description: "Image caption (shown in lightbox)", type: "string" },
+    source: {
+      description: "Source attribution",
+      type: "{ label: string; url?: string }",
+    },
+  }}
+/>
+
+## Limiting Visible Images
+
+Use `maxVisible` to cap the grid display while keeping all images accessible in the carousel:
+
+```tsx
+<ImageGallery
+  id="limited-gallery"
+  images={/* 12 images */}
+  maxVisible={4}
+/>
+```
+
+The last visible thumbnail shows a "+N more" overlay that opens the carousel at the first hidden image.

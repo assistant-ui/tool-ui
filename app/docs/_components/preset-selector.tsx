@@ -11,6 +11,7 @@ import { citationPresets } from "@/lib/presets/citation";
 import { codeBlockPresets } from "@/lib/presets/code-block";
 import { dataTablePresets } from "@/lib/presets/data-table";
 import { imagePresets } from "@/lib/presets/image";
+import { imageGalleryPresets } from "@/lib/presets/image-gallery";
 import { videoPresets } from "@/lib/presets/video";
 import { audioPresets } from "@/lib/presets/audio";
 import { linkPreviewPresets } from "@/lib/presets/link-preview";
@@ -31,6 +32,7 @@ const PRESET_REGISTRY: Record<string, PresetMap> = {
   "code-block": codeBlockPresets,
   "data-table": dataTablePresets,
   image: imagePresets,
+  "image-gallery": imageGalleryPresets,
   video: videoPresets,
   audio: audioPresets,
   "link-preview": linkPreviewPresets,

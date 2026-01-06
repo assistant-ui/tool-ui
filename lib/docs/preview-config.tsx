@@ -9,6 +9,7 @@ import { Citation, CitationList } from "@/components/tool-ui/citation";
 import { CodeBlock } from "@/components/tool-ui/code-block";
 import { DataTable } from "@/components/tool-ui/data-table";
 import { Image } from "@/components/tool-ui/image";
+import { ImageGallery } from "@/components/tool-ui/image-gallery";
 import { Video } from "@/components/tool-ui/video";
 import { Audio } from "@/components/tool-ui/audio";
 import { LinkPreview } from "@/components/tool-ui/link-preview";
@@ -24,6 +25,7 @@ import { citationPresets, type CitationPresetName } from "@/lib/presets/citation
 import { codeBlockPresets, type CodeBlockPresetName } from "@/lib/presets/code-block";
 import { dataTablePresets, type DataTablePresetName, type SortState } from "@/lib/presets/data-table";
 import { imagePresets, type ImagePresetName } from "@/lib/presets/image";
+import { imageGalleryPresets, type ImageGalleryPresetName } from "@/lib/presets/image-gallery";
 import { videoPresets, type VideoPresetName } from "@/lib/presets/video";
 import { audioPresets, type AudioPresetName } from "@/lib/presets/audio";
 import { linkPreviewPresets, type LinkPreviewPresetName } from "@/lib/presets/link-preview";
@@ -40,6 +42,7 @@ export type ComponentId =
   | "code-block"
   | "data-table"
   | "image"
+  | "image-gallery"
   | "video"
   | "audio"
   | "link-preview"
@@ -170,6 +173,19 @@ export const previewConfigs: Record<ComponentId, PreviewConfig<unknown, string>>
           {...image}
           responseActions={responseActions as Parameters<typeof Image>[0]["responseActions"]}
           onResponseAction={(actionId) => console.log("Response action:", actionId)}
+        />
+      );
+    },
+  },
+  "image-gallery": {
+    presets: imageGalleryPresets as Record<string, PresetWithCodeGen<unknown>>,
+    defaultPreset: "search-results" satisfies ImageGalleryPresetName,
+    renderComponent: ({ data }) => {
+      const galleryData = data as Parameters<typeof ImageGallery>[0];
+      return (
+        <ImageGallery
+          {...galleryData}
+          onImageClick={(id, image) => console.log("Image clicked:", id, image)}
         />
       );
     },
