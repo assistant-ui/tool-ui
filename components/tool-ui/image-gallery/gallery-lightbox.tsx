@@ -11,64 +11,49 @@ type LightboxImage = Pick<
   "id" | "src" | "alt" | "width" | "height" | "title" | "caption" | "source"
 >;
 
-const imageTransition = {
+const BORDER_RADIUS = 12;
+
+const SPRING_TRANSITION = {
   type: "spring" as const,
   stiffness: 400,
   damping: 30,
 };
 
-const backdropTransition = {
+const FADE_TRANSITION = {
   duration: 0.3,
   ease: [0.32, 0.72, 0, 1] as const,
 };
 
 export function GalleryLightbox() {
   const dialogRef = useRef<HTMLDialogElement>(null);
-  const displayIndexRef = useRef<number>(0);
+  const lastOpenedIndexRef = useRef(0);
 
   const { images, activeIndex, exitingIndex, closeLightbox, clearExitingIndex } =
     useImageGallery();
 
   const isOpen = activeIndex !== null;
-  const shouldKeepDialogOpen = isOpen || exitingIndex !== null;
+  const isAnimatingOut = exitingIndex !== null;
+  const shouldKeepDialogOpen = isOpen || isAnimatingOut;
 
-  const displayIndex = activeIndex ?? exitingIndex ?? displayIndexRef.current;
-  if (activeIndex !== null) {
-    displayIndexRef.current = activeIndex;
-  }
-
+  const displayIndex = activeIndex ?? exitingIndex ?? lastOpenedIndexRef.current;
   const currentImage = images[displayIndex] ?? null;
 
-  useEffect(() => {
-    const dialog = dialogRef.current;
-    if (!dialog) return;
+  if (activeIndex !== null) {
+    lastOpenedIndexRef.current = activeIndex;
+  }
 
-    if (shouldKeepDialogOpen && !dialog.open) {
-      dialog.showModal();
-    }
-  }, [shouldKeepDialogOpen]);
+  useDialogSync(dialogRef, shouldKeepDialogOpen);
+  useEscapeKey(isOpen, closeLightbox);
 
   const handleExitComplete = useCallback(() => {
     dialogRef.current?.close();
     clearExitingIndex();
   }, [clearExitingIndex]);
 
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (!isOpen) return;
-      if (e.key === "Escape") {
-        e.preventDefault();
-        closeLightbox();
-      }
-    };
-
-    document.addEventListener("keydown", handleKeyDown);
-    return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [isOpen, closeLightbox]);
-
   const handleBackdropClick = useCallback(
     (e: React.MouseEvent<HTMLDialogElement>) => {
-      if (e.target === dialogRef.current) {
+      const clickedBackdrop = e.target === dialogRef.current;
+      if (clickedBackdrop) {
         closeLightbox();
       }
     },
@@ -91,52 +76,106 @@ export function GalleryLightbox() {
       className={cn(
         "fixed inset-0 m-0 h-full max-h-full w-full max-w-full",
         "overflow-hidden p-0",
-        "bg-transparent",
-        "backdrop:bg-transparent",
+        "bg-transparent backdrop:bg-transparent",
         "focus:outline-none",
       )}
       aria-label="Image lightbox"
     >
       <AnimatePresence onExitComplete={handleExitComplete}>
         {isOpen && currentImage && (
-          <div key="lightbox-container" className="relative h-full w-full">
-            <motion.div
-              key="lightbox-backdrop"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={backdropTransition}
-              className="absolute inset-0 bg-black/90"
-            />
-
-            <motion.div
-              key="lightbox-close"
-              initial={{ opacity: 0, scale: 0.96 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.96 }}
-              transition={backdropTransition}
-              className="absolute right-4 top-4 z-20"
-            >
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                onClick={closeLightbox}
-                className="text-white/80 hover:bg-white/10 hover:text-white"
-                aria-label="Close"
-              >
-                <X className="h-5 w-5" />
-              </Button>
-            </motion.div>
-
-            <div className="relative z-10 flex h-full w-full flex-col items-center justify-center gap-4 p-8">
-              <LightboxImage image={currentImage} />
-              <ImageMetadata image={currentImage} />
-            </div>
-          </div>
+          <LightboxContent image={currentImage} onClose={closeLightbox} />
         )}
       </AnimatePresence>
     </dialog>
+  );
+}
+
+function useDialogSync(
+  dialogRef: React.RefObject<HTMLDialogElement | null>,
+  shouldBeOpen: boolean,
+) {
+  useEffect(() => {
+    const dialog = dialogRef.current;
+    if (!dialog) return;
+
+    if (shouldBeOpen && !dialog.open) {
+      dialog.showModal();
+    }
+  }, [dialogRef, shouldBeOpen]);
+}
+
+function useEscapeKey(isActive: boolean, onEscape: () => void) {
+  useEffect(() => {
+    if (!isActive) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        e.preventDefault();
+        onEscape();
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [isActive, onEscape]);
+}
+
+interface LightboxContentProps {
+  image: LightboxImage;
+  onClose: () => void;
+}
+
+function LightboxContent({ image, onClose }: LightboxContentProps) {
+  return (
+    <div key="lightbox-container" className="relative h-full w-full">
+      <LightboxBackdrop />
+      <LightboxCloseButton onClose={onClose} />
+      <div className="relative z-10 flex h-full w-full flex-col items-center justify-center gap-4 p-8">
+        <LightboxImage image={image} />
+        <LightboxMetadata image={image} />
+      </div>
+    </div>
+  );
+}
+
+function LightboxBackdrop() {
+  return (
+    <motion.div
+      key="lightbox-backdrop"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={FADE_TRANSITION}
+      className="absolute inset-0 bg-black/90"
+    />
+  );
+}
+
+interface LightboxCloseButtonProps {
+  onClose: () => void;
+}
+
+function LightboxCloseButton({ onClose }: LightboxCloseButtonProps) {
+  return (
+    <motion.div
+      key="lightbox-close"
+      initial={{ opacity: 0, scale: 0.96 }}
+      animate={{ opacity: 1, scale: 1 }}
+      exit={{ opacity: 0, scale: 0.96 }}
+      transition={FADE_TRANSITION}
+      className="absolute right-4 top-4 z-20"
+    >
+      <Button
+        type="button"
+        variant="ghost"
+        size="icon"
+        onClick={onClose}
+        className="text-white/80 hover:bg-white/10 hover:text-white"
+        aria-label="Close"
+      >
+        <X className="h-5 w-5" />
+      </Button>
+    </motion.div>
   );
 }
 
@@ -145,14 +184,15 @@ interface LightboxImageProps {
 }
 
 function LightboxImage({ image }: LightboxImageProps) {
-  const [error, setError] = useState(false);
+  const [hasError, setHasError] = useState(false);
+  const layoutId = `gallery-image-${image.id}`;
 
-  if (error) {
+  if (hasError) {
     return (
       <motion.div
-        layoutId={`gallery-image-${image.id}`}
-        style={{ borderRadius: 12 }}
-        transition={imageTransition}
+        layoutId={layoutId}
+        style={{ borderRadius: BORDER_RADIUS }}
+        transition={SPRING_TRANSITION}
         className="flex flex-col items-center gap-3 text-white/60 !opacity-100"
       >
         <ImageOff className="h-12 w-12" />
@@ -164,27 +204,29 @@ function LightboxImage({ image }: LightboxImageProps) {
   return (
     <motion.img
       layout
-      layoutId={`gallery-image-${image.id}`}
+      layoutId={layoutId}
       src={image.src}
       alt={image.alt}
       draggable={false}
-      onError={() => setError(true)}
-      style={{ borderRadius: 12 }}
-      transition={imageTransition}
+      onError={() => setHasError(true)}
+      style={{ borderRadius: BORDER_RADIUS }}
+      transition={SPRING_TRANSITION}
       className="max-h-[80vh] max-w-full object-contain shadow-2xl select-none !opacity-100"
     />
   );
 }
 
-interface ImageMetadataProps {
+interface LightboxMetadataProps {
   image: Pick<LightboxImage, "title" | "caption" | "source">;
 }
 
-function ImageMetadata({ image }: ImageMetadataProps) {
-  const hasSource = Boolean(image.source?.label);
+function LightboxMetadata({ image }: LightboxMetadataProps) {
+  const hasTitle = Boolean(image.title);
   const hasCaption = Boolean(image.caption);
+  const hasSource = Boolean(image.source?.label);
+  const hasAnyMetadata = hasTitle || hasCaption || hasSource;
 
-  if (!image.title && !hasCaption && !hasSource) {
+  if (!hasAnyMetadata) {
     return null;
   }
 
@@ -193,10 +235,10 @@ function ImageMetadata({ image }: ImageMetadataProps) {
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: 8 }}
-      transition={{ ...backdropTransition, delay: 0.1 }}
+      transition={{ ...FADE_TRANSITION, delay: 0.1 }}
       className="text-center"
     >
-      {image.title && (
+      {hasTitle && (
         <h3 className="text-base font-medium tracking-tight text-white">
           {image.title}
         </h3>
@@ -217,17 +259,18 @@ interface SourceLinkProps {
 }
 
 function SourceLink({ source }: SourceLinkProps) {
-  if (source.url) {
-    return (
-      <a
-        href={source.url}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="hover:text-white/80 hover:underline"
-      >
-        {source.label}
-      </a>
-    );
+  if (!source.url) {
+    return <>{source.label}</>;
   }
-  return <>{source.label}</>;
+
+  return (
+    <a
+      href={source.url}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="hover:text-white/80 hover:underline"
+    >
+      {source.label}
+    </a>
+  );
 }

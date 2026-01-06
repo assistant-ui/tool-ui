@@ -22,7 +22,7 @@ const ImageGalleryContext = createContext<ImageGalleryContextValue | null>(
   null,
 );
 
-export function useImageGallery() {
+export function useImageGallery(): ImageGalleryContextValue {
   const context = useContext(ImageGalleryContext);
   if (!context) {
     throw new Error("useImageGallery must be used within ImageGalleryProvider");
@@ -47,16 +47,19 @@ export function ImageGalleryProvider({
   }, []);
 
   const closeLightbox = useCallback(() => {
-    if (activeIndex === null) return;
-    setExitingIndex(activeIndex);
-    setActiveIndex(null);
-  }, [activeIndex]);
+    setActiveIndex((current) => {
+      if (current !== null) {
+        setExitingIndex(current);
+      }
+      return null;
+    });
+  }, []);
 
   const clearExitingIndex = useCallback(() => {
     setExitingIndex(null);
   }, []);
 
-  const value = useMemo(
+  const value = useMemo<ImageGalleryContextValue>(
     () => ({
       images,
       activeIndex,

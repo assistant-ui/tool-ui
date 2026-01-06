@@ -45,7 +45,7 @@ export const componentsRegistry: ComponentMeta[] = [
   {
     id: "image-gallery",
     label: "Image Gallery",
-    description: "Masonry grid with fullscreen carousel viewer",
+    description: "Masonry grid with fullscreen lightbox viewer",
     path: "/docs/image-gallery",
   },
   {

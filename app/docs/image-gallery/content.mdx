@@ -3,7 +3,7 @@ import { ImageGallery } from "@/components/tool-ui/image-gallery";
 
 <DocsHeader
   title="Image Gallery"
-  description="Display multiple images in a masonry grid with fullscreen carousel."
+  description="Display multiple images in a masonry grid with fullscreen lightbox."
   mdxPath="app/docs/image-gallery/content.mdx"
 />
 
@@ -96,11 +96,11 @@ import { ImageGallery } from "@/components/tool-ui/image-gallery";
   <Feature icon="LayoutGrid" title="Masonry grid">
     Responsive grid that adapts to image aspect ratios
   </Feature>
-  <Feature icon="Maximize" title="Fullscreen carousel">
+  <Feature icon="Maximize" title="Fullscreen lightbox">
     Click any image to view in a fullscreen lightbox
   </Feature>
-  <Feature icon="Navigation" title="Swipe and keyboard">
-    Navigate with touch gestures, arrows, or keyboard
+  <Feature icon="Sparkles" title="Smooth transitions">
+    Shared layout animations between grid and lightbox
   </Feature>
   <Feature icon="Image" title="Overflow indicator">
     Cap visible images with a "+N more" overlay
@@ -144,11 +144,9 @@ pnpm dlx shadcn@latest add button
     title: { description: "Gallery header title", type: "string" },
     description: { description: "Gallery header description", type: "string" },
     maxVisible: {
-      description: "Maximum images to show in grid (rest shown in carousel)",
+      description: "Maximum images to show in grid (rest accessible via overflow)",
       type: "number",
     },
-    responseActions: { description: "Response action buttons (shown in lightbox)", type: "Action[]" },
-    onResponseAction: { description: "Response action handler", type: "(actionId: string) => void" },
     onImageClick: { description: "Image click handler", type: "(imageId: string, image: ImageGalleryItem) => void" },
   }}
 />
@@ -193,7 +191,7 @@ pnpm dlx shadcn@latest add button
 
 ## Limiting Visible Images
 
-Use `maxVisible` to cap the grid display while keeping all images accessible in the carousel:
+Use `maxVisible` to cap the grid display while keeping all images accessible in the lightbox:
 
 ```tsx
 <ImageGallery
@@ -203,4 +201,4 @@ Use `maxVisible` to cap the grid display while keeping all images accessible in 
 />
 ```
 
-The last visible thumbnail shows a "+N more" overlay that opens the carousel at the first hidden image.
+The last visible thumbnail shows a "+N more" overlay that opens the lightbox at the first hidden image.

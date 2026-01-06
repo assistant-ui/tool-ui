@@ -1,4 +1,3 @@
- 
 "use client";
 
 import { useState, useCallback } from "react";
@@ -7,13 +6,18 @@ import { cn, ImageOff } from "./_adapter";
 import { useImageGallery } from "./context";
 import type { ImageGalleryItem } from "./schema";
 
-const springTransition = {
+type GridImage = Pick<
+  ImageGalleryItem,
+  "id" | "src" | "alt" | "width" | "height"
+>;
+
+const BORDER_RADIUS = 12;
+
+const SPRING_TRANSITION = {
   type: "spring" as const,
   stiffness: 300,
   damping: 30,
 };
-
-type GridImage = Pick<ImageGalleryItem, "id" | "src" | "alt" | "width" | "height">;
 
 interface GalleryGridProps {
   maxVisible?: number;
@@ -23,10 +27,10 @@ interface GalleryGridProps {
 export function GalleryGrid({ maxVisible, onImageClick }: GalleryGridProps) {
   const { images, openLightbox } = useImageGallery();
 
-  const visibleImages = maxVisible ? images.slice(0, maxVisible) : images;
-  const hiddenCount = maxVisible ? Math.max(0, images.length - maxVisible) : 0;
-  const showOverflow = hiddenCount > 0;
-  const overflowIndex = maxVisible ? maxVisible - 1 : -1;
+  const { visibleImages, hiddenCount, overflowIndex } = computeVisibility(
+    images,
+    maxVisible,
+  );
 
   const handleImageClick = useCallback(
     (index: number) => {
@@ -51,7 +55,7 @@ export function GalleryGrid({ maxVisible, onImageClick }: GalleryGridProps) {
       role="list"
     >
       {visibleImages.map((image, index) => {
-        const isOverflowTrigger = showOverflow && index === overflowIndex;
+        const isOverflowTrigger = hiddenCount > 0 && index === overflowIndex;
 
         return (
           <GridImageCard
@@ -67,6 +71,22 @@ export function GalleryGrid({ maxVisible, onImageClick }: GalleryGridProps) {
   );
 }
 
+function computeVisibility(images: GridImage[], maxVisible?: number) {
+  if (!maxVisible) {
+    return {
+      visibleImages: images,
+      hiddenCount: 0,
+      overflowIndex: -1,
+    };
+  }
+
+  return {
+    visibleImages: images.slice(0, maxVisible),
+    hiddenCount: Math.max(0, images.length - maxVisible),
+    overflowIndex: maxVisible - 1,
+  };
+}
+
 interface GridImageCardProps {
   image: GridImage;
   index: number;
@@ -80,14 +100,9 @@ function GridImageCard({
   onClick,
   overlayCount,
 }: GridImageCardProps) {
-  const [error, setError] = useState(false);
+  const [hasError, setHasError] = useState(false);
+  const { shouldSpanTwoRows } = computeImageLayout(image);
 
-  const aspectRatio = image.width / image.height;
-  const isPortrait = aspectRatio < 1;
-  const isSquarish = aspectRatio >= 0.9 && aspectRatio <= 1.1;
-  const spanTwoRows = isPortrait && !isSquarish;
-
-  const handleError = useCallback(() => setError(true), []);
   const handleClick = useCallback(() => onClick(index), [onClick, index]);
 
   return (
@@ -96,9 +111,9 @@ function GridImageCard({
       className={cn(
         "group relative cursor-pointer overflow-hidden",
         "bg-muted rounded-lg",
-        spanTwoRows && "row-span-2",
+        shouldSpanTwoRows && "row-span-2",
       )}
-      style={{ aspectRatio: spanTwoRows ? undefined : "1 / 1" }}
+      style={{ aspectRatio: shouldSpanTwoRows ? undefined : "1 / 1" }}
     >
       <button
         type="button"
@@ -107,7 +122,7 @@ function GridImageCard({
         aria-label={overlayCount ? `View ${overlayCount} more images` : image.alt}
       />
 
-      {error ? (
+      {hasError ? (
         <ImageErrorState alt={image.alt} />
       ) : (
         <motion.img
@@ -120,18 +135,28 @@ function GridImageCard({
           tabIndex={-1}
           loading="lazy"
           decoding="async"
-          onError={handleError}
-          style={{ borderRadius: 12 }}
+          onError={() => setHasError(true)}
+          style={{ borderRadius: BORDER_RADIUS }}
           className="relative h-full w-full object-cover !opacity-100"
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 1 }}
-          transition={springTransition}
+          transition={SPRING_TRANSITION}
         />
       )}
 
       {overlayCount && <OverflowOverlay count={overlayCount} />}
     </div>
   );
+}
+
+function computeImageLayout(image: GridImage) {
+  const aspectRatio = image.width / image.height;
+  const isPortrait = aspectRatio < 1;
+  const isSquarish = aspectRatio >= 0.9 && aspectRatio <= 1.1;
+
+  return {
+    shouldSpanTwoRows: isPortrait && !isSquarish,
+  };
 }
 
 function ImageErrorState({ alt }: { alt: string }) {
