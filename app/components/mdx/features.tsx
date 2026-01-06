@@ -50,6 +50,9 @@ import {
   ShieldCheck,
   DollarSign,
   Package,
+  Grid2x2,
+  Move,
+  PlusCircle,
 } from "lucide-react";
 
 const ICON_MAP: Record<string, LucideIcon> = {
@@ -102,6 +105,9 @@ const ICON_MAP: Record<string, LucideIcon> = {
   ShieldCheck,
   DollarSign,
   Package,
+  Grid2x2,
+  Move,
+  PlusCircle,
 };
 
 interface FeatureGridProps {
