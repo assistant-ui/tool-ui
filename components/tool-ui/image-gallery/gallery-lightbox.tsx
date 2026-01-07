@@ -10,8 +10,13 @@ type LightboxImage = Pick<ImageGalleryItem, "title" | "caption" | "source">;
 export function GalleryLightbox() {
   const dialogRef = useRef<HTMLDialogElement>(null);
 
-  const { images, activeIndex, closeLightbox, lightboxContentRef, setDialogRef } =
-    useImageGallery();
+  const {
+    images,
+    activeIndex,
+    closeLightbox,
+    lightboxContentRef,
+    setDialogRef,
+  } = useImageGallery();
 
   const isOpen = activeIndex !== null;
   const currentImage = isOpen ? images[activeIndex] : null;
@@ -60,9 +65,9 @@ export function GalleryLightbox() {
           <div
             ref={lightboxContentRef}
             className={cn(
-              "relative w-fit max-w-full overflow-hidden rounded-lg shadow-2xl pointer-events-auto",
+              "pointer-events-auto relative w-fit max-w-full overflow-hidden rounded-lg shadow-2xl",
               "[&>img]:block [&>img]:max-h-[80vh] [&>img]:max-w-full",
-              "[&>img]:w-auto [&>img]:h-auto [&>img]:object-contain [&>img]:select-none",
+              "[&>img]:h-auto [&>img]:w-auto [&>img]:object-contain [&>img]:select-none",
             )}
           />
           {currentImage && <Metadata image={currentImage} />}

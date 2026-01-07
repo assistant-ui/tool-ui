@@ -120,16 +120,19 @@ function GridImageCard({
         type="button"
         onClick={handleClick}
         className="absolute inset-0 z-20 h-full w-full rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2"
-        aria-label={overlayCount ? `View ${overlayCount} more images` : image.alt}
+        aria-label={
+          overlayCount ? `View ${overlayCount} more images` : image.alt
+        }
       />
 
       <div
         ref={wrapperRef}
-        className="relative h-full w-full overflow-hidden rounded-lg bg-muted"
+        className="bg-muted relative h-full w-full overflow-hidden rounded-lg"
       >
         {hasError ? (
           <ImageErrorState alt={image.alt} />
         ) : (
+          // eslint-disable-next-line @next/next/no-img-element
           <img
             src={image.src}
             alt={image.alt}
@@ -159,8 +162,8 @@ function isPortraitImage(image: GridImage): boolean {
 function ImageErrorState({ alt }: { alt: string }) {
   return (
     <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 p-4">
-      <ImageOff className="h-8 w-8 text-muted-foreground" />
-      <span className="line-clamp-2 text-center text-xs text-muted-foreground">
+      <ImageOff className="text-muted-foreground h-8 w-8" />
+      <span className="text-muted-foreground line-clamp-2 text-center text-xs">
         {alt}
       </span>
     </div>
