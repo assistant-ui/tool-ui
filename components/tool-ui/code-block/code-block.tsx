@@ -263,7 +263,7 @@ export function CodeBlock({
       data-slot="code-block"
     >
       <div className="border-border bg-card overflow-hidden rounded-lg border shadow-xs">
-        <div className="bg-muted/50 flex items-center justify-between border-b px-4 py-2">
+        <div className="bg-card flex items-center justify-between border-b px-4 py-2">
           <div className="flex items-center gap-1">
             <span className="text-muted-foreground text-sm">
               {getLanguageDisplayName(language)}

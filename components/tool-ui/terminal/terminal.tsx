@@ -8,7 +8,6 @@ import {
   ChevronDown,
   ChevronUp,
   Terminal as TerminalIcon,
-  Timer,
 } from "lucide-react";
 import type { TerminalProps } from "./schema";
 import {
@@ -22,21 +21,13 @@ import { TerminalProgress } from "./progress";
 
 const COPY_ID = "terminal-output";
 
-function formatDuration(ms: number): string {
-  if (ms < 1000) return `${ms}ms`;
-  if (ms < 60000) return `${(ms / 1000).toFixed(1)}s`;
-  const minutes = Math.floor(ms / 60000);
-  const seconds = ((ms % 60000) / 1000).toFixed(0);
-  return `${minutes}m ${seconds}s`;
-}
-
 export function Terminal({
   id,
   command,
   stdout,
   stderr,
   exitCode,
-  durationMs,
+  durationMs: _durationMs,
   cwd,
   truncated,
   maxCollapsedLines,
@@ -93,26 +84,20 @@ export function Terminal({
       data-slot="terminal"
     >
       <div className="border-border bg-card overflow-hidden rounded-lg border shadow-xs">
-        <div className="bg-muted/50 flex items-center justify-between border-b px-4 py-2">
+        <div className="bg-card flex items-center justify-between border-b px-4 py-2">
           <div className="flex items-center gap-2 overflow-hidden">
             <TerminalIcon className="text-muted-foreground h-4 w-4 shrink-0" />
-            <code className="text-foreground truncate font-mono text-sm">
+            <code className="text-foreground truncate font-mono text-xs">
               {cwd && <span className="text-muted-foreground">{cwd}$ </span>}
               {command}
             </code>
           </div>
-          <div className="flex items-center gap-2">
-            {durationMs !== undefined && (
-              <span className="text-muted-foreground flex items-center gap-1.5 font-mono text-xs tabular-nums">
-                <Timer className="size-3" />
-                {formatDuration(durationMs)}
-              </span>
-            )}
+          <div className="flex items-center gap-3">
             <span
               className={cn(
                 "font-mono text-sm tabular-nums",
                 isSuccess
-                  ? "text-emerald-600 dark:text-emerald-400"
+                  ? "text-muted-foreground"
                   : "text-red-600 dark:text-red-400",
               )}
             >

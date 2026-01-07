@@ -58,7 +58,7 @@ export const optionListPresets: Record<OptionListPresetName, PresetWithCodeGen<S
       minSelections: 1,
       maxSelections: 2,
       responseActions: [
-        { id: "cancel", label: "Reset", variant: "ghost" },
+        { id: "cancel", label: "Reset" },
         { id: "confirm", label: "Confirm", variant: "default" },
       ],
     } satisfies SerializableOptionList,
@@ -83,7 +83,7 @@ export const optionListPresets: Record<OptionListPresetName, PresetWithCodeGen<S
       ],
       selectionMode: "single",
       responseActions: [
-        { id: "cancel", label: "Reset", variant: "ghost" },
+        { id: "cancel", label: "Reset" },
         { id: "confirm", label: "Continue", variant: "default" },
       ],
     } satisfies SerializableOptionList,
@@ -118,7 +118,7 @@ export const optionListPresets: Record<OptionListPresetName, PresetWithCodeGen<S
       selectionMode: "multi",
       minSelections: 4,
       responseActions: [
-        { id: "cancel", label: "Cancel", variant: "ghost" },
+        { id: "cancel", label: "Cancel" },
         {
           id: "confirm",
           label: "Approve Release",
@@ -174,7 +174,7 @@ export const optionListPresets: Record<OptionListPresetName, PresetWithCodeGen<S
       ],
       selectionMode: "single",
       responseActions: [
-        { id: "cancel", label: "Cancel", variant: "ghost" },
+        { id: "cancel", label: "Cancel" },
         {
           id: "confirm",
           label: "Delete",

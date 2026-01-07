@@ -10,7 +10,6 @@ import type { ImageGalleryProps } from "./schema";
 export function ImageGallery({
   id,
   images,
-  maxVisible,
   title,
   description,
   className,
@@ -45,10 +44,7 @@ export function ImageGallery({
           <ImageGalleryProvider images={images}>
             <Header title={title} description={description} />
             <div className="p-3">
-              <GalleryGrid
-                maxVisible={maxVisible}
-                onImageClick={handleImageClick}
-              />
+              <GalleryGrid onImageClick={handleImageClick} />
             </div>
             <GalleryLightbox />
           </ImageGalleryProvider>

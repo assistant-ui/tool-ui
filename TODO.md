@@ -29,4 +29,25 @@
 - [x] Fix Citation docs accessibility section — markdown table is broken, convert to bulleted list (refer to other docs for format)
 - [x] Fix platform tabs visuals under Social Posts / Examples — should match top-level Docs / Examples tabs styling
 - [x] Replace Video component video with something more visually interesting from a reliable source
-- [ ] Revisit Image Gallery "+n" feature — lightbox carousel was removed so no way to view additional images now; consider removing feature for now
+- [x] Revisit Image Gallery "+n" feature — removed maxVisible feature for now
+
+## High Priority
+<!-- Visual consistency — the core differentiator -->
+- [x] Code Block and Terminal headers: use bg-card in dark mode to match other components
+- [x] Terminal component: remove timing indicator from header, prepend code with label, smaller header text
+- [x] Standardize button variants in responseActions — "Cancel" and negatory actions should use tertiary variant (no border)
+
+## Medium Priority
+<!-- Component-specific polish -->
+- [ ] Image Gallery lightbox scrim: make darker/more opaque in light mode
+- [ ] Image Gallery grid thumbnails: add focus outlines, hover scale up, active scale down, cubic transition
+- [ ] Audio player fixes:
+  - Play button needs solid icon and better position
+  - Keep scrubber and controls on same line
+  - Make scrubber handle primary color
+  - Allow description to go 2 lines max
+  - Smaller image border radius for proper inset with card
+
+## Low Priority
+<!-- Content/examples -->
+- [ ] Use shorter nature videos for Video component examples

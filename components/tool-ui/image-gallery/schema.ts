@@ -31,7 +31,6 @@ export const SerializableImageGallerySchema = z.object({
   role: ToolUIRoleSchema.optional(),
   receipt: ToolUIReceiptSchema.optional(),
   images: z.array(ImageGalleryItemSchema).min(1),
-  maxVisible: z.number().positive().optional(),
   title: z.string().optional(),
   description: z.string().optional(),
 });
