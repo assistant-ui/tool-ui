@@ -1,6 +1,6 @@
 "use client";
 
-import { LayoutGroup } from "motion/react";
+import "./styles.css";
 import { cn } from "./_adapter";
 import { ImageGalleryProvider } from "./context";
 import { GalleryGrid } from "./gallery-grid";
@@ -43,16 +43,14 @@ export function ImageGallery({
           <LoadingSkeleton />
         ) : (
           <ImageGalleryProvider images={images}>
-            <LayoutGroup>
-              <Header title={title} description={description} />
-              <div className="p-3">
-                <GalleryGrid
-                  maxVisible={maxVisible}
-                  onImageClick={handleImageClick}
-                />
-              </div>
-              <GalleryLightbox />
-            </LayoutGroup>
+            <Header title={title} description={description} />
+            <div className="p-3">
+              <GalleryGrid
+                maxVisible={maxVisible}
+                onImageClick={handleImageClick}
+              />
+            </div>
+            <GalleryLightbox />
           </ImageGalleryProvider>
         )}
       </div>
