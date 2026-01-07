@@ -39,9 +39,9 @@
 
 ## Medium Priority
 <!-- Component-specific polish -->
-- [ ] Image Gallery lightbox scrim: make darker/more opaque in light mode
-- [ ] Image Gallery grid thumbnails: add focus outlines, hover scale up, active scale down, cubic transition
-- [ ] Audio player fixes:
+- [x] Image Gallery lightbox scrim: make darker/more opaque in light mode
+- [x] Image Gallery grid thumbnails: add focus outlines, hover scale up, active scale down, cubic transition
+- [x] Audio player fixes:
   - Play button needs solid icon and better position
   - Keep scrubber and controls on same line
   - Make scrubber handle primary color
@@ -50,4 +50,4 @@
 
 ## Low Priority
 <!-- Content/examples -->
-- [ ] Use shorter nature videos for Video component examples
+- [x] Use shorter nature videos for Video component examples

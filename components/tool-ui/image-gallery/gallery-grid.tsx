@@ -119,7 +119,7 @@ function GridImageCard({
       <button
         type="button"
         onClick={handleClick}
-        className="absolute inset-0 z-20 h-full w-full rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2"
+        className="absolute inset-0 z-20 h-full w-full rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
         aria-label={
           overlayCount ? `View ${overlayCount} more images` : image.alt
         }
@@ -127,7 +127,7 @@ function GridImageCard({
 
       <div
         ref={wrapperRef}
-        className="bg-muted relative h-full w-full overflow-hidden rounded-lg"
+        className="bg-muted relative h-full w-full overflow-hidden rounded-lg transition-transform duration-200 ease-[cubic-bezier(0.4,0,0.2,1)] group-hover:scale-[1.02] group-active:scale-[0.98]"
       >
         {hasError ? (
           <ImageErrorState alt={image.alt} />

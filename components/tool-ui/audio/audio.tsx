@@ -19,18 +19,24 @@ function formatTime(seconds: number): string {
 
 function AudioProgress() {
   return (
-    <div className="flex w-full motion-safe:animate-pulse flex-col gap-3 p-4">
+    <div className="flex w-full flex-col gap-4 p-4 motion-safe:animate-pulse">
       <div className="flex items-center gap-4">
-        <div className="bg-muted size-16 shrink-0 rounded-lg" />
+        <div className="bg-muted size-16 shrink-0 rounded-md" />
         <div className="flex flex-1 flex-col gap-2">
           <div className="bg-muted h-4 w-3/4 rounded" />
           <div className="bg-muted h-3 w-1/2 rounded" />
         </div>
       </div>
-      <div className="bg-muted h-1.5 w-full rounded-full" />
-      <div className="flex items-center justify-between">
-        <div className="bg-muted size-8 rounded-full" />
-        <div className="bg-muted h-3 w-12 rounded" />
+      <div className="flex items-center gap-3">
+        <div className="bg-muted size-9 shrink-0 rounded-full" />
+        <div className="flex flex-1 flex-col gap-1">
+          <div className="bg-muted h-1.5 w-full rounded-full" />
+          <div className="flex justify-between">
+            <div className="bg-muted h-3 w-8 rounded" />
+            <div className="bg-muted h-3 w-8 rounded" />
+          </div>
+        </div>
+        <div className="bg-muted size-8 shrink-0 rounded-full" />
       </div>
     </div>
   );
@@ -161,7 +167,7 @@ function AudioInner(props: AudioProps) {
           <div className="flex w-full flex-col gap-4 p-4">
             <div className="flex items-center gap-4">
               {artwork && (
-                <div className="bg-muted relative size-16 shrink-0 overflow-hidden rounded-lg shadow-sm">
+                <div className="bg-muted relative size-16 shrink-0 overflow-hidden rounded-md shadow-sm">
                   <img
                     src={artwork}
                     alt=""
@@ -179,49 +185,48 @@ function AudioInner(props: AudioProps) {
                   </div>
                 )}
                 {description && (
-                  <div className="text-muted-foreground line-clamp-1 text-sm">
+                  <div className="text-muted-foreground line-clamp-2 text-sm">
                     {description}
                   </div>
                 )}
               </div>
             </div>
 
-            <div className="space-y-2">
-              <Slider
-                value={[currentTime]}
-                max={duration || 100}
-                step={0.1}
-                onValueChange={handleSeek}
-                onPointerDown={handleSeekStart}
-                onPointerUp={handleSeekEnd}
-                className="cursor-pointer"
-                aria-label="Audio progress"
-              />
-              <div className="flex items-center justify-between text-xs text-muted-foreground">
-                <span>{formatTime(currentTime)}</span>
-                <span>{formatTime(duration)}</span>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-3">
               <Button
                 variant="default"
                 size="icon"
                 onClick={handlePlayPause}
-                className="size-10 rounded-full"
+                className="size-9 shrink-0 rounded-full"
                 aria-label={state.playing ? "Pause" : "Play"}
               >
                 {state.playing ? (
-                  <Pause className="size-5" />
+                  <Pause className="size-4" fill="currentColor" />
                 ) : (
-                  <Play className="size-5 ml-0.5" />
+                  <Play className="size-4 ml-0.5" fill="currentColor" />
                 )}
               </Button>
+              <div className="flex flex-1 flex-col gap-1">
+                <Slider
+                  value={[currentTime]}
+                  max={duration || 100}
+                  step={0.1}
+                  onValueChange={handleSeek}
+                  onPointerDown={handleSeekStart}
+                  onPointerUp={handleSeekEnd}
+                  className="cursor-pointer [&_[data-slot=thumb]]:bg-primary [&_[data-slot=thumb]]:border-primary"
+                  aria-label="Audio progress"
+                />
+                <div className="flex items-center justify-between text-xs text-muted-foreground">
+                  <span>{formatTime(currentTime)}</span>
+                  <span>{formatTime(duration)}</span>
+                </div>
+              </div>
               <Button
                 variant="ghost"
                 size="icon"
                 onClick={handleMuteToggle}
-                className="size-8"
+                className="size-8 shrink-0"
                 aria-label={state.muted ? "Unmute" : "Mute"}
               >
                 {state.muted ? (
