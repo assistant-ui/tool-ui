@@ -52,6 +52,11 @@ export type ComponentId =
   | "plan"
   | "terminal";
 
+export interface ChatContext {
+  userMessage: string;
+  preamble?: string;
+}
+
 export interface PreviewConfig<TData, TPresetName extends string> {
   presets: Record<TPresetName, PresetWithCodeGen<TData>>;
   defaultPreset: TPresetName;
@@ -62,6 +67,7 @@ export interface PreviewConfig<TData, TPresetName extends string> {
     setState: (state: Partial<PreviewState>) => void;
   }) => ReactNode;
   wrapper?: ComponentType<{ children: ReactNode }>;
+  chatContext: ChatContext;
 }
 
 export interface PreviewState {
@@ -82,6 +88,10 @@ export const previewConfigs: Record<ComponentId, PreviewConfig<unknown, string>>
     presets: approvalCardPresets as Record<string, PresetWithCodeGen<unknown>>,
     defaultPreset: "deploy" satisfies ApprovalCardPresetName,
     wrapper: MaxWidthSmWrapper,
+    chatContext: {
+      userMessage: "Deploy the latest changes to production",
+      preamble: "I'll need your confirmation before proceeding:",
+    },
     renderComponent: ({ data }) => {
       const cardData = data as Parameters<typeof ApprovalCard>[0];
       return (
@@ -96,6 +106,10 @@ export const previewConfigs: Record<ComponentId, PreviewConfig<unknown, string>>
   chart: {
     presets: chartPresets as Record<string, PresetWithCodeGen<unknown>>,
     defaultPreset: "revenue" satisfies ChartPresetName,
+    chatContext: {
+      userMessage: "Show me the revenue data for this quarter",
+      preamble: "Here's your data visualization:",
+    },
     renderComponent: ({ data, presetName }) => {
       const chartData = data as Omit<Parameters<typeof Chart>[0], "id">;
       return <Chart id={`chart-${presetName}`} {...chartData} />;
@@ -104,6 +118,10 @@ export const previewConfigs: Record<ComponentId, PreviewConfig<unknown, string>>
   citation: {
     presets: citationPresets as Record<string, PresetWithCodeGen<unknown>>,
     defaultPreset: "stacked" satisfies CitationPresetName,
+    chatContext: {
+      userMessage: "What does the documentation say about this?",
+      preamble: "According to the source:",
+    },
     renderComponent: ({ data, presetName }) => {
       const { citations, variant, maxVisible, responseActions } = data as {
         citations: Parameters<typeof Citation>[0][];
@@ -145,11 +163,19 @@ export const previewConfigs: Record<ComponentId, PreviewConfig<unknown, string>>
   "code-block": {
     presets: codeBlockPresets as Record<string, PresetWithCodeGen<unknown>>,
     defaultPreset: "typescript" satisfies CodeBlockPresetName,
+    chatContext: {
+      userMessage: "Write me a utility function for this",
+      preamble: "Here's the code:",
+    },
     renderComponent: ({ data }) => <CodeBlock {...(data as Parameters<typeof CodeBlock>[0])} />,
   },
   "data-table": {
     presets: dataTablePresets as Record<string, PresetWithCodeGen<unknown>>,
     defaultPreset: "stocks" satisfies DataTablePresetName,
+    chatContext: {
+      userMessage: "Show me the data in a table",
+      preamble: "Here's what I found:",
+    },
     renderComponent: ({ data, state, setState }) => {
       const tableData = data as Parameters<typeof DataTable>[0];
       return (
@@ -166,6 +192,10 @@ export const previewConfigs: Record<ComponentId, PreviewConfig<unknown, string>>
     presets: imagePresets as Record<string, PresetWithCodeGen<unknown>>,
     defaultPreset: "with-source" satisfies ImagePresetName,
     wrapper: MaxWidthWrapper,
+    chatContext: {
+      userMessage: "Generate an image of a sunset over mountains",
+      preamble: "Here's what I created:",
+    },
     renderComponent: ({ data }) => {
       const { image, responseActions } = data as { image: Parameters<typeof Image>[0]; responseActions?: unknown[] };
       return (
@@ -180,6 +210,10 @@ export const previewConfigs: Record<ComponentId, PreviewConfig<unknown, string>>
   "image-gallery": {
     presets: imageGalleryPresets as Record<string, PresetWithCodeGen<unknown>>,
     defaultPreset: "search-results" satisfies ImageGalleryPresetName,
+    chatContext: {
+      userMessage: "Find me some reference images",
+      preamble: "Here are some images I found:",
+    },
     renderComponent: ({ data }) => {
       const galleryData = data as Parameters<typeof ImageGallery>[0];
       return (
@@ -194,6 +228,10 @@ export const previewConfigs: Record<ComponentId, PreviewConfig<unknown, string>>
     presets: videoPresets as Record<string, PresetWithCodeGen<unknown>>,
     defaultPreset: "with-poster" satisfies VideoPresetName,
     wrapper: MaxWidthWrapper,
+    chatContext: {
+      userMessage: "Find that video tutorial",
+      preamble: "Here's the video:",
+    },
     renderComponent: ({ data }) => {
       const { video, responseActions } = data as { video: Parameters<typeof Video>[0]; responseActions?: unknown[] };
       return (
@@ -209,6 +247,10 @@ export const previewConfigs: Record<ComponentId, PreviewConfig<unknown, string>>
     presets: audioPresets as Record<string, PresetWithCodeGen<unknown>>,
     defaultPreset: "with-artwork" satisfies AudioPresetName,
     wrapper: MaxWidthSmWrapper,
+    chatContext: {
+      userMessage: "Play that song we talked about",
+      preamble: "Here it is:",
+    },
     renderComponent: ({ data }) => {
       const { audio, responseActions } = data as { audio: Parameters<typeof Audio>[0]; responseActions?: unknown[] };
       return (
@@ -224,6 +266,10 @@ export const previewConfigs: Record<ComponentId, PreviewConfig<unknown, string>>
     presets: linkPreviewPresets as Record<string, PresetWithCodeGen<unknown>>,
     defaultPreset: "with-image" satisfies LinkPreviewPresetName,
     wrapper: MaxWidthWrapper,
+    chatContext: {
+      userMessage: "Find that article from earlier",
+      preamble: "Was it this one?",
+    },
     renderComponent: ({ data }) => {
       const { linkPreview, responseActions } = data as { linkPreview: Parameters<typeof LinkPreview>[0]; responseActions?: unknown[] };
       return (
@@ -239,6 +285,10 @@ export const previewConfigs: Record<ComponentId, PreviewConfig<unknown, string>>
     presets: optionListPresets as Record<string, PresetWithCodeGen<unknown>>,
     defaultPreset: "max-selections" satisfies OptionListPresetName,
     wrapper: MaxWidthWrapper,
+    chatContext: {
+      userMessage: "Help me pick between these options",
+      preamble: "What sounds good?",
+    },
     renderComponent: ({ data, state, setState }) => {
       const listData = data as Parameters<typeof OptionList>[0];
       return (
@@ -259,6 +309,10 @@ export const previewConfigs: Record<ComponentId, PreviewConfig<unknown, string>>
     presets: orderSummaryPresets as Record<string, PresetWithCodeGen<unknown>>,
     defaultPreset: "default" satisfies OrderSummaryPresetName,
     wrapper: MaxWidthWrapper,
+    chatContext: {
+      userMessage: "Place that order we discussed",
+      preamble: "Here's the order summary for your review:",
+    },
     renderComponent: ({ data }) => {
       const orderData = data as Parameters<typeof OrderSummary>[0];
       return (
@@ -272,11 +326,19 @@ export const previewConfigs: Record<ComponentId, PreviewConfig<unknown, string>>
   plan: {
     presets: planPresets as Record<string, PresetWithCodeGen<unknown>>,
     defaultPreset: "simple" satisfies PlanPresetName,
+    chatContext: {
+      userMessage: "Help me plan out this project",
+      preamble: "Here's what I'm working on:",
+    },
     renderComponent: ({ data }) => <Plan {...(data as Parameters<typeof Plan>[0])} />,
   },
   "item-carousel": {
     presets: itemCarouselPresets as Record<string, PresetWithCodeGen<unknown>>,
     defaultPreset: "recommendations" satisfies ItemCarouselPresetName,
+    chatContext: {
+      userMessage: "What should I listen to right now?",
+      preamble: "Here are some recommendations:",
+    },
     renderComponent: ({ data }) => (
       <ItemCarousel
         {...(data as Parameters<typeof ItemCarousel>[0])}
@@ -288,6 +350,10 @@ export const previewConfigs: Record<ComponentId, PreviewConfig<unknown, string>>
   terminal: {
     presets: terminalPresets as Record<string, PresetWithCodeGen<unknown>>,
     defaultPreset: "success" satisfies TerminalPresetName,
+    chatContext: {
+      userMessage: "Run the tests",
+      preamble: "Running tests...",
+    },
     renderComponent: ({ data }) => (
       <Terminal
         {...(data as Parameters<typeof Terminal>[0])}

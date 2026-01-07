@@ -265,6 +265,7 @@ export function Plan({
               confirmTimeout={resolvedFooterActions.confirmTimeout}
               onAction={(id) => onResponseAction?.(id)}
               onBeforeAction={onBeforeResponseAction}
+              className="w-full"
             />
           </CardFooter>
         )}

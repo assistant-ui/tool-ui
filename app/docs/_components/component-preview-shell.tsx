@@ -3,7 +3,7 @@
 import { memo, useCallback, useState, type ReactNode } from "react";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import type { ImperativePanelGroupHandle } from "react-resizable-panels";
-import { Check, Code, Copy, Eye } from "lucide-react";
+import { Check, Code, Copy, Eye, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { cn } from "@/lib/ui/cn";
@@ -13,7 +13,7 @@ import { useCopyToClipboard } from "@/components/tool-ui/shared";
 const PREVIEW_MIN_WIDTH = 40;
 const PREVIEW_MAX_WIDTH = 100;
 
-type ViewMode = "preview" | "code";
+type ViewMode = "canvas" | "chat" | "code";
 
 function ViewModeToggle({
   value,
@@ -28,19 +28,26 @@ function ViewModeToggle({
       value={value}
       onValueChange={(v) => v && onValueChange(v as ViewMode)}
       size="sm"
-      className="bg-background shadow-sm"
+      className="bg-primary/5 rounded-lg p-[3px]"
     >
       <ToggleGroupItem
-        value="preview"
-        aria-label="View preview"
-        className="data-[state=on]:bg-foreground data-[state=on]:text-background"
+        value="canvas"
+        aria-label="View canvas"
+        className="text-muted-foreground data-[state=on]:bg-background data-[state=on]:text-foreground data-[state=on]:shadow-sm"
       >
         <Eye className="size-4" />
       </ToggleGroupItem>
       <ToggleGroupItem
+        value="chat"
+        aria-label="View in chat context"
+        className="text-muted-foreground data-[state=on]:bg-background data-[state=on]:text-foreground data-[state=on]:shadow-sm"
+      >
+        <MessageCircle className="size-4" />
+      </ToggleGroupItem>
+      <ToggleGroupItem
         value="code"
         aria-label="View code"
-        className="data-[state=on]:bg-foreground data-[state=on]:text-background"
+        className="text-muted-foreground data-[state=on]:bg-background data-[state=on]:text-foreground data-[state=on]:shadow-sm"
       >
         <Code className="size-4" />
       </ToggleGroupItem>
@@ -98,6 +105,7 @@ const ResizablePreviewArea = memo(function ResizablePreviewArea({
 interface ComponentPreviewShellProps {
   sidebar: ReactNode;
   preview: ReactNode;
+  chatPanel: ReactNode;
   codePanel: ReactNode;
   code: string;
 }
@@ -107,10 +115,11 @@ const COPY_ID = "code-panel";
 export function ComponentPreviewShell({
   sidebar,
   preview,
+  chatPanel,
   codePanel,
   code,
 }: ComponentPreviewShellProps) {
-  const [viewMode, setViewMode] = useState<ViewMode>("preview");
+  const [viewMode, setViewMode] = useState<ViewMode>("canvas");
   const { copiedId, copy } = useCopyToClipboard();
   const copied = copiedId === COPY_ID;
   const { panelGroupRef, handleLayout } = useResponsivePreview({
@@ -155,7 +164,7 @@ export function ComponentPreviewShell({
             "border lg:mr-4 lg:mb-4 lg:rounded-lg lg:border-l",
           )}
         >
-          {viewMode === "preview" && (
+          {viewMode === "canvas" && (
             <div
               className="bg-dot-grid pointer-events-none absolute inset-0 z-0 dark:opacity-60"
               aria-hidden="true"
@@ -202,12 +211,10 @@ export function ComponentPreviewShell({
             className={cn(
               "scrollbar-subtle relative z-10",
               "flex min-h-0 min-w-0 flex-1",
-              viewMode === "preview"
-                ? "items-start justify-center overflow-y-auto"
-                : "flex-col",
+              viewMode === "code" ? "flex-col" : "items-start justify-center overflow-y-auto",
             )}
           >
-            {viewMode === "preview" ? (
+            {viewMode === "canvas" && (
               <div className="relative h-fit w-full p-4 pt-12 lg:pt-16">
                 <ResizablePreviewArea
                   panelGroupRef={panelGroupRef}
@@ -216,9 +223,13 @@ export function ComponentPreviewShell({
                   {preview}
                 </ResizablePreviewArea>
               </div>
-            ) : (
-              codePanel
             )}
+            {viewMode === "chat" && (
+              <div className="relative h-fit w-full p-4 pt-12 lg:pt-16">
+                <div className="mx-auto max-w-2xl">{chatPanel}</div>
+              </div>
+            )}
+            {viewMode === "code" && codePanel}
           </div>
         </div>
       </div>

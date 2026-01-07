@@ -198,7 +198,7 @@ function ItemCarouselHeader({
   if (!title && !description) return null;
 
   return (
-    <div className="border-border/60 border-b px-4 pt-4 pb-3">
+    <div className="px-4 pt-4 pb-1">
       {title && (
         <h3 className="text-[15px] leading-tight font-semibold tracking-tight">
           {title}

@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useSearchParams, usePathname, useRouter } from "next/navigation";
 import { ComponentPreviewShell } from "../component-preview-shell";
+import { ChatContextPreview } from "../chat-context-preview";
 import { XPost } from "@/components/tool-ui/x-post";
 import { InstagramPost } from "@/components/tool-ui/instagram-post";
 import { LinkedInPost } from "@/components/tool-ui/linkedin-post";
@@ -76,7 +77,7 @@ function PlatformSelector({
         value={currentPlatform}
         onValueChange={(value) => onSelectPlatform(value as Platform)}
       >
-        <TabsList className="w-full bg-transparent">
+        <TabsList className="w-full bg-primary/5">
           <TabsTrigger value="x" className="flex-1">
             X
           </TabsTrigger>
@@ -139,7 +140,7 @@ function PresetSelector({
             <span
               aria-hidden="true"
               data-selected={currentPreset === preset}
-              className="bg-foreground absolute top-2.5 -left-4.5 h-0 w-1 -translate-y-1/2 transform-gpu rounded-full opacity-0 transition-[height,opacity,transform] delay-100 duration-200 ease-in-out data-[selected=true]:h-5 data-[selected=true]:opacity-100"
+              className="bg-foreground absolute top-2.5 -left-4.5 h-5 w-1 origin-center -translate-y-1/2 scale-y-0 transform-gpu rounded-full opacity-0 transition-[opacity,transform] delay-100 duration-200 ease-out data-[selected=true]:scale-y-100 data-[selected=true]:opacity-100"
             />
           </ItemContent>
         </Item>
@@ -263,6 +264,15 @@ export function SocialPostPreview() {
     </div>
   );
 
+  const chatPanel = (
+    <ChatContextPreview
+      userMessage="What are the trending posts about AI on social media right now?"
+      preamble="Here's a popular post I found:"
+    >
+      {previewContent}
+    </ChatContextPreview>
+  );
+
   return (
     <ComponentPreviewShell
       sidebar={
@@ -279,6 +289,7 @@ export function SocialPostPreview() {
         </>
       }
       preview={previewContent}
+      chatPanel={chatPanel}
       codePanel={
         <div className="text-muted-foreground flex h-full items-center justify-center">
           Code panel coming soon

@@ -109,7 +109,7 @@ function Header({
         )}
         {createdAt && (
           <>
-            <span className="text-muted-foreground">•</span>
+            <span className="text-muted-foreground">·</span>
             <span className="text-muted-foreground text-sm">
               {formatRelativeTime(createdAt)}
             </span>
@@ -297,12 +297,10 @@ export function InstagramPost({
         <Header author={post.author} createdAt={post.createdAt} />
 
         {post.media && post.media.length > 0 && (
-          <div className="mb-4">
-            <MediaGrid media={post.media} />
-          </div>
+          <MediaGrid media={post.media} />
         )}
 
-        <div className="flex flex-col gap-2 px-3 pb-3">
+        <div className="flex flex-col gap-2 p-3">
           <PostActions
             stats={post.stats}
             onAction={(action) => onAction?.(action, post)}

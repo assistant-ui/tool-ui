@@ -281,7 +281,7 @@ function PostActions({
 }) {
   return (
     <TooltipProvider delayDuration={300}>
-      <div className="mt-3 flex items-center gap-6">
+      <div className="mt-3 flex items-center gap-4">
         <ActionButton
           icon={Heart}
           label="Like"
@@ -317,7 +317,7 @@ export function XPost({
 
   return (
     <div
-      className={cn("flex max-w-xl flex-col gap-1.5", className)}
+      className={cn("flex max-w-xl flex-col gap-3", className)}
       data-tool-ui-id={post.id}
       data-slot="x-post"
     >

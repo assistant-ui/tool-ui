@@ -1,7 +1,7 @@
 import type { SerializableTerminal } from "@/components/tool-ui/terminal";
 import type { PresetWithCodeGen } from "./types";
 
-export type TerminalPresetName = "success" | "error" | "build" | "ansiColors" | "collapsible" | "noOutput";
+export type TerminalPresetName = "success" | "error" | "build" | "ansiColors" | "collapsible" | "noOutput" | "with-actions";
 
 function escape(value: string): string {
   return value.replace(/\\/g, "\\\\").replace(/"/g, '\\"').replace(/`/g, "\\`");
@@ -146,6 +146,24 @@ Successfully built image myapp:latest`,
       exitCode: 0,
       durationMs: 12,
       cwd: "~/project",
+    } satisfies SerializableTerminal,
+    generateExampleCode: generateTerminalCode,
+  },
+  "with-actions": {
+    description: "Failed command with retry actions",
+    data: {
+      id: "terminal-preview-with-actions",
+      command: "npm run deploy",
+      stdout: "Deploying to production...",
+      stderr: `Error: Connection timeout
+Unable to reach deployment server after 30s`,
+      exitCode: 1,
+      durationMs: 30125,
+      cwd: "~/project",
+      responseActions: [
+        { id: "retry", label: "Retry", variant: "default" },
+        { id: "debug", label: "View logs", variant: "outline" },
+      ],
     } satisfies SerializableTerminal,
     generateExampleCode: generateTerminalCode,
   },

@@ -103,6 +103,8 @@ export function Image(props: ImageProps) {
     }
   };
 
+  const hasMetadata = title || hasSource;
+
   return (
     <article
       className={cn("relative w-full min-w-80 max-w-md", className)}
@@ -120,64 +122,65 @@ export function Image(props: ImageProps) {
         {isLoading ? (
           <ImageProgress />
         ) : (
-          <div
-            className={cn(
-              "bg-muted group relative w-full overflow-hidden",
-              ratio !== "auto" ? RATIO_CLASS_MAP[ratio] : "min-h-[160px]",
-              sanitizedHref && "cursor-pointer",
-            )}
-            onClick={sanitizedHref ? handleImageClick : undefined}
-            role={sanitizedHref ? "link" : undefined}
-            tabIndex={sanitizedHref ? 0 : undefined}
-            onKeyDown={
-              sanitizedHref
-                ? (e) => {
-                    if (e.key === "Enter" || e.key === " ") {
-                      e.preventDefault();
-                      handleImageClick();
-                    }
-                  }
-                : undefined
-            }
-          >
-            <img
-              src={src}
-              alt={alt}
-              loading="lazy"
-              decoding="async"
+          <>
+            <div
               className={cn(
-                "absolute inset-0 h-full w-full",
-                getFitClass(fit),
-                "transition-transform duration-300 group-hover:scale-[1.01]",
+                "bg-muted group relative w-full overflow-hidden",
+                ratio !== "auto" ? RATIO_CLASS_MAP[ratio] : "min-h-[160px]",
+                sanitizedHref && "cursor-pointer",
               )}
-            />
-            {(title || hasSource) && (
-              <>
-                <div
-                  className="pointer-events-none absolute inset-x-0 top-0 z-20 h-32 opacity-0 transition-opacity duration-200 group-hover:opacity-100"
-                  style={{ backgroundImage: OVERLAY_GRADIENT }}
-                />
-                <div className="absolute inset-x-0 top-0 z-30 flex items-start justify-between gap-3 px-5 pt-4 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
-                  <div className="flex min-w-0 flex-1 flex-col gap-2">
-                    {title && (
-                      <div className="line-clamp-2 font-semibold text-white drop-shadow-sm">
-                        {title}
-                      </div>
-                    )}
-                    {hasSource && (
-                      <SourceAttribution
-                        source={source}
-                        sourceLabel={sourceLabel}
-                        fallbackInitial={fallbackInitial}
-                        hasClickableUrl={Boolean(resolvedSourceUrl)}
-                        onSourceClick={handleSourceClick}
-                      />
-                    )}
+              onClick={sanitizedHref ? handleImageClick : undefined}
+              role={sanitizedHref ? "link" : undefined}
+              tabIndex={sanitizedHref ? 0 : undefined}
+              onKeyDown={
+                sanitizedHref
+                  ? (e) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        handleImageClick();
+                      }
+                    }
+                  : undefined
+              }
+            >
+              <img
+                src={src}
+                alt={alt}
+                loading="lazy"
+                decoding="async"
+                className={cn(
+                  "absolute inset-0 h-full w-full",
+                  getFitClass(fit),
+                  "transition-transform duration-300 group-hover:scale-[1.01]",
+                )}
+              />
+              {title && (
+                <>
+                  <div
+                    className="pointer-events-none absolute inset-x-0 top-0 z-20 h-32 opacity-0 transition-opacity duration-200 group-hover:opacity-100"
+                    style={{ backgroundImage: OVERLAY_GRADIENT }}
+                  />
+                  <div className="absolute inset-x-0 top-0 z-30 flex items-start justify-between gap-3 px-5 pt-4 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+                    <div className="line-clamp-2 font-semibold text-white drop-shadow-sm">
+                      {title}
+                    </div>
                   </div>
-                </div>
-              </>
+                </>
+              )}
+            </div>
+            {hasMetadata && (
+              <div className="flex items-center gap-3 px-4 py-3">
+                <SourceAttribution
+                  source={source}
+                  sourceLabel={sourceLabel}
+                  fallbackInitial={fallbackInitial}
+                  hasClickableUrl={Boolean(resolvedSourceUrl)}
+                  onSourceClick={handleSourceClick}
+                  title={title}
+                />
+              </div>
             )}
-          </div>
+          </>
         )}
       </div>
       {normalizedActions && (
@@ -201,6 +204,7 @@ interface SourceAttributionProps {
   fallbackInitial: string;
   hasClickableUrl: boolean;
   onSourceClick: (event: React.MouseEvent<HTMLButtonElement>) => void;
+  title?: string;
 }
 
 function SourceAttribution({
@@ -209,42 +213,52 @@ function SourceAttribution({
   fallbackInitial,
   hasClickableUrl,
   onSourceClick,
+  title,
 }: SourceAttributionProps) {
+  const hasSource = Boolean(sourceLabel || source?.iconUrl);
+
   const content = (
-    <div className="flex items-center gap-2">
+    <div className="flex min-w-0 flex-1 items-center gap-3">
       {source?.iconUrl ? (
         <img
           src={source.iconUrl}
           alt=""
           aria-hidden="true"
-          className="h-6 w-6 rounded-full object-cover"
+          className="size-8 shrink-0 rounded-full object-cover"
           loading="lazy"
           decoding="async"
         />
       ) : fallbackInitial ? (
-        <div className="flex h-6 w-6 items-center justify-center rounded-full bg-white/20 text-xs font-semibold text-white uppercase">
+        <div className="bg-muted text-muted-foreground flex size-8 shrink-0 items-center justify-center rounded-full text-xs font-semibold uppercase">
           {fallbackInitial}
         </div>
       ) : null}
-      {sourceLabel && (
-        <span className="text-sm font-medium text-white/90 drop-shadow-sm">
-          {sourceLabel}
-        </span>
-      )}
+      <div className="min-w-0 flex-1">
+        {title && (
+          <div className="text-foreground line-clamp-1 text-sm font-medium">
+            {title}
+          </div>
+        )}
+        {sourceLabel && (
+          <div className="text-muted-foreground line-clamp-1 text-xs">
+            {sourceLabel}
+          </div>
+        )}
+      </div>
     </div>
   );
 
-  if (hasClickableUrl) {
+  if (hasClickableUrl && hasSource) {
     return (
       <button
         type="button"
         onClick={onSourceClick}
-        className="inline-flex w-fit items-center gap-2 text-left focus-visible:ring-2 focus-visible:ring-white focus-visible:outline-none"
+        className="flex w-full items-center gap-3 text-left hover:opacity-80 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
       >
         {content}
       </button>
     );
   }
 
-  return <div className="inline-flex w-fit items-center gap-2">{content}</div>;
+  return <div className="flex w-full items-center gap-3">{content}</div>;
 }

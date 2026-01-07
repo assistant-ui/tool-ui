@@ -7,7 +7,8 @@ export type CodeBlockPresetName =
   | "json"
   | "bash"
   | "highlighted"
-  | "collapsible";
+  | "collapsible"
+  | "with-actions";
 
 function escape(value: string): string {
   return value.replace(/\\/g, "\\\\").replace(/"/g, '\\"').replace(/`/g, "\\`");
@@ -162,6 +163,25 @@ echo "Done!"`,
       language: "javascript",
       showLineNumbers: true,
       maxCollapsedLines: 10,
+    } satisfies SerializableCodeBlock,
+    generateExampleCode: generateCodeBlockCode,
+  },
+  "with-actions": {
+    description: "Code with response action buttons",
+    data: {
+      id: "code-block-preview-with-actions",
+      code: `# Install dependencies
+pnpm install
+
+# Run development server
+pnpm dev`,
+      language: "bash",
+      filename: "setup.sh",
+      showLineNumbers: true,
+      responseActions: [
+        { id: "copy", label: "Copy to clipboard", variant: "outline" },
+        { id: "run", label: "Run in terminal", variant: "default" },
+      ],
     } satisfies SerializableCodeBlock,
     generateExampleCode: generateCodeBlockCode,
   },

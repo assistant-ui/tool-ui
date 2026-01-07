@@ -1,7 +1,7 @@
 import type { SerializablePlan } from "@/components/tool-ui/plan";
 import type { PresetWithCodeGen } from "./types";
 
-export type PlanPresetName = "simple" | "comprehensive" | "mixed_states" | "all_complete";
+export type PlanPresetName = "simple" | "comprehensive" | "mixed_states" | "all_complete" | "with-actions";
 
 function escape(value: string): string {
   return value.replace(/\\/g, "\\\\").replace(/"/g, '\\"');
@@ -27,6 +27,13 @@ function generatePlanCode(data: SerializablePlan): string {
 
   if (data.showProgress === false) {
     props.push(`  showProgress={false}`);
+  }
+
+  if (data.responseActions && Array.isArray(data.responseActions) && data.responseActions.length > 0) {
+    props.push(
+      `  responseActions={${JSON.stringify(data.responseActions, null, 4).replace(/\n/g, "\n  ")}}`,
+    );
+    props.push(`  onResponseAction={(id) => console.log("Action:", id)}`);
   }
 
   return `<Plan\n${props.join("\n")}\n/>`;
@@ -125,6 +132,26 @@ export const planPresets: Record<PlanPresetName, PresetWithCodeGen<SerializableP
         { id: "2", label: "Deploy to production", status: "completed" },
         { id: "3", label: "Verify health endpoints", status: "completed" },
         { id: "4", label: "Update status page", status: "completed" },
+      ],
+    } satisfies SerializablePlan,
+    generateExampleCode: generatePlanCode,
+  },
+  "with-actions": {
+    description: "Plan with response action buttons",
+    data: {
+      id: "plan-with-actions",
+      title: "Refactoring Plan",
+      description: "Steps to improve code quality",
+      showProgress: false,
+      todos: [
+        { id: "1", label: "Identify duplicated code", status: "pending" },
+        { id: "2", label: "Extract shared utilities", status: "pending" },
+        { id: "3", label: "Update imports", status: "pending" },
+        { id: "4", label: "Run tests", status: "pending" },
+      ],
+      responseActions: [
+        { id: "modify", label: "Request Changes", variant: "outline" },
+        { id: "approve", label: "Approve Plan" },
       ],
     } satisfies SerializablePlan,
     generateExampleCode: generatePlanCode,

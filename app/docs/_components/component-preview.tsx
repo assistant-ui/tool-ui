@@ -2,6 +2,7 @@
 
 import { useCallback, useRef, useState } from "react";
 import { ComponentPreviewShell } from "./component-preview-shell";
+import { ChatContextPreview } from "./chat-context-preview";
 import { PresetSelector } from "./preset-selector";
 import {
   type ComponentId,
@@ -59,6 +60,15 @@ export function ComponentPreview({ componentId }: ComponentPreviewProps) {
     previewContent
   );
 
+  const chatPanel = (
+    <ChatContextPreview
+      userMessage={config.chatContext.userMessage}
+      preamble={config.chatContext.preamble}
+    >
+      {wrappedPreview}
+    </ChatContextPreview>
+  );
+
   return (
     <ComponentPreviewShell
       sidebar={
@@ -69,6 +79,7 @@ export function ComponentPreview({ componentId }: ComponentPreviewProps) {
         />
       }
       preview={wrappedPreview}
+      chatPanel={chatPanel}
       codePanel={
         <div className="code-panel-fullbleed scrollbar-subtle">
           <DynamicCodeBlock lang="tsx" code={code} />

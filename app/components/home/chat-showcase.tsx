@@ -403,6 +403,38 @@ function createSceneConfigs(): SceneConfig[] {
       toolFallbackHeight: 280,
     },
     {
+      userMessage: "Draft a review for that ramen place",
+      preamble: "Here's a draft:",
+      toolUI: (
+        <div className="w-full max-w-[600px] min-w-0">
+          <XPost
+            post={X_POST}
+            className="w-full"
+            responseActions={X_POST_ACTIONS}
+          />
+        </div>
+      ),
+      toolFallbackHeight: 480,
+    },
+    {
+      userMessage: "What should I listen to right now?",
+      preamble: "Here are some albums you might like:",
+      toolUI: (
+        <ItemCarousel
+          id="chat-showcase-item-carousel"
+          {...ITEM_CAROUSEL_DATA}
+          className="w-full max-w-[640px]"
+        />
+      ),
+      toolFallbackHeight: 320,
+    },
+    {
+      userMessage: "Run the tests for the auth module",
+      preamble: "Running tests...",
+      toolUI: <AnimatedTerminal className="w-full max-w-[560px]" />,
+      toolFallbackHeight: 200,
+    },
+    {
       userMessage: "Find me flights to Tokyo in March",
       preamble: "Here are the best options:",
       toolUI: (
@@ -418,12 +450,6 @@ function createSceneConfigs(): SceneConfig[] {
       toolFallbackHeight: 320,
     },
     {
-      userMessage: "Run the tests for the auth module",
-      preamble: "Running tests...",
-      toolUI: <AnimatedTerminal className="w-full max-w-[560px]" />,
-      toolFallbackHeight: 200,
-    },
-    {
       userMessage: "Help me find a movie for tonight",
       preamble: "What sounds good?",
       toolUI: (
@@ -433,18 +459,6 @@ function createSceneConfigs(): SceneConfig[] {
           selectionMode="multi"
           defaultValue={["comedy", "comfort"]}
           className="w-full max-w-[480px]"
-        />
-      ),
-      toolFallbackHeight: 320,
-    },
-    {
-      userMessage: "What should I listen to right now?",
-      preamble: "Here are some albums you might like:",
-      toolUI: (
-        <ItemCarousel
-          id="chat-showcase-item-carousel"
-          {...ITEM_CAROUSEL_DATA}
-          className="w-full max-w-[640px]"
         />
       ),
       toolFallbackHeight: 320,
@@ -462,32 +476,16 @@ function createSceneConfigs(): SceneConfig[] {
       toolFallbackHeight: 260,
     },
     {
-      userMessage: "What does React docs say about useEffect?",
-      preamble: "According to the official documentation:",
-      toolUI: (
-        <Citation {...CITATION} className="w-full max-w-[480px]" />
-      ),
-      toolFallbackHeight: 180,
-    },
-    {
       userMessage: "Find that physics article from Quanta",
       preamble: "Was it this one?",
       toolUI: <LinkPreview {...LINK_PREVIEW} />,
       toolFallbackHeight: 260,
     },
     {
-      userMessage: "Draft a review for that ramen place",
-      preamble: "Here's a draft:",
-      toolUI: (
-        <div className="w-full max-w-[600px] min-w-0">
-          <XPost
-            post={X_POST}
-            className="w-full"
-            responseActions={X_POST_ACTIONS}
-          />
-        </div>
-      ),
-      toolFallbackHeight: 480,
+      userMessage: "What does React docs say about useEffect?",
+      preamble: "According to the official documentation:",
+      toolUI: <Citation {...CITATION} className="w-full max-w-[480px]" />,
+      toolFallbackHeight: 180,
     },
   ];
 }

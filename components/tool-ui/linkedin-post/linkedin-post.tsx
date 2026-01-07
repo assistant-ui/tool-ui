@@ -82,7 +82,7 @@ function Header({
         {createdAt && (
           <div className="text-muted-foreground mt-0.5 flex items-center gap-1 text-xs">
             <span>{formatRelativeTime(createdAt)}</span>
-            <span>•</span>
+            <span>·</span>
             <span>Edited</span>
           </div>
         )}
@@ -272,7 +272,7 @@ export function LinkedInPost({
       data-tool-ui-id={post.id}
       data-slot="linkedin-post"
     >
-      <article className="bg-card flex flex-col gap-3 rounded-lg border p-4 shadow-sm">
+      <article className="bg-card flex flex-col gap-3 rounded-lg border p-3 shadow-sm">
         <Header author={post.author} createdAt={post.createdAt} />
         <PostBody text={post.text} />
 
