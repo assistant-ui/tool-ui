@@ -33,21 +33,21 @@ function ViewModeToggle({
       <ToggleGroupItem
         value="canvas"
         aria-label="View canvas"
-        className="text-muted-foreground data-[state=on]:bg-background data-[state=on]:text-foreground data-[state=on]:rounded-md data-[state=on]:shadow-sm"
+        className="text-muted-foreground hover:bg-transparent hover:text-primary data-[state=on]:bg-background data-[state=on]:text-foreground data-[state=on]:rounded-md data-[state=on]:shadow-sm"
       >
         <Eye className="size-4" />
       </ToggleGroupItem>
       <ToggleGroupItem
         value="chat"
         aria-label="View in chat context"
-        className="text-muted-foreground data-[state=on]:bg-background data-[state=on]:text-foreground data-[state=on]:rounded-md data-[state=on]:shadow-sm"
+        className="text-muted-foreground hover:bg-transparent hover:text-primary data-[state=on]:bg-background data-[state=on]:text-foreground data-[state=on]:rounded-md data-[state=on]:shadow-sm"
       >
         <MessageCircle className="size-4" />
       </ToggleGroupItem>
       <ToggleGroupItem
         value="code"
         aria-label="View code"
-        className="text-muted-foreground data-[state=on]:bg-background data-[state=on]:text-foreground data-[state=on]:rounded-md data-[state=on]:shadow-sm"
+        className="text-muted-foreground hover:bg-transparent hover:text-primary data-[state=on]:bg-background data-[state=on]:text-foreground data-[state=on]:rounded-md data-[state=on]:shadow-sm"
       >
         <Code className="size-4" />
       </ToggleGroupItem>
