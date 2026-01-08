@@ -77,7 +77,7 @@ export const audioPresets: Record<AudioPresetName, PresetWithCodeGen<AudioData>>
       audio: {
         id: "audio-preview-full",
         assetId: "audio-full",
-        src: "https://upload.wikimedia.org/wikipedia/commons/4/4b/Blackbird_singing_in_the_garden.ogg",
+        src: "https://cdn.pixabay.com/audio/2022/03/10/audio_4dedf5bf94.mp3",
         title: "Morning Forest",
         description: "Dawn chorus recorded in Olympic National Park",
         artwork: "https://images.unsplash.com/photo-1448375240586-882707db888b?w=400&auto=format&fit=crop",
@@ -93,7 +93,7 @@ export const audioPresets: Record<AudioPresetName, PresetWithCodeGen<AudioData>>
       audio: {
         id: "audio-preview-compact",
         assetId: "audio-compact",
-        src: "https://upload.wikimedia.org/wikipedia/commons/4/4b/Blackbird_singing_in_the_garden.ogg",
+        src: "https://cdn.pixabay.com/audio/2022/03/10/audio_4dedf5bf94.mp3",
         title: "Morning Forest",
         description: "Olympic National Park",
         artwork: "https://images.unsplash.com/photo-1448375240586-882707db888b?w=400&auto=format&fit=crop",
@@ -108,7 +108,7 @@ export const audioPresets: Record<AudioPresetName, PresetWithCodeGen<AudioData>>
       audio: {
         id: "audio-preview-actions",
         assetId: "audio-actions",
-        src: "https://upload.wikimedia.org/wikipedia/commons/4/4b/Blackbird_singing_in_the_garden.ogg",
+        src: "https://cdn.pixabay.com/audio/2022/03/10/audio_4dedf5bf94.mp3",
         title: "Morning Forest",
         description: "Dawn chorus recorded in Olympic National Park",
         artwork: "https://images.unsplash.com/photo-1448375240586-882707db888b?w=400&auto=format&fit=crop",
