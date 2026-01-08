@@ -4,7 +4,6 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion, type Transition } from "motion/react";
 import { cn } from "@/lib/ui/cn";
 import { CitationList } from "@/components/tool-ui/citation";
-import { citationPresets } from "@/lib/presets/citation";
 import { DataTable } from "@/components/tool-ui/data-table";
 import { LinkPreview } from "@/components/tool-ui/link-preview";
 import { Chart } from "@/components/tool-ui/chart";
@@ -26,6 +25,7 @@ import {
   CODE_BLOCK_DATA,
   OPTION_LIST_OPTIONS,
   ITEM_CAROUSEL_DATA,
+  LLM_CITATIONS,
 } from "@/lib/mocks/chat-showcase-data";
 
 const TIMING = {
@@ -482,12 +482,13 @@ function createSceneConfigs(): SceneConfig[] {
       toolFallbackHeight: 260,
     },
     {
-      userMessage: "When was React first released?",
-      preamble: "React was open-sourced by Facebook in May 2013.",
+      userMessage: "What was the first LLM?",
+      preamble:
+        "GPT-1, released by OpenAI in 2018, is generally considered the first large language model.",
       toolUI: (
         <CitationList
           id="showcase-citations"
-          citations={citationPresets.stacked.data.citations}
+          citations={LLM_CITATIONS}
           variant="stacked"
           className="w-full max-w-[480px]"
         />

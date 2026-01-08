@@ -6,6 +6,7 @@ import type { OptionListOption } from "@/components/tool-ui/option-list";
 import type { SerializableTerminal } from "@/components/tool-ui/terminal";
 import type { SerializableCodeBlock } from "@/components/tool-ui/code-block";
 import type { SerializableItemCarousel } from "@/components/tool-ui/item-carousel";
+import type { SerializableCitation } from "@/components/tool-ui/citation";
 
 export type Flight = {
   id: string;
@@ -231,3 +232,49 @@ export const ITEM_CAROUSEL_DATA: Omit<SerializableItemCarousel, "id"> = {
   ],
 };
 
+function favicon(domain: string, size = 32): string {
+  return `https://www.google.com/s2/favicons?domain=${domain}&sz=${size}`;
+}
+
+export const LLM_CITATIONS: SerializableCitation[] = [
+  {
+    id: "llm-citation-1",
+    href: "https://en.wikipedia.org/wiki/Large_language_model",
+    title: "Large language model - Wikipedia",
+    snippet:
+      "A large language model is a type of machine learning model designed for natural language processing tasks such as language generation.",
+    domain: "wikipedia.org",
+    favicon: favicon("wikipedia.org"),
+    type: "document",
+  },
+  {
+    id: "llm-citation-2",
+    href: "https://arxiv.org/abs/1706.03762",
+    title: "Attention Is All You Need",
+    snippet:
+      "The dominant sequence transduction models are based on complex recurrent or convolutional neural networks.",
+    domain: "arxiv.org",
+    favicon: favicon("arxiv.org"),
+    type: "article",
+  },
+  {
+    id: "llm-citation-3",
+    href: "https://openai.com/research/gpt-2",
+    title: "Better Language Models - OpenAI",
+    snippet:
+      "We've trained a large-scale unsupervised language model which generates coherent paragraphs of text.",
+    domain: "openai.com",
+    favicon: favicon("openai.com"),
+    type: "article",
+  },
+  {
+    id: "llm-citation-4",
+    href: "https://ai.google/research/pubs/pub46201",
+    title: "BERT: Pre-training of Deep Bidirectional Transformers",
+    snippet:
+      "We introduce a new language representation model called BERT, which stands for Bidirectional Encoder Representations from Transformers.",
+    domain: "ai.google",
+    favicon: favicon("ai.google"),
+    type: "article",
+  },
+];
