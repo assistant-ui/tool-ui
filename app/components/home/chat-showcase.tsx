@@ -482,8 +482,8 @@ function createSceneConfigs(): SceneConfig[] {
       toolFallbackHeight: 260,
     },
     {
-      userMessage: "How do I manage state in React?",
-      preamble: "Here's an overview with sources:",
+      userMessage: "When was React first released?",
+      preamble: "React was open-sourced by Facebook in May 2013.",
       toolUI: (
         <CitationList
           id="showcase-citations"
