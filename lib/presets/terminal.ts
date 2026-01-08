@@ -127,13 +127,39 @@ Successfully built image myapp:latest`,
     description: "Long output with collapse",
     data: {
       id: "terminal-preview-collapsible",
-      command: "npm install",
-      stdout:
-        Array.from({ length: 25 }, (_, i) => `added package-${i + 1}@1.0.0`).join(
-          "\n",
-        ) + "\n\nadded 25 packages in 3.2s",
+      command: "pnpm install",
+      stdout: `Packages: +847
+++++++++++++++++++++++++++++++++++++++++++++++++++
+
+Progress: resolved 892, reused 891, downloaded 1, added 847, done
+
+dependencies:
++ @radix-ui/react-dialog 1.1.4
++ @radix-ui/react-dropdown-menu 2.1.4
++ @radix-ui/react-popover 1.1.4
++ @radix-ui/react-select 2.1.4
++ @radix-ui/react-tabs 1.1.2
++ @radix-ui/react-tooltip 1.1.6
++ class-variance-authority 0.7.1
++ clsx 2.1.1
++ lucide-react 0.468.0
++ next 15.1.3
++ react 19.0.0
++ react-dom 19.0.0
++ tailwind-merge 2.6.0
++ tailwindcss-animate 1.0.7
++ zod 3.24.1
+
+devDependencies:
++ @types/node 22.10.5
++ @types/react 19.0.2
++ eslint 9.17.0
++ prettier 3.4.2
++ typescript 5.7.2
+
+Done in 4.8s`,
       exitCode: 0,
-      durationMs: 3200,
+      durationMs: 4800,
       maxCollapsedLines: 8,
     } satisfies SerializableTerminal,
     generateExampleCode: generateTerminalCode,

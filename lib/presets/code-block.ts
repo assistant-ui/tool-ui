@@ -156,11 +156,44 @@ echo "Done!"`,
     description: "Long code with collapse/expand",
     data: {
       id: "code-block-preview-collapsible",
-      code: Array.from(
-        { length: 30 },
-        (_, i) => `console.log("Line ${i + 1}");`,
-      ).join("\n"),
-      language: "javascript",
+      code: `import { z } from "zod";
+
+export const UserSchema = z.object({
+  id: z.string().uuid(),
+  email: z.string().email(),
+  name: z.string().min(1).max(100),
+  role: z.enum(["admin", "member", "guest"]),
+  createdAt: z.coerce.date(),
+  updatedAt: z.coerce.date(),
+  profile: z.object({
+    avatar: z.string().url().optional(),
+    bio: z.string().max(500).optional(),
+    location: z.string().optional(),
+    website: z.string().url().optional(),
+  }).optional(),
+  preferences: z.object({
+    theme: z.enum(["light", "dark", "system"]).default("system"),
+    notifications: z.object({
+      email: z.boolean().default(true),
+      push: z.boolean().default(false),
+      marketing: z.boolean().default(false),
+    }),
+    locale: z.string().default("en-US"),
+    timezone: z.string().default("UTC"),
+  }),
+});
+
+export type User = z.infer<typeof UserSchema>;
+
+export const CreateUserSchema = UserSchema.omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export type CreateUser = z.infer<typeof CreateUserSchema>;`,
+      language: "typescript",
+      filename: "user-schema.ts",
       showLineNumbers: true,
       maxCollapsedLines: 10,
     } satisfies SerializableCodeBlock,

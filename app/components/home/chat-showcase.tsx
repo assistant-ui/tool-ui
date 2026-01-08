@@ -398,12 +398,12 @@ function createSceneConfigs(): SceneConfig[] {
     },
     {
       userMessage: "Find me a birthday gift for Sarah",
-      preamble: "On it! Let me look into some options.",
+      preamble: "Let me look into some options.",
       toolUI: <AnimatedPlan className="w-full max-w-[480px]" />,
       toolFallbackHeight: 280,
     },
     {
-      userMessage: "Draft a review for that ramen place",
+      userMessage: "Help me announce my new React library",
       preamble: "Here's a draft:",
       toolUI: (
         <div className="w-full max-w-[600px] min-w-0">
@@ -482,8 +482,8 @@ function createSceneConfigs(): SceneConfig[] {
       toolFallbackHeight: 260,
     },
     {
-      userMessage: "What does React docs say about useEffect?",
-      preamble: "According to the official documentation:",
+      userMessage: "Find the useEffect docs",
+      preamble: "Here's the reference:",
       toolUI: <Citation {...CITATION} className="w-full max-w-[480px]" />,
       toolFallbackHeight: 180,
     },

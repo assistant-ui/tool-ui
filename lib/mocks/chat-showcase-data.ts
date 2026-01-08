@@ -97,12 +97,12 @@ export const LINK_PREVIEW: SerializableLinkPreview = {
 export const X_POST: XPostData = {
   id: "chat-showcase-x-post",
   author: {
-    name: "Noodle Enthusiast",
-    handle: "ramenlover",
+    name: "Alex Chen",
+    handle: "alexchendev",
     avatarUrl:
       "https://images.unsplash.com/photo-1599566150163-29194dcaad36?auto=format&fit=crop&q=80&w=1200",
   },
-  text: "Finally tried Tsujita LA and wow 🍜\n\nThe tsukemen broth is impossibly rich—thick, porky, with this subtle citrus note. Noodles have the perfect chew. Worth the 45-minute wait.\n\nOrdering extra chashu next time. This is the one.",
+  text: "Just shipped something I've been working on for a while: react-aria-tree\n\nA headless tree view component with full keyboard navigation, multi-select, drag & drop, and virtualization built in.\n\nNo styling opinions. Accessible by default.\n\ngithub.com/alexchen/react-aria-tree",
   createdAt: "2025-11-10T14:30:00.000Z",
 };
 

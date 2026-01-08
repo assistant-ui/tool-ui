@@ -1,0 +1,49 @@
+{
+  "includeCoAuthoredBy": true,
+  "permissions": {
+    "deny": [
+      "**/.env*",
+      "**/*.env",
+      "**/secrets/**",
+      "**/*secret*",
+      "**/*credentials*",
+      "**/node_modules/**",
+      "**/.next/**",
+      "**/dist/**",
+      "**/build/**",
+      "**/*.log"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash(git add*)",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "pnpm lint:fix && echo '✓ Linting complete'"
+          }
+        ]
+      },
+      {
+        "matcher": "Bash(git commit*)",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "if git diff --cached | grep -iE '(api_key|secret|password|token)=\\S+'; then echo '⚠️  WARNING: Possible secrets detected in staged files!' && exit 1; fi"
+          }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo 'export NODE_ENV=development' >> $CLAUDE_ENV_FILE && echo '✓ Environment configured'"
+          }
+        ]
+      }
+    ]
+  }
+}
