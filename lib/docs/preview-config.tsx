@@ -245,17 +245,18 @@ export const previewConfigs: Record<ComponentId, PreviewConfig<unknown, string>>
   },
   audio: {
     presets: audioPresets as Record<string, PresetWithCodeGen<unknown>>,
-    defaultPreset: "with-artwork" satisfies AudioPresetName,
+    defaultPreset: "full" satisfies AudioPresetName,
     wrapper: MaxWidthSmWrapper,
     chatContext: {
       userMessage: "Play that song we talked about",
       preamble: "Here it is:",
     },
     renderComponent: ({ data }) => {
-      const { audio, responseActions } = data as { audio: Parameters<typeof Audio>[0]; responseActions?: unknown[] };
+      const { audio, variant, responseActions } = data as { audio: Parameters<typeof Audio>[0]; variant?: "full" | "compact"; responseActions?: unknown[] };
       return (
         <Audio
           {...audio}
+          variant={variant}
           responseActions={responseActions as Parameters<typeof Audio>[0]["responseActions"]}
           onResponseAction={(actionId) => console.log("Response action:", actionId)}
         />

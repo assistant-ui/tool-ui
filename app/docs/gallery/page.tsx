@@ -89,7 +89,7 @@ export default function ComponentsGalleryPage() {
           </div>
 
           <div className="mb-5 flex break-inside-avoid justify-center 2xl:mb-5">
-            <Audio {...audioPresets["with-artwork"].data.audio} />
+            <Audio {...audioPresets["full"].data.audio} />
           </div>
 
           <div className="mb-5 flex break-inside-avoid justify-center 2xl:mb-5">

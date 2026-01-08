@@ -35,3 +35,5 @@ export type SerializableAudio = z.infer<typeof SerializableAudioSchema>;
 export function parseSerializableAudio(input: unknown): SerializableAudio {
   return parseWithSchema(SerializableAudioSchema, input, "Audio");
 }
+
+export type AudioVariant = "full" | "compact";

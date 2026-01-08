@@ -2,11 +2,11 @@
 "use client";
 
 import * as React from "react";
-import { Pause, Play, Volume2, VolumeX } from "lucide-react";
+import { Pause, Play } from "lucide-react";
 import { cn, Button, Slider } from "./_adapter";
 import { ActionButtons, normalizeActionsConfig, type ActionsProp } from "../shared";
 import { AudioProvider, useAudio } from "./context";
-import type { SerializableAudio } from "./schema";
+import type { SerializableAudio, AudioVariant } from "./schema";
 
 const FALLBACK_LOCALE = "en-US";
 
@@ -17,32 +17,8 @@ function formatTime(seconds: number): string {
   return `${mins}:${secs.toString().padStart(2, "0")}`;
 }
 
-function AudioProgress() {
-  return (
-    <div className="flex w-full flex-col gap-4 p-4 motion-safe:animate-pulse">
-      <div className="flex items-center gap-4">
-        <div className="bg-muted size-16 shrink-0 rounded-md" />
-        <div className="flex flex-1 flex-col gap-2">
-          <div className="bg-muted h-4 w-3/4 rounded" />
-          <div className="bg-muted h-3 w-1/2 rounded" />
-        </div>
-      </div>
-      <div className="flex items-center gap-3">
-        <div className="bg-muted size-9 shrink-0 rounded-full" />
-        <div className="flex flex-1 flex-col gap-1">
-          <div className="bg-muted h-1.5 w-full rounded-full" />
-          <div className="flex justify-between">
-            <div className="bg-muted h-3 w-8 rounded" />
-            <div className="bg-muted h-3 w-8 rounded" />
-          </div>
-        </div>
-        <div className="bg-muted size-8 shrink-0 rounded-full" />
-      </div>
-    </div>
-  );
-}
-
 export interface AudioProps extends SerializableAudio {
+  variant?: AudioVariant;
   className?: string;
   isLoading?: boolean;
   onMediaEvent?: (type: "play" | "pause" | "mute" | "unmute") => void;
@@ -59,8 +35,213 @@ export function Audio(props: AudioProps) {
   );
 }
 
+interface PlayerControls {
+  isPlaying: boolean;
+  currentTime: number;
+  duration: number;
+  onPlayPause: () => void;
+  onSeek: (value: number[]) => void;
+  onSeekStart: () => void;
+  onSeekEnd: () => void;
+}
+
+function FullProgress() {
+  return (
+    <div className="flex w-full flex-col motion-safe:animate-pulse">
+      <div className="bg-muted aspect-[4/3] w-full" />
+      <div className="flex flex-col gap-5 p-4">
+        <div className="space-y-0.5">
+          <div className="bg-muted h-5 w-3/4 rounded" />
+          <div className="bg-muted h-4 w-1/2 rounded" />
+        </div>
+        <div className="flex items-start gap-3">
+          <div className="flex flex-1 flex-col gap-2">
+            <div className="bg-muted h-1.5 w-full rounded-full" />
+            <div className="flex justify-between">
+              <div className="bg-muted h-3 w-8 rounded" />
+              <div className="bg-muted h-3 w-8 rounded" />
+            </div>
+          </div>
+          <div className="bg-muted -mt-4 size-10 shrink-0 rounded-full" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function CompactProgress() {
+  return (
+    <div className="relative flex w-full items-center gap-3 overflow-hidden p-3 motion-safe:animate-pulse">
+      <div className="bg-muted/30 absolute inset-0" />
+      <div className="bg-muted/60 relative size-12 shrink-0 rounded-lg" />
+      <div className="relative flex min-w-0 flex-1 flex-col justify-center gap-1">
+        <div className="bg-muted/70 h-4 w-3/4 rounded" />
+        <div className="bg-muted/50 h-3 w-1/2 rounded" />
+        <div className="mt-0.5 flex items-center gap-2">
+          <div className="bg-muted/40 h-1 flex-1 rounded-full" />
+          <div className="bg-muted/50 h-2.5 w-6 rounded" />
+        </div>
+      </div>
+      <div className="bg-muted/60 relative size-10 shrink-0 rounded-full" />
+    </div>
+  );
+}
+
+interface FullPlayerProps {
+  artwork?: string;
+  title?: string;
+  description?: string;
+  controls: PlayerControls;
+}
+
+function FullPlayer({ artwork, title, description, controls }: FullPlayerProps) {
+  return (
+    <div className="flex w-full flex-col">
+      {artwork && (
+        <div className="bg-muted relative aspect-[4/3] w-full overflow-hidden">
+          <img
+            src={artwork}
+            alt=""
+            aria-hidden="true"
+            loading="lazy"
+            decoding="async"
+            className="absolute inset-0 h-full w-full object-cover"
+          />
+        </div>
+      )}
+      <div className="flex flex-col gap-5 p-4">
+        {(title || description) && (
+          <div className="space-y-0.5">
+            {title && (
+              <div className="text-foreground line-clamp-2 font-semibold leading-snug">
+                {title}
+              </div>
+            )}
+            {description && (
+              <div className="text-muted-foreground line-clamp-2 text-sm leading-snug">
+                {description}
+              </div>
+            )}
+          </div>
+        )}
+        <div className="flex items-start gap-3">
+          <div className="flex flex-1 flex-col gap-2">
+            <Slider
+              value={[controls.currentTime]}
+              max={controls.duration || 100}
+              step={0.1}
+              onValueChange={controls.onSeek}
+              onPointerDown={controls.onSeekStart}
+              onPointerUp={controls.onSeekEnd}
+              className="cursor-pointer [&_[data-slot=range]]:bg-foreground [&_[data-slot=thumb]]:size-3 [&_[data-slot=thumb]]:border-2 [&_[data-slot=thumb]]:border-background [&_[data-slot=thumb]]:bg-foreground"
+              aria-label="Audio progress"
+            />
+            <div className="text-muted-foreground flex items-center justify-between text-xs tabular-nums">
+              <span>{formatTime(controls.currentTime)}</span>
+              <span>{formatTime(controls.duration)}</span>
+            </div>
+          </div>
+          <Button
+            variant="default"
+            size="icon"
+            onClick={controls.onPlayPause}
+            className="-mt-4 size-10 shrink-0 rounded-full"
+            aria-label={controls.isPlaying ? "Pause" : "Play"}
+          >
+            {controls.isPlaying ? (
+              <Pause className="size-4" fill="currentColor" />
+            ) : (
+              <Play className="size-4 ml-0.5" fill="currentColor" />
+            )}
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+interface CompactPlayerProps {
+  artwork?: string;
+  title?: string;
+  description?: string;
+  controls: PlayerControls;
+}
+
+function CompactPlayer({ artwork, title, description, controls }: CompactPlayerProps) {
+  const progress = controls.duration > 0
+    ? (controls.currentTime / controls.duration) * 100
+    : 0;
+
+  return (
+    <div className="relative flex w-full items-center gap-3 overflow-hidden p-3">
+      {artwork && (
+        <>
+          <img
+            src={artwork}
+            alt=""
+            aria-hidden="true"
+            className="pointer-events-none absolute -left-1/4 top-1/2 h-[200%] w-auto -translate-y-1/2 object-cover opacity-40 blur-2xl saturate-150"
+          />
+          <div className="from-card/60 to-card/90 pointer-events-none absolute inset-0 bg-gradient-to-r" />
+        </>
+      )}
+      {artwork && (
+        <div className="ring-background/20 relative size-12 shrink-0 overflow-hidden rounded-lg shadow-lg ring-1">
+          <img
+            src={artwork}
+            alt=""
+            aria-hidden="true"
+            loading="lazy"
+            decoding="async"
+            className="absolute inset-0 h-full w-full object-cover"
+          />
+        </div>
+      )}
+      <div className="relative flex min-w-0 flex-1 flex-col justify-center">
+        {title && (
+          <div className="text-foreground truncate text-sm font-semibold leading-tight">
+            {title}
+          </div>
+        )}
+        {description && (
+          <div className="text-muted-foreground truncate text-xs leading-tight">
+            {description}
+          </div>
+        )}
+        {controls.duration > 0 && (
+          <div className="mt-1 flex items-center gap-2">
+            <div className="bg-foreground/20 relative h-1 flex-1 overflow-hidden rounded-full">
+              <div
+                className="bg-foreground absolute inset-y-0 left-0 rounded-full transition-all duration-150"
+                style={{ width: `${progress}%` }}
+              />
+            </div>
+            <span className="text-muted-foreground text-[10px] tabular-nums">
+              {formatTime(controls.currentTime)}
+            </span>
+          </div>
+        )}
+      </div>
+      <Button
+        variant="default"
+        size="icon"
+        onClick={controls.onPlayPause}
+        className="relative size-10 shrink-0 rounded-full shadow-md"
+        aria-label={controls.isPlaying ? "Pause" : "Play"}
+      >
+        {controls.isPlaying ? (
+          <Pause className="size-4" fill="currentColor" />
+        ) : (
+          <Play className="size-4 ml-0.5" fill="currentColor" />
+        )}
+      </Button>
+    </div>
+  );
+}
+
 function AudioInner(props: AudioProps) {
   const {
+    variant = "full",
     className,
     isLoading,
     onMediaEvent,
@@ -95,14 +276,6 @@ function AudioInner(props: AudioProps) {
   React.useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
-    if (audio.muted !== state.muted) {
-      audio.muted = state.muted;
-    }
-  }, [state.muted]);
-
-  React.useEffect(() => {
-    const audio = audioRef.current;
-    if (!audio) return;
     if (state.playing && audio.paused) {
       void audio.play().catch(() => undefined);
     } else if (!state.playing && !audio.paused) {
@@ -125,12 +298,6 @@ function AudioInner(props: AudioProps) {
     }
   };
 
-  const handleMuteToggle = () => {
-    const audio = audioRef.current;
-    if (!audio) return;
-    audio.muted = !audio.muted;
-  };
-
   const handleSeek = (value: number[]) => {
     const audio = audioRef.current;
     if (!audio) return;
@@ -147,9 +314,25 @@ function AudioInner(props: AudioProps) {
     setIsSeeking(false);
   };
 
+  const controls: PlayerControls = {
+    isPlaying: state.playing,
+    currentTime,
+    duration,
+    onPlayPause: handlePlayPause,
+    onSeek: handleSeek,
+    onSeekStart: handleSeekStart,
+    onSeekEnd: handleSeekEnd,
+  };
+
+  const isCompact = variant === "compact";
+
   return (
     <article
-      className={cn("relative w-full min-w-80 max-w-sm", className)}
+      className={cn(
+        "@container/actions relative w-full",
+        isCompact ? "min-w-72 max-w-md" : "min-w-52 max-w-sm",
+        className,
+      )}
       lang={locale}
       aria-busy={isLoading}
       data-tool-ui-id={id}
@@ -157,118 +340,54 @@ function AudioInner(props: AudioProps) {
     >
       <div
         className={cn(
-          "group @container relative isolate flex w-full min-w-0 flex-col overflow-hidden rounded-xl",
-          "border border-border bg-card text-sm shadow-xs",
+          "group @container relative isolate flex w-full min-w-0 flex-col overflow-hidden",
+          "border-border bg-card border text-sm shadow-xs",
+          "rounded-xl",
         )}
       >
         {isLoading ? (
-          <AudioProgress />
+          isCompact ? <CompactProgress /> : <FullProgress />
+        ) : isCompact ? (
+          <CompactPlayer
+            artwork={artwork}
+            title={title}
+            description={description}
+            controls={controls}
+          />
         ) : (
-          <div className="flex w-full flex-col gap-4 p-4">
-            <div className="flex items-center gap-4">
-              {artwork && (
-                <div className="bg-muted relative size-16 shrink-0 overflow-hidden rounded-md shadow-sm">
-                  <img
-                    src={artwork}
-                    alt=""
-                    aria-hidden="true"
-                    loading="lazy"
-                    decoding="async"
-                    className="absolute inset-0 h-full w-full object-cover"
-                  />
-                </div>
-              )}
-              <div className="min-w-0 flex-1 space-y-0.5">
-                {title && (
-                  <div className="text-foreground line-clamp-2 text-[15px] leading-tight font-semibold">
-                    {title}
-                  </div>
-                )}
-                {description && (
-                  <div className="text-muted-foreground line-clamp-2 text-sm">
-                    {description}
-                  </div>
-                )}
-              </div>
-            </div>
-
-            <div className="flex items-center gap-3">
-              <Button
-                variant="default"
-                size="icon"
-                onClick={handlePlayPause}
-                className="size-9 shrink-0 rounded-full"
-                aria-label={state.playing ? "Pause" : "Play"}
-              >
-                {state.playing ? (
-                  <Pause className="size-4" fill="currentColor" />
-                ) : (
-                  <Play className="size-4 ml-0.5" fill="currentColor" />
-                )}
-              </Button>
-              <div className="flex flex-1 flex-col gap-1">
-                <Slider
-                  value={[currentTime]}
-                  max={duration || 100}
-                  step={0.1}
-                  onValueChange={handleSeek}
-                  onPointerDown={handleSeekStart}
-                  onPointerUp={handleSeekEnd}
-                  className="cursor-pointer [&_[data-slot=thumb]]:bg-primary [&_[data-slot=thumb]]:border-primary"
-                  aria-label="Audio progress"
-                />
-                <div className="flex items-center justify-between text-xs text-muted-foreground">
-                  <span>{formatTime(currentTime)}</span>
-                  <span>{formatTime(duration)}</span>
-                </div>
-              </div>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={handleMuteToggle}
-                className="size-8 shrink-0"
-                aria-label={state.muted ? "Unmute" : "Mute"}
-              >
-                {state.muted ? (
-                  <VolumeX className="size-4" />
-                ) : (
-                  <Volume2 className="size-4" />
-                )}
-              </Button>
-            </div>
-
-            <audio
-              ref={audioRef}
-              src={src}
-              preload="metadata"
-              className="hidden"
-              onPlay={() => {
-                setState({ playing: true });
-                onMediaEvent?.("play");
-              }}
-              onPause={() => {
-                setState({ playing: false });
-                onMediaEvent?.("pause");
-              }}
-              onVolumeChange={(event) => {
-                const target = event.currentTarget;
-                setState({ muted: target.muted });
-                onMediaEvent?.(target.muted ? "mute" : "unmute");
-              }}
-              onTimeUpdate={(event) => {
-                if (!isSeeking) {
-                  setCurrentTime(event.currentTarget.currentTime);
-                }
-              }}
-              onLoadedMetadata={(event) => {
-                setDuration(event.currentTarget.duration);
-              }}
-              onDurationChange={(event) => {
-                setDuration(event.currentTarget.duration);
-              }}
-            />
-          </div>
+          <FullPlayer
+            artwork={artwork}
+            title={title}
+            description={description}
+            controls={controls}
+          />
         )}
+
+        <audio
+          ref={audioRef}
+          src={src}
+          preload="metadata"
+          className="hidden"
+          onPlay={() => {
+            setState({ playing: true });
+            onMediaEvent?.("play");
+          }}
+          onPause={() => {
+            setState({ playing: false });
+            onMediaEvent?.("pause");
+          }}
+          onTimeUpdate={(event) => {
+            if (!isSeeking) {
+              setCurrentTime(event.currentTarget.currentTime);
+            }
+          }}
+          onLoadedMetadata={(event) => {
+            setDuration(event.currentTarget.duration);
+          }}
+          onDurationChange={(event) => {
+            setDuration(event.currentTarget.duration);
+          }}
+        />
       </div>
       {normalizedActions && (
         <div className="@container/actions mt-3">

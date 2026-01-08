@@ -1,9 +1,10 @@
-import type { SerializableAudio } from "@/components/tool-ui/audio";
+import type { SerializableAudio, AudioVariant } from "@/components/tool-ui/audio";
 import type { SerializableAction } from "@/components/tool-ui/shared";
 import type { PresetWithCodeGen } from "./types";
 
 interface AudioData {
   audio: SerializableAudio;
+  variant?: AudioVariant;
   responseActions?: SerializableAction[];
 }
 
@@ -16,12 +17,16 @@ function formatObject(value: Record<string, unknown>): string {
 }
 
 function generateAudioCode(data: AudioData): string {
-  const { audio, responseActions } = data;
+  const { audio, variant, responseActions } = data;
   const props: string[] = [];
 
   props.push(`  id="${audio.id}"`);
   props.push(`  assetId="${audio.assetId}"`);
   props.push(`  src="${audio.src}"`);
+
+  if (variant) {
+    props.push(`  variant="${variant}"`);
+  }
 
   if (audio.title) {
     props.push(`  title="${escape(audio.title)}"`);
@@ -63,57 +68,55 @@ function generateAudioCode(data: AudioData): string {
   return `<Audio\n${props.join("\n")}\n/>`;
 }
 
-export type AudioPresetName = "basic" | "with-artwork" | "with-actions";
+export type AudioPresetName = "full" | "compact" | "with-actions";
 
 export const audioPresets: Record<AudioPresetName, PresetWithCodeGen<AudioData>> = {
-  basic: {
-    description: "Simple audio player",
+  full: {
+    description: "Portrait card with large artwork",
     data: {
       audio: {
-        id: "audio-preview-basic",
-        assetId: "audio-basic",
+        id: "audio-preview-full",
+        assetId: "audio-full",
         src: "https://samplelib.com/lib/preview/mp3/sample-6s.mp3",
-        title: "Sample audio clip",
+        title: "Neon Dreams",
+        description: "Synthwave mix for late night coding sessions",
+        artwork: "https://images.unsplash.com/photo-1614149162883-504ce4d13909?w=400&auto=format&fit=crop",
+        durationMs: 30000,
       },
     } satisfies AudioData,
     generateExampleCode: generateAudioCode,
   },
-  "with-artwork": {
-    description: "Audio with artwork thumbnail and metadata",
+  compact: {
+    description: "Condensed inline player",
     data: {
+      variant: "compact",
       audio: {
-        id: "audio-preview-artwork",
-        assetId: "audio-artwork",
+        id: "audio-preview-compact",
+        assetId: "audio-compact",
         src: "https://samplelib.com/lib/preview/mp3/sample-6s.mp3",
-        title: "Bell Labs hallway recording",
-        description: "Ambient sounds where UNIX, C, and more took shape.",
-        artwork: "https://images.unsplash.com/photo-1454165205744-3b78555e5572?w=400&auto=format&fit=crop",
-        fileSizeBytes: 215040,
+        title: "Neon Dreams",
+        description: "Synthwave mix",
+        artwork: "https://images.unsplash.com/photo-1614149162883-504ce4d13909?w=400&auto=format&fit=crop",
         durationMs: 30000,
-        createdAt: "2025-02-12T10:15:00.000Z",
-        source: {
-          label: "Archive reel",
-          iconUrl: "https://api.dicebear.com/7.x/shapes/svg?seed=reel",
-        },
       },
     } satisfies AudioData,
     generateExampleCode: generateAudioCode,
   },
   "with-actions": {
-    description: "Audio with response action buttons",
+    description: "Full player with response action buttons",
     data: {
       audio: {
         id: "audio-preview-actions",
         assetId: "audio-actions",
         src: "https://samplelib.com/lib/preview/mp3/sample-6s.mp3",
-        title: "Podcast episode",
-        description: "A deep dive into software architecture.",
-        artwork: "https://images.unsplash.com/photo-1454165205744-3b78555e5572?w=400&auto=format&fit=crop",
+        title: "The Art of Code",
+        description: "Episode 42: Building beautiful interfaces",
+        artwork: "https://images.unsplash.com/photo-1557682250-33bd709cbe85?w=400&auto=format&fit=crop",
         durationMs: 1800000,
       },
       responseActions: [
-        { id: "share", label: "Share", variant: "default" },
         { id: "download", label: "Download", variant: "secondary" },
+        { id: "share", label: "Share", variant: "default" },
       ],
     } satisfies AudioData,
     generateExampleCode: generateAudioCode,
