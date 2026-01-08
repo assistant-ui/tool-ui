@@ -111,7 +111,7 @@ export const audioPresets: Record<AudioPresetName, PresetWithCodeGen<AudioData>>
         src: "https://samplelib.com/lib/preview/mp3/sample-6s.mp3",
         title: "The Art of Code",
         description: "Episode 42: Building beautiful interfaces",
-        artwork: "https://images.unsplash.com/photo-1557682250-33bd709cbe85?w=400&auto=format&fit=crop",
+        artwork: "https://images.unsplash.com/photo-1614149162883-504ce4d13909?w=400&auto=format&fit=crop",
         durationMs: 1800000,
       },
       responseActions: [
