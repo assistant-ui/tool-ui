@@ -1,5 +1,4 @@
 import type { Column } from "@/components/tool-ui/data-table";
-import type { SerializableCitation } from "@/components/tool-ui/citation";
 import type { SerializableLinkPreview } from "@/components/tool-ui/link-preview";
 import type { SerializableChart } from "@/components/tool-ui/chart";
 import type { XPostData } from "@/components/tool-ui/x-post";
@@ -232,12 +231,3 @@ export const ITEM_CAROUSEL_DATA: Omit<SerializableItemCarousel, "id"> = {
   ],
 };
 
-export const CITATION: SerializableCitation = {
-  id: "chat-showcase-citation",
-  href: "https://react.dev/reference/react/useEffect",
-  title: "useEffect – React",
-  snippet:
-    "useEffect is a React Hook that lets you synchronize a component with an external system. Call useEffect at the top level of your component to declare an Effect.",
-  domain: "react.dev",
-  type: "document",
-};

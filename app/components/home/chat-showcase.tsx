@@ -3,7 +3,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion, type Transition } from "motion/react";
 import { cn } from "@/lib/ui/cn";
-import { Citation } from "@/components/tool-ui/citation";
+import { CitationList } from "@/components/tool-ui/citation";
+import { citationPresets } from "@/lib/presets/citation";
 import { DataTable } from "@/components/tool-ui/data-table";
 import { LinkPreview } from "@/components/tool-ui/link-preview";
 import { Chart } from "@/components/tool-ui/chart";
@@ -25,7 +26,6 @@ import {
   CODE_BLOCK_DATA,
   OPTION_LIST_OPTIONS,
   ITEM_CAROUSEL_DATA,
-  CITATION,
 } from "@/lib/mocks/chat-showcase-data";
 
 const TIMING = {
@@ -482,10 +482,17 @@ function createSceneConfigs(): SceneConfig[] {
       toolFallbackHeight: 260,
     },
     {
-      userMessage: "Find the useEffect docs",
-      preamble: "Here's the reference:",
-      toolUI: <Citation {...CITATION} className="w-full max-w-[480px]" />,
-      toolFallbackHeight: 180,
+      userMessage: "How do I manage state in React?",
+      preamble: "Here's an overview with sources:",
+      toolUI: (
+        <CitationList
+          id="showcase-citations"
+          citations={citationPresets.stacked.data.citations}
+          variant="stacked"
+          className="w-full max-w-[480px]"
+        />
+      ),
+      toolFallbackHeight: 56,
     },
   ];
 }
