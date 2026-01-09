@@ -79,6 +79,12 @@ export const componentsRegistry: ComponentMeta[] = [
     path: "/docs/order-summary",
   },
   {
+    id: "parameter-slider",
+    label: "Parameter Slider",
+    description: "Numeric parameter adjustment controls",
+    path: "/docs/parameter-slider",
+  },
+  {
     id: "plan",
     label: "Plan",
     description: "Display step-by-step task workflows",

@@ -18,6 +18,7 @@ import { linkPreviewPresets } from "@/lib/presets/link-preview";
 import { itemCarouselPresets } from "@/lib/presets/item-carousel";
 import { optionListPresets } from "@/lib/presets/option-list";
 import { orderSummaryPresets } from "@/lib/presets/order-summary";
+import { parameterSliderPresets } from "@/lib/presets/parameter-slider";
 import { planPresets } from "@/lib/presets/plan";
 import { terminalPresets } from "@/lib/presets/terminal";
 import type { Preset } from "@/lib/presets/types";
@@ -39,6 +40,7 @@ const PRESET_REGISTRY: Record<string, PresetMap> = {
   "item-carousel": itemCarouselPresets,
   "option-list": optionListPresets,
   "order-summary": orderSummaryPresets,
+  "parameter-slider": parameterSliderPresets,
   plan: planPresets,
   terminal: terminalPresets,
 };

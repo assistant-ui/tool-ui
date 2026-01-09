@@ -16,6 +16,7 @@ import { LinkPreview } from "@/components/tool-ui/link-preview";
 import { ItemCarousel } from "@/components/tool-ui/item-carousel";
 import { OptionList } from "@/components/tool-ui/option-list";
 import { OrderSummary } from "@/components/tool-ui/order-summary";
+import { ParameterSlider } from "@/components/tool-ui/parameter-slider";
 import { Plan } from "@/components/tool-ui/plan";
 import { Terminal } from "@/components/tool-ui/terminal";
 
@@ -32,6 +33,7 @@ import { linkPreviewPresets, type LinkPreviewPresetName } from "@/lib/presets/li
 import { itemCarouselPresets, type ItemCarouselPresetName } from "@/lib/presets/item-carousel";
 import { optionListPresets, type OptionListPresetName } from "@/lib/presets/option-list";
 import { orderSummaryPresets, type OrderSummaryPresetName } from "@/lib/presets/order-summary";
+import { parameterSliderPresets, type ParameterSliderPresetName } from "@/lib/presets/parameter-slider";
 import { planPresets, type PlanPresetName } from "@/lib/presets/plan";
 import { terminalPresets, type TerminalPresetName } from "@/lib/presets/terminal";
 
@@ -49,6 +51,7 @@ export type ComponentId =
   | "item-carousel"
   | "option-list"
   | "order-summary"
+  | "parameter-slider"
   | "plan"
   | "terminal";
 
@@ -81,6 +84,10 @@ function MaxWidthWrapper({ children }: { children: ReactNode }) {
 
 function MaxWidthSmWrapper({ children }: { children: ReactNode }) {
   return <div className="mx-auto w-full max-w-sm">{children}</div>;
+}
+
+function MaxWidthSmStartWrapper({ children }: { children: ReactNode }) {
+  return <div className="w-full max-w-sm">{children}</div>;
 }
 
 export const previewConfigs: Record<ComponentId, PreviewConfig<unknown, string>> = {
@@ -320,6 +327,24 @@ export const previewConfigs: Record<ComponentId, PreviewConfig<unknown, string>>
         <OrderSummary
           {...orderData}
           onResponseAction={(actionId) => console.log("Response action:", actionId)}
+        />
+      );
+    },
+  },
+  "parameter-slider": {
+    presets: parameterSliderPresets as Record<string, PresetWithCodeGen<unknown>>,
+    defaultPreset: "photo-adjustments" satisfies ParameterSliderPresetName,
+    wrapper: MaxWidthSmStartWrapper,
+    chatContext: {
+      userMessage: "Help me dial in the right settings",
+      preamble: "Here are the settings if you want to fine-tune:",
+    },
+    renderComponent: ({ data }) => {
+      const sliderData = data as Parameters<typeof ParameterSlider>[0];
+      return (
+        <ParameterSlider
+          {...sliderData}
+          onResponseAction={(actionId, values) => console.log("Action:", actionId, "Values:", values)}
         />
       );
     },

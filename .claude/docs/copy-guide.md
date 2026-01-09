@@ -47,6 +47,20 @@ The assistant preamble (the text before showing a Tool UI) should:
 - "Found a few options." (casual, helpful)
 - "Tests passed." (minimal for routine output)
 
+### Interactive vs. Delivery Components
+
+Match the preamble to the component's interaction model:
+
+| Component Type | User Role | Preamble Style | Example |
+|----------------|-----------|----------------|---------|
+| Delivery | Views results | Announcing | "Here's your spending breakdown." |
+| Interactive | Takes action | Inviting | "Here are the settings if you want to fine-tune:" |
+
+**Delivery** (charts, citations, terminal): User consumes what's shown.
+**Interactive** (sliders, option lists, approval cards): User must act on what's shown.
+
+For interactive components, avoid imperative preambles like "Adjust these:" or "Select one:"—these sound like commands. Instead, present the controls as available options: "Here are some choices:" or "Here are the settings if you'd like to dial it in:"
+
 **Weak preambles:**
 - "Here's a draft:" (too terse—what kind of draft?)
 - "On it! Let me look into some options." (too chatty for most contexts)

@@ -13,6 +13,7 @@ import { Terminal } from "@/components/tool-ui/terminal";
 import { CodeBlock } from "@/components/tool-ui/code-block";
 import { OptionList } from "@/components/tool-ui/option-list";
 import { ItemCarousel } from "@/components/tool-ui/item-carousel";
+import { ParameterSlider } from "@/components/tool-ui/parameter-slider";
 import {
   type Flight,
   TABLE_COLUMNS,
@@ -26,6 +27,7 @@ import {
   OPTION_LIST_OPTIONS,
   ITEM_CAROUSEL_DATA,
   LLM_CITATIONS,
+  PARAMETER_SLIDER_DATA,
 } from "@/lib/mocks/chat-showcase-data";
 
 const TIMING = {
@@ -429,6 +431,18 @@ function createSceneConfigs(): SceneConfig[] {
       toolFallbackHeight: 320,
     },
     {
+      userMessage: "Boost the bass a bit on this track",
+      preamble: "Here are the current EQ settings:",
+      toolUI: (
+        <ParameterSlider
+          id="chat-showcase-parameter-slider"
+          {...PARAMETER_SLIDER_DATA}
+          className="w-full max-w-[480px]"
+        />
+      ),
+      toolFallbackHeight: 240,
+    },
+    {
       userMessage: "Run the tests for the auth module",
       preamble: "Running tests...",
       toolUI: <AnimatedTerminal className="w-full max-w-[560px]" />,
@@ -498,7 +512,7 @@ function createSceneConfigs(): SceneConfig[] {
   ];
 }
 
-const SCENE_COUNT = 10;
+const SCENE_COUNT = 11;
 
 type AnimatedSceneProps = {
   config: SceneConfig;
