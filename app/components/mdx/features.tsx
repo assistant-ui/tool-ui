@@ -53,6 +53,7 @@ import {
   Grid2x2,
   Move,
   PlusCircle,
+  SlidersHorizontal,
 } from "lucide-react";
 
 const ICON_MAP: Record<string, LucideIcon> = {
@@ -108,6 +109,7 @@ const ICON_MAP: Record<string, LucideIcon> = {
   Grid2x2,
   Move,
   PlusCircle,
+  SlidersHorizontal,
 };
 
 interface FeatureGridProps {
