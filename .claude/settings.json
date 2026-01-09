@@ -41,6 +41,10 @@
           {
             "type": "command",
             "command": "echo 'export NODE_ENV=development' >> $CLAUDE_ENV_FILE && echo '✓ Environment configured'"
+          },
+          {
+            "type": "command",
+            "command": "pnpm dev > /dev/null 2>&1 & echo '✓ Dev server starting on http://localhost:3000'"
           }
         ]
       }
