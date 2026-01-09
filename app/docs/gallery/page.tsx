@@ -18,6 +18,7 @@ import { Terminal } from "@/components/tool-ui/terminal";
 import { CodeBlock } from "@/components/tool-ui/code-block";
 import { Chart } from "@/components/tool-ui/chart";
 import { ItemCarousel } from "@/components/tool-ui/item-carousel";
+import { ParameterSlider } from "@/components/tool-ui/parameter-slider";
 import { approvalCardPresets } from "@/lib/presets/approval-card";
 import { citationPresets } from "@/lib/presets/citation";
 import { dataTablePresets } from "@/lib/presets/data-table";
@@ -35,6 +36,7 @@ import { planPresets } from "@/lib/presets/plan";
 import { terminalPresets } from "@/lib/presets/terminal";
 import { codeBlockPresets } from "@/lib/presets/code-block";
 import { chartPresets } from "@/lib/presets/chart";
+import { parameterSliderPresets } from "@/lib/presets/parameter-slider";
 
 export const metadata: Metadata = {
   title: "Gallery",
@@ -129,6 +131,10 @@ export default function ComponentsGalleryPage() {
 
           <div className="mb-5 flex break-inside-avoid justify-center 2xl:mb-5">
             <Chart id="gallery-chart" {...chartPresets.revenue.data} />
+          </div>
+
+          <div className="mb-5 flex break-inside-avoid justify-center 2xl:mb-5">
+            <ParameterSlider {...parameterSliderPresets["photo-adjustments"].data} />
           </div>
 
           {/* <div className="mb-5 flex justify-center break-inside-avoid 2xl:mb-5">

@@ -7,6 +7,7 @@ import type { SerializableTerminal } from "@/components/tool-ui/terminal";
 import type { SerializableCodeBlock } from "@/components/tool-ui/code-block";
 import type { SerializableItemCarousel } from "@/components/tool-ui/item-carousel";
 import type { SerializableCitation } from "@/components/tool-ui/citation";
+import type { SerializableParameterSlider } from "@/components/tool-ui/parameter-slider";
 
 export type Flight = {
   id: string;
@@ -229,6 +230,18 @@ export const ITEM_CAROUSEL_DATA: Omit<SerializableItemCarousel, "id"> = {
         "https://is1-ssl.mzstatic.com/image/thumb/Music115/v4/a8/2e/b4/a82eb490-f30a-a321-461a-0383c88fec95/15UMGIM23316.rgb.jpg/600x600bb.jpg",
       actions: [{ id: "play", label: "Play", variant: "default" }],
     },
+  ],
+};
+
+export const PARAMETER_SLIDER_DATA: Omit<SerializableParameterSlider, "id"> = {
+  sliders: [
+    { id: "bass", label: "Bass", min: -12, max: 12, step: 1, value: 4, unit: "dB" },
+    { id: "mid", label: "Mid", min: -12, max: 12, step: 1, value: -1, unit: "dB" },
+    { id: "treble", label: "Treble", min: -12, max: 12, step: 1, value: 3, unit: "dB" },
+  ],
+  responseActions: [
+    { id: "reset", label: "Flat", variant: "ghost" },
+    { id: "apply", label: "Apply", variant: "default" },
   ],
 };
 
