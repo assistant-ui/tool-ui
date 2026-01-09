@@ -47,7 +47,7 @@ function getAriaValueText(
   return unit ? `${value} ${unit}` : String(value);
 }
 
-const TICK_COUNT = 17;
+const TICK_COUNT = 16;
 const TEXT_PADDING_X = -16;
 const TEXT_PADDING_Y = -2;
 const DETECTION_MARGIN_X = 20;
@@ -214,10 +214,10 @@ function SliderRow({ config, value, onChange, disabled }: SliderRowProps) {
 
     // Tight intersection check for release state
     // Inset by px-2 (8px) padding to check against actual text, not padded container
-    const labelLeft = (labelRect.left - trackRect.left) + TEXT_RELEASE_INSET;
-    const labelRight = (labelRect.right - trackRect.left) - TEXT_RELEASE_INSET;
-    const valueLeft = (valueRect.left - trackRect.left) + TEXT_RELEASE_INSET;
-    const valueRight = (valueRect.right - trackRect.left) - TEXT_RELEASE_INSET;
+    const labelLeft = labelRect.left - trackRect.left + TEXT_RELEASE_INSET;
+    const labelRight = labelRect.right - trackRect.left - TEXT_RELEASE_INSET;
+    const valueLeft = valueRect.left - trackRect.left + TEXT_RELEASE_INSET;
+    const valueRight = valueRect.right - trackRect.left - TEXT_RELEASE_INSET;
 
     const thumbLeft = thumbCenterPx - thumbHalfWidth;
     const thumbRight = thumbCenterPx + thumbHalfWidth;
@@ -231,61 +231,72 @@ function SliderRow({ config, value, onChange, disabled }: SliderRowProps) {
     // Use the max gap of whichever text element(s) the handle intersects
     const labelFullGap = labelRect.height + TEXT_PADDING_Y * 2;
     const valueFullGap = valueRect.height + TEXT_PADDING_Y * 2;
-    const releaseGap = hitsLabel && hitsValue
-      ? Math.max(labelFullGap, valueFullGap)
-      : hitsLabel
-        ? labelFullGap
-        : hitsValue
-          ? valueFullGap
-          : 0;
+    const releaseGap =
+      hitsLabel && hitsValue
+        ? Math.max(labelFullGap, valueFullGap)
+        : hitsLabel
+          ? labelFullGap
+          : hitsValue
+            ? valueFullGap
+            : 0;
     setFullGap(releaseGap);
   }, [value, min, max]);
 
   // While dragging: gradual separation based on distance
   // On release: fully open if intersecting text, fully closed otherwise
-  const gap = isDragging ? dragGap : (intersectsText ? fullGap : 0);
+  const gap = isDragging ? dragGap : intersectsText ? fullGap : 0;
 
   const ticks = useMemo(() => {
-    const range = max - min;
-    const stepCount = Math.round(range / step) + 1;
+    // Generate equidistant ticks regardless of step value
+    const majorTickCount = TICK_COUNT;
+    const result: { percent: number; isCenter: boolean; isSubtick: boolean }[] =
+      [];
 
-    // If too many steps, show every Nth tick to stay around TICK_COUNT
-    const skipFactor =
-      stepCount > TICK_COUNT ? Math.ceil(stepCount / TICK_COUNT) : 1;
+    for (let i = 0; i <= majorTickCount; i++) {
+      const percent = (i / majorTickCount) * 100;
+      const isCenter = !crossesZero && percent === 50;
 
-    const result: { percent: number; isZero: boolean; isSubtick: boolean }[] = [];
-    let lastPercent: number | null = null;
+      // Skip the center tick (50%) for crossesZero sliders
+      if (crossesZero && percent === 50) continue;
 
-    for (let i = 0; i < stepCount; i++) {
-      if (i % skipFactor !== 0 && i !== stepCount - 1) continue;
-
-      const tickValue = min + i * step;
-      const percent = ((tickValue - min) / range) * 100;
-      const isZero = crossesZero && Math.abs(tickValue) < step * 0.5;
-
-      // Add subtick at midpoint between this tick and the previous one
-      if (lastPercent !== null) {
-        const midPercent = (lastPercent + percent) / 2;
-        result.push({ percent: midPercent, isZero: false, isSubtick: true });
+      // Add subtick at midpoint before this tick (except for first)
+      if (i > 0) {
+        const prevPercent = ((i - 1) / majorTickCount) * 100;
+        // Don't add subtick if it would be at 50% for crossesZero
+        const midPercent = (prevPercent + percent) / 2;
+        if (!(crossesZero && midPercent === 50)) {
+          result.push({ percent: midPercent, isCenter: false, isSubtick: true });
+        }
       }
 
-      result.push({ percent, isZero, isSubtick: false });
-      lastPercent = percent;
+      result.push({ percent, isCenter, isSubtick: false });
     }
+
     return result;
-  }, [min, max, step, crossesZero]);
+  }, [crossesZero]);
 
   const zeroPercent = crossesZero ? ((0 - min) / (max - min)) * 100 : 0;
   const valuePercent = ((value - min) / (max - min)) * 100;
 
-  const rangeStyle = useMemo(() => {
+  const HANDLE_HALF_WIDTH = 2; // half of visual w-1 pill (4px)
+
+  const fillClipPath = useMemo(() => {
     if (crossesZero) {
-      const left = Math.min(zeroPercent, valuePercent);
-      const width = Math.abs(valuePercent - zeroPercent);
-      return { left: `${left}%`, width: `${width}%` };
+      if (valuePercent >= zeroPercent) {
+        // Positive: reveal from zeroPercent to right edge of handle
+        return `inset(0 calc(${100 - valuePercent}% - ${HANDLE_HALF_WIDTH}px) 0 ${zeroPercent}% round 0 2px 2px 0)`;
+      } else {
+        // Negative: reveal from left edge of handle to zeroPercent
+        return `inset(0 ${100 - zeroPercent}% 0 calc(${valuePercent}% - ${HANDLE_HALF_WIDTH}px) round 2px 0 0 2px)`;
+      }
     }
-    return { left: "0%", width: `${valuePercent}%` };
+    // Non-crossesZero: reveal from 0 to right edge of handle
+    return `inset(0 calc(${100 - valuePercent}% - ${HANDLE_HALF_WIDTH}px) 0 0 round 0 2px 2px 0)`;
   }, [crossesZero, zeroPercent, valuePercent]);
+
+  const fillMaskImage = crossesZero
+    ? "linear-gradient(to right, rgba(0,0,0,0.25) 0%, rgba(0,0,0,0.4) 50%, black 100%)"
+    : "linear-gradient(to right, rgba(0,0,0,0.4) 0%, black 100%)";
 
   const handleValueChange = useCallback(
     (values: number[]) => {
@@ -326,18 +337,15 @@ function SliderRow({ config, value, onChange, disabled }: SliderRowProps) {
           <div
             className="bg-primary/30 dark:bg-primary/40 absolute inset-0"
             style={{
-              maskImage: crossesZero
-                ? "linear-gradient(to right, rgba(0,0,0,0.4) 0%, black 50%, rgba(0,0,0,0.4) 100%)"
-                : "linear-gradient(to right, black 0%, rgba(0,0,0,0.4) 100%)",
-              WebkitMaskImage: crossesZero
-                ? "linear-gradient(to right, rgba(0,0,0,0.4) 0%, black 50%, rgba(0,0,0,0.4) 100%)"
-                : "linear-gradient(to right, black 0%, rgba(0,0,0,0.4) 100%)",
-              clipPath: `inset(0 ${100 - parseFloat(rangeStyle.width || "0") - parseFloat(rangeStyle.left || "0")}% 0 ${parseFloat(rangeStyle.left || "0")}%)`,
+              maskImage: fillMaskImage,
+              WebkitMaskImage: fillMaskImage,
+              clipPath: fillClipPath,
             }}
           />
 
           {ticks.map((tick, i) => {
-            const isEdge = !tick.isSubtick && (i === 0 || i === ticks.length - 1);
+            const isEdge =
+              !tick.isSubtick && (tick.percent === 0 || tick.percent === 100);
             return (
               <span
                 key={i}
@@ -348,7 +356,7 @@ function SliderRow({ config, value, onChange, disabled }: SliderRowProps) {
                     ? "bg-transparent"
                     : tick.isSubtick
                       ? "bg-foreground/8 dark:bg-white/5"
-                      : tick.isZero
+                      : tick.isCenter
                         ? "bg-foreground/30 dark:bg-white/25"
                         : "bg-foreground/15 dark:bg-white/8",
                 )}
@@ -363,7 +371,7 @@ function SliderRow({ config, value, onChange, disabled }: SliderRowProps) {
           className={cn(
             "group/thumb z-0 block h-[50px] w-3 shrink-0 cursor-grab rounded-sm",
             "relative bg-transparent",
-            "transition-all duration-150 ease-[var(--cubic-ease-in-out)]",
+            "transition-all duration-100 ease-[var(--cubic-ease-in-out)]",
             "hover:h-[54px]",
             "focus-visible:outline-ring focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1",
             "active:cursor-grabbing",
@@ -375,7 +383,7 @@ function SliderRow({ config, value, onChange, disabled }: SliderRowProps) {
           <span
             className={cn(
               "bg-primary absolute top-0 left-1/2 w-1 -translate-x-1/2 rounded-full",
-              "transition-all duration-150 ease-[var(--cubic-ease-in-out)]",
+              "transition-all duration-100 ease-[var(--cubic-ease-in-out)]",
               "group-hover/thumb:w-1.5",
               "group-active/thumb:w-2",
               isDragging && "w-2",
@@ -387,7 +395,7 @@ function SliderRow({ config, value, onChange, disabled }: SliderRowProps) {
           <span
             className={cn(
               "bg-primary absolute bottom-0 left-1/2 w-1 -translate-x-1/2 rounded-full",
-              "transition-all duration-150 ease-[var(--cubic-ease-in-out)]",
+              "transition-all duration-100 ease-[var(--cubic-ease-in-out)]",
               "group-hover/thumb:w-1.5",
               "group-active/thumb:w-2",
               isDragging && "w-2",
@@ -401,13 +409,13 @@ function SliderRow({ config, value, onChange, disabled }: SliderRowProps) {
         <div className="pointer-events-none absolute inset-x-2 top-1/2 z-10 flex -translate-y-1/2 items-center justify-between">
           <span
             ref={labelRef}
-            className="text-primary rounded-full px-2 py-px text-sm font-medium"
+            className="text-primary -mt-0.5 rounded-full px-2 py-px text-sm font-normal tracking-wide [text-shadow:0.5px_0.5px_0_rgba(0,0,0,0.35)]"
           >
             {label}
           </span>
           <span
             ref={valueRef}
-            className="text-foreground rounded-full px-2 py-px font-mono text-sm tabular-nums"
+            className="text-foreground -mt-px -mb-0.5 flex h-6 items-center rounded-full px-2 font-mono text-xs tabular-nums [text-shadow:0.5px_0.5px_0_rgba(0,0,0,0.35)]"
           >
             {formatSignedValue(value, min, max, precision, unit)}
           </span>

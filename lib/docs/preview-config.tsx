@@ -337,7 +337,7 @@ export const previewConfigs: Record<ComponentId, PreviewConfig<unknown, string>>
     wrapper: MaxWidthSmStartWrapper,
     chatContext: {
       userMessage: "Help me dial in the right settings",
-      preamble: "Here are the settings if you want to fine-tune:",
+      preamble: "You can dial in your preferences and I'll remember them:",
     },
     renderComponent: ({ data }) => {
       const sliderData = data as Parameters<typeof ParameterSlider>[0];
