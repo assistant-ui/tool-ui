@@ -53,6 +53,7 @@ const TEXT_PADDING_Y = -2;
 const DETECTION_MARGIN_X = 20;
 const DETECTION_MARGIN_Y = 12;
 const TRACK_HEIGHT = 48;
+const TEXT_RELEASE_INSET = 8;
 
 function signedDistanceToRoundedRect(
   px: number,
@@ -166,7 +167,8 @@ function SliderRow({ config, value, onChange, disabled }: SliderRowProps) {
   const labelRef = useRef<HTMLSpanElement>(null);
   const valueRef = useRef<HTMLSpanElement>(null);
 
-  const [gap, setGap] = useState(0);
+  const [dragGap, setDragGap] = useState(0);
+  const [intersectsText, setIntersectsText] = useState(false);
 
   useEffect(() => {
     if (!isDragging) return;
@@ -189,6 +191,7 @@ function SliderRow({ config, value, onChange, disabled }: SliderRowProps) {
     const trackWidth = trackRect.width;
     const valuePercent = ((value - min) / (max - min)) * 100;
     const thumbCenterPx = (valuePercent / 100) * trackWidth;
+    const thumbHalfWidth = 6;
 
     const trackCenterY = TRACK_HEIGHT / 2;
 
@@ -206,18 +209,56 @@ function SliderRow({ config, value, onChange, disabled }: SliderRowProps) {
       centerY: trackCenterY,
     });
 
-    setGap(Math.max(labelGap, valueGap));
+    setDragGap(Math.max(labelGap, valueGap));
+
+    // Tight intersection check for release state
+    // Inset by px-2 (8px) padding to check against actual text, not padded container
+    const labelLeft = (labelRect.left - trackRect.left) + TEXT_RELEASE_INSET;
+    const labelRight = (labelRect.right - trackRect.left) - TEXT_RELEASE_INSET;
+    const valueLeft = (valueRect.left - trackRect.left) + TEXT_RELEASE_INSET;
+    const valueRight = (valueRect.right - trackRect.left) - TEXT_RELEASE_INSET;
+
+    const thumbLeft = thumbCenterPx - thumbHalfWidth;
+    const thumbRight = thumbCenterPx + thumbHalfWidth;
+
+    const hitsLabel = thumbRight > labelLeft && thumbLeft < labelRight;
+    const hitsValue = thumbRight > valueLeft && thumbLeft < valueRight;
+
+    setIntersectsText(hitsLabel || hitsValue);
   }, [value, min, max]);
+
+  // Use dragGap while dragging, but snap closed on release if not intersecting text
+  const gap = isDragging ? dragGap : (intersectsText ? dragGap : 0);
 
   const ticks = useMemo(() => {
     const range = max - min;
-    return Array.from({ length: TICK_COUNT }, (_, i) => {
-      const percent = (i / (TICK_COUNT - 1)) * 100;
-      const value = min + range * (i / (TICK_COUNT - 1));
-      const isZero = crossesZero && Math.abs(value) < range * 0.01;
-      return { percent, isZero };
-    });
-  }, [min, max, crossesZero]);
+    const stepCount = Math.round(range / step) + 1;
+
+    // If too many steps, show every Nth tick to stay around TICK_COUNT
+    const skipFactor =
+      stepCount > TICK_COUNT ? Math.ceil(stepCount / TICK_COUNT) : 1;
+
+    const result: { percent: number; isZero: boolean; isSubtick: boolean }[] = [];
+    let lastPercent: number | null = null;
+
+    for (let i = 0; i < stepCount; i++) {
+      if (i % skipFactor !== 0 && i !== stepCount - 1) continue;
+
+      const tickValue = min + i * step;
+      const percent = ((tickValue - min) / range) * 100;
+      const isZero = crossesZero && Math.abs(tickValue) < step * 0.5;
+
+      // Add subtick at midpoint between this tick and the previous one
+      if (lastPercent !== null) {
+        const midPercent = (lastPercent + percent) / 2;
+        result.push({ percent: midPercent, isZero: false, isSubtick: true });
+      }
+
+      result.push({ percent, isZero, isSubtick: false });
+      lastPercent = percent;
+    }
+    return result;
+  }, [min, max, step, crossesZero]);
 
   const zeroPercent = crossesZero ? ((0 - min) / (max - min)) * 100 : 0;
   const valuePercent = ((value - min) / (max - min)) * 100;
@@ -281,18 +322,20 @@ function SliderRow({ config, value, onChange, disabled }: SliderRowProps) {
           />
 
           {ticks.map((tick, i) => {
-            const isFirst = i === 0;
-            const isCenter = i === Math.floor(TICK_COUNT / 2);
+            const isEdge = !tick.isSubtick && (i === 0 || i === ticks.length - 1);
             return (
               <span
                 key={i}
                 className={cn(
-                  "pointer-events-none absolute bottom-0 h-2 w-px",
-                  isFirst || isCenter
+                  "pointer-events-none absolute bottom-px w-px",
+                  tick.isSubtick ? "h-1.5" : "h-2",
+                  isEdge
                     ? "bg-transparent"
-                    : tick.isZero
-                      ? "bg-foreground/30 dark:bg-white/25"
-                      : "bg-foreground/15 dark:bg-white/8",
+                    : tick.isSubtick
+                      ? "bg-foreground/8 dark:bg-white/5"
+                      : tick.isZero
+                        ? "bg-foreground/30 dark:bg-white/25"
+                        : "bg-foreground/15 dark:bg-white/8",
                 )}
                 style={{ left: `${tick.percent}%` }}
               />
@@ -317,7 +360,7 @@ function SliderRow({ config, value, onChange, disabled }: SliderRowProps) {
           <span
             className={cn(
               "bg-primary absolute top-0 left-1/2 w-1 -translate-x-1/2 rounded-full",
-              "transition-all duration-150 ease-linear",
+              "transition-all duration-150 ease-[var(--cubic-ease-in-out)]",
               "group-hover/thumb:w-1.5",
               "group-active/thumb:w-2",
               isDragging && "w-2",
@@ -329,7 +372,7 @@ function SliderRow({ config, value, onChange, disabled }: SliderRowProps) {
           <span
             className={cn(
               "bg-primary absolute bottom-0 left-1/2 w-1 -translate-x-1/2 rounded-full",
-              "transition-all duration-150 ease-linear",
+              "transition-all duration-150 ease-[var(--cubic-ease-in-out)]",
               "group-hover/thumb:w-1.5",
               "group-active/thumb:w-2",
               isDragging && "w-2",
