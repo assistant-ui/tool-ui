@@ -168,6 +168,7 @@ function SliderRow({ config, value, onChange, disabled }: SliderRowProps) {
   const valueRef = useRef<HTMLSpanElement>(null);
 
   const [dragGap, setDragGap] = useState(0);
+  const [fullGap, setFullGap] = useState(0);
   const [intersectsText, setIntersectsText] = useState(false);
 
   useEffect(() => {
@@ -225,10 +226,24 @@ function SliderRow({ config, value, onChange, disabled }: SliderRowProps) {
     const hitsValue = thumbRight > valueLeft && thumbLeft < valueRight;
 
     setIntersectsText(hitsLabel || hitsValue);
+
+    // Calculate full separation gap for release state
+    // Use the max gap of whichever text element(s) the handle intersects
+    const labelFullGap = labelRect.height + TEXT_PADDING_Y * 2;
+    const valueFullGap = valueRect.height + TEXT_PADDING_Y * 2;
+    const releaseGap = hitsLabel && hitsValue
+      ? Math.max(labelFullGap, valueFullGap)
+      : hitsLabel
+        ? labelFullGap
+        : hitsValue
+          ? valueFullGap
+          : 0;
+    setFullGap(releaseGap);
   }, [value, min, max]);
 
-  // Use dragGap while dragging, but snap closed on release if not intersecting text
-  const gap = isDragging ? dragGap : (intersectsText ? dragGap : 0);
+  // While dragging: gradual separation based on distance
+  // On release: fully open if intersecting text, fully closed otherwise
+  const gap = isDragging ? dragGap : (intersectsText ? fullGap : 0);
 
   const ticks = useMemo(() => {
     const range = max - min;
