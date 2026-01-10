@@ -17,6 +17,7 @@ const externalPatterns: Pattern[] = [
 ];
 
 // Build patterns for label (e.g., "Link Preview"), camel ("LinkPreview"), and id ("link-preview").
+// Only include kebab patterns with hyphens to avoid matching lowercase words like "audio" or "video".
 const patterns: Pattern[] = [
   ...externalPatterns,
   ...componentsRegistry
@@ -24,11 +25,14 @@ const patterns: Pattern[] = [
       const label = c.label;
       const camel = label.replace(/\s+/g, "");
       const kebab = c.id;
-      return [
+      const result = [
         { match: label, href: c.path },
         { match: camel, href: c.path },
-        { match: kebab, href: c.path },
       ];
+      if (kebab.includes("-")) {
+        result.push({ match: kebab, href: c.path });
+      }
+      return result;
     })
     .sort((a, b) => b.match.length - a.match.length),
 ];

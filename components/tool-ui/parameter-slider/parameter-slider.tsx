@@ -49,13 +49,23 @@ function getAriaValueText(
 
 const TICK_COUNT = 16;
 const TEXT_PADDING_X = 4;
-const TEXT_PADDING_X_OUTER = -4; // Negative padding (inset) on outer-facing side
+const TEXT_PADDING_X_OUTER = 0; // Less inset on outer-facing side (near edges)
 const TEXT_PADDING_Y = 2;
 const DETECTION_MARGIN_X = 12;
-const DETECTION_MARGIN_X_OUTER = 16; // Increased margin to compensate for reduced padding
+const DETECTION_MARGIN_X_OUTER = 4; // Small margin at edges for steep falloff - segments fully close at terminal positions
 const DETECTION_MARGIN_Y = 12;
 const TRACK_HEIGHT = 48;
 const TEXT_RELEASE_INSET = 8;
+const TRACK_EDGE_INSET = 4; // px from track edge - keeps elements visible at extremes
+// Text vertical offset: raised slightly from center
+// Positive = raised, negative = lowered
+const TEXT_VERTICAL_OFFSET = 0.5;
+
+// Convert a percentage (0-100) to an inset position string
+// At 0%: 4px from left edge; at 100%: 4px from right edge
+function toInsetPosition(percent: number): string {
+  return `calc(${TRACK_EDGE_INSET}px + (100% - ${TRACK_EDGE_INSET * 2}px) * ${percent / 100})`;
+}
 
 function signedDistanceToRoundedRect(
   px: number,
@@ -217,10 +227,12 @@ function SliderRow({ config, value, onChange, disabled, trackClassName, fillClas
 
     const trackWidth = trackRect.width;
     const valuePercent = ((value - min) / (max - min)) * 100;
-    const thumbCenterPx = (valuePercent / 100) * trackWidth;
+    // Use same inset coordinate system as visual elements
+    const thumbCenterPx = TRACK_EDGE_INSET + ((trackWidth - TRACK_EDGE_INSET * 2) * valuePercent / 100);
     const thumbHalfWidth = 6;
 
-    const trackCenterY = TRACK_HEIGHT / 2;
+    // Text is raised by TEXT_VERTICAL_OFFSET from center
+    const trackCenterY = TRACK_HEIGHT / 2 - TEXT_VERTICAL_OFFSET;
 
     const labelGap = calculateGap(thumbCenterPx, {
       left: labelRect.left - trackRect.left,
@@ -304,20 +316,30 @@ function SliderRow({ config, value, onChange, disabled, trackClassName, fillClas
   const zeroPercent = crossesZero ? ((0 - min) / (max - min)) * 100 : 0;
   const valuePercent = ((value - min) / (max - min)) * 100;
 
-  // Fill clip-path - simple percentage-based positioning
+  // Fill clip-path - uses same inset coordinate system as thumb and ticks
+  // At terminal values (0% or 100%), extend fill all the way to the edge
   const fillClipPath = useMemo(() => {
-    const fillEdgeFromRight = `${100 - valuePercent}%`;
+    // Convert percentage to inset position for clip-path
+    // Clip from right = 100% - insetPosition(valuePercent)
+    const toClipFromRight = (percent: number) => {
+      if (percent >= 100) return '0'; // Extend to right edge at 100%
+      return `calc(100% - ${TRACK_EDGE_INSET}px - (100% - ${TRACK_EDGE_INSET * 2}px) * ${percent / 100})`;
+    };
+    const toClipFromLeft = (percent: number) => {
+      if (percent <= 0) return '0'; // Extend to left edge at 0%
+      return `calc(${TRACK_EDGE_INSET}px + (100% - ${TRACK_EDGE_INSET * 2}px) * ${percent / 100})`;
+    };
 
     if (crossesZero) {
-      const zeroPos = `${zeroPercent}%`;
+      const zeroClipLeft = toClipFromLeft(zeroPercent);
       if (valuePercent >= zeroPercent) {
-        return `inset(0 ${fillEdgeFromRight} 0 ${zeroPos})`;
+        return `inset(0 ${toClipFromRight(valuePercent)} 0 ${zeroClipLeft})`;
       } else {
-        const zeroFromRight = `${100 - zeroPercent}%`;
-        return `inset(0 ${zeroFromRight} 0 ${valuePercent}%)`;
+        const zeroClipRight = toClipFromRight(zeroPercent);
+        return `inset(0 ${zeroClipRight} 0 ${toClipFromLeft(valuePercent)})`;
       }
     }
-    return `inset(0 ${fillEdgeFromRight} 0 0)`;
+    return `inset(0 ${toClipFromRight(valuePercent)} 0 0)`;
   }, [crossesZero, zeroPercent, valuePercent]);
 
   const fillMaskImage = crossesZero
@@ -325,11 +347,28 @@ function SliderRow({ config, value, onChange, disabled, trackClassName, fillClas
     : "linear-gradient(to right, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.7) 100%)";
 
   // Metallic reflection gradient that follows the handle position
-  // Unified gradient with consistent appearance - only opacity changes
   // Visible while dragging OR when resting at edges (0%/100%)
   const reflectionStyle = useMemo(() => {
-    const handlePos = valuePercent;
-    const spread = 10; // Consistent spread for all states
+    // At terminal values, position gradient at actual edge for clean alignment
+    const atLeftEdge = valuePercent <= 0;
+    const atRightEdge = valuePercent >= 100;
+    const edgeThreshold = 3;
+    const nearEdge = valuePercent <= edgeThreshold || valuePercent >= 100 - edgeThreshold;
+
+    // Narrower spread when stationary at edges (~35% narrower)
+    const spread = nearEdge && !isDragging ? 6.5 : 10;
+
+    // Position: at terminal values use actual edge, otherwise use inset formula
+    let handlePos: number;
+    if (atLeftEdge) {
+      handlePos = 0;
+    } else if (atRightEdge) {
+      handlePos = 100;
+    } else {
+      // Approximate the inset: map 0-100% to ~1-99% for gradient
+      const insetApprox = 1;
+      handlePos = insetApprox + (100 - insetApprox * 2) * (valuePercent / 100);
+    }
 
     const start = Math.max(0, handlePos - spread);
     const end = Math.min(100, handlePos + spread);
@@ -346,7 +385,7 @@ function SliderRow({ config, value, onChange, disabled, trackClassName, fillClas
       maskComposite: 'exclude',
       padding: '1px',
     };
-  }, [valuePercent]);
+  }, [valuePercent, isDragging]);
 
   // Opacity scales with handle size: rest → hover → drag
   const reflectionOpacity = useMemo(() => {
@@ -354,10 +393,10 @@ function SliderRow({ config, value, onChange, disabled, trackClassName, fillClas
     const atEdge = valuePercent <= edgeThreshold || valuePercent >= 100 - edgeThreshold;
 
     if (isDragging || atEdge) {
-      return 0.4;
+      return 1;
     }
     if (isHovered) {
-      return 0.2;
+      return 0.6;
     }
     return 0;
   }, [valuePercent, isDragging, isHovered]);
@@ -427,7 +466,10 @@ function SliderRow({ config, value, onChange, disabled, trackClassName, fillClas
                         ? "bg-foreground/30 dark:bg-white/25"
                         : "bg-foreground/15 dark:bg-white/8",
                 )}
-                style={{ left: `${tick.percent}%` }}
+                style={{
+                  left: toInsetPosition(tick.percent),
+                  transform: "translateX(-50%)",
+                }}
               />
             );
           })}
@@ -445,6 +487,10 @@ function SliderRow({ config, value, onChange, disabled, trackClassName, fillClas
         />
 
         <SliderPrimitive.Thumb
+          style={{
+            left: toInsetPosition(valuePercent),
+            transform: "translateX(-50%)",
+          }}
           className={cn(
             "group/thumb z-0 block w-3 shrink-0 cursor-grab rounded-sm",
             "relative bg-transparent outline-none",
@@ -469,6 +515,15 @@ function SliderRow({ config, value, onChange, disabled, trackClassName, fillClas
             const atEdge = valuePercent <= edgeThreshold || valuePercent >= 100 - edgeThreshold;
             const restOpacity = atEdge ? 0 : 0.25;
 
+            // Asymmetric segment heights: gap is shifted up to match raised text position
+            // Top segment is shorter, bottom segment is taller
+            const topHeight = isActive && gap > 0
+              ? `calc(50% - ${gap / 2 + TEXT_VERTICAL_OFFSET}px)`
+              : "50%";
+            const bottomHeight = isActive && gap > 0
+              ? `calc(50% - ${gap / 2 - TEXT_VERTICAL_OFFSET}px)`
+              : "50%";
+
             return (
               <>
                 <span
@@ -483,7 +538,7 @@ function SliderRow({ config, value, onChange, disabled, trackClassName, fillClas
                   )}
                   style={{
                     transform: `translateX(calc(-50% + ${fillEdgeOffset}px))`,
-                    height: isActive && gap > 0 ? `calc(50% - ${gap / 2}px)` : "50%",
+                    height: topHeight,
                     opacity: isActive ? 1 : restOpacity,
                   }}
                 />
@@ -499,7 +554,7 @@ function SliderRow({ config, value, onChange, disabled, trackClassName, fillClas
                   )}
                   style={{
                     transform: `translateX(calc(-50% + ${fillEdgeOffset}px))`,
-                    height: isActive && gap > 0 ? `calc(50% - ${gap / 2}px)` : "50%",
+                    height: bottomHeight,
                     opacity: isActive ? 1 : restOpacity,
                   }}
                 />
@@ -508,10 +563,13 @@ function SliderRow({ config, value, onChange, disabled, trackClassName, fillClas
           })()}
         </SliderPrimitive.Thumb>
 
-        <div className="pointer-events-none absolute inset-x-3 top-1/2 z-10 flex -translate-y-1/2 items-center justify-between">
+        <div
+          className="pointer-events-none absolute inset-x-3 top-1/2 z-10 flex items-center justify-between"
+          style={{ transform: `translateY(calc(-50% - ${TEXT_VERTICAL_OFFSET}px))` }}
+        >
           <span
             ref={labelRef}
-            className="text-primary -mt-0.5 rounded-full px-2 py-px text-sm font-normal tracking-wide [text-shadow:0.5px_0.5px_0_rgba(0,0,0,0.35)]"
+            className="text-primary -mt-px rounded-full px-2 py-px text-sm font-normal tracking-wide [text-shadow:0.5px_0.5px_0_rgba(0,0,0,0.35)]"
           >
             {label}
           </span>

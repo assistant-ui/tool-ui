@@ -106,7 +106,7 @@ export function RoundedRectOverlay({
         />
       )}
       <div
-        className={cn("absolute border-2", styles.border, styles.bg)}
+        className={cn("absolute border", styles.border, styles.bg)}
         style={{
           left,
           top,
@@ -141,7 +141,7 @@ export function ThumbIndicator({ rect, containerRect }: ThumbIndicatorProps) {
 
   return (
     <div
-      className="absolute border-2 border-orange-500 bg-orange-500/20"
+      className="absolute border border-orange-500 bg-orange-500/20"
       style={{
         left: left - 2,
         top: top - 2,

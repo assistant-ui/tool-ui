@@ -93,26 +93,8 @@ function ParameterSliderDebugOverlay({
     );
   }
 
-  const hasLabels = sliderElements.some((el) => el.label !== null);
-  const hasValues = sliderElements.some((el) => el.value !== null);
-  const hasThumbs = sliderElements.some((el) => el.thumb !== null);
-
   return (
     <>
-      <div className="absolute -top-6 right-0 flex gap-1 text-[10px]">
-        <span className={`rounded px-1.5 py-0.5 ${hasLabels ? "bg-blue-500" : "bg-red-500"} text-white`}>
-          L
-        </span>
-        <span className={`rounded px-1.5 py-0.5 ${hasValues ? "bg-green-500" : "bg-red-500"} text-white`}>
-          V
-        </span>
-        <span className={`rounded px-1.5 py-0.5 ${hasThumbs ? "bg-orange-500" : "bg-red-500"} text-white`}>
-          T
-        </span>
-        <span className="bg-muted text-muted-foreground rounded px-1.5 py-0.5">
-          {sliderElements.length}
-        </span>
-      </div>
       {sliderElements.map((row, index) => (
         <Fragment key={index}>
           {row.label && (
@@ -120,12 +102,11 @@ function ParameterSliderDebugOverlay({
               rect={row.label}
               containerRect={containerRect}
               padding={4}
-              paddingOuter={-4}
+              paddingOuter={0}
               color="blue"
               showMargin={level === "margins" || level === "full"}
               marginSize={12}
-              marginSizeOuter={16}
-              label={level === "full" ? "Label" : undefined}
+              marginSizeOuter={4}
               outerEdgeRadiusFactor={0.3}
               isLeftAligned={true}
             />
@@ -136,12 +117,11 @@ function ParameterSliderDebugOverlay({
               rect={row.value}
               containerRect={containerRect}
               padding={4}
-              paddingOuter={-4}
+              paddingOuter={0}
               color="green"
               showMargin={level === "margins" || level === "full"}
               marginSize={12}
-              marginSizeOuter={16}
-              label={level === "full" ? "Value" : undefined}
+              marginSizeOuter={4}
               outerEdgeRadiusFactor={0.3}
               isLeftAligned={false}
             />
