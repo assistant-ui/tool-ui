@@ -333,17 +333,30 @@ export const previewConfigs: Record<ComponentId, PreviewConfig<unknown, string>>
   },
   "parameter-slider": {
     presets: parameterSliderPresets as Record<string, PresetWithCodeGen<unknown>>,
-    defaultPreset: "photo-adjustments" satisfies ParameterSliderPresetName,
+    defaultPreset: "audio-eq" satisfies ParameterSliderPresetName,
     wrapper: MaxWidthSmStartWrapper,
     chatContext: {
-      userMessage: "Help me dial in the right settings",
-      preamble: "You can dial in your preferences and I'll remember them:",
+      userMessage: "Boost the bass a bit on this track",
+      preamble: "Here are the current EQ settings:",
     },
-    renderComponent: ({ data }) => {
+    renderComponent: ({ data, presetName }) => {
       const sliderData = data as Parameters<typeof ParameterSlider>[0];
+      const isAudioEq = presetName === "audio-eq";
+
+      // Apply per-slider neon theming for audio-eq preset
+      const themedSliders = isAudioEq
+        ? sliderData.sliders.map((slider, i) => ({
+            ...slider,
+            trackClassName: "bg-zinc-900/80 dark:bg-zinc-950/90",
+            fillClassName: ["bg-cyan-500/40", "bg-fuchsia-500/40", "bg-amber-500/40"][i],
+            handleClassName: ["bg-cyan-400", "bg-fuchsia-400", "bg-amber-400"][i],
+          }))
+        : sliderData.sliders;
+
       return (
         <ParameterSlider
           {...sliderData}
+          sliders={themedSliders}
           onResponseAction={(actionId, values) => console.log("Action:", actionId, "Values:", values)}
         />
       );

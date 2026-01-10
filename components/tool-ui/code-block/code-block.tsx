@@ -230,7 +230,6 @@ export function CodeBlock({
   const lineCount = code.split("\n").length;
   const shouldCollapse = maxCollapsedLines && lineCount > maxCollapsedLines;
   const isCollapsed = shouldCollapse && !isExpanded;
-  const isContentStale = highlightedHtml !== htmlCache.get(cacheKey);
 
   const handleCopy = useCallback(() => {
     copy(code, COPY_ID);
@@ -296,10 +295,10 @@ export function CodeBlock({
           <div
             className={cn(
               "overflow-x-auto overflow-y-clip text-sm [&_pre]:bg-transparent [&_pre]:py-4",
-              (isCollapsed || isContentStale) && "max-h-[200px]",
+              isCollapsed && "max-h-[200px]",
             )}
           >
-            {highlightedHtml && !isContentStale && (
+            {highlightedHtml && (
               <div dangerouslySetInnerHTML={{ __html: highlightedHtml }} />
             )}
           </div>

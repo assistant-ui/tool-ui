@@ -48,9 +48,11 @@ function getAriaValueText(
 }
 
 const TICK_COUNT = 16;
-const TEXT_PADDING_X = -16;
-const TEXT_PADDING_Y = -2;
-const DETECTION_MARGIN_X = 20;
+const TEXT_PADDING_X = 4;
+const TEXT_PADDING_X_OUTER = -4; // Negative padding (inset) on outer-facing side
+const TEXT_PADDING_Y = 2;
+const DETECTION_MARGIN_X = 12;
+const DETECTION_MARGIN_X_OUTER = 16; // Increased margin to compensate for reduced padding
 const DETECTION_MARGIN_Y = 12;
 const TRACK_HEIGHT = 48;
 const TEXT_RELEASE_INSET = 8;
@@ -62,19 +64,22 @@ function signedDistanceToRoundedRect(
   right: number,
   top: number,
   bottom: number,
-  radius: number,
+  radiusLeft: number,
+  radiusRight: number,
 ): number {
-  const innerLeft = left + radius;
-  const innerRight = right - radius;
-  const innerTop = top + radius;
-  const innerBottom = bottom - radius;
+  const innerLeft = left + radiusLeft;
+  const innerRight = right - radiusRight;
+  const innerTop = top + Math.max(radiusLeft, radiusRight);
+  const innerBottom = bottom - Math.max(radiusLeft, radiusRight);
 
-  const inCornerX = px < innerLeft || px > innerRight;
+  const inLeftCorner = px < innerLeft;
+  const inRightCorner = px > innerRight;
   const inCornerY = py < innerTop || py > innerBottom;
 
-  if (inCornerX && inCornerY) {
-    const cornerX = px < innerLeft ? innerLeft : innerRight;
-    const cornerY = py < innerTop ? innerTop : innerBottom;
+  if ((inLeftCorner || inRightCorner) && inCornerY) {
+    const radius = inLeftCorner ? radiusLeft : radiusRight;
+    const cornerX = inLeftCorner ? innerLeft : innerRight;
+    const cornerY = py < innerTop ? top + radius : bottom - radius;
     const distToCornerCenter = Math.hypot(px - cornerX, py - cornerY);
     return distToCornerCenter - radius;
   }
@@ -89,32 +94,43 @@ function signedDistanceToRoundedRect(
   return Math.max(dx, dy);
 }
 
+const OUTER_EDGE_RADIUS_FACTOR = 0.3; // Reduced radius on outer-facing sides for steeper falloff
+
 function calculateGap(
   thumbCenterX: number,
   textRect: { left: number; right: number; height: number; centerY: number },
+  isLeftAligned: boolean,
 ): number {
   const { left, right, height, centerY } = textRect;
-  const paddingX = TEXT_PADDING_X;
+  // Asymmetric padding/margin: outer-facing side has less padding, more margin
+  const paddingLeft = isLeftAligned ? TEXT_PADDING_X_OUTER : TEXT_PADDING_X;
+  const paddingRight = isLeftAligned ? TEXT_PADDING_X : TEXT_PADDING_X_OUTER;
+  const marginLeft = isLeftAligned ? DETECTION_MARGIN_X_OUTER : DETECTION_MARGIN_X;
+  const marginRight = isLeftAligned ? DETECTION_MARGIN_X : DETECTION_MARGIN_X_OUTER;
   const paddingY = TEXT_PADDING_Y;
-  const marginX = DETECTION_MARGIN_X;
   const marginY = DETECTION_MARGIN_Y;
   const thumbCenterY = centerY;
 
   // Inner boundary (where max gap occurs)
-  const innerLeft = left - paddingX;
-  const innerRight = right + paddingX;
+  const innerLeft = left - paddingLeft;
+  const innerRight = right + paddingRight;
   const innerTop = centerY - height / 2 - paddingY;
   const innerBottom = centerY + height / 2 + paddingY;
   const innerHeight = height + paddingY * 2;
   const innerRadius = innerHeight / 2;
+  // Smaller radius on outer-facing side (left for label, right for value)
+  const innerRadiusLeft = isLeftAligned ? innerRadius * OUTER_EDGE_RADIUS_FACTOR : innerRadius;
+  const innerRadiusRight = isLeftAligned ? innerRadius : innerRadius * OUTER_EDGE_RADIUS_FACTOR;
 
   // Outer boundary (where effect starts) - proportionally larger
-  const outerLeft = left - paddingX - marginX;
-  const outerRight = right + paddingX + marginX;
+  const outerLeft = left - paddingLeft - marginLeft;
+  const outerRight = right + paddingRight + marginRight;
   const outerTop = centerY - height / 2 - paddingY - marginY;
   const outerBottom = centerY + height / 2 + paddingY + marginY;
   const outerHeight = height + paddingY * 2 + marginY * 2;
   const outerRadius = outerHeight / 2;
+  const outerRadiusLeft = isLeftAligned ? outerRadius * OUTER_EDGE_RADIUS_FACTOR : outerRadius;
+  const outerRadiusRight = isLeftAligned ? outerRadius : outerRadius * OUTER_EDGE_RADIUS_FACTOR;
 
   const outerDist = signedDistanceToRoundedRect(
     thumbCenterX,
@@ -123,7 +139,8 @@ function calculateGap(
     outerRight,
     outerTop,
     outerBottom,
-    outerRadius,
+    outerRadiusLeft,
+    outerRadiusRight,
   );
 
   // Outside outer boundary - no gap
@@ -136,7 +153,8 @@ function calculateGap(
     innerRight,
     innerTop,
     innerBottom,
-    innerRadius,
+    innerRadiusLeft,
+    innerRadiusRight,
   );
 
   // Inside inner boundary - max gap
@@ -156,10 +174,17 @@ interface SliderRowProps {
   value: number;
   onChange: (value: number) => void;
   disabled?: boolean;
+  trackClassName?: string;
+  fillClassName?: string;
+  handleClassName?: string;
 }
 
-function SliderRow({ config, value, onChange, disabled }: SliderRowProps) {
+function SliderRow({ config, value, onChange, disabled, trackClassName, fillClassName, handleClassName }: SliderRowProps) {
   const { id, label, min, max, step = 1, unit, precision } = config;
+  // Per-slider theming overrides component-level theming
+  const resolvedTrackClassName = config.trackClassName ?? trackClassName;
+  const resolvedFillClassName = config.fillClassName ?? fillClassName;
+  const resolvedHandleClassName = config.handleClassName ?? handleClassName;
   const crossesZero = min < 0 && max > 0;
   const [isDragging, setIsDragging] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
@@ -202,14 +227,14 @@ function SliderRow({ config, value, onChange, disabled }: SliderRowProps) {
       right: labelRect.right - trackRect.left,
       height: labelRect.height,
       centerY: trackCenterY,
-    });
+    }, true); // label is left-aligned
 
     const valueGap = calculateGap(thumbCenterPx, {
       left: valueRect.left - trackRect.left,
       right: valueRect.right - trackRect.left,
       height: valueRect.height,
       centerY: trackCenterY,
-    });
+    }, false); // value is right-aligned
 
     setDragGap(Math.max(labelGap, valueGap));
 
@@ -279,30 +304,20 @@ function SliderRow({ config, value, onChange, disabled }: SliderRowProps) {
   const zeroPercent = crossesZero ? ((0 - min) / (max - min)) * 100 : 0;
   const valuePercent = ((value - min) / (max - min)) * 100;
 
-  // Fill clip-path uses same coordinate system as thumb
-  // Thumb position: 10px + (100% - 20px) * P/100 relative to Root
-  // Track is 4px inset, so relative to Track: 6px + (100% - 12px) * P/100
-  // At extremes (0% or 100%), extend fill to visual edges for complete coverage
+  // Fill clip-path - simple percentage-based positioning
   const fillClipPath = useMemo(() => {
-    const fillEdge = `calc(6px + (100% - 12px) * ${valuePercent / 100})`;
-    const fillEdgeFromRight = `calc(100% - 6px - (100% - 12px) * ${valuePercent / 100})`;
+    const fillEdgeFromRight = `${100 - valuePercent}%`;
 
     if (crossesZero) {
-      const zeroPos = `calc(6px + (100% - 12px) * ${zeroPercent / 100})`;
+      const zeroPos = `${zeroPercent}%`;
       if (valuePercent >= zeroPercent) {
-        // Positive: reveal from zero to fill edge (extend to right edge at 100%)
-        const rightInset = valuePercent >= 100 ? '0' : fillEdgeFromRight;
-        return `inset(0 ${rightInset} 0 ${zeroPos})`;
+        return `inset(0 ${fillEdgeFromRight} 0 ${zeroPos})`;
       } else {
-        // Negative: reveal from fill edge to zero (extend to left edge at 0%)
-        const zeroFromRight = `calc(100% - 6px - (100% - 12px) * ${zeroPercent / 100})`;
-        const leftInset = valuePercent <= 0 ? '0' : fillEdge;
-        return `inset(0 ${zeroFromRight} 0 ${leftInset})`;
+        const zeroFromRight = `${100 - zeroPercent}%`;
+        return `inset(0 ${zeroFromRight} 0 ${valuePercent}%)`;
       }
     }
-    // Non-crossesZero: reveal from left edge to fill edge (extend to right at 100%)
-    const rightInset = valuePercent >= 100 ? '0' : fillEdgeFromRight;
-    return `inset(0 ${rightInset} 0 0)`;
+    return `inset(0 ${fillEdgeFromRight} 0 0)`;
   }, [crossesZero, zeroPercent, valuePercent]);
 
   const fillMaskImage = crossesZero
@@ -380,13 +395,14 @@ function SliderRow({ config, value, onChange, disabled }: SliderRowProps) {
         <SliderPrimitive.Track
           ref={trackRef}
           className={cn(
-            "squircle relative mx-1 h-12 w-[calc(100%-8px)] grow overflow-hidden rounded-sm",
-            "bg-muted ring-border ring-1 ring-inset",
-            "dark:bg-black/40 dark:ring-white/10",
+            "squircle relative h-12 w-full grow overflow-hidden rounded-sm",
+            "ring-border ring-1 ring-inset",
+            "dark:ring-white/10",
+            resolvedTrackClassName ?? "bg-muted dark:bg-black/40",
           )}
         >
           <div
-            className="bg-primary/30 dark:bg-primary/40 absolute inset-0"
+            className={cn("absolute inset-0", resolvedFillClassName ?? "bg-primary/30 dark:bg-primary/40")}
             style={{
               maskImage: fillMaskImage,
               WebkitMaskImage: fillMaskImage,
@@ -419,21 +435,16 @@ function SliderRow({ config, value, onChange, disabled }: SliderRowProps) {
 
         {/* Metallic reflection overlay - follows handle, brightness scales with interaction */}
         <div
-          className="pointer-events-none absolute inset-y-0 inset-x-1 rounded-sm squircle transition-[opacity] duration-200 ease-[var(--cubic-ease-in-out)]"
+          className="pointer-events-none absolute inset-0 rounded-sm squircle transition-[opacity] duration-200 ease-[var(--cubic-ease-in-out)]"
           style={{
             ...reflectionStyle,
             opacity: reflectionOpacity,
             filter: 'blur(1px)',
+            mixBlendMode: 'overlay',
           }}
         />
 
         <SliderPrimitive.Thumb
-          style={{
-            // Inset thumb position so handle stays within track bounds
-            // Track inset: 4px, Handle half-width: 6px, Total: 10px each side
-            left: `calc(10px + (100% - 20px) * ${valuePercent / 100})`,
-            transform: "translateX(-50%)",
-          }}
           className={cn(
             "group/thumb z-0 block w-3 shrink-0 cursor-grab rounded-sm",
             "relative bg-transparent outline-none",
@@ -462,12 +473,13 @@ function SliderRow({ config, value, onChange, disabled }: SliderRowProps) {
               <>
                 <span
                   className={cn(
-                    "bg-primary absolute top-0 left-1/2",
-                    "transition-all duration-150 ease-[var(--cubic-ease-in-out)]",
+                    "absolute top-0 left-1/2",
+                    "transition-all duration-100 ease-[var(--cubic-ease-in-out)]",
                     isActive
                       ? gap > 0 ? "rounded-full" : "rounded-t-full"
                       : "rounded-t-sm",
                     isDragging ? "w-2" : isActive ? "w-1.5" : "w-px",
+                    resolvedHandleClassName ?? "bg-primary",
                   )}
                   style={{
                     transform: `translateX(calc(-50% + ${fillEdgeOffset}px))`,
@@ -477,12 +489,13 @@ function SliderRow({ config, value, onChange, disabled }: SliderRowProps) {
                 />
                 <span
                   className={cn(
-                    "bg-primary absolute bottom-0 left-1/2",
-                    "transition-all duration-150 ease-[var(--cubic-ease-in-out)]",
+                    "absolute bottom-0 left-1/2",
+                    "transition-all duration-100 ease-[var(--cubic-ease-in-out)]",
                     isActive
                       ? gap > 0 ? "rounded-full" : "rounded-b-full"
                       : "rounded-b-sm",
                     isDragging ? "w-2" : isActive ? "w-1.5" : "w-px",
+                    resolvedHandleClassName ?? "bg-primary",
                   )}
                   style={{
                     transform: `translateX(calc(-50% + ${fillEdgeOffset}px))`,
@@ -495,7 +508,7 @@ function SliderRow({ config, value, onChange, disabled }: SliderRowProps) {
           })()}
         </SliderPrimitive.Thumb>
 
-        <div className="pointer-events-none absolute inset-x-4 top-1/2 z-10 flex -translate-y-1/2 items-center justify-between">
+        <div className="pointer-events-none absolute inset-x-3 top-1/2 z-10 flex -translate-y-1/2 items-center justify-between">
           <span
             ref={labelRef}
             className="text-primary -mt-0.5 rounded-full px-2 py-px text-sm font-normal tracking-wide [text-shadow:0.5px_0.5px_0_rgba(0,0,0,0.35)]"
@@ -524,6 +537,9 @@ export function ParameterSlider({
   onBeforeResponseAction,
   className,
   isLoading,
+  trackClassName,
+  fillClassName,
+  handleClassName,
 }: ParameterSliderProps) {
   const initialValuesRef = useRef<SliderValue[]>(
     sliders.map((s) => ({ id: s.id, value: s.value })),
@@ -618,6 +634,9 @@ export function ParameterSlider({
             value={valueMap.get(slider.id) ?? slider.value}
             onChange={(v) => updateValue(slider.id, v)}
             disabled={isLoading}
+            trackClassName={trackClassName}
+            fillClassName={fillClassName}
+            handleClassName={handleClassName}
           />
         ))}
       </div>

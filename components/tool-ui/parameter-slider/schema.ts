@@ -17,6 +17,9 @@ export const SliderConfigSchema = z.object({
   value: z.number(),
   unit: z.string().optional(),
   precision: z.number().int().min(0).optional(),
+  trackClassName: z.string().optional(),
+  fillClassName: z.string().optional(),
+  handleClassName: z.string().optional(),
 });
 
 export type SliderConfig = z.infer<typeof SliderConfigSchema>;
@@ -61,4 +64,7 @@ export interface ParameterSliderProps
     values: SliderValue[],
   ) => void | Promise<void>;
   onBeforeResponseAction?: (actionId: string) => boolean | Promise<boolean>;
+  trackClassName?: string;
+  fillClassName?: string;
+  handleClassName?: string;
 }

@@ -6,10 +6,14 @@ interface RoundedRectOverlayProps {
   rect: DOMRect;
   containerRect: DOMRect;
   padding?: number;
+  paddingOuter?: number; // Padding on outer-facing side (overrides padding on that side)
   color: "blue" | "green" | "orange";
   showMargin?: boolean;
   marginSize?: number;
+  marginSizeOuter?: number; // Margin on outer-facing side (overrides marginSize on that side)
   label?: string;
+  outerEdgeRadiusFactor?: number; // Factor to reduce radius on outer-facing edge (0-1)
+  isLeftAligned?: boolean; // If true, left side is outer-facing; if false, right side is outer-facing
 }
 
 const COLOR_STYLES = {
@@ -40,26 +44,48 @@ export function RoundedRectOverlay({
   rect,
   containerRect,
   padding = 6,
+  paddingOuter,
   color,
   showMargin = false,
   marginSize = 16,
+  marginSizeOuter,
   label,
+  outerEdgeRadiusFactor = 1,
+  isLeftAligned = true,
 }: RoundedRectOverlayProps) {
   const styles = COLOR_STYLES[color];
 
+  // Asymmetric padding: outer-facing side uses paddingOuter if provided
+  const paddingLeft = isLeftAligned ? (paddingOuter ?? padding) : padding;
+  const paddingRight = isLeftAligned ? padding : (paddingOuter ?? padding);
+
   // Calculate position relative to container
-  const left = rect.left - containerRect.left - padding;
+  const left = rect.left - containerRect.left - paddingLeft;
   const top = rect.top - containerRect.top - padding;
-  const width = rect.width + padding * 2;
+  const width = rect.width + paddingLeft + paddingRight;
   const height = rect.height + padding * 2;
-  const cornerRadius = height / 2;
+  const fullRadius = height / 2;
+  const reducedRadius = fullRadius * outerEdgeRadiusFactor;
+
+  // Asymmetric radii: smaller on outer-facing side
+  const radiusLeft = isLeftAligned ? reducedRadius : fullRadius;
+  const radiusRight = isLeftAligned ? fullRadius : reducedRadius;
+  const borderRadius = `${radiusLeft}px ${radiusRight}px ${radiusRight}px ${radiusLeft}px`;
+
+  // Asymmetric margin: outer-facing side uses marginSizeOuter if provided
+  const marginLeft_ = isLeftAligned ? (marginSizeOuter ?? marginSize) : marginSize;
+  const marginRight_ = isLeftAligned ? marginSize : (marginSizeOuter ?? marginSize);
 
   // Margin overlay dimensions
-  const marginLeft = left - marginSize;
+  const marginLeftPos = left - marginLeft_;
   const marginTop = top - marginSize;
-  const marginWidth = width + marginSize * 2;
+  const marginWidth = width + marginLeft_ + marginRight_;
   const marginHeight = height + marginSize * 2;
-  const marginCornerRadius = marginHeight / 2;
+  const marginFullRadius = marginHeight / 2;
+  const marginReducedRadius = marginFullRadius * outerEdgeRadiusFactor;
+  const marginRadiusLeft = isLeftAligned ? marginReducedRadius : marginFullRadius;
+  const marginRadiusRight = isLeftAligned ? marginFullRadius : marginReducedRadius;
+  const marginBorderRadius = `${marginRadiusLeft}px ${marginRadiusRight}px ${marginRadiusRight}px ${marginRadiusLeft}px`;
 
   return (
     <>
@@ -71,11 +97,11 @@ export function RoundedRectOverlay({
             styles.marginBg,
           )}
           style={{
-            left: marginLeft,
+            left: marginLeftPos,
             top: marginTop,
             width: marginWidth,
             height: marginHeight,
-            borderRadius: marginCornerRadius,
+            borderRadius: marginBorderRadius,
           }}
         />
       )}
@@ -86,7 +112,7 @@ export function RoundedRectOverlay({
           top,
           width,
           height,
-          borderRadius: cornerRadius,
+          borderRadius,
         }}
       >
         {label && (

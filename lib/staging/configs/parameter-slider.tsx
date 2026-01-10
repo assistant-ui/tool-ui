@@ -119,11 +119,15 @@ function ParameterSliderDebugOverlay({
             <RoundedRectOverlay
               rect={row.label}
               containerRect={containerRect}
-              padding={6}
+              padding={4}
+              paddingOuter={-4}
               color="blue"
               showMargin={level === "margins" || level === "full"}
-              marginSize={16}
+              marginSize={12}
+              marginSizeOuter={16}
               label={level === "full" ? "Label" : undefined}
+              outerEdgeRadiusFactor={0.3}
+              isLeftAligned={true}
             />
           )}
 
@@ -131,11 +135,15 @@ function ParameterSliderDebugOverlay({
             <RoundedRectOverlay
               rect={row.value}
               containerRect={containerRect}
-              padding={6}
+              padding={4}
+              paddingOuter={-4}
               color="green"
               showMargin={level === "margins" || level === "full"}
-              marginSize={16}
+              marginSize={12}
+              marginSizeOuter={16}
               label={level === "full" ? "Value" : undefined}
+              outerEdgeRadiusFactor={0.3}
+              isLeftAligned={false}
             />
           )}
 
