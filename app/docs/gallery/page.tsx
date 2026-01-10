@@ -52,8 +52,22 @@ export default function ComponentsGalleryPage() {
             <DataTable {...dataTablePresets.stocks.data} />
           </div>
 
-          <div className="mb-5 flex justify-center [column-span:all] 2xl:mb-5">
+          <div className="mb-5 flex justify-center [column-span:all] 2xl:mb-5 2xl:hidden">
             <ItemCarousel {...itemCarouselPresets.recommendations.data} />
+          </div>
+
+          <div className="mb-5 flex break-inside-avoid justify-center 2xl:mb-5 2xl:hidden">
+            <ParameterSlider {...parameterSliderPresets["photo-adjustments"].data} />
+          </div>
+
+          {/* 2xl: ItemCarousel (2 cols) + ParameterSlider (1 col) on same row */}
+          <div className="mb-5 hidden [column-span:all] 2xl:mb-5 2xl:grid 2xl:grid-cols-3 2xl:gap-5">
+            <div className="col-span-2 flex justify-center">
+              <ItemCarousel {...itemCarouselPresets.recommendations.data} />
+            </div>
+            <div className="col-span-1 flex items-center justify-center">
+              <ParameterSlider {...parameterSliderPresets["photo-adjustments"].data} />
+            </div>
           </div>
 
           <div className="mb-5 flex break-inside-avoid justify-center 2xl:mb-5">
@@ -131,10 +145,6 @@ export default function ComponentsGalleryPage() {
 
           <div className="mb-5 flex break-inside-avoid justify-center 2xl:mb-5">
             <Chart id="gallery-chart" {...chartPresets.revenue.data} />
-          </div>
-
-          <div className="mb-5 flex break-inside-avoid justify-center 2xl:mb-5">
-            <ParameterSlider {...parameterSliderPresets["photo-adjustments"].data} />
           </div>
 
           {/* <div className="mb-5 flex justify-center break-inside-avoid 2xl:mb-5">

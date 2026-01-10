@@ -399,6 +399,18 @@ function createSceneConfigs(): SceneConfig[] {
       toolFallbackHeight: 240,
     },
     {
+      userMessage: "Boost the bass a bit on this track",
+      preamble: "Here are the current EQ settings:",
+      toolUI: (
+        <ParameterSlider
+          id="chat-showcase-parameter-slider"
+          {...PARAMETER_SLIDER_DATA}
+          className="w-full max-w-[480px]"
+        />
+      ),
+      toolFallbackHeight: 240,
+    },
+    {
       userMessage: "Find me a birthday gift for Sarah",
       preamble: "Let me look into some options.",
       toolUI: <AnimatedPlan className="w-full max-w-[480px]" />,
@@ -429,18 +441,6 @@ function createSceneConfigs(): SceneConfig[] {
         />
       ),
       toolFallbackHeight: 320,
-    },
-    {
-      userMessage: "Boost the bass a bit on this track",
-      preamble: "Here are the current EQ settings:",
-      toolUI: (
-        <ParameterSlider
-          id="chat-showcase-parameter-slider"
-          {...PARAMETER_SLIDER_DATA}
-          className="w-full max-w-[480px]"
-        />
-      ),
-      toolFallbackHeight: 240,
     },
     {
       userMessage: "Run the tests for the auth module",

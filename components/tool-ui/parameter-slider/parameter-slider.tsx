@@ -279,20 +279,30 @@ function SliderRow({ config, value, onChange, disabled }: SliderRowProps) {
   const zeroPercent = crossesZero ? ((0 - min) / (max - min)) * 100 : 0;
   const valuePercent = ((value - min) / (max - min)) * 100;
 
-  const HANDLE_HALF_WIDTH = 2; // half of visual w-1 pill (4px)
-
+  // Fill clip-path uses same coordinate system as thumb
+  // Thumb position: 10px + (100% - 20px) * P/100 relative to Root
+  // Track is 4px inset, so relative to Track: 6px + (100% - 12px) * P/100
+  // At extremes (0% or 100%), extend fill to visual edges for complete coverage
   const fillClipPath = useMemo(() => {
+    const fillEdge = `calc(6px + (100% - 12px) * ${valuePercent / 100})`;
+    const fillEdgeFromRight = `calc(100% - 6px - (100% - 12px) * ${valuePercent / 100})`;
+
     if (crossesZero) {
+      const zeroPos = `calc(6px + (100% - 12px) * ${zeroPercent / 100})`;
       if (valuePercent >= zeroPercent) {
-        // Positive: reveal from zeroPercent to right edge of handle
-        return `inset(0 calc(${100 - valuePercent}% - ${HANDLE_HALF_WIDTH}px) 0 ${zeroPercent}%)`;
+        // Positive: reveal from zero to fill edge (extend to right edge at 100%)
+        const rightInset = valuePercent >= 100 ? '0' : fillEdgeFromRight;
+        return `inset(0 ${rightInset} 0 ${zeroPos})`;
       } else {
-        // Negative: reveal from left edge of handle to zeroPercent
-        return `inset(0 ${100 - zeroPercent}% 0 calc(${valuePercent}% - ${HANDLE_HALF_WIDTH}px))`;
+        // Negative: reveal from fill edge to zero (extend to left edge at 0%)
+        const zeroFromRight = `calc(100% - 6px - (100% - 12px) * ${zeroPercent / 100})`;
+        const leftInset = valuePercent <= 0 ? '0' : fillEdge;
+        return `inset(0 ${zeroFromRight} 0 ${leftInset})`;
       }
     }
-    // Non-crossesZero: reveal from 0 to right edge of handle
-    return `inset(0 calc(${100 - valuePercent}% - ${HANDLE_HALF_WIDTH}px) 0 0)`;
+    // Non-crossesZero: reveal from left edge to fill edge (extend to right at 100%)
+    const rightInset = valuePercent >= 100 ? '0' : fillEdgeFromRight;
+    return `inset(0 ${rightInset} 0 0)`;
   }, [crossesZero, zeroPercent, valuePercent]);
 
   const fillMaskImage = crossesZero
@@ -370,7 +380,7 @@ function SliderRow({ config, value, onChange, disabled }: SliderRowProps) {
         <SliderPrimitive.Track
           ref={trackRef}
           className={cn(
-            "squircle relative h-12 w-full grow overflow-hidden rounded-sm",
+            "squircle relative mx-1 h-12 w-[calc(100%-8px)] grow overflow-hidden rounded-sm",
             "bg-muted ring-border ring-1 ring-inset",
             "dark:bg-black/40 dark:ring-white/10",
           )}
@@ -409,7 +419,7 @@ function SliderRow({ config, value, onChange, disabled }: SliderRowProps) {
 
         {/* Metallic reflection overlay - follows handle, brightness scales with interaction */}
         <div
-          className="pointer-events-none absolute inset-0 rounded-sm squircle transition-[opacity] duration-200 ease-[var(--cubic-ease-in-out)]"
+          className="pointer-events-none absolute inset-y-0 inset-x-1 rounded-sm squircle transition-[opacity] duration-200 ease-[var(--cubic-ease-in-out)]"
           style={{
             ...reflectionStyle,
             opacity: reflectionOpacity,
@@ -418,7 +428,12 @@ function SliderRow({ config, value, onChange, disabled }: SliderRowProps) {
         />
 
         <SliderPrimitive.Thumb
-          style={{ left: `${valuePercent}%`, transform: "translateX(-50%)" }}
+          style={{
+            // Inset thumb position so handle stays within track bounds
+            // Track inset: 4px, Handle half-width: 6px, Total: 10px each side
+            left: `calc(10px + (100% - 20px) * ${valuePercent / 100})`,
+            transform: "translateX(-50%)",
+          }}
           className={cn(
             "group/thumb z-0 block w-3 shrink-0 cursor-grab rounded-sm",
             "relative bg-transparent outline-none",
@@ -434,11 +449,9 @@ function SliderRow({ config, value, onChange, disabled }: SliderRowProps) {
             // Calculate morph state
             const isActive = isHovered || isDragging;
 
-            // Offset to align with fill edge - same position for both rest and active states
-            // This prevents horizontal jitter when transitioning between states
-            const fillEdgeOffset = crossesZero && valuePercent < zeroPercent
-              ? -HANDLE_HALF_WIDTH  // Negative fill: edge is to the left
-              : HANDLE_HALF_WIDTH;   // Positive fill: edge is to the right
+            // Simple fixed offset - fill now uses same coordinate system as thumb
+            // Indicator sits at thumb center, which aligns with fill edge
+            const fillEdgeOffset = 0;
 
             // Hide rest-state indicator at edges (0% or 100%) - the reflection gradient handles this
             const edgeThreshold = 3;
@@ -482,7 +495,7 @@ function SliderRow({ config, value, onChange, disabled }: SliderRowProps) {
           })()}
         </SliderPrimitive.Thumb>
 
-        <div className="pointer-events-none absolute inset-x-2 top-1/2 z-10 flex -translate-y-1/2 items-center justify-between">
+        <div className="pointer-events-none absolute inset-x-4 top-1/2 z-10 flex -translate-y-1/2 items-center justify-between">
           <span
             ref={labelRef}
             className="text-primary -mt-0.5 rounded-full px-2 py-px text-sm font-normal tracking-wide [text-shadow:0.5px_0.5px_0_rgba(0,0,0,0.35)]"
