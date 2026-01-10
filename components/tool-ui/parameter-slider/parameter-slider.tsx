@@ -162,6 +162,7 @@ function SliderRow({ config, value, onChange, disabled }: SliderRowProps) {
   const { id, label, min, max, step = 1, unit, precision } = config;
   const crossesZero = min < 0 && max > 0;
   const [isDragging, setIsDragging] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
 
   const trackRef = useRef<HTMLSpanElement>(null);
   const labelRef = useRef<HTMLSpanElement>(null);
@@ -299,16 +300,12 @@ function SliderRow({ config, value, onChange, disabled }: SliderRowProps) {
     : "linear-gradient(to right, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.7) 100%)";
 
   // Metallic reflection gradient that follows the handle position
-  // Fully visible while dragging, fades out on release unless at edges
+  // Unified gradient with consistent appearance - only opacity changes
+  // Visible while dragging OR when resting at edges (0%/100%)
   const reflectionStyle = useMemo(() => {
     const handlePos = valuePercent;
-    const baseSpread = 6; // Base width when not dragging (in %)
-    const dragSpread = 12; // Width while dragging (in %)
+    const spread = 10; // Consistent spread for all states
 
-    const spread = isDragging ? dragSpread : baseSpread;
-
-    // Create gradient stops centered on handle position
-    // Use full white - opacity controlled separately for animation
     const start = Math.max(0, handlePos - spread);
     const end = Math.min(100, handlePos + spread);
 
@@ -324,19 +321,21 @@ function SliderRow({ config, value, onChange, disabled }: SliderRowProps) {
       maskComposite: 'exclude',
       padding: '1px',
     };
-  }, [valuePercent, isDragging]);
+  }, [valuePercent]);
 
-  // Separate opacity calculation for CSS transition animation
+  // Opacity scales with handle size: rest → hover → drag
   const reflectionOpacity = useMemo(() => {
-    const maxOpacity = 0.4;
-    const edgeThreshold = 3; // Consider "at edge" within 3% of min/max
+    const edgeThreshold = 3;
     const atEdge = valuePercent <= edgeThreshold || valuePercent >= 100 - edgeThreshold;
 
     if (isDragging || atEdge) {
-      return maxOpacity;
+      return 0.4;
+    }
+    if (isHovered) {
+      return 0.2;
     }
     return 0;
-  }, [valuePercent, isDragging]);
+  }, [valuePercent, isDragging, isHovered]);
 
   const handleValueChange = useCallback(
     (values: number[]) => {
@@ -360,6 +359,8 @@ function SliderRow({ config, value, onChange, disabled }: SliderRowProps) {
         onValueChange={handleValueChange}
         onPointerDown={() => setIsDragging(true)}
         onPointerUp={() => setIsDragging(false)}
+        onPointerEnter={() => setIsHovered(true)}
+        onPointerLeave={() => setIsHovered(false)}
         min={min}
         max={max}
         step={step}
@@ -380,17 +381,6 @@ function SliderRow({ config, value, onChange, disabled }: SliderRowProps) {
               maskImage: fillMaskImage,
               WebkitMaskImage: fillMaskImage,
               clipPath: fillClipPath,
-            }}
-          />
-
-          {/* Fill edge indicator - blend mode adjusts visibility against fill */}
-          <div
-            className="bg-primary pointer-events-none absolute top-0 bottom-0 w-px mix-blend-multiply transition-opacity duration-200 ease-[var(--cubic-ease-in-out)] dark:mix-blend-screen"
-            style={{
-              left: crossesZero && valuePercent < zeroPercent
-                ? `calc(${valuePercent}% - ${HANDLE_HALF_WIDTH}px + 1px)`
-                : `calc(${valuePercent}% + ${HANDLE_HALF_WIDTH}px - 1px)`,
-              opacity: isDragging ? 0 : 0.375,
             }}
           />
 
@@ -417,59 +407,79 @@ function SliderRow({ config, value, onChange, disabled }: SliderRowProps) {
           })}
         </SliderPrimitive.Track>
 
-        {/* Metallic reflection overlay - follows handle position, fades at center */}
+        {/* Metallic reflection overlay - follows handle, brightness scales with interaction */}
         <div
-          className="pointer-events-none absolute inset-0 rounded-sm squircle transition-[opacity,filter,visibility] duration-200 ease-[var(--cubic-ease-in-out)]"
+          className="pointer-events-none absolute inset-0 rounded-sm squircle transition-[opacity] duration-200 ease-[var(--cubic-ease-in-out)]"
           style={{
             ...reflectionStyle,
             opacity: reflectionOpacity,
-            filter: isDragging ? 'blur(2px)' : 'blur(0px)',
-            visibility: reflectionOpacity > 0 || isDragging ? 'visible' : 'hidden',
+            filter: 'blur(1px)',
           }}
         />
 
         <SliderPrimitive.Thumb
           style={{ left: `${valuePercent}%`, transform: "translateX(-50%)" }}
           className={cn(
-            "group/thumb z-0 block h-[50px] w-3 shrink-0 cursor-grab rounded-sm",
+            "group/thumb z-0 block w-3 shrink-0 cursor-grab rounded-sm",
             "relative bg-transparent outline-none",
-            "transition-[height,opacity] duration-100 ease-[var(--cubic-ease-in-out)]",
-            "hover:h-[54px]",
+            "transition-[height,opacity] duration-150 ease-[var(--cubic-ease-in-out)]",
             "focus-visible:outline-ring focus-visible:outline-2 focus-visible:outline-offset-1",
             "active:cursor-grabbing",
-            "active:h-[56px]",
             "disabled:pointer-events-none disabled:opacity-50",
-            isDragging && "h-[56px]",
+            // Height morphs: rest (track height) → hover → active
+            isDragging ? "h-[56px]" : isHovered ? "h-[54px]" : "h-12",
           )}
         >
-          <span
-            className={cn(
-              "bg-primary absolute top-0 left-1/2 w-1 -translate-x-1/2",
-              gap > 0 ? "rounded-full" : "rounded-t-full",
-              "opacity-0 transition-all duration-150 ease-[var(--cubic-ease-in-out)]",
-              "group-hover/slider:opacity-100",
-              "group-hover/thumb:w-1.5",
-              "group-active/thumb:w-2",
-              isDragging && "w-2 opacity-100",
-            )}
-            style={{
-              height: gap > 0 ? `calc(50% - ${gap / 2}px)` : "50%",
-            }}
-          />
-          <span
-            className={cn(
-              "bg-primary absolute bottom-0 left-1/2 w-1 -translate-x-1/2",
-              gap > 0 ? "rounded-full" : "rounded-b-full",
-              "opacity-0 transition-all duration-150 ease-[var(--cubic-ease-in-out)]",
-              "group-hover/slider:opacity-100",
-              "group-hover/thumb:w-1.5",
-              "group-active/thumb:w-2",
-              isDragging && "w-2 opacity-100",
-            )}
-            style={{
-              height: gap > 0 ? `calc(50% - ${gap / 2}px)` : "50%",
-            }}
-          />
+          {(() => {
+            // Calculate morph state
+            const isActive = isHovered || isDragging;
+
+            // Offset to align with fill edge - same position for both rest and active states
+            // This prevents horizontal jitter when transitioning between states
+            const fillEdgeOffset = crossesZero && valuePercent < zeroPercent
+              ? -HANDLE_HALF_WIDTH  // Negative fill: edge is to the left
+              : HANDLE_HALF_WIDTH;   // Positive fill: edge is to the right
+
+            // Hide rest-state indicator at edges (0% or 100%) - the reflection gradient handles this
+            const edgeThreshold = 3;
+            const atEdge = valuePercent <= edgeThreshold || valuePercent >= 100 - edgeThreshold;
+            const restOpacity = atEdge ? 0 : 0.25;
+
+            return (
+              <>
+                <span
+                  className={cn(
+                    "bg-primary absolute top-0 left-1/2",
+                    "transition-all duration-150 ease-[var(--cubic-ease-in-out)]",
+                    isActive
+                      ? gap > 0 ? "rounded-full" : "rounded-t-full"
+                      : "rounded-t-sm",
+                    isDragging ? "w-2" : isActive ? "w-1.5" : "w-px",
+                  )}
+                  style={{
+                    transform: `translateX(calc(-50% + ${fillEdgeOffset}px))`,
+                    height: isActive && gap > 0 ? `calc(50% - ${gap / 2}px)` : "50%",
+                    opacity: isActive ? 1 : restOpacity,
+                  }}
+                />
+                <span
+                  className={cn(
+                    "bg-primary absolute bottom-0 left-1/2",
+                    "transition-all duration-150 ease-[var(--cubic-ease-in-out)]",
+                    isActive
+                      ? gap > 0 ? "rounded-full" : "rounded-b-full"
+                      : "rounded-b-sm",
+                    isDragging ? "w-2" : isActive ? "w-1.5" : "w-px",
+                  )}
+                  style={{
+                    transform: `translateX(calc(-50% + ${fillEdgeOffset}px))`,
+                    height: isActive && gap > 0 ? `calc(50% - ${gap / 2}px)` : "50%",
+                    opacity: isActive ? 1 : restOpacity,
+                  }}
+                />
+              </>
+            );
+          })()}
         </SliderPrimitive.Thumb>
 
         <div className="pointer-events-none absolute inset-x-2 top-1/2 z-10 flex -translate-y-1/2 items-center justify-between">
