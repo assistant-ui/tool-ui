@@ -225,6 +225,69 @@ Things that sound creative but aren't how people actually work.
 
 ---
 
+## Semantic Color Choices
+
+Colors in data visualizations carry meaning. Mismatched colors undermine trust and create cognitive friction.
+
+### The Rule
+
+**Positive outcomes get positive colors. Negative outcomes get negative colors.**
+
+This applies to:
+- Sparklines showing trends
+- Chart series representing metrics
+- Delta indicators (+/-%)
+- Status badges
+
+### Color Semantics
+
+| Color | Meaning | Use for |
+|-------|---------|---------|
+| Green (`--chart-1`) | Positive, good, growth | Revenue up, users growing, goals met |
+| Red (`--chart-2`) | Negative, bad, decline | Errors, churn increasing, losses |
+| Blue (`--chart-3`) | Neutral, informational | Comparisons, baselines, neutral data |
+| Purple (`--chart-4`) | Neutral, categorical | Secondary categories |
+| Yellow (`--chart-5`) | Warning, attention | Thresholds, alerts |
+| Muted | Neutral, decorative | When semantic meaning isn't needed |
+
+### Context Matters
+
+Some metrics are "inverse"—down is good:
+- **Churn rate**: Decreasing is positive → use green
+- **Error rate**: Decreasing is positive → use green
+- **Response time**: Decreasing is positive → use green
+
+The `upIsPositive: false` flag on delta indicators handles the text color. Match sparkline colors to the same logic.
+
+### Examples
+
+**Correct:**
+```typescript
+// Revenue trending up = good = green
+sparkline: { data: [...], color: "var(--chart-1)" },
+diff: { value: 12.4 }  // Shows green +12.4%
+
+// Churn trending down = good = green
+sparkline: { data: [...], color: "var(--chart-1)" },
+diff: { value: -0.8, upIsPositive: false }  // Shows green -0.8%
+```
+
+**Incorrect:**
+```typescript
+// Revenue with red sparkline sends wrong signal
+sparkline: { data: [...], color: "var(--chart-2)" },  // ❌ Red for positive metric
+diff: { value: 12.4 }  // Green text contradicts red sparkline
+```
+
+### When to Use Neutral Colors
+
+Use muted/neutral colors when:
+- The metric isn't inherently good or bad (e.g., "Steps today" in a fitness tracker)
+- You're showing multiple series that need visual distinction, not semantic meaning
+- The context is purely informational without performance judgment
+
+---
+
 ## Component-Specific Notes
 
 ### Charts
@@ -255,6 +318,7 @@ Before finalizing any example copy:
 - [ ] **Voice match:** Does the assistant tone fit the context?
 - [ ] **Specificity:** Are there any generic placeholders?
 - [ ] **Stakes match:** Does the UI weight match the scenario weight?
+- [ ] **Color semantics:** Do visualization colors match the metric's meaning? (green for positive, red for negative)
 - [ ] **Not a tech demo:** Would this example make sense outside documentation?
 - [ ] **Diverse:** Does this add variety to the overall set of examples?
 

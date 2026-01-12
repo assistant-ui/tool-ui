@@ -18,6 +18,7 @@ import { OptionList } from "@/components/tool-ui/option-list";
 import { OrderSummary } from "@/components/tool-ui/order-summary";
 import { ParameterSlider } from "@/components/tool-ui/parameter-slider";
 import { Plan } from "@/components/tool-ui/plan";
+import { StatsDisplay } from "@/components/tool-ui/stats-display";
 import { Terminal } from "@/components/tool-ui/terminal";
 
 import { approvalCardPresets, type ApprovalCardPresetName } from "@/lib/presets/approval-card";
@@ -35,6 +36,7 @@ import { optionListPresets, type OptionListPresetName } from "@/lib/presets/opti
 import { orderSummaryPresets, type OrderSummaryPresetName } from "@/lib/presets/order-summary";
 import { parameterSliderPresets, type ParameterSliderPresetName } from "@/lib/presets/parameter-slider";
 import { planPresets, type PlanPresetName } from "@/lib/presets/plan";
+import { statsDisplayPresets, type StatsDisplayPresetName } from "@/lib/presets/stats-display";
 import { terminalPresets, type TerminalPresetName } from "@/lib/presets/terminal";
 
 export type ComponentId =
@@ -53,6 +55,7 @@ export type ComponentId =
   | "order-summary"
   | "parameter-slider"
   | "plan"
+  | "stats-display"
   | "terminal";
 
 export interface ChatContext {
@@ -370,6 +373,18 @@ export const previewConfigs: Record<ComponentId, PreviewConfig<unknown, string>>
       preamble: "Here's what I'm working on:",
     },
     renderComponent: ({ data }) => <Plan {...(data as Parameters<typeof Plan>[0])} />,
+  },
+  "stats-display": {
+    presets: statsDisplayPresets as Record<string, PresetWithCodeGen<unknown>>,
+    defaultPreset: "business-metrics" satisfies StatsDisplayPresetName,
+    chatContext: {
+      userMessage: "Show me the key metrics for this quarter",
+      preamble: "Here's your performance summary:",
+    },
+    renderComponent: ({ data }) => {
+      const statsData = data as Parameters<typeof StatsDisplay>[0];
+      return <StatsDisplay {...statsData} />;
+    },
   },
   "item-carousel": {
     presets: itemCarouselPresets as Record<string, PresetWithCodeGen<unknown>>,

@@ -103,6 +103,12 @@ export const componentsRegistry: ComponentMeta[] = [
     path: "/docs/social-post",
   },
   {
+    id: "stats-display",
+    label: "Stats Display",
+    description: "Display key metrics in a grid",
+    path: "/docs/stats-display",
+  },
+  {
     id: "terminal",
     label: "Terminal",
     description: "Show command-line output and logs",

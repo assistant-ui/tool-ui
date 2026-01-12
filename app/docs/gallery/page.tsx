@@ -19,6 +19,7 @@ import { CodeBlock } from "@/components/tool-ui/code-block";
 import { Chart } from "@/components/tool-ui/chart";
 import { ItemCarousel } from "@/components/tool-ui/item-carousel";
 import { ParameterSlider } from "@/components/tool-ui/parameter-slider";
+import { StatsDisplay } from "@/components/tool-ui/stats-display";
 import { approvalCardPresets } from "@/lib/presets/approval-card";
 import { citationPresets } from "@/lib/presets/citation";
 import { dataTablePresets } from "@/lib/presets/data-table";
@@ -37,6 +38,7 @@ import { terminalPresets } from "@/lib/presets/terminal";
 import { codeBlockPresets } from "@/lib/presets/code-block";
 import { chartPresets } from "@/lib/presets/chart";
 import { parameterSliderPresets } from "@/lib/presets/parameter-slider";
+import { statsDisplayPresets } from "@/lib/presets/stats-display";
 
 export const metadata: Metadata = {
   title: "Gallery",
@@ -88,6 +90,10 @@ export default function ComponentsGalleryPage() {
 
           <div className="mb-5 flex break-inside-avoid justify-center 2xl:mb-5">
             <DataTable layout="cards" {...dataTablePresets.tasks.data} />
+          </div>
+
+          <div className="mb-5 flex break-inside-avoid justify-center 2xl:mb-5">
+            <StatsDisplay {...statsDisplayPresets["business-metrics"].data} />
           </div>
 
           <div className="mb-5 flex break-inside-avoid justify-center 2xl:mb-5">

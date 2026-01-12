@@ -1,0 +1,322 @@
+import { DocsHeader } from "../_components/docs-header";
+import { StatsDisplay } from "@/components/tool-ui/stats-display";
+
+<DocsHeader
+  title="Stats Display"
+  description="Display key metrics in a grid."
+  mdxPath="app/docs/stats-display/content.mdx"
+/>
+
+<Tabs items={["Preview", "Code"]}>
+  <Tab>
+    <div className="not-prose mx-auto max-w-lg">
+      <StatsDisplay
+        id="stats-example"
+        title="Revenue Overview"
+        description="Q4 2024 performance"
+        stats={[
+          {
+            key: "revenue",
+            label: "Total Revenue",
+            value: 284500,
+            format: { kind: "currency", currency: "USD", decimals: 0 },
+            diff: { value: 12.5, decimals: 1 },
+            sparkline: { data: [180, 210, 195, 240, 220, 260, 285], color: "var(--chart-1)" },
+          },
+          {
+            key: "mrr",
+            label: "Monthly Recurring",
+            value: 42800,
+            format: { kind: "currency", currency: "USD", decimals: 0 },
+            diff: { value: 8.2, decimals: 1 },
+          },
+          {
+            key: "churn",
+            label: "Churn Rate",
+            value: 0.032,
+            format: { kind: "percent", decimals: 1, basis: "fraction" },
+            diff: { value: -0.8, decimals: 1, upIsPositive: false },
+          },
+        ]}
+      />
+    </div>
+  </Tab>
+  <Tab>
+    ```tsx
+    import { StatsDisplay } from "@/components/tool-ui/stats-display";
+
+    export function Example() {
+      return (
+        <StatsDisplay
+          id="stats-example"
+          title="Revenue Overview"
+          description="Q4 2024 performance"
+          stats={[
+            {
+              key: "revenue",
+              label: "Total Revenue",
+              value: 284500,
+              format: { kind: "currency", currency: "USD", decimals: 0 },
+              diff: { value: 12.5, decimals: 1 },
+              sparkline: { data: [180, 210, 195, 240, 220, 260, 285], color: "var(--chart-1)" },
+            },
+            {
+              key: "mrr",
+              label: "Monthly Recurring",
+              value: 42800,
+              format: { kind: "currency", currency: "USD", decimals: 0 },
+              diff: { value: 8.2, decimals: 1 },
+            },
+            {
+              key: "churn",
+              label: "Churn Rate",
+              value: 0.032,
+              format: { kind: "percent", decimals: 1, basis: "fraction" },
+              diff: { value: -0.8, decimals: 1, upIsPositive: false },
+            },
+          ]}
+        />
+      );
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Key Features
+
+<FeatureGrid>
+  <Feature icon="Grid2x2" title="Auto-responsive grid">
+    CSS grid with auto-fit adapts to container width
+  </Feature>
+  <Feature icon="LineChart" title="Inline sparklines">
+    Pure SVG trend visualization without external dependencies
+  </Feature>
+  <Feature icon="BarChart3" title="Delta indicators">
+    Semantic colors with upIsPositive for metrics where down is good
+  </Feature>
+  <Feature icon="DollarSign" title="Flexible formatting">
+    Currency, percent, number, and text formats with locale support
+  </Feature>
+</FeatureGrid>
+
+## When to Use
+
+- **Good for:** KPI dashboards, analytics summaries, performance snapshots
+- **Not for:** Detailed data exploration (use [Data Table](/docs/data-table)), time-series visualization (use [Chart](/docs/chart))
+
+## Source and Install
+
+Copy [`components/tool-ui/stats-display`](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/stats-display) and the [`shared`](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/shared) directory into your project. The `shared` folder contains utilities used by all Tool UI components. The `tool-ui` directory should sit alongside your shadcn `ui` directory.
+
+### Prerequisites
+
+This component requires the following [shadcn/ui](https://ui.shadcn.com) components:
+
+```bash
+pnpm dlx shadcn@latest add card
+```
+
+### Directory Structure
+
+<Files>
+  <Folder name="components" defaultOpen>
+    <Folder name="ui">
+      <File name="card.tsx" />
+      <File name="..." />
+    </Folder>
+    <Folder name="tool-ui" defaultOpen>
+      <Folder name="shared" defaultOpen>
+        <File name="action-buttons.tsx" />
+        <File name="schema.ts" />
+        <File name="index.ts" />
+        <File name="..." />
+      </Folder>
+      <Folder name="stats-display" defaultOpen>
+        <File name="stats-display.tsx" />
+        <File name="sparkline.tsx" />
+        <File name="schema.ts" />
+        <File name="index.tsx" />
+        <File name="error-boundary.tsx" />
+      </Folder>
+    </Folder>
+  </Folder>
+</Files>
+
+### Download
+
+- [**Shared Dependencies (GitHub)**](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/shared) ([ZIP](https://download-directory.github.io/?url=https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/shared))
+- [**Stats Display (GitHub)**](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/stats-display) ([ZIP](https://download-directory.github.io/?url=https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/stats-display))
+
+## Usage
+
+```tsx
+"use client";
+
+import { makeAssistantTool } from "@assistant-ui/react";
+import {
+  StatsDisplay,
+  StatsDisplayErrorBoundary,
+  parseSerializableStatsDisplay,
+  SerializableStatsDisplaySchema,
+  type SerializableStatsDisplay,
+} from "@/components/tool-ui/stats-display";
+
+export const StatsDisplayTool = makeAssistantTool<SerializableStatsDisplay>({
+  toolName: "showStats",
+  description: "Display key metrics in a grid",
+  parameters: SerializableStatsDisplaySchema,
+  render: ({ args, result, addResult, toolCallId }) => {
+    if (!args?.stats?.length) return null;
+
+    const data = parseSerializableStatsDisplay({
+      ...args,
+      id: (args as any)?.id ?? `stats-${toolCallId}`,
+    });
+
+    return (
+      <StatsDisplayErrorBoundary>
+        <StatsDisplay {...data} />
+      </StatsDisplayErrorBoundary>
+    );
+  },
+});
+```
+
+## Props
+
+<TypeTable
+  type={{
+    id: {
+      description: "Unique identifier for this component instance",
+      type: "string",
+      required: true,
+    },
+    title: {
+      description: "Optional card title",
+      type: "string",
+    },
+    description: {
+      description: "Optional card description",
+      type: "string",
+    },
+    stats: {
+      description: "Array of stat items to display",
+      type: "StatItem[]",
+      required: true,
+    },
+    className: {
+      description: "Additional CSS classes",
+      type: "string",
+    },
+    isLoading: {
+      description: "Show skeleton loading state",
+      type: "boolean",
+      default: "false",
+    },
+    locale: {
+      description: "Locale for number formatting",
+      type: "string",
+    },
+  }}
+/>
+
+## StatItem Schema
+
+<TypeTable
+  type={{
+    key: {
+      description: "Unique key for the stat",
+      type: "string",
+      required: true,
+    },
+    label: {
+      description: "Label displayed above the value",
+      type: "string",
+      required: true,
+    },
+    value: {
+      description: "The stat value",
+      type: "number | string",
+      required: true,
+    },
+    format: {
+      description: "Value formatting config",
+      type: "StatFormat",
+    },
+    diff: {
+      description: "Change indicator",
+      type: "StatDiff",
+    },
+    sparkline: {
+      description: "Mini trend visualization",
+      type: "StatSparkline",
+    },
+  }}
+/>
+
+## StatFormat Variants
+
+<TypeTable
+  type={{
+    text: {
+      description: "Display value as-is",
+      type: "{ kind: 'text' }",
+    },
+    number: {
+      description: "Format as number with optional decimals and compact notation",
+      type: "{ kind: 'number', decimals?: number, compact?: boolean }",
+    },
+    currency: {
+      description: "Format as currency",
+      type: "{ kind: 'currency', currency: string, decimals?: number }",
+    },
+    percent: {
+      description: "Format as percentage",
+      type: "{ kind: 'percent', decimals?: number, basis?: 'fraction' | 'unit' }",
+    },
+  }}
+/>
+
+## StatDiff Schema
+
+<TypeTable
+  type={{
+    value: {
+      description: "Change percentage value",
+      type: "number",
+      required: true,
+    },
+    decimals: {
+      description: "Decimal places for diff display",
+      type: "number",
+      default: "2",
+    },
+    upIsPositive: {
+      description: "Whether positive change is good (green) or bad (red)",
+      type: "boolean",
+      default: "true",
+    },
+  }}
+/>
+
+## StatSparkline Schema
+
+<TypeTable
+  type={{
+    data: {
+      description: "Array of numeric values (minimum 2)",
+      type: "number[]",
+      required: true,
+    },
+    color: {
+      description: "Custom stroke color",
+      type: "string",
+    },
+  }}
+/>
+
+## Accessibility
+
+- Uses semantic `<article>` with `aria-busy` for loading state
+- All values are rendered as text, accessible to screen readers
+- Sparklines are decorative SVG with appropriate hiding from assistive tech

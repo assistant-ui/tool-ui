@@ -134,6 +134,7 @@ Create 4-5 presets. **Every preset must be a believable real-world scenario**, e
 - [ ] **Believability**: Would someone actually do this?
 - [ ] **Specificity**: No generic placeholders (Category A, Item 1, $99.99)
 - [ ] **Stakes match**: UI treatment matches scenario weight
+- [ ] **Color semantics**: Positive metrics use green, negative use red (see copy-guide.md)
 - [ ] **Not a tech demo**: Makes sense outside documentation
 - [ ] IDs are unique and descriptive (`{name}-{preset-key}`)
 - [ ] `generateExampleCode` produces valid, readable JSX
