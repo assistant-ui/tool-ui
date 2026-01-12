@@ -13,6 +13,39 @@ import type { ParameterSliderProps, SliderConfig, SliderValue } from "./schema";
 import { ActionButtons, normalizeActionsConfig } from "../shared";
 import type { Action } from "../shared";
 import { cn } from "./_adapter";
+import {
+  generateHourglassClipPath,
+  calculateGap,
+  type HitboxConfig,
+} from "./geometry";
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Layout Constants
+// ─────────────────────────────────────────────────────────────────────────────
+
+const TRACK_HEIGHT = 48;
+const TRACK_EDGE_INSET = 4;
+const TEXT_VERTICAL_OFFSET = 0.5;
+const TEXT_RELEASE_INSET = 8;
+const TICK_COUNT = 16;
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Text Hitbox Configuration
+// ─────────────────────────────────────────────────────────────────────────────
+
+const HITBOX_CONFIG: HitboxConfig = {
+  paddingX: 4,
+  paddingXOuter: 0,
+  paddingY: 2,
+  marginX: 12,
+  marginXOuter: 4,
+  marginY: 12,
+  outerEdgeRadiusFactor: 0.3,
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Formatting Utilities
+// ─────────────────────────────────────────────────────────────────────────────
 
 function formatSignedValue(
   value: number,
@@ -47,136 +80,57 @@ function getAriaValueText(
   return unit ? `${value} ${unit}` : String(value);
 }
 
-const TICK_COUNT = 16;
-const TEXT_PADDING_X = 4;
-const TEXT_PADDING_X_OUTER = 0; // Less inset on outer-facing side (near edges)
-const TEXT_PADDING_Y = 2;
-const DETECTION_MARGIN_X = 12;
-const DETECTION_MARGIN_X_OUTER = 4; // Small margin at edges for steep falloff - segments fully close at terminal positions
-const DETECTION_MARGIN_Y = 12;
-const TRACK_HEIGHT = 48;
-const TEXT_RELEASE_INSET = 8;
-const TRACK_EDGE_INSET = 4; // px from track edge - keeps elements visible at extremes
-// Text vertical offset: raised slightly from center
-// Positive = raised, negative = lowered
-const TEXT_VERTICAL_OFFSET = 0.5;
-
-// Convert a percentage (0-100) to an inset position string
-// At 0%: 4px from left edge; at 100%: 4px from right edge
 function toInsetPosition(percent: number): string {
   return `calc(${TRACK_EDGE_INSET}px + (100% - ${TRACK_EDGE_INSET * 2}px) * ${percent / 100})`;
 }
 
-function signedDistanceToRoundedRect(
-  px: number,
-  py: number,
-  left: number,
-  right: number,
-  top: number,
-  bottom: number,
-  radiusLeft: number,
-  radiusRight: number,
-): number {
-  const innerLeft = left + radiusLeft;
-  const innerRight = right - radiusRight;
-  const innerTop = top + Math.max(radiusLeft, radiusRight);
-  const innerBottom = bottom - Math.max(radiusLeft, radiusRight);
+// ─────────────────────────────────────────────────────────────────────────────
+// Hourglass Handle
+// ─────────────────────────────────────────────────────────────────────────────
 
-  const inLeftCorner = px < innerLeft;
-  const inRightCorner = px > innerRight;
-  const inCornerY = py < innerTop || py > innerBottom;
-
-  if ((inLeftCorner || inRightCorner) && inCornerY) {
-    const radius = inLeftCorner ? radiusLeft : radiusRight;
-    const cornerX = inLeftCorner ? innerLeft : innerRight;
-    const cornerY = py < innerTop ? top + radius : bottom - radius;
-    const distToCornerCenter = Math.hypot(px - cornerX, py - cornerY);
-    return distToCornerCenter - radius;
-  }
-
-  const dx = Math.max(left - px, px - right, 0);
-  const dy = Math.max(top - py, py - bottom, 0);
-
-  if (dx === 0 && dy === 0) {
-    return -Math.min(px - left, right - px, py - top, bottom - py);
-  }
-
-  return Math.max(dx, dy);
+interface HourglassHandleProps {
+  valuePercent: number;
+  gap: number;
+  isHovered: boolean;
+  isDragging: boolean;
+  className?: string;
 }
 
-const OUTER_EDGE_RADIUS_FACTOR = 0.3; // Reduced radius on outer-facing sides for steeper falloff
+const EDGE_THRESHOLD = 3;
+const MAX_GAP = 20;
+const WAIST_Y = 49;
 
-function calculateGap(
-  thumbCenterX: number,
-  textRect: { left: number; right: number; height: number; centerY: number },
-  isLeftAligned: boolean,
-): number {
-  const { left, right, height, centerY } = textRect;
-  // Asymmetric padding/margin: outer-facing side has less padding, more margin
-  const paddingLeft = isLeftAligned ? TEXT_PADDING_X_OUTER : TEXT_PADDING_X;
-  const paddingRight = isLeftAligned ? TEXT_PADDING_X : TEXT_PADDING_X_OUTER;
-  const marginLeft = isLeftAligned ? DETECTION_MARGIN_X_OUTER : DETECTION_MARGIN_X;
-  const marginRight = isLeftAligned ? DETECTION_MARGIN_X : DETECTION_MARGIN_X_OUTER;
-  const paddingY = TEXT_PADDING_Y;
-  const marginY = DETECTION_MARGIN_Y;
-  const thumbCenterY = centerY;
+function HourglassHandle({
+  valuePercent,
+  gap,
+  isHovered,
+  isDragging,
+  className,
+}: HourglassHandleProps) {
+  const isActive = isHovered || isDragging;
+  const atEdge =
+    valuePercent <= EDGE_THRESHOLD || valuePercent >= 100 - EDGE_THRESHOLD;
+  const restOpacity = atEdge ? 0 : 0.25;
+  const pinch = isActive ? Math.min(1, gap / MAX_GAP) : 0;
+  const clipPath = generateHourglassClipPath(pinch, WAIST_Y);
 
-  // Inner boundary (where max gap occurs)
-  const innerLeft = left - paddingLeft;
-  const innerRight = right + paddingRight;
-  const innerTop = centerY - height / 2 - paddingY;
-  const innerBottom = centerY + height / 2 + paddingY;
-  const innerHeight = height + paddingY * 2;
-  const innerRadius = innerHeight / 2;
-  // Smaller radius on outer-facing side (left for label, right for value)
-  const innerRadiusLeft = isLeftAligned ? innerRadius * OUTER_EDGE_RADIUS_FACTOR : innerRadius;
-  const innerRadiusRight = isLeftAligned ? innerRadius : innerRadius * OUTER_EDGE_RADIUS_FACTOR;
-
-  // Outer boundary (where effect starts) - proportionally larger
-  const outerLeft = left - paddingLeft - marginLeft;
-  const outerRight = right + paddingRight + marginRight;
-  const outerTop = centerY - height / 2 - paddingY - marginY;
-  const outerBottom = centerY + height / 2 + paddingY + marginY;
-  const outerHeight = height + paddingY * 2 + marginY * 2;
-  const outerRadius = outerHeight / 2;
-  const outerRadiusLeft = isLeftAligned ? outerRadius * OUTER_EDGE_RADIUS_FACTOR : outerRadius;
-  const outerRadiusRight = isLeftAligned ? outerRadius : outerRadius * OUTER_EDGE_RADIUS_FACTOR;
-
-  const outerDist = signedDistanceToRoundedRect(
-    thumbCenterX,
-    thumbCenterY,
-    outerLeft,
-    outerRight,
-    outerTop,
-    outerBottom,
-    outerRadiusLeft,
-    outerRadiusRight,
+  return (
+    <span
+      className={cn(
+        "absolute top-0 left-1/2 h-full",
+        isActive
+          ? "transition-[clip-path,width,opacity] duration-100 ease-out"
+          : "transition-[clip-path,width,opacity] duration-150 ease-out",
+        className ?? "bg-primary",
+      )}
+      style={{
+        clipPath,
+        width: isDragging ? 8 : isActive ? 6 : 1,
+        transform: "translateX(-50%)",
+        opacity: isActive ? 1 : restOpacity,
+      }}
+    />
   );
-
-  // Outside outer boundary - no gap
-  if (outerDist > 0) return 0;
-
-  const innerDist = signedDistanceToRoundedRect(
-    thumbCenterX,
-    thumbCenterY,
-    innerLeft,
-    innerRight,
-    innerTop,
-    innerBottom,
-    innerRadiusLeft,
-    innerRadiusRight,
-  );
-
-  // Inside inner boundary - max gap
-  const maxGap = height + paddingY * 2;
-  if (innerDist <= 0) return maxGap;
-
-  // Between boundaries - linear interpolation
-  // outerDist is negative (inside outer), innerDist is positive (outside inner)
-  const totalDist = Math.abs(outerDist) + innerDist;
-  const t = Math.abs(outerDist) / totalDist;
-
-  return maxGap * t;
 }
 
 interface SliderRowProps {
@@ -227,31 +181,37 @@ function SliderRow({ config, value, onChange, disabled, trackClassName, fillClas
 
     const trackWidth = trackRect.width;
     const valuePercent = ((value - min) / (max - min)) * 100;
-    // Use same inset coordinate system as visual elements
     const thumbCenterPx = TRACK_EDGE_INSET + ((trackWidth - TRACK_EDGE_INSET * 2) * valuePercent / 100);
     const thumbHalfWidth = 6;
 
-    // Text is raised by TEXT_VERTICAL_OFFSET from center
     const trackCenterY = TRACK_HEIGHT / 2 - TEXT_VERTICAL_OFFSET;
 
-    const labelGap = calculateGap(thumbCenterPx, {
-      left: labelRect.left - trackRect.left,
-      right: labelRect.right - trackRect.left,
-      height: labelRect.height,
-      centerY: trackCenterY,
-    }, true); // label is left-aligned
+    const labelGap = calculateGap(
+      thumbCenterPx,
+      {
+        left: labelRect.left - trackRect.left,
+        right: labelRect.right - trackRect.left,
+        height: labelRect.height,
+        centerY: trackCenterY,
+      },
+      true,
+      HITBOX_CONFIG,
+    );
 
-    const valueGap = calculateGap(thumbCenterPx, {
-      left: valueRect.left - trackRect.left,
-      right: valueRect.right - trackRect.left,
-      height: valueRect.height,
-      centerY: trackCenterY,
-    }, false); // value is right-aligned
+    const valueGap = calculateGap(
+      thumbCenterPx,
+      {
+        left: valueRect.left - trackRect.left,
+        right: valueRect.right - trackRect.left,
+        height: valueRect.height,
+        centerY: trackCenterY,
+      },
+      false,
+      HITBOX_CONFIG,
+    );
 
     setDragGap(Math.max(labelGap, valueGap));
 
-    // Tight intersection check for release state
-    // Inset by px-2 (8px) padding to check against actual text, not padded container
     const labelLeft = labelRect.left - trackRect.left + TEXT_RELEASE_INSET;
     const labelRight = labelRect.right - trackRect.left - TEXT_RELEASE_INSET;
     const valueLeft = valueRect.left - trackRect.left + TEXT_RELEASE_INSET;
@@ -265,10 +225,8 @@ function SliderRow({ config, value, onChange, disabled, trackClassName, fillClas
 
     setIntersectsText(hitsLabel || hitsValue);
 
-    // Calculate full separation gap for release state
-    // Use the max gap of whichever text element(s) the handle intersects
-    const labelFullGap = labelRect.height + TEXT_PADDING_Y * 2;
-    const valueFullGap = valueRect.height + TEXT_PADDING_Y * 2;
+    const labelFullGap = labelRect.height + HITBOX_CONFIG.paddingY * 2;
+    const valueFullGap = valueRect.height + HITBOX_CONFIG.paddingY * 2;
     const releaseGap =
       hitsLabel && hitsValue
         ? Math.max(labelFullGap, valueFullGap)
@@ -280,8 +238,7 @@ function SliderRow({ config, value, onChange, disabled, trackClassName, fillClas
     setFullGap(releaseGap);
   }, [value, min, max]);
 
-  // While dragging: gradual separation based on distance
-  // On release: fully open if intersecting text, fully closed otherwise
+  // Gap drives the hourglass pinch: more gap = more pinch
   const gap = isDragging ? dragGap : intersectsText ? fullGap : 0;
 
   const ticks = useMemo(() => {
@@ -498,69 +455,16 @@ function SliderRow({ config, value, onChange, disabled, trackClassName, fillClas
             "focus-visible:outline-ring focus-visible:outline-2 focus-visible:outline-offset-1",
             "active:cursor-grabbing",
             "disabled:pointer-events-none disabled:opacity-50",
-            // Height morphs: rest (track height) → hover → active
             isDragging ? "h-[56px]" : isHovered ? "h-[54px]" : "h-12",
           )}
         >
-          {(() => {
-            // Calculate morph state
-            const isActive = isHovered || isDragging;
-
-            // Simple fixed offset - fill now uses same coordinate system as thumb
-            // Indicator sits at thumb center, which aligns with fill edge
-            const fillEdgeOffset = 0;
-
-            // Hide rest-state indicator at edges (0% or 100%) - the reflection gradient handles this
-            const edgeThreshold = 3;
-            const atEdge = valuePercent <= edgeThreshold || valuePercent >= 100 - edgeThreshold;
-            const restOpacity = atEdge ? 0 : 0.25;
-
-            // Asymmetric segment heights: gap is shifted up to match raised text position
-            // Top segment is shorter, bottom segment is taller
-            const topHeight = isActive && gap > 0
-              ? `calc(50% - ${gap / 2 + TEXT_VERTICAL_OFFSET}px)`
-              : "50%";
-            const bottomHeight = isActive && gap > 0
-              ? `calc(50% - ${gap / 2 - TEXT_VERTICAL_OFFSET}px)`
-              : "50%";
-
-            return (
-              <>
-                <span
-                  className={cn(
-                    "absolute top-0 left-1/2",
-                    "transition-all duration-100 ease-[var(--cubic-ease-in-out)]",
-                    isActive
-                      ? gap > 0 ? "rounded-full" : "rounded-t-full"
-                      : "rounded-t-sm",
-                    isDragging ? "w-2" : isActive ? "w-1.5" : "w-px",
-                    resolvedHandleClassName ?? "bg-primary",
-                  )}
-                  style={{
-                    transform: `translateX(calc(-50% + ${fillEdgeOffset}px))`,
-                    height: topHeight,
-                    opacity: isActive ? 1 : restOpacity,
-                  }}
-                />
-                <span
-                  className={cn(
-                    "absolute bottom-0 left-1/2",
-                    "transition-all duration-100 ease-[var(--cubic-ease-in-out)]",
-                    isActive
-                      ? gap > 0 ? "rounded-full" : "rounded-b-full"
-                      : "rounded-b-sm",
-                    isDragging ? "w-2" : isActive ? "w-1.5" : "w-px",
-                    resolvedHandleClassName ?? "bg-primary",
-                  )}
-                  style={{
-                    transform: `translateX(calc(-50% + ${fillEdgeOffset}px))`,
-                    height: bottomHeight,
-                    opacity: isActive ? 1 : restOpacity,
-                  }}
-                />
-              </>
-            );
-          })()}
+          <HourglassHandle
+            valuePercent={valuePercent}
+            gap={gap}
+            isHovered={isHovered}
+            isDragging={isDragging}
+            className={resolvedHandleClassName}
+          />
         </SliderPrimitive.Thumb>
 
         <div
