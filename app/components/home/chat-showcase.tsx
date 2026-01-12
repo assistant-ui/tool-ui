@@ -14,6 +14,7 @@ import { CodeBlock } from "@/components/tool-ui/code-block";
 import { OptionList } from "@/components/tool-ui/option-list";
 import { ItemCarousel } from "@/components/tool-ui/item-carousel";
 import { ParameterSlider } from "@/components/tool-ui/parameter-slider";
+import { StatsDisplay } from "@/components/tool-ui/stats-display";
 import {
   type Flight,
   TABLE_COLUMNS,
@@ -28,6 +29,7 @@ import {
   ITEM_CAROUSEL_DATA,
   LLM_CITATIONS,
   PARAMETER_SLIDER_DATA,
+  STATS_DISPLAY_DATA,
 } from "@/lib/mocks/chat-showcase-data";
 
 const TIMING = {
@@ -399,6 +401,18 @@ function createSceneConfigs(): SceneConfig[] {
       toolFallbackHeight: 240,
     },
     {
+      userMessage: "How's the business doing this quarter?",
+      preamble: "Here are your Q4 metrics:",
+      toolUI: (
+        <StatsDisplay
+          id="chat-showcase-stats-display"
+          {...STATS_DISPLAY_DATA}
+          className="w-full max-w-[560px]"
+        />
+      ),
+      toolFallbackHeight: 280,
+    },
+    {
       userMessage: "Boost the bass a bit on this track",
       preamble: "Here are the current EQ settings:",
       toolUI: (
@@ -512,7 +526,7 @@ function createSceneConfigs(): SceneConfig[] {
   ];
 }
 
-const SCENE_COUNT = 11;
+const SCENE_COUNT = 12;
 
 type AnimatedSceneProps = {
   config: SceneConfig;
