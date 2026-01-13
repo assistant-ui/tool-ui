@@ -7,7 +7,6 @@ import { ActionButtons, normalizeActionsConfig, type ActionsProp } from "../shar
 import {
   RATIO_CLASS_MAP,
   getFitClass,
-  OVERLAY_GRADIENT,
   sanitizeHref,
 } from "../shared/media";
 import type { SerializableImage, Source } from "./schema";
@@ -151,22 +150,8 @@ export function Image(props: ImageProps) {
                 className={cn(
                   "absolute inset-0 h-full w-full",
                   getFitClass(fit),
-                  "transition-transform duration-300 group-hover:scale-[1.01]",
                 )}
               />
-              {title && (
-                <>
-                  <div
-                    className="pointer-events-none absolute inset-x-0 top-0 z-20 h-32 opacity-0 transition-opacity duration-200 group-hover:opacity-100"
-                    style={{ backgroundImage: OVERLAY_GRADIENT }}
-                  />
-                  <div className="absolute inset-x-0 top-0 z-30 flex items-start justify-between gap-3 px-5 pt-4 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
-                    <div className="line-clamp-2 font-semibold text-white drop-shadow-sm">
-                      {title}
-                    </div>
-                  </div>
-                </>
-              )}
             </div>
             {hasMetadata && (
               <div className="flex items-center gap-3 px-4 py-3">

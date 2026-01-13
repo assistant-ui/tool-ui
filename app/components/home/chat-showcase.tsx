@@ -7,7 +7,6 @@ import { CitationList } from "@/components/tool-ui/citation";
 import { DataTable } from "@/components/tool-ui/data-table";
 import { LinkPreview } from "@/components/tool-ui/link-preview";
 import { Chart } from "@/components/tool-ui/chart";
-import { XPost } from "@/components/tool-ui/x-post";
 import { Plan } from "@/components/tool-ui/plan";
 import { Terminal } from "@/components/tool-ui/terminal";
 import { CodeBlock } from "@/components/tool-ui/code-block";
@@ -20,8 +19,6 @@ import {
   TABLE_COLUMNS,
   TABLE_DATA,
   LINK_PREVIEW,
-  X_POST,
-  X_POST_ACTIONS,
   SPENDING_CHART,
   PLAN_TODO_LABELS,
   CODE_BLOCK_DATA,
@@ -389,18 +386,6 @@ function PreambleBubble({
 function createSceneConfigs(): SceneConfig[] {
   return [
     {
-      userMessage: "How did I spend money this week?",
-      preamble: "Here's your spending breakdown:",
-      toolUI: (
-        <Chart
-          id="chat-showcase-chart"
-          {...SPENDING_CHART}
-          className="w-full max-w-[560px]"
-        />
-      ),
-      toolFallbackHeight: 240,
-    },
-    {
       userMessage: "How's the business doing this quarter?",
       preamble: "Here are your Q4 metrics:",
       toolUI: (
@@ -413,8 +398,21 @@ function createSceneConfigs(): SceneConfig[] {
       toolFallbackHeight: 280,
     },
     {
+      userMessage: "How did I spend money this week?",
+      preamble: "Here's your spending breakdown:",
+      toolUI: (
+        <Chart
+          id="chat-showcase-chart"
+          {...SPENDING_CHART}
+          className="w-full max-w-[560px]"
+        />
+      ),
+      toolFallbackHeight: 240,
+    },
+    {
       userMessage: "Boost the bass a bit on this track",
-      preamble: "Here are the current EQ settings:",
+      preamble:
+        "Bumped the bass a bit. Here's the current EQ if you want to dial it in further.",
       toolUI: (
         <ParameterSlider
           id="chat-showcase-parameter-slider"
@@ -429,20 +427,6 @@ function createSceneConfigs(): SceneConfig[] {
       preamble: "Let me look into some options.",
       toolUI: <AnimatedPlan className="w-full max-w-[480px]" />,
       toolFallbackHeight: 280,
-    },
-    {
-      userMessage: "Help me announce my new React library",
-      preamble: "Here's a draft:",
-      toolUI: (
-        <div className="w-full max-w-[600px] min-w-0">
-          <XPost
-            post={X_POST}
-            className="w-full"
-            responseActions={X_POST_ACTIONS}
-          />
-        </div>
-      ),
-      toolFallbackHeight: 480,
     },
     {
       userMessage: "What should I listen to right now?",
@@ -526,7 +510,7 @@ function createSceneConfigs(): SceneConfig[] {
   ];
 }
 
-const SCENE_COUNT = 12;
+const SCENE_COUNT = 11;
 
 type AnimatedSceneProps = {
   config: SceneConfig;

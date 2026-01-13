@@ -256,11 +256,6 @@ import { DocsHeader } from "../_components/docs-header";
   {/* 3-4 features */}
 </FeatureGrid>
 
-## When to Use
-
-- **Good for:** {use cases}
-- **Not for:** {anti-patterns with alternatives}
-
 ## {State/Variant Section if applicable}
 
 {Explanation + preset example}

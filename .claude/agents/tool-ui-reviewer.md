@@ -142,7 +142,6 @@ Check these patterns and report deviations as warnings:
 #### Documentation Patterns
 - [ ] DocsHeader has correct mdxPath
 - [ ] FeatureGrid with 3-4 features
-- [ ] "When to Use" section present
 - [ ] TypeTable matches actual schema
 - [ ] Prerequisites list correct shadcn components
 

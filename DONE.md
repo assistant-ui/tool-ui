@@ -6,6 +6,23 @@ Archive of completed features and improvements. See `TODO.md` for active work.
 
 ## January 2026
 
+### Landing Page Showcase
+- Removed X Post example from showcase (less relevant)
+- Made Stats Display the first component shown
+- Updated parameter slider response text to "Bumped the bass a bit. Here's the current EQ if you want to dial it in further."
+
+### Video Component
+- Fixed video src using reliable Archive.org nature video (forest canopy)
+
+### Documentation Structure
+- Removed "When To Use" sections from all 18 component docs (overly prescriptive)
+- Updated internal documentation templates (tool-ui-reviewer.md, tool-ui-documenter.md, generate-tool-ui.plan.md)
+
+### Component Polish
+- Audio (Compact): added spacing between title and description, increased time indicator font-size
+- Chart (Monthly Revenue): replaced green/red colors with teal (#14B8A6) and watermelon (#F87171)
+- Image: removed hover overlay state (title/source now always visible in footer)
+
 ### Landing Page & Docs UX
 - Re-evaluate landing page showcase order — prioritize most impressive/distinctive components first
 - Add "Chat" viewing mode to component docs preview — Canvas / Chat / Code toggles

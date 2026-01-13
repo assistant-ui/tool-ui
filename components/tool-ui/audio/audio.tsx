@@ -204,7 +204,7 @@ function CompactPlayer({ artwork, title, description, controls }: CompactPlayerP
           </div>
         )}
         {description && (
-          <div className="text-muted-foreground truncate text-xs leading-tight">
+          <div className="text-muted-foreground mt-0.5 truncate text-xs leading-tight">
             {description}
           </div>
         )}
@@ -216,7 +216,7 @@ function CompactPlayer({ artwork, title, description, controls }: CompactPlayerP
                 style={{ width: `${progress}%` }}
               />
             </div>
-            <span className="text-muted-foreground text-[10px] tabular-nums">
+            <span className="text-muted-foreground text-xs tabular-nums">
               {formatTime(controls.currentTime)}
             </span>
           </div>

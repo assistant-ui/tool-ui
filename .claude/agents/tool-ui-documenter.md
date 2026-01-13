@@ -122,11 +122,6 @@ import { {Name} } from "@/components/tool-ui/{name}";
   {/* 3-4 features total */}
 </FeatureGrid>
 
-## When to Use
-
-- **Good for:** {comma-separated use cases}
-- **Not for:** {anti-patterns} (use [{Alternative}](/docs/{alternative}) instead)
-
 ## Source and Install
 
 Copy [`components/tool-ui/{name}`](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/{name}) and the [`shared`](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/shared) directory into your project. The `shared` folder contains utilities used by all Tool UI components. The `tool-ui` directory should sit alongside your shadcn `ui` directory.

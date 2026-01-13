@@ -64,6 +64,7 @@ export const chartPresets: Record<ChartPresetName, PresetWithCodeGen<ChartData>>
         { key: "revenue", label: "Revenue" },
         { key: "expenses", label: "Expenses" },
       ],
+      colors: ["#14B8A6", "#F87171"],
       showLegend: true,
       showGrid: true,
     } satisfies ChartData,
