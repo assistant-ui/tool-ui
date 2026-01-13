@@ -18,6 +18,7 @@ import { OptionList } from "@/components/tool-ui/option-list";
 import { OrderSummary } from "@/components/tool-ui/order-summary";
 import { ParameterSlider } from "@/components/tool-ui/parameter-slider";
 import { Plan } from "@/components/tool-ui/plan";
+import { PreferencesPanel } from "@/components/tool-ui/preferences-panel";
 import { StatsDisplay } from "@/components/tool-ui/stats-display";
 import { Terminal } from "@/components/tool-ui/terminal";
 
@@ -36,6 +37,7 @@ import { optionListPresets, type OptionListPresetName } from "@/lib/presets/opti
 import { orderSummaryPresets, type OrderSummaryPresetName } from "@/lib/presets/order-summary";
 import { parameterSliderPresets, type ParameterSliderPresetName } from "@/lib/presets/parameter-slider";
 import { planPresets, type PlanPresetName } from "@/lib/presets/plan";
+import { preferencesPanelPresets, type PreferencesPanelPresetName } from "@/lib/presets/preferences-panel";
 import { statsDisplayPresets, type StatsDisplayPresetName } from "@/lib/presets/stats-display";
 import { terminalPresets, type TerminalPresetName } from "@/lib/presets/terminal";
 
@@ -55,6 +57,7 @@ export type ComponentId =
   | "order-summary"
   | "parameter-slider"
   | "plan"
+  | "preferences-panel"
   | "stats-display"
   | "terminal";
 
@@ -91,6 +94,10 @@ function MaxWidthSmWrapper({ children }: { children: ReactNode }) {
 
 function MaxWidthSmStartWrapper({ children }: { children: ReactNode }) {
   return <div className="w-full max-w-sm">{children}</div>;
+}
+
+function MaxWidthStartWrapper({ children }: { children: ReactNode }) {
+  return <div className="w-full max-w-md">{children}</div>;
 }
 
 export const previewConfigs: Record<ComponentId, PreviewConfig<unknown, string>> = {
@@ -373,6 +380,27 @@ export const previewConfigs: Record<ComponentId, PreviewConfig<unknown, string>>
       preamble: "Here's what I'm working on:",
     },
     renderComponent: ({ data }) => <Plan {...(data as Parameters<typeof Plan>[0])} />,
+  },
+  "preferences-panel": {
+    presets: preferencesPanelPresets as Record<string, PresetWithCodeGen<unknown>>,
+    defaultPreset: "notifications" satisfies PreferencesPanelPresetName,
+    wrapper: MaxWidthStartWrapper,
+    chatContext: {
+      userMessage: "Update my notification settings",
+      preamble: "Here are your current preferences:",
+    },
+    renderComponent: ({ data, state, setState }) => {
+      const panelData = data as Parameters<typeof PreferencesPanel>[0];
+      return (
+        <PreferencesPanel
+          {...panelData}
+          value={state.selection as Record<string, string | boolean> | undefined}
+          onChange={(value) => setState({ selection: value as unknown as string[] | string | null })}
+          onSave={async (values) => console.log("Saved:", values)}
+          onCancel={() => console.log("Cancelled")}
+        />
+      );
+    },
   },
   "stats-display": {
     presets: statsDisplayPresets as Record<string, PresetWithCodeGen<unknown>>,

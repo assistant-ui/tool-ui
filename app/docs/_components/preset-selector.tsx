@@ -20,6 +20,7 @@ import { optionListPresets } from "@/lib/presets/option-list";
 import { orderSummaryPresets } from "@/lib/presets/order-summary";
 import { parameterSliderPresets } from "@/lib/presets/parameter-slider";
 import { planPresets } from "@/lib/presets/plan";
+import { preferencesPanelPresets } from "@/lib/presets/preferences-panel";
 import { statsDisplayPresets } from "@/lib/presets/stats-display";
 import { terminalPresets } from "@/lib/presets/terminal";
 import type { Preset } from "@/lib/presets/types";
@@ -43,6 +44,7 @@ const PRESET_REGISTRY: Record<string, PresetMap> = {
   "order-summary": orderSummaryPresets,
   "parameter-slider": parameterSliderPresets,
   plan: planPresets,
+  "preferences-panel": preferencesPanelPresets,
   "stats-display": statsDisplayPresets,
   terminal: terminalPresets,
 };

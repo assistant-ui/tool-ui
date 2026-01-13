@@ -267,7 +267,7 @@ export type ComponentId =
 "{name}": {
   presets: {name}Presets as Record<string, PresetWithCodeGen<unknown>>,
   defaultPreset: "{most-representative-preset}" satisfies {Name}PresetName,
-  wrapper: MaxWidthSmWrapper, // or MaxWidthWrapper for larger components
+  wrapper: MaxWidthStartWrapper, // See wrapper guide below
   renderComponent: ({ data }) => {
     const componentData = data as Parameters<typeof {Name}>[0];
     return (
@@ -279,6 +279,24 @@ export type ComponentId =
   },
 },
 ```
+
+**Wrapper Selection Guide:**
+
+Choose wrapper based on component width and chat alignment:
+
+| Wrapper | Width | Alignment | Use For |
+|---------|-------|-----------|---------|
+| `MaxWidthSmWrapper` | `max-w-sm` | Center | Small, symmetric components (approval cards) |
+| `MaxWidthSmStartWrapper` | `max-w-sm` | Left | Small chat-style components |
+| `MaxWidthWrapper` | `max-w-md` | Center | Medium, symmetric components |
+| `MaxWidthStartWrapper` | `max-w-md` | Left | **Chat-style components** (settings, forms, preferences) |
+
+**IMPORTANT:** Most Tool UI components should use the **"Start" variants** (left-aligned) to match chat message alignment in assistant-ui. Only use centered wrappers for truly symmetric, standalone components.
+
+**Examples:**
+- ✅ `preferences-panel` → `MaxWidthStartWrapper` (chat-style settings)
+- ✅ `option-list` → `MaxWidthStartWrapper` (chat-style choices)
+- ✅ `approval-card` → `MaxWidthSmWrapper` (centered, symmetric decision)
 
 **Reference:** Read `lib/docs/preview-config.tsx` for patterns.
 

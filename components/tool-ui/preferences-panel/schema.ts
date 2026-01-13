@@ -1,0 +1,110 @@
+import { z } from "zod";
+import type { ActionsProp } from "../shared";
+import {
+  SerializableActionSchema,
+  SerializableActionsConfigSchema,
+  ToolUIIdSchema,
+  ToolUIReceiptSchema,
+  ToolUIRoleSchema,
+  parseWithSchema,
+} from "../shared";
+
+const PreferenceItemSchema = z.object({
+  id: z.string().min(1),
+  label: z.string().min(1),
+  description: z.string().optional(),
+  type: z.enum(["switch", "toggle", "select"]),
+  defaultChecked: z.boolean().optional(),
+  options: z
+    .array(
+      z.object({
+        value: z.string().min(1),
+        label: z.string().min(1),
+      }),
+    )
+    .min(2)
+    .max(4)
+    .optional(),
+  defaultValue: z.string().optional(),
+  selectOptions: z
+    .array(
+      z.object({
+        value: z.string().min(1),
+        label: z.string().min(1),
+      }),
+    )
+    .min(5)
+    .optional(),
+  defaultSelected: z.string().optional(),
+});
+
+const PreferenceSectionSchema = z.object({
+  heading: z.string().min(1).optional(),
+  items: z.array(PreferenceItemSchema).min(1).max(3),
+});
+
+export const SerializablePreferencesPanelSchema = z
+  .object({
+    id: ToolUIIdSchema,
+    role: ToolUIRoleSchema.optional(),
+    receipt: ToolUIReceiptSchema.optional(),
+    title: z.string().min(1).optional(),
+    sections: z.array(PreferenceSectionSchema).min(1).max(2),
+    confirmed: z.record(z.string(), z.union([z.string(), z.boolean()])).optional(),
+    error: z.record(z.string(), z.string()).optional(),
+    responseActions: z
+      .union([
+        z.array(SerializableActionSchema),
+        SerializableActionsConfigSchema,
+      ])
+      .optional(),
+  })
+  .refine(
+    (data) => {
+      const totalItems = data.sections.reduce(
+        (sum, section) => sum + section.items.length,
+        0,
+      );
+      return totalItems <= 5;
+    },
+    {
+      message: "Total items across all sections must not exceed 5",
+    },
+  );
+
+export type SerializablePreferencesPanel = z.infer<
+  typeof SerializablePreferencesPanelSchema
+>;
+
+export function parseSerializablePreferencesPanel(
+  input: unknown,
+): SerializablePreferencesPanel {
+  return parseWithSchema(
+    SerializablePreferencesPanelSchema,
+    input,
+    "PreferencesPanel",
+  );
+}
+
+export interface PreferencesValue {
+  [itemId: string]: string | boolean;
+}
+
+export interface PreferencesPanelProps
+  extends Omit<SerializablePreferencesPanel, "responseActions"> {
+  className?: string;
+  isLoading?: boolean;
+  value?: PreferencesValue;
+  onChange?: (value: PreferencesValue) => void;
+  onSave?: (value: PreferencesValue) => void | Promise<void>;
+  onCancel?: () => void;
+  responseActions?: ActionsProp;
+  onResponseAction?: (
+    actionId: string,
+    value: PreferencesValue,
+  ) => void | Promise<void>;
+  onBeforeResponseAction?: (actionId: string) => boolean | Promise<boolean>;
+}
+
+export type PreferenceItem = z.infer<typeof PreferenceItemSchema>;
+export type PreferenceSection = z.infer<typeof PreferenceSectionSchema>;

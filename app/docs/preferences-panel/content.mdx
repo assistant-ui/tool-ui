@@ -1,0 +1,347 @@
+import { DocsHeader } from "../_components/docs-header";
+import { PreferencesPanel } from "@/components/tool-ui/preferences-panel";
+
+<DocsHeader
+  title="Preferences Panel"
+  description="Staged settings with explicit save"
+  mdxPath="app/docs/preferences-panel/content.mdx"
+/>
+
+<Tabs items={["Preview", "Code"]}>
+  <Tab>
+    <div className="not-prose mx-auto max-w-md">
+      <PreferencesPanel
+        id="preferences-panel-example"
+        sections={[
+          {
+            items: [
+              {
+                id: "notifications",
+                label: "Notifications",
+                description: "Receive push notifications",
+                type: "switch",
+                defaultChecked: true,
+              },
+              {
+                id: "theme",
+                label: "Theme",
+                description: "Choose your appearance",
+                type: "toggle",
+                options: [
+                  { value: "light", label: "Light" },
+                  { value: "dark", label: "Dark" },
+                  { value: "auto", label: "Auto" },
+                ],
+                defaultValue: "auto",
+              },
+              {
+                id: "analytics",
+                label: "Analytics",
+                description: "Help improve the product",
+                type: "switch",
+                defaultChecked: false,
+              },
+            ],
+          },
+        ]}
+      />
+    </div>
+  </Tab>
+  <Tab>
+    ```tsx
+    import { PreferencesPanel } from "@/components/tool-ui/preferences-panel";
+
+    export function Example() {
+      return (
+        <PreferencesPanel
+          id="preferences-panel-example"
+          sections={[
+            {
+              items: [
+                {
+                  id: "notifications",
+                  label: "Notifications",
+                  description: "Receive push notifications",
+                  type: "switch",
+                  defaultChecked: true,
+                },
+                {
+                  id: "theme",
+                  label: "Theme",
+                  description: "Choose your appearance",
+                  type: "toggle",
+                  options: [
+                    { value: "light", label: "Light" },
+                    { value: "dark", label: "Dark" },
+                    { value: "auto", label: "Auto" },
+                  ],
+                  defaultValue: "auto",
+                },
+                {
+                  id: "analytics",
+                  label: "Analytics",
+                  description: "Help improve the product",
+                  type: "switch",
+                  defaultChecked: false,
+                },
+              ],
+            },
+          ]}
+        />
+      );
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Key Features
+
+<FeatureGrid>
+  <Feature icon="Settings2" title="Three control types">
+    Switch, toggle (2-4 options), or select (5+ options)
+  </Feature>
+  <Feature icon="SquareCheck" title="Staged changes">
+    Save/Cancel actions prevent accidental updates
+  </Feature>
+  <Feature icon="CheckCircle2" title="Receipt state">
+    Show confirmed selections after save
+  </Feature>
+  <Feature icon="Layers" title="Organized sections">
+    Group related settings with optional headings
+  </Feature>
+</FeatureGrid>
+
+## Source and Install
+
+Copy [`components/tool-ui/preferences-panel`](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/preferences-panel) and the [`shared`](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/shared) directory into your project. The `shared` folder contains utilities used by all Tool UI components. The `tool-ui` directory should sit alongside your shadcn `ui` directory.
+
+### Prerequisites
+
+This component requires the following [shadcn/ui](https://ui.shadcn.com) components:
+
+```bash
+pnpm dlx shadcn@latest add button label select separator switch toggle-group
+```
+
+### Directory Structure
+
+<Files>
+  <Folder name="components" defaultOpen>
+    <Folder name="ui">
+      <File name="button.tsx" />
+      <File name="label.tsx" />
+      <File name="select.tsx" />
+      <File name="separator.tsx" />
+      <File name="switch.tsx" />
+      <File name="toggle-group.tsx" />
+    </Folder>
+    <Folder name="tool-ui" defaultOpen>
+      <Folder name="shared" defaultOpen>
+        <File name="action-buttons.tsx" />
+        <File name="schema.ts" />
+        <File name="index.ts" />
+      </Folder>
+      <Folder name="preferences-panel" defaultOpen>
+        <File name="preferences-panel.tsx" />
+        <File name="schema.ts" />
+        <File name="index.tsx" />
+        <File name="_adapter.tsx" />
+        <File name="error-boundary.tsx" />
+      </Folder>
+    </Folder>
+  </Folder>
+</Files>
+
+### Download
+
+- [**Shared Dependencies (GitHub)**](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/shared) ([ZIP](https://download-directory.github.io/?url=https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/shared))
+- [**Preferences Panel (GitHub)**](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/preferences-panel) ([ZIP](https://download-directory.github.io/?url=https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/preferences-panel))
+
+## Usage
+
+```tsx
+"use client";
+
+import { makeAssistantTool } from "@assistant-ui/react";
+import {
+  PreferencesPanel,
+  PreferencesPanelErrorBoundary,
+  parseSerializablePreferencesPanel,
+  SerializablePreferencesPanelSchema,
+  type SerializablePreferencesPanel,
+} from "@/components/tool-ui/preferences-panel";
+
+export const PreferencesPanelTool = makeAssistantTool<SerializablePreferencesPanel>({
+  toolName: "show_preferences_panel",
+  description: "Display user preference settings with save/cancel actions",
+  parameters: SerializablePreferencesPanelSchema,
+  render: ({ args, result, addResult, toolCallId }) => {
+    if (!args.sections) return null;
+
+    const data = parseSerializablePreferencesPanel({
+      ...args,
+      id: (args as any)?.id ?? `preferences-panel-${toolCallId}`,
+    });
+
+    return (
+      <PreferencesPanelErrorBoundary>
+        <PreferencesPanel
+          {...data}
+          onSave={async (values) => {
+            await addResult({ status: "saved", values });
+          }}
+          onCancel={() => {
+            addResult({ status: "cancelled" });
+          }}
+        />
+      </PreferencesPanelErrorBoundary>
+    );
+  },
+});
+```
+
+## Props
+
+<TypeTable
+  type={{
+    id: {
+      description: "Unique identifier for this tool UI instance",
+      type: "string",
+      required: true,
+    },
+    title: {
+      description: "Optional card header title",
+      type: "string",
+    },
+    sections: {
+      description: "Array of preference sections (max 2)",
+      type: "PreferenceSection[]",
+      required: true,
+    },
+    value: {
+      description: "Controlled values for all preferences",
+      type: "PreferencesValue",
+    },
+    onChange: {
+      description: "Called when any preference changes",
+      type: "(value: PreferencesValue) => void",
+    },
+    confirmed: {
+      description: "Show receipt state with confirmed values",
+      type: "PreferencesValue",
+    },
+    onSave: {
+      description: "Handler for Save action",
+      type: "(value: PreferencesValue) => void | Promise<void>",
+    },
+    onCancel: {
+      description: "Handler for Cancel action",
+      type: "() => void",
+    },
+    responseActions: {
+      description: "Custom action buttons configuration",
+      type: "Action[] | ActionsConfig",
+    },
+    onResponseAction: {
+      description: "Handler for response actions",
+      type: "(actionId: string, value: PreferencesValue) => void | Promise<void>",
+    },
+    isLoading: {
+      description: "Show loading state on Save button",
+      type: "boolean",
+    },
+    className: {
+      description: "Additional CSS classes",
+      type: "string",
+    },
+  }}
+/>
+
+### PreferenceSection
+
+<TypeTable
+  type={{
+    heading: {
+      description: "Optional section heading",
+      type: "string",
+    },
+    items: {
+      description: "Preference items in this section (1-3 items)",
+      type: "PreferenceItem[]",
+      required: true,
+    },
+  }}
+/>
+
+### PreferenceItem
+
+<TypeTable
+  type={{
+    id: {
+      description: "Unique identifier for this preference",
+      type: "string",
+      required: true,
+    },
+    label: {
+      description: "Preference label",
+      type: "string",
+      required: true,
+    },
+    description: {
+      description: "Optional help text",
+      type: "string",
+    },
+    type: {
+      description: "Control type to render",
+      type: '"switch" | "toggle" | "select"',
+      required: true,
+    },
+    defaultChecked: {
+      description: "Default value for switch type",
+      type: "boolean",
+    },
+    options: {
+      description: "Options for toggle type (2-4 options)",
+      type: "{ value: string; label: string }[]",
+    },
+    defaultValue: {
+      description: "Default selection for toggle type",
+      type: "string",
+    },
+    selectOptions: {
+      description: "Options for select type (5+ options)",
+      type: "{ value: string; label: string }[]",
+    },
+    defaultSelected: {
+      description: "Default selection for select type",
+      type: "string",
+    },
+  }}
+/>
+
+### PreferencesValue
+
+<TypeTable
+  type={{
+    "[itemId: string]": {
+      description: "Preference values keyed by item ID",
+      type: "string | boolean",
+    },
+  }}
+/>
+
+## Limits
+
+- **Max 2 sections** per panel
+- **Max 3 items** per section
+- **Max 5 total items** across all sections
+- **Toggle**: 2-4 options
+- **Select**: 5+ options
+
+## Accessibility
+
+- Keyboard navigation within each control type
+- Labels properly associated with controls via `htmlFor` and `id`
+- Save button disabled when no changes exist
+- `aria-busy` state during save operations
+- Receipt state uses `role="status"` for screen readers

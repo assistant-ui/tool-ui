@@ -182,6 +182,77 @@ const actions = responseActions ?? defaultActions;
 
 **Reference:** Read `components/tool-ui/option-list/option-list.tsx` for comprehensive example.
 
+**CRITICAL: Unified Rendering for Receipt/Confirmation States**
+
+When a component has both interactive and receipt states (like confirmed selections, saved preferences, completed decisions), **DO NOT create separate rendering functions**. This causes maintenance problems where spacing, typography, and layout drift out of sync.
+
+**❌ Bad Pattern (Duplicated Rendering):**
+```tsx
+// Separate components for interactive vs receipt
+function PreferenceItemRow({ ... }) {
+  return <div className="py-3">...</div>;
+}
+
+function PreferenceReceipt({ ... }) {
+  return <div className="py-2">...</div>; // Different padding!
+}
+```
+
+**✅ Good Pattern (Unified Rendering):**
+```tsx
+// Single component handles both states
+function PreferenceItemRow({
+  item,
+  value,
+  onChange,
+  disabled,
+  isReceipt = false, // Flag for receipt state
+}: {
+  item: PreferenceItem;
+  value: string | boolean;
+  onChange?: (value: string | boolean) => void;
+  disabled?: boolean;
+  isReceipt?: boolean;
+}) {
+  const id = `preference-${item.id}`;
+
+  return (
+    <div className="flex items-start justify-between gap-4 py-3">
+      <div className="flex flex-col gap-1.5">
+        {isReceipt ? (
+          <span className="text-sm font-medium leading-6">{item.label}</span>
+        ) : (
+          <Label htmlFor={id} className="font-medium leading-6">
+            {item.label}
+          </Label>
+        )}
+        {item.description && (
+          <p className="text-muted-foreground text-sm">{item.description}</p>
+        )}
+      </div>
+      {isReceipt ? (
+        <span className="text-muted-foreground text-sm">{displayValue}</span>
+      ) : (
+        <PreferenceControl value={value} onChange={onChange} />
+      )}
+    </div>
+  );
+}
+```
+
+**Key Benefits:**
+- ✅ Single source of truth for spacing, padding, typography
+- ✅ Changes automatically apply to both states
+- ✅ Easier to maintain and review
+- ✅ No risk of visual drift between states
+
+**When to use unified rendering:**
+- Components with `confirmed` or `decision` props that show read-only state
+- Settings panels with "saved" vs "editing" modes
+- Any component that transitions from interactive to read-only
+
+**Reference:** Read `components/tool-ui/preferences-panel/preferences-panel.tsx` for the unified pattern with `isReceipt` flag.
+
 ### 4. `error-boundary.tsx`
 
 Error handling wrapper.
@@ -235,6 +306,8 @@ Before completing, verify:
 - [ ] ActionButtons wrapped in `<div className="@container/actions">` for responsive layout
 - [ ] `onAction` handler always defined (wrap `onResponseAction?.()` in useCallback)
 - [ ] Default actions provided when `responseActions` is undefined
+- [ ] Receipt/confirmation states use unified rendering (single component with `isReceipt` flag)
+- [ ] NO separate rendering functions for interactive vs receipt states
 - [ ] Loading state has `aria-busy="true"`
 - [ ] Interactive elements have keyboard support
 - [ ] All exports present in index.tsx

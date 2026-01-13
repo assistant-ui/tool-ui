@@ -91,6 +91,12 @@ export const componentsRegistry: ComponentMeta[] = [
     path: "/docs/plan",
   },
   {
+    id: "preferences-panel",
+    label: "Preferences Panel",
+    description: "Compact settings panel for user preferences",
+    path: "/docs/preferences-panel",
+  },
+  {
     id: "item-carousel",
     label: "Item Carousel",
     description: "Horizontal carousel for browsing collections",

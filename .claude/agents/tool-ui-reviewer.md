@@ -118,6 +118,22 @@ Required exports:
 
 Check these patterns and report deviations as warnings:
 
+#### Anti-Pattern Detection
+
+**Duplicated Receipt Rendering (CRITICAL WARNING):**
+```bash
+# Check for common anti-patterns
+grep -n "function.*Receipt\|function.*Confirmation" components/tool-ui/{name}/{name}.tsx
+```
+
+If separate receipt/confirmation rendering functions exist:
+- **WARN STRONGLY**: This violates the unified rendering pattern
+- Suggest refactoring to use single component with `isReceipt` flag
+- Note: This causes maintenance issues where spacing/styling drift out of sync
+
+**Acceptable:** Helper components for rendering parts (like controls)
+**Not Acceptable:** Separate `{Name}Receipt` or `{Name}Confirmation` that duplicate layout/spacing logic from main component
+
 #### Schema Patterns
 - [ ] Uses `ToolUIIdSchema` for id field
 - [ ] Uses `ToolUIRoleSchema.optional().default(...)`
@@ -132,6 +148,8 @@ Check these patterns and report deviations as warnings:
 - [ ] Uses `cn()` for className merging
 - [ ] Actions use `responseActions` / `onResponseAction` naming
 - [ ] Loading state has `aria-busy="true"`
+- [ ] Receipt/confirmation states use unified rendering (NOT separate components)
+- [ ] If has receipt state, check for `isReceipt` flag pattern instead of duplicated rendering logic
 
 #### Preset Patterns
 - [ ] 4-5 distinct presets
