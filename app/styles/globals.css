@@ -24,7 +24,6 @@
 
 /* View Transitions */
 @import "./theme-transition.css";
-@import "./workbench-transitions.css";
 
 @layer base {
   * {

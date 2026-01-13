@@ -50,7 +50,7 @@ The docs site has interconnected registries:
 
 1. **Component registry** (`lib/docs/component-registry.ts`) — Metadata for all components
 2. **Presets** (`lib/presets/{component}.ts`) — Example data + code generation
-3. **Preview config** (`lib/docs/preview-config.tsx`) — Renders components in the workbench
+3. **Preview config** (`lib/docs/preview-config.tsx`) — Renders components in the docs preview
 4. **Doc pages** (`app/docs/{component}/`) — MDX content + opengraph-image.tsx
 5. **Gallery** (`app/docs/gallery/page.tsx`) — Masonry grid of all components
 

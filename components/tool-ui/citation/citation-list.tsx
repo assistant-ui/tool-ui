@@ -333,7 +333,6 @@ function StackedCitations({
     containerRef,
     handleMouseEnter,
     handleMouseLeave,
-    handleFocus,
     handleBlur,
   } = useHoverPopover();
   const maxIcons = 4;

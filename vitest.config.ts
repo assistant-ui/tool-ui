@@ -9,7 +9,7 @@ export default defineConfig({
   },
   test: {
     environment: "node",
-    include: ["lib/playground/**/*.test.ts", "app/workbench/lib/**/*.test.ts"],
+    include: ["lib/playground/**/*.test.ts"],
     passWithNoTests: true,
     globals: true,
     coverage: {

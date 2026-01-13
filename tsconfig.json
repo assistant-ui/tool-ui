@@ -18,7 +18,6 @@
       "@/*": ["./*"],
       "@/components/*": ["./components/*"],
       "@/lib/*": ["./lib/*"],
-      "@/lib/workbench/*": ["./app/workbench/lib/*"],
       "@/app/*": ["./app/*"]
     },
     "plugins": [

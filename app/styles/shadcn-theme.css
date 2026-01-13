@@ -116,7 +116,7 @@
   --sidebar-ring: oklch(0.556 0 0);
 }
 
-/* Isolated theme scopes for workbench preview */
+/* Isolated theme scopes for docs preview */
 /* Double attribute selector increases specificity to override .dark from ancestors */
 [data-theme="light"][data-theme] {
   --wash: oklch(0.95 0 0);

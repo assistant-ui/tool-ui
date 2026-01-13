@@ -16,6 +16,8 @@ interface ComponentPreviewProps {
   componentId: ComponentId;
 }
 
+const EMPTY_STATE: PreviewState = {};
+
 export function ComponentPreview({ componentId }: ComponentPreviewProps) {
   const config = getPreviewConfig(componentId);
 
@@ -24,18 +26,18 @@ export function ComponentPreview({ componentId }: ComponentPreviewProps) {
     defaultPreset: config.defaultPreset,
   });
 
-  const [state, setState] = useState<PreviewState>({});
+  const [state, setState] = useState<PreviewState>(EMPTY_STATE);
   const prevPresetRef = useRef(currentPreset);
 
   if (prevPresetRef.current !== currentPreset) {
     prevPresetRef.current = currentPreset;
-    setState({});
+    setState(EMPTY_STATE);
   }
 
   const handleSelectPreset = useCallback(
     (preset: unknown) => {
       setPreset(preset as string);
-      setState({});
+      setState(EMPTY_STATE);
     },
     [setPreset],
   );
