@@ -14,10 +14,12 @@ interface SparklineAnimationParams {
   fillOpacity: number;
   baseStrokeOpacity: number;
   glintDuration: number;
+  glintDelay: number;
   glintDashSize: number;
   glintGapSize: number;
   glintStrokeWidth: number;
   glintPeakOpacity: number;
+  slowGlintDelay: number;
   slowGlintDashSize: number;
   slowGlintGapSize: number;
   slowGlintStrokeWidth: number;
@@ -43,6 +45,7 @@ interface TunableSparklineProps {
   style?: CSSProperties;
   showFill?: boolean;
   animation: SparklineAnimationParams;
+  baseDelay?: number;
 }
 
 function TunableSparkline({
@@ -54,6 +57,7 @@ function TunableSparkline({
   style,
   showFill = false,
   animation,
+  baseDelay = 0,
 }: TunableSparklineProps) {
   const gradientId = useId();
   const polylineRef = useRef<SVGPolylineElement>(null);
@@ -91,7 +95,9 @@ function TunableSparkline({
     `${width - padding},${height}`,
   ].join(" ");
 
-  const animationDelay = style?.animationDelay ?? "0ms";
+  const fillDelay = `${baseDelay}ms`;
+  const slowGlintDelay = `${baseDelay + animation.slowGlintDelay}ms`;
+  const glintDelay = `${baseDelay + animation.glintDelay}ms`;
 
   return (
     <svg
@@ -118,7 +124,7 @@ function TunableSparkline({
             fill={`url(#${gradientId})`}
             className="animate-in fade-in fill-mode-both"
             style={{
-              animationDelay,
+              animationDelay: fillDelay,
               animationDuration: `${animation.fillFadeDuration}ms`,
               animationTimingFunction: "cubic-bezier(0.16, 1, 0.3, 1)",
             }}
@@ -148,9 +154,9 @@ function TunableSparkline({
             vectorEffect="non-scaling-stroke"
             strokeDasharray={`${animation.slowGlintDashSize} ${animation.slowGlintGapSize}`}
             strokeDashoffset={pathLength}
+            strokeOpacity={0}
             style={{
-              animationDelay,
-              animation: `glint-slow-tunable ${animation.glintDuration}s ease-out forwards`,
+              animation: `glint-slow-tunable ${animation.glintDuration}s ease-out ${slowGlintDelay} forwards`,
             }}
           />
           <polyline
@@ -163,9 +169,9 @@ function TunableSparkline({
             vectorEffect="non-scaling-stroke"
             strokeDasharray={`${animation.glintDashSize} ${animation.glintGapSize}`}
             strokeDashoffset={pathLength}
+            strokeOpacity={0}
             style={{
-              animationDelay,
-              animation: `glint-tunable ${animation.glintDuration}s ease-out forwards`,
+              animation: `glint-tunable ${animation.glintDuration}s ease-out ${glintDelay} forwards`,
             }}
           />
         </>
@@ -333,6 +339,7 @@ function TunableStatCard({
           color={sparklineColor}
           showFill
           animation={sparklineAnimation}
+          baseDelay={baseDelay}
           className="pointer-events-none absolute inset-x-0 top-2 bottom-2"
           style={{
             opacity: 0,
@@ -505,6 +512,7 @@ function TuningPanel({ data }: TuningPanelProps) {
 
   const glintAnimation = useControls("Glint Effect", {
     glintDuration: { value: 0.8, min: 0.1, max: 3, step: 0.1, label: "Duration (s)" },
+    glintDelay: { value: 400, min: 0, max: 2000, step: 50, label: "Delay (ms)" },
     glintDashSize: { value: 74, min: 4, max: 150, step: 2, label: "Dash Size" },
     glintGapSize: { value: 110, min: 20, max: 400, step: 10, label: "Gap Size" },
     glintStrokeWidth: { value: 1.0, min: 0.5, max: 6, step: 0.25, label: "Stroke Width" },
@@ -512,6 +520,7 @@ function TuningPanel({ data }: TuningPanelProps) {
   });
 
   const slowGlintAnimation = useControls("Slow Glint", {
+    slowGlintDelay: { value: 300, min: 0, max: 2000, step: 50, label: "Delay (ms)" },
     slowGlintDashSize: { value: 80, min: 10, max: 200, step: 5, label: "Dash Size" },
     slowGlintGapSize: { value: 200, min: 50, max: 600, step: 25, label: "Gap Size" },
     slowGlintStrokeWidth: { value: 3.5, min: 0.5, max: 6, step: 0.25, label: "Stroke Width" },
@@ -540,10 +549,12 @@ function TuningPanel({ data }: TuningPanelProps) {
     fillOpacity: sparklineAnimation.fillOpacity,
     baseStrokeOpacity: sparklineAnimation.baseStrokeOpacity,
     glintDuration: glintAnimation.glintDuration,
+    glintDelay: glintAnimation.glintDelay,
     glintDashSize: glintAnimation.glintDashSize,
     glintGapSize: glintAnimation.glintGapSize,
     glintStrokeWidth: glintAnimation.glintStrokeWidth,
     glintPeakOpacity: glintAnimation.glintPeakOpacity,
+    slowGlintDelay: slowGlintAnimation.slowGlintDelay,
     slowGlintDashSize: slowGlintAnimation.slowGlintDashSize,
     slowGlintGapSize: slowGlintAnimation.slowGlintGapSize,
     slowGlintStrokeWidth: slowGlintAnimation.slowGlintStrokeWidth,
