@@ -89,6 +89,15 @@ export function StagingCanvas({
       ? { ...preset.data, isLoading }
       : preset.data;
 
+  // If staging config has a tuning panel, render it instead of the normal component
+  if (stagingConfig?.renderTuningPanel) {
+    return (
+      <div className="relative w-full">
+        {stagingConfig.renderTuningPanel({ data: componentData as Record<string, unknown> })}
+      </div>
+    );
+  }
+
   const component = previewConfig.renderComponent({
     data: componentData,
     presetName,

@@ -31,11 +31,12 @@ function FormattedValue({ value, format, locale }: FormattedValueProps) {
           maximumFractionDigits: decimals,
           notation: "compact",
         }).formatToParts(value);
+        const fullNumber = new Intl.NumberFormat(locale).format(value);
         return (
-          <span className="font-light tabular-nums">
+          <span className="font-light tabular-nums" aria-label={fullNumber}>
             {parts.map((part, i) =>
               part.type === "compact" ? (
-                <span key={i} className="ml-0.5 text-[0.7em] opacity-70">{part.value}</span>
+                <span key={i} className="ml-0.5 text-[0.65em] opacity-80" aria-hidden="true">{part.value}</span>
               ) : (
                 <span key={i}>{part.value}</span>
               )
@@ -58,7 +59,14 @@ function FormattedValue({ value, format, locale }: FormattedValueProps) {
         minimumFractionDigits: decimals,
         maximumFractionDigits: decimals,
       }).format(value);
-      return <span className="font-light tabular-nums">{formatted}</span>;
+      const spokenValue = new Intl.NumberFormat(locale, {
+        style: "currency",
+        currency,
+        currencyDisplay: "name",
+        minimumFractionDigits: decimals,
+        maximumFractionDigits: decimals,
+      }).format(value);
+      return <span className="font-light tabular-nums" aria-label={spokenValue}>{formatted}</span>;
     }
     case "percent": {
       const decimals = format.decimals ?? 2;
@@ -66,9 +74,9 @@ function FormattedValue({ value, format, locale }: FormattedValueProps) {
       const numeric = basis === "fraction" ? value * 100 : value;
       const formatted = numeric.toFixed(decimals);
       return (
-        <span className="font-light tabular-nums">
+        <span className="font-light tabular-nums" aria-label={`${formatted} percent`}>
           {formatted}
-          <span className="ml-0.5 text-[0.7em] opacity-70">%</span>
+          <span className="ml-0.5 text-[0.65em] opacity-80" aria-hidden="true">%</span>
         </span>
       );
     }
@@ -97,13 +105,21 @@ function DeltaValue({ diff }: DeltaValueProps) {
       ? "text-red-600 dark:text-red-500"
       : "text-muted-foreground";
 
+  const bgClass = isGood
+    ? "bg-green-500/10 dark:bg-green-500/15"
+    : isBad
+      ? "bg-red-500/10 dark:bg-red-500/15"
+      : "bg-muted";
+
   const formatted = Math.abs(value).toFixed(decimals);
-  const display = isNegative ? `−${formatted}%` : `+${formatted}%`;
+  const sign = isNegative ? "−" : "+";
+  const display = `${sign}${formatted}%`;
 
   return (
-    <span className={cn("text-sm font-medium tabular-nums", colorClass)}>
+    <span className={cn("inline-flex items-center gap-1 rounded-full px-1.5 py-0.5 text-xs font-semibold tabular-nums", colorClass, bgClass)}>
+      {!upIsPositive && <span className="text-[0.9em]">{isGood ? "↓" : "↑"}</span>}
       {display}
-      {label && <span className="text-muted-foreground ml-1 font-normal">{label}</span>}
+      {label && <span className="text-muted-foreground font-normal">{label}</span>}
     </span>
   );
 }
@@ -133,18 +149,18 @@ function StatCard({ stat, locale, isSingle = false, index = 0 }: StatCardProps) 
           color={sparklineColor}
           showFill
           fillOpacity={0.06}
-          className="pointer-events-none absolute inset-x-0 top-2 bottom-2 animate-in fade-in slide-in-from-bottom-4 duration-1000 fill-mode-both"
+          className="pointer-events-none absolute inset-x-0 top-2 bottom-2 animate-in fade-in slide-in-from-bottom-12 duration-1000 ease-[cubic-bezier(0.16,1,0.3,1)] fill-mode-both"
           style={{ animationDelay: `${baseDelay}ms` }}
         />
       )}
       <span
-        className="text-muted-foreground relative text-xs font-medium tracking-wider uppercase animate-in fade-in slide-in-from-bottom-1 duration-500 fill-mode-both"
+        className="text-muted-foreground relative text-xs font-normal tracking-wider uppercase opacity-90 animate-in fade-in slide-in-from-bottom-1 duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] fill-mode-both"
         style={{ animationDelay: `${baseDelay + 75}ms` }}
       >
         {stat.label}
       </span>
       <div
-        className="relative flex items-baseline gap-2 pb-2 animate-in fade-in slide-in-from-bottom-2 duration-500 fill-mode-both"
+        className="relative flex items-baseline gap-2 pb-2 animate-in fade-in slide-in-from-bottom-2 duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] fill-mode-both"
         style={{ animationDelay: `${baseDelay + 150}ms` }}
       >
         <span className={cn(

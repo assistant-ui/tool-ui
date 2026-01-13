@@ -1,7 +1,7 @@
 "use client";
 
 import type { CSSProperties } from "react";
-import { useId } from "react";
+import { useId, useRef, useEffect, useState } from "react";
 import { cn } from "./_adapter";
 
 export interface SparklineProps {
@@ -26,6 +26,14 @@ export function Sparkline({
   fillOpacity = 0.8,
 }: SparklineProps) {
   const gradientId = useId();
+  const polylineRef = useRef<SVGPolylineElement>(null);
+  const [pathLength, setPathLength] = useState(0);
+
+  useEffect(() => {
+    if (polylineRef.current) {
+      setPathLength(polylineRef.current.getTotalLength());
+    }
+  }, [data]);
 
   if (data.length < 2) {
     return null;
@@ -53,6 +61,8 @@ export function Sparkline({
     `${width - padding},${height}`,
   ].join(" ");
 
+  const animationDelay = style?.animationDelay ?? "0ms";
+
   return (
     <svg
       viewBox={`0 0 ${width} ${height}`}
@@ -69,10 +79,16 @@ export function Sparkline({
               <stop offset="100%" stopColor={color} stopOpacity={0} />
             </linearGradient>
           </defs>
-          <polygon points={areaPointsString} fill={`url(#${gradientId})`} />
+          <polygon
+            points={areaPointsString}
+            fill={`url(#${gradientId})`}
+            className="animate-in fade-in duration-1000 ease-[cubic-bezier(0.16,1,0.3,1)] fill-mode-both"
+            style={{ animationDelay }}
+          />
         </>
       )}
       <polyline
+        ref={polylineRef}
         points={linePointsString}
         fill="none"
         stroke={color}
@@ -82,6 +98,48 @@ export function Sparkline({
         strokeLinejoin="round"
         vectorEffect="non-scaling-stroke"
       />
+      {pathLength > 0 && (
+        <>
+          <polyline
+            points={linePointsString}
+            fill="none"
+            stroke={color}
+            strokeWidth={1.5}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            vectorEffect="non-scaling-stroke"
+            strokeDasharray="40 200"
+            strokeDashoffset={pathLength}
+            className="animate-[glint-slow_0.8s_ease-out_forwards]"
+            style={{ animationDelay }}
+          />
+          <polyline
+            points={linePointsString}
+            fill="none"
+            stroke={color}
+            strokeWidth={2}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            vectorEffect="non-scaling-stroke"
+            strokeDasharray="16 80"
+            strokeDashoffset={pathLength}
+            className="animate-[glint_0.8s_ease-out_forwards]"
+            style={{ animationDelay }}
+          />
+        </>
+      )}
+      <style>{`
+        @keyframes glint {
+          0% { stroke-dashoffset: ${pathLength}; stroke-opacity: 0; }
+          20% { stroke-opacity: 0.8; }
+          100% { stroke-dashoffset: ${-pathLength}; stroke-opacity: 0; }
+        }
+        @keyframes glint-slow {
+          0% { stroke-dashoffset: ${pathLength}; stroke-opacity: 0; }
+          20% { stroke-opacity: 0.4; }
+          100% { stroke-dashoffset: ${-pathLength}; stroke-opacity: 0; }
+        }
+      `}</style>
     </svg>
   );
 }
