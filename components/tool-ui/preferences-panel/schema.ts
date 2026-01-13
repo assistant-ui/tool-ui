@@ -23,7 +23,6 @@ const PreferenceItemSchema = z.object({
       }),
     )
     .min(2)
-    .max(4)
     .optional(),
   defaultValue: z.string().optional(),
   selectOptions: z
@@ -40,37 +39,24 @@ const PreferenceItemSchema = z.object({
 
 const PreferenceSectionSchema = z.object({
   heading: z.string().min(1).optional(),
-  items: z.array(PreferenceItemSchema).min(1).max(3),
+  items: z.array(PreferenceItemSchema).min(1),
 });
 
-export const SerializablePreferencesPanelSchema = z
-  .object({
-    id: ToolUIIdSchema,
-    role: ToolUIRoleSchema.optional(),
-    receipt: ToolUIReceiptSchema.optional(),
-    title: z.string().min(1).optional(),
-    sections: z.array(PreferenceSectionSchema).min(1).max(2),
-    confirmed: z.record(z.string(), z.union([z.string(), z.boolean()])).optional(),
-    error: z.record(z.string(), z.string()).optional(),
-    responseActions: z
-      .union([
-        z.array(SerializableActionSchema),
-        SerializableActionsConfigSchema,
-      ])
-      .optional(),
-  })
-  .refine(
-    (data) => {
-      const totalItems = data.sections.reduce(
-        (sum, section) => sum + section.items.length,
-        0,
-      );
-      return totalItems <= 5;
-    },
-    {
-      message: "Total items across all sections must not exceed 5",
-    },
-  );
+export const SerializablePreferencesPanelSchema = z.object({
+  id: ToolUIIdSchema,
+  role: ToolUIRoleSchema.optional(),
+  receipt: ToolUIReceiptSchema.optional(),
+  title: z.string().min(1).optional(),
+  sections: z.array(PreferenceSectionSchema).min(1),
+  confirmed: z.record(z.string(), z.union([z.string(), z.boolean()])).optional(),
+  error: z.record(z.string(), z.string()).optional(),
+  responseActions: z
+    .union([
+      z.array(SerializableActionSchema),
+      SerializableActionsConfigSchema,
+    ])
+    .optional(),
+});
 
 export type SerializablePreferencesPanel = z.infer<
   typeof SerializablePreferencesPanelSchema

@@ -24,10 +24,6 @@ import {
 } from "./_adapter";
 import { Check, AlertCircle } from "lucide-react";
 
-// ============================================================================
-// Helper Functions
-// ============================================================================
-
 function getInitialValue(item: PreferenceItem): string | boolean {
   switch (item.type) {
     case "switch":
@@ -40,36 +36,25 @@ function getInitialValue(item: PreferenceItem): string | boolean {
 }
 
 function formatDisplayValue(item: PreferenceItem, value: string | boolean): string {
-  switch (item.type) {
-    case "switch": {
-      return typeof value === "boolean" && value ? "On" : "Off";
-    }
-    case "toggle": {
-      const stringValue = typeof value === "string" ? value : "";
-      const option = item.options?.find((opt) => opt.value === stringValue);
-      return option?.label ?? stringValue;
-    }
-    case "select": {
-      const stringValue = typeof value === "string" ? value : "";
-      const option = item.selectOptions?.find((opt) => opt.value === stringValue);
-      return option?.label ?? stringValue;
-    }
+  if (item.type === "switch") {
+    return typeof value === "boolean" && value ? "On" : "Off";
   }
+
+  const stringValue = typeof value === "string" ? value : "";
+  const options = item.type === "toggle" ? item.options : item.selectOptions;
+  const option = options?.find((opt) => opt.value === stringValue);
+
+  return option?.label ?? stringValue;
 }
 
 function computeInitialValues(sections: PreferenceSection[]): PreferencesValue {
-  const values: PreferencesValue = {};
-  for (const section of sections) {
-    for (const item of section.items) {
-      values[item.id] = getInitialValue(item);
-    }
-  }
-  return values;
+  return sections.reduce<PreferencesValue>((acc, section) => {
+    section.items.forEach((item) => {
+      acc[item.id] = getInitialValue(item);
+    });
+    return acc;
+  }, {});
 }
-
-// ============================================================================
-// Sub-Components
-// ============================================================================
 
 interface PreferenceControlProps {
   item: PreferenceItem;
@@ -78,70 +63,125 @@ interface PreferenceControlProps {
   disabled?: boolean;
 }
 
+function SwitchControl({ id, checked, onChange, disabled, label }: {
+  id: string;
+  checked: boolean;
+  onChange: (value: boolean) => void;
+  disabled?: boolean;
+  label: string;
+}) {
+  return (
+    <Switch
+      id={id}
+      checked={checked}
+      onCheckedChange={onChange}
+      disabled={disabled}
+      aria-label={label}
+    />
+  );
+}
+
+function ToggleControl({ value, options, onChange, disabled, label }: {
+  value: string;
+  options: Array<{ value: string; label: string }>;
+  onChange: (value: string) => void;
+  disabled?: boolean;
+  label: string;
+}) {
+  return (
+    <ToggleGroup
+      type="single"
+      value={value}
+      onValueChange={(v) => v && onChange(v)}
+      disabled={disabled}
+      aria-label={label}
+      className="gap-1"
+    >
+      {options.map((opt) => (
+        <ToggleGroupItem
+          key={opt.value}
+          value={opt.value}
+          aria-label={opt.label}
+          className="!rounded-full px-3 py-1.5 text-sm"
+        >
+          {opt.label}
+        </ToggleGroupItem>
+      ))}
+    </ToggleGroup>
+  );
+}
+
+function SelectControl({ id, value, options, onChange, disabled, label }: {
+  id: string;
+  value: string;
+  options: Array<{ value: string; label: string }>;
+  onChange: (value: string) => void;
+  disabled?: boolean;
+  label: string;
+}) {
+  return (
+    <Select
+      value={value}
+      onValueChange={onChange}
+      disabled={disabled}
+    >
+      <SelectTrigger
+        id={id}
+        className="w-[180px]"
+        aria-label={label}
+      >
+        <SelectValue placeholder="Select..." />
+      </SelectTrigger>
+      <SelectContent>
+        {options.map((opt) => (
+          <SelectItem key={opt.value} value={opt.value}>
+            {opt.label}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
+  );
+}
+
 function PreferenceControl({ item, value, onChange, disabled }: PreferenceControlProps) {
   const id = `preference-${item.id}`;
 
   if (item.type === "switch") {
-    const checked = typeof value === "boolean" ? value : false;
     return (
-      <Switch
+      <SwitchControl
         id={id}
-        checked={checked}
-        onCheckedChange={onChange}
+        checked={typeof value === "boolean" ? value : false}
+        onChange={onChange}
         disabled={disabled}
-        aria-label={item.label}
+        label={item.label}
       />
     );
   }
 
+  const stringValue = typeof value === "string" ? value : "";
+
   if (item.type === "toggle" && item.options) {
-    const stringValue = typeof value === "string" ? value : "";
     return (
-      <ToggleGroup
-        type="single"
+      <ToggleControl
         value={stringValue}
-        onValueChange={(v) => v && onChange(v)}
+        options={item.options}
+        onChange={onChange}
         disabled={disabled}
-        aria-label={item.label}
-        className="gap-1"
-      >
-        {item.options.map((opt) => (
-          <ToggleGroupItem
-            key={opt.value}
-            value={opt.value}
-            aria-label={opt.label}
-            className="!rounded-full px-3 py-1.5 text-sm"
-          >
-            {opt.label}
-          </ToggleGroupItem>
-        ))}
-      </ToggleGroup>
+        label={item.label}
+      />
     );
   }
 
   if (item.type === "select" && item.selectOptions) {
-    const stringValue = typeof value === "string" ? value : "";
     return (
-      <Select
+      <SelectControl
+        id={id}
         value={stringValue}
-        onValueChange={onChange}
+        options={item.selectOptions}
+        onChange={onChange}
         disabled={disabled}
-      >
-        <SelectTrigger
-          id={id}
-          className="w-[180px]"
-          aria-label={item.label}
-        >
-          <SelectValue placeholder="Select..." />
-        </SelectTrigger>
-        <SelectContent>
-          {item.selectOptions.map((opt) => (
-            <SelectItem key={opt.value} value={opt.value}>
-              {opt.label}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
+        label={item.label}
+      />
     );
   }
 
@@ -159,6 +199,66 @@ interface PreferenceItemRowProps {
   isFirstInSectionWithoutHeading?: boolean;
 }
 
+function ItemLabel({ item, error, isReceipt }: {
+  item: PreferenceItem;
+  error?: string;
+  isReceipt: boolean;
+}) {
+  const htmlFor = `preference-${item.id}`;
+
+  if (isReceipt) {
+    return (
+      <>
+        <span className="text-sm font-medium leading-6 text-pretty">{item.label}</span>
+        {error ? (
+          <span className="text-destructive text-sm font-normal text-pretty">
+            {error}
+          </span>
+        ) : item.description ? (
+          <span className="text-muted-foreground text-sm font-normal text-pretty">
+            {item.description}
+          </span>
+        ) : null}
+      </>
+    );
+  }
+
+  return (
+    <>
+      <Label htmlFor={htmlFor} className="font-medium leading-6 text-pretty">
+        {item.label}
+      </Label>
+      {item.description && (
+        <p className="text-muted-foreground text-sm font-normal text-pretty">
+          {item.description}
+        </p>
+      )}
+    </>
+  );
+}
+
+function ItemValue({ item, value, error, showSuccessIndicators }: {
+  item: PreferenceItem;
+  value: string | boolean;
+  error?: string;
+  showSuccessIndicators: boolean;
+}) {
+  const displayValue = formatDisplayValue(item, value);
+
+  return (
+    <div className="flex shrink-0 items-center gap-2">
+      <span className="text-muted-foreground text-sm font-medium">
+        {displayValue}
+      </span>
+      {error ? (
+        <AlertCircle className="text-destructive size-3.5" />
+      ) : showSuccessIndicators ? (
+        <Check className="text-emerald-600 dark:text-emerald-500 size-3.5" />
+      ) : null}
+    </div>
+  );
+}
+
 function PreferenceItemRow({
   item,
   value,
@@ -169,11 +269,7 @@ function PreferenceItemRow({
   showSuccessIndicators = false,
   isFirstInSectionWithoutHeading = false,
 }: PreferenceItemRowProps) {
-  const id = `preference-${item.id}`;
-  const isSwitch = item.type === "switch";
-  const displayValue = isReceipt ? formatDisplayValue(item, value) : "";
-
-  const shouldStack = !isSwitch && !isReceipt;
+  const shouldStack = item.type !== "switch" && !isReceipt;
 
   return (
     <div
@@ -184,44 +280,16 @@ function PreferenceItemRow({
       )}
     >
       <div className="flex flex-col gap-1">
-        {isReceipt ? (
-          <>
-            <span className="text-sm font-medium leading-6 text-pretty">{item.label}</span>
-            {error ? (
-              <span className="text-destructive text-sm font-normal text-pretty">
-                {error}
-              </span>
-            ) : item.description ? (
-              <span className="text-muted-foreground text-sm font-normal text-pretty">
-                {item.description}
-              </span>
-            ) : null}
-          </>
-        ) : (
-          <>
-            <Label htmlFor={id} className="font-medium leading-6 text-pretty">
-              {item.label}
-            </Label>
-            {item.description && (
-              <p className="text-muted-foreground text-sm font-normal text-pretty">
-                {item.description}
-              </p>
-            )}
-          </>
-        )}
+        <ItemLabel item={item} error={error} isReceipt={isReceipt} />
       </div>
 
       {isReceipt ? (
-        <div className="flex shrink-0 items-center gap-2">
-          <span className="text-muted-foreground text-sm font-medium">
-            {displayValue}
-          </span>
-          {error ? (
-            <AlertCircle className="text-destructive size-3.5" />
-          ) : showSuccessIndicators ? (
-            <Check className="text-emerald-600 dark:text-emerald-500 size-3.5" />
-          ) : null}
-        </div>
+        <ItemValue
+          item={item}
+          value={value}
+          error={error}
+          showSuccessIndicators={showSuccessIndicators}
+        />
       ) : (
         <div className="flex shrink-0">
           <PreferenceControl
@@ -259,23 +327,33 @@ function ItemList({
   hasHeading = false,
   hasTitle = false,
 }: ItemListProps) {
+  const shouldRemoveFirstPadding = !hasHeading && hasTitle;
+
   return (
     <div className="flex flex-col">
-      {items.map((item, itemIndex) => (
-        <div key={item.id}>
-          {itemIndex > 0 && <Separator className="my-1" />}
-          <PreferenceItemRow
-            item={item}
-            value={values[item.id] ?? getInitialValue(item)}
-            onChange={onChangeValue ? (v) => onChangeValue(item.id, v) : undefined}
-            disabled={disabled}
-            isReceipt={isReceipt}
-            error={errors?.[item.id]}
-            showSuccessIndicators={showSuccessIndicators}
-            isFirstInSectionWithoutHeading={itemIndex === 0 && !hasHeading && hasTitle}
-          />
-        </div>
-      ))}
+      {items.map((item, index) => {
+        const isFirst = index === 0;
+        const itemValue = values[item.id] ?? getInitialValue(item);
+        const handleChange = onChangeValue
+          ? (v: string | boolean) => onChangeValue(item.id, v)
+          : undefined;
+
+        return (
+          <div key={item.id}>
+            {!isFirst && <Separator className="my-1" />}
+            <PreferenceItemRow
+              item={item}
+              value={itemValue}
+              onChange={handleChange}
+              disabled={disabled}
+              isReceipt={isReceipt}
+              error={errors?.[item.id]}
+              showSuccessIndicators={showSuccessIndicators}
+              isFirstInSectionWithoutHeading={isFirst && shouldRemoveFirstPadding}
+            />
+          </div>
+        );
+      })}
     </div>
   );
 }
@@ -299,19 +377,21 @@ function PreferencesSection({
   errors,
   hasTitle = false,
 }: PreferencesSectionProps) {
-  const hasErrors = errors && Object.keys(errors).length > 0;
+  const hasErrors = !!(errors && Object.keys(errors).length > 0);
 
-  const itemListProps: ItemListProps = {
-    items: section.items,
-    values,
-    onChangeValue,
-    disabled,
-    isReceipt,
-    errors,
-    showSuccessIndicators: hasErrors,
-    hasHeading: !!section.heading,
-    hasTitle,
-  };
+  const content = (
+    <ItemList
+      items={section.items}
+      values={values}
+      onChangeValue={onChangeValue}
+      disabled={disabled}
+      isReceipt={isReceipt}
+      errors={errors}
+      showSuccessIndicators={hasErrors}
+      hasHeading={!!section.heading}
+      hasTitle={hasTitle}
+    />
+  );
 
   if (section.heading) {
     return (
@@ -319,12 +399,12 @@ function PreferencesSection({
         <legend className="text-muted-foreground text-xs tracking-widest uppercase pb-1">
           {section.heading}
         </legend>
-        <ItemList {...itemListProps} />
+        {content}
       </fieldset>
     );
   }
 
-  return <ItemList {...itemListProps} />;
+  return content;
 }
 
 interface ReceiptHeaderProps {
@@ -402,10 +482,6 @@ function PreferencesReceipt({
   );
 }
 
-// ============================================================================
-// Main Component
-// ============================================================================
-
 export function PreferencesPanel({
   id,
   title,
@@ -471,26 +547,36 @@ export function PreferencesPanel({
 
   const normalizedActions = useMemo(() => {
     const normalized = normalizeActionsConfig(responseActions);
-    if (normalized) return normalized;
+    if (normalized) {
+      return {
+        ...normalized,
+        align: normalized.align ?? ("right" as const),
+      };
+    }
+
+    const defaultActions: Action[] = [
+      { id: "cancel", label: "Cancel", variant: "ghost" },
+      { id: "save", label: "Save Changes", variant: "default" },
+    ];
 
     return {
-      items: [
-        { id: "cancel", label: "Cancel", variant: "ghost" as const },
-        { id: "save", label: "Save Changes", variant: "default" as const },
-      ],
+      items: defaultActions,
       align: "right" as const,
     };
   }, [responseActions]);
 
   const actionsWithState = useMemo((): Action[] => {
-    return normalizedActions.items.map((action) => ({
-      ...action,
-      disabled:
-        action.disabled ||
-        isLoading ||
-        (action.id === "save" && !isDirty),
-      loading: action.id === "save" && isLoading,
-    }));
+    return normalizedActions.items.map((action) => {
+      const isSaveAction = action.id === "save";
+      const baseDisabled = "disabled" in action ? action.disabled : false;
+      const shouldDisable = baseDisabled || isLoading || (isSaveAction && !isDirty);
+
+      return {
+        ...action,
+        disabled: shouldDisable,
+        loading: isSaveAction && isLoading,
+      };
+    });
   }, [normalizedActions.items, isLoading, isDirty]);
 
   if (confirmed !== undefined) {
