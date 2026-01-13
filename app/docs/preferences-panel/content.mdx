@@ -3,7 +3,7 @@ import { PreferencesPanel } from "@/components/tool-ui/preferences-panel";
 
 <DocsHeader
   title="Preferences Panel"
-  description="Staged settings with explicit save"
+  description="Compact settings panel with staged changes."
   mdxPath="app/docs/preferences-panel/content.mdx"
 />
 
@@ -98,16 +98,16 @@ import { PreferencesPanel } from "@/components/tool-ui/preferences-panel";
 
 <FeatureGrid>
   <Feature icon="Settings2" title="Three control types">
-    Switch, toggle (2-4 options), or select (5+ options)
+    Switch for binary choices, toggle for 2-4 options, select for 5+ options
   </Feature>
   <Feature icon="SquareCheck" title="Staged changes">
-    Save/Cancel actions prevent accidental updates
+    Explicit Save/Cancel actions prevent accidental changes
   </Feature>
   <Feature icon="CheckCircle2" title="Receipt state">
-    Show confirmed selections after save
+    Terminal state showing confirmed selections with success indicators
   </Feature>
   <Feature icon="Layers" title="Organized sections">
-    Group related settings with optional headings
+    Group related settings with optional section headings
   </Feature>
 </FeatureGrid>
 
@@ -173,9 +173,9 @@ import {
 
 export const PreferencesPanelTool = makeAssistantTool<SerializablePreferencesPanel>({
   toolName: "show_preferences_panel",
-  description: "Display user preference settings with save/cancel actions",
+  description: "Display user preference settings with staged changes",
   parameters: SerializablePreferencesPanelSchema,
-  render: ({ args, result, addResult, toolCallId }) => {
+  render: ({ args, addResult, toolCallId }) => {
     if (!args.sections) return null;
 
     const data = parseSerializablePreferencesPanel({
@@ -205,53 +205,53 @@ export const PreferencesPanelTool = makeAssistantTool<SerializablePreferencesPan
 <TypeTable
   type={{
     id: {
-      description: "Unique identifier for this tool UI instance",
+      description: "Unique identifier for the preferences panel instance",
       type: "string",
       required: true,
     },
     title: {
-      description: "Optional card header title",
+      description: "Optional header displayed at top of card",
       type: "string",
     },
     sections: {
-      description: "Array of preference sections (max 2)",
+      description: "Preference sections with controls (max 2 sections, max 5 total items)",
       type: "PreferenceSection[]",
       required: true,
     },
     value: {
-      description: "Controlled values for all preferences",
+      description: "Controlled values object. When provided, component becomes controlled.",
       type: "PreferencesValue",
     },
     onChange: {
-      description: "Called when any preference changes",
+      description: "Called when any preference value changes (before save)",
       type: "(value: PreferencesValue) => void",
     },
     confirmed: {
-      description: "Show receipt state with confirmed values",
+      description: "When provided, renders receipt state showing confirmed preferences with success indicators",
       type: "PreferencesValue",
     },
     onSave: {
-      description: "Handler for Save action",
+      description: "Handler called when Save button is clicked. Receives current preference values.",
       type: "(value: PreferencesValue) => void | Promise<void>",
     },
     onCancel: {
-      description: "Handler for Cancel action",
+      description: "Handler called when Cancel button is clicked. Resets to initial values.",
       type: "() => void",
     },
     responseActions: {
-      description: "Custom action buttons configuration",
+      description: "Custom action buttons. Defaults to Cancel (ghost) and Save Changes (default).",
       type: "Action[] | ActionsConfig",
     },
     onResponseAction: {
-      description: "Handler for response actions",
+      description: "Handler for custom response actions. Receives actionId and current values.",
       type: "(actionId: string, value: PreferencesValue) => void | Promise<void>",
     },
     isLoading: {
-      description: "Show loading state on Save button",
+      description: "Shows loading spinner on Save button and disables all controls",
       type: "boolean",
     },
     className: {
-      description: "Additional CSS classes",
+      description: "Additional CSS classes for the root element",
       type: "string",
     },
   }}
@@ -262,11 +262,11 @@ export const PreferencesPanelTool = makeAssistantTool<SerializablePreferencesPan
 <TypeTable
   type={{
     heading: {
-      description: "Optional section heading",
+      description: "Optional section heading displayed above items",
       type: "string",
     },
     items: {
-      description: "Preference items in this section (1-3 items)",
+      description: "Preference controls in this section. Each section supports 1-3 items.",
       type: "PreferenceItem[]",
       required: true,
     },
@@ -278,42 +278,42 @@ export const PreferencesPanelTool = makeAssistantTool<SerializablePreferencesPan
 <TypeTable
   type={{
     id: {
-      description: "Unique identifier for this preference",
+      description: "Unique identifier used as key in values object",
       type: "string",
       required: true,
     },
     label: {
-      description: "Preference label",
+      description: "Primary label displayed above the control",
       type: "string",
       required: true,
     },
     description: {
-      description: "Optional help text",
+      description: "Optional help text displayed below the label",
       type: "string",
     },
     type: {
-      description: "Control type to render",
+      description: "Control type: switch (binary), toggle (2-4 options), select (5+ options)",
       type: '"switch" | "toggle" | "select"',
       required: true,
     },
     defaultChecked: {
-      description: "Default value for switch type",
+      description: "Initial checked state. Required when type is \"switch\".",
       type: "boolean",
     },
     options: {
-      description: "Options for toggle type (2-4 options)",
+      description: "Available choices. Required when type is \"toggle\". Supports 2-4 options.",
       type: "{ value: string; label: string }[]",
     },
     defaultValue: {
-      description: "Default selection for toggle type",
+      description: "Initially selected option value. Required when type is \"toggle\".",
       type: "string",
     },
     selectOptions: {
-      description: "Options for select type (5+ options)",
+      description: "Available choices. Required when type is \"select\". Use for 5+ options.",
       type: "{ value: string; label: string }[]",
     },
     defaultSelected: {
-      description: "Default selection for select type",
+      description: "Initially selected option value. Required when type is \"select\".",
       type: "string",
     },
   }}
@@ -324,7 +324,7 @@ export const PreferencesPanelTool = makeAssistantTool<SerializablePreferencesPan
 <TypeTable
   type={{
     "[itemId: string]": {
-      description: "Preference values keyed by item ID",
+      description: "Values keyed by item ID. Boolean for switches, string for toggles and selects.",
       type: "string | boolean",
     },
   }}
@@ -332,16 +332,19 @@ export const PreferencesPanelTool = makeAssistantTool<SerializablePreferencesPan
 
 ## Limits
 
-- **Max 2 sections** per panel
-- **Max 3 items** per section
-- **Max 5 total items** across all sections
-- **Toggle**: 2-4 options
-- **Select**: 5+ options
+- **Sections**: 2 maximum per panel
+- **Items per section**: 3 maximum
+- **Total items**: 5 maximum across all sections
+- **Toggle options**: 2-4 choices (use select for more)
+- **Select options**: 5+ choices (use toggle for fewer)
 
 ## Accessibility
 
-- Keyboard navigation within each control type
-- Labels properly associated with controls via `htmlFor` and `id`
-- Save button disabled when no changes exist
-- `aria-busy` state during save operations
-- Receipt state uses `role="status"` for screen readers
+- Full keyboard navigation support for all control types
+- Labels properly associated with controls using `htmlFor` and `id` attributes
+- Save button disabled when no changes exist to prevent unnecessary actions
+- `aria-busy` attribute indicates loading state during save operations
+- Receipt state uses `role="status"` for screen reader announcements
+- All animations respect `prefers-reduced-motion` user preference
+- Sufficient color contrast meets WCAG AA standards
+- Focus indicators visible on all interactive elements
