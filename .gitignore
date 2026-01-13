@@ -48,3 +48,4 @@ next-env.d.ts
 
 # VSCode
 .vscode.playwright-mcp/
+.vscode/terminals.json
