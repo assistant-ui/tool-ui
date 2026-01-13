@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo } from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 
 interface UsePresetParamOptions<T extends string> {
@@ -25,43 +25,24 @@ export function usePresetParam<T extends string>({
 
   const presetKeys = useMemo(() => new Set(Object.keys(presets)), [presets]);
 
-  const currentParamValue = useMemo(
-    () => searchParams.get(paramName),
-    [searchParams, paramName],
-  );
-
-  const isValidPreset = useCallback(
-    (value: string | null): value is T => {
-      return value !== null && presetKeys.has(value);
-    },
-    [presetKeys],
-  );
-
-  const initialPreset = isValidPreset(currentParamValue)
-    ? currentParamValue
-    : defaultPreset;
-
-  const [currentPreset, setCurrentPresetState] = useState<T>(initialPreset);
-
-  useEffect(() => {
-    if (isValidPreset(currentParamValue)) {
-      setCurrentPresetState(currentParamValue);
-    } else {
-      setCurrentPresetState(defaultPreset);
+  const currentPreset = useMemo(() => {
+    const paramValue = searchParams.get(paramName);
+    if (paramValue !== null && presetKeys.has(paramValue)) {
+      return paramValue as T;
     }
-  }, [currentParamValue, isValidPreset, defaultPreset]);
+    return defaultPreset;
+  }, [searchParams, paramName, presetKeys, defaultPreset]);
 
   const setPreset = useCallback(
     (preset: T) => {
-      setCurrentPresetState(preset);
-
+      const currentParamValue = searchParams.get(paramName);
       if (currentParamValue === preset) return;
 
       const params = new URLSearchParams(searchParams.toString());
       params.set(paramName, preset);
       router.push(`${pathname}?${params.toString()}`, { scroll: false });
     },
-    [router, pathname, searchParams, paramName, currentParamValue],
+    [router, pathname, searchParams, paramName],
   );
 
   return { currentPreset, setPreset };
