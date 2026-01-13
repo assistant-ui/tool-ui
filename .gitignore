@@ -47,4 +47,4 @@ next-env.d.ts
 .claude/hud-status.json
 
 # VSCode
-.vscode
+.vscode.playwright-mcp/
