@@ -97,6 +97,12 @@ export const componentsRegistry: ComponentMeta[] = [
     path: "/docs/preferences-panel",
   },
   {
+    id: "progress-tracker",
+    label: "Progress Tracker",
+    description: "Real-time status feedback for multi-step operations",
+    path: "/docs/progress-tracker",
+  },
+  {
     id: "item-carousel",
     label: "Item Carousel",
     description: "Horizontal carousel for browsing collections",

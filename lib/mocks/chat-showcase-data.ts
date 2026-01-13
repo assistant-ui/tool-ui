@@ -9,6 +9,7 @@ import type { SerializableItemCarousel } from "@/components/tool-ui/item-carouse
 import type { SerializableCitation } from "@/components/tool-ui/citation";
 import type { SerializableParameterSlider } from "@/components/tool-ui/parameter-slider";
 import type { SerializableStatsDisplay } from "@/components/tool-ui/stats-display";
+import type { SerializableProgressTracker } from "@/components/tool-ui/progress-tracker";
 
 export type Flight = {
   id: string;
@@ -341,4 +342,29 @@ export const STATS_DISPLAY_DATA: Omit<SerializableStatsDisplay, "id"> = {
       diff: { value: 5.0, decimals: 0 },
     },
   ],
+};
+
+export const PROGRESS_TRACKER_DATA: Omit<SerializableProgressTracker, "id"> = {
+  steps: [
+    {
+      id: "build",
+      label: "Building",
+      description: "Compiling TypeScript and bundling assets",
+      status: "completed",
+    },
+    {
+      id: "test",
+      label: "Running Tests",
+      description: "84 tests across 12 suites",
+      status: "in-progress",
+    },
+    {
+      id: "deploy",
+      label: "Deploy to Production",
+      description: "Upload to edge nodes",
+      status: "pending",
+    },
+  ],
+  elapsedTime: 38400,
+  responseActions: [{ id: "cancel", label: "Cancel", variant: "outline" }],
 };

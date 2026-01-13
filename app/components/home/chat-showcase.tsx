@@ -14,6 +14,7 @@ import { OptionList } from "@/components/tool-ui/option-list";
 import { ItemCarousel } from "@/components/tool-ui/item-carousel";
 import { ParameterSlider } from "@/components/tool-ui/parameter-slider";
 import { StatsDisplay } from "@/components/tool-ui/stats-display";
+import { ProgressTracker } from "@/components/tool-ui/progress-tracker";
 import {
   type Flight,
   TABLE_COLUMNS,
@@ -27,6 +28,7 @@ import {
   LLM_CITATIONS,
   PARAMETER_SLIDER_DATA,
   STATS_DISPLAY_DATA,
+  PROGRESS_TRACKER_DATA,
 } from "@/lib/mocks/chat-showcase-data";
 
 const TIMING = {
@@ -445,6 +447,18 @@ function createSceneConfigs(): SceneConfig[] {
       preamble: "Running tests...",
       toolUI: <AnimatedTerminal className="w-full max-w-[560px]" />,
       toolFallbackHeight: 200,
+    },
+    {
+      userMessage: "Deploy the updates to production",
+      preamble: "Starting deployment...",
+      toolUI: (
+        <ProgressTracker
+          id="chat-showcase-progress-tracker"
+          {...PROGRESS_TRACKER_DATA}
+          className="w-full max-w-[480px]"
+        />
+      ),
+      toolFallbackHeight: 260,
     },
     {
       userMessage: "Find me flights to Tokyo in March",

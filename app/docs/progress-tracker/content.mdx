@@ -1,0 +1,398 @@
+import { DocsHeader } from "../_components/docs-header";
+import { ProgressTracker } from "@/components/tool-ui/progress-tracker";
+
+<DocsHeader
+  title="Progress Tracker"
+  description="Real-time status feedback for multi-step operations."
+  mdxPath="app/docs/progress-tracker/content.mdx"
+/>
+
+<Tabs items={["Preview", "Code"]}>
+  <Tab>
+    <div className="not-prose mx-auto max-w-sm">
+      <ProgressTracker
+        id="progress-tracker-example"
+        steps={[
+          {
+            id: "build",
+            label: "Building",
+            description: "Compiling TypeScript and bundling assets",
+            status: "completed",
+          },
+          {
+            id: "test",
+            label: "Running Tests",
+            description: "147 tests across 23 suites",
+            status: "in-progress",
+          },
+          {
+            id: "deploy",
+            label: "Deploy to Production",
+            description: "Upload to edge nodes",
+            status: "pending",
+          },
+        ]}
+        elapsedTime={43200}
+        responseActions={[{ id: "cancel", label: "Cancel", variant: "outline" }]}
+      />
+    </div>
+  </Tab>
+  <Tab>
+    ```tsx
+    import { ProgressTracker } from "@/components/tool-ui/progress-tracker";
+
+    export function Example() {
+      return (
+        <ProgressTracker
+          id="progress-tracker-example"
+          steps={[
+            {
+              id: "build",
+              label: "Building",
+              description: "Compiling TypeScript and bundling assets",
+              status: "completed",
+            },
+            {
+              id: "test",
+              label: "Running Tests",
+              description: "147 tests across 23 suites",
+              status: "in-progress",
+            },
+            {
+              id: "deploy",
+              label: "Deploy to Production",
+              description: "Upload to edge nodes",
+              status: "pending",
+            },
+          ]}
+          elapsedTime={43200}
+          responseActions={[{ id: "cancel", label: "Cancel", variant: "outline" }]}
+          onResponseAction={(actionId) => console.log(actionId)}
+        />
+      );
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Key Features
+
+<FeatureGrid>
+  <Feature icon="ListChecks" title="Status indicators">
+    Visual states for pending, in-progress, completed, and failed steps
+  </Feature>
+  <Feature icon="Timer" title="Elapsed time">
+    Optional time tracking with automatic formatting
+  </Feature>
+  <Feature icon="AlertCircle" title="Error handling">
+    Failed step indicators with descriptive error messages
+  </Feature>
+  <Feature icon="CheckCircle2" title="Receipt state">
+    Terminal state view showing complete operation history
+  </Feature>
+</FeatureGrid>
+
+## Step Statuses
+
+Each step has one of four statuses:
+
+- **Pending** — Not yet started (empty circle)
+- **In-progress** — Currently executing (animated spinner)
+- **Completed** — Successfully finished (filled checkmark)
+- **Failed** — Encountered an error (filled X icon)
+
+The component automatically highlights the current step (in-progress or first pending) with a subtle background and `aria-current="step"` for accessibility.
+
+## Receipt Pattern
+
+Use the `receipt` prop to render a terminal state after an operation completes, fails, or is cancelled. The receipt displays the full step history with an outcome indicator, making it ideal for conversation history.
+
+<Tabs items={["Success", "Failed", "Cancelled"]}>
+  <Tab>
+    <div className="not-prose mx-auto max-w-sm">
+      <ProgressTracker
+        id="receipt-success-example"
+        steps={[
+          { id: "build", label: "Building", status: "completed" },
+          { id: "test", label: "Testing", status: "completed" },
+          { id: "deploy", label: "Deploying", status: "completed" },
+        ]}
+        elapsedTime={128500}
+        receipt={{
+          outcome: "success",
+          summary: "Deployment complete",
+          at: new Date().toISOString(),
+        }}
+      />
+    </div>
+  </Tab>
+  <Tab>
+    <div className="not-prose mx-auto max-w-sm">
+      <ProgressTracker
+        id="receipt-failed-example"
+        steps={[
+          { id: "connect", label: "Connect to Database", status: "completed" },
+          { id: "migrate", label: "Run Migrations", description: "Failed: column 'user_id' already exists", status: "failed" },
+          { id: "verify", label: "Verify Schema", status: "pending" },
+        ]}
+        elapsedTime={8300}
+        receipt={{
+          outcome: "failed",
+          summary: "Migration failed",
+          at: new Date().toISOString(),
+        }}
+      />
+    </div>
+  </Tab>
+  <Tab>
+    <div className="not-prose mx-auto max-w-sm">
+      <ProgressTracker
+        id="receipt-cancelled-example"
+        steps={[
+          { id: "step1", label: "Analyzing", status: "completed" },
+          { id: "step2", label: "Processing", status: "in-progress" },
+          { id: "step3", label: "Generating", status: "pending" },
+        ]}
+        elapsedTime={12400}
+        receipt={{
+          outcome: "cancelled",
+          summary: "Processing cancelled",
+          at: new Date().toISOString(),
+        }}
+      />
+    </div>
+  </Tab>
+</Tabs>
+
+Receipt features:
+
+- Displays all steps with final statuses and connecting lines
+- Shows elapsed time badge at the top (if provided)
+- Outcome indicator in top-right: green check (success), red alert (failure), gray check (cancelled)
+- Supports `success`, `partial`, `failed`, and `cancelled` outcomes
+- Read-only with no action buttons
+- Uses `role="status"` for screen reader announcements
+
+## Elapsed Time
+
+Pass `elapsedTime` in milliseconds to display a timer badge. Automatically formatted as:
+
+- Under 60 seconds: `3.4s`
+- Over 60 seconds: `2m 15s`
+
+<Tabs items={["Preview", "Code"]}>
+  <Tab>
+    <div className="not-prose mx-auto max-w-sm">
+      <ProgressTracker
+        id="elapsed-time-example"
+        steps={[
+          { id: "parse", label: "Parse CSV", status: "completed" },
+          { id: "validate", label: "Validate Records", status: "in-progress" },
+          { id: "import", label: "Import to Database", status: "pending" },
+        ]}
+        elapsedTime={247800}
+      />
+    </div>
+  </Tab>
+  <Tab>
+    ```tsx
+    <ProgressTracker
+      id="elapsed-time-example"
+      steps={[
+        { id: "parse", label: "Parse CSV", status: "completed" },
+        { id: "validate", label: "Validate Records", status: "in-progress" },
+        { id: "import", label: "Import to Database", status: "pending" },
+      ]}
+      elapsedTime={247800}
+    />
+    ```
+  </Tab>
+</Tabs>
+
+## Source and Install
+
+Copy [`components/tool-ui/progress-tracker`](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/progress-tracker) and the [`shared`](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/shared) directory into your project. The `shared` folder contains utilities used by all Tool UI components. The `tool-ui` directory should sit alongside your shadcn `ui` directory.
+
+### Prerequisites
+
+This component requires the following [shadcn/ui](https://ui.shadcn.com) components:
+
+```bash
+pnpm dlx shadcn@latest add button
+```
+
+### Directory Structure
+
+<Files>
+  <Folder name="components" defaultOpen>
+    <Folder name="ui">
+      <File name="button.tsx" />
+      <File name="..." />
+    </Folder>
+    <Folder name="tool-ui" defaultOpen>
+      <Folder name="shared" defaultOpen>
+        <File name="action-buttons.tsx" />
+        <File name="schema.ts" />
+        <File name="parse.ts" />
+        <File name="index.ts" />
+        <File name="..." />
+      </Folder>
+      <Folder name="progress-tracker" defaultOpen>
+        <File name="progress-tracker.tsx" />
+        <File name="schema.ts" />
+        <File name="error-boundary.tsx" />
+        <File name="index.tsx" />
+        <File name="_adapter.tsx" />
+      </Folder>
+    </Folder>
+  </Folder>
+</Files>
+
+### Download
+
+- [**Shared Dependencies (GitHub)**](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/shared) ([ZIP](https://download-directory.github.io/?url=https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/shared))
+- [**Progress Tracker (GitHub)**](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/progress-tracker) ([ZIP](https://download-directory.github.io/?url=https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/progress-tracker))
+
+## Usage
+
+```tsx
+"use client";
+
+import { makeAssistantTool } from "@assistant-ui/react";
+import {
+  ProgressTracker,
+  ProgressTrackerErrorBoundary,
+  parseSerializableProgressTracker,
+  SerializableProgressTrackerSchema,
+  type SerializableProgressTracker,
+} from "@/components/tool-ui/progress-tracker";
+
+export const ProgressTrackerTool = makeAssistantTool<SerializableProgressTracker>({
+  toolName: "trackProgress",
+  description: "Display real-time progress for multi-step operations",
+  parameters: SerializableProgressTrackerSchema,
+  render: ({ args, toolCallId }) => {
+    if (!(args as any)?.steps) return null;
+
+    const data = parseSerializableProgressTracker({
+      ...args,
+      id: (args as any)?.id ?? `progress-tracker-${toolCallId}`,
+    });
+
+    return (
+      <ProgressTrackerErrorBoundary>
+        <ProgressTracker
+          {...data}
+          onResponseAction={async (actionId) => {
+            if (actionId === "cancel") {
+              console.log("Cancelled operation");
+            }
+          }}
+        />
+      </ProgressTrackerErrorBoundary>
+    );
+  },
+});
+```
+
+Mount `<ProgressTrackerTool />` under `<AssistantRuntimeProvider>` to register the tool and its UI.
+
+## Props
+
+<TypeTable
+  type={{
+    id: {
+      description: "Unique identifier for the progress tracker instance",
+      type: "string",
+      required: true,
+    },
+    steps: {
+      description: "Sequential list of operation steps with status indicators",
+      type: "ProgressStep[]",
+      required: true,
+    },
+    elapsedTime: {
+      description: "Operation duration in milliseconds. Displayed as formatted timer badge.",
+      type: "number",
+    },
+    responseActions: {
+      description: "Actions rendered below the card (e.g., Cancel, Retry). Hidden when operation completes unless custom actions provided.",
+      type: "Action[] | ActionsConfig",
+    },
+    onResponseAction: {
+      description: "Handler when a response action is triggered",
+      type: "(actionId: string) => void | Promise<void>",
+    },
+    onBeforeResponseAction: {
+      description: "Handler called before action execution (can prevent action by returning false)",
+      type: "(actionId: string) => boolean | Promise<boolean>",
+    },
+    receipt: {
+      description: "When provided, renders terminal state showing full step history with outcome indicator",
+      type: "ToolUIReceipt",
+    },
+  }}
+/>
+
+## ProgressStep Schema
+
+<TypeTable
+  type={{
+    id: {
+      description: "Unique identifier for the step",
+      type: "string",
+      required: true,
+    },
+    label: {
+      description: "Step name displayed to the user",
+      type: "string",
+      required: true,
+    },
+    description: {
+      description: "Additional details shown below the label. Visible for current, failed, in-progress, or completed (when all done) steps.",
+      type: "string",
+    },
+    status: {
+      description: "Current state of the step",
+      type: "'pending' | 'in-progress' | 'completed' | 'failed'",
+      required: true,
+    },
+  }}
+/>
+
+## ToolUIReceipt Schema
+
+<TypeTable
+  type={{
+    outcome: {
+      description: "Final result of the operation. Determines outcome indicator color/icon.",
+      type: "'success' | 'partial' | 'failed' | 'cancelled'",
+      required: true,
+    },
+    summary: {
+      description: "Brief outcome message displayed in top-right (e.g., 'Deployment complete')",
+      type: "string",
+      required: true,
+    },
+    at: {
+      description: "ISO 8601 timestamp when the operation completed",
+      type: "string",
+      required: true,
+    },
+    identifiers: {
+      description: "Optional reference IDs for the operation (e.g., { deploymentId: 'abc-123' })",
+      type: "Record<string, string>",
+    },
+  }}
+/>
+
+## Accessibility
+
+- Semantic `<article>` with `role="status"` and `aria-live="polite"` for live updates
+- `aria-busy` indicates when an operation is in progress
+- `aria-current="step"` marks the currently active step
+- Steps rendered as semantic list (`<ul>` / `<li>`)
+- Keyboard navigation: `Tab` to focus action buttons, `Enter` or `Space` to activate
+- Loading skeleton (`ProgressTrackerProgress`) displayed while streaming data
+- All animations respect `prefers-reduced-motion`
+- Text is unselectable to prevent accidental highlighting during status changes

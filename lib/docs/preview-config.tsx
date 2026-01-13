@@ -19,6 +19,7 @@ import { OrderSummary } from "@/components/tool-ui/order-summary";
 import { ParameterSlider } from "@/components/tool-ui/parameter-slider";
 import { Plan } from "@/components/tool-ui/plan";
 import { PreferencesPanel } from "@/components/tool-ui/preferences-panel";
+import { ProgressTracker } from "@/components/tool-ui/progress-tracker";
 import { StatsDisplay } from "@/components/tool-ui/stats-display";
 import { Terminal } from "@/components/tool-ui/terminal";
 
@@ -38,6 +39,7 @@ import { orderSummaryPresets, type OrderSummaryPresetName } from "@/lib/presets/
 import { parameterSliderPresets, type ParameterSliderPresetName } from "@/lib/presets/parameter-slider";
 import { planPresets, type PlanPresetName } from "@/lib/presets/plan";
 import { preferencesPanelPresets, type PreferencesPanelPresetName } from "@/lib/presets/preferences-panel";
+import { progressTrackerPresets, type ProgressTrackerPresetName } from "@/lib/presets/progress-tracker";
 import { statsDisplayPresets, type StatsDisplayPresetName } from "@/lib/presets/stats-display";
 import { terminalPresets, type TerminalPresetName } from "@/lib/presets/terminal";
 
@@ -58,6 +60,7 @@ export type ComponentId =
   | "parameter-slider"
   | "plan"
   | "preferences-panel"
+  | "progress-tracker"
   | "stats-display"
   | "terminal";
 
@@ -398,6 +401,24 @@ export const previewConfigs: Record<ComponentId, PreviewConfig<unknown, string>>
           onChange={(value) => setState({ selection: value as unknown as string[] | string | null })}
           onSave={async (values) => console.log("Saved:", values)}
           onCancel={() => console.log("Cancelled")}
+        />
+      );
+    },
+  },
+  "progress-tracker": {
+    presets: progressTrackerPresets as Record<string, PresetWithCodeGen<unknown>>,
+    defaultPreset: "in-progress" satisfies ProgressTrackerPresetName,
+    wrapper: MaxWidthSmStartWrapper,
+    chatContext: {
+      userMessage: "Deploy the application to production",
+      preamble: "Starting deployment process:",
+    },
+    renderComponent: ({ data }) => {
+      const trackerData = data as Parameters<typeof ProgressTracker>[0];
+      return (
+        <ProgressTracker
+          {...trackerData}
+          onResponseAction={(actionId) => console.log("Response action:", actionId)}
         />
       );
     },

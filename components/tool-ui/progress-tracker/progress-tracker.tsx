@@ -1,0 +1,329 @@
+"use client";
+
+import * as React from "react";
+import { cn } from "./_adapter";
+import type { ProgressTrackerProps } from "./schema";
+import { ActionButtons, normalizeActionsConfig } from "../shared";
+import type { Action } from "../shared";
+import { Check, X, Loader2, Timer, AlertCircle } from "lucide-react";
+
+function formatElapsedTime(milliseconds: number): string {
+  const seconds = milliseconds / 1000;
+
+  if (seconds < 60) {
+    return `${seconds.toFixed(1)}s`;
+  }
+
+  const minutes = Math.floor(seconds / 60);
+  const remainingSeconds = Math.floor(seconds % 60);
+  return `${minutes}m ${remainingSeconds}s`;
+}
+
+interface StepIndicatorProps {
+  status: "pending" | "in-progress" | "completed" | "failed";
+}
+
+function StepIndicator({ status }: StepIndicatorProps) {
+  if (status === "pending") {
+    return (
+      <span
+        className="bg-card flex size-6 shrink-0 items-center justify-center rounded-full border-2 border-muted-foreground/50 motion-safe:transition-all motion-safe:duration-200"
+        aria-hidden="true"
+      />
+    );
+  }
+
+  if (status === "in-progress") {
+    return (
+      <span
+        className="bg-card flex size-6 shrink-0 items-center justify-center rounded-full shadow-[0_0_0_4px_hsl(var(--primary)/0.1)] motion-safe:transition-all motion-safe:duration-200"
+        aria-hidden="true"
+      >
+        <Loader2 className="text-primary size-6 motion-safe:animate-spin" />
+      </span>
+    );
+  }
+
+  if (status === "completed") {
+    return (
+      <span
+        className="bg-primary text-primary-foreground flex size-6 shrink-0 items-center justify-center rounded-full shadow-sm motion-safe:animate-[scale-in_200ms_ease-out] motion-safe:transition-all motion-safe:duration-200"
+        aria-hidden="true"
+      >
+        <Check className="size-4" strokeWidth={3} />
+      </span>
+    );
+  }
+
+  if (status === "failed") {
+    return (
+      <span
+        className="bg-destructive/90 text-destructive-foreground flex size-6 shrink-0 items-center justify-center rounded-full shadow-sm motion-safe:animate-[scale-in_200ms_ease-out] motion-safe:transition-all motion-safe:duration-200"
+        aria-hidden="true"
+      >
+        <X className="size-4" strokeWidth={3} />
+      </span>
+    );
+  }
+
+  return null;
+}
+
+export function ProgressTrackerProgress({ className }: { className?: string }) {
+  return (
+    <div
+      data-slot="progress-tracker-progress"
+      aria-busy="true"
+      className={cn(
+        "flex w-full min-w-80 max-w-md flex-col",
+        "text-foreground",
+        className,
+      )}
+    >
+      <div className="bg-card flex w-full flex-col gap-4 rounded-2xl border p-5 shadow-xs">
+        <div className="flex flex-col gap-3">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="flex items-start gap-3">
+              <div className="bg-muted size-6 animate-pulse rounded-full" />
+              <div className="flex flex-1 flex-col gap-1">
+                <div className="bg-muted h-5 w-3/4 animate-pulse rounded" />
+                <div className="bg-muted h-4 w-full animate-pulse rounded" />
+              </div>
+            </div>
+          ))}
+        </div>
+        <div className="flex justify-end">
+          <div className="bg-muted h-9 w-20 animate-pulse rounded-full" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export function ProgressTracker({
+  id,
+  steps,
+  elapsedTime,
+  responseActions,
+  onResponseAction,
+  onBeforeResponseAction,
+  className,
+  receipt,
+}: ProgressTrackerProps) {
+  const hasInProgress = steps.some((step) => step.status === "in-progress");
+  const hasFailed = steps.some((step) => step.status === "failed");
+  const allCompleted = steps.every((step) => step.status === "completed");
+
+  const currentStepId = React.useMemo(() => {
+    const inProgressStep = steps.find((s) => s.status === "in-progress");
+    if (inProgressStep) return inProgressStep.id;
+
+    const firstPendingStep = steps.find((s) => s.status === "pending");
+    if (firstPendingStep) return firstPendingStep.id;
+
+    return null;
+  }, [steps]);
+
+  const handleAction = React.useCallback(
+    async (actionId: string) => {
+      await onResponseAction?.(actionId);
+    },
+    [onResponseAction],
+  );
+
+  const defaultActions: Action[] = React.useMemo(
+    () => [
+      {
+        id: "cancel",
+        label: "Cancel",
+        variant: "outline",
+      },
+    ],
+    [],
+  );
+
+  const normalizedActions = React.useMemo(() => {
+    if (allCompleted || receipt) return null;
+
+    const config = normalizeActionsConfig(responseActions);
+    if (config) return config;
+
+    if (hasFailed) return null;
+
+    return {
+      items: defaultActions,
+      align: "right" as const,
+    };
+  }, [allCompleted, receipt, responseActions, hasFailed, defaultActions]);
+
+  if (receipt) {
+    const { outcome, summary } = receipt;
+    const isSuccess = outcome === "success";
+    const isFailed = outcome === "failed";
+
+    return (
+      <div
+        className={cn(
+          "flex w-full min-w-80 max-w-md flex-col",
+          "text-foreground select-none",
+          className,
+        )}
+        data-slot="progress-tracker"
+        data-tool-ui-id={id}
+        data-receipt="true"
+        role="status"
+        aria-label={summary}
+      >
+        <div className="bg-card flex w-full flex-col gap-4 rounded-2xl border p-5 shadow-xs">
+          <div className="flex items-center justify-between">
+            {elapsedTime !== undefined && elapsedTime > 0 && (
+              <div className="flex items-center gap-1.5 text-xs text-muted-foreground font-mono">
+                <Timer className="size-3.5 -mt-px" />
+                <span>{formatElapsedTime(elapsedTime)}</span>
+              </div>
+            )}
+            <span
+              className={cn(
+                "flex items-center gap-1.5 text-xs font-medium",
+                isSuccess && "text-emerald-600 dark:text-emerald-500",
+                isFailed && "text-destructive",
+                !isSuccess && !isFailed && "text-muted-foreground",
+              )}
+            >
+              {isSuccess ? (
+                <Check className="size-3.5" />
+              ) : isFailed ? (
+                <AlertCircle className="size-3.5" />
+              ) : (
+                <Check className="size-3.5" />
+              )}
+              {summary}
+            </span>
+          </div>
+
+          <ul role="list" className="flex flex-col gap-2">
+            {steps.map((step, index) => (
+              <li
+                key={step.id}
+                className="relative flex items-start gap-3 -mx-2 rounded-lg px-2 py-1.5"
+              >
+                {index < steps.length - 1 && (
+                  <div
+                    className="absolute left-5 top-8 w-px bg-border"
+                    style={{
+                      height: "calc(100% + 0.5rem)",
+                    }}
+                    aria-hidden="true"
+                  />
+                )}
+                <div className="relative z-10">
+                  <StepIndicator status={step.status} />
+                </div>
+                <div className="flex flex-1 flex-col gap-0.5">
+                  <span className="text-sm font-medium leading-6">
+                    {step.label}
+                  </span>
+                  {step.description && (
+                    <span className="text-muted-foreground text-sm">
+                      {step.description}
+                    </span>
+                  )}
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <article
+      className={cn(
+        "flex w-full min-w-80 max-w-md flex-col gap-3",
+        "text-foreground select-none",
+        className,
+      )}
+      data-slot="progress-tracker"
+      data-tool-ui-id={id}
+      role="status"
+      aria-live="polite"
+      aria-busy={hasInProgress}
+    >
+      <div className="bg-card flex w-full flex-col gap-4 rounded-2xl border p-5 shadow-xs">
+        {elapsedTime !== undefined && elapsedTime > 0 && (
+          <div className="flex items-center gap-1.5 text-xs text-muted-foreground font-mono">
+            <Timer className="size-3.5 -mt-px" />
+            <span>{formatElapsedTime(elapsedTime)}</span>
+          </div>
+        )}
+
+        <ul role="list" className="flex flex-col gap-3">
+          {steps.map((step, index) => {
+            const isCurrent = step.id === currentStepId;
+            const showDescription =
+              step.description &&
+              (allCompleted ||
+                isCurrent ||
+                step.status === "failed" ||
+                step.status === "in-progress");
+
+            return (
+              <li
+                key={step.id}
+                className={cn(
+                  "relative flex items-start gap-3 -mx-2 rounded-lg px-2 py-1.5",
+                  isCurrent && "bg-primary/5",
+                )}
+                aria-current={isCurrent ? "step" : undefined}
+              >
+                {index < steps.length - 1 && (
+                  <div
+                    className={cn(
+                      "absolute left-5 top-8 w-px bg-border",
+                      "motion-safe:transition-all motion-safe:duration-300",
+                    )}
+                    style={{
+                      height: "calc(100% + 0.75rem)",
+                    }}
+                    aria-hidden="true"
+                  />
+                )}
+                <div className="relative z-10">
+                  <StepIndicator status={step.status} />
+                </div>
+                <div className="flex flex-1 flex-col gap-0.5">
+                  <span
+                    className={cn(
+                      "text-sm font-medium leading-6",
+                      step.status === "pending" && "text-muted-foreground",
+                    )}
+                  >
+                    {step.label}
+                  </span>
+                  {showDescription && (
+                    <span className="text-muted-foreground text-sm">
+                      {step.description}
+                    </span>
+                  )}
+                </div>
+              </li>
+            );
+          })}
+        </ul>
+      </div>
+
+      {normalizedActions && (
+        <div className="@container/actions">
+          <ActionButtons
+            actions={normalizedActions.items}
+            align={normalizedActions.align}
+            confirmTimeout={normalizedActions.confirmTimeout}
+            onAction={handleAction}
+            onBeforeAction={onBeforeResponseAction}
+          />
+        </div>
+      )}
+    </article>
+  );
+}
