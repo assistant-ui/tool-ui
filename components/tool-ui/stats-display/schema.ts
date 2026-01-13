@@ -36,6 +36,7 @@ export const StatDiffSchema = z.object({
   value: z.number(),
   decimals: z.number().int().min(0).optional(),
   upIsPositive: z.boolean().optional(),
+  label: z.string().optional(),
 });
 
 export type StatDiff = z.infer<typeof StatDiffSchema>;

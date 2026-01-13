@@ -83,7 +83,7 @@ interface DeltaValueProps {
 }
 
 function DeltaValue({ diff }: DeltaValueProps) {
-  const { value, decimals = 1, upIsPositive = true } = diff;
+  const { value, decimals = 1, upIsPositive = true, label } = diff;
 
   const isPositive = value > 0;
   const isNegative = value < 0;
@@ -103,6 +103,7 @@ function DeltaValue({ diff }: DeltaValueProps) {
   return (
     <span className={cn("text-sm font-medium tabular-nums", colorClass)}>
       {display}
+      {label && <span className="text-muted-foreground ml-1 font-normal">{label}</span>}
     </span>
   );
 }
@@ -111,32 +112,43 @@ interface StatCardProps {
   stat: StatItem;
   locale?: string;
   isSingle?: boolean;
+  index?: number;
 }
 
-function StatCard({ stat, locale, isSingle = false }: StatCardProps) {
+function StatCard({ stat, locale, isSingle = false, index = 0 }: StatCardProps) {
   const sparklineColor = stat.sparkline?.color ?? "var(--muted-foreground)";
   const hasSparkline = Boolean(stat.sparkline);
+  const baseDelay = index * 100;
 
   return (
-    <div className={cn(
-      "relative flex min-h-28 flex-col gap-1 px-6",
-      isSingle ? "justify-center" : "justify-end"
-    )}>
+    <div
+      className={cn(
+        "relative flex min-h-28 flex-col gap-1 px-6",
+        isSingle ? "justify-center" : "justify-end"
+      )}
+    >
       {hasSparkline && (
         <Sparkline
           data={stat.sparkline!.data}
           color={sparklineColor}
           showFill
-          fillOpacity={0.25}
-          className="pointer-events-none absolute inset-x-0 top-2 bottom-2"
+          fillOpacity={0.06}
+          className="pointer-events-none absolute inset-x-0 top-2 bottom-2 animate-in fade-in slide-in-from-bottom-4 duration-1000 fill-mode-both"
+          style={{ animationDelay: `${baseDelay}ms` }}
         />
       )}
-      <span className="text-muted-foreground relative text-xs font-medium tracking-wider uppercase">
+      <span
+        className="text-muted-foreground relative text-xs font-medium tracking-wider uppercase animate-in fade-in slide-in-from-bottom-1 duration-500 fill-mode-both"
+        style={{ animationDelay: `${baseDelay + 75}ms` }}
+      >
         {stat.label}
       </span>
-      <div className="relative flex items-baseline gap-2 pb-2">
+      <div
+        className="relative flex items-baseline gap-2 pb-2 animate-in fade-in slide-in-from-bottom-2 duration-500 fill-mode-both"
+        style={{ animationDelay: `${baseDelay + 150}ms` }}
+      >
         <span className={cn(
-          "font-extralight tracking-normal",
+          "font-light tracking-normal",
           isSingle ? "text-5xl" : "text-3xl"
         )}>
           <FormattedValue
@@ -170,8 +182,9 @@ export function StatsDisplay({
   stats,
   className,
   isLoading = false,
-  locale,
+  locale: localeProp,
 }: StatsDisplayProps) {
+  const locale = localeProp ?? (typeof navigator !== "undefined" ? navigator.language : undefined);
   const hasHeader = Boolean(title || description);
   const isSingle = stats.length === 1;
 
@@ -216,7 +229,7 @@ export function StatsDisplay({
                       index > 0 && "border-border border-t"
                     )}
                   >
-                    <StatCard stat={stat} locale={locale} isSingle={isSingle} />
+                    <StatCard stat={stat} locale={locale} isSingle={isSingle} index={index} />
                   </div>
                 ))}
           </div>

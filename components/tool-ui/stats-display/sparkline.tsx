@@ -1,5 +1,6 @@
 "use client";
 
+import type { CSSProperties } from "react";
 import { useId } from "react";
 import { cn } from "./_adapter";
 
@@ -9,6 +10,7 @@ export interface SparklineProps {
   width?: number;
   height?: number;
   className?: string;
+  style?: CSSProperties;
   showFill?: boolean;
   fillOpacity?: number;
 }
@@ -19,6 +21,7 @@ export function Sparkline({
   width = 64,
   height = 24,
   className,
+  style,
   showFill = false,
   fillOpacity = 0.8,
 }: SparklineProps) {
@@ -54,7 +57,8 @@ export function Sparkline({
     <svg
       viewBox={`0 0 ${width} ${height}`}
       aria-hidden="true"
-      className={cn("h-full w-full shrink-0 animate-in fade-in slide-in-from-bottom-4 duration-700 ease-[cubic-bezier(0.16,1,0.3,1)]", className)}
+      className={cn("h-full w-full shrink-0", className)}
+      style={style}
       preserveAspectRatio="none"
     >
       {showFill && (
@@ -73,7 +77,7 @@ export function Sparkline({
         fill="none"
         stroke={color}
         strokeWidth={1}
-        strokeOpacity={0.4}
+        strokeOpacity={0.15}
         strokeLinecap="round"
         strokeLinejoin="round"
         vectorEffect="non-scaling-stroke"
