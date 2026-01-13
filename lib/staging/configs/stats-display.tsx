@@ -512,19 +512,19 @@ function TuningPanel({ data }: TuningPanelProps) {
 
   const glintAnimation = useControls("Glint Effect", {
     glintDuration: { value: 0.8, min: 0.1, max: 3, step: 0.1, label: "Duration (s)" },
-    glintDelay: { value: 400, min: 0, max: 2000, step: 50, label: "Delay (ms)" },
-    glintDashSize: { value: 74, min: 4, max: 150, step: 2, label: "Dash Size" },
+    glintDelay: { value: 0, min: 0, max: 2000, step: 50, label: "Delay (ms)" },
+    glintDashSize: { value: 34, min: 4, max: 150, step: 2, label: "Dash Size" },
     glintGapSize: { value: 110, min: 20, max: 400, step: 10, label: "Gap Size" },
-    glintStrokeWidth: { value: 1.0, min: 0.5, max: 6, step: 0.25, label: "Stroke Width" },
-    glintPeakOpacity: { value: 0.8, min: 0, max: 1, step: 0.05, label: "Peak Opacity" },
+    glintStrokeWidth: { value: 0.75, min: 0.5, max: 6, step: 0.25, label: "Stroke Width" },
+    glintPeakOpacity: { value: 0.9, min: 0, max: 1, step: 0.05, label: "Peak Opacity" },
   });
 
   const slowGlintAnimation = useControls("Slow Glint", {
-    slowGlintDelay: { value: 300, min: 0, max: 2000, step: 50, label: "Delay (ms)" },
-    slowGlintDashSize: { value: 80, min: 10, max: 200, step: 5, label: "Dash Size" },
+    slowGlintDelay: { value: 0, min: 0, max: 2000, step: 50, label: "Delay (ms)" },
+    slowGlintDashSize: { value: 115, min: 10, max: 200, step: 5, label: "Dash Size" },
     slowGlintGapSize: { value: 200, min: 50, max: 600, step: 25, label: "Gap Size" },
-    slowGlintStrokeWidth: { value: 3.5, min: 0.5, max: 6, step: 0.25, label: "Stroke Width" },
-    slowGlintPeakOpacity: { value: 0.4, min: 0, max: 1, step: 0.05, label: "Peak Opacity" },
+    slowGlintStrokeWidth: { value: 0.75, min: 0.5, max: 6, step: 0.25, label: "Stroke Width" },
+    slowGlintPeakOpacity: { value: 0.2, min: 0, max: 1, step: 0.05, label: "Peak Opacity" },
   });
 
   const cardAnimation = useControls("Stat Cards", {
