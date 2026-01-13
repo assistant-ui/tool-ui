@@ -134,7 +134,7 @@ interface StatCardProps {
 function StatCard({ stat, locale, isSingle = false, index = 0 }: StatCardProps) {
   const sparklineColor = stat.sparkline?.color ?? "var(--muted-foreground)";
   const hasSparkline = Boolean(stat.sparkline);
-  const baseDelay = index * 100;
+  const baseDelay = index * 175;
 
   return (
     <div
@@ -148,7 +148,7 @@ function StatCard({ stat, locale, isSingle = false, index = 0 }: StatCardProps) 
           data={stat.sparkline!.data}
           color={sparklineColor}
           showFill
-          fillOpacity={0.06}
+          fillOpacity={0.09}
           className="pointer-events-none absolute inset-x-0 top-2 bottom-2 animate-in fade-in slide-in-from-bottom-12 duration-1000 ease-[cubic-bezier(0.16,1,0.3,1)] fill-mode-both"
           style={{ animationDelay: `${baseDelay}ms` }}
         />

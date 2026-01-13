@@ -23,7 +23,7 @@ export function Sparkline({
   className,
   style,
   showFill = false,
-  fillOpacity = 0.8,
+  fillOpacity = 0.09,
 }: SparklineProps) {
   const gradientId = useId();
   const polylineRef = useRef<SVGPolylineElement>(null);
@@ -104,12 +104,13 @@ export function Sparkline({
             points={linePointsString}
             fill="none"
             stroke={color}
-            strokeWidth={1.5}
+            strokeWidth={0.75}
             strokeLinecap="round"
             strokeLinejoin="round"
             vectorEffect="non-scaling-stroke"
-            strokeDasharray="40 200"
+            strokeDasharray="115 200"
             strokeDashoffset={pathLength}
+            strokeOpacity={0}
             className="animate-[glint-slow_0.8s_ease-out_forwards]"
             style={{ animationDelay }}
           />
@@ -117,12 +118,13 @@ export function Sparkline({
             points={linePointsString}
             fill="none"
             stroke={color}
-            strokeWidth={2}
+            strokeWidth={0.75}
             strokeLinecap="round"
             strokeLinejoin="round"
             vectorEffect="non-scaling-stroke"
-            strokeDasharray="16 80"
+            strokeDasharray="34 110"
             strokeDashoffset={pathLength}
+            strokeOpacity={0}
             className="animate-[glint_0.8s_ease-out_forwards]"
             style={{ animationDelay }}
           />
@@ -131,12 +133,12 @@ export function Sparkline({
       <style>{`
         @keyframes glint {
           0% { stroke-dashoffset: ${pathLength}; stroke-opacity: 0; }
-          20% { stroke-opacity: 0.8; }
+          20% { stroke-opacity: 0.9; }
           100% { stroke-dashoffset: ${-pathLength}; stroke-opacity: 0; }
         }
         @keyframes glint-slow {
           0% { stroke-dashoffset: ${pathLength}; stroke-opacity: 0; }
-          20% { stroke-opacity: 0.4; }
+          20% { stroke-opacity: 0.2; }
           100% { stroke-dashoffset: ${-pathLength}; stroke-opacity: 0; }
         }
       `}</style>
