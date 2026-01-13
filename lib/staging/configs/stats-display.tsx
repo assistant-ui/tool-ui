@@ -537,8 +537,51 @@ function TuningPanel({ data }: TuningPanelProps) {
     valueSlide: { value: 8, min: 0, max: 32, step: 2, label: "Value Slide (px)" },
   });
 
+  const copyConfig = useCallback(() => {
+    const config = {
+      sparkline: {
+        slideDuration: sparklineAnimation.slideDuration,
+        slideDistance: sparklineAnimation.slideDistance,
+        fadeDuration: sparklineAnimation.fadeDuration,
+        fillFadeDuration: sparklineAnimation.fillFadeDuration,
+        fillOpacity: sparklineAnimation.fillOpacity,
+        baseStrokeOpacity: sparklineAnimation.baseStrokeOpacity,
+      },
+      glint: {
+        duration: glintAnimation.glintDuration,
+        delay: glintAnimation.glintDelay,
+        dashSize: glintAnimation.glintDashSize,
+        gapSize: glintAnimation.glintGapSize,
+        strokeWidth: glintAnimation.glintStrokeWidth,
+        peakOpacity: glintAnimation.glintPeakOpacity,
+      },
+      slowGlint: {
+        delay: slowGlintAnimation.slowGlintDelay,
+        dashSize: slowGlintAnimation.slowGlintDashSize,
+        gapSize: slowGlintAnimation.slowGlintGapSize,
+        strokeWidth: slowGlintAnimation.slowGlintStrokeWidth,
+        peakOpacity: slowGlintAnimation.slowGlintPeakOpacity,
+      },
+      cards: {
+        staggerOffset: cardAnimation.staggerOffset,
+        labelDelay: cardAnimation.labelDelay,
+        labelDuration: cardAnimation.labelDuration,
+        labelSlide: cardAnimation.labelSlide,
+        valueDelay: cardAnimation.valueDelay,
+        valueDuration: cardAnimation.valueDuration,
+        valueSlide: cardAnimation.valueSlide,
+      },
+    };
+
+    const configText = JSON.stringify(config, null, 2);
+    navigator.clipboard.writeText(configText).then(() => {
+      console.log("Config copied to clipboard!");
+    });
+  }, [sparklineAnimation, glintAnimation, slowGlintAnimation, cardAnimation]);
+
   useControls({
     "Replay Animation": button(replay),
+    "Copy Config": button(copyConfig),
   });
 
   const mergedSparklineAnimation: SparklineAnimationParams = {
