@@ -3,7 +3,7 @@ import { LinkPreview } from "@/components/tool-ui/link-preview";
 
 <DocsHeader
   title="Link Preview"
-  description="Rich link previews with OG data."
+  description="Rich link previews with Open Graph data."
   mdxPath="app/docs/link-preview/content.mdx"
 />
 
@@ -45,11 +45,17 @@ import { LinkPreview } from "@/components/tool-ui/link-preview";
 ## Key Features
 
 <FeatureGrid>
-  <Feature icon="Link" title="OG metadata">
-    Display title, description, and image from Open Graph
+  <Feature icon="Link" title="Open Graph metadata">
+    Display title, description, and image from Open Graph tags
   </Feature>
   <Feature icon="Globe" title="Domain with favicon">
     Show site favicon alongside domain name
+  </Feature>
+  <Feature icon="AspectRatio" title="Flexible aspect ratios">
+    Support for auto, 1:1, 4:3, 16:9, and 9:16 image formats
+  </Feature>
+  <Feature icon="MousePointerClick" title="Response actions">
+    Add custom action buttons below the preview card
   </Feature>
 </FeatureGrid>
 
@@ -84,7 +90,7 @@ pnpm dlx shadcn@latest add badge button card tooltip
     },
     title: { description: "Link title", type: "string" },
     description: { description: "Link description", type: "string" },
-    image: { description: "OG image URL", type: "string" },
+    image: { description: "Open Graph image URL", type: "string" },
     domain: { description: "Source domain", type: "string" },
     favicon: { description: "Favicon URL", type: "string" },
     ratio: {

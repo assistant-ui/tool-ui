@@ -208,7 +208,7 @@ The receipt shows what the user chose. The assistant's follow-up confirms the ou
 
 ## Anti-Patterns
 
-- **Input fields:** Input fields introduce dissonance by competing with the primary composer input. Reflect on whether it'd be more appropriate to capture that information through dialogue with the asssitant or, in rare cases, link to a dedicated form outside of or detached from the the chat context.
+- **Input fields:** Input fields introduce dissonance by competing with the primary composer input. Consider whether it would be more appropriate to capture that information through dialogue with the assistant or, in rare cases, link to a dedicated form outside of or detached from the chat context.
 - **Hidden mutations:** Actions that change state should produce visible indication of what happened; terminal decisions should produce a receipt that reflects what choice the user made.
 - **Kitchen sinks:** If it needs tabs or navigation, consider breaking it into separate Tool UIs.
 - **Uncontextualized tool UIs:** Always have the assistant introduce a tool UI, providing context that clarifies what's being shown.
