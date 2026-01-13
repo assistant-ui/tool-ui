@@ -81,6 +81,10 @@ export default function ComponentsGalleryPage() {
           </div>
 
           <div className="mb-5 flex break-inside-avoid justify-center 2xl:mb-5">
+            <StatsDisplay {...statsDisplayPresets["business-metrics"].data} />
+          </div>
+
+          <div className="mb-5 flex break-inside-avoid justify-center 2xl:mb-5">
             <ImageGallery {...imageGalleryPresets["search-results"].data} />
           </div>
 
@@ -90,10 +94,6 @@ export default function ComponentsGalleryPage() {
 
           <div className="mb-5 flex break-inside-avoid justify-center 2xl:mb-5">
             <DataTable layout="cards" {...dataTablePresets.tasks.data} />
-          </div>
-
-          <div className="mb-5 flex break-inside-avoid justify-center 2xl:mb-5">
-            <StatsDisplay {...statsDisplayPresets["business-metrics"].data} />
           </div>
 
           <div className="mb-5 flex break-inside-avoid justify-center 2xl:mb-5">
