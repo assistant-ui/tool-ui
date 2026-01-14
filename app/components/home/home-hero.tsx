@@ -10,7 +10,7 @@ import { Badge } from "@/components/ui/badge";
 const smoothSpring = {
   type: "spring" as const,
   stiffness: 200,
-  damping: 25,
+  damping: 35,
   duration: 0.8
 };
 
