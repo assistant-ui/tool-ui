@@ -29,7 +29,7 @@ export default function HomePage() {
           </div>
 
           <div
-            className="pointer-events-none absolute inset-0 z-[5] lg:hidden"
+            className="pointer-events-none absolute inset-0 z-[5] md:hidden"
             style={{
               background: "linear-gradient(to top, var(--color-background) 0%, transparent 100%)",
             }}
@@ -37,7 +37,7 @@ export default function HomePage() {
           />
 
           <div
-            className="squircle absolute inset-0 flex h-full min-h-0 w-full min-w-0 -translate-y-12 translate-x-1/4 scale-[0.7] items-center justify-end lg:relative lg:translate-x-0 lg:translate-y-0 lg:scale-100 lg:justify-center lg:flex-1"
+            className="squircle absolute inset-0 md:relative flex h-full min-h-0 w-full min-w-0 -translate-y-12 translate-x-1/4 scale-[0.7] md:translate-x-0 md:translate-y-0 md:scale-100 items-center justify-end lg:justify-center lg:flex-1"
           >
             <div className="block h-full w-full max-w-[430px] lg:hidden">
               <FauxChatShellMobileAnimated />
