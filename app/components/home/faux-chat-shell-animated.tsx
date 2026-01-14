@@ -40,25 +40,25 @@ export function FauxChatShellAnimated() {
 
   const resting = {
     opacity: 1,
-    rotateX: 47,
-    rotateY: 21,
-    rotateZ: -19,
-    x: -56,
-    y: -55,
-    scale: 0.95,
+    rotateX: 37,
+    rotateY: 26,
+    rotateZ: -18,
+    x: -35,
+    y: -60,
+    scale: 1.05,
   };
 
   // Perspective and transform origin
-  const perspective = 1800;
-  const perspectiveOriginX = 64;
-  const perspectiveOriginY = 0;
-  const originX = 80;
-  const originY = 53;
-  const translateZInitial = 20;
-  const translateZResting = 40;
+  const perspective = 3700;
+  const perspectiveOriginX = 100;
+  const perspectiveOriginY = 29;
+  const originX = 70;
+  const originY = 64;
+  const translateZInitial = 96;
+  const translateZResting = 96;
 
   // Lighting parameters
-  const lightAngle = 137;
+  const lightAngle = 140;
   const lightPosition = 82;
   const lightSpread = 29;
   const lightOpacity = 0.07;
