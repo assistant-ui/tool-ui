@@ -2,6 +2,7 @@
 
 import { motion } from "motion/react";
 import { FauxChatShell } from "./faux-chat-shell";
+import { generateNoiseDataUri } from "./noise-texture";
 
 function generateSineEasedGradient(
   angle: number,
@@ -116,7 +117,8 @@ export function FauxChatShellAnimated() {
           animate={{ opacity: 1 }}
           transition={transition}
           style={{
-            background: restingLightGradient,
+            backgroundImage: `url("${generateNoiseDataUri(64, 0.015)}"), ${restingLightGradient}`,
+            backgroundBlendMode: 'overlay, normal',
           }}
           aria-hidden="true"
         />

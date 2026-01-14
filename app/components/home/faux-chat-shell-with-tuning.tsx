@@ -4,6 +4,7 @@ import { useRef, useState } from "react";
 import { motion } from "motion/react";
 import { useControls, folder, button } from "leva";
 import { FauxChatShell, generateSineEasedGradient } from "./faux-chat-shell";
+import { generateNoiseDataUri } from "./noise-texture";
 
 type InitialTransformValues = {
   rotateX: number;
@@ -282,7 +283,8 @@ export function FauxChatShellWithTuning() {
           animate={{ opacity: 1 }}
           transition={getTransition()}
           style={{
-            background: restingLightGradient,
+            backgroundImage: `url("${generateNoiseDataUri(64, 0.015)}"), ${restingLightGradient}`,
+            backgroundBlendMode: 'overlay, normal',
           }}
           aria-hidden="true"
         />
