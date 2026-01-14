@@ -8,7 +8,7 @@ function generateSineEasedGradient(
   centerPosition: number,
   peakOpacity: number,
   spreadWidth: number,
-  steps: number = 32
+  steps: number = 128
 ): string {
   const stops: string[] = [];
 
