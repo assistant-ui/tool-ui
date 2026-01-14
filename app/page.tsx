@@ -1,16 +1,32 @@
+"use client";
+
 import ContentLayout from "@/app/components/layout/page-shell";
 import { HeaderFrame } from "@/app/components/layout/app-shell";
 import { ThemeToggle } from "@/app/components/builder/theme-toggle";
 import { HomeHero } from "@/app/components/home/home-hero";
 import { FauxChatShellAnimated } from "@/app/components/home/faux-chat-shell-animated";
+import { motion } from "motion/react";
+
+const smoothSpring = { type: "spring" as const, stiffness: 300, damping: 30 };
 
 export default function HomePage() {
   return (
     <HeaderFrame
-      rightContent={<ThemeToggle />}
+      rightContent={
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ ...smoothSpring, delay: 0.6 }}
+        >
+          <ThemeToggle />
+        </motion.div>
+      }
       background={
-        <div
+        <motion.div
           className="bg-background pointer-events-none fixed inset-0 opacity-60 dark:opacity-40"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.4 }}
           aria-hidden="true"
         />
       }
