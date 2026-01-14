@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { cn } from "@/lib/ui/cn";
 import { ChatShowcase } from "./chat-showcase";
 
@@ -17,9 +18,25 @@ function DynamicIsland() {
 }
 
 function StatusBar() {
+  const [time, setTime] = useState<string>("");
+
+  useEffect(() => {
+    const updateTime = () => {
+      const now = new Date();
+      const hours = now.getHours();
+      const minutes = now.getMinutes().toString().padStart(2, "0");
+      setTime(`${hours}:${minutes}`);
+    };
+
+    updateTime();
+    const interval = setInterval(updateTime, 60000);
+
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <div className="absolute inset-x-0 top-0 z-20 flex items-center justify-between px-6 pt-3 text-xs">
-      <div className="font-medium">9:41</div>
+      <div className="font-medium">{time}</div>
       <div className="flex items-center gap-1">
         {/* Signal/WiFi/Battery icons would go here - keeping minimal */}
       </div>
