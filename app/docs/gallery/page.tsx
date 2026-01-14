@@ -18,7 +18,6 @@ import { Terminal } from "@/components/tool-ui/terminal";
 import { CodeBlock } from "@/components/tool-ui/code-block";
 import { Chart } from "@/components/tool-ui/chart";
 import { ItemCarousel } from "@/components/tool-ui/item-carousel";
-import { ParameterSlider } from "@/components/tool-ui/parameter-slider";
 import { StatsDisplay } from "@/components/tool-ui/stats-display";
 import { PreferencesPanel } from "@/components/tool-ui/preferences-panel";
 import { ProgressTracker } from "@/components/tool-ui/progress-tracker";
@@ -39,7 +38,6 @@ import { planPresets } from "@/lib/presets/plan";
 import { terminalPresets } from "@/lib/presets/terminal";
 import { codeBlockPresets } from "@/lib/presets/code-block";
 import { chartPresets } from "@/lib/presets/chart";
-import { parameterSliderPresets } from "@/lib/presets/parameter-slider";
 import { statsDisplayPresets } from "@/lib/presets/stats-display";
 import { preferencesPanelPresets } from "@/lib/presets/preferences-panel";
 import { progressTrackerPresets } from "@/lib/presets/progress-tracker";
@@ -58,22 +56,8 @@ export default function ComponentsGalleryPage() {
             <DataTable {...dataTablePresets.stocks.data} />
           </div>
 
-          <div className="mb-5 flex justify-center [column-span:all] 2xl:mb-5 2xl:hidden">
+          <div className="mb-5 flex justify-center [column-span:all] 2xl:mb-5">
             <ItemCarousel {...itemCarouselPresets.recommendations.data} />
-          </div>
-
-          <div className="mb-5 flex break-inside-avoid justify-center 2xl:mb-5 2xl:hidden">
-            <ParameterSlider {...parameterSliderPresets["photo-adjustments"].data} />
-          </div>
-
-          {/* 2xl: ItemCarousel (2 cols) + ParameterSlider (1 col) on same row */}
-          <div className="mb-5 hidden [column-span:all] 2xl:mb-5 2xl:grid 2xl:grid-cols-3 2xl:gap-5">
-            <div className="col-span-2 flex justify-center">
-              <ItemCarousel {...itemCarouselPresets.recommendations.data} />
-            </div>
-            <div className="col-span-1 flex items-center justify-center">
-              <ParameterSlider {...parameterSliderPresets["photo-adjustments"].data} />
-            </div>
           </div>
 
           <div className="mb-5 flex break-inside-avoid justify-center 2xl:mb-5">
