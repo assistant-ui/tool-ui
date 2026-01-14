@@ -14,7 +14,7 @@ export function DocsContent({
   includePager = true,
 }: DocsContentProps) {
   return (
-    <div className={cn("prose dark:prose-invert mx-auto max-w-3xl", className)}>
+    <div className={cn("prose dark:prose-invert mx-auto max-w-3xl flex-1", className)}>
       {children}
       {includePager && <DocsPager />}
     </div>

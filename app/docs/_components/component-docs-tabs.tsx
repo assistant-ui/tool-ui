@@ -6,6 +6,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { DocsBorderedShell } from "./docs-bordered-shell";
 import { DocsContent } from "./docs-content";
 import { useTabSearchParam } from "@/hooks/use-tab-search-param";
+import { useDocsToc } from "./docs-toc-context";
+import { DocsTocWrapper } from "./docs-toc-wrapper";
 
 type DocsTab = "docs" | "examples";
 
@@ -33,6 +35,7 @@ export const ComponentDocsTabs = memo(function ComponentDocsTabs({
   examples,
 }: ComponentDocsTabsProps) {
   const contentRef = useRef<HTMLDivElement>(null);
+  const { scrollContainerRef } = useDocsToc();
 
   const { activeTab, setActiveTab } = useTabSearchParam<DocsTab>({
     defaultTab: "docs",
@@ -85,13 +88,17 @@ export const ComponentDocsTabs = memo(function ComponentDocsTabs({
           className="relative flex min-h-0 flex-1 scroll-mt-16 flex-col"
         >
           <TabsContent
+            ref={scrollContainerRef}
             value="docs"
             className="scrollbar-subtle h-full min-h-0 flex-1 overflow-y-auto pt-12"
           >
-            <div className="z-0 min-h-0 flex-1 p-6 pb-24 sm:p-10 lg:p-12">
-              <DocsContent>
-                <Suspense fallback={<ContentSkeleton />}>{docs}</Suspense>
-              </DocsContent>
+            <div className="z-0 min-h-0 flex-1">
+              <div className="mx-auto flex max-w-[1200px] gap-8 p-6 pb-96 sm:p-10 sm:pb-96 lg:p-12 lg:pb-96">
+                <DocsContent>
+                  <Suspense fallback={<ContentSkeleton />}>{docs}</Suspense>
+                </DocsContent>
+                <DocsTocWrapper />
+              </div>
             </div>
           </TabsContent>
           <TabsContent
