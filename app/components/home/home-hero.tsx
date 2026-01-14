@@ -7,7 +7,12 @@ import { HomeHexnutScene } from "./home-hexnut-scene";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
-const smoothSpring = { type: "spring" as const, stiffness: 300, damping: 30 };
+const smoothSpring = {
+  type: "spring" as const,
+  stiffness: 200,
+  damping: 25,
+  duration: 0.8
+};
 
 export function HomeHero() {
   return (
@@ -16,7 +21,7 @@ export function HomeHero() {
         className="-mb-4 -ml-4 flex items-end justify-start"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ ...smoothSpring, delay: 0 }}
+        transition={{ ...smoothSpring, delay: 0.1 }}
       >
         <HomeHexnutScene />
       </motion.div>
@@ -27,14 +32,14 @@ export function HomeHero() {
               className="text-6xl font-bold tracking-tight"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ ...smoothSpring, delay: 0 }}
+              transition={{ ...smoothSpring, delay: 0.1 }}
             >
               Tool UI
             </motion.h1>
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ ...smoothSpring, delay: 0.05 }}
+              transition={{ ...smoothSpring, delay: 0.2 }}
             >
               <Badge
                 variant="outline"
@@ -49,7 +54,7 @@ export function HomeHero() {
           className="text-2xl text-pretty"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ ...smoothSpring, delay: 0.15 }}
+          transition={{ ...smoothSpring, delay: 0.3 }}
         >
           Beautiful UI components for AI tool calls
         </motion.h2>
@@ -58,7 +63,7 @@ export function HomeHero() {
         className="text-muted-foreground mb-2 text-lg text-pretty"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ ...smoothSpring, delay: 0.2 }}
+        transition={{ ...smoothSpring, delay: 0.4 }}
       >
         Responsive, accessible, typed, copy-pasteable.{" "}
         <br className="hidden md:block" />

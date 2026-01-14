@@ -1,10 +1,20 @@
+"use client";
+
 import type { ReactNode } from "react";
+import { motion } from "motion/react";
 import { ResponsiveHeader } from "@/app/components/layout/app-header.server";
 
 type HeaderFrameProps = {
   children: ReactNode;
   rightContent?: ReactNode;
   background?: ReactNode;
+};
+
+const navbarSpring = {
+  type: "spring" as const,
+  stiffness: 200,
+  damping: 25,
+  duration: 0.8
 };
 
 export function HeaderFrame({
@@ -19,9 +29,14 @@ export function HeaderFrame({
           {background}
         </div>
       ) : null}
-      <div className="relative z-10 w-full max-w-[1440px] shrink-0 px-4 md:px-8">
+      <motion.div
+        className="relative z-10 w-full max-w-[1440px] shrink-0 px-4 md:px-8"
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ ...navbarSpring, delay: 0 }}
+      >
         <ResponsiveHeader rightContent={rightContent} />
-      </div>
+      </motion.div>
       <div className="relative z-10 flex min-h-0 w-full flex-1 justify-center overflow-hidden">
         {children}
       </div>
