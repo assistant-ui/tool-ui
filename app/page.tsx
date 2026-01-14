@@ -2,7 +2,7 @@ import ContentLayout from "@/app/components/layout/page-shell";
 import { HeaderFrame } from "@/app/components/layout/app-shell";
 import { ThemeToggle } from "@/app/components/builder/theme-toggle";
 import { HomeHero } from "@/app/components/home/home-hero";
-import { FauxChatShell } from "@/app/components/home/faux-chat-shell";
+import { FauxChatShellAnimated } from "@/app/components/home/faux-chat-shell-animated";
 
 export default function HomePage() {
   return (
@@ -21,9 +21,11 @@ export default function HomePage() {
             <HomeHero />
           </div>
 
-          <div className="squircle relative hidden h-full min-h-0 w-full min-w-0 items-center justify-center lg:flex lg:flex-1">
+          <div
+            className="squircle relative hidden h-full min-h-0 w-full min-w-0 items-center justify-center lg:flex lg:flex-1"
+          >
             <div className="h-full w-full max-w-[800px]">
-              <FauxChatShell />
+              <FauxChatShellAnimated />
             </div>
           </div>
         </main>

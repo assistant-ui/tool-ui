@@ -1,0 +1,103 @@
+"use client";
+
+import { motion } from "motion/react";
+import { FauxChatShell, generateSineEasedGradient } from "./faux-chat-shell";
+
+export function FauxChatShellAnimated() {
+  // Hardcoded animation values
+  const initial = {
+    opacity: 0,
+    rotateX: 20,
+    rotateY: 37,
+    rotateZ: -13,
+    x: 429,
+    y: -298,
+    scale: 2,
+  };
+
+  const resting = {
+    opacity: 1,
+    rotateX: 47,
+    rotateY: 21,
+    rotateZ: -19,
+    x: -56,
+    y: -55,
+    scale: 0.95,
+  };
+
+  // Perspective and transform origin
+  const perspective = 1800;
+  const perspectiveOriginX = 64;
+  const perspectiveOriginY = 0;
+  const originX = 80;
+  const originY = 53;
+  const translateZInitial = 20;
+  const translateZResting = 40;
+
+  // Lighting parameters
+  const lightAngle = 137;
+  const lightPosition = 82;
+  const lightSpread = 29;
+  const lightOpacity = 0.07;
+
+  // Calculate light position based on surface normal (simulates static directional light)
+  function calculateLightPosition(rotateX: number, rotateY: number) {
+    const baseY = lightPosition;
+    const highlightY = baseY - (rotateX * 0.8) - (rotateY * 0.3);
+    return highlightY;
+  }
+
+  // Calculate highlight position for resting state
+  const restingLightPos = calculateLightPosition(resting.rotateX, resting.rotateY);
+
+  // Generate gradient centered at calculated position
+  const restingLightGradient = generateSineEasedGradient(
+    lightAngle,
+    restingLightPos,
+    lightOpacity,
+    lightSpread,
+    32
+  );
+
+  // Animation config
+  const transition = {
+    type: "spring" as const,
+    duration: 5,
+    bounce: 0.2,
+  };
+
+  return (
+    <div
+      className="relative h-full w-full"
+      style={{
+        perspective: `${perspective}px`,
+        perspectiveOrigin: `${perspectiveOriginX}% ${perspectiveOriginY}%`,
+      }}
+    >
+      <motion.div
+        className="relative h-full w-full overflow-hidden rounded-2xl"
+        initial={{ ...initial, translateZ: translateZInitial }}
+        animate={{ ...resting, translateZ: translateZResting }}
+        transition={transition}
+        style={{
+          transformStyle: "preserve-3d",
+          transformOrigin: `${originX}% ${originY}%`,
+        }}
+      >
+        <FauxChatShell disableLightOverlay />
+
+        {/* Lighting overlay - fades in from 0 to full opacity */}
+        <motion.div
+          className="pointer-events-none absolute inset-0 z-30"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={transition}
+          style={{
+            background: restingLightGradient,
+          }}
+          aria-hidden="true"
+        />
+      </motion.div>
+    </div>
+  );
+}
