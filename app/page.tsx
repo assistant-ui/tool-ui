@@ -4,7 +4,7 @@ import ContentLayout from "@/app/components/layout/page-shell";
 import { HeaderFrame } from "@/app/components/layout/app-shell";
 import { ThemeToggle } from "@/app/components/builder/theme-toggle";
 import { HomeHero } from "@/app/components/home/home-hero";
-import { FauxChatShellAnimated } from "@/app/components/home/faux-chat-shell-animated";
+import { FauxChatShellMobileWithTuning } from "@/app/components/home/faux-chat-shell-mobile-with-tuning";
 import { motion } from "motion/react";
 
 export default function HomePage() {
@@ -30,8 +30,8 @@ export default function HomePage() {
           <div
             className="squircle relative hidden h-full min-h-0 w-full min-w-0 items-center justify-center lg:flex lg:flex-1"
           >
-            <div className="h-full w-full max-w-[800px]">
-              <FauxChatShellAnimated />
+            <div className="h-full w-full max-w-[430px]">
+              <FauxChatShellMobileWithTuning />
             </div>
           </div>
         </main>
