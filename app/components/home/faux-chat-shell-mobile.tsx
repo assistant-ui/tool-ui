@@ -36,7 +36,7 @@ function StatusBar() {
   }, []);
 
   return (
-    <div className="absolute inset-x-0 top-0 z-20 flex items-center justify-between px-6 pt-3 text-xs">
+    <div className="absolute inset-x-0 top-0 z-20 flex items-center justify-between px-6 pt-6 text-xs">
       <div className="font-medium">{time}</div>
       <div className="flex items-center gap-1">
         {/* Signal/WiFi/Battery icons would go here - keeping minimal */}
