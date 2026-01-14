@@ -10,8 +10,9 @@ import { Badge } from "@/components/ui/badge";
 const smoothSpring = {
   type: "spring" as const,
   stiffness: 200,
-  damping: 35,
-  duration: 0.8
+  damping: 40,
+  duration: 0.8,
+  restDelta: 0.0001,
 };
 
 export function HomeHero() {
@@ -73,7 +74,7 @@ export function HomeHero() {
       <motion.div
         initial={{ opacity: 0, y: 20, scale: 0.98 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
-        transition={{ ...smoothSpring, delay: 4.5 }}
+        transition={{ ...smoothSpring, delay: 0.5 }}
       >
         <Button asChild className="group font-light tracking-wide" size="homeCTA">
           <Link href="/docs/gallery">

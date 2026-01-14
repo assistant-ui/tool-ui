@@ -13,8 +13,9 @@ type HeaderFrameProps = {
 const navbarSpring = {
   type: "spring" as const,
   stiffness: 200,
-  damping: 35,
-  duration: 0.8
+  damping: 40,
+  duration: 0.8,
+  restDelta: 0.0001,
 };
 
 export function HeaderFrame({
