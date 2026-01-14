@@ -7,26 +7,10 @@ import { HomeHero } from "@/app/components/home/home-hero";
 import { FauxChatShellAnimated } from "@/app/components/home/faux-chat-shell-animated";
 import { motion } from "motion/react";
 
-const smoothSpring = {
-  type: "spring" as const,
-  stiffness: 200,
-  damping: 40,
-  duration: 0.8,
-  restDelta: 0.0001,
-};
-
 export default function HomePage() {
   return (
     <HeaderFrame
-      rightContent={
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ ...smoothSpring, delay: 0.8 }}
-        >
-          <ThemeToggle />
-        </motion.div>
-      }
+      rightContent={<ThemeToggle />}
       background={
         <motion.div
           className="bg-background pointer-events-none fixed inset-0 opacity-60 dark:opacity-40"
