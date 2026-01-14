@@ -18,11 +18,7 @@ export function generateNoiseDataUri(size: number = 64, opacity: number = 0.02):
     </svg>
   `.trim();
 
-  // Use btoa for client-side base64 encoding
-  if (typeof window !== 'undefined') {
-    return `data:image/svg+xml;base64,${btoa(svg)}`;
-  }
-  // For SSR, use URL encoding instead
+  // Use URL encoding consistently for both SSR and client to avoid hydration mismatch
   return `data:image/svg+xml,${encodeURIComponent(svg)}`;
 }
 

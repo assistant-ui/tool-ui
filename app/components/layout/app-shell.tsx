@@ -26,7 +26,7 @@ export function HeaderFrame({
   animateNavbar = false,
 }: HeaderFrameProps) {
   return (
-    <div className="relative flex h-screen flex-col items-center overflow-hidden">
+    <div className="relative flex h-dvh flex-col items-center overflow-hidden">
       {background ? (
         <div className="pointer-events-none absolute inset-0 z-0">
           {background}
