@@ -29,7 +29,7 @@ export default function HomePage() {
           </div>
 
           <div
-            className="squircle relative flex h-full min-h-0 w-full min-w-0 items-center justify-center lg:flex-1"
+            className="squircle absolute inset-0 flex h-full min-h-0 w-full min-w-0 items-center justify-center lg:relative lg:flex-1"
           >
             <div className="block h-full w-full max-w-[430px] md:hidden">
               <FauxChatShellMobileAnimated />
