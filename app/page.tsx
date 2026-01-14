@@ -12,6 +12,7 @@ export default function HomePage() {
   return (
     <HeaderFrame
       rightContent={<ThemeToggle />}
+      animateNavbar={true}
       background={
         <motion.div
           className="bg-background pointer-events-none fixed inset-0 opacity-60 dark:opacity-40"

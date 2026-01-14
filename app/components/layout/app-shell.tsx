@@ -8,6 +8,7 @@ type HeaderFrameProps = {
   children: ReactNode;
   rightContent?: ReactNode;
   background?: ReactNode;
+  animateNavbar?: boolean;
 };
 
 const navbarSpring = {
@@ -22,6 +23,7 @@ export function HeaderFrame({
   children,
   rightContent,
   background,
+  animateNavbar = false,
 }: HeaderFrameProps) {
   return (
     <div className="relative flex h-screen flex-col items-center overflow-hidden">
@@ -32,9 +34,9 @@ export function HeaderFrame({
       ) : null}
       <motion.div
         className="relative z-10 w-full max-w-[1440px] shrink-0 px-4 md:px-8"
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ ...navbarSpring, delay: 0 }}
+        initial={animateNavbar ? { opacity: 0, y: -20 } : false}
+        animate={animateNavbar ? { opacity: 1, y: 0 } : {}}
+        transition={animateNavbar ? { ...navbarSpring, delay: 0 } : {}}
       >
         <ResponsiveHeader rightContent={rightContent} />
       </motion.div>
