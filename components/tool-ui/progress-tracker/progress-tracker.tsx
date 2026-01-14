@@ -174,7 +174,7 @@ export function ProgressTracker({
         role="status"
         aria-label={summary}
       >
-        <div className="bg-card flex w-full flex-col gap-4 rounded-2xl border p-5 shadow-xs">
+        <div className="bg-card/60 flex w-full flex-col gap-4 rounded-2xl border p-5 opacity-95 shadow-xs">
           <div className="flex items-center justify-between">
             {elapsedTime !== undefined && elapsedTime > 0 && (
               <div className="flex items-center gap-1.5 text-xs text-muted-foreground font-mono">

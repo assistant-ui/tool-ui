@@ -195,7 +195,7 @@ function OptionListConfirmation({
     >
       <div
         className={cn(
-          "bg-card/60 flex w-full flex-col overflow-hidden rounded-2xl border px-5 py-2.5 shadow-xs",
+          "bg-card/60 flex w-full flex-col overflow-hidden rounded-2xl border px-5 py-2.5 opacity-95 shadow-xs",
         )}
       >
         {confirmedOptions.map((option, index) => (

@@ -203,11 +203,12 @@ export function OrderSummary({
     >
       <div
         className={cn(
-          "bg-card text-card-foreground rounded-lg border shadow-sm",
+          "text-card-foreground rounded-lg border shadow-sm",
+          isReceipt ? "bg-card/60" : "bg-card",
           isLoading && "pointer-events-none opacity-70",
         )}
       >
-        <div className="space-y-4 p-4">
+        <div className={cn("space-y-4 p-4", isReceipt && "opacity-95")}>
           <div>
             <h2 id={titleId} className="flex items-center gap-2 text-base font-semibold">
               {isReceipt && (

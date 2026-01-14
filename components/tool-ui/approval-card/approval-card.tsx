@@ -52,7 +52,7 @@ function ApprovalCardReceipt({
     >
       <div
         className={cn(
-          "bg-card/60 flex w-full items-center gap-3 rounded-2xl border px-4 py-3 shadow-xs",
+          "bg-card/60 flex w-full items-center gap-3 rounded-2xl border px-4 py-3 opacity-95 shadow-xs",
         )}
       >
         <span

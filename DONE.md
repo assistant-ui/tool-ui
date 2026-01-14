@@ -67,6 +67,22 @@ Archive of completed features and improvements. See `TODO.md` for active work.
 - Replace Video component video with something more visually interesting
 - Use shorter nature videos for Video component examples
 
+### Parameter Slider
+- Fixed gallery mobile glitch by adding `isolate` to SliderPrimitive.Root (creates stacking context, prevents CSS columns interference with transforms/clip-paths)
+
+### Stats Display
+- Removed decimal places from MRR stat in "mixed-formats" preset (EUR formatting)
+
+### Receipt State Styling
+- Applied consistent dimmer styling across all receipt states (`bg-card/60` + `opacity-95`)
+- Components updated: OrderSummary, ProgressTracker, OptionList, ApprovalCard, PreferencesPanel
+
+### Landing Page Browser Shell
+- Added directional light reflection effect that responds to shell rotation
+- Light source simulation at top-left with gradient highlight that shifts based on rotateX/rotateY
+- FauxChatShellWithTuning passes rotation as CSS custom properties
+- FauxChatShell uses useDirectionalLight hook to compute dynamic gradient
+
 ### Stats Display Component
 - Restructure stat layout: sparkline underneath value, diff to the right of value
 - Add hairline grid borders between items (no outer edges, avoid double borders)

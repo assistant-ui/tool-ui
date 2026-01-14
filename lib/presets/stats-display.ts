@@ -188,7 +188,7 @@ export const statsDisplayPresets: Record<StatsDisplayPresetName, StatsDisplayPre
           key: "mrr",
           label: "MRR",
           value: 42850,
-          format: { kind: "currency", currency: "EUR" },
+          format: { kind: "currency", currency: "EUR", decimals: 0 },
           sparkline: {
             data: [38000, 39200, 40100, 41000, 41800, 42850],
             color: "var(--chart-1)",

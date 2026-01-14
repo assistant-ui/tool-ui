@@ -16,10 +16,4 @@
 
 ---
 
-## Captured
-
-- Remove the two decimal places from the MRR stat in the "mixed-formats" (Subscription Overview) preset for Stats Display
-
----
-
 *Completed work archived in `DONE.md`*

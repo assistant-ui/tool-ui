@@ -462,7 +462,7 @@ function PreferencesReceipt({
       aria-label={hasErrors ? "Preferences with errors" : "Confirmed preferences"}
       className={cn("@container/preferences-panel flex w-full max-w-md min-w-80 flex-col", className)}
     >
-      <div className="bg-card/60 flex w-full flex-col rounded-2xl border shadow-xs overflow-hidden">
+      <div className="bg-card/60 flex w-full flex-col rounded-2xl border opacity-95 shadow-xs overflow-hidden">
         {title && <ReceiptHeader title={title} hasErrors={!!hasErrors} />}
         <div className={cn("px-5 flex flex-col gap-4", title ? "py-6" : "py-2")}>
           {sections.map((section, index) => (

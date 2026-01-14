@@ -32,8 +32,8 @@ export function HeaderFrame({
       ) : null}
       <motion.div
         className="relative z-10 w-full max-w-[1440px] shrink-0 px-4 md:px-8"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
         transition={{ ...navbarSpring, delay: 0 }}
       >
         <ResponsiveHeader rightContent={rightContent} />

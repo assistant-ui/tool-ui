@@ -416,7 +416,7 @@ function SliderRow({ config, value, onChange, disabled, trackClassName, fillClas
         id={id}
         className={cn(
           "group/slider relative flex w-full touch-none items-center select-none",
-          "h-12",
+          "isolate h-12",
           disabled && "pointer-events-none opacity-50",
         )}
         value={[value]}
