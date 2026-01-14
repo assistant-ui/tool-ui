@@ -1,7 +1,30 @@
 "use client";
 
 import { motion } from "motion/react";
-import { FauxChatShell, generateSineEasedGradient } from "./faux-chat-shell";
+import { FauxChatShell } from "./faux-chat-shell";
+
+function generateSineEasedGradient(
+  angle: number,
+  centerPosition: number,
+  peakOpacity: number,
+  spreadWidth: number,
+  steps: number = 32
+): string {
+  const stops: string[] = [];
+
+  for (let i = 0; i <= steps; i++) {
+    const t = i / steps;
+    const position = centerPosition - spreadWidth / 2 + spreadWidth * t;
+
+    const sineValue = Math.sin(t * Math.PI);
+    const eased = sineValue * sineValue;
+    const opacity = peakOpacity * eased;
+
+    stops.push(`rgba(255, 255, 255, ${opacity.toFixed(4)}) ${position.toFixed(1)}%`);
+  }
+
+  return `linear-gradient(${angle}deg, ${stops.join(", ")})`;
+}
 
 export function FauxChatShellAnimated() {
   // Hardcoded animation values
