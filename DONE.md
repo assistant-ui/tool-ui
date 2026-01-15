@@ -95,3 +95,15 @@ Archive of completed features and improvements. See `TODO.md` for active work.
 - Conditional CardHeader rendering (already implemented)
 - Full-bleed separators between stats in stacked mode (@container query)
 - Reduce CardHeader to CardContent gap from gap-6 to gap-2
+
+### Landing Page Showcase Refinements (Jan 15, 2026)
+- Rewrote all showcase copy with casual, informative vibe (e.g., "Q4 numbers are in. Looking solid.")
+- Updated movie scenario preamble to "Let's narrow things down. What sounds good?"
+- Replaced debounce code example with simpler useLocalStorage hook (half the length)
+- Added color to EQ sliders: red for bass, yellow for mid, blue for treble
+- Added blur in/out animations to typing indicator dot with right-translate on exit (morphing effect)
+- Tool UI components now appear immediately when streaming starts (instead of after preamble completes)
+- Sped up text streaming by 35% (18ms per character, down from 28ms)
+- Added 2.5-second initial delay to first carousel scene
+- Removed Stats Display header from showcase (showing just the stats)
+- Added 300ms delay to Tool UI component appearance

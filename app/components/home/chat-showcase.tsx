@@ -22,7 +22,6 @@ import {
   LINK_PREVIEW,
   SPENDING_CHART,
   PLAN_TODO_LABELS,
-  CODE_BLOCK_DATA,
   OPTION_LIST_OPTIONS,
   ITEM_CAROUSEL_DATA,
   LLM_CITATIONS,
@@ -109,10 +108,12 @@ function useSceneTimeline({
   reducedMotion,
   onComplete,
   hasUserMessage = true,
+  initialDelay = 0,
 }: {
   reducedMotion: boolean;
   onComplete: () => void;
   hasUserMessage?: boolean;
+  initialDelay?: number;
 }): SceneTimelineState {
   const [preambleReady, setPreambleReady] = useState(reducedMotion);
   const [showTool, setShowTool] = useState(reducedMotion);
@@ -131,13 +132,13 @@ function useSceneTimeline({
   useEffect(() => {
     if (reducedMotion || preambleReady) return;
 
-    const delay = hasUserMessage
-      ? TIMING.durations.userIn + TIMING.beats.afterUser
-      : 0;
+    const delay =
+      initialDelay +
+      (hasUserMessage ? TIMING.durations.userIn + TIMING.beats.afterUser : 0);
 
     const timeoutId = window.setTimeout(() => setPreambleReady(true), delay);
     return () => window.clearTimeout(timeoutId);
-  }, [preambleReady, reducedMotion, hasUserMessage]);
+  }, [preambleReady, reducedMotion, hasUserMessage, initialDelay]);
 
   useEffect(() => {
     const shouldScheduleCompletion =
@@ -386,14 +387,16 @@ function PreambleBubble({
 }
 
 function createSceneConfigs(): SceneConfig[] {
+  const { title: _title, ...statsDataWithoutTitle } = STATS_DISPLAY_DATA;
+
   return [
     {
       userMessage: "How's the business doing this quarter?",
-      preamble: "Here are your Q4 metrics:",
+      preamble: "Q4 numbers are in. Looking solid.",
       toolUI: (
         <StatsDisplay
           id="chat-showcase-stats-display"
-          {...STATS_DISPLAY_DATA}
+          {...statsDataWithoutTitle}
           className="w-full max-w-[560px]"
         />
       ),
@@ -401,7 +404,7 @@ function createSceneConfigs(): SceneConfig[] {
     },
     {
       userMessage: "How did I spend money this week?",
-      preamble: "Here's your spending breakdown:",
+      preamble: "Broke down your spending by category.",
       toolUI: (
         <Chart
           id="chat-showcase-chart"
@@ -413,12 +416,46 @@ function createSceneConfigs(): SceneConfig[] {
     },
     {
       userMessage: "Boost the bass a bit on this track",
-      preamble:
-        "Bumped the bass a bit. Here's the current EQ if you want to dial it in further.",
+      preamble: "Bass is up. Here's the full EQ.",
       toolUI: (
         <ParameterSlider
           id="chat-showcase-parameter-slider"
-          {...PARAMETER_SLIDER_DATA}
+          sliders={[
+            {
+              id: "bass",
+              label: "Bass",
+              min: -12,
+              max: 12,
+              step: 1,
+              value: 4,
+              unit: "dB",
+              fillClassName: "bg-chart-2/30 dark:bg-chart-2/40",
+              handleClassName: "bg-chart-2"
+            },
+            {
+              id: "mid",
+              label: "Mid",
+              min: -12,
+              max: 12,
+              step: 1,
+              value: -1,
+              unit: "dB",
+              fillClassName: "bg-chart-5/30 dark:bg-chart-5/40",
+              handleClassName: "bg-chart-5"
+            },
+            {
+              id: "treble",
+              label: "Treble",
+              min: -12,
+              max: 12,
+              step: 1,
+              value: 3,
+              unit: "dB",
+              fillClassName: "bg-chart-3/30 dark:bg-chart-3/40",
+              handleClassName: "bg-chart-3"
+            },
+          ]}
+          responseActions={PARAMETER_SLIDER_DATA.responseActions}
           className="w-full max-w-[480px]"
         />
       ),
@@ -426,13 +463,13 @@ function createSceneConfigs(): SceneConfig[] {
     },
     {
       userMessage: "Find me a birthday gift for Sarah",
-      preamble: "Let me look into some options.",
+      preamble: "On it. Checking her interests now.",
       toolUI: <AnimatedPlan className="w-full max-w-[480px]" />,
       toolFallbackHeight: 280,
     },
     {
       userMessage: "What should I listen to right now?",
-      preamble: "Here are some albums you might like:",
+      preamble: "Found a few albums for you.",
       toolUI: (
         <ItemCarousel
           id="chat-showcase-item-carousel"
@@ -444,13 +481,13 @@ function createSceneConfigs(): SceneConfig[] {
     },
     {
       userMessage: "Run the tests for the auth module",
-      preamble: "Running tests...",
+      preamble: "Running auth tests now.",
       toolUI: <AnimatedTerminal className="w-full max-w-[560px]" />,
       toolFallbackHeight: 200,
     },
     {
       userMessage: "Deploy the updates to production",
-      preamble: "Starting deployment...",
+      preamble: "Deployment started. Tracking progress.",
       toolUI: (
         <ProgressTracker
           id="chat-showcase-progress-tracker"
@@ -462,7 +499,7 @@ function createSceneConfigs(): SceneConfig[] {
     },
     {
       userMessage: "Find me flights to Tokyo in March",
-      preamble: "Here are the best options:",
+      preamble: "Found 4 nonstop flights. Sorted by price.",
       toolUI: (
         <DataTable<Flight>
           id="chat-showcase-data-table"
@@ -477,7 +514,7 @@ function createSceneConfigs(): SceneConfig[] {
     },
     {
       userMessage: "Help me find a movie for tonight",
-      preamble: "What sounds good?",
+      preamble: "Let's narrow things down. What sounds good?",
       toolUI: (
         <OptionList
           id="chat-showcase-option-list"
@@ -490,12 +527,28 @@ function createSceneConfigs(): SceneConfig[] {
       toolFallbackHeight: 320,
     },
     {
-      userMessage: "Need a debounce hook",
-      preamble: "Sure, here's a solid one with some often overlooked defenses:",
+      userMessage: "Need a localStorage hook",
+      preamble: "Got you. Handles JSON parsing and updates.",
       toolUI: (
         <CodeBlock
           id="chat-showcase-code-block"
-          {...CODE_BLOCK_DATA}
+          language="typescript"
+          filename="use-local-storage.ts"
+          code={`import { useState, useEffect } from "react";
+
+export function useLocalStorage<T>(key: string, initial: T) {
+  const [value, setValue] = useState<T>(() => {
+    const stored = localStorage.getItem(key);
+    return stored ? JSON.parse(stored) : initial;
+  });
+
+  useEffect(() => {
+    localStorage.setItem(key, JSON.stringify(value));
+  }, [key, value]);
+
+  return [value, setValue] as const;
+}`}
+          showLineNumbers={true}
           className="w-full"
         />
       ),
@@ -509,8 +562,7 @@ function createSceneConfigs(): SceneConfig[] {
     },
     {
       userMessage: "What was the first LLM?",
-      preamble:
-        "GPT-1, released by OpenAI in 2018, is generally considered the first large language model.",
+      preamble: "GPT-1 from OpenAI in 2018. Here are the key sources.",
       toolUI: (
         <CitationList
           id="showcase-citations"
@@ -533,6 +585,7 @@ type AnimatedSceneProps = {
   sceneId: string;
   isExiting?: boolean;
   composerPadding?: boolean;
+  initialDelay?: number;
 };
 
 function AnimatedScene({
@@ -541,11 +594,13 @@ function AnimatedScene({
   onComplete,
   sceneId,
   isExiting = false,
+  initialDelay = 0,
 }: AnimatedSceneProps) {
   const timeline = useSceneTimeline({
     reducedMotion,
     onComplete,
     hasUserMessage: !!config.userMessage,
+    initialDelay,
   });
 
   const handlePreambleComplete = useCallback(() => {
@@ -583,7 +638,7 @@ function AnimatedScene({
             animate={{
               opacity: 1,
               y: 0,
-              transition: createEntryTransition(80),
+              transition: createEntryTransition(initialDelay + 80),
             }}
             exit={{
               opacity: 0,
@@ -617,10 +672,11 @@ function AnimatedScene({
                   <motion.div
                     key={`${sceneId}-indicator`}
                     className="absolute top-1.5 left-0"
-                    initial={{ opacity: 0, scale: 0.5 }}
+                    initial={{ opacity: 0, scale: 0.5, filter: "blur(4px)" }}
                     animate={{
                       opacity: 1,
                       scale: 1,
+                      filter: "blur(0px)",
                       transition: {
                         ...SPRINGS.smooth,
                         delay: TIMING.durations.userIn / 1000,
@@ -628,7 +684,9 @@ function AnimatedScene({
                     }}
                     exit={{
                       opacity: 0,
-                      transition: { duration: 0.15, ease: "easeOut" },
+                      x: 20,
+                      filter: "blur(4px)",
+                      transition: { duration: 0.2, ease: "easeOut" },
                     }}
                   >
                     <TypingIndicator />
@@ -658,9 +716,9 @@ function AnimatedScene({
                 opacity: 1,
                 y: 0,
                 transition: createEntryTransition(
-                  config.preamble
+                  (config.preamble
                     ? TIMING.beats.afterPreamble
-                    : TIMING.beats.beforeContent,
+                    : TIMING.beats.beforeContent) + 300,
                 ),
               }}
               exit={{
@@ -747,6 +805,7 @@ export function ChatShowcase() {
             onComplete={advanceToNextScene}
             sceneId={`scene-${sceneIndex}`}
             isExiting={isExiting}
+            initialDelay={sceneRunId === 0 ? 2500 : 0}
           />
         </motion.div>
       </div>
