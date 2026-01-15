@@ -230,7 +230,7 @@ function AnimatedPlan({ className }: { className?: string }) {
   useEffect(() => {
     if (completedCount >= PLAN_TODO_LABELS.length) return;
 
-    const delay = completedCount === 0 ? 600 : 1500;
+    const delay = completedCount === 0 ? 400 : 1100;
     const timeoutId = window.setTimeout(() => {
       setCompletedCount((c) => c + 1);
     }, delay);
