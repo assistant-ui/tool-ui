@@ -316,7 +316,7 @@ function StreamingChar({ char, delay }: { char: string; delay: number }) {
 
 function PreambleBubble({
   text,
-  msPerChar = 28,
+  msPerChar = 18,
   reducedMotion,
   onComplete,
 }: PreambleBubbleProps) {
@@ -553,13 +553,12 @@ function AnimatedScene({
   }, [timeline]);
 
   useEffect(() => {
-    const shouldShowToolWithoutPreamble =
-      !config.preamble && timeline.preambleReady && !timeline.showTool;
+    const shouldShowTool = timeline.preambleReady && !timeline.showTool;
 
-    if (shouldShowToolWithoutPreamble) {
+    if (shouldShowTool) {
       timeline.setShowTool(true);
     }
-  }, [config.preamble, timeline]);
+  }, [timeline]);
 
   const shouldRenderItems = !isExiting;
   const shouldShowToolContent = config.preamble ? timeline.showTool : true;
