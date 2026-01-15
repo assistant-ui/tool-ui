@@ -1,10 +1,12 @@
 import type { ComponentId, StagingConfig } from "./types";
 import { parameterSliderStagingConfig } from "./configs/parameter-slider";
 import { statsDisplayStagingConfig } from "./configs/stats-display";
+import { progressTrackerStagingConfig } from "./configs/progress-tracker";
 
 const stagingConfigs: Partial<Record<ComponentId, StagingConfig>> = {
   "parameter-slider": parameterSliderStagingConfig,
   "stats-display": statsDisplayStagingConfig,
+  "progress-tracker": progressTrackerStagingConfig,
 };
 
 export function getStagingConfig(

@@ -27,7 +27,7 @@ function StepIndicator({ status }: StepIndicatorProps) {
   if (status === "pending") {
     return (
       <span
-        className="bg-card flex size-6 shrink-0 items-center justify-center rounded-full border-2 border-muted-foreground/50 motion-safe:transition-all motion-safe:duration-200"
+        className="bg-card flex size-6 shrink-0 items-center justify-center rounded-full border border-border motion-safe:transition-all motion-safe:duration-200"
         aria-hidden="true"
       />
     );
@@ -36,10 +36,10 @@ function StepIndicator({ status }: StepIndicatorProps) {
   if (status === "in-progress") {
     return (
       <span
-        className="bg-card flex size-6 shrink-0 items-center justify-center rounded-full shadow-[0_0_0_4px_hsl(var(--primary)/0.1)] motion-safe:transition-all motion-safe:duration-200"
+        className="bg-card flex size-6 shrink-0 items-center justify-center rounded-full border border-border shadow-[0_0_0_4px_hsl(var(--primary)/0.1)] motion-safe:transition-all motion-safe:duration-300"
         aria-hidden="true"
       >
-        <Loader2 className="text-primary size-6 motion-safe:animate-spin" />
+        <Loader2 className="text-primary size-5 motion-safe:animate-[spin_0.7s_linear_infinite]" />
       </span>
     );
   }
@@ -47,10 +47,16 @@ function StepIndicator({ status }: StepIndicatorProps) {
   if (status === "completed") {
     return (
       <span
-        className="bg-primary text-primary-foreground flex size-6 shrink-0 items-center justify-center rounded-full shadow-sm motion-safe:animate-[scale-in_200ms_ease-out] motion-safe:transition-all motion-safe:duration-200"
+        className="bg-primary text-primary-foreground flex size-6 shrink-0 items-center justify-center rounded-full border border-primary shadow-sm motion-safe:animate-[spring-bounce_500ms_cubic-bezier(0.34,1.56,0.64,1)]"
         aria-hidden="true"
       >
-        <Check className="size-4" strokeWidth={3} />
+        <Check
+          className="size-4 [&_path]:motion-safe:animate-[check-draw_400ms_cubic-bezier(0.34,1.56,0.64,1)_100ms_backwards]"
+          strokeWidth={3}
+          style={{
+            ["--check-path-length" as string]: "24",
+          }}
+        />
       </span>
     );
   }
@@ -58,10 +64,16 @@ function StepIndicator({ status }: StepIndicatorProps) {
   if (status === "failed") {
     return (
       <span
-        className="bg-destructive/90 text-destructive-foreground flex size-6 shrink-0 items-center justify-center rounded-full shadow-sm motion-safe:animate-[scale-in_200ms_ease-out] motion-safe:transition-all motion-safe:duration-200"
+        className="bg-destructive dark:bg-red-700 text-white flex size-6 shrink-0 items-center justify-center rounded-full border border-destructive dark:border-red-700 shadow-sm motion-safe:animate-[spring-bounce_500ms_cubic-bezier(0.34,1.56,0.64,1)]"
         aria-hidden="true"
       >
-        <X className="size-4" strokeWidth={3} />
+        <X
+          className="size-4 [&_path]:motion-safe:animate-[check-draw_400ms_cubic-bezier(0.34,1.56,0.64,1)_100ms_backwards]"
+          strokeWidth={3}
+          style={{
+            ["--check-path-length" as string]: "16",
+          }}
+        />
       </span>
     );
   }
@@ -261,18 +273,14 @@ export function ProgressTracker({
         <ul role="list" className="flex flex-col gap-3">
           {steps.map((step, index) => {
             const isCurrent = step.id === currentStepId;
-            const showDescription =
-              step.description &&
-              (allCompleted ||
-                isCurrent ||
-                step.status === "failed" ||
-                step.status === "in-progress");
+            const showDescription = !!step.description;
 
             return (
               <li
                 key={step.id}
                 className={cn(
                   "relative flex items-start gap-3 -mx-2 rounded-lg px-2 py-1.5",
+                  "motion-safe:transition-all motion-safe:duration-300",
                   isCurrent && "bg-primary/5",
                 )}
                 aria-current={isCurrent ? "step" : undefined}
@@ -280,11 +288,11 @@ export function ProgressTracker({
                 {index < steps.length - 1 && (
                   <div
                     className={cn(
-                      "absolute left-5 top-8 w-px bg-border",
+                      "absolute left-5 top-6 w-px bg-border",
                       "motion-safe:transition-all motion-safe:duration-300",
                     )}
                     style={{
-                      height: "calc(100% + 0.75rem)",
+                      height: "calc(100% + 0.25rem)",
                     }}
                     aria-hidden="true"
                   />
@@ -297,6 +305,7 @@ export function ProgressTracker({
                     className={cn(
                       "text-sm font-medium leading-6",
                       step.status === "pending" && "text-muted-foreground",
+                      step.status === "in-progress" && "motion-safe:shimmer shimmer-invert text-foreground",
                     )}
                   >
                     {step.label}

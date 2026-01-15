@@ -261,6 +261,43 @@ function AnimatedPlan({ className }: { className?: string }) {
   );
 }
 
+function AnimatedProgressTracker({ className }: { className?: string }) {
+  const [currentStep, setCurrentStep] = useState(1);
+
+  useEffect(() => {
+    if (currentStep >= 3) return;
+
+    const delay = currentStep === 1 ? 1300 : 1500;
+    const timeoutId = window.setTimeout(() => {
+      setCurrentStep((s) => s + 1);
+    }, delay);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [currentStep]);
+
+  const steps = PROGRESS_TRACKER_DATA.steps.map((step, index) => ({
+    ...step,
+    status:
+      index < currentStep
+        ? ("completed" as const)
+        : index === currentStep
+          ? ("in-progress" as const)
+          : ("pending" as const),
+  }));
+
+  const elapsedTime = PROGRESS_TRACKER_DATA.elapsedTime! + (currentStep * 12000);
+
+  return (
+    <ProgressTracker
+      id="chat-showcase-progress-tracker"
+      steps={steps}
+      elapsedTime={elapsedTime}
+      responseActions={PROGRESS_TRACKER_DATA.responseActions}
+      className={className}
+    />
+  );
+}
+
 type ChatBubbleProps = {
   role: "user" | "assistant";
   children: React.ReactNode;
@@ -488,13 +525,7 @@ function createSceneConfigs(): SceneConfig[] {
     {
       userMessage: "Deploy the updates to production",
       preamble: "Deployment started. Tracking progress.",
-      toolUI: (
-        <ProgressTracker
-          id="chat-showcase-progress-tracker"
-          {...PROGRESS_TRACKER_DATA}
-          className="w-full max-w-[480px]"
-        />
-      ),
+      toolUI: <AnimatedProgressTracker className="w-full max-w-[480px]" />,
       toolFallbackHeight: 260,
     },
     {

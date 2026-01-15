@@ -50,6 +50,36 @@
   }
 }
 
+@keyframes spring-bounce {
+  0% {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes check-draw {
+  0% {
+    stroke-dasharray: var(--check-path-length, 24);
+    stroke-dashoffset: var(--check-path-length, 24);
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    stroke-dasharray: var(--check-path-length, 24);
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+}
+
 @layer utilities {
   .animate-accordion-down {
     animation: accordion-down 200ms ease-out;
