@@ -66,9 +66,7 @@ export function HomeHero() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ ...smoothSpring, delay: 0.4 }}
       >
-        JSON-native, typed, responsive, accessible,{" "}
-        <br className="sm:hidden" />
-        copy-pasteable.
+        JSON-native, typed, accessible, copy-pasteable.
         <br />
         Built on Tailwind, Radix, and shadcn/ui. Open Source.
       </motion.p>
