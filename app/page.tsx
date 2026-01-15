@@ -14,24 +14,13 @@ export default function HomePage() {
       rightContent={<ThemeToggle />}
       animateNavbar={true}
       background={
-        <>
-          <motion.div
-            className="bg-background pointer-events-none fixed inset-0 opacity-60 dark:opacity-40"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.6 }}
-            aria-hidden="true"
-          />
-          {/* Device shell positioned relative to HeaderFrame so it can extend into header */}
-          <div className="squircle pointer-events-none absolute inset-0 top-[60px] flex items-end justify-center md:top-0 md:items-center lg:right-0 lg:left-auto lg:w-1/2">
-            <div className="block h-full max-h-[90dvh] w-full max-w-[430px] translate-y-[52px] translate-x-[45%] scale-[0.7] md:translate-x-0 md:translate-y-0 md:scale-100 lg:hidden">
-              <FauxChatShellMobileAnimated />
-            </div>
-            <div className="hidden h-full max-h-[90dvh] w-full lg:block">
-              <FauxChatShellAnimated />
-            </div>
-          </div>
-        </>
+        <motion.div
+          className="bg-background pointer-events-none fixed inset-0 opacity-60 dark:opacity-40"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.6 }}
+          aria-hidden="true"
+        />
       }
     >
       <ContentLayout>
@@ -48,8 +37,16 @@ export default function HomePage() {
             aria-hidden="true"
           />
 
-          {/* Spacer for desktop layout */}
-          <div className="hidden lg:flex lg:flex-1" />
+          <div
+            className="squircle absolute inset-0 flex h-full min-h-0 w-full min-w-0 -translate-y-12 translate-x-[45%] scale-[0.7] items-center justify-end md:translate-x-0 md:translate-y-0 md:scale-100 lg:relative lg:justify-center lg:flex-1"
+          >
+            <div className="block h-full w-full max-w-[430px] lg:hidden">
+              <FauxChatShellMobileAnimated />
+            </div>
+            <div className="hidden h-full w-full lg:block">
+              <FauxChatShellAnimated />
+            </div>
+          </div>
         </main>
       </ContentLayout>
     </HeaderFrame>
