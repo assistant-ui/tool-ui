@@ -9,7 +9,6 @@ import { ImageGallery } from "@/components/tool-ui/image-gallery";
 import { Video } from "@/components/tool-ui/video";
 import { Audio } from "@/components/tool-ui/audio";
 import { LinkPreview } from "@/components/tool-ui/link-preview";
-import { XPost } from "@/components/tool-ui/x-post";
 import { LinkedInPost } from "@/components/tool-ui/linkedin-post";
 import { OptionList } from "@/components/tool-ui/option-list";
 import { OrderSummary } from "@/components/tool-ui/order-summary";
@@ -30,7 +29,6 @@ import { imageGalleryPresets } from "@/lib/presets/image-gallery";
 import { videoPresets } from "@/lib/presets/video";
 import { audioPresets } from "@/lib/presets/audio";
 import { linkPreviewPresets } from "@/lib/presets/link-preview";
-import { xPostPresets } from "@/lib/presets/x-post";
 import { linkedInPostPresets } from "@/lib/presets/linkedin-post";
 import { optionListPresets } from "@/lib/presets/option-list";
 import { orderSummaryPresets } from "@/lib/presets/order-summary";
@@ -58,10 +56,6 @@ export default function ComponentsGalleryPage() {
 
           <div className="mb-5 flex justify-center [column-span:all] 2xl:mb-5">
             <ItemCarousel {...itemCarouselPresets.recommendations.data} />
-          </div>
-
-          <div className="mb-5 flex break-inside-avoid justify-center 2xl:mb-5">
-            <XPost post={xPostPresets.basic.data.post} />
           </div>
 
           <div className="mb-5 flex break-inside-avoid justify-center 2xl:mb-5">
