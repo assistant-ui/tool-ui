@@ -66,10 +66,11 @@ export function HomeHero() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ ...smoothSpring, delay: 0.4 }}
       >
-        JSON-native, typed, responsive, accessible, copy-pasteable.{" "}
-        <br className="hidden md:block" />
-        Built on Tailwind, Radix, and shadcn/ui. Open Source.{" "}
-        <br className="hidden md:block" />
+        JSON-native, typed, responsive, accessible,{" "}
+        <br className="sm:hidden" />
+        copy-pasteable.
+        <br />
+        Built on Tailwind, Radix, and shadcn/ui. Open Source.
       </motion.p>
       <motion.div
         initial={{ opacity: 0, y: 20, scale: 0.98 }}
