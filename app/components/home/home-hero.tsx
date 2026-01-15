@@ -28,7 +28,7 @@ export function HomeHero() {
       </motion.div>
       <div className="flex flex-col gap-3">
         <div className="flex flex-col gap-3">
-          <div className="flex flex-col items-start md:flex-row md:gap-3">
+          <div className="flex flex-col items-start md:flex-row md:items-end md:gap-3">
             <motion.h1
               className="text-6xl font-bold tracking-tight"
               initial={{ opacity: 0, y: 20 }}
@@ -44,7 +44,7 @@ export function HomeHero() {
             >
               <Badge
                 variant="outline"
-                className="text-muted-foreground mt-1 cursor-default font-mono text-xs font-light select-none md:self-end"
+                className="text-muted-foreground mt-1 cursor-default font-mono text-xs font-light select-none md:mt-0"
               >
                 research preview
               </Badge>
