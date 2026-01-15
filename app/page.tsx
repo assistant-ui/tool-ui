@@ -24,10 +24,10 @@ export default function HomePage() {
           />
           {/* Device shell positioned relative to HeaderFrame so it can extend into header */}
           <div className="squircle pointer-events-none absolute inset-0 top-[60px] flex items-end justify-center md:top-0 md:items-center lg:right-0 lg:left-auto lg:w-1/2">
-            <div className="block h-full w-full max-w-[430px] -translate-y-[148px] translate-x-[45%] scale-[0.7] md:translate-x-0 md:translate-y-0 md:scale-100 lg:hidden">
+            <div className="block h-full max-h-[90dvh] w-full max-w-[430px] translate-y-[52px] translate-x-[45%] scale-[0.7] md:translate-x-0 md:translate-y-0 md:scale-100 lg:hidden">
               <FauxChatShellMobileAnimated />
             </div>
-            <div className="hidden h-full w-full lg:block">
+            <div className="hidden h-full max-h-[90dvh] w-full lg:block">
               <FauxChatShellAnimated />
             </div>
           </div>
