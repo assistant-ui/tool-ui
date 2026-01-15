@@ -97,7 +97,7 @@ function PlanTodoItem({ todo, className, style, showConnector }: PlanTodoItemPro
   const labelElement = (
     <span
       className={cn(
-        "text-sm font-medium leading-6",
+        "text-sm font-medium leading-6 break-words",
         todo.status === "pending" && "text-muted-foreground",
         todo.status === "in_progress" && "motion-safe:shimmer shimmer-invert text-foreground",
         (todo.status === "completed" || todo.status === "cancelled") && "text-muted-foreground"
@@ -122,13 +122,15 @@ function PlanTodoItem({ todo, className, style, showConnector }: PlanTodoItemPro
         <div className="relative z-10">
           <TodoIcon status={todo.status} />
         </div>
-        {labelElement}
+        <div className="flex-1 min-w-0">
+          {labelElement}
+        </div>
       </li>
     );
   }
 
   return (
-    <li className={cn("relative -mx-2 cursor-default rounded-md", className)} style={style}>
+    <li className={cn("relative -mx-2 cursor-default rounded-md min-w-0", className)} style={style}>
       {showConnector && (
         <div
           className="absolute left-5 top-6 w-px bg-border"
@@ -140,7 +142,7 @@ function PlanTodoItem({ todo, className, style, showConnector }: PlanTodoItemPro
       )}
       <Collapsible asChild open={isOpen} onOpenChange={setIsOpen}>
         <div
-          className="data-[state=open]:bg-primary/5 rounded-md motion-safe:transition-all motion-safe:duration-200"
+          className="min-w-0 data-[state=open]:bg-primary/5 rounded-md motion-safe:transition-all motion-safe:duration-200"
           style={{
             backdropFilter: isOpen ? "blur(2px)" : undefined,
           }}
@@ -149,14 +151,14 @@ function PlanTodoItem({ todo, className, style, showConnector }: PlanTodoItemPro
           <div className="relative z-10">
             <TodoIcon status={todo.status} />
           </div>
-          <span className="flex-1">
+          <span className="flex-1 min-w-0">
             {labelElement}
           </span>
           <ChevronRight className="text-muted-foreground/50 group-hover/todo:text-muted-foreground mt-0.5 size-4 shrink-0 rotate-90 motion-safe:transition-transform motion-safe:duration-300 motion-safe:ease-[cubic-bezier(0.34,1.56,0.64,1)] group-data-[state=open]/todo:[transform:rotateY(180deg)]" />
         </CollapsibleTrigger>
         <CollapsibleContent className="group/content" data-slot="collapsible-content">
-          <div className="motion-safe:group-data-[state=open]/content:animate-[fade-in-stagger_120ms_ease-out_30ms_backwards] motion-safe:group-data-[state=closed]/content:animate-[fade-out-stagger_120ms_ease-out]">
-            <p className="text-muted-foreground pr-2 pb-1.5 pl-11 text-sm text-pretty">
+          <div className="min-w-0 motion-safe:group-data-[state=open]/content:animate-[fade-in-stagger_120ms_ease-out_30ms_backwards] motion-safe:group-data-[state=closed]/content:animate-[fade-out-stagger_120ms_ease-out]">
+            <p className="text-muted-foreground pr-2 pb-1.5 pl-11 text-sm text-pretty break-words min-w-0">
               {todo.description}
             </p>
           </div>
@@ -321,8 +323,8 @@ export function Plan({
           )}
         </CardHeader>
 
-        <CardContent className="px-4">
-          <div className="bg-muted/70 rounded-lg px-6 py-4">
+        <CardContent className="px-4 min-w-0">
+          <div className="bg-muted/70 rounded-lg px-6 py-4 min-w-0">
             {showProgress && (
               <>
                 <div className="text-muted-foreground mb-2 text-sm">
@@ -333,7 +335,7 @@ export function Plan({
               </>
             )}
 
-            <ul className="mt-4 space-y-1">
+            <ul className="mt-4 space-y-1 min-w-0">
               <TodoList todos={visibleTodos} newTodoIds={newTodoIds} />
 
               {hiddenTodos.length > 0 && (
