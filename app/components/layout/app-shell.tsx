@@ -26,7 +26,7 @@ export function HeaderFrame({
   animateNavbar = false,
 }: HeaderFrameProps) {
   return (
-    <div className="relative flex h-dvh flex-col items-center overflow-x-hidden overflow-y-visible">
+    <div className="relative flex h-dvh flex-col items-center overflow-hidden">
       {background ? (
         <div className="pointer-events-none absolute inset-0 z-0">
           {background}
@@ -40,7 +40,7 @@ export function HeaderFrame({
       >
         <ResponsiveHeader rightContent={rightContent} />
       </motion.div>
-      <div className="relative z-10 flex min-h-0 w-full flex-1 justify-center overflow-x-hidden overflow-y-visible">
+      <div className="relative z-10 flex min-h-0 w-full flex-1 justify-center overflow-hidden">
         {children}
       </div>
     </div>
