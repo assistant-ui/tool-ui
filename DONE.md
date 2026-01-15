@@ -107,3 +107,24 @@ Archive of completed features and improvements. See `TODO.md` for active work.
 - Added 2.5-second initial delay to first carousel scene
 - Removed Stats Display header from showcase (showing just the stats)
 - Added 300ms delay to Tool UI component appearance
+
+### Plan Component Animation Polish (Jan 15, 2026)
+- Sped up task description enter animation from 200ms/100ms delay to 120ms/30ms delay
+- Fixed task description alignment by changing left padding from pl-8 to pl-7 to match label position
+- Removed inner circle from pending todo icons, now showing clean empty circle
+- Increased pending icon border width from 1px to 2px for better visibility
+- Enhanced pending icon border contrast using border-muted-foreground/30 instead of border-border
+- Fixed progress bar shimmer flicker by removing background from keyframe animation (only transform animates)
+- Increased shimmer contrast from rgba(255,255,255,0.4) to rgba(255,255,255,0.7) for better visibility
+- Verified glow pulse and shimmer animations fire exactly once at 100% completion (already correct)
+
+### Plan Component Visual Refinement (Jan 15, 2026)
+- Unified step icon sizing with Progress Tracker: container size-5→size-6, Loader2 size-3→size-5, Check/X size-3→size-4
+- Updated pending icon styling to match Progress Tracker: border→border (not border-2), border-muted-foreground/30→border-border
+- Adjusted step description left padding from pl-7 to pl-8 to align with larger icons
+- Added gorgeous deep emerald gradient to progress bar at 100% completion: linear-gradient(90deg, #047857, #10b981, #34d399)
+- Fixed progress bar shimmer glitch by extending animation endpoint from translateX(100%) to translateX(200%)
+- Added exit transition to step description (fade-out-stagger animation, reverse of enter)
+- Restored original chevron animation using vertical flip (rotateY) instead of rotation
+- Removed border from container housing plan steps and progress (cleaner look)
+- Removed strikethrough treatment from completed steps (kept muted-foreground dimming)

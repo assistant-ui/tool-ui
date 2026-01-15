@@ -14,7 +14,7 @@ function StagingContent() {
   return (
     <div className="flex h-screen flex-col">
       <StagingToolbar />
-      <main className="relative flex flex-1 items-center justify-center overflow-hidden p-8">
+      <main className="relative flex flex-1 items-start justify-center overflow-auto p-8">
         {viewMode === "static" ? (
           <StagingCanvas
             componentId={componentId}

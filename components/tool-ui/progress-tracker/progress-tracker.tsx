@@ -64,7 +64,7 @@ function StepIndicator({ status }: StepIndicatorProps) {
   if (status === "failed") {
     return (
       <span
-        className="bg-destructive dark:bg-red-700 text-white flex size-6 shrink-0 items-center justify-center rounded-full border border-destructive dark:border-red-700 shadow-sm motion-safe:animate-[spring-bounce_500ms_cubic-bezier(0.34,1.56,0.64,1)]"
+        className="bg-destructive dark:bg-red-600 text-white flex size-6 shrink-0 items-center justify-center rounded-full border border-destructive dark:border-red-600 shadow-sm motion-safe:animate-[spring-bounce_500ms_cubic-bezier(0.34,1.56,0.64,1)]"
         aria-hidden="true"
       >
         <X
@@ -278,17 +278,13 @@ export function ProgressTracker({
             return (
               <li
                 key={step.id}
-                className={cn(
-                  "relative flex items-start gap-3 -mx-2 rounded-lg px-2 py-1.5",
-                  "motion-safe:transition-all motion-safe:duration-300",
-                  isCurrent && "bg-primary/5",
-                )}
+                className="relative -mx-2"
                 aria-current={isCurrent ? "step" : undefined}
               >
                 {index < steps.length - 1 && (
                   <div
                     className={cn(
-                      "absolute left-5 top-6 w-px bg-border",
+                      "absolute left-5 top-6 w-px bg-border z-50",
                       "motion-safe:transition-all motion-safe:duration-300",
                     )}
                     style={{
@@ -297,10 +293,20 @@ export function ProgressTracker({
                     aria-hidden="true"
                   />
                 )}
-                <div className="relative z-10">
-                  <StepIndicator status={step.status} />
-                </div>
-                <div className="flex flex-1 flex-col gap-0.5">
+                <div
+                  className={cn(
+                    "relative z-10 flex items-start gap-3 rounded-lg px-2 py-1.5",
+                    "motion-safe:transition-all motion-safe:duration-300",
+                    isCurrent && "bg-primary/5",
+                  )}
+                  style={{
+                    backdropFilter: isCurrent ? "blur(2px)" : undefined,
+                  }}
+                >
+                  <div className="relative z-10">
+                    <StepIndicator status={step.status} />
+                  </div>
+                  <div className="flex flex-1 flex-col gap-0.5">
                   <span
                     className={cn(
                       "text-sm font-medium leading-6",
@@ -315,6 +321,7 @@ export function ProgressTracker({
                       {step.description}
                     </span>
                   )}
+                </div>
                 </div>
               </li>
             );

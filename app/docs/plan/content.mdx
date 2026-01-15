@@ -271,7 +271,37 @@ export const ShowPlanUI = makeAssistantToolUI({
   }}
 />
 
+## Animations
+
+The Plan component includes polished animations that enhance the user experience while respecting accessibility preferences:
+
+### State Transitions
+
+- **Spring bounce effects**: When todos complete or are cancelled, icons bounce with playful spring physics
+- **Stroke-drawing animations**: Checkmarks and X icons draw themselves with a satisfying stroke animation
+- **Fast spinner**: In-progress todos show a 0.7-second rotation for responsive visual feedback
+- **Shimmer effect**: Labels of in-progress todos shimmer to draw attention
+
+### Entrance Animations
+
+New todos fade up with a 50ms stagger between each item, creating a smooth cascading effect. This applies both on initial render and when todos are dynamically added.
+
+### Progress Celebration
+
+When the progress bar reaches 100%, it triggers a multi-layered celebration:
+
+- Color pulse with brightness increase
+- Shimmer sweep across the bar
+- Glow effect radiating from the edges
+
+### Accordion Interactions
+
+- Chevron rotates with spring physics (bouncy cubic-bezier easing)
+- Content fades up with a slight delay after the accordion opens
+- Staggered reveal for description and metadata
+
 ## Accessibility
 
-- Spinning icon and shimmer animations respect `prefers-reduced-motion`
-- Users who prefer reduced motion see static icons and text
+- All animations automatically disable when users have `prefers-reduced-motion` enabled in their system preferences, ensuring an accessible experience for everyone
+- Users who prefer reduced motion see instant state changes without visual motion
+- Functionality is preserved regardless of motion preferences

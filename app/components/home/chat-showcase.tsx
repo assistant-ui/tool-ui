@@ -230,7 +230,7 @@ function AnimatedPlan({ className }: { className?: string }) {
   useEffect(() => {
     if (completedCount >= PLAN_TODO_LABELS.length) return;
 
-    const delay = completedCount === 0 ? 600 : 800;
+    const delay = completedCount === 0 ? 600 : 1500;
     const timeoutId = window.setTimeout(() => {
       setCompletedCount((c) => c + 1);
     }, delay);
@@ -238,9 +238,17 @@ function AnimatedPlan({ className }: { className?: string }) {
     return () => window.clearTimeout(timeoutId);
   }, [completedCount]);
 
+  const todoDescriptions = [
+    "Analyzing social media activity and recent conversations",
+    "Browsing gift guides and personalized recommendations",
+    "Evaluating quality, reviews, and price ranges",
+    "Selecting the top 3 options with purchase links",
+  ];
+
   const todos = PLAN_TODO_LABELS.map((label: string, index: number) => ({
     id: String(index + 1),
     label,
+    description: todoDescriptions[index],
     status:
       index < completedCount
         ? ("completed" as const)

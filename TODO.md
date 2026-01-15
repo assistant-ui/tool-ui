@@ -12,6 +12,14 @@
 
 *Currently in progress. Limit to 1-3 items.*
 
+None
+
+---
+
+## 📋 Next
+
+*Researched, scoped, ready to start.*
+
 - [ ] Apply Vercel React best practices review across codebase
 - [ ] Address performance and optimization opportunities
 

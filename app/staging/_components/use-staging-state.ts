@@ -78,11 +78,21 @@ export function useStagingState() {
           ? presetParam
           : config?.defaultPreset ?? "";
 
-      useStagingStore.setState({
-        componentId: componentParam,
-        presetName,
-        debugLevel: debugParam && DEBUG_LEVELS.includes(debugParam) ? debugParam : "off",
-      });
+      const debugLevel = debugParam && DEBUG_LEVELS.includes(debugParam) ? debugParam : "off";
+
+      // Only update store if values have changed to prevent infinite loop
+      const currentState = useStagingStore.getState();
+      if (
+        currentState.componentId !== componentParam ||
+        currentState.presetName !== presetName ||
+        currentState.debugLevel !== debugLevel
+      ) {
+        useStagingStore.setState({
+          componentId: componentParam,
+          presetName,
+          debugLevel,
+        });
+      }
     }
   }, [searchParams]);
 
