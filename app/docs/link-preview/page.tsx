@@ -8,6 +8,8 @@ export const metadata: Metadata = {
   description: "Rich link previews with OG data",
 };
 
+export const revalidate = 3600;
+
 export default function LinkPreviewDocsPage() {
   return (
     <ComponentDocsTabs

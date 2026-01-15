@@ -8,6 +8,8 @@ export const metadata: Metadata = {
   description: "Display source references with attribution",
 };
 
+export const revalidate = 3600;
+
 export default function CitationDocsPage() {
   return (
     <ComponentDocsTabs

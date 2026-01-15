@@ -8,6 +8,8 @@ export const metadata: Metadata = {
   description: "Video playback with controls and poster",
 };
 
+export const revalidate = 3600;
+
 export default function VideoDocsPage() {
   return (
     <ComponentDocsTabs

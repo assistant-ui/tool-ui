@@ -7,6 +7,8 @@ export const metadata: Metadata = {
   description: "How to contribute to Tool UI",
 };
 
+export const revalidate = 3600;
+
 export default function ContributingPage() {
   return (
     <DocsArticle>

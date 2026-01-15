@@ -7,6 +7,8 @@ export const metadata: Metadata = {
   description: "Get started with Tool UI in minutes",
 };
 
+export const revalidate = 3600;
+
 export default function QuickStartPage() {
   return (
     <DocsArticle>

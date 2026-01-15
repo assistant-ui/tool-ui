@@ -8,6 +8,8 @@ export const metadata: Metadata = {
   description: "Masonry grid with fullscreen carousel viewer",
 };
 
+export const revalidate = 3600;
+
 export default function ImageGalleryDocsPage() {
   return (
     <ComponentDocsTabs

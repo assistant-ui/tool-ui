@@ -8,6 +8,8 @@ export const metadata: Metadata = {
   description: "Display syntax-highlighted code snippets",
 };
 
+export const revalidate = 3600;
+
 export default function CodeBlockDocsPage() {
   return (
     <ComponentDocsTabs

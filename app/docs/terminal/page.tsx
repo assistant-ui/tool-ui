@@ -8,6 +8,8 @@ export const metadata: Metadata = {
   description: "Show command-line output and logs",
 };
 
+export const revalidate = 3600;
+
 export default function TerminalDocsPage() {
   return (
     <ComponentDocsTabs

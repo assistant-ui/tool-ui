@@ -8,6 +8,8 @@ export const metadata: Metadata = {
   description: "Display images with metadata and attribution",
 };
 
+export const revalidate = 3600;
+
 export default function ImageDocsPage() {
   return (
     <ComponentDocsTabs

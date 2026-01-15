@@ -8,6 +8,8 @@ export const metadata: Metadata = {
   description: "Compact settings panel for user preferences",
 };
 
+export const revalidate = 3600;
+
 export default function PreferencesPanelDocsPage() {
   return (
     <ComponentDocsTabs

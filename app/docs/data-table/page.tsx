@@ -8,6 +8,8 @@ export const metadata: Metadata = {
   description: "Present structured data in sortable tables",
 };
 
+export const revalidate = 3600;
+
 export default function DataTableDocsPage() {
   return (
     <ComponentDocsTabs

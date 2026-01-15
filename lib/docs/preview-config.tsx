@@ -1,47 +1,152 @@
 "use client";
 
-import type { ComponentType, ReactNode } from "react";
+import dynamic from "next/dynamic";
+import type { ComponentProps, ComponentType, ReactNode } from "react";
 import type { PresetWithCodeGen } from "@/lib/presets/types";
 
-import { ApprovalCard } from "@/components/tool-ui/approval-card";
-import { Chart } from "@/components/tool-ui/chart";
-import { Citation, CitationList } from "@/components/tool-ui/citation";
-import { CodeBlock } from "@/components/tool-ui/code-block";
-import { DataTable } from "@/components/tool-ui/data-table";
-import { Image } from "@/components/tool-ui/image";
-import { ImageGallery } from "@/components/tool-ui/image-gallery";
-import { Video } from "@/components/tool-ui/video";
-import { Audio } from "@/components/tool-ui/audio";
-import { LinkPreview } from "@/components/tool-ui/link-preview";
-import { ItemCarousel } from "@/components/tool-ui/item-carousel";
-import { OptionList } from "@/components/tool-ui/option-list";
-import { OrderSummary } from "@/components/tool-ui/order-summary";
-import { ParameterSlider } from "@/components/tool-ui/parameter-slider";
-import { Plan } from "@/components/tool-ui/plan";
-import { PreferencesPanel } from "@/components/tool-ui/preferences-panel";
-import { ProgressTracker } from "@/components/tool-ui/progress-tracker";
-import { StatsDisplay } from "@/components/tool-ui/stats-display";
-import { Terminal } from "@/components/tool-ui/terminal";
+import type { ApprovalCard } from "@/components/tool-ui/approval-card";
+import type { Chart } from "@/components/tool-ui/chart";
+import type { Citation } from "@/components/tool-ui/citation";
+import type { CodeBlock } from "@/components/tool-ui/code-block";
+import type { DataTable } from "@/components/tool-ui/data-table";
+import type { Image } from "@/components/tool-ui/image";
+import type { ImageGallery } from "@/components/tool-ui/image-gallery";
+import type { Video } from "@/components/tool-ui/video";
+import type { Audio } from "@/components/tool-ui/audio";
+import type { LinkPreview } from "@/components/tool-ui/link-preview";
+import type { ItemCarousel } from "@/components/tool-ui/item-carousel";
+import type { OptionList } from "@/components/tool-ui/option-list";
+import type { OrderSummary } from "@/components/tool-ui/order-summary";
+import type { ParameterSlider } from "@/components/tool-ui/parameter-slider";
+import type { Plan } from "@/components/tool-ui/plan";
+import type { PreferencesPanel } from "@/components/tool-ui/preferences-panel";
+import type { ProgressTracker } from "@/components/tool-ui/progress-tracker";
+import type { StatsDisplay } from "@/components/tool-ui/stats-display";
+import type { Terminal } from "@/components/tool-ui/terminal";
 
-import { approvalCardPresets, type ApprovalCardPresetName } from "@/lib/presets/approval-card";
+import {
+  approvalCardPresets,
+  type ApprovalCardPresetName,
+} from "@/lib/presets/approval-card";
 import { chartPresets, type ChartPresetName } from "@/lib/presets/chart";
-import { citationPresets, type CitationPresetName } from "@/lib/presets/citation";
-import { codeBlockPresets, type CodeBlockPresetName } from "@/lib/presets/code-block";
-import { dataTablePresets, type DataTablePresetName, type SortState } from "@/lib/presets/data-table";
+import {
+  citationPresets,
+  type CitationPresetName,
+} from "@/lib/presets/citation";
+import {
+  codeBlockPresets,
+  type CodeBlockPresetName,
+} from "@/lib/presets/code-block";
+import {
+  dataTablePresets,
+  type DataTablePresetName,
+  type SortState,
+} from "@/lib/presets/data-table";
 import { imagePresets, type ImagePresetName } from "@/lib/presets/image";
-import { imageGalleryPresets, type ImageGalleryPresetName } from "@/lib/presets/image-gallery";
+import {
+  imageGalleryPresets,
+  type ImageGalleryPresetName,
+} from "@/lib/presets/image-gallery";
 import { videoPresets, type VideoPresetName } from "@/lib/presets/video";
 import { audioPresets, type AudioPresetName } from "@/lib/presets/audio";
-import { linkPreviewPresets, type LinkPreviewPresetName } from "@/lib/presets/link-preview";
-import { itemCarouselPresets, type ItemCarouselPresetName } from "@/lib/presets/item-carousel";
-import { optionListPresets, type OptionListPresetName } from "@/lib/presets/option-list";
-import { orderSummaryPresets, type OrderSummaryPresetName } from "@/lib/presets/order-summary";
-import { parameterSliderPresets, type ParameterSliderPresetName } from "@/lib/presets/parameter-slider";
+import {
+  linkPreviewPresets,
+  type LinkPreviewPresetName,
+} from "@/lib/presets/link-preview";
+import {
+  itemCarouselPresets,
+  type ItemCarouselPresetName,
+} from "@/lib/presets/item-carousel";
+import {
+  optionListPresets,
+  type OptionListPresetName,
+} from "@/lib/presets/option-list";
+import {
+  orderSummaryPresets,
+  type OrderSummaryPresetName,
+} from "@/lib/presets/order-summary";
+import {
+  parameterSliderPresets,
+  type ParameterSliderPresetName,
+} from "@/lib/presets/parameter-slider";
 import { planPresets, type PlanPresetName } from "@/lib/presets/plan";
-import { preferencesPanelPresets, type PreferencesPanelPresetName } from "@/lib/presets/preferences-panel";
-import { progressTrackerPresets, type ProgressTrackerPresetName } from "@/lib/presets/progress-tracker";
-import { statsDisplayPresets, type StatsDisplayPresetName } from "@/lib/presets/stats-display";
-import { terminalPresets, type TerminalPresetName } from "@/lib/presets/terminal";
+import {
+  preferencesPanelPresets,
+  type PreferencesPanelPresetName,
+} from "@/lib/presets/preferences-panel";
+import {
+  progressTrackerPresets,
+  type ProgressTrackerPresetName,
+} from "@/lib/presets/progress-tracker";
+import {
+  statsDisplayPresets,
+  type StatsDisplayPresetName,
+} from "@/lib/presets/stats-display";
+import {
+  terminalPresets,
+  type TerminalPresetName,
+} from "@/lib/presets/terminal";
+
+const DynamicApprovalCard = dynamic(() =>
+  import("@/components/tool-ui/approval-card").then((m) => m.ApprovalCard)
+);
+const DynamicChart = dynamic(() =>
+  import("@/components/tool-ui/chart").then((m) => m.Chart)
+);
+const DynamicCitation = dynamic(() =>
+  import("@/components/tool-ui/citation").then((m) => m.Citation)
+);
+const DynamicCitationList = dynamic(() =>
+  import("@/components/tool-ui/citation").then((m) => m.CitationList)
+);
+const DynamicCodeBlock = dynamic(() =>
+  import("@/components/tool-ui/code-block").then((m) => m.CodeBlock)
+);
+const DynamicDataTable = dynamic(() =>
+  import("@/components/tool-ui/data-table").then((m) => m.DataTable)
+);
+const DynamicImage = dynamic(() =>
+  import("@/components/tool-ui/image").then((m) => m.Image)
+);
+const DynamicImageGallery = dynamic(() =>
+  import("@/components/tool-ui/image-gallery").then((m) => m.ImageGallery)
+);
+const DynamicVideo = dynamic(() =>
+  import("@/components/tool-ui/video").then((m) => m.Video)
+);
+const DynamicAudio = dynamic(() =>
+  import("@/components/tool-ui/audio").then((m) => m.Audio)
+);
+const DynamicLinkPreview = dynamic(() =>
+  import("@/components/tool-ui/link-preview").then((m) => m.LinkPreview)
+);
+const DynamicItemCarousel = dynamic(() =>
+  import("@/components/tool-ui/item-carousel").then((m) => m.ItemCarousel)
+);
+const DynamicOptionList = dynamic(() =>
+  import("@/components/tool-ui/option-list").then((m) => m.OptionList)
+);
+const DynamicOrderSummary = dynamic(() =>
+  import("@/components/tool-ui/order-summary").then((m) => m.OrderSummary)
+);
+const DynamicParameterSlider = dynamic(() =>
+  import("@/components/tool-ui/parameter-slider").then((m) => m.ParameterSlider)
+);
+const DynamicPlan = dynamic(() =>
+  import("@/components/tool-ui/plan").then((m) => m.Plan)
+);
+const DynamicPreferencesPanel = dynamic(() =>
+  import("@/components/tool-ui/preferences-panel").then((m) => m.PreferencesPanel)
+);
+const DynamicProgressTracker = dynamic(() =>
+  import("@/components/tool-ui/progress-tracker").then((m) => m.ProgressTracker)
+);
+const DynamicStatsDisplay = dynamic(() =>
+  import("@/components/tool-ui/stats-display").then((m) => m.StatsDisplay)
+);
+const DynamicTerminal = dynamic(() =>
+  import("@/components/tool-ui/terminal").then((m) => m.Terminal)
+);
 
 export type ComponentId =
   | "approval-card"
@@ -103,7 +208,10 @@ function MaxWidthStartWrapper({ children }: { children: ReactNode }) {
   return <div className="w-full max-w-md">{children}</div>;
 }
 
-export const previewConfigs: Record<ComponentId, PreviewConfig<unknown, string>> = {
+export const previewConfigs: Record<
+  ComponentId,
+  PreviewConfig<unknown, string>
+> = {
   "approval-card": {
     presets: approvalCardPresets as Record<string, PresetWithCodeGen<unknown>>,
     defaultPreset: "deploy" satisfies ApprovalCardPresetName,
@@ -113,9 +221,9 @@ export const previewConfigs: Record<ComponentId, PreviewConfig<unknown, string>>
       preamble: "I'll need your confirmation before proceeding:",
     },
     renderComponent: ({ data }) => {
-      const cardData = data as Parameters<typeof ApprovalCard>[0];
+      const cardData = data as ComponentProps<typeof ApprovalCard>;
       return (
-        <ApprovalCard
+        <DynamicApprovalCard
           {...cardData}
           onConfirm={() => console.log("Approved")}
           onCancel={() => console.log("Denied")}
@@ -132,7 +240,7 @@ export const previewConfigs: Record<ComponentId, PreviewConfig<unknown, string>>
     },
     renderComponent: ({ data, presetName }) => {
       const chartData = data as Omit<Parameters<typeof Chart>[0], "id">;
-      return <Chart id={`chart-${presetName}`} {...chartData} />;
+      return <DynamicChart id={`chart-${presetName}`} {...chartData} />;
     },
   },
   citation: {
@@ -154,11 +262,17 @@ export const previewConfigs: Record<ComponentId, PreviewConfig<unknown, string>>
       if (citations.length === 1 && !maxVisible) {
         return (
           <div className="mx-auto w-full max-w-md">
-            <Citation
+            <DynamicCitation
               {...citations[0]}
               variant={variant}
-              responseActions={responseActions as Parameters<typeof Citation>[0]["responseActions"]}
-              onResponseAction={(actionId) => console.log("Response action:", actionId)}
+              responseActions={
+                responseActions as Parameters<
+                  typeof Citation
+                >[0]["responseActions"]
+              }
+              onResponseAction={(actionId) =>
+                console.log("Response action:", actionId)
+              }
             />
           </div>
         );
@@ -170,7 +284,7 @@ export const previewConfigs: Record<ComponentId, PreviewConfig<unknown, string>>
 
       return (
         <div className={wrapperClass}>
-          <CitationList
+          <DynamicCitationList
             id={`citation-list-${presetName}`}
             citations={citations}
             variant={variant}
@@ -187,7 +301,9 @@ export const previewConfigs: Record<ComponentId, PreviewConfig<unknown, string>>
       userMessage: "Write me a utility function for this",
       preamble: "Here's the code:",
     },
-    renderComponent: ({ data }) => <CodeBlock {...(data as Parameters<typeof CodeBlock>[0])} />,
+    renderComponent: ({ data }) => (
+      <DynamicCodeBlock {...(data as Parameters<typeof CodeBlock>[0])} />
+    ),
   },
   "data-table": {
     presets: dataTablePresets as Record<string, PresetWithCodeGen<unknown>>,
@@ -199,11 +315,13 @@ export const previewConfigs: Record<ComponentId, PreviewConfig<unknown, string>>
     renderComponent: ({ data, state, setState }) => {
       const tableData = data as Parameters<typeof DataTable>[0];
       return (
-        <DataTable
+        <DynamicDataTable
           {...tableData}
           sort={state.sort as Parameters<typeof DataTable>[0]["sort"]}
           onSortChange={(sort) => setState({ sort })}
-          onResponseAction={(actionId) => console.log("Response action:", actionId)}
+          onResponseAction={(actionId) =>
+            console.log("Response action:", actionId)
+          }
         />
       );
     },
@@ -217,12 +335,19 @@ export const previewConfigs: Record<ComponentId, PreviewConfig<unknown, string>>
       preamble: "Here's what I created:",
     },
     renderComponent: ({ data }) => {
-      const { image, responseActions } = data as { image: Parameters<typeof Image>[0]; responseActions?: unknown[] };
+      const { image, responseActions } = data as {
+        image: Parameters<typeof Image>[0];
+        responseActions?: unknown[];
+      };
       return (
-        <Image
+        <DynamicImage
           {...image}
-          responseActions={responseActions as Parameters<typeof Image>[0]["responseActions"]}
-          onResponseAction={(actionId) => console.log("Response action:", actionId)}
+          responseActions={
+            responseActions as Parameters<typeof Image>[0]["responseActions"]
+          }
+          onResponseAction={(actionId) =>
+            console.log("Response action:", actionId)
+          }
         />
       );
     },
@@ -237,7 +362,7 @@ export const previewConfigs: Record<ComponentId, PreviewConfig<unknown, string>>
     renderComponent: ({ data }) => {
       const galleryData = data as Parameters<typeof ImageGallery>[0];
       return (
-        <ImageGallery
+        <DynamicImageGallery
           {...galleryData}
           onImageClick={(id, image) => console.log("Image clicked:", id, image)}
         />
@@ -253,12 +378,19 @@ export const previewConfigs: Record<ComponentId, PreviewConfig<unknown, string>>
       preamble: "Here's the video:",
     },
     renderComponent: ({ data }) => {
-      const { video, responseActions } = data as { video: Parameters<typeof Video>[0]; responseActions?: unknown[] };
+      const { video, responseActions } = data as {
+        video: Parameters<typeof Video>[0];
+        responseActions?: unknown[];
+      };
       return (
-        <Video
+        <DynamicVideo
           {...video}
-          responseActions={responseActions as Parameters<typeof Video>[0]["responseActions"]}
-          onResponseAction={(actionId) => console.log("Response action:", actionId)}
+          responseActions={
+            responseActions as Parameters<typeof Video>[0]["responseActions"]
+          }
+          onResponseAction={(actionId) =>
+            console.log("Response action:", actionId)
+          }
         />
       );
     },
@@ -272,13 +404,21 @@ export const previewConfigs: Record<ComponentId, PreviewConfig<unknown, string>>
       preamble: "Here it is:",
     },
     renderComponent: ({ data }) => {
-      const { audio, variant, responseActions } = data as { audio: Parameters<typeof Audio>[0]; variant?: "full" | "compact"; responseActions?: unknown[] };
+      const { audio, variant, responseActions } = data as {
+        audio: Parameters<typeof Audio>[0];
+        variant?: "full" | "compact";
+        responseActions?: unknown[];
+      };
       return (
-        <Audio
+        <DynamicAudio
           {...audio}
           variant={variant}
-          responseActions={responseActions as Parameters<typeof Audio>[0]["responseActions"]}
-          onResponseAction={(actionId) => console.log("Response action:", actionId)}
+          responseActions={
+            responseActions as Parameters<typeof Audio>[0]["responseActions"]
+          }
+          onResponseAction={(actionId) =>
+            console.log("Response action:", actionId)
+          }
         />
       );
     },
@@ -292,12 +432,21 @@ export const previewConfigs: Record<ComponentId, PreviewConfig<unknown, string>>
       preamble: "Was it this one?",
     },
     renderComponent: ({ data }) => {
-      const { linkPreview, responseActions } = data as { linkPreview: Parameters<typeof LinkPreview>[0]; responseActions?: unknown[] };
+      const { linkPreview, responseActions } = data as {
+        linkPreview: Parameters<typeof LinkPreview>[0];
+        responseActions?: unknown[];
+      };
       return (
-        <LinkPreview
+        <DynamicLinkPreview
           {...linkPreview}
-          responseActions={responseActions as Parameters<typeof LinkPreview>[0]["responseActions"]}
-          onResponseAction={(actionId) => console.log("Response action:", actionId)}
+          responseActions={
+            responseActions as Parameters<
+              typeof LinkPreview
+            >[0]["responseActions"]
+          }
+          onResponseAction={(actionId) =>
+            console.log("Response action:", actionId)
+          }
         />
       );
     },
@@ -313,7 +462,7 @@ export const previewConfigs: Record<ComponentId, PreviewConfig<unknown, string>>
     renderComponent: ({ data, state, setState }) => {
       const listData = data as Parameters<typeof OptionList>[0];
       return (
-        <OptionList
+        <DynamicOptionList
           {...listData}
           id="option-list-preview"
           value={state.selection}
@@ -337,15 +486,20 @@ export const previewConfigs: Record<ComponentId, PreviewConfig<unknown, string>>
     renderComponent: ({ data }) => {
       const orderData = data as Parameters<typeof OrderSummary>[0];
       return (
-        <OrderSummary
+        <DynamicOrderSummary
           {...orderData}
-          onResponseAction={(actionId) => console.log("Response action:", actionId)}
+          onResponseAction={(actionId) =>
+            console.log("Response action:", actionId)
+          }
         />
       );
     },
   },
   "parameter-slider": {
-    presets: parameterSliderPresets as Record<string, PresetWithCodeGen<unknown>>,
+    presets: parameterSliderPresets as Record<
+      string,
+      PresetWithCodeGen<unknown>
+    >,
     defaultPreset: "audio-eq" satisfies ParameterSliderPresetName,
     wrapper: MaxWidthSmStartWrapper,
     chatContext: {
@@ -361,16 +515,24 @@ export const previewConfigs: Record<ComponentId, PreviewConfig<unknown, string>>
         ? sliderData.sliders.map((slider, i) => ({
             ...slider,
             trackClassName: "bg-zinc-900/80 dark:bg-zinc-950/90",
-            fillClassName: ["bg-cyan-500/40", "bg-fuchsia-500/40", "bg-amber-500/40"][i],
-            handleClassName: ["bg-cyan-400", "bg-fuchsia-400", "bg-amber-400"][i],
+            fillClassName: [
+              "bg-cyan-500/40",
+              "bg-fuchsia-500/40",
+              "bg-amber-500/40",
+            ][i],
+            handleClassName: ["bg-cyan-400", "bg-fuchsia-400", "bg-amber-400"][
+              i
+            ],
           }))
         : sliderData.sliders;
 
       return (
-        <ParameterSlider
+        <DynamicParameterSlider
           {...sliderData}
           sliders={themedSliders}
-          onResponseAction={(actionId, values) => console.log("Action:", actionId, "Values:", values)}
+          onResponseAction={(actionId, values) =>
+            console.log("Action:", actionId, "Values:", values)
+          }
         />
       );
     },
@@ -382,10 +544,15 @@ export const previewConfigs: Record<ComponentId, PreviewConfig<unknown, string>>
       userMessage: "Help me plan out this project",
       preamble: "Here's what I'm working on:",
     },
-    renderComponent: ({ data }) => <Plan {...(data as Parameters<typeof Plan>[0])} />,
+    renderComponent: ({ data }) => (
+      <DynamicPlan {...(data as Parameters<typeof Plan>[0])} />
+    ),
   },
   "preferences-panel": {
-    presets: preferencesPanelPresets as Record<string, PresetWithCodeGen<unknown>>,
+    presets: preferencesPanelPresets as Record<
+      string,
+      PresetWithCodeGen<unknown>
+    >,
     defaultPreset: "notifications" satisfies PreferencesPanelPresetName,
     wrapper: MaxWidthStartWrapper,
     chatContext: {
@@ -395,10 +562,16 @@ export const previewConfigs: Record<ComponentId, PreviewConfig<unknown, string>>
     renderComponent: ({ data, state, setState }) => {
       const panelData = data as Parameters<typeof PreferencesPanel>[0];
       return (
-        <PreferencesPanel
+        <DynamicPreferencesPanel
           {...panelData}
-          value={state.selection as Record<string, string | boolean> | undefined}
-          onChange={(value) => setState({ selection: value as unknown as string[] | string | null })}
+          value={
+            state.selection as Record<string, string | boolean> | undefined
+          }
+          onChange={(value) =>
+            setState({
+              selection: value as unknown as string[] | string | null,
+            })
+          }
           onSave={async (values) => console.log("Saved:", values)}
           onCancel={() => console.log("Cancelled")}
         />
@@ -406,7 +579,10 @@ export const previewConfigs: Record<ComponentId, PreviewConfig<unknown, string>>
     },
   },
   "progress-tracker": {
-    presets: progressTrackerPresets as Record<string, PresetWithCodeGen<unknown>>,
+    presets: progressTrackerPresets as Record<
+      string,
+      PresetWithCodeGen<unknown>
+    >,
     defaultPreset: "in-progress" satisfies ProgressTrackerPresetName,
     wrapper: MaxWidthSmStartWrapper,
     chatContext: {
@@ -416,9 +592,11 @@ export const previewConfigs: Record<ComponentId, PreviewConfig<unknown, string>>
     renderComponent: ({ data }) => {
       const trackerData = data as Parameters<typeof ProgressTracker>[0];
       return (
-        <ProgressTracker
+        <DynamicProgressTracker
           {...trackerData}
-          onResponseAction={(actionId) => console.log("Response action:", actionId)}
+          onResponseAction={(actionId) =>
+            console.log("Response action:", actionId)
+          }
         />
       );
     },
@@ -432,7 +610,7 @@ export const previewConfigs: Record<ComponentId, PreviewConfig<unknown, string>>
     },
     renderComponent: ({ data }) => {
       const statsData = data as Parameters<typeof StatsDisplay>[0];
-      return <StatsDisplay {...statsData} />;
+      return <DynamicStatsDisplay {...statsData} />;
     },
   },
   "item-carousel": {
@@ -443,10 +621,12 @@ export const previewConfigs: Record<ComponentId, PreviewConfig<unknown, string>>
       preamble: "Here are some recommendations:",
     },
     renderComponent: ({ data }) => (
-      <ItemCarousel
+      <DynamicItemCarousel
         {...(data as Parameters<typeof ItemCarousel>[0])}
         onItemClick={(itemId) => console.log("Item clicked:", itemId)}
-        onItemAction={(itemId, actionId) => console.log("Item action:", itemId, actionId)}
+        onItemAction={(itemId, actionId) =>
+          console.log("Item action:", itemId, actionId)
+        }
       />
     ),
   },
@@ -458,10 +638,12 @@ export const previewConfigs: Record<ComponentId, PreviewConfig<unknown, string>>
       preamble: "Running tests...",
     },
     renderComponent: ({ data }) => (
-      <Terminal
+      <DynamicTerminal
         {...(data as Parameters<typeof Terminal>[0])}
         id="terminal-preview"
-        onResponseAction={(actionId) => console.log("Response action:", actionId)}
+        onResponseAction={(actionId) =>
+          console.log("Response action:", actionId)
+        }
       />
     ),
   },

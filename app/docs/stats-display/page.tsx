@@ -8,6 +8,8 @@ export const metadata: Metadata = {
   description: "Display key metrics in a grid",
 };
 
+export const revalidate = 3600;
+
 export default function StatsDisplayDocsPage() {
   return (
     <ComponentDocsTabs

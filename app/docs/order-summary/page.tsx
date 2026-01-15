@@ -9,6 +9,8 @@ export const metadata: Metadata = {
     "Display agent-suggested purchases with itemized pricing for user confirmation",
 };
 
+export const revalidate = 3600;
+
 export default function OrderSummaryDocsPage() {
   return (
     <ComponentDocsTabs

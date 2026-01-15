@@ -8,6 +8,8 @@ export const metadata: Metadata = {
   description: "Display step-by-step task workflows",
 };
 
+export const revalidate = 3600;
+
 export default function PlanDocsPage() {
   return (
     <ComponentDocsTabs

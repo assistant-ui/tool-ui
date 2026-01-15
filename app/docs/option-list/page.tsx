@@ -8,6 +8,8 @@ export const metadata: Metadata = {
   description: "Let users select from multiple choices",
 };
 
+export const revalidate = 3600;
+
 export default function OptionListDocsPage() {
   return (
     <ComponentDocsTabs

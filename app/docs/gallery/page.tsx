@@ -1,25 +1,57 @@
 import type { Metadata } from "next";
+import dynamic from "next/dynamic";
 
 import { DocsBorderedShell } from "@/app/docs/_components/docs-bordered-shell";
-import { ApprovalCard } from "@/components/tool-ui/approval-card";
-import { CitationList } from "@/components/tool-ui/citation";
 import { DataTable } from "@/components/tool-ui/data-table";
 import { Image } from "@/components/tool-ui/image";
-import { ImageGallery } from "@/components/tool-ui/image-gallery";
-import { Video } from "@/components/tool-ui/video";
-import { Audio } from "@/components/tool-ui/audio";
-import { LinkPreview } from "@/components/tool-ui/link-preview";
-import { LinkedInPost } from "@/components/tool-ui/linkedin-post";
-import { OptionList } from "@/components/tool-ui/option-list";
-import { OrderSummary } from "@/components/tool-ui/order-summary";
-import { Plan } from "@/components/tool-ui/plan";
-import { Terminal } from "@/components/tool-ui/terminal";
-import { CodeBlock } from "@/components/tool-ui/code-block";
-import { Chart } from "@/components/tool-ui/chart";
 import { ItemCarousel } from "@/components/tool-ui/item-carousel";
 import { StatsDisplay } from "@/components/tool-ui/stats-display";
-import { PreferencesPanel } from "@/components/tool-ui/preferences-panel";
-import { ProgressTracker } from "@/components/tool-ui/progress-tracker";
+
+const ApprovalCard = dynamic(() =>
+  import("@/components/tool-ui/approval-card").then((m) => m.ApprovalCard)
+);
+const CitationList = dynamic(() =>
+  import("@/components/tool-ui/citation").then((m) => m.CitationList)
+);
+const ImageGallery = dynamic(() =>
+  import("@/components/tool-ui/image-gallery").then((m) => m.ImageGallery)
+);
+const Video = dynamic(() =>
+  import("@/components/tool-ui/video").then((m) => m.Video)
+);
+const Audio = dynamic(() =>
+  import("@/components/tool-ui/audio").then((m) => m.Audio)
+);
+const LinkPreview = dynamic(() =>
+  import("@/components/tool-ui/link-preview").then((m) => m.LinkPreview)
+);
+const LinkedInPost = dynamic(() =>
+  import("@/components/tool-ui/linkedin-post").then((m) => m.LinkedInPost)
+);
+const OptionList = dynamic(() =>
+  import("@/components/tool-ui/option-list").then((m) => m.OptionList)
+);
+const OrderSummary = dynamic(() =>
+  import("@/components/tool-ui/order-summary").then((m) => m.OrderSummary)
+);
+const Plan = dynamic(() =>
+  import("@/components/tool-ui/plan").then((m) => m.Plan)
+);
+const Terminal = dynamic(() =>
+  import("@/components/tool-ui/terminal").then((m) => m.Terminal)
+);
+const CodeBlock = dynamic(() =>
+  import("@/components/tool-ui/code-block").then((m) => m.CodeBlock)
+);
+const Chart = dynamic(() =>
+  import("@/components/tool-ui/chart").then((m) => m.Chart)
+);
+const PreferencesPanel = dynamic(() =>
+  import("@/components/tool-ui/preferences-panel").then((m) => m.PreferencesPanel)
+);
+const ProgressTracker = dynamic(() =>
+  import("@/components/tool-ui/progress-tracker").then((m) => m.ProgressTracker)
+);
 import { approvalCardPresets } from "@/lib/presets/approval-card";
 import { citationPresets } from "@/lib/presets/citation";
 import { dataTablePresets } from "@/lib/presets/data-table";
@@ -44,6 +76,8 @@ export const metadata: Metadata = {
   title: "Gallery",
   description: "Browse all Tool UI components in a visual gallery",
 };
+
+export const revalidate = 3600;
 
 export default function ComponentsGalleryPage() {
   return (

@@ -1,5 +1,6 @@
 "use client";
 
+import { useMemo, useCallback, memo } from "react";
 import {
   BarChart,
   LineChart,
@@ -34,7 +35,7 @@ const DEFAULT_COLORS = [
   "var(--chart-5)",
 ];
 
-export function Chart({
+export const Chart = memo(function Chart({
   id,
   type,
   title,
@@ -49,35 +50,48 @@ export function Chart({
   onDataPointClick,
 }: ChartProps) {
   const palette = colors?.length ? colors : DEFAULT_COLORS;
-  const seriesColors = series.map(
-    (seriesItem, index) => seriesItem.color ?? palette[index % palette.length],
+
+  const seriesColors = useMemo(
+    () =>
+      series.map(
+        (seriesItem, index) =>
+          seriesItem.color ?? palette[index % palette.length]
+      ),
+    [series, palette]
   );
 
-  const chartConfig: ChartConfig = Object.fromEntries(
-    series.map((seriesItem, index) => [
-      seriesItem.key,
-      {
-        label: seriesItem.label,
-        color: seriesColors[index],
-      },
-    ]),
+  const chartConfig: ChartConfig = useMemo(
+    () =>
+      Object.fromEntries(
+        series.map((seriesItem, index) => [
+          seriesItem.key,
+          {
+            label: seriesItem.label,
+            color: seriesColors[index],
+          },
+        ])
+      ),
+    [series, seriesColors]
   );
 
-  const handleDataPointClick = (
-    seriesKey: string,
-    seriesLabel: string,
-    payload: Record<string, unknown>,
-    index: number,
-  ) => {
-    onDataPointClick?.({
-      seriesKey,
-      seriesLabel,
-      xValue: payload[xKey],
-      yValue: payload[seriesKey],
-      index,
-      payload,
-    });
-  };
+  const handleDataPointClick = useCallback(
+    (
+      seriesKey: string,
+      seriesLabel: string,
+      payload: Record<string, unknown>,
+      index: number
+    ) => {
+      onDataPointClick?.({
+        seriesKey,
+        seriesLabel,
+        xValue: payload[xKey],
+        yValue: payload[seriesKey],
+        index,
+        payload,
+      });
+    },
+    [onDataPointClick, xKey]
+  );
 
   const ChartComponent = type === "bar" ? BarChart : LineChart;
 
@@ -163,4 +177,4 @@ export function Chart({
       <CardContent>{chartContent}</CardContent>
     </Card>
   );
-}
+});

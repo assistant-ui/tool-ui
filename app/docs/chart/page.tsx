@@ -8,6 +8,8 @@ export const metadata: Metadata = {
   description: "Visualize data with interactive charts",
 };
 
+export const revalidate = 3600;
+
 export default function ChartDocsPage() {
   return (
     <ComponentDocsTabs

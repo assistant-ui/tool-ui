@@ -8,6 +8,8 @@ export const metadata: Metadata = {
   description: "Audio playback with artwork and metadata",
 };
 
+export const revalidate = 3600;
+
 export default function AudioDocsPage() {
   return (
     <ComponentDocsTabs

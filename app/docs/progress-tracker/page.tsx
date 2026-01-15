@@ -8,6 +8,8 @@ export const metadata: Metadata = {
   description: "Real-time status feedback for multi-step operations",
 };
 
+export const revalidate = 3600;
+
 export default function ProgressTrackerDocsPage() {
   return (
     <ComponentDocsTabs

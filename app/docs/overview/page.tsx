@@ -7,6 +7,8 @@ export const metadata: Metadata = {
   description: "Introduction to Tool UI component library",
 };
 
+export const revalidate = 3600;
+
 export default function OverviewPage() {
   return (
     <DocsArticle>

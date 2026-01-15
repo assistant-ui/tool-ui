@@ -7,6 +7,8 @@ export const metadata: Metadata = {
   description: "Design principles and patterns for Tool UI components",
 };
 
+export const revalidate = 3600;
+
 export default function DesignGuidelinesPage() {
   return (
     <DocsArticle>

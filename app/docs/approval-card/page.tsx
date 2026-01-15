@@ -8,6 +8,8 @@ export const metadata: Metadata = {
   description: "Binary confirmation for agent actions",
 };
 
+export const revalidate = 3600;
+
 export default function ApprovalCardDocsPage() {
   return (
     <ComponentDocsTabs

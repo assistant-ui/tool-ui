@@ -8,6 +8,8 @@ export const metadata: Metadata = {
   description: "Render social media content previews",
 };
 
+export const revalidate = 3600;
+
 export default function SocialPostDocsPage() {
   return (
     <ComponentDocsTabs docs={<Content />} examples={<SocialPostPreview />} />

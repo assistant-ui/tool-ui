@@ -53,7 +53,7 @@ function HomeIndicator() {
   );
 }
 
-export function FauxChatShellMobile({ className, disableLightOverlay }: FauxChatShellMobileProps) {
+export function FauxChatShellMobile({ className, disableLightOverlay: _disableLightOverlay }: FauxChatShellMobileProps) {
   return (
     <div
       className={cn(

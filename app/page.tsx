@@ -6,7 +6,6 @@ import { ThemeToggle } from "@/app/components/builder/theme-toggle";
 import { HomeHero } from "@/app/components/home/home-hero";
 import { FauxChatShellMobileAnimated } from "@/app/components/home/faux-chat-shell-mobile-animated";
 import { FauxChatShellAnimated } from "@/app/components/home/faux-chat-shell-animated";
-import { motion } from "motion/react";
 
 export default function HomePage() {
   return (
@@ -14,13 +13,23 @@ export default function HomePage() {
       rightContent={<ThemeToggle />}
       animateNavbar={true}
       background={
-        <motion.div
-          className="bg-background pointer-events-none fixed inset-0 opacity-60 dark:opacity-40"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.6 }}
-          aria-hidden="true"
-        />
+        <>
+          <div
+            className="bg-background pointer-events-none fixed inset-0 opacity-60 dark:opacity-40"
+            style={{ animation: "fade-in 0.6s ease-out forwards" }}
+            aria-hidden="true"
+          />
+          <style jsx>{`
+            @keyframes fade-in {
+              from {
+                opacity: 0;
+              }
+              to {
+                opacity: 1;
+              }
+            }
+          `}</style>
+        </>
       }
     >
       <ContentLayout>
@@ -32,14 +41,13 @@ export default function HomePage() {
           <div
             className="pointer-events-none absolute inset-0 z-[5] md:hidden"
             style={{
-              background: "linear-gradient(to top, var(--color-background) 0%, transparent 100%)",
+              background:
+                "linear-gradient(to top, var(--color-background) 0%, transparent 100%)",
             }}
             aria-hidden="true"
           />
 
-          <div
-            className="squircle absolute inset-0 flex h-full min-h-0 w-full min-w-0 -translate-y-12 translate-x-[45%] scale-[0.7] items-center justify-end md:translate-x-0 md:translate-y-0 md:scale-100 lg:relative lg:justify-center lg:flex-1"
-          >
+          <div className="squircle absolute inset-0 flex h-full min-h-0 w-full min-w-0 translate-x-[45%] -translate-y-12 scale-[0.7] items-center justify-end md:translate-x-0 md:translate-y-0 md:scale-100 lg:relative lg:flex-1 lg:justify-center">
             <div className="block h-full w-full max-w-[430px] lg:hidden">
               <FauxChatShellMobileAnimated />
             </div>

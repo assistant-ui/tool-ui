@@ -12,18 +12,49 @@ import { TypeTable } from "fumadocs-ui/components/type-table";
 import { DynamicCodeBlock } from "fumadocs-ui/components/dynamic-codeblock";
 import { Files, File, Folder } from "fumadocs-ui/components/files";
 import * as React from "react";
+import dynamic from "next/dynamic";
 import { AutoLinkChildren, withAutoLink } from "@/lib/docs/auto-link";
-import { Mermaid } from "@/app/components/mdx/mermaid";
-import {
-  ApprovalCardPresetExample,
-  ChartPresetExample,
-  OptionListPresetExample,
-  CodeBlockPresetExample,
-  TerminalPresetExample,
-  PlanPresetExample,
-  ItemCarouselPresetExample,
-} from "@/app/docs/_components/preset-example";
-import { FeatureGrid, Feature } from "@/app/components/mdx/features";
+
+const Mermaid = dynamic(() =>
+  import("@/app/components/mdx/mermaid").then((m) => m.Mermaid)
+);
+const ApprovalCardPresetExample = dynamic(() =>
+  import("@/app/docs/_components/preset-example").then(
+    (m) => m.ApprovalCardPresetExample
+  )
+);
+const ChartPresetExample = dynamic(() =>
+  import("@/app/docs/_components/preset-example").then((m) => m.ChartPresetExample)
+);
+const OptionListPresetExample = dynamic(() =>
+  import("@/app/docs/_components/preset-example").then(
+    (m) => m.OptionListPresetExample
+  )
+);
+const CodeBlockPresetExample = dynamic(() =>
+  import("@/app/docs/_components/preset-example").then(
+    (m) => m.CodeBlockPresetExample
+  )
+);
+const TerminalPresetExample = dynamic(() =>
+  import("@/app/docs/_components/preset-example").then(
+    (m) => m.TerminalPresetExample
+  )
+);
+const PlanPresetExample = dynamic(() =>
+  import("@/app/docs/_components/preset-example").then((m) => m.PlanPresetExample)
+);
+const ItemCarouselPresetExample = dynamic(() =>
+  import("@/app/docs/_components/preset-example").then(
+    (m) => m.ItemCarouselPresetExample
+  )
+);
+const FeatureGrid = dynamic(() =>
+  import("@/app/components/mdx/features").then((m) => m.FeatureGrid)
+);
+const Feature = dynamic(() =>
+  import("@/app/components/mdx/features").then((m) => m.Feature)
+);
 
 export function useMDXComponents(components: MDXComponents): MDXComponents {
   // Wrap selected default components to auto-link Tool UI mentions

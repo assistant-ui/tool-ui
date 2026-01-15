@@ -8,6 +8,8 @@ export const metadata: Metadata = {
   description: "Numeric parameter adjustment controls",
 };
 
+export const revalidate = 3600;
+
 export default function ParameterSliderDocsPage() {
   return (
     <ComponentDocsTabs

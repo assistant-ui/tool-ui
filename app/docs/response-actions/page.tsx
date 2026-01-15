@@ -7,6 +7,8 @@ export const metadata: Metadata = {
   description: "Add contextual actions to AI responses",
 };
 
+export const revalidate = 3600;
+
 export default function ContextualActionsPage() {
   return (
     <DocsArticle>

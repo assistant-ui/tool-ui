@@ -8,6 +8,8 @@ export const metadata: Metadata = {
   description: "Display items in a horizontal scrollable carousel",
 };
 
+export const revalidate = 3600;
+
 export default function ItemCarouselDocsPage() {
   return (
     <ComponentDocsTabs

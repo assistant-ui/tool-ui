@@ -7,6 +7,8 @@ export const metadata: Metadata = {
   description: "Advanced configuration and usage patterns",
 };
 
+export const revalidate = 3600;
+
 export default function AdvancedDocsPage() {
   return (
     <DocsArticle>
