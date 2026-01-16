@@ -273,7 +273,8 @@ export function ProgressTracker({
         <ul role="list" className="flex flex-col gap-3">
           {steps.map((step, index) => {
             const isCurrent = step.id === currentStepId;
-            const showDescription = !!step.description;
+            const isActive = step.status === "in-progress";
+            const hasDescription = !!step.description;
 
             return (
               <li
@@ -306,22 +307,31 @@ export function ProgressTracker({
                   <div className="relative z-10">
                     <StepIndicator status={step.status} />
                   </div>
-                  <div className="flex flex-1 flex-col gap-0.5">
-                  <span
-                    className={cn(
-                      "text-sm font-medium leading-6",
-                      step.status === "pending" && "text-muted-foreground",
-                      step.status === "in-progress" && "motion-safe:shimmer shimmer-invert text-foreground",
-                    )}
-                  >
-                    {step.label}
-                  </span>
-                  {showDescription && (
-                    <span className="text-muted-foreground text-sm">
-                      {step.description}
+                  <div className="flex flex-1 flex-col">
+                    <span
+                      className={cn(
+                        "text-sm font-medium leading-6",
+                        step.status === "pending" && "text-muted-foreground",
+                        step.status === "in-progress" && "motion-safe:shimmer shimmer-invert text-foreground",
+                      )}
+                    >
+                      {step.label}
                     </span>
-                  )}
-                </div>
+                    {hasDescription && (
+                      <div
+                        className={cn(
+                          "grid motion-safe:transition-[grid-template-rows,opacity] motion-safe:duration-300 motion-safe:ease-out",
+                          isActive ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0",
+                        )}
+                      >
+                        <div className="overflow-hidden">
+                          <span className="text-muted-foreground text-sm block pt-0.5">
+                            {step.description}
+                          </span>
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </li>
             );
