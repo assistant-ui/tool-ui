@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 
 import { FaGithub } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
+import { ArrowUpRight } from "lucide-react";
 import { LogoMark } from "@/components/ui/logo";
 import { ActiveNavLink } from "./header-active-link.client";
 
@@ -38,9 +39,10 @@ export function ResponsiveHeader({ rightContent }: ResponsiveHeaderProps) {
             href="https://www.assistant-ui.com"
             target="_blank"
             rel="noopener noreferrer"
-            className="hover:text-foreground hover:bg-muted/50 hidden rounded-lg px-4 py-2 text-sm font-medium transition-colors lg:block"
+            className="hover:text-foreground hover:bg-muted/50 hidden items-center gap-0.5 rounded-lg px-4 py-2 text-sm font-medium transition-colors lg:flex"
           >
-            assistant-ui ↗
+            assistant-ui
+            <ArrowUpRight className="size-4" />
           </Link>
         </nav>
         <div className="flex items-center gap-4">
