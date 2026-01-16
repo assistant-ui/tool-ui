@@ -284,7 +284,7 @@ export function ProgressTracker({
                 {index < steps.length - 1 && (
                   <div
                     className={cn(
-                      "absolute left-5 top-6 w-px bg-border z-50",
+                      "absolute left-5 top-6 w-px bg-border",
                       "motion-safe:transition-all motion-safe:duration-300",
                     )}
                     style={{
