@@ -43,8 +43,8 @@ export function MobileNavSheet() {
           aria-label="Open navigation"
         >
           <svg className="size-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-            <line x1="4" y1="9" x2="20" y2="9" />
-            <line x1="4" y1="15" x2="20" y2="15" />
+            <line x1="4" y1="8" x2="20" y2="8" />
+            <line x1="4" y1="16" x2="20" y2="16" />
           </svg>
         </Button>
       </Sheet.Trigger>
