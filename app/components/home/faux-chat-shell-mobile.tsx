@@ -12,7 +12,7 @@ type FauxChatShellMobileProps = {
 function DynamicIsland() {
   return (
     <div className="absolute left-1/2 top-3 z-30 -translate-x-1/2" aria-hidden="true">
-      <div className="border-gradient-glow-notch h-9 w-32 rounded-full" />
+      <div className="border-gradient-glow-notch squircle h-9 w-32 rounded-full" />
     </div>
   );
 }
