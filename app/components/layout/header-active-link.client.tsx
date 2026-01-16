@@ -17,7 +17,7 @@ export function ActiveNavLink({ href, children }: ActiveNavLinkProps) {
     <Link
       href={href}
       className={cn(
-        "bg-background active:bg-primary/10 rounded-lg px-4 py-2 text-sm transition-[colors,background] duration-75",
+        "active:bg-primary/10 rounded-lg px-4 py-2 text-sm transition-[colors,background] duration-75",
         isActive ? "bg-primary/5" : "hover:bg-primary/5",
       )}
       aria-current={isActive ? "page" : undefined}
