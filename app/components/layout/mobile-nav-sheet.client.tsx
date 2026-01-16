@@ -4,7 +4,6 @@ import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Sheet, Scroll } from "@silk-hq/components";
-import { Menu } from "lucide-react";
 import { FaGithub } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
 import { componentsRegistry } from "@/lib/docs/component-registry";
@@ -43,7 +42,10 @@ export function MobileNavSheet() {
           className="MobileNavSheet-trigger z-50 size-14 rounded-full shadow-lg md:hidden"
           aria-label="Open navigation"
         >
-          <Menu className="size-6" />
+          <svg className="size-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+            <line x1="4" y1="9" x2="20" y2="9" />
+            <line x1="4" y1="15" x2="20" y2="15" />
+          </svg>
         </Button>
       </Sheet.Trigger>
 
