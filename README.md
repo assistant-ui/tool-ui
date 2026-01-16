@@ -1,6 +1,6 @@
 # Tool UI
 
-### Beautiful UI components for AI tool calls.
+### UI components for AI interfaces.
 
 Responsive, accessible, typed, copy-pasteable. Built on Radix, shadcn/ui, and Tailwind. Open Source.
 

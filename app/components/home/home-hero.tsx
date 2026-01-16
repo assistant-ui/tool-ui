@@ -30,7 +30,7 @@ export function HomeHero() {
         <div className="flex flex-col gap-3">
           <div className="flex flex-col items-start md:flex-row md:items-end md:gap-3">
             <motion.h1
-              className="text-6xl font-bold tracking-tight"
+              className="text-6xl font-bold tracking-wide"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ ...smoothSpring, delay: 0.1 }}
@@ -57,7 +57,7 @@ export function HomeHero() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ ...smoothSpring, delay: 0.3 }}
         >
-          Beautiful UI components for AI tool calls
+          UI components for AI interfaces
         </motion.h2>
       </div>
       <motion.p

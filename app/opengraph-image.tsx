@@ -5,10 +5,10 @@ import {
 } from "@/lib/og/og-image";
 
 export const runtime = "nodejs";
-export const alt = "Tool UI - Beautiful UI components for AI tool calls";
+export const alt = "Tool UI - UI components for AI interfaces";
 export const size = ogSize;
 export const contentType = ogContentType;
 
 export default async function Image() {
-  return generateOgImage("Tool UI", "Beautiful UI components for AI tool calls");
+  return generateOgImage("Tool UI", "UI components for AI interfaces");
 }

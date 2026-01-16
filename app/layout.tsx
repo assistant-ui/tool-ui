@@ -7,7 +7,7 @@ import { MobileNavSheet } from "@/app/components/layout/mobile-nav-sheet.client"
 
 const isProduction = process.env.NODE_ENV === "production";
 const title = isProduction ? "Tool UI" : "Tool UI — Dev";
-const description = "Beautiful UI components for AI tool calls";
+const description = "UI components for AI interfaces";
 
 export const metadata = {
   title,

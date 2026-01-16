@@ -32,9 +32,9 @@
   max-width: 700px;
   max-height: 100vh;
   /* Extend height to include safe area; prefer dynamic viewport units */
-  height: calc(80vh + env(safe-area-inset-bottom, 0px)); /* fallback */
-  height: calc(80svh + env(safe-area-inset-bottom, 0px)); /* small viewport */
-  height: calc(80dvh + env(safe-area-inset-bottom, 0px)); /* dynamic viewport */
+  height: calc(92vh + env(safe-area-inset-bottom, 0px)); /* fallback */
+  height: calc(92svh + env(safe-area-inset-bottom, 0px)); /* small viewport */
+  height: calc(92dvh + env(safe-area-inset-bottom, 0px)); /* dynamic viewport */
   display: flex;
   flex-direction: column;
   position: relative;
