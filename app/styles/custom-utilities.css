@@ -313,7 +313,7 @@
 
   .border-gradient-glow-notch {
     --glow-gradient: radial-gradient(
-      ellipse 120% 180% at 20% 20%,
+      ellipse 120% 180% at 20% 80%,
       rgba(255, 255, 255, 0.25) 0%,
       rgba(255, 255, 255, 0.08) 30%,
       rgba(255, 255, 255, 0.02) 60%,
