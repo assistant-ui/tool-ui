@@ -59,14 +59,6 @@ function StatusBar() {
   );
 }
 
-function HomeIndicator() {
-  return (
-    <div className="absolute inset-x-0 bottom-2 z-20 flex justify-center" aria-hidden="true">
-      <div className="bg-foreground/20 h-1 w-32 rounded-full" />
-    </div>
-  );
-}
-
 export function FauxChatShellMobile({ className, disableLightOverlay: _disableLightOverlay }: FauxChatShellMobileProps) {
   return (
     <div
@@ -105,7 +97,6 @@ export function FauxChatShellMobile({ className, disableLightOverlay: _disableLi
         aria-hidden="true"
       />
 
-      <HomeIndicator />
     </div>
   );
 }
