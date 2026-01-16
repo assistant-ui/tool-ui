@@ -34,7 +34,7 @@ export default function HomePage() {
     >
       <ContentLayout>
         <main className="relative flex h-full max-h-[800px] min-h-0 w-full max-w-[1440px] flex-col justify-end gap-10 overflow-x-clip md:p-6 lg:flex-row">
-          <div className="relative z-10 flex w-full max-w-[500px] flex-col justify-end pb-16 pl-6 md:pb-[10vh] lg:max-w-[40w] lg:min-w-[400x] lg:shrink lg:grow-0 lg:basis-[40w]">
+          <div className="relative z-10 flex w-full max-w-[500px] flex-col justify-end pb-[calc(5.5rem+env(safe-area-inset-bottom,0px))] pl-6 md:pb-[10vh] lg:max-w-[40w] lg:min-w-[400x] lg:shrink lg:grow-0 lg:basis-[40w]">
             <HomeHero />
           </div>
 
