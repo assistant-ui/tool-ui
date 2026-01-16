@@ -75,7 +75,7 @@ export function HomeHero() {
         animate={{ opacity: 1, y: 0, scale: 1 }}
         transition={{ ...smoothSpring, delay: 0.5 }}
       >
-        <Button asChild className="group font-light tracking-wide" size="homeCTA">
+        <Button asChild className="group font-medium tracking-wide" size="homeCTA">
           <Link href="/docs/gallery">
             See the Components
             <ArrowRight className="size-5 shrink-0 transition-transform group-hover:translate-x-1" />
