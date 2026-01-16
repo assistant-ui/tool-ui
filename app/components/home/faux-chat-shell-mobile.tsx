@@ -30,9 +30,23 @@ function StatusBar() {
     };
 
     updateTime();
-    const interval = setInterval(updateTime, 60000);
 
-    return () => clearInterval(interval);
+    const scheduleNextUpdate = () => {
+      const now = new Date();
+      const msUntilNextMinute = (60 - now.getSeconds()) * 1000 - now.getMilliseconds();
+      return setTimeout(() => {
+        updateTime();
+        intervalRef = setInterval(updateTime, 60000);
+      }, msUntilNextMinute);
+    };
+
+    let intervalRef: ReturnType<typeof setInterval> | null = null;
+    const timeoutRef = scheduleNextUpdate();
+
+    return () => {
+      clearTimeout(timeoutRef);
+      if (intervalRef) clearInterval(intervalRef);
+    };
   }, []);
 
   return (
