@@ -320,7 +320,7 @@
       rgba(255, 255, 255, 0) 100%
     );
     background:
-      linear-gradient(black, black) padding-box,
+      linear-gradient(rgba(0, 0, 0, 0.85), rgba(0, 0, 0, 0.85)) padding-box,
       var(--glow-gradient) border-box;
     border: 1px solid transparent;
   }
