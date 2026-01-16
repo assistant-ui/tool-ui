@@ -47,7 +47,7 @@ export default function HomePage() {
             aria-hidden="true"
           />
 
-          <div className="absolute inset-0 flex h-full min-h-0 w-full min-w-0 translate-x-[45%] -translate-y-12 scale-[0.7] items-center justify-end sm:translate-x-[20%] md:translate-x-0 md:translate-y-0 md:scale-100 lg:relative lg:flex-1 lg:justify-center">
+          <div className="absolute inset-0 flex h-full min-h-0 w-full min-w-0 translate-x-[45%] -translate-y-12 scale-[0.7] items-center justify-end sm:translate-x-[20%] sm:scale-[0.85] md:translate-x-0 md:translate-y-0 md:scale-100 lg:relative lg:flex-1 lg:justify-center">
             <div className="block h-full w-full max-w-[430px] lg:hidden">
               <FauxChatShellMobileAnimated />
             </div>
