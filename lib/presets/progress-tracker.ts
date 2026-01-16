@@ -214,13 +214,11 @@ export const progressTrackerPresets = {
         {
           id: "connect",
           label: "Connect to Database",
-          description: "postgres://prod-db-1.example.com",
           status: "completed",
         },
         {
           id: "backup",
           label: "Create Backup",
-          description: "Snapshot before migration",
           status: "completed",
         },
         {
