@@ -199,7 +199,7 @@ export function OrderSummary({
       data-tool-ui-id={id}
       aria-labelledby={titleId}
       aria-busy={isLoading}
-      className={cn("max-w-md min-w-80", className)}
+      className={cn("flex max-w-md min-w-80 flex-col gap-3", className)}
     >
       <div
         className={cn(
@@ -237,14 +237,14 @@ export function OrderSummary({
           <Separator />
 
           <PricingBreakdown pricing={pricing} />
-
-          {!isReceipt && (
-            <div className="@container/actions">
-              <ActionButtons actions={actions} onAction={handleAction} />
-            </div>
-          )}
         </div>
       </div>
+
+      {!isReceipt && (
+        <div className="@container/actions">
+          <ActionButtons actions={actions} onAction={handleAction} />
+        </div>
+      )}
     </article>
   );
 }

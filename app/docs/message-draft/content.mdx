@@ -1,0 +1,379 @@
+import { DocsHeader } from "../_components/docs-header";
+import { MessageDraft } from "@/components/tool-ui/message-draft";
+
+<DocsHeader
+  title="Message Draft"
+  description="Review and approve messages before an AI agent sends them."
+  mdxPath="app/docs/message-draft/content.mdx"
+/>
+
+<Tabs items={["Preview", "Code"]}>
+  <Tab>
+    <div className="not-prose mx-auto max-w-sm">
+      <MessageDraft
+        id="message-draft-example"
+        channel="email"
+        subject="Q4 Planning Follow-up"
+        to={["sarah.chen@company.com"]}
+        body={`Hi Sarah,
+
+Thanks for joining the planning meeting today. I've attached the updated timeline.
+
+Best,
+Alex`}
+      />
+    </div>
+  </Tab>
+  <Tab>
+    ```tsx
+    import { MessageDraft } from "@/components/tool-ui/message-draft";
+
+    export function Example() {
+      return (
+        <MessageDraft
+          id="message-draft-example"
+          channel="email"
+          subject="Q4 Planning Follow-up"
+          to={["sarah.chen@company.com"]}
+          body={`Hi Sarah,
+
+Thanks for joining the planning meeting today. I've attached the updated timeline.
+
+Best,
+Alex`}
+          onSend={() => console.log("Sent")}
+          onCancel={() => console.log("Cancelled")}
+        />
+      );
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Key Features
+
+<FeatureGrid>
+  <Feature icon="ShieldCheck" title="Human-in-the-loop">
+    Review messages before the AI sends them on your behalf
+  </Feature>
+  <Feature icon="Timer" title="Undo grace period">
+    Cancel within a configurable window after clicking Send
+  </Feature>
+  <Feature icon="Layers" title="Channel skins">
+    Email and Slack with channel-specific metadata display
+  </Feature>
+  <Feature icon="CheckCircle2" title="Receipt states">
+    Compact confirmation after send or cancel
+  </Feature>
+</FeatureGrid>
+
+## Channel Skins
+
+The component supports multiple channel types with appropriate metadata display.
+
+### Email
+
+Shows subject line, To/CC/BCC recipients, and message body.
+
+<Tabs items={["Preview", "Code"]}>
+  <Tab>
+    <div className="not-prose mx-auto max-w-sm">
+      <MessageDraft
+        id="email-example"
+        channel="email"
+        subject="Re: Q4 Budget Review"
+        to={["finance@company.com"]}
+        cc={["manager@company.com"]}
+        body={`Hi team,
+
+I've compiled the department requests. Key changes:
+- Engineering: +15% for infrastructure
+- Marketing: Flat (reallocating to digital)
+
+Please review by Friday.
+
+Thanks,
+Dana`}
+      />
+    </div>
+  </Tab>
+  <Tab>
+    ```tsx
+    <MessageDraft
+      id="email-example"
+      channel="email"
+      subject="Re: Q4 Budget Review"
+      to={["finance@company.com"]}
+      cc={["manager@company.com"]}
+      body="..."
+      onSend={() => sendEmail()}
+      onCancel={() => console.log("Cancelled")}
+    />
+    ```
+  </Tab>
+</Tabs>
+
+### Slack
+
+Shows channel or DM target with the Slack icon.
+
+<Tabs items={["Channel", "Direct Message"]}>
+  <Tab>
+    <div className="not-prose mx-auto max-w-sm">
+      <MessageDraft
+        id="slack-channel-example"
+        channel="slack"
+        target={{ type: "channel", name: "eng-releases" }}
+        body={`Shipped v2.4.1 to production:
+- Fixed auth token refresh bug
+- Improved search latency by 40%
+
+Monitoring dashboards look good.`}
+      />
+    </div>
+  </Tab>
+  <Tab>
+    <div className="not-prose mx-auto max-w-sm">
+      <MessageDraft
+        id="slack-dm-example"
+        channel="slack"
+        target={{ type: "dm", name: "Alex Rivera" }}
+        body="Hey Alex, just wanted to check in on the API integration. Are we still on track for the Thursday demo?"
+      />
+    </div>
+  </Tab>
+</Tabs>
+
+## Send Flow
+
+After clicking Send, there's a grace period where the user can undo:
+
+1. **Review** - User reviews the draft with Send/Cancel buttons
+2. **Sending** - Countdown with Undo button (default 5 seconds)
+3. **Sent** - Compact receipt confirming the message was sent
+
+The grace period is configurable via `undoGracePeriod` (in milliseconds).
+
+## Receipt States
+
+When `outcome` is set, the component renders a compact receipt showing the result. This is useful for displaying the outcome in conversation history.
+
+<Tabs items={["Sent", "Cancelled"]}>
+  <Tab>
+    <div className="not-prose mx-auto max-w-sm">
+      <MessageDraft
+        id="sent-receipt"
+        channel="email"
+        subject="Interview follow-up"
+        to={["hiring@company.com"]}
+        body="Thank you for the interview..."
+        outcome="sent"
+      />
+    </div>
+  </Tab>
+  <Tab>
+    <div className="not-prose mx-auto max-w-sm">
+      <MessageDraft
+        id="cancelled-receipt"
+        channel="slack"
+        target={{ type: "channel", name: "general" }}
+        body="Cancelled message..."
+        outcome="cancelled"
+      />
+    </div>
+  </Tab>
+</Tabs>
+
+## Source and Install
+
+Copy [`components/tool-ui/message-draft`](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/message-draft) and the [`shared`](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/shared) directory into your project. The `shared` folder contains utilities used by all Tool UI components. The `tool-ui` directory should sit alongside your shadcn `ui` directory.
+
+### Prerequisites
+
+This component requires the following [shadcn/ui](https://ui.shadcn.com) components:
+
+```bash
+pnpm dlx shadcn@latest add button separator
+```
+
+### Directory Structure
+
+<Files>
+  <Folder name="components" defaultOpen>
+    <Folder name="ui">
+      <File name="button.tsx" />
+      <File name="separator.tsx" />
+      <File name="..." />
+    </Folder>
+    <Folder name="tool-ui" defaultOpen>
+      <Folder name="shared" defaultOpen>
+        <File name="action-buttons.tsx" />
+        <File name="schema.ts" />
+        <File name="parse.ts" />
+        <File name="index.ts" />
+        <File name="..." />
+      </Folder>
+      <Folder name="message-draft" defaultOpen>
+        <File name="message-draft.tsx" />
+        <File name="schema.ts" />
+        <File name="index.tsx" />
+        <File name="error-boundary.tsx" />
+        <File name="_adapter.tsx" />
+      </Folder>
+    </Folder>
+  </Folder>
+</Files>
+
+### Download
+
+- [**Shared Dependencies (GitHub)**](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/shared) ([ZIP](https://download-directory.github.io/?url=https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/shared))
+- [**Message Draft (GitHub)**](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/message-draft) ([ZIP](https://download-directory.github.io/?url=https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/message-draft))
+
+## Usage
+
+```tsx
+"use client";
+
+import { makeAssistantTool } from "@assistant-ui/react";
+import {
+  MessageDraft,
+  MessageDraftErrorBoundary,
+  parseSerializableMessageDraft,
+  SerializableMessageDraftSchema,
+  type SerializableMessageDraft,
+  type MessageDraftOutcome,
+} from "@/components/tool-ui/message-draft";
+
+export const MessageDraftTool = makeAssistantTool<
+  SerializableMessageDraft,
+  MessageDraftOutcome
+>({
+  toolName: "draftMessage",
+  description: "Draft a message for the user to review before sending.",
+  parameters: SerializableMessageDraftSchema,
+  render: ({ args, result, addResult, toolCallId }) => {
+    // Wait for channel to determine which fields are required
+    if (!(args as any)?.channel || !(args as any)?.body) return null;
+
+    const draft = parseSerializableMessageDraft({
+      ...args,
+      id: (args as any)?.id ?? `message-draft-${toolCallId}`,
+    });
+
+    return (
+      <MessageDraftErrorBoundary>
+        {result !== undefined ? (
+          <MessageDraft {...draft} outcome={result} />
+        ) : (
+          <MessageDraft
+            {...draft}
+            onSend={async () => {
+              // Perform actual send logic here
+              await sendMessage(draft);
+              addResult("sent");
+            }}
+            onCancel={() => addResult("cancelled")}
+          />
+        )}
+      </MessageDraftErrorBoundary>
+    );
+  },
+});
+```
+
+Mount `<MessageDraftTool />` under `<AssistantRuntimeProvider>` to register the tool and its UI.
+
+## Props
+
+<TypeTable
+  type={{
+    id: {
+      description: "Unique identifier for the message draft",
+      type: "string",
+      required: true,
+    },
+    channel: {
+      description: "Message channel type",
+      type: "'email' | 'slack'",
+      required: true,
+    },
+    body: {
+      description: "Message content",
+      type: "string",
+      required: true,
+    },
+    outcome: {
+      description: "Final state (renders receipt when set)",
+      type: "'sent' | 'cancelled'",
+    },
+    undoGracePeriod: {
+      description: "Milliseconds before send is finalized",
+      type: "number",
+      default: "5000",
+    },
+    onSend: {
+      description: "Called when grace period completes",
+      type: "() => void | Promise<void>",
+    },
+    onUndo: {
+      description: "Called when user clicks Undo during grace period",
+      type: "() => void",
+    },
+    onCancel: {
+      description: "Called when user cancels the draft",
+      type: "() => void",
+    },
+    className: {
+      description: "Additional CSS classes",
+      type: "string",
+    },
+  }}
+/>
+
+### Email-specific Props
+
+<TypeTable
+  type={{
+    subject: {
+      description: "Email subject line",
+      type: "string",
+      required: true,
+    },
+    to: {
+      description: "Primary recipients",
+      type: "string[]",
+      required: true,
+    },
+    cc: {
+      description: "Carbon copy recipients",
+      type: "string[]",
+    },
+    bcc: {
+      description: "Blind carbon copy recipients",
+      type: "string[]",
+    },
+  }}
+/>
+
+### Slack-specific Props
+
+<TypeTable
+  type={{
+    target: {
+      description: "Slack destination",
+      type: "{ type: 'channel' | 'dm', name: string }",
+      required: true,
+    },
+  }}
+/>
+
+## Accessibility
+
+- Uses `article` with `aria-labelledby` for the draft content
+- **Keyboard navigation:**
+  - `Tab` to move between buttons
+  - `Enter` or `Space` to activate focused button
+  - `Escape` triggers cancel while in review state
+- Sending state announces countdown via `aria-live="polite"`
+- Receipt state uses `role="status"` for screen reader announcements
+- Focus moves to Undo button when entering sending state

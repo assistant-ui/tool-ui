@@ -15,6 +15,7 @@ import { imageGalleryPresets } from "@/lib/presets/image-gallery";
 import { videoPresets } from "@/lib/presets/video";
 import { audioPresets } from "@/lib/presets/audio";
 import { linkPreviewPresets } from "@/lib/presets/link-preview";
+import { messageDraftPresets } from "@/lib/presets/message-draft";
 import { itemCarouselPresets } from "@/lib/presets/item-carousel";
 import { optionListPresets } from "@/lib/presets/option-list";
 import { orderSummaryPresets } from "@/lib/presets/order-summary";
@@ -40,6 +41,7 @@ const PRESET_REGISTRY: Record<string, PresetMap> = {
   video: videoPresets,
   audio: audioPresets,
   "link-preview": linkPreviewPresets,
+  "message-draft": messageDraftPresets,
   "item-carousel": itemCarouselPresets,
   "option-list": optionListPresets,
   "order-summary": orderSummaryPresets,

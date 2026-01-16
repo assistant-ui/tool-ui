@@ -40,7 +40,7 @@ function ApprovalCardReceipt({
   return (
     <div
       className={cn(
-        "flex w-full min-w-64 max-w-sm flex-col",
+        "flex w-full min-w-64 max-w-md flex-col",
         "text-foreground",
         className,
       )}
@@ -82,7 +82,7 @@ function ApprovalCardSkeleton({ className }: { className?: string }) {
   return (
     <div
       className={cn(
-        "flex w-full min-w-64 max-w-sm flex-col",
+        "flex w-full min-w-64 max-w-md flex-col",
         className,
       )}
       data-slot="approval-card-progress"
@@ -184,7 +184,7 @@ export function ApprovalCard({
   return (
     <article
       className={cn(
-        "@container/actions flex w-full min-w-64 max-w-sm flex-col",
+        "@container/actions flex w-full min-w-64 max-w-md flex-col",
         "text-foreground",
         className,
       )}

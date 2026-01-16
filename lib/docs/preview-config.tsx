@@ -14,6 +14,7 @@ import type { ImageGallery } from "@/components/tool-ui/image-gallery";
 import type { Video } from "@/components/tool-ui/video";
 import type { Audio } from "@/components/tool-ui/audio";
 import type { LinkPreview } from "@/components/tool-ui/link-preview";
+import type { MessageDraft } from "@/components/tool-ui/message-draft";
 import type { ItemCarousel } from "@/components/tool-ui/item-carousel";
 import type { OptionList } from "@/components/tool-ui/option-list";
 import type { OrderSummary } from "@/components/tool-ui/order-summary";
@@ -53,6 +54,10 @@ import {
   linkPreviewPresets,
   type LinkPreviewPresetName,
 } from "@/lib/presets/link-preview";
+import {
+  messageDraftPresets,
+  type MessageDraftPresetName,
+} from "@/lib/presets/message-draft";
 import {
   itemCarouselPresets,
   type ItemCarouselPresetName,
@@ -120,6 +125,9 @@ const DynamicAudio = dynamic(() =>
 const DynamicLinkPreview = dynamic(() =>
   import("@/components/tool-ui/link-preview").then((m) => m.LinkPreview)
 );
+const DynamicMessageDraft = dynamic(() =>
+  import("@/components/tool-ui/message-draft").then((m) => m.MessageDraft)
+);
 const DynamicItemCarousel = dynamic(() =>
   import("@/components/tool-ui/item-carousel").then((m) => m.ItemCarousel)
 );
@@ -159,6 +167,7 @@ export type ComponentId =
   | "video"
   | "audio"
   | "link-preview"
+  | "message-draft"
   | "item-carousel"
   | "option-list"
   | "order-summary"
@@ -447,6 +456,26 @@ export const previewConfigs: Record<
           onResponseAction={(actionId) =>
             console.log("Response action:", actionId)
           }
+        />
+      );
+    },
+  },
+  "message-draft": {
+    presets: messageDraftPresets as Record<string, PresetWithCodeGen<unknown>>,
+    defaultPreset: "email" satisfies MessageDraftPresetName,
+    wrapper: MaxWidthStartWrapper,
+    chatContext: {
+      userMessage: "Send Marcus the updated proposal",
+      preamble: "I've drafted this message for your review:",
+    },
+    renderComponent: ({ data }) => {
+      const draftData = data as Parameters<typeof MessageDraft>[0];
+      return (
+        <DynamicMessageDraft
+          {...draftData}
+          onSend={() => console.log("Message sent")}
+          onUndo={() => console.log("Send undone")}
+          onCancel={() => console.log("Message cancelled")}
         />
       );
     },

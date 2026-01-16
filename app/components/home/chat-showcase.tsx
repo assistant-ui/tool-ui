@@ -15,6 +15,7 @@ import { ItemCarousel } from "@/components/tool-ui/item-carousel";
 import { ParameterSlider } from "@/components/tool-ui/parameter-slider";
 import { StatsDisplay } from "@/components/tool-ui/stats-display";
 import { ProgressTracker } from "@/components/tool-ui/progress-tracker";
+import { MessageDraft } from "@/components/tool-ui/message-draft";
 import {
   type Flight,
   TABLE_COLUMNS,
@@ -600,6 +601,28 @@ export function useLocalStorage<T>(key: string, initial: T) {
       toolFallbackHeight: 260,
     },
     {
+      userMessage: "Send Marcus the updated proposal",
+      preamble: "Drafted this for you. Review before sending.",
+      toolUI: (
+        <MessageDraft
+          id="chat-showcase-message-draft"
+          channel="email"
+          subject="Updated proposal attached"
+          to={["marcus.chen@acme.co"]}
+          body={`Hi Marcus,
+
+I've attached the revised proposal with the changes we discussed. The new timeline reflects the Q2 launch date, and I've adjusted the budget breakdown in section 3.
+
+Let me know if you have any questions.
+
+Best,
+Sarah`}
+          className="w-full max-w-[480px]"
+        />
+      ),
+      toolFallbackHeight: 340,
+    },
+    {
       userMessage: "What was the first LLM?",
       preamble: "GPT-1 from OpenAI in 2018. Here are the key sources.",
       toolUI: (
@@ -615,7 +638,7 @@ export function useLocalStorage<T>(key: string, initial: T) {
   ];
 }
 
-const SCENE_COUNT = 11;
+const SCENE_COUNT = 12;
 
 type AnimatedSceneProps = {
   config: SceneConfig;

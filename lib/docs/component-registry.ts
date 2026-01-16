@@ -67,6 +67,12 @@ export const componentsRegistry: ComponentMeta[] = [
     path: "/docs/link-preview",
   },
   {
+    id: "message-draft",
+    label: "Message Draft",
+    description: "Review and approve messages before sending",
+    path: "/docs/message-draft",
+  },
+  {
     id: "option-list",
     label: "Option List",
     description: "Let users select from multiple choices",

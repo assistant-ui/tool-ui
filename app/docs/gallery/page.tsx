@@ -52,6 +52,9 @@ const PreferencesPanel = dynamic(() =>
 const ProgressTracker = dynamic(() =>
   import("@/components/tool-ui/progress-tracker").then((m) => m.ProgressTracker)
 );
+const MessageDraft = dynamic(() =>
+  import("@/components/tool-ui/message-draft").then((m) => m.MessageDraft)
+);
 import { approvalCardPresets } from "@/lib/presets/approval-card";
 import { citationPresets } from "@/lib/presets/citation";
 import { dataTablePresets } from "@/lib/presets/data-table";
@@ -71,6 +74,7 @@ import { chartPresets } from "@/lib/presets/chart";
 import { statsDisplayPresets } from "@/lib/presets/stats-display";
 import { preferencesPanelPresets } from "@/lib/presets/preferences-panel";
 import { progressTrackerPresets } from "@/lib/presets/progress-tracker";
+import { messageDraftPresets } from "@/lib/presets/message-draft";
 
 export const metadata: Metadata = {
   title: "Gallery",
@@ -93,23 +97,11 @@ export default function ComponentsGalleryPage() {
           </div>
 
           <div className="mb-5 flex break-inside-avoid justify-center 2xl:mb-5">
-            <Image {...imagePresets["with-source"].data.image} />
-          </div>
-
-          <div className="mb-5 flex break-inside-avoid justify-center 2xl:mb-5">
             <StatsDisplay {...statsDisplayPresets["business-metrics"].data} />
           </div>
 
           <div className="mb-5 flex break-inside-avoid justify-center 2xl:mb-5">
             <ImageGallery {...imageGalleryPresets["search-results"].data} />
-          </div>
-
-          <div className="mb-5 flex break-inside-avoid justify-center 2xl:mb-5">
-            <Video {...videoPresets["with-poster"].data.video} />
-          </div>
-
-          <div className="mb-5 flex break-inside-avoid justify-center 2xl:mb-5">
-            <DataTable layout="cards" {...dataTablePresets.tasks.data} />
           </div>
 
           <div className="mb-5 flex break-inside-avoid justify-center 2xl:mb-5">
@@ -138,6 +130,10 @@ export default function ComponentsGalleryPage() {
             <ApprovalCard {...approvalCardPresets["with-metadata"].data} />
           </div>
 
+          <div className="mb-5 flex break-inside-avoid justify-center 2xl:mb-5">
+            <MessageDraft {...messageDraftPresets.email.data} />
+          </div>
+
           <div className="mb-5 break-inside-avoid 2xl:mb-5">
             <OrderSummary
               {...orderSummaryPresets.default.data}
@@ -162,10 +158,6 @@ export default function ComponentsGalleryPage() {
           </div>
 
           <div className="mb-5 flex break-inside-avoid justify-center 2xl:mb-5">
-            <LinkedInPost post={linkedInPostPresets.basic.data.post} />
-          </div>
-
-          <div className="mb-5 flex break-inside-avoid justify-center 2xl:mb-5">
             <Terminal {...terminalPresets.success.data} />
           </div>
 
@@ -175,6 +167,18 @@ export default function ComponentsGalleryPage() {
 
           <div className="mb-5 flex break-inside-avoid justify-center 2xl:mb-5">
             <Chart id="gallery-chart" {...chartPresets.revenue.data} />
+          </div>
+
+          <div className="mb-5 flex break-inside-avoid justify-center 2xl:mb-5">
+            <Video {...videoPresets["with-poster"].data.video} />
+          </div>
+
+          <div className="mb-5 flex break-inside-avoid justify-center 2xl:mb-5">
+            <Image {...imagePresets["with-source"].data.image} />
+          </div>
+
+          <div className="mb-5 flex break-inside-avoid justify-center 2xl:mb-5">
+            <LinkedInPost post={linkedInPostPresets.basic.data.post} />
           </div>
 
           {/* <div className="mb-5 flex justify-center break-inside-avoid 2xl:mb-5">
