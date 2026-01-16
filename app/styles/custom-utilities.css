@@ -311,6 +311,20 @@
     );
   }
 
+  .border-gradient-glow-notch {
+    --glow-gradient: radial-gradient(
+      ellipse 120% 180% at 20% 20%,
+      rgba(255, 255, 255, 0.25) 0%,
+      rgba(255, 255, 255, 0.08) 30%,
+      rgba(255, 255, 255, 0.02) 60%,
+      rgba(255, 255, 255, 0) 100%
+    );
+    background:
+      linear-gradient(black, black) padding-box,
+      var(--glow-gradient) border-box;
+    border: 1px solid transparent;
+  }
+
   .gradient-line-header {
     background: linear-gradient(
       to right,
