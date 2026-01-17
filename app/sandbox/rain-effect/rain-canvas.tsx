@@ -4,8 +4,19 @@ import { useEffect, useRef, useCallback } from "react";
 
 interface RainCanvasProps {
   className?: string;
-  intensity?: number;
+  // Glass drops (rain on window)
+  glassIntensity?: number;
   zoom?: number;
+  // Falling rain (rain in the air)
+  fallingIntensity?: number;
+  fallingSpeed?: number;
+  fallingAngle?: number;
+  fallingStreakLength?: number;
+  fallingLayers?: number;
+  fallingRefraction?: number;
+  fallingWaviness?: number;
+  fallingThicknessVar?: number;
+  // Debug
   debug?: boolean;
 }
 
@@ -29,8 +40,16 @@ out vec4 fragColor;
 
 uniform float u_time;
 uniform vec2 u_resolution;
-uniform float u_intensity;
+uniform float u_glassIntensity;
 uniform float u_zoom;
+uniform float u_fallingIntensity;
+uniform float u_fallingSpeed;
+uniform float u_fallingAngle;
+uniform float u_fallingStreakLength;
+uniform int u_fallingLayers;
+uniform float u_fallingRefraction;
+uniform float u_fallingWaviness;
+uniform float u_fallingThicknessVar;
 uniform bool u_debug;
 
 #define S(a, b, t) smoothstep(a, b, t)
@@ -213,7 +232,7 @@ float StaticDrops(vec2 uv, float t) {
 }
 
 // ============================================================================
-// COMBINED DROPS
+// COMBINED DROPS (Glass effect)
 // ============================================================================
 
 vec2 Drops(vec2 uv, float t, float l0, float l1, float l2) {
@@ -232,6 +251,191 @@ vec2 Drops(vec2 uv, float t, float l0, float l1, float l2) {
 }
 
 // ============================================================================
+// FALLING RAIN (Rain streaks in the air)
+// ============================================================================
+
+// Hash function for pseudo-random values
+float hash12(vec2 p) {
+  vec3 p3 = fract(vec3(p.xyx) * 0.1031);
+  p3 += dot(p3, p3.yzx + 33.33);
+  return fract((p3.x + p3.y) * p3.z);
+}
+
+vec2 hash22(vec2 p) {
+  vec3 p3 = fract(vec3(p.xyx) * vec3(0.1031, 0.1030, 0.0973));
+  p3 += dot(p3, p3.yzx + 33.33);
+  return fract((p3.xx + p3.yz) * p3.zy);
+}
+
+
+// Attempt a streak hit with organic shape
+// Returns: x = refraction offset, y = streak mask
+vec2 OrganicStreak(vec2 localUV, float streakH, float baseWidth, float seed, float seed2) {
+  vec2 d = localUV;
+
+  // Normalize position along streak (0 = top, 1 = bottom)
+  float t = (d.y + streakH) / (2.0 * streakH);
+  t = clamp(t, 0.0, 1.0);
+
+  // Early exit if clearly outside
+  if (abs(d.y) > streakH * 1.2) return vec2(0.0);
+
+  // === WAVY PATH ===
+  // Streak doesn't fall straight - has slight S-curve wiggle
+  float waveFreq = 2.0 + seed * 3.0;
+  float waveAmp = baseWidth * (1.0 + seed2 * 2.0) * u_fallingWaviness;
+  float wave = sin(t * waveFreq * 3.14159 + seed * 10.0) * waveAmp;
+  d.x -= wave;
+
+  // === VARIABLE THICKNESS ===
+  // Width varies along length: thicker near top, thinner at bottom, with noise
+  float taper = mix(1.3, 0.4, t * t); // Basic taper
+  float thicknessNoiseAmt = 0.2 * u_fallingThicknessVar;
+  float thicknessNoise = sin(t * 15.0 + seed * 20.0) * thicknessNoiseAmt + 1.0;
+  float width = baseWidth * taper * thicknessNoise;
+
+  // === CORE SHAPE ===
+  // Soft-edged streak
+  float coreDist = abs(d.x);
+  float core = S(width, width * 0.2, coreDist);
+
+  // Vertical bounds: soft fade at top and bottom
+  float vertFade = S(0.0, 0.1, t) * S(1.0, 0.85, t);
+
+  // === INTERNAL BRIGHTNESS VARIATION ===
+  // Simulates light refracting through oscillating raindrop
+  float oscillation = sin(t * 25.0 + seed * 30.0) * 0.25 + 0.75;
+  float speckle = sin(t * 60.0 + seed2 * 50.0) * 0.15 + 0.85;
+
+  // === BREAK INTO SEGMENTS ===
+  // Some streaks appear broken/dotted (especially longer ones)
+  float breakup = 1.0;
+  if (seed > 0.6) {
+    // This streak has gaps
+    float gapPattern = sin(t * 8.0 + seed * 15.0);
+    breakup = S(-0.3, 0.1, gapPattern);
+  }
+
+  // === BRIGHT HEAD ===
+  // The leading edge (top) of the drop catches more light
+  float headBrightness = S(0.15, 0.0, t) * 1.5;
+
+  // Combine all factors
+  float streak = core * vertFade * oscillation * speckle * breakup;
+  streak += headBrightness * core * S(0.2, 0.0, t);
+  streak = clamp(streak, 0.0, 1.0);
+
+  // Refraction direction based on position relative to wavy center
+  float refract = d.x * streak;
+
+  return vec2(refract, streak);
+}
+
+// Falling rain layer with organic streaks
+vec2 FallingRainLayer(vec2 uv, float t, float speed, float windAngle, float streakLen, float scale, float density) {
+  vec2 offset = vec2(0.0);
+
+  // Apply wind shear
+  vec2 p = uv;
+  p.x += p.y * windAngle;
+
+  // Scale and scroll
+  p *= scale;
+  p.y += t * speed;
+
+  // Grid
+  vec2 id = floor(p);
+  vec2 gv = fract(p) - 0.5;
+
+  // Check neighboring cells
+  for (int y = -1; y <= 1; y++) {
+    for (int x = -1; x <= 1; x++) {
+      vec2 offs = vec2(float(x), float(y));
+      vec2 cellId = id + offs;
+
+      // Random values for this cell
+      float n1 = hash12(cellId);
+      vec2 n2 = hash22(cellId * 17.23);
+      float n3 = hash12(cellId * 31.17);
+
+      // Skip based on density
+      if (n1 > density) continue;
+
+      // Drop position within cell
+      vec2 dropPos = offs + n2 - 0.5;
+
+      // Local coordinates relative to drop
+      vec2 localUV = gv - dropPos;
+
+      // Streak dimensions with variation
+      float streakW = 0.025 + n1 * 0.02;
+      float streakH = streakLen * (0.4 + n3 * 0.6);
+
+      // Get organic streak
+      vec2 result = OrganicStreak(localUV, streakH, streakW, n1, n3);
+
+      if (result.y > 0.001) {
+        offset.x += result.x * 0.5;
+        offset.y += (n1 - 0.5) * result.y * 0.1;
+      }
+    }
+  }
+
+  return offset;
+}
+
+// Returns refraction offset for falling rain (to distort background sampling)
+vec2 FallingRain(vec2 uv, float t) {
+  vec2 totalOffset = vec2(0.0);
+
+  if (u_fallingIntensity < 0.01) return totalOffset;
+
+  float speed = u_fallingSpeed * 5.0;
+  float windAngle = u_fallingAngle;
+  float streakLen = u_fallingStreakLength * 0.3;
+  float intensity = u_fallingIntensity;
+
+  int layers = u_fallingLayers;
+
+  // Multiple depth layers
+  for (int i = 0; i < 6; i++) {
+    if (i >= layers) break;
+
+    float layerIdx = float(i);
+    float depth = layerIdx / float(max(layers - 1, 1));
+
+    // Layer parameters: closer = larger streaks, faster, denser, more refraction
+    float layerScale = mix(6.0, 30.0, depth);
+    float layerSpeed = speed * mix(2.0, 0.5, depth);
+    float layerDensity = intensity * mix(0.8, 0.3, depth);
+    float layerStrength = mix(1.0, 0.15, depth);
+    float layerStreakLen = streakLen * mix(1.5, 0.4, depth);
+    float layerAngle = windAngle * mix(1.0, 0.6, depth);
+
+    // Unique offset per layer to prevent alignment
+    vec2 layerOffset = vec2(
+      sin(layerIdx * 73.156) * 3.0,
+      cos(layerIdx * 37.842) * 3.0
+    );
+
+    vec2 layer = FallingRainLayer(
+      uv + layerOffset,
+      t + layerIdx * 0.13,
+      layerSpeed,
+      layerAngle,
+      layerStreakLen,
+      layerScale,
+      layerDensity
+    );
+
+    totalOffset += layer * layerStrength;
+  }
+
+  // Scale refraction to screen space - controlled by uniform
+  return totalOffset * u_fallingRefraction;
+}
+
+// ============================================================================
 // MAIN
 // ============================================================================
 
@@ -245,35 +449,49 @@ void main() {
 
   float t = u_time * 0.2;
 
-  // Rain amount controls layer visibility
-  float rainAmount = u_intensity;
+  // Glass drops intensity
+  float rainAmount = u_glassIntensity;
 
   // Layer intensities based on rain amount
   float staticDrops = S(-0.5, 1.0, rainAmount) * 2.0;
   float layer1 = S(0.25, 0.75, rainAmount);
   float layer2 = S(0.0, 0.5, rainAmount);
 
-  // Calculate drops
+  // Calculate glass drops
   vec2 c = Drops(uv, t, staticDrops, layer1, layer2);
 
-  // Calculate normals by sampling at offsets (gradient-based)
+  // Calculate normals by sampling at offsets (gradient-based) for glass drops
   vec2 e = vec2(0.001, 0.0);
   float cx = Drops(uv + e, t, staticDrops, layer1, layer2).x;
   float cy = Drops(uv + e.yx, t, staticDrops, layer1, layer2).x;
-  vec2 n = vec2(cx - c.x, cy - c.x);
+  vec2 glassNormal = vec2(cx - c.x, cy - c.x);
 
-  // Blur amount based on trail (further = more blur)
-  float maxBlur = mix(3.0, 6.0, rainAmount);
-  float minBlur = 2.0;
-  float focus = mix(maxBlur - c.y, minBlur, S(0.1, 0.2, c.x));
+  // Get falling rain refraction offset
+  vec2 fallingRainOffset = FallingRain(uv, u_time);
 
-  // Sample background with refraction
-  vec2 refractedUV = UV + n;
+  // Combine refractions: glass drops + falling rain
+  vec2 totalRefraction = glassNormal + fallingRainOffset;
+
+  // Sample background with combined refraction
+  vec2 refractedUV = UV + totalRefraction;
   refractedUV = clamp(refractedUV, 0.0, 1.0);
 
   vec3 color = cityLights(refractedUV);
 
-  // Add slight brightness to drops themselves
+  // Falling rain creates subtle specular highlights where it refracts light
+  // This makes rain visible even against dark backgrounds
+  float rainMagnitude = length(fallingRainOffset);
+  if (rainMagnitude > 0.001) {
+    // Sample what's being refracted - if it's bright, the rain catches that light
+    vec3 refractedLight = cityLights(refractedUV);
+    float brightness = dot(refractedLight, vec3(0.299, 0.587, 0.114));
+
+    // Subtle specular highlight - brighter where refracting bright areas
+    float specular = rainMagnitude * 15.0 * (0.1 + brightness * 0.9);
+    color += vec3(0.8, 0.85, 0.95) * specular * 0.3;
+  }
+
+  // Add slight brightness to glass drops themselves
   color += vec3(0.1, 0.12, 0.15) * c.x * 0.5;
 
   // Debug mode
@@ -283,8 +501,8 @@ void main() {
     float gridLines = step(0.98, grid.x) + step(0.98, grid.y);
     color = mix(color, vec3(1.0, 0.0, 0.0), gridLines * 0.3);
 
-    // Show normals
-    color.rg += abs(n) * 50.0;
+    // Show normals (combined refraction)
+    color.rg += abs(totalRefraction) * 50.0;
 
     // Show drop mask
     color.b += c.x * 0.5;
@@ -337,8 +555,16 @@ function createProgram(
 
 export function RainCanvas({
   className,
-  intensity = 0.5,
+  glassIntensity = 0.5,
   zoom = 1.0,
+  fallingIntensity = 0.6,
+  fallingSpeed = 1.0,
+  fallingAngle = 0.1,
+  fallingStreakLength = 1.0,
+  fallingLayers = 4,
+  fallingRefraction = 0.4,
+  fallingWaviness = 1.0,
+  fallingThicknessVar = 1.0,
   debug = false,
 }: RainCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -347,8 +573,16 @@ export function RainCanvas({
   const uniformsRef = useRef<{
     time: WebGLUniformLocation | null;
     resolution: WebGLUniformLocation | null;
-    intensity: WebGLUniformLocation | null;
+    glassIntensity: WebGLUniformLocation | null;
     zoom: WebGLUniformLocation | null;
+    fallingIntensity: WebGLUniformLocation | null;
+    fallingSpeed: WebGLUniformLocation | null;
+    fallingAngle: WebGLUniformLocation | null;
+    fallingStreakLength: WebGLUniformLocation | null;
+    fallingLayers: WebGLUniformLocation | null;
+    fallingRefraction: WebGLUniformLocation | null;
+    fallingWaviness: WebGLUniformLocation | null;
+    fallingThicknessVar: WebGLUniformLocation | null;
     debug: WebGLUniformLocation | null;
   } | null>(null);
   const animationFrameRef = useRef<number>(0);
@@ -380,8 +614,16 @@ export function RainCanvas({
     uniformsRef.current = {
       time: gl.getUniformLocation(program, "u_time"),
       resolution: gl.getUniformLocation(program, "u_resolution"),
-      intensity: gl.getUniformLocation(program, "u_intensity"),
+      glassIntensity: gl.getUniformLocation(program, "u_glassIntensity"),
       zoom: gl.getUniformLocation(program, "u_zoom"),
+      fallingIntensity: gl.getUniformLocation(program, "u_fallingIntensity"),
+      fallingSpeed: gl.getUniformLocation(program, "u_fallingSpeed"),
+      fallingAngle: gl.getUniformLocation(program, "u_fallingAngle"),
+      fallingStreakLength: gl.getUniformLocation(program, "u_fallingStreakLength"),
+      fallingLayers: gl.getUniformLocation(program, "u_fallingLayers"),
+      fallingRefraction: gl.getUniformLocation(program, "u_fallingRefraction"),
+      fallingWaviness: gl.getUniformLocation(program, "u_fallingWaviness"),
+      fallingThicknessVar: gl.getUniformLocation(program, "u_fallingThicknessVar"),
       debug: gl.getUniformLocation(program, "u_debug"),
     };
 
@@ -423,14 +665,22 @@ export function RainCanvas({
     gl.useProgram(program);
     gl.uniform1f(uniforms.time, time);
     gl.uniform2f(uniforms.resolution, canvas.width, canvas.height);
-    gl.uniform1f(uniforms.intensity, intensity);
+    gl.uniform1f(uniforms.glassIntensity, glassIntensity);
     gl.uniform1f(uniforms.zoom, zoom);
+    gl.uniform1f(uniforms.fallingIntensity, fallingIntensity);
+    gl.uniform1f(uniforms.fallingSpeed, fallingSpeed);
+    gl.uniform1f(uniforms.fallingAngle, fallingAngle);
+    gl.uniform1f(uniforms.fallingStreakLength, fallingStreakLength);
+    gl.uniform1i(uniforms.fallingLayers, fallingLayers);
+    gl.uniform1f(uniforms.fallingRefraction, fallingRefraction);
+    gl.uniform1f(uniforms.fallingWaviness, fallingWaviness);
+    gl.uniform1f(uniforms.fallingThicknessVar, fallingThicknessVar);
     gl.uniform1i(uniforms.debug, debug ? 1 : 0);
 
     gl.drawArrays(gl.TRIANGLES, 0, 6);
 
     animationFrameRef.current = requestAnimationFrame(render);
-  }, [intensity, zoom, debug]);
+  }, [glassIntensity, zoom, fallingIntensity, fallingSpeed, fallingAngle, fallingStreakLength, fallingLayers, fallingRefraction, fallingWaviness, fallingThicknessVar, debug]);
 
   useEffect(() => {
     if (initGL()) {
