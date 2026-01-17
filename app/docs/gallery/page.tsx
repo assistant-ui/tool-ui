@@ -113,6 +113,10 @@ export default function ComponentsGalleryPage() {
           </div>
 
           <div className="mb-5 flex break-inside-avoid justify-center 2xl:mb-5">
+            <WeatherWidget {...weatherWidgetPresets["sunny-forecast"].data} />
+          </div>
+
+          <div className="mb-5 flex break-inside-avoid justify-center 2xl:mb-5">
             <ImageGallery {...imageGalleryPresets["search-results"].data} />
           </div>
 

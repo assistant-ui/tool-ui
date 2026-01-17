@@ -190,6 +190,12 @@ export const componentsRegistry: ComponentMeta[] = [
     path: "/docs/weather-widget",
     category: "display",
   },
+  {
+    id: "weather-widget",
+    label: "Weather Widget",
+    description: "Display weather conditions and forecasts",
+    path: "/docs/weather-widget",
+  },
 ];
 
 export function getComponentById(id: string): ComponentMeta | undefined {
