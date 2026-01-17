@@ -132,6 +132,12 @@ export const componentsRegistry: ComponentMeta[] = [
     description: "Show command-line output and logs",
     path: "/docs/terminal",
   },
+  {
+    id: "weather-widget",
+    label: "Weather Widget",
+    description: "Display weather conditions and forecasts",
+    path: "/docs/weather-widget",
+  },
 ];
 
 export function getComponentById(id: string): ComponentMeta | undefined {

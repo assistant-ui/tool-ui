@@ -55,6 +55,9 @@ const ProgressTracker = dynamic(() =>
 const MessageDraft = dynamic(() =>
   import("@/components/tool-ui/message-draft").then((m) => m.MessageDraft)
 );
+const WeatherWidget = dynamic(() =>
+  import("@/components/tool-ui/weather-widget").then((m) => m.WeatherWidget)
+);
 import { approvalCardPresets } from "@/lib/presets/approval-card";
 import { citationPresets } from "@/lib/presets/citation";
 import { dataTablePresets } from "@/lib/presets/data-table";
@@ -75,6 +78,7 @@ import { statsDisplayPresets } from "@/lib/presets/stats-display";
 import { preferencesPanelPresets } from "@/lib/presets/preferences-panel";
 import { progressTrackerPresets } from "@/lib/presets/progress-tracker";
 import { messageDraftPresets } from "@/lib/presets/message-draft";
+import { weatherWidgetPresets } from "@/lib/presets/weather-widget";
 
 export const metadata: Metadata = {
   title: "Gallery",
@@ -98,6 +102,10 @@ export default function ComponentsGalleryPage() {
 
           <div className="mb-5 flex break-inside-avoid justify-center 2xl:mb-5">
             <StatsDisplay {...statsDisplayPresets["business-metrics"].data} />
+          </div>
+
+          <div className="mb-5 flex break-inside-avoid justify-center 2xl:mb-5">
+            <WeatherWidget {...weatherWidgetPresets["sunny-forecast"].data} />
           </div>
 
           <div className="mb-5 flex break-inside-avoid justify-center 2xl:mb-5">

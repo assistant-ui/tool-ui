@@ -24,6 +24,7 @@ import type { PreferencesPanel } from "@/components/tool-ui/preferences-panel";
 import type { ProgressTracker } from "@/components/tool-ui/progress-tracker";
 import type { StatsDisplay } from "@/components/tool-ui/stats-display";
 import type { Terminal } from "@/components/tool-ui/terminal";
+import type { WeatherWidget } from "@/components/tool-ui/weather-widget";
 
 import {
   approvalCardPresets,
@@ -91,6 +92,10 @@ import {
   terminalPresets,
   type TerminalPresetName,
 } from "@/lib/presets/terminal";
+import {
+  weatherWidgetPresets,
+  type WeatherWidgetPresetName,
+} from "@/lib/presets/weather-widget";
 
 const DynamicApprovalCard = dynamic(() =>
   import("@/components/tool-ui/approval-card").then((m) => m.ApprovalCard)
@@ -155,6 +160,9 @@ const DynamicStatsDisplay = dynamic(() =>
 const DynamicTerminal = dynamic(() =>
   import("@/components/tool-ui/terminal").then((m) => m.Terminal)
 );
+const DynamicWeatherWidget = dynamic(() =>
+  import("@/components/tool-ui/weather-widget").then((m) => m.WeatherWidget)
+);
 
 export type ComponentId =
   | "approval-card"
@@ -176,7 +184,8 @@ export type ComponentId =
   | "preferences-panel"
   | "progress-tracker"
   | "stats-display"
-  | "terminal";
+  | "terminal"
+  | "weather-widget";
 
 export interface ChatContext {
   userMessage: string;
@@ -673,6 +682,20 @@ export const previewConfigs: Record<
         onResponseAction={(actionId) =>
           console.log("Response action:", actionId)
         }
+      />
+    ),
+  },
+  "weather-widget": {
+    presets: weatherWidgetPresets as Record<string, PresetWithCodeGen<unknown>>,
+    defaultPreset: "sunny-forecast" satisfies WeatherWidgetPresetName,
+    wrapper: MaxWidthSmStartWrapper,
+    chatContext: {
+      userMessage: "What's the weather like in San Diego?",
+      preamble: "Here's the current weather:",
+    },
+    renderComponent: ({ data }) => (
+      <DynamicWeatherWidget
+        {...(data as Parameters<typeof WeatherWidget>[0])}
       />
     ),
   },

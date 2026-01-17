@@ -16,6 +16,7 @@ import { ParameterSlider } from "@/components/tool-ui/parameter-slider";
 import { StatsDisplay } from "@/components/tool-ui/stats-display";
 import { ProgressTracker } from "@/components/tool-ui/progress-tracker";
 import { MessageDraft } from "@/components/tool-ui/message-draft";
+import { WeatherWidget } from "@/components/tool-ui/weather-widget";
 import {
   type Flight,
   TABLE_COLUMNS,
@@ -461,6 +462,32 @@ function createSceneConfigs(): SceneConfig[] {
       toolFallbackHeight: 240,
     },
     {
+      userMessage: "What's the weather like this week?",
+      preamble: "Looking mild with some rain midweek.",
+      toolUI: (
+        <WeatherWidget
+          id="chat-showcase-weather"
+          location="San Francisco, CA"
+          current={{
+            temp: 62,
+            tempMin: 54,
+            tempMax: 66,
+            condition: "partly-cloudy",
+          }}
+          forecast={[
+            { day: "Tue", tempMin: 52, tempMax: 64, condition: "cloudy" },
+            { day: "Wed", tempMin: 50, tempMax: 58, condition: "rain" },
+            { day: "Thu", tempMin: 51, tempMax: 61, condition: "drizzle" },
+            { day: "Fri", tempMin: 53, tempMax: 65, condition: "partly-cloudy" },
+            { day: "Sat", tempMin: 55, tempMax: 68, condition: "clear" },
+          ]}
+          unit="fahrenheit"
+          className="w-full max-w-[400px]"
+        />
+      ),
+      toolFallbackHeight: 280,
+    },
+    {
       userMessage: "Boost the bass a bit on this track",
       preamble: "Bass is up. Here's the full EQ.",
       toolUI: (
@@ -638,7 +665,7 @@ Sarah`}
   ];
 }
 
-const SCENE_COUNT = 12;
+const SCENE_COUNT = 13;
 
 type AnimatedSceneProps = {
   config: SceneConfig;
@@ -691,7 +718,7 @@ function AnimatedScene({
   });
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col pb-20">
       <AnimatePresence>
         {shouldRenderItems && config.userMessage && (
           <motion.div

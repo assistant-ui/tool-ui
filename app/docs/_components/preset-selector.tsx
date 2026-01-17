@@ -25,6 +25,7 @@ import { preferencesPanelPresets } from "@/lib/presets/preferences-panel";
 import { progressTrackerPresets } from "@/lib/presets/progress-tracker";
 import { statsDisplayPresets } from "@/lib/presets/stats-display";
 import { terminalPresets } from "@/lib/presets/terminal";
+import { weatherWidgetPresets } from "@/lib/presets/weather-widget";
 import type { Preset } from "@/lib/presets/types";
 import { cn } from "@/lib/ui/cn";
 
@@ -51,6 +52,7 @@ const PRESET_REGISTRY: Record<string, PresetMap> = {
   "progress-tracker": progressTrackerPresets,
   "stats-display": statsDisplayPresets,
   terminal: terminalPresets,
+  "weather-widget": weatherWidgetPresets,
 };
 
 const DEFAULT_COMPONENT = "chart";
