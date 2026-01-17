@@ -140,7 +140,7 @@ export function FauxChatShell({ className, disableLightOverlay }: FauxChatShellP
         />
       )}
 
-      <div className="bg-background/80 absolute z-20 w-full backdrop-blur-lg">
+      <div className="bg-background/80 absolute z-20 w-full rounded-t-2xl backdrop-blur-lg">
         <div className="flex h-10 shrink-0 items-center px-4 pt-0.5">
           <WindowDots />
         </div>
@@ -153,7 +153,7 @@ export function FauxChatShell({ className, disableLightOverlay }: FauxChatShellP
         className="pointer-events-none absolute inset-x-0 right-3 bottom-0 z-10 h-24"
         style={{
           background:
-            "linear-gradient(to top, var(--color-background) 0%, transparent 100%)",
+            "linear-gradient(to top, var(--glow-surface-to) 0%, transparent 100%)",
         }}
         aria-hidden="true"
       />

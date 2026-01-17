@@ -252,18 +252,18 @@
   }
 
   .border-gradient-glow {
-    --glow-gradient: radial-gradient(
-      ellipse 300% 214% at 0% 100%,
-      rgba(0, 0, 0, 0.08) 0%,
-      rgba(0, 0, 0, 0) 100%
-    );
+    --glow-gradient: rgba(0, 0, 0, 0.12);
+    --glow-surface-from: var(--background);
+    --glow-surface-to: #f7f7f7;
     background:
-      linear-gradient(var(--background), var(--background)) padding-box,
+      linear-gradient(to bottom, var(--glow-surface-from), var(--glow-surface-to)) padding-box,
       var(--glow-gradient) border-box;
     border: 1px solid transparent;
   }
 
   .dark .border-gradient-glow {
+    --glow-surface-from: var(--background);
+    --glow-surface-to: var(--background);
     --glow-gradient: radial-gradient(
       ellipse 300% 214% at 0% 72%,
       rgba(255, 255, 255, 0.41) 0%,
@@ -274,13 +274,13 @@
   }
 
   .border-gradient-glow-composer {
-    --glow-gradient: radial-gradient(
-      ellipse 167% 263% at 0% 41%,
-      rgba(0, 0, 0, 0.12) 0%,
-      rgba(0, 0, 0, 0.06) 19%,
-      rgba(0, 0, 0, 0.02) 49%,
-      rgba(0, 0, 0, 0) 100%
-    );
+    --glow-gradient: rgba(0, 0, 0, 0.12);
+    background:
+      linear-gradient(rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.5)) padding-box,
+      var(--glow-gradient) border-box;
+    border: 1px solid transparent;
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
   }
 
   .dark .border-gradient-glow-composer {
@@ -294,12 +294,7 @@
   }
 
   .border-gradient-glow-dot {
-    --glow-gradient: radial-gradient(
-      ellipse 140% 200% at 25% 100%,
-      rgba(0, 0, 0, 0.2) 0%,
-      rgba(0, 0, 0, 0.04) 50%,
-      rgba(0, 0, 0, 0.008) 70%
-    );
+    --glow-gradient: rgba(0, 0, 0, 0.12);
   }
 
   .dark .border-gradient-glow-dot {
@@ -312,6 +307,17 @@
   }
 
   .border-gradient-glow-notch {
+    --glow-gradient: rgba(0, 0, 0, 0.12);
+    background: var(--glow-gradient);
+    border: 1px solid transparent;
+    mask:
+      linear-gradient(#fff 0 0) padding-box,
+      linear-gradient(#fff 0 0);
+    mask-composite: exclude;
+    -webkit-mask-composite: xor;
+  }
+
+  .dark .border-gradient-glow-notch {
     --glow-gradient: radial-gradient(
       ellipse 120% 180% at 20% 80%,
       rgba(255, 255, 255, 0.12) 0%,
@@ -319,10 +325,6 @@
       rgba(255, 255, 255, 0.01) 60%,
       rgba(255, 255, 255, 0) 100%
     );
-    background:
-      linear-gradient(rgba(0, 0, 0, 0.85), rgba(0, 0, 0, 0.85)) padding-box,
-      var(--glow-gradient) border-box;
-    border: 1px solid transparent;
   }
 
   .gradient-line-header {

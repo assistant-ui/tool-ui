@@ -63,7 +63,7 @@ export function FauxChatShellMobile({ className, disableLightOverlay: _disableLi
   return (
     <div
       className={cn(
-        "border-gradient-glow bg-neutral-50 dark:bg-background relative flex h-full w-full max-w-[430px] flex-col overflow-hidden rounded-[2.5rem]",
+        "border-gradient-glow relative flex h-full w-full max-w-[430px] flex-col overflow-hidden rounded-[2.5rem]",
         className,
       )}
       style={{
@@ -92,7 +92,7 @@ export function FauxChatShellMobile({ className, disableLightOverlay: _disableLi
         className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-24"
         style={{
           background:
-            "linear-gradient(to top, var(--color-background) 0%, transparent 100%)",
+            "linear-gradient(to top, var(--glow-surface-to) 0%, transparent 100%)",
         }}
         aria-hidden="true"
       />
