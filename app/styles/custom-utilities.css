@@ -275,8 +275,9 @@
 
   .border-gradient-glow-composer {
     --glow-gradient: rgba(0, 0, 0, 0.12);
+    --composer-bg: rgba(247, 247, 247, 0.8);
     background:
-      linear-gradient(rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.5)) padding-box,
+      linear-gradient(var(--composer-bg), var(--composer-bg)) padding-box,
       var(--glow-gradient) border-box;
     border: 1px solid transparent;
     backdrop-filter: blur(24px);
@@ -291,6 +292,7 @@
       rgba(255, 255, 255, 0.02) 49%,
       rgba(255, 255, 255, 0) 100%
     );
+    --composer-bg: color-mix(in srgb, var(--background) 85%, transparent);
   }
 
   .border-gradient-glow-dot {

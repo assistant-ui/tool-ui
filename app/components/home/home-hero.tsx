@@ -38,13 +38,13 @@ export function HomeHero() {
               Tool UI
             </motion.h1>
             <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
               transition={{ ...smoothSpring, delay: 0.2 }}
             >
               <Badge
                 variant="outline"
-                className="text-muted-foreground mt-1 cursor-default font-mono text-xs font-light select-none md:mt-0"
+                className="text-muted-foreground mt-1 cursor-default bg-background/50 font-mono text-xs font-light backdrop-blur-md select-none md:mt-0 md:mb-1"
               >
                 research preview
               </Badge>
