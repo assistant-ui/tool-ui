@@ -138,6 +138,12 @@ export const componentsRegistry: ComponentMeta[] = [
     description: "Multi-step guided questions with branching",
     path: "/docs/question-flow",
   },
+  {
+    id: "weather-widget",
+    label: "Weather Widget",
+    description: "Display weather conditions and forecasts",
+    path: "/docs/weather-widget",
+  },
 ];
 
 export function getComponentById(id: string): ComponentMeta | undefined {

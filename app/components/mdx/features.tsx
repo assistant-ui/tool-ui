@@ -54,6 +54,10 @@ import {
   Move,
   PlusCircle,
   SlidersHorizontal,
+  CloudSun,
+  MapPin,
+  Thermometer,
+  Calendar,
 } from "lucide-react";
 
 const ICON_MAP: Record<string, LucideIcon> = {
@@ -110,6 +114,10 @@ const ICON_MAP: Record<string, LucideIcon> = {
   Move,
   PlusCircle,
   SlidersHorizontal,
+  CloudSun,
+  MapPin,
+  Thermometer,
+  Calendar,
 };
 
 interface FeatureGridProps {
