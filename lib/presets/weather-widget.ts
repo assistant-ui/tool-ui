@@ -6,7 +6,8 @@ export type WeatherWidgetPresetName =
   | "rainy-week"
   | "mixed-conditions"
   | "cold-snap"
-  | "tropical";
+  | "tropical"
+  | "thunderstorm";
 
 function generateWeatherWidgetCode(data: SerializableWeatherWidget): string {
   const props: string[] = [];
@@ -142,6 +143,28 @@ export const weatherWidgetPresets: Record<
         { day: "Fri", tempMin: 28, tempMax: 35, condition: "partly-cloudy" },
       ],
       unit: "celsius",
+    } satisfies SerializableWeatherWidget,
+    generateExampleCode: generateWeatherWidgetCode,
+  },
+  thunderstorm: {
+    description: "Dramatic thunderstorm with lightning",
+    data: {
+      id: "weather-widget-thunderstorm",
+      location: "Kansas City, MO",
+      current: {
+        temp: 72,
+        tempMin: 65,
+        tempMax: 78,
+        condition: "thunderstorm",
+      },
+      forecast: [
+        { day: "Tue", tempMin: 62, tempMax: 75, condition: "heavy-rain" },
+        { day: "Wed", tempMin: 58, tempMax: 70, condition: "rain" },
+        { day: "Thu", tempMin: 55, tempMax: 68, condition: "cloudy" },
+        { day: "Fri", tempMin: 52, tempMax: 72, condition: "partly-cloudy" },
+        { day: "Sat", tempMin: 58, tempMax: 76, condition: "clear" },
+      ],
+      unit: "fahrenheit",
     } satisfies SerializableWeatherWidget,
     generateExampleCode: generateWeatherWidgetCode,
   },
