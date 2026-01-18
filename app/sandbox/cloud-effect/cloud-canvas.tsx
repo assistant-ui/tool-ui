@@ -165,18 +165,27 @@ float fbmBillow(vec2 p, int octaves, float lacunarity, float gain) {
 // ============================================================================
 
 // Warp coordinates using noise for more organic shapes
-vec2 domainWarp(vec2 p, float strength, float scale) {
-  // First layer of warp
-  float warpX = fbmValue(p * scale, 3, 2.0, 0.5) * 2.0 - 1.0;
-  float warpY = fbmValue(p * scale + vec2(50.0, 50.0), 3, 2.0, 0.5) * 2.0 - 1.0;
+// time and turbulence parameters allow animated morphing
+vec2 domainWarp(vec2 p, float strength, float scale, float time, float turbulence) {
+  // Time-varying offset creates churning motion
+  // Turbulence controls intensity, wind speed controls rapidity
+  float morphSpeed = 0.15 * turbulence * (0.3 + u_windSpeed * 0.7);
+  vec2 timeOffset1 = vec2(time * morphSpeed, time * morphSpeed * 0.7);
+  vec2 timeOffset2 = vec2(time * morphSpeed * -0.5, time * morphSpeed * 0.3);
 
-  vec2 warped = p + vec2(warpX, warpY) * strength;
+  // First layer of warp (animated)
+  float warpX = fbmValue(p * scale + timeOffset1, 3, 2.0, 0.5) * 2.0 - 1.0;
+  float warpY = fbmValue(p * scale + vec2(50.0, 50.0) + timeOffset1 * 0.8, 3, 2.0, 0.5) * 2.0 - 1.0;
 
-  // Second layer for more complexity (recursive warp)
-  float warpX2 = fbmValue(warped * scale * 0.5 + vec2(100.0, 0.0), 2, 2.0, 0.5) * 2.0 - 1.0;
-  float warpY2 = fbmValue(warped * scale * 0.5 + vec2(0.0, 100.0), 2, 2.0, 0.5) * 2.0 - 1.0;
+  // Turbulence increases warp strength
+  float dynamicStrength = strength * (1.0 + turbulence * 0.5);
+  vec2 warped = p + vec2(warpX, warpY) * dynamicStrength;
 
-  return warped + vec2(warpX2, warpY2) * strength * 0.5;
+  // Second layer for more complexity (animated differently)
+  float warpX2 = fbmValue(warped * scale * 0.5 + vec2(100.0, 0.0) + timeOffset2, 2, 2.0, 0.5) * 2.0 - 1.0;
+  float warpY2 = fbmValue(warped * scale * 0.5 + vec2(0.0, 100.0) + timeOffset2 * 1.2, 2, 2.0, 0.5) * 2.0 - 1.0;
+
+  return warped + vec2(warpX2, warpY2) * dynamicStrength * 0.5;
 }
 
 // ============================================================================
@@ -184,20 +193,26 @@ vec2 domainWarp(vec2 p, float strength, float scale) {
 // ============================================================================
 
 // Cumulus: billowy, puffy, well-defined edges
-float cumulusDensity(vec2 uv, vec2 offset, float scale) {
+float cumulusDensity(vec2 uv, vec2 offset, float scale, float time, float turbulence) {
   vec2 p = (uv + offset) * scale;
 
   // Apply domain warping for organic, flowing shapes
-  vec2 warped = domainWarp(p, 0.4, 0.3);
+  // Time and turbulence create animated morphing
+  vec2 warped = domainWarp(p, 0.4, 0.3, time, turbulence);
+
+  // Wind-scaled animation rate
+  float animRate = turbulence * (0.3 + u_windSpeed * 0.7);
 
   // Large-scale variation to create bigger cloud masses
-  float largeMass = fbmValue(p * 0.15, 2, 2.0, 0.6);
+  // Also animate slightly for slow billowing
+  float largeMass = fbmValue(p * 0.15 + vec2(time * 0.02 * animRate), 2, 2.0, 0.6);
 
   // Base billow shape with warped coordinates
   float billow = fbmBillow(warped * 0.5, 4, 2.0, 0.5);
 
   // Add some value noise for detail (less warped to preserve fine detail)
-  float detail = fbmValue(p * 2.0, 3, 2.0, 0.5);
+  // Animate detail layer for additional churning at high turbulence
+  float detail = fbmValue(p * 2.0 + vec2(time * 0.05 * animRate, 0.0), 3, 2.0, 0.5);
 
   // Combine: large masses modulate the billow, detail adds texture
   float base = billow * 0.6 + largeMass * 0.25 + detail * 0.15;
@@ -259,11 +274,11 @@ float stratocumulusDensity(vec2 uv, vec2 offset, float scale) {
 }
 
 // Interpolate between cloud types
-float cloudDensity(vec2 uv, vec2 offset, float scale, float cloudType) {
+float cloudDensity(vec2 uv, vec2 offset, float scale, float cloudType, float time, float turbulence) {
   if (cloudType < 0.33) {
     // Cumulus to stratocumulus
     float t = cloudType / 0.33;
-    float cumulus = cumulusDensity(uv, offset, scale);
+    float cumulus = cumulusDensity(uv, offset, scale, time, turbulence);
     float stratocumulus = stratocumulusDensity(uv, offset, scale);
     return mix(cumulus, stratocumulus, t);
   } else if (cloudType < 0.66) {
@@ -566,18 +581,12 @@ vec4 renderCloudLayer(vec2 uv, float layerIndex, float totalLayers) {
   float speed = u_windSpeed * (0.5 + layerDepth * 0.5);
   vec2 offset = windDir * u_time * speed * 0.1;
 
-  // Add turbulence
-  offset += vec2(
-    sin(u_time * 0.3 + layerIndex * 2.0) * u_turbulence * 0.02,
-    cos(u_time * 0.2 + layerIndex * 1.5) * u_turbulence * 0.01
-  );
-
   // Scale varies per layer (further = smaller features)
   // u_cloudScale controls overall detail level
   float scale = (2.0 + layerIndex * 0.5) * u_cloudScale;
 
-  // Get cumulus density
-  float density = cumulusDensity(uv, offset + vec2(layerIndex * 10.0), scale);
+  // Get cumulus density (turbulence creates animated morphing/churning)
+  float density = cumulusDensity(uv, offset + vec2(layerIndex * 10.0), scale, u_time, u_turbulence);
 
   // Height-based cloud distribution (clouds denser at bottom, dissipate toward top)
   // This creates the effect of being at or above cloud level
@@ -656,7 +665,7 @@ void main() {
   if (u_debug) {
     vec2 windDir = vec2(cos(u_windAngle), sin(u_windAngle));
     vec2 offset = windDir * u_time * u_windSpeed * 0.1;
-    float rawDensity = cumulusDensity(uv, offset, 2.0);
+    float rawDensity = cumulusDensity(uv, offset, 2.0, u_time, u_turbulence);
     color = mix(color, vec3(rawDensity), 0.5);
   }
 
