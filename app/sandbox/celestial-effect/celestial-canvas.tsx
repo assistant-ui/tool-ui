@@ -2,6 +2,10 @@
 
 import { useEffect, useRef, useCallback } from "react";
 
+// =============================================================================
+// TYPES
+// =============================================================================
+
 interface CelestialCanvasProps {
   className?: string;
   // Time
@@ -31,7 +35,36 @@ interface CelestialCanvasProps {
   debug?: boolean;
 }
 
-const VERTEX_SHADER = `#version 300 es
+interface UniformLocations {
+  u_time: WebGLUniformLocation | null;
+  u_resolution: WebGLUniformLocation | null;
+  u_timeOfDay: WebGLUniformLocation | null;
+  u_sunSize: WebGLUniformLocation | null;
+  u_sunGlowIntensity: WebGLUniformLocation | null;
+  u_sunGlowSize: WebGLUniformLocation | null;
+  u_sunRaysEnabled: WebGLUniformLocation | null;
+  u_sunRayCount: WebGLUniformLocation | null;
+  u_sunRayLength: WebGLUniformLocation | null;
+  u_moonSize: WebGLUniformLocation | null;
+  u_moonPhase: WebGLUniformLocation | null;
+  u_moonGlowIntensity: WebGLUniformLocation | null;
+  u_moonGlowSize: WebGLUniformLocation | null;
+  u_showCraters: WebGLUniformLocation | null;
+  u_craterDetail: WebGLUniformLocation | null;
+  u_horizonOffset: WebGLUniformLocation | null;
+  u_atmosphereThickness: WebGLUniformLocation | null;
+  u_starDensity: WebGLUniformLocation | null;
+  u_showPath: WebGLUniformLocation | null;
+  u_debug: WebGLUniformLocation | null;
+  u_moonTexture: WebGLUniformLocation | null;
+  u_hasMoonTexture: WebGLUniformLocation | null;
+}
+
+// =============================================================================
+// SHADER: VERTEX
+// =============================================================================
+
+const VERTEX_SHADER = /* glsl */ `#version 300 es
 in vec4 a_position;
 out vec2 v_uv;
 
@@ -41,12 +74,16 @@ void main() {
 }
 `;
 
-const FRAGMENT_SHADER = `#version 300 es
-precision highp float;
+// =============================================================================
+// SHADER: FRAGMENT - GLSL functions organized by category
+// =============================================================================
 
-in vec2 v_uv;
-out vec4 fragColor;
+const GLSL_CONSTANTS = /* glsl */ `
+#define PI 3.14159265359
+#define TAU 6.28318530718
+`;
 
+const GLSL_UNIFORMS = /* glsl */ `
 uniform float u_time;
 uniform vec2 u_resolution;
 uniform float u_timeOfDay;
@@ -69,14 +106,9 @@ uniform bool u_showPath;
 uniform bool u_debug;
 uniform sampler2D u_moonTexture;
 uniform bool u_hasMoonTexture;
+`;
 
-#define PI 3.14159265359
-#define TAU 6.28318530718
-
-// ============================================================================
-// NOISE FUNCTIONS
-// ============================================================================
-
+const GLSL_NOISE = /* glsl */ `
 float hash(vec2 p) {
   return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453123);
 }
@@ -117,49 +149,39 @@ float fbm(vec2 p, int octaves) {
 
   return value;
 }
+`;
 
-// ============================================================================
-// CELESTIAL POSITIONS
-// ============================================================================
-
+const GLSL_CELESTIAL_POSITIONS = /* glsl */ `
 vec2 getSunPosition(float timeOfDay, float horizonOffset) {
-  // Sun follows an arc: rises in east (left), peaks at noon, sets in west (right)
-  // angle spans 0 to PI as timeOfDay goes from 0.25 (sunrise) to 0.75 (sunset)
   float angle = (timeOfDay - 0.25) * 2.0 * PI;
-  float x = 0.5 - cos(angle) * 0.4; // negative cos for left-to-right motion
+  float x = 0.5 - cos(angle) * 0.4;
   float y = horizonOffset + sin(angle) * 0.45;
   return vec2(x, y);
 }
 
 vec2 getMoonPosition(float timeOfDay, float horizonOffset) {
-  // Moon is opposite the sun (offset by 0.5)
   float moonTime = fract(timeOfDay + 0.5);
   float angle = (moonTime - 0.25) * 2.0 * PI;
-  float x = 0.5 - cos(angle) * 0.4; // negative cos for left-to-right motion
+  float x = 0.5 - cos(angle) * 0.4;
   float y = horizonOffset + sin(angle) * 0.45;
   return vec2(x, y);
 }
 
 float getSunVisibility(float timeOfDay) {
-  // Sun visible from ~0.2 to ~0.8 (sunrise to sunset)
   float rise = smoothstep(0.2, 0.3, timeOfDay);
   float set = smoothstep(0.8, 0.7, timeOfDay);
   return rise * set;
 }
 
 float getMoonVisibility(float timeOfDay) {
-  // Moon visible when sun is down
   float nightStart = smoothstep(0.7, 0.85, timeOfDay);
   float nightEnd = smoothstep(0.3, 0.15, timeOfDay);
   return max(nightStart, nightEnd);
 }
+`;
 
-// ============================================================================
-// SKY GRADIENT
-// ============================================================================
-
+const GLSL_SKY = /* glsl */ `
 vec3 getSkyColor(vec2 uv, float timeOfDay, float atmosphereThickness) {
-  // Time-based sky colors
   vec3 dayTop = vec3(0.4, 0.6, 0.9);
   vec3 dayHorizon = vec3(0.7, 0.8, 0.95);
 
@@ -169,58 +191,45 @@ vec3 getSkyColor(vec2 uv, float timeOfDay, float atmosphereThickness) {
   vec3 nightTop = vec3(0.02, 0.02, 0.05);
   vec3 nightHorizon = vec3(0.05, 0.05, 0.1);
 
-  // Determine time of day blend
   float dayAmount = smoothstep(0.25, 0.4, timeOfDay) * smoothstep(0.75, 0.6, timeOfDay);
   float sunsetAmount = max(
     smoothstep(0.2, 0.3, timeOfDay) * smoothstep(0.4, 0.3, timeOfDay),
     smoothstep(0.6, 0.7, timeOfDay) * smoothstep(0.8, 0.7, timeOfDay)
   );
-  float nightAmount = 1.0 - dayAmount - sunsetAmount;
-  nightAmount = max(0.0, nightAmount);
+  float nightAmount = max(0.0, 1.0 - dayAmount - sunsetAmount);
 
-  // Vertical gradient factor
   float gradientFactor = pow(1.0 - uv.y, atmosphereThickness);
 
-  // Blend sky colors based on time
   vec3 topColor = dayTop * dayAmount + sunsetTop * sunsetAmount + nightTop * nightAmount;
   vec3 horizonColor = dayHorizon * dayAmount + sunsetHorizon * sunsetAmount + nightHorizon * nightAmount;
 
   return mix(topColor, horizonColor, gradientFactor);
 }
+`;
 
-// ============================================================================
-// STARS
-// ============================================================================
-
+const GLSL_STARS = /* glsl */ `
 float drawStars(vec2 uv, float density, float time) {
   float stars = 0.0;
 
-  // Multiple star layers for depth
   for (int layer = 0; layer < 3; layer++) {
     float layerScale = 100.0 + float(layer) * 50.0;
     vec2 gridUV = uv * layerScale;
     vec2 gridID = floor(gridUV);
     vec2 gridFract = fract(gridUV);
 
-    // Random star position within grid cell
     vec2 starOffset = hash2(gridID + float(layer) * 100.0);
     vec2 starPos = starOffset;
 
     float dist = length(gridFract - starPos);
 
-    // Star visibility based on density
     float starPresent = step(1.0 - density * 0.3, hash(gridID * (float(layer) + 1.0)));
 
-    // Star size varies
     float starSize = 0.02 + hash(gridID.yx) * 0.03;
 
-    // Twinkle
     float twinkle = sin(time * (2.0 + hash(gridID) * 3.0) + hash(gridID.yx) * TAU) * 0.3 + 0.7;
 
-    // Star brightness
     float star = smoothstep(starSize, 0.0, dist) * starPresent * twinkle;
 
-    // Dimmer stars in background layers
     star *= 1.0 - float(layer) * 0.3;
 
     stars += star;
@@ -228,31 +237,25 @@ float drawStars(vec2 uv, float density, float time) {
 
   return stars;
 }
+`;
 
-// ============================================================================
-// SUN
-// ============================================================================
-
+const GLSL_SUN = /* glsl */ `
 vec3 drawSun(vec2 uv, vec2 sunPos, float size, float glowIntensity, float glowSize,
              bool showRays, int rayCount, float rayLength, float time) {
   vec2 aspect = vec2(u_resolution.x / u_resolution.y, 1.0);
   vec2 diff = (uv - sunPos) * aspect;
   float dist = length(diff);
 
-  // Core sun disc - inverted smoothstep for correct falloff
   float disc = 1.0 - smoothstep(size * 0.9, size, dist);
 
-  // Sun color gradient (white center to yellow edge)
   vec3 sunCore = vec3(1.0, 1.0, 0.95);
   vec3 sunEdge = vec3(1.0, 0.9, 0.4);
   float edgeFactor = clamp(dist / size, 0.0, 1.0);
   vec3 sunColor = mix(sunCore, sunEdge, edgeFactor);
 
-  // Limb darkening effect
   float limbDarkening = 1.0 - pow(clamp(dist / size, 0.0, 1.0), 2.0) * 0.3;
   sunColor *= limbDarkening;
 
-  // Glow layers - scale by glowSize
   float scaledDist = dist / (glowSize * 0.1);
   float glow1 = exp(-scaledDist * 8.0) * glowIntensity * 0.5;
   float glow2 = exp(-scaledDist * 3.0) * glowIntensity * 0.3;
@@ -260,7 +263,6 @@ vec3 drawSun(vec2 uv, vec2 sunPos, float size, float glowIntensity, float glowSi
 
   vec3 glowColor = vec3(1.0, 0.8, 0.4);
 
-  // Sun rays
   float rays = 0.0;
   if (showRays && dist > size * 0.5) {
     float angle = atan(diff.y, diff.x);
@@ -271,19 +273,15 @@ vec3 drawSun(vec2 uv, vec2 sunPos, float size, float glowIntensity, float glowSi
     rays = rayPattern * rayFalloff * 0.4 * glowIntensity;
   }
 
-  // Combine - disc is additive bright white/yellow
   vec3 result = sunColor * disc * 2.0;
   result += glowColor * (glow1 + glow2 + glow3);
   result += vec3(1.0, 0.9, 0.6) * rays;
 
   return result;
 }
+`;
 
-// ============================================================================
-// MOON - 3D sphere with real texture and proper lighting
-// ============================================================================
-
-// Get 3D sphere normal from 2D disc position
+const GLSL_MOON = /* glsl */ `
 vec3 getSphereNormal(vec2 discUV) {
   float r2 = dot(discUV, discUV);
   if (r2 > 1.0) return vec3(0.0);
@@ -291,21 +289,16 @@ vec3 getSphereNormal(vec2 discUV) {
   return normalize(vec3(discUV.x, discUV.y, z));
 }
 
-// Convert sphere normal to equirectangular UV for texture sampling
 vec2 sphereToEquirectangular(vec3 normal) {
-  // Longitude: atan2(x, z) gives angle around Y axis
-  // We offset by 0.5 to center the near side of the moon
   float longitude = atan(normal.x, normal.z);
   float u = longitude / TAU + 0.5;
 
-  // Latitude: asin(y) gives angle from equator
   float latitude = asin(clamp(normal.y, -1.0, 1.0));
   float v = latitude / PI + 0.5;
 
   return vec2(u, v);
 }
 
-// Sample moon surface color from texture or procedural fallback
 vec3 getMoonSurfaceColor(vec3 normal, vec2 discUV) {
   if (u_hasMoonTexture) {
     vec2 texUV = sphereToEquirectangular(normal);
@@ -313,7 +306,6 @@ vec3 getMoonSurfaceColor(vec3 normal, vec2 discUV) {
     return texColor;
   }
 
-  // Procedural fallback if texture not loaded
   float brightness = 0.7 + fbm(discUV * 5.0, 3) * 0.3;
   return vec3(brightness * 0.85, brightness * 0.83, brightness * 0.8);
 }
@@ -324,21 +316,17 @@ vec4 drawMoon(vec2 uv, vec2 moonPos, float size, float phase, float glowIntensit
   vec2 diff = (uv - moonPos) * aspect;
   float dist = length(diff);
 
-  // Normalized position on moon disc (-1 to 1)
   vec2 discUV = diff / size;
   float discDist = length(discUV);
 
-  // Smooth disc edge
   float disc = 1.0 - smoothstep(0.95, 1.0, discDist);
 
   if (disc < 0.001) {
-    // Outside moon, just render glow (alpha = 0, additive glow)
     float scaledDist = dist / (glowSize * 0.08);
     float glow1 = exp(-scaledDist * 6.0) * glowIntensity * 0.25;
     float glow2 = exp(-scaledDist * 2.0) * glowIntensity * 0.1;
     vec3 glowColor = vec3(0.8, 0.85, 0.95);
 
-    // Glow follows illuminated portion
     float phaseAngle = phase * TAU;
     vec3 sunDir = vec3(sin(phaseAngle), 0.0, -cos(phaseAngle));
     float glowPhase = max(0.2, dot(normalize(vec3(discUV, 0.5)), sunDir) * 0.5 + 0.5);
@@ -346,113 +334,79 @@ vec4 drawMoon(vec2 uv, vec2 moonPos, float size, float phase, float glowIntensit
     return vec4(glowColor * (glow1 + glow2) * glowPhase, 0.0);
   }
 
-  // === 3D SPHERE LIGHTING ===
-  // Get surface normal on the sphere
   vec3 normal = getSphereNormal(discUV);
 
-  // Sun direction based on phase (direction light comes FROM)
-  // phase 0 = new moon: sun behind moon, light comes from -Z (away from viewer)
-  // phase 0.25 = first quarter: sun to the right, light comes from +X
-  // phase 0.5 = full moon: sun behind viewer, light comes from +Z (toward moon)
-  // phase 0.75 = third quarter: sun to the left, light comes from -X
   float phaseAngle = phase * TAU;
   vec3 sunDir = vec3(sin(phaseAngle), 0.0, -cos(phaseAngle));
 
-  // Basic lambertian lighting
   float NdotL = dot(normal, sunDir);
 
-  // Terminator softness for realistic shadow edge
   float terminator = smoothstep(-0.02, 0.08, NdotL);
 
-  // === LUNAR SURFACE FROM TEXTURE ===
   vec3 baseColor = getMoonSurfaceColor(normal, discUV);
 
-  // === LIGHTING APPLICATION ===
-  // Ambient light (earthshine on dark side)
   vec3 ambient = baseColor * 0.03;
 
-  // Direct sunlight
   vec3 lit = baseColor * terminator;
 
-  // Combine
   vec3 moonSurface = ambient + lit;
 
-  // === LIMB DARKENING ===
-  // Moon appears slightly darker at edges due to viewing angle
   float limbDarkening = 1.0 - pow(discDist, 3.0) * 0.15;
   moonSurface *= limbDarkening;
 
-  // === SUBTLE RIM LIGHT ===
-  // Very subtle bright edge where sun grazes the surface
   float rimLight = pow(1.0 - abs(NdotL), 4.0) * terminator * 0.1;
   moonSurface += vec3(1.0, 0.98, 0.95) * rimLight;
 
-  // === GLOW ===
   float scaledDist = dist / (glowSize * 0.08);
   float glow1 = exp(-scaledDist * 6.0) * glowIntensity * 0.2;
   float glow2 = exp(-scaledDist * 2.0) * glowIntensity * 0.1;
   vec3 glowColor = vec3(0.8, 0.85, 0.95);
 
-  // Glow intensity based on how much of moon is lit
   float litAmount = max(0.1, terminator);
 
   vec3 result = moonSurface;
   vec3 glow = glowColor * (glow1 + glow2) * litAmount;
 
-  // Return moon surface with disc alpha, plus additive glow
   return vec4(result * disc + glow, disc);
 }
+`;
 
-// ============================================================================
-// DEBUG
-// ============================================================================
-
+const GLSL_DEBUG = /* glsl */ `
 vec3 drawOrbitalPath(vec2 uv, float horizonOffset) {
   vec2 aspect = vec2(u_resolution.x / u_resolution.y, 1.0);
 
-  // Draw the semicircular arc the sun/moon follows
-  // The arc goes from (0.1, horizonOffset) to (0.9, horizonOffset) with peak at (0.5, horizonOffset + 0.45)
   vec2 arcCenter = vec2(0.5, horizonOffset);
   vec2 diff = (uv - arcCenter) * aspect;
 
-  // Semi-elliptical path (upper half only)
   float ellipseX = diff.x / 0.4;
   float ellipseY = diff.y / 0.45;
   float ellipseDist = abs(length(vec2(ellipseX, ellipseY)) - 1.0);
 
-  // Only show upper half of the ellipse (where sun/moon actually travels)
   float upperHalf = step(0.0, diff.y);
   float path = smoothstep(0.02, 0.01, ellipseDist) * upperHalf;
 
-  // Horizon line
   float horizon = smoothstep(0.005, 0.002, abs(uv.y - horizonOffset));
 
   return vec3(0.3, 0.3, 0.5) * path + vec3(0.5, 0.3, 0.3) * horizon;
 }
+`;
 
-// ============================================================================
-// MAIN
-// ============================================================================
-
+const GLSL_MAIN = /* glsl */ `
 void main() {
   vec2 uv = v_uv;
 
-  // Get sky background
   vec3 color = getSkyColor(uv, u_timeOfDay, u_atmosphereThickness);
 
-  // Stars (only visible at night)
   float nightFactor = getMoonVisibility(u_timeOfDay);
   if (nightFactor > 0.01) {
     float stars = drawStars(uv, u_starDensity, u_time);
     color += vec3(stars) * nightFactor;
   }
 
-  // Debug orbital path
   if (u_showPath) {
     color += drawOrbitalPath(uv, u_horizonOffset);
   }
 
-  // Sun
   float sunVis = getSunVisibility(u_timeOfDay);
   if (sunVis > 0.01) {
     vec2 sunPos = getSunPosition(u_timeOfDay, u_horizonOffset);
@@ -461,20 +415,16 @@ void main() {
     color += sun * sunVis;
   }
 
-  // Moon
   float moonVis = getMoonVisibility(u_timeOfDay);
   if (moonVis > 0.01) {
     vec2 moonPos = getMoonPosition(u_timeOfDay, u_horizonOffset);
     vec4 moon = drawMoon(uv, moonPos, u_moonSize, u_moonPhase, u_moonGlowIntensity,
                          u_moonGlowSize, u_showCraters, u_craterDetail, u_time);
-    // Proper compositing: blend moon disc over background, add glow
     float alpha = moon.a * moonVis;
     color = mix(color, moon.rgb, alpha) + moon.rgb * (1.0 - moon.a) * moonVis;
   }
 
-  // Debug info
   if (u_debug) {
-    // Show time value
     if (uv.x < 0.1 && uv.y > 0.95) {
       color = vec3(u_timeOfDay, 0.0, 0.0);
     }
@@ -484,9 +434,31 @@ void main() {
 }
 `;
 
+const FRAGMENT_SHADER = /* glsl */ `#version 300 es
+precision highp float;
+
+in vec2 v_uv;
+out vec4 fragColor;
+
+${GLSL_CONSTANTS}
+${GLSL_UNIFORMS}
+${GLSL_NOISE}
+${GLSL_CELESTIAL_POSITIONS}
+${GLSL_SKY}
+${GLSL_STARS}
+${GLSL_SUN}
+${GLSL_MOON}
+${GLSL_DEBUG}
+${GLSL_MAIN}
+`;
+
+// =============================================================================
+// WEBGL UTILITIES
+// =============================================================================
+
 function createShader(
   gl: WebGL2RenderingContext,
-  type: number,
+  type: GLenum,
   source: string
 ): WebGLShader | null {
   const shader = gl.createShader(type);
@@ -525,6 +497,120 @@ function createProgram(
   return program;
 }
 
+function getUniformLocations(
+  gl: WebGL2RenderingContext,
+  program: WebGLProgram
+): UniformLocations {
+  const uniformNames: Array<keyof UniformLocations> = [
+    "u_time",
+    "u_resolution",
+    "u_timeOfDay",
+    "u_sunSize",
+    "u_sunGlowIntensity",
+    "u_sunGlowSize",
+    "u_sunRaysEnabled",
+    "u_sunRayCount",
+    "u_sunRayLength",
+    "u_moonSize",
+    "u_moonPhase",
+    "u_moonGlowIntensity",
+    "u_moonGlowSize",
+    "u_showCraters",
+    "u_craterDetail",
+    "u_horizonOffset",
+    "u_atmosphereThickness",
+    "u_starDensity",
+    "u_showPath",
+    "u_debug",
+    "u_moonTexture",
+    "u_hasMoonTexture",
+  ];
+
+  const locations = {} as UniformLocations;
+  for (const name of uniformNames) {
+    locations[name] = gl.getUniformLocation(program, name);
+  }
+  return locations;
+}
+
+function setupQuadGeometry(
+  gl: WebGL2RenderingContext,
+  program: WebGLProgram
+): void {
+  const positions = new Float32Array([
+    -1, -1,
+     1, -1,
+    -1,  1,
+    -1,  1,
+     1, -1,
+     1,  1,
+  ]);
+
+  const positionBuffer = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+  gl.bufferData(gl.ARRAY_BUFFER, positions, gl.STATIC_DRAW);
+
+  const positionLoc = gl.getAttribLocation(program, "a_position");
+  gl.enableVertexAttribArray(positionLoc);
+  gl.vertexAttribPointer(positionLoc, 2, gl.FLOAT, false, 0, 0);
+}
+
+function loadMoonTexture(
+  gl: WebGL2RenderingContext,
+  onLoad: () => void
+): WebGLTexture | null {
+  const texture = gl.createTexture();
+  if (!texture) return null;
+
+  gl.bindTexture(gl.TEXTURE_2D, texture);
+
+  gl.texImage2D(
+    gl.TEXTURE_2D,
+    0,
+    gl.RGBA,
+    1,
+    1,
+    0,
+    gl.RGBA,
+    gl.UNSIGNED_BYTE,
+    new Uint8Array([128, 128, 128, 255])
+  );
+
+  const image = new Image();
+  image.crossOrigin = "anonymous";
+  image.onload = () => {
+    gl.bindTexture(gl.TEXTURE_2D, texture);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
+    gl.generateMipmap(gl.TEXTURE_2D);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    onLoad();
+  };
+  image.src = "/assets/moon-texture.jpg";
+
+  return texture;
+}
+
+function updateCanvasSize(
+  canvas: HTMLCanvasElement,
+  gl: WebGL2RenderingContext
+): void {
+  const displayWidth = canvas.clientWidth * window.devicePixelRatio;
+  const displayHeight = canvas.clientHeight * window.devicePixelRatio;
+
+  if (canvas.width !== displayWidth || canvas.height !== displayHeight) {
+    canvas.width = displayWidth;
+    canvas.height = displayHeight;
+    gl.viewport(0, 0, canvas.width, canvas.height);
+  }
+}
+
+// =============================================================================
+// COMPONENT
+// =============================================================================
+
 export function CelestialCanvas({
   className,
   timeOfDay = 0.5,
@@ -551,27 +637,57 @@ export function CelestialCanvas({
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const glRef = useRef<WebGL2RenderingContext | null>(null);
   const programRef = useRef<WebGLProgram | null>(null);
-  const uniformsRef = useRef<Record<string, WebGLUniformLocation | null>>({});
+  const uniformsRef = useRef<UniformLocations | null>(null);
   const animationFrameRef = useRef<number>(0);
   const startTimeRef = useRef<number>(0);
   const animatedTimeRef = useRef<number>(timeOfDay);
   const moonTextureRef = useRef<WebGLTexture | null>(null);
   const moonTextureLoadedRef = useRef<boolean>(false);
 
-  // Store props in refs so render loop doesn't need to be recreated
   const propsRef = useRef({
-    timeOfDay, animateTime, dayDuration,
-    sunSize, sunGlowIntensity, sunGlowSize, sunRaysEnabled, sunRayCount, sunRayLength,
-    moonSize, moonPhase, moonGlowIntensity, moonGlowSize, showCraters, craterDetail,
-    horizonOffset, atmosphereThickness, starDensity, showPath, debug
+    timeOfDay,
+    animateTime,
+    dayDuration,
+    sunSize,
+    sunGlowIntensity,
+    sunGlowSize,
+    sunRaysEnabled,
+    sunRayCount,
+    sunRayLength,
+    moonSize,
+    moonPhase,
+    moonGlowIntensity,
+    moonGlowSize,
+    showCraters,
+    craterDetail,
+    horizonOffset,
+    atmosphereThickness,
+    starDensity,
+    showPath,
+    debug,
   });
 
-  // Update props ref when props change (no re-render needed)
   propsRef.current = {
-    timeOfDay, animateTime, dayDuration,
-    sunSize, sunGlowIntensity, sunGlowSize, sunRaysEnabled, sunRayCount, sunRayLength,
-    moonSize, moonPhase, moonGlowIntensity, moonGlowSize, showCraters, craterDetail,
-    horizonOffset, atmosphereThickness, starDensity, showPath, debug
+    timeOfDay,
+    animateTime,
+    dayDuration,
+    sunSize,
+    sunGlowIntensity,
+    sunGlowSize,
+    sunRaysEnabled,
+    sunRayCount,
+    sunRayLength,
+    moonSize,
+    moonPhase,
+    moonGlowIntensity,
+    moonGlowSize,
+    showCraters,
+    craterDetail,
+    horizonOffset,
+    atmosphereThickness,
+    starDensity,
+    showPath,
+    debug,
   };
 
   const initGL = useCallback(() => {
@@ -593,56 +709,13 @@ export function CelestialCanvas({
     if (!program) return false;
     programRef.current = program;
 
-    // Get all uniform locations
-    const uniformNames = [
-      "u_time", "u_resolution", "u_timeOfDay",
-      "u_sunSize", "u_sunGlowIntensity", "u_sunGlowSize",
-      "u_sunRaysEnabled", "u_sunRayCount", "u_sunRayLength",
-      "u_moonSize", "u_moonPhase", "u_moonGlowIntensity", "u_moonGlowSize",
-      "u_showCraters", "u_craterDetail",
-      "u_horizonOffset", "u_atmosphereThickness", "u_starDensity",
-      "u_showPath", "u_debug",
-      "u_moonTexture", "u_hasMoonTexture"
-    ];
+    uniformsRef.current = getUniformLocations(gl, program);
 
-    uniformNames.forEach(name => {
-      uniformsRef.current[name] = gl.getUniformLocation(program, name);
+    moonTextureRef.current = loadMoonTexture(gl, () => {
+      moonTextureLoadedRef.current = true;
     });
 
-    // Load moon texture
-    const moonTexture = gl.createTexture();
-    moonTextureRef.current = moonTexture;
-    gl.bindTexture(gl.TEXTURE_2D, moonTexture);
-
-    // Placeholder 1x1 pixel until image loads
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([128, 128, 128, 255]));
-
-    const moonImage = new Image();
-    moonImage.crossOrigin = "anonymous";
-    moonImage.onload = () => {
-      gl.bindTexture(gl.TEXTURE_2D, moonTexture);
-      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, moonImage);
-      gl.generateMipmap(gl.TEXTURE_2D);
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-      moonTextureLoadedRef.current = true;
-    };
-    moonImage.src = "/assets/moon-texture.jpg";
-
-    // Set up geometry
-    const positions = new Float32Array([
-      -1, -1, 1, -1, -1, 1, -1, 1, 1, -1, 1, 1,
-    ]);
-
-    const positionBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, positions, gl.STATIC_DRAW);
-
-    const positionLoc = gl.getAttribLocation(program, "a_position");
-    gl.enableVertexAttribArray(positionLoc);
-    gl.vertexAttribPointer(positionLoc, 2, gl.FLOAT, false, 0, 0);
+    setupQuadGeometry(gl, program);
 
     startTimeRef.current = performance.now();
     return true;
@@ -655,20 +728,12 @@ export function CelestialCanvas({
     const canvas = canvasRef.current;
     const props = propsRef.current;
 
-    if (!gl || !program || !canvas) return;
+    if (!gl || !program || !uniforms || !canvas) return;
 
-    const displayWidth = canvas.clientWidth * window.devicePixelRatio;
-    const displayHeight = canvas.clientHeight * window.devicePixelRatio;
-
-    if (canvas.width !== displayWidth || canvas.height !== displayHeight) {
-      canvas.width = displayWidth;
-      canvas.height = displayHeight;
-      gl.viewport(0, 0, canvas.width, canvas.height);
-    }
+    updateCanvasSize(canvas, gl);
 
     const time = (performance.now() - startTimeRef.current) / 1000;
 
-    // Animate time if enabled
     if (props.animateTime) {
       animatedTimeRef.current = (time / props.dayDuration) % 1.0;
     } else {
@@ -677,7 +742,6 @@ export function CelestialCanvas({
 
     gl.useProgram(program);
 
-    // Set uniforms
     gl.uniform1f(uniforms.u_time, time);
     gl.uniform2f(uniforms.u_resolution, canvas.width, canvas.height);
     gl.uniform1f(uniforms.u_timeOfDay, animatedTimeRef.current);
@@ -699,7 +763,6 @@ export function CelestialCanvas({
     gl.uniform1i(uniforms.u_showPath, props.showPath ? 1 : 0);
     gl.uniform1i(uniforms.u_debug, props.debug ? 1 : 0);
 
-    // Bind moon texture
     gl.activeTexture(gl.TEXTURE0);
     gl.bindTexture(gl.TEXTURE_2D, moonTextureRef.current);
     gl.uniform1i(uniforms.u_moonTexture, 0);
@@ -708,7 +771,7 @@ export function CelestialCanvas({
     gl.drawArrays(gl.TRIANGLES, 0, 6);
 
     animationFrameRef.current = requestAnimationFrame(render);
-  }, []); // No dependencies - reads from refs
+  }, []);
 
   useEffect(() => {
     if (initGL()) {
