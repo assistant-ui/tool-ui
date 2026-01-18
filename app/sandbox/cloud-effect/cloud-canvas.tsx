@@ -361,6 +361,74 @@ vec3 renderStars(vec2 uv, float time, float sunAlt, float density, float starSiz
 }
 
 // ============================================================================
+// SHOOTING STARS
+// ============================================================================
+
+vec3 renderShootingStars(vec2 uv, float time, float sunAlt) {
+  // Only visible at night
+  float visibility = smoothstep(0.0, -0.1, sunAlt);
+  if (visibility < 0.001) return vec3(0.0);
+
+  vec3 result = vec3(0.0);
+
+  // Check multiple potential shooting stars (staggered timing)
+  for (int i = 0; i < 3; i++) {
+    float fi = float(i);
+
+    // Each meteor has a different cycle offset and duration
+    float cycleLength = 12.0 + fi * 7.0; // 12-26 second cycles
+    float cycleTime = mod(time + fi * 37.0, cycleLength);
+
+    // Meteor is only active for a brief window
+    float meteorDuration = 0.8 + fi * 0.3;
+    float meteorStart = cycleLength * 0.7; // Appear near end of cycle
+
+    if (cycleTime < meteorStart || cycleTime > meteorStart + meteorDuration) continue;
+
+    float t = (cycleTime - meteorStart) / meteorDuration; // 0 to 1 over meteor lifetime
+
+    // Random start position and angle for this meteor (based on cycle)
+    float cycle = floor((time + fi * 37.0) / cycleLength);
+    float startX = hash21(vec2(cycle, fi * 100.0)) * 0.8 + 0.1;
+    float startY = hash21(vec2(cycle + 50.0, fi * 100.0)) * 0.4 + 0.5; // Upper half
+    float angle = -0.5 - hash21(vec2(cycle + 100.0, fi)) * 0.8; // Downward angle
+
+    // Meteor travels across sky
+    float speed = 0.4 + hash21(vec2(cycle + 150.0, fi)) * 0.3;
+    vec2 meteorPos = vec2(startX, startY) + vec2(cos(angle), sin(angle)) * t * speed;
+
+    // Meteor trail (line segment)
+    float trailLength = 0.08 + hash21(vec2(cycle + 200.0, fi)) * 0.06;
+    vec2 trailDir = normalize(vec2(cos(angle), sin(angle)));
+    vec2 trailStart = meteorPos;
+    vec2 trailEnd = meteorPos - trailDir * trailLength;
+
+    // Distance to line segment
+    vec2 pa = uv - trailStart;
+    vec2 ba = trailEnd - trailStart;
+    float h = clamp(dot(pa, ba) / dot(ba, ba), 0.0, 1.0);
+    float dist = length(pa - ba * h);
+
+    // Fade along trail (bright at head, dim at tail)
+    float trailFade = 1.0 - h;
+
+    // Meteor intensity with distance falloff
+    float width = 0.003;
+    float meteor = smoothstep(width, 0.0, dist) * trailFade;
+
+    // Fade in and out over lifetime
+    float lifeFade = sin(t * 3.14159);
+
+    // Bright white-blue color with slight tail coloring
+    vec3 meteorColor = mix(vec3(0.8, 0.85, 1.0), vec3(1.0, 0.95, 0.8), h);
+
+    result += meteorColor * meteor * lifeFade * 0.8;
+  }
+
+  return result * visibility;
+}
+
+// ============================================================================
 // ATMOSPHERIC SKY
 // ============================================================================
 
@@ -427,42 +495,58 @@ vec3 atmosphericSky(vec2 uv, float sunAlt) {
 // ============================================================================
 
 vec3 cloudLighting(float density, float heightInCloud, float sunAlt, float lightInt, float ambDark) {
+  // Overall daylight factor - dims everything as sun sets
+  float daylight = smoothstep(-0.12, 0.1, sunAlt);
+
+  // Night factor for transitioning to night colors
+  float nightFactor = 1.0 - smoothstep(-0.12, 0.02, sunAlt);
+
   // Calculate warmth factor based on sun altitude
   // Low sun = warm colors, high sun = neutral colors
   float warmth = 1.0 - smoothstep(0.0, 0.4, sunAlt);
   warmth = warmth * warmth; // Ease in for more dramatic effect at low angles
 
-  // Lit cloud color: white at midday, warm orange/gold at sunset
+  // Lit cloud color: white at midday, warm orange/gold at sunset, dark blue-grey at night
   vec3 dayLitColor = vec3(1.0, 0.98, 0.96);
   vec3 sunsetLitColor = vec3(1.0, 0.7, 0.45);
+  vec3 nightLitColor = vec3(0.12, 0.14, 0.2); // Faint moonlit highlight
   vec3 litColor = mix(dayLitColor, sunsetLitColor, warmth);
+  litColor = mix(litColor, nightLitColor, nightFactor);
 
-  // Shadow color: cool blue-grey at midday, warm purple-brown at sunset
+  // Shadow color: cool blue-grey at midday, warm purple-brown at sunset, very dark at night
   vec3 dayShadowColor = vec3(0.45, 0.5, 0.6);
   vec3 sunsetShadowColor = vec3(0.35, 0.25, 0.3);
-  vec3 shadowColor = mix(dayShadowColor, sunsetShadowColor, warmth) * (1.0 - ambDark * 0.3);
+  vec3 nightShadowColor = vec3(0.03, 0.04, 0.07); // Nearly black
+  vec3 shadowColor = mix(dayShadowColor, sunsetShadowColor, warmth);
+  shadowColor = mix(shadowColor, nightShadowColor, nightFactor);
+  shadowColor *= (1.0 - ambDark * 0.3);
 
   // Lighting calculation
   // Higher sun = lit from above, lower sun = more side/bottom lighting
-  float topLight = heightInCloud * sunAlt;
+  float topLight = heightInCloud * max(0.0, sunAlt);
   float sideLight = (1.0 - abs(heightInCloud - 0.5) * 2.0) * (1.0 - sunAlt * 0.5);
 
   // Bottom illumination when sun is very low (light bouncing up from horizon)
   float bottomLight = (1.0 - heightInCloud) * warmth * 0.5;
 
-  float lightAmount = topLight * 0.5 + sideLight * 0.3 + bottomLight + 0.2;
+  // Ambient light - much lower at night (just faint starlight/moonlight)
+  float ambientLight = mix(0.03, 0.2, daylight);
+
+  float lightAmount = (topLight * 0.5 + sideLight * 0.3 + bottomLight) * daylight + ambientLight;
   lightAmount = clamp(lightAmount * lightInt, 0.0, 1.0);
 
   // Mix shadow and lit colors
   vec3 cloudColor = mix(shadowColor, litColor, lightAmount);
 
-  // Rim lighting / silver lining effect (more pronounced at sunset)
+  // Rim lighting / silver lining effect (more pronounced at sunset, very faint at night)
   float rimLight = pow(density, 0.5) * (1.0 - density) * 4.0;
   vec3 rimColor = mix(vec3(1.0, 1.0, 0.95), vec3(1.0, 0.8, 0.5), warmth);
-  cloudColor += rimColor * rimLight * 0.3 * lightInt;
+  rimColor = mix(rimColor, vec3(0.15, 0.18, 0.25), nightFactor); // Faint blue rim at night
+  float rimStrength = mix(0.1, 0.3, daylight); // Dim rim at night
+  cloudColor += rimColor * rimLight * rimStrength * lightInt;
 
-  // Hot highlight on very bright parts during sunset
-  float hotSpot = pow(max(0.0, lightAmount - 0.6) * 2.5, 2.0) * warmth;
+  // Hot highlight on very bright parts during sunset (not at night)
+  float hotSpot = pow(max(0.0, lightAmount - 0.6) * 2.5, 2.0) * warmth * daylight;
   cloudColor += vec3(1.0, 0.5, 0.2) * hotSpot * 0.4;
 
   return cloudColor;
@@ -519,6 +603,22 @@ vec4 renderCloudLayer(vec2 uv, float layerIndex, float totalLayers) {
   // Calculate lighting
   vec3 color = cloudLighting(density, heightInCloud, u_sunAltitude, u_lightIntensity, u_ambientDarkness);
 
+  // === AERIAL PERSPECTIVE ===
+  // Distant layers (higher index) get hazier, more blue-tinted, lower contrast
+  float distance = layerOffset; // 0 = front, 1 = back
+
+  // Haze color - blue-ish during day, darker at night
+  float daylight = smoothstep(-0.1, 0.2, u_sunAltitude);
+  vec3 hazeColor = mix(vec3(0.05, 0.06, 0.1), vec3(0.6, 0.7, 0.85), daylight);
+
+  // Blend toward haze based on distance
+  float hazeAmount = distance * distance * 0.5; // Quadratic falloff
+  color = mix(color, hazeColor, hazeAmount);
+
+  // Reduce contrast for distant layers
+  float contrastReduction = 1.0 - distance * 0.3;
+  color = mix(vec3(0.5), color, contrastReduction);
+
   // Apply density for alpha
   float alpha = density * u_density * (0.6 + layerDepth * 0.4);
 
@@ -536,6 +636,10 @@ void main() {
   // Stars (visible at night, rendered behind clouds)
   vec3 stars = renderStars(v_uv, u_time, u_sunAltitude, u_starDensity, u_starSize, u_starTwinkleSpeed, u_starTwinkleAmount);
   skyColor += stars;
+
+  // Shooting stars (visible at night)
+  vec3 shootingStars = renderShootingStars(v_uv, u_time, u_sunAltitude);
+  skyColor += shootingStars;
 
   // Accumulate cloud layers (back to front - painter's algorithm)
   // Higher layer index = background, lower = foreground
