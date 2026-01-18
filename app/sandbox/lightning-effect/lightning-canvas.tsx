@@ -396,17 +396,17 @@ void main() {
     // Lightning start and end points (randomized per strike)
     vec2 strikeHash = hash22(vec2(u_strikeSeed * 123.456, u_strikeSeed * 789.012));
 
-    // Start: somewhere in upper portion of screen
+    // Start: top of screen with horizontal variation
     vec2 boltStart = vec2(
-      0.2 + strikeHash.x * 0.6,
-      0.85 + strikeHash.y * 0.1
+      0.3 + strikeHash.x * 0.4,
+      1.05
     );
     boltStart.x *= aspect;
 
-    // End: toward bottom, somewhat below start
+    // End: bottom of screen with some horizontal drift
     vec2 boltEnd = vec2(
-      boltStart.x + (strikeHash.x - 0.5) * 0.3,
-      0.1 + strikeHash.y * 0.2
+      boltStart.x + (strikeHash.x - 0.5) * 0.4,
+      -0.05
     );
 
     // Main bolt distance
