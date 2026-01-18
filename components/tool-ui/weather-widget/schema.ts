@@ -41,6 +41,32 @@ export const TemperatureUnitSchema = z.enum(["celsius", "fahrenheit"]);
 
 export type TemperatureUnit = z.infer<typeof TemperatureUnitSchema>;
 
+export const PrecipitationLevelSchema = z.enum(["none", "light", "moderate", "heavy"]);
+
+export type PrecipitationLevel = z.infer<typeof PrecipitationLevelSchema>;
+
+export const EffectQualitySchema = z.enum(["low", "medium", "high", "auto"]);
+
+export type EffectQuality = z.infer<typeof EffectQualitySchema>;
+
+export const EffectSettingsSchema = z.object({
+  enabled: z.boolean().optional(),
+  quality: EffectQualitySchema.optional(),
+  reducedMotion: z.boolean().optional(),
+});
+
+export type EffectSettings = z.infer<typeof EffectSettingsSchema>;
+
+export const ExtendedCurrentWeatherSchema = CurrentWeatherSchema.extend({
+  windSpeed: z.number().optional(),
+  windDirection: z.number().min(0).max(360).optional(),
+  humidity: z.number().min(0).max(100).optional(),
+  precipitation: PrecipitationLevelSchema.optional(),
+  visibility: z.number().optional(),
+});
+
+export type ExtendedCurrentWeather = z.infer<typeof ExtendedCurrentWeatherSchema>;
+
 export const SerializableWeatherWidgetSchema = z.object({
   id: ToolUIIdSchema,
   role: ToolUIRoleSchema.optional(),
@@ -69,4 +95,5 @@ export interface WeatherWidgetProps extends SerializableWeatherWidget {
   className?: string;
   isLoading?: boolean;
   locale?: string;
+  effects?: EffectSettings;
 }

@@ -14,6 +14,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { cn, Card, CardHeader, CardTitle, CardContent } from "./_adapter";
+import { EffectCompositor } from "./effects";
 import type {
   WeatherWidgetProps,
   WeatherCondition,
@@ -156,6 +157,7 @@ export function WeatherWidget({
   className,
   isLoading = false,
   locale: localeProp,
+  effects,
 }: WeatherWidgetProps) {
   const locale =
     localeProp ??
@@ -163,6 +165,7 @@ export function WeatherWidget({
 
   const unitLabel = unit === "celsius" ? "C" : "F";
   const conditionLabel = conditionLabels[current.condition];
+  const effectsEnabled = effects?.enabled !== false && !isLoading;
 
   return (
     <article
@@ -171,11 +174,28 @@ export function WeatherWidget({
       aria-busy={isLoading}
       className={cn("w-full max-w-sm", className)}
     >
-      <Card className="overflow-clip">
-        <CardHeader className="pb-2">
+      <Card className="relative overflow-clip">
+        {effectsEnabled && (
+          <EffectCompositor
+            condition={current.condition}
+            timestamp={updatedAt}
+            settings={effects}
+          />
+        )}
+        <CardHeader
+          className={cn(
+            "relative z-10 pb-2",
+            effectsEnabled && "drop-shadow-[0_1px_2px_rgba(0,0,0,0.3)]",
+          )}
+        >
           <CardTitle className="text-base font-medium">{location}</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent
+          className={cn(
+            "relative z-10 space-y-4",
+            effectsEnabled && "drop-shadow-[0_1px_2px_rgba(0,0,0,0.3)]",
+          )}
+        >
           {isLoading ? (
             <div className="flex items-center gap-4">
               <div className="bg-muted size-12 animate-pulse rounded-full" />
