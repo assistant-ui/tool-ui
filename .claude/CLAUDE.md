@@ -116,6 +116,7 @@ Doc pages use MDX (`app/docs/{component}/content.mdx`). Key considerations:
 - **Custom components**: Available via `mdx-components.tsx` — includes `TypeTable`, `Files`, `Feature`, `FeatureGrid`, preset examples
 - **Prose styling**: Content wraps in `.prose` class from `docs-content.tsx`. Use `not-prose` class to escape for custom layouts.
 - **Auto-linking**: Tool UI component names in text auto-link to their docs pages (configured in `withAutoLink`)
+- **Turbopack limitation**: MDX plugins must be specified as strings (e.g., `"remark-gfm"`) not imports, because Turbopack requires serializable config
 
 ## Discovery Locations
 
