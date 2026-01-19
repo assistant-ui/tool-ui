@@ -134,3 +134,33 @@ Archive of completed features and improvements. See `TODO.md` for active work.
 - Restored original chevron animation using vertical flip (rotateY) instead of rotation
 - Removed border from container housing plan steps and progress (cleaner look)
 - Removed strikethrough treatment from completed steps (kept muted-foreground dimming)
+
+### Message Draft Component (Jan 16, 2026)
+- Created new Message Draft component for email/Slack message review before sending
+- Removed channel indicator labels (email/slack at top) — channels are clear from context
+- Replaced hashtag icon with full-color Slack logo for channel targets
+- Left-aligned "Read more" trigger for better visual alignment
+- Removed colons after field labels (To, Cc, Bcc)
+- Increased max-width from max-w-sm to max-w-lg for better readability
+- Increased default visible lines before truncation (120px → 200px)
+- Added animated fade in/out for truncation gradient on expand/collapse
+- Reworked state transitions: content stays visible, only CTA area swaps (Send/Cancel → Undo timer → Sent confirmation)
+- Cancelled state now removes the component entirely
+- Moved sent indicator to the right with human-readable timestamp (e.g., "Sent at 2:34 PM")
+- Replaced DM chat bubble icon with Slack logo, changed text to "DM to @Name" format
+- Added member count display for Slack channels (right-aligned, opposite channel name)
+- Updated email fields to use two-column tabular layout (labels left, recipients right)
+- Moved Read More button down with more space from text (h-16 overlay with -bottom-2)
+- Made Read More an outline button with rounded-full styling
+- Made metadata/body separator full-bleed using negative margins
+- Fixed long body initial render: uses useLayoutEffect + null state to prevent expand→collapse flash
+- Moved undo timer to the right, next to the Undo button ("Sending in Xs")
+- Moved Read More / Show Less button to bottom left of card footer, opposite the CTAs
+- Email field labels now use small caps (uppercase, xs text, tracking-wide)
+- Added slight gap between email meta field rows (pb-1)
+- Replaced Separator component with plain div for full-bleed control (fixes right-side gap)
+- Changed DM label from "DM to @Name" to "Message to @Name"
+- Increased body max height to 280px (~12 lines) before truncation
+- Added transition-none to card to prevent shadow flash during state changes
+- Moved action buttons outside the card (matching other Tool UI components like OptionList)
+- Removed small caps from email field labels (reverted to simpler styling)

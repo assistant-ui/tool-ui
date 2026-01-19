@@ -7,7 +7,8 @@ export type WeatherWidgetPresetName =
   | "mixed-conditions"
   | "cold-snap"
   | "tropical"
-  | "thunderstorm";
+  | "thunderstorm"
+  | "night-clear";
 
 function generateWeatherWidgetCode(data: SerializableWeatherWidget): string {
   const props: string[] = [];
@@ -55,6 +56,7 @@ export const weatherWidgetPresets: Record<
         { day: "Sat", tempMin: 64, tempMax: 77, condition: "partly-cloudy" },
       ],
       unit: "fahrenheit",
+      updatedAt: "2025-01-18T14:30:00Z",
     } satisfies SerializableWeatherWidget,
     generateExampleCode: generateWeatherWidgetCode,
   },
@@ -103,7 +105,7 @@ export const weatherWidgetPresets: Record<
     generateExampleCode: generateWeatherWidgetCode,
   },
   "cold-snap": {
-    description: "Winter weather with snow",
+    description: "Winter weather with snow at night",
     data: {
       id: "weather-widget-cold-snap",
       location: "Minneapolis, MN",
@@ -121,6 +123,7 @@ export const weatherWidgetPresets: Record<
         { day: "Sat", tempMin: 2, tempMax: 18, condition: "clear" },
       ],
       unit: "fahrenheit",
+      updatedAt: "2025-01-18T21:00:00Z",
     } satisfies SerializableWeatherWidget,
     generateExampleCode: generateWeatherWidgetCode,
   },
@@ -165,6 +168,30 @@ export const weatherWidgetPresets: Record<
         { day: "Sat", tempMin: 58, tempMax: 76, condition: "clear" },
       ],
       unit: "fahrenheit",
+      updatedAt: "2025-01-18T17:30:00Z",
+    } satisfies SerializableWeatherWidget,
+    generateExampleCode: generateWeatherWidgetCode,
+  },
+  "night-clear": {
+    description: "Clear night sky with full moon",
+    data: {
+      id: "weather-widget-night-clear",
+      location: "Sedona, AZ",
+      current: {
+        temp: 45,
+        tempMin: 38,
+        tempMax: 62,
+        condition: "clear",
+      },
+      forecast: [
+        { day: "Tue", tempMin: 36, tempMax: 64, condition: "clear" },
+        { day: "Wed", tempMin: 38, tempMax: 66, condition: "clear" },
+        { day: "Thu", tempMin: 40, tempMax: 68, condition: "partly-cloudy" },
+        { day: "Fri", tempMin: 42, tempMax: 70, condition: "clear" },
+        { day: "Sat", tempMin: 39, tempMax: 65, condition: "clear" },
+      ],
+      unit: "fahrenheit",
+      updatedAt: "2025-01-18T23:00:00Z",
     } satisfies SerializableWeatherWidget,
     generateExampleCode: generateWeatherWidgetCode,
   },

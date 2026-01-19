@@ -1,7 +1,7 @@
 import type { SerializablePlan } from "@/components/tool-ui/plan";
 import type { PresetWithCodeGen } from "./types";
 
-export type PlanPresetName = "simple" | "comprehensive" | "mixed_states" | "all_complete" | "with-actions";
+export type PlanPresetName = "simple" | "comprehensive" | "mixed_states" | "all_complete";
 
 function escape(value: string): string {
   return value.replace(/\\/g, "\\\\").replace(/"/g, '\\"');
@@ -132,26 +132,6 @@ export const planPresets: Record<PlanPresetName, PresetWithCodeGen<SerializableP
         { id: "2", label: "Deploy to production", status: "completed" },
         { id: "3", label: "Verify health endpoints", status: "completed" },
         { id: "4", label: "Update status page", status: "completed" },
-      ],
-    } satisfies SerializablePlan,
-    generateExampleCode: generatePlanCode,
-  },
-  "with-actions": {
-    description: "Plan with response action buttons",
-    data: {
-      id: "plan-with-actions",
-      title: "Refactoring Plan",
-      description: "Steps to improve code quality",
-      showProgress: false,
-      todos: [
-        { id: "1", label: "Identify duplicated code", status: "pending" },
-        { id: "2", label: "Extract shared utilities", status: "pending" },
-        { id: "3", label: "Update imports", status: "pending" },
-        { id: "4", label: "Run tests", status: "pending" },
-      ],
-      responseActions: [
-        { id: "modify", label: "Request Changes", variant: "outline" },
-        { id: "approve", label: "Approve Plan" },
       ],
     } satisfies SerializablePlan,
     generateExampleCode: generatePlanCode,

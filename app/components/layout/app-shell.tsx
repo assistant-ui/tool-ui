@@ -35,7 +35,7 @@ export function HeaderFrame({
       >
         <ResponsiveHeader rightContent={rightContent} />
       </div>
-      <div className="relative z-10 flex min-h-0 w-full flex-1 justify-center overflow-hidden">
+      <div className="relative  flex min-h-0 w-full flex-1 justify-center">
         {children}
       </div>
       <style jsx>{`
