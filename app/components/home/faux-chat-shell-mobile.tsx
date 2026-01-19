@@ -84,7 +84,7 @@ export function FauxChatShellMobile({ className, disableLightOverlay: _disableLi
       <DynamicIsland />
       <StatusBar />
 
-      <div className="scrollbar-subtle relative z-0 grow overflow-y-auto px-4 pt-20 pb-4">
+      <div className="scrollbar-subtle relative z-0 grow overflow-y-auto px-4 pt-20">
         <ChatShowcase />
       </div>
 
