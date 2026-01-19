@@ -21,7 +21,7 @@ import { DocsHeader } from "../_components/docs-header";
     Click any todo to reveal additional context
   </Feature>
   <Feature icon="PartyPopper" title="Completion celebration">
-    Delightful feedback when all tasks are done
+    Visual feedback when all tasks complete
   </Feature>
 </FeatureGrid>
 
@@ -273,22 +273,22 @@ export const ShowPlanUI = makeAssistantToolUI({
 
 ## Animations
 
-The Plan component includes polished animations that enhance the user experience while respecting accessibility preferences:
+The Plan component includes animations that respect accessibility preferences:
 
 ### State Transitions
 
-- **Spring bounce effects**: When todos complete or are cancelled, icons bounce with playful spring physics
-- **Stroke-drawing animations**: Checkmarks and X icons draw themselves with a satisfying stroke animation
+- **Spring bounce effects**: When todos complete or are cancelled, icons bounce with spring physics
+- **Stroke-drawing animations**: Checkmarks and X icons draw themselves with a stroke animation
 - **Fast spinner**: In-progress todos show a 0.7-second rotation for responsive visual feedback
 - **Shimmer effect**: Labels of in-progress todos shimmer to draw attention
 
 ### Entrance Animations
 
-New todos fade up with a 50ms stagger between each item, creating a smooth cascading effect. This applies both on initial render and when todos are dynamically added.
+New todos fade up with a 50ms stagger between each item. This applies on initial render and when todos are dynamically added.
 
 ### Progress Celebration
 
-When the progress bar reaches 100%, it triggers a multi-layered celebration:
+When the progress bar reaches 100%, it triggers a completion effect:
 
 - Color pulse with brightness increase
 - Shimmer sweep across the bar
@@ -302,6 +302,6 @@ When the progress bar reaches 100%, it triggers a multi-layered celebration:
 
 ## Accessibility
 
-- All animations automatically disable when users have `prefers-reduced-motion` enabled in their system preferences, ensuring an accessible experience for everyone
+- All animations disable when users have `prefers-reduced-motion` enabled
 - Users who prefer reduced motion see instant state changes without visual motion
 - Functionality is preserved regardless of motion preferences
