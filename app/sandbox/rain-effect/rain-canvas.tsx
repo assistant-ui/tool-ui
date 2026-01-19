@@ -117,24 +117,6 @@ vec3 cityLights(vec2 uv) {
   float horizonGlow = exp(-pow((uv.y - 0.15) * 4.0, 2.0));
   color += vec3(0.15, 0.08, 0.05) * horizonGlow * 0.5;
 
-  // Bokeh lights
-  for (int i = 0; i < 40; i++) {
-    vec3 n = N13(float(i) * 13.7);
-    vec2 lightPos = vec2(n.x, n.y * 0.5);
-
-    float dist = length(uv - lightPos);
-    float bokeh = exp(-dist * dist * 60.0);
-
-    // Color variation
-    vec3 lightColor = mix(vec3(1.0, 0.9, 0.7), N13(float(i) * 7.3), 0.4);
-
-    // Brightness and twinkle
-    float brightness = 0.3 + n.z * 0.7;
-    float twinkle = 0.85 + 0.15 * sin(u_time * (1.0 + n.z * 2.0) + n.x * 6.28);
-
-    color += lightColor * bokeh * brightness * twinkle * 0.35;
-  }
-
   // Atmospheric haze
   float fog = fbm(uv * 3.0 + u_time * 0.02) * 0.08;
   color += vec3(0.04, 0.05, 0.07) * fog;
