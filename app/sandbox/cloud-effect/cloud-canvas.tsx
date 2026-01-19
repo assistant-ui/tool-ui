@@ -26,6 +26,10 @@ interface CloudCanvasProps {
   starSize?: number; // 0.5-3, how large stars appear
   starTwinkleSpeed?: number; // 0-3, how fast stars twinkle
   starTwinkleAmount?: number; // 0-1, how much stars twinkle
+  // Positioning
+  horizonLine?: number; // 0-1, vertical position of cloud layer (0=bottom, 1=top)
+  // Compositing
+  transparentBackground?: boolean; // When true, outputs alpha for compositing over other layers
   // Debug
   debug?: boolean;
 }
@@ -65,6 +69,8 @@ uniform float u_starDensity;
 uniform float u_starSize;
 uniform float u_starTwinkleSpeed;
 uniform float u_starTwinkleAmount;
+uniform float u_horizonLine;
+uniform bool u_transparentBackground;
 uniform bool u_debug;
 
 #define PI 3.14159265359
@@ -576,6 +582,11 @@ vec4 renderCloudLayer(vec2 uv, float layerIndex, float totalLayers) {
   float layerOffset = layerIndex / max(1.0, totalLayers - 1.0);
   float layerDepth = 1.0 - layerOffset * u_layerSpread;
 
+  // Apply horizon line offset to shift clouds vertically
+  // u_horizonLine 0.5 = centered, 0 = clouds at bottom, 1 = clouds at top
+  float horizonOffset = (u_horizonLine - 0.5) * 1.5;
+  float cloudY = uv.y - horizonOffset;
+
   // Wind offset with parallax
   vec2 windDir = vec2(cos(u_windAngle), sin(u_windAngle));
   float speed = u_windSpeed * (0.5 + layerDepth * 0.5);
@@ -592,10 +603,10 @@ vec4 renderCloudLayer(vec2 uv, float layerIndex, float totalLayers) {
   // This creates the effect of being at or above cloud level
   float heightNoise = fbmValue(uv * 2.0 + offset * 0.5, 2, 2.0, 0.5) * 0.3;
   float cloudCeiling = 0.65 + heightNoise; // Irregular top boundary
-  float heightFalloff = smoothstep(cloudCeiling, cloudCeiling - 0.4, uv.y);
+  float heightFalloff = smoothstep(cloudCeiling, cloudCeiling - 0.4, cloudY);
 
   // Additional dissipation - clouds thin out and become wispier near the top
-  float dissipation = smoothstep(0.3, 0.7, uv.y);
+  float dissipation = smoothstep(0.3, 0.7, cloudY);
   density = mix(density, density * density, dissipation * 0.5); // Thin out upper clouds
 
   // Apply height-based density reduction
@@ -607,7 +618,7 @@ vec4 renderCloudLayer(vec2 uv, float layerIndex, float totalLayers) {
 
   // Height in cloud for lighting - use vertical UV position
   // Higher on screen = more lit by sun from above
-  float heightInCloud = uv.y * 0.6 + density * 0.4;
+  float heightInCloud = cloudY * 0.6 + density * 0.4;
 
   // Calculate lighting
   vec3 color = cloudLighting(density, heightInCloud, u_sunAltitude, u_lightIntensity, u_ambientDarkness);
@@ -639,29 +650,37 @@ void main() {
   float aspect = u_resolution.x / u_resolution.y;
   uv.x *= aspect;
 
-  // Atmospheric sky gradient based on sun altitude
+  // Transparent mode: render only clouds with alpha for compositing
+  if (u_transparentBackground) {
+    vec3 cloudColor = vec3(0.0);
+    float cloudAlpha = 0.0;
+
+    for (int i = u_numLayers - 1; i >= 0; i--) {
+      vec4 cloud = renderCloudLayer(uv, float(i), float(u_numLayers));
+      cloudColor = mix(cloudColor, cloud.rgb, cloud.a);
+      cloudAlpha = cloudAlpha + cloud.a * (1.0 - cloudAlpha);
+    }
+
+    fragColor = vec4(cloudColor, cloudAlpha);
+    return;
+  }
+
+  // Normal mode: full sky with stars and clouds
   vec3 skyColor = atmosphericSky(v_uv, u_sunAltitude);
 
-  // Stars (visible at night, rendered behind clouds)
   vec3 stars = renderStars(v_uv, u_time, u_sunAltitude, u_starDensity, u_starSize, u_starTwinkleSpeed, u_starTwinkleAmount);
   skyColor += stars;
 
-  // Shooting stars (visible at night)
   vec3 shootingStars = renderShootingStars(v_uv, u_time, u_sunAltitude);
   skyColor += shootingStars;
 
-  // Accumulate cloud layers (back to front - painter's algorithm)
-  // Higher layer index = background, lower = foreground
   vec3 color = skyColor;
 
   for (int i = u_numLayers - 1; i >= 0; i--) {
     vec4 cloud = renderCloudLayer(uv, float(i), float(u_numLayers));
-
-    // Simple back-to-front alpha blending
     color = mix(color, cloud.rgb, cloud.a);
   }
 
-  // Debug: show density field
   if (u_debug) {
     vec2 windDir = vec2(cos(u_windAngle), sin(u_windAngle));
     vec2 offset = windDir * u_time * u_windSpeed * 0.1;
@@ -733,6 +752,8 @@ export function CloudCanvas({
   starSize = 1.5,
   starTwinkleSpeed = 1.0,
   starTwinkleAmount = 0.5,
+  horizonLine = 0.5,
+  transparentBackground = false,
   debug = false,
 }: CloudCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -758,6 +779,8 @@ export function CloudCanvas({
     starSize: WebGLUniformLocation | null;
     starTwinkleSpeed: WebGLUniformLocation | null;
     starTwinkleAmount: WebGLUniformLocation | null;
+    horizonLine: WebGLUniformLocation | null;
+    transparentBackground: WebGLUniformLocation | null;
     debug: WebGLUniformLocation | null;
   } | null>(null);
   const animationFrameRef = useRef<number>(0);
@@ -767,7 +790,7 @@ export function CloudCanvas({
     const canvas = canvasRef.current;
     if (!canvas) return false;
 
-    const gl = canvas.getContext("webgl2");
+    const gl = canvas.getContext("webgl2", { alpha: true, premultipliedAlpha: false });
     if (!gl) {
       console.error("WebGL2 not supported");
       return false;
@@ -802,6 +825,8 @@ export function CloudCanvas({
       starSize: gl.getUniformLocation(program, "u_starSize"),
       starTwinkleSpeed: gl.getUniformLocation(program, "u_starTwinkleSpeed"),
       starTwinkleAmount: gl.getUniformLocation(program, "u_starTwinkleAmount"),
+      horizonLine: gl.getUniformLocation(program, "u_horizonLine"),
+      transparentBackground: gl.getUniformLocation(program, "u_transparentBackground"),
       debug: gl.getUniformLocation(program, "u_debug"),
     };
 
@@ -860,6 +885,8 @@ export function CloudCanvas({
     gl.uniform1f(uniforms.starSize, starSize);
     gl.uniform1f(uniforms.starTwinkleSpeed, starTwinkleSpeed);
     gl.uniform1f(uniforms.starTwinkleAmount, starTwinkleAmount);
+    gl.uniform1f(uniforms.horizonLine, horizonLine);
+    gl.uniform1i(uniforms.transparentBackground, transparentBackground ? 1 : 0);
     gl.uniform1i(uniforms.debug, debug ? 1 : 0);
 
     gl.drawArrays(gl.TRIANGLES, 0, 6);
@@ -871,7 +898,7 @@ export function CloudCanvas({
     sunAltitude, sunAzimuth, lightIntensity, ambientDarkness,
     numLayers, layerSpread,
     starDensity, starSize, starTwinkleSpeed, starTwinkleAmount,
-    debug
+    horizonLine, transparentBackground, debug
   ]);
 
   useEffect(() => {

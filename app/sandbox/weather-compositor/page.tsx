@@ -21,6 +21,7 @@ import {
   importFromFile,
   type FullCompositorParams,
   type ConditionOverrides,
+  type GlobalSettings,
 } from "./presets";
 
 function formatTimeLabel(timeOfDay: number): string {
@@ -70,9 +71,14 @@ function useDebounce<T>(value: T, delay: number): T {
   return debouncedValue;
 }
 
+const DEFAULT_GLOBAL_SETTINGS: GlobalSettings = {
+  timeOfDay: 0.5,
+};
+
 export default function WeatherCompositorSandbox() {
   const [isMounted, setIsMounted] = useState(false);
   const [activeCondition, setActiveCondition] = useState<WeatherCondition>("clear");
+  const [globalSettings, setGlobalSettings] = useState<GlobalSettings>(DEFAULT_GLOBAL_SETTINGS);
   const [overrides, setOverrides] = useState<Partial<Record<WeatherCondition, ConditionOverrides>>>({});
   const isInitializing = useRef(true);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -82,6 +88,7 @@ export default function WeatherCompositorSandbox() {
     const stored = loadFromStorage();
     if (stored) {
       setActiveCondition(stored.activeCondition);
+      setGlobalSettings(stored.globalSettings ?? DEFAULT_GLOBAL_SETTINGS);
       setOverrides(stored.overrides);
     }
     setTimeout(() => {
@@ -99,6 +106,17 @@ export default function WeatherCompositorSandbox() {
     [baseParams, currentOverrides]
   );
 
+  // Global controls (not persisted per-condition)
+  const [global, setGlobal] = useControls("Global", () => ({
+    timeOfDay: { value: globalSettings.timeOfDay, min: 0, max: 1, step: 0.01, label: "Time of Day" },
+  }), []);
+
+  // Sync global controls with state
+  useEffect(() => {
+    if (isInitializing.current) return;
+    setGlobalSettings({ timeOfDay: global.timeOfDay });
+  }, [global.timeOfDay]);
+
   const [layers, setLayers] = useControls("Layers", () => ({
     celestial: { value: mergedParams.layers.celestial, label: "Celestial" },
     clouds: { value: mergedParams.layers.clouds, label: "Clouds" },
@@ -108,7 +126,6 @@ export default function WeatherCompositorSandbox() {
   }), [activeCondition]);
 
   const [celestial, setCelestial] = useControls("Celestial", () => ({
-    timeOfDay: { value: mergedParams.celestial.timeOfDay, min: 0, max: 1, step: 0.01, label: "Time (0=midnight)" },
     moonPhase: { value: mergedParams.celestial.moonPhase, min: 0, max: 1, step: 0.01, label: "Moon Phase" },
     starDensity: { value: mergedParams.celestial.starDensity, min: 0, max: 1, step: 0.05, label: "Star Density" },
     celestialX: { value: mergedParams.celestial.celestialX, min: 0, max: 1, step: 0.01, label: "Position X" },
@@ -125,6 +142,7 @@ export default function WeatherCompositorSandbox() {
     turbulence: { value: mergedParams.cloud.turbulence, min: 0, max: 2, step: 0.05, label: "Turbulence" },
     numLayers: { value: mergedParams.cloud.numLayers, min: 1, max: 6, step: 1, label: "Layers" },
     ambientDarkness: { value: mergedParams.cloud.ambientDarkness, min: 0, max: 1, step: 0.05, label: "Darkness" },
+    horizonLine: { value: mergedParams.cloud.horizonLine, min: 0, max: 1, step: 0.01, label: "Horizon" },
   }), [activeCondition]);
 
   const [rain, setRain] = useControls("Rain", () => ({
@@ -147,9 +165,10 @@ export default function WeatherCompositorSandbox() {
     snowLayers: { value: mergedParams.snow.snowLayers, min: 1, max: 6, step: 1, label: "Layers" },
   }), [activeCondition]);
 
+  // Combine Leva values with global timeOfDay for full params
   const currentParams: FullCompositorParams = {
     layers,
-    celestial,
+    celestial: { ...celestial, timeOfDay: global.timeOfDay },
     cloud,
     rain,
     lightning,
@@ -175,7 +194,7 @@ export default function WeatherCompositorSandbox() {
     });
   }, [debouncedParams, activeCondition, baseParams, isMounted]);
 
-  const stateToSave = useDebounce({ activeCondition, overrides }, 500);
+  const stateToSave = useDebounce({ activeCondition, globalSettings, overrides }, 500);
 
   useEffect(() => {
     if (!isMounted || isInitializing.current) return;
@@ -189,7 +208,15 @@ export default function WeatherCompositorSandbox() {
     const merged = mergeWithOverrides(newBase, existingOverrides);
 
     setLayers(merged.layers);
-    setCelestial(merged.celestial);
+    // Don't reset timeOfDay - it's global
+    setCelestial({
+      moonPhase: merged.celestial.moonPhase,
+      starDensity: merged.celestial.starDensity,
+      celestialX: merged.celestial.celestialX,
+      celestialY: merged.celestial.celestialY,
+      sunSize: merged.celestial.sunSize,
+      moonSize: merged.celestial.moonSize,
+    });
     setCloud(merged.cloud);
     setRain(merged.rain);
     setLightning(merged.lightning);
@@ -197,8 +224,8 @@ export default function WeatherCompositorSandbox() {
   }, [overrides, setLayers, setCelestial, setCloud, setRain, setLightning, setSnow]);
 
   const handleExport = useCallback(() => {
-    exportToFile({ activeCondition, overrides });
-  }, [activeCondition, overrides]);
+    exportToFile({ activeCondition, globalSettings, overrides });
+  }, [activeCondition, globalSettings, overrides]);
 
   const handleImport = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -207,7 +234,9 @@ export default function WeatherCompositorSandbox() {
     try {
       const imported = await importFromFile(file);
       setActiveCondition(imported.activeCondition);
+      setGlobalSettings(imported.globalSettings ?? DEFAULT_GLOBAL_SETTINGS);
       setOverrides(imported.overrides);
+      setGlobal({ timeOfDay: imported.globalSettings?.timeOfDay ?? 0.5 });
       handleConditionChange(imported.activeCondition);
     } catch (err) {
       console.error("Failed to import presets:", err);
@@ -216,7 +245,7 @@ export default function WeatherCompositorSandbox() {
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
-  }, [handleConditionChange]);
+  }, [handleConditionChange, setGlobal]);
 
   const handleReset = useCallback(() => {
     setOverrides(prev => {
@@ -226,7 +255,14 @@ export default function WeatherCompositorSandbox() {
     });
     const base = getBaseParamsForCondition(activeCondition);
     setLayers(base.layers);
-    setCelestial(base.celestial);
+    setCelestial({
+      moonPhase: base.celestial.moonPhase,
+      starDensity: base.celestial.starDensity,
+      celestialX: base.celestial.celestialX,
+      celestialY: base.celestial.celestialY,
+      sunSize: base.celestial.sunSize,
+      moonSize: base.celestial.moonSize,
+    });
     setCloud(base.cloud);
     setRain(base.rain);
     setLightning(base.lightning);
@@ -236,6 +272,8 @@ export default function WeatherCompositorSandbox() {
   if (!isMounted) {
     return null;
   }
+
+  const timeOfDay = global.timeOfDay;
 
   return (
     <div className="relative min-h-screen bg-black">
@@ -304,7 +342,7 @@ export default function WeatherCompositorSandbox() {
           {layers.celestial && (
             <CelestialCanvas
               className="absolute inset-0"
-              timeOfDay={celestial.timeOfDay}
+              timeOfDay={timeOfDay}
               moonPhase={celestial.moonPhase}
               starDensity={celestial.starDensity}
               celestialX={celestial.celestialX}
@@ -323,8 +361,9 @@ export default function WeatherCompositorSandbox() {
               windSpeed={cloud.windSpeed}
               turbulence={cloud.turbulence}
               numLayers={cloud.numLayers}
-              sunAltitude={celestial.timeOfDay < 0.5 ? celestial.timeOfDay * 2 : 2 - celestial.timeOfDay * 2}
+              sunAltitude={timeOfDay < 0.5 ? timeOfDay * 2 : 2 - timeOfDay * 2}
               ambientDarkness={cloud.ambientDarkness}
+              horizonLine={cloud.horizonLine}
               starDensity={0}
               transparentBackground={true}
             />
@@ -366,7 +405,7 @@ export default function WeatherCompositorSandbox() {
           )}
 
           <div className="pointer-events-none absolute bottom-4 left-4 rounded bg-black/50 px-2 py-1 text-sm text-white/80 backdrop-blur-sm">
-            {formatTimeLabel(celestial.timeOfDay)}
+            {formatTimeLabel(timeOfDay)}
           </div>
         </div>
       </div>
