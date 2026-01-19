@@ -399,14 +399,14 @@ export default function WeatherCompositorSandbox() {
         <div
           className="relative overflow-hidden rounded-xl border border-white/10"
           style={{
-            width: "400px",
-            height: "280px",
+            width: showWidgetPreview ? "480px" : "400px",
+            height: showWidgetPreview ? "340px" : "280px",
           }}
         >
           {showWidgetPreview ? (
             <WeatherWidget
               id="compositor-preview"
-              location="San Francisco"
+              location="San Francisco, CA"
               current={{
                 temp: 72,
                 tempMin: 65,
@@ -414,9 +414,13 @@ export default function WeatherCompositorSandbox() {
                 condition: activeCondition,
               }}
               forecast={[
-                { day: "Mon", tempMin: 62, tempMax: 75, condition: activeCondition },
+                { day: "Today", tempMin: 65, tempMax: 78, condition: activeCondition },
                 { day: "Tue", tempMin: 64, tempMax: 77, condition: "partly-cloudy" },
                 { day: "Wed", tempMin: 61, tempMax: 73, condition: "cloudy" },
+                { day: "Thu", tempMin: 58, tempMax: 68, condition: "rain" },
+                { day: "Fri", tempMin: 55, tempMax: 65, condition: "drizzle" },
+                { day: "Sat", tempMin: 60, tempMax: 72, condition: "partly-cloudy" },
+                { day: "Sun", tempMin: 63, tempMax: 75, condition: "clear" },
               ]}
               unit="fahrenheit"
               updatedAt={(() => {
@@ -425,6 +429,90 @@ export default function WeatherCompositorSandbox() {
                 return date.toISOString();
               })()}
               effects={{ enabled: true }}
+              customEffectProps={{
+                layers: {
+                  celestial: layers.celestial,
+                  clouds: layers.clouds,
+                  rain: layers.rain,
+                  lightning: layers.lightning,
+                  snow: layers.snow,
+                },
+                celestial: layers.celestial ? {
+                  timeOfDay,
+                  moonPhase: celestial.moonPhase,
+                  starDensity: celestial.starDensity,
+                  celestialX: celestial.celestialX,
+                  celestialY: celestial.celestialY,
+                  sunSize: celestial.sunSize,
+                  moonSize: celestial.moonSize,
+                  sunGlowIntensity: celestial.sunGlowIntensity,
+                  sunGlowSize: celestial.sunGlowSize,
+                  sunRayCount: celestial.sunRayCount,
+                  sunRayLength: celestial.sunRayLength,
+                  sunRayIntensity: celestial.sunRayIntensity,
+                  moonGlowIntensity: celestial.moonGlowIntensity,
+                  moonGlowSize: celestial.moonGlowSize,
+                } : undefined,
+                cloud: layers.clouds ? {
+                  cloudScale: cloud.cloudScale,
+                  coverage: cloud.coverage,
+                  density: cloud.density,
+                  softness: cloud.softness,
+                  windSpeed: cloud.windSpeed,
+                  windAngle: cloud.windAngle,
+                  turbulence: cloud.turbulence,
+                  sunAltitude: timeOfDay < 0.5 ? timeOfDay * 2 : 2 - timeOfDay * 2,
+                  sunAzimuth: cloud.sunAzimuth,
+                  lightIntensity: cloud.lightIntensity,
+                  ambientDarkness: cloud.ambientDarkness,
+                  numLayers: cloud.numLayers,
+                  layerSpread: cloud.layerSpread,
+                  starDensity: 0,
+                  starSize: cloud.starSize,
+                  starTwinkleSpeed: cloud.starTwinkleSpeed,
+                  starTwinkleAmount: cloud.starTwinkleAmount,
+                  horizonLine: cloud.horizonLine,
+                } : undefined,
+                rain: layers.rain ? {
+                  glassIntensity: rain.glassIntensity,
+                  zoom: rain.zoom,
+                  fallingIntensity: rain.fallingIntensity,
+                  fallingSpeed: rain.fallingSpeed,
+                  fallingAngle: rain.fallingAngle,
+                  fallingStreakLength: rain.fallingStreakLength,
+                  fallingLayers: rain.fallingLayers,
+                  fallingRefraction: rain.fallingRefraction,
+                  fallingWaviness: rain.fallingWaviness,
+                  fallingThicknessVar: rain.fallingThicknessVar,
+                } : undefined,
+                lightning: layers.lightning ? {
+                  branchDensity: lightning.branchDensity,
+                  displacement: lightning.displacement,
+                  glowIntensity: lightning.glowIntensity,
+                  flashDuration: lightning.flashDuration,
+                  sceneIllumination: lightning.sceneIllumination,
+                  afterglowPersistence: lightning.afterglowPersistence,
+                  autoMode: lightning.autoMode,
+                  autoInterval: lightning.autoInterval,
+                } : undefined,
+                snow: layers.snow ? {
+                  intensity: snow.intensity,
+                  layers: snow.layers,
+                  fallSpeed: snow.fallSpeed,
+                  windSpeed: snow.windSpeed,
+                  windAngle: snow.windAngle,
+                  turbulence: snow.turbulence,
+                  drift: snow.drift,
+                  flutter: snow.flutter,
+                  windShear: snow.windShear,
+                  flakeSize: snow.flakeSize,
+                  sizeVariation: snow.sizeVariation,
+                  opacity: snow.opacity,
+                  glowAmount: snow.glowAmount,
+                  sparkle: snow.sparkle,
+                  visibility: snow.visibility,
+                } : undefined,
+              }}
             />
           ) : (
             <>

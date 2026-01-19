@@ -124,9 +124,9 @@ function ForecastDayCard({ day, unit, index }: ForecastDayCardProps) {
         condition={day.condition}
         className="text-muted-foreground size-5"
       />
-      <div className="flex flex-col items-center text-xs tabular-nums">
-        <span className="font-medium">{formatTemperature(day.tempMax, unit)}</span>
-        <span className="text-muted-foreground">
+      <div className="flex flex-col items-center tabular-nums">
+        <span className="text-sm font-medium">{formatTemperature(day.tempMax, unit)}</span>
+        <span className="text-muted-foreground text-xs">
           {formatTemperature(day.tempMin, unit)}
         </span>
       </div>
@@ -158,6 +158,7 @@ export function WeatherWidget({
   isLoading = false,
   locale: localeProp,
   effects,
+  customEffectProps,
 }: WeatherWidgetProps) {
   const locale =
     localeProp ??
@@ -180,6 +181,7 @@ export function WeatherWidget({
             condition={current.condition}
             timestamp={updatedAt}
             settings={effects}
+            customProps={customEffectProps}
           />
         )}
         <CardHeader
@@ -188,7 +190,7 @@ export function WeatherWidget({
             effectsEnabled && "drop-shadow-[0_1px_2px_rgba(0,0,0,0.3)]",
           )}
         >
-          <CardTitle className="text-base font-medium">{location}</CardTitle>
+          <CardTitle className="text-lg font-semibold tracking-tight">{location}</CardTitle>
         </CardHeader>
         <CardContent
           className={cn(
@@ -214,23 +216,22 @@ export function WeatherWidget({
                 className="text-muted-foreground size-12"
               />
               <div className="flex flex-col">
-                <div className="flex items-baseline gap-1">
+                <div className="flex items-baseline gap-0.5">
                   <span
-                    className="text-4xl font-light tabular-nums"
+                    className="text-4xl font-normal tabular-nums tracking-tight"
                     aria-label={`${Math.round(current.temp)} degrees ${unit === "celsius" ? "Celsius" : "Fahrenheit"}`}
                   >
                     {Math.round(current.temp)}
                   </span>
-                  <span className="text-muted-foreground text-lg">
+                  <span className="text-muted-foreground text-xl font-light">
                     °{unitLabel}
                   </span>
                 </div>
                 <div className="text-muted-foreground flex items-center gap-2 text-sm">
-                  <span>{conditionLabel}</span>
+                  <span className="font-medium">{conditionLabel}</span>
                   <span aria-hidden="true">·</span>
                   <span className="tabular-nums">
-                    H:{formatTemperature(current.tempMax, unit)} L:
-                    {formatTemperature(current.tempMin, unit)}
+                    H: {formatTemperature(current.tempMax, unit)}{"  "}L: {formatTemperature(current.tempMin, unit)}
                   </span>
                 </div>
               </div>
@@ -261,7 +262,7 @@ export function WeatherWidget({
 
           {updatedAt && !isLoading && (
             <p
-              className="text-muted-foreground text-xs animate-in fade-in duration-500 fill-mode-both"
+              className="text-muted-foreground text-[13px] animate-in fade-in duration-500 fill-mode-both"
               style={{ animationDelay: "300ms" }}
             >
               Updated {formatRelativeTime(updatedAt, locale)}

@@ -145,124 +145,30 @@ interface CelestialPreset {
   moonGlowSize: number;
 }
 
+// Unified celestial settings across all conditions
+const UNIFIED_CELESTIAL: CelestialPreset = {
+  x: 0.74, y: 0.78,
+  sunSize: 0.14, moonSize: 0.17,
+  starDensity: 2.0,
+  sunGlowIntensity: 3.05, sunGlowSize: 0.30,
+  sunRayCount: 6, sunRayLength: 3.0, sunRayIntensity: 0.10,
+  moonGlowIntensity: 3.45, moonGlowSize: 0.94,
+};
+
 const CELESTIAL_PRESETS: Record<WeatherCondition, CelestialPreset> = {
-  // Clear: Crisp sun, prominent rays, tight glow. High position for open sky feeling.
-  clear: {
-    x: 0.72, y: 0.78,
-    sunSize: 0.10, moonSize: 0.08,
-    starDensity: 0.9,
-    sunGlowIntensity: 1.2, sunGlowSize: 0.25,
-    sunRayCount: 16, sunRayLength: 0.6, sunRayIntensity: 0.6,
-    moonGlowIntensity: 1.1, moonGlowSize: 0.18,
-  },
-  // Partly Cloudy: Soft rays peek through, slight atmospheric scatter.
-  "partly-cloudy": {
-    x: 0.68, y: 0.72,
-    sunSize: 0.12, moonSize: 0.10,
-    starDensity: 0.5,
-    sunGlowIntensity: 0.9, sunGlowSize: 0.35,
-    sunRayCount: 12, sunRayLength: 0.4, sunRayIntensity: 0.3,
-    moonGlowIntensity: 0.8, moonGlowSize: 0.22,
-  },
-  // Cloudy: Diffuse light, subtle rays through thin spots.
-  cloudy: {
-    x: 0.62, y: 0.66,
-    sunSize: 0.15, moonSize: 0.12,
-    starDensity: 0.15,
-    sunGlowIntensity: 0.6, sunGlowSize: 0.45,
-    sunRayCount: 6, sunRayLength: 0.2, sunRayIntensity: 0.15,
-    moonGlowIntensity: 0.5, moonGlowSize: 0.28,
-  },
-  // Overcast: Low, oppressive. Sun is diffuse blob, no rays.
-  overcast: {
-    x: 0.55, y: 0.60,
-    sunSize: 0.18, moonSize: 0.14,
-    starDensity: 0.0,
-    sunGlowIntensity: 0.4, sunGlowSize: 0.55,
-    sunRayCount: 0, sunRayLength: 0, sunRayIntensity: 0,
-    moonGlowIntensity: 0.35, moonGlowSize: 0.32,
-  },
-  // Fog: Maximum atmospheric diffusion. Huge ethereal halo, high position.
-  fog: {
-    x: 0.60, y: 0.82,
-    sunSize: 0.28, moonSize: 0.22,
-    starDensity: 0.0,
-    sunGlowIntensity: 0.8, sunGlowSize: 0.7,
-    sunRayCount: 0, sunRayLength: 0, sunRayIntensity: 0,
-    moonGlowIntensity: 0.7, moonGlowSize: 0.4,
-  },
-  // Drizzle: Light rain, dim sun, faint rays possible.
-  drizzle: {
-    x: 0.60, y: 0.68,
-    sunSize: 0.14, moonSize: 0.11,
-    starDensity: 0.08,
-    sunGlowIntensity: 0.5, sunGlowSize: 0.4,
-    sunRayCount: 4, sunRayLength: 0.15, sunRayIntensity: 0.1,
-    moonGlowIntensity: 0.45, moonGlowSize: 0.24,
-  },
-  // Rain: Sun obscured, no rays, muted glow.
-  rain: {
-    x: 0.58, y: 0.62,
-    sunSize: 0.13, moonSize: 0.10,
-    starDensity: 0.0,
-    sunGlowIntensity: 0.35, sunGlowSize: 0.35,
-    sunRayCount: 0, sunRayLength: 0, sunRayIntensity: 0,
-    moonGlowIntensity: 0.35, moonGlowSize: 0.2,
-  },
-  // Heavy Rain: Very low, dramatic. Minimal celestial presence.
-  "heavy-rain": {
-    x: 0.52, y: 0.55,
-    sunSize: 0.11, moonSize: 0.09,
-    starDensity: 0.0,
-    sunGlowIntensity: 0.25, sunGlowSize: 0.3,
-    sunRayCount: 0, sunRayLength: 0, sunRayIntensity: 0,
-    moonGlowIntensity: 0.25, moonGlowSize: 0.16,
-  },
-  // Thunderstorm: Lowest, most ominous. Sun barely visible.
-  thunderstorm: {
-    x: 0.48, y: 0.50,
-    sunSize: 0.10, moonSize: 0.08,
-    starDensity: 0.0,
-    sunGlowIntensity: 0.15, sunGlowSize: 0.25,
-    sunRayCount: 0, sunRayLength: 0, sunRayIntensity: 0,
-    moonGlowIntensity: 0.15, moonGlowSize: 0.14,
-  },
-  // Snow: Crisp winter light, gentle rays, bright reflective glow.
-  snow: {
-    x: 0.70, y: 0.75,
-    sunSize: 0.12, moonSize: 0.10,
-    starDensity: 0.4,
-    sunGlowIntensity: 0.9, sunGlowSize: 0.35,
-    sunRayCount: 10, sunRayLength: 0.4, sunRayIntensity: 0.35,
-    moonGlowIntensity: 0.85, moonGlowSize: 0.25,
-  },
-  // Sleet: Mixed precipitation, no rays, moderate glow.
-  sleet: {
-    x: 0.58, y: 0.62,
-    sunSize: 0.13, moonSize: 0.10,
-    starDensity: 0.0,
-    sunGlowIntensity: 0.4, sunGlowSize: 0.38,
-    sunRayCount: 0, sunRayLength: 0, sunRayIntensity: 0,
-    moonGlowIntensity: 0.38, moonGlowSize: 0.22,
-  },
-  // Hail: Similar to heavy rain. Severe, minimal sun.
-  hail: {
-    x: 0.52, y: 0.58,
-    sunSize: 0.11, moonSize: 0.09,
-    starDensity: 0.0,
-    sunGlowIntensity: 0.3, sunGlowSize: 0.3,
-    sunRayCount: 0, sunRayLength: 0, sunRayIntensity: 0,
-    moonGlowIntensity: 0.3, moonGlowSize: 0.18,
-  },
-  // Windy: Crystal clear air, maximum visibility. Intense rays, tight crisp sun.
-  windy: {
-    x: 0.75, y: 0.76,
-    sunSize: 0.09, moonSize: 0.075,
-    starDensity: 0.55,
-    sunGlowIntensity: 1.3, sunGlowSize: 0.22,
-    sunRayCount: 16, sunRayLength: 0.65, sunRayIntensity: 0.7,
-    moonGlowIntensity: 1.2, moonGlowSize: 0.16,
-  },
+  clear: UNIFIED_CELESTIAL,
+  "partly-cloudy": UNIFIED_CELESTIAL,
+  cloudy: UNIFIED_CELESTIAL,
+  overcast: UNIFIED_CELESTIAL,
+  fog: UNIFIED_CELESTIAL,
+  drizzle: UNIFIED_CELESTIAL,
+  rain: UNIFIED_CELESTIAL,
+  "heavy-rain": UNIFIED_CELESTIAL,
+  thunderstorm: UNIFIED_CELESTIAL,
+  snow: UNIFIED_CELESTIAL,
+  sleet: UNIFIED_CELESTIAL,
+  hail: UNIFIED_CELESTIAL,
+  windy: UNIFIED_CELESTIAL,
 };
 
 /**

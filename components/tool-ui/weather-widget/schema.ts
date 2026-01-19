@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { ToolUIIdSchema, ToolUIRoleSchema, parseWithSchema } from "../shared";
+import type { CustomEffectProps } from "./effects";
 
 export const WeatherConditionSchema = z.enum([
   "clear",
@@ -96,4 +97,9 @@ export interface WeatherWidgetProps extends SerializableWeatherWidget {
   isLoading?: boolean;
   locale?: string;
   effects?: EffectSettings;
+  /**
+   * Custom effect props for direct control over all effect parameters.
+   * Used by the compositor sandbox for tuning effects in context.
+   */
+  customEffectProps?: CustomEffectProps;
 }
