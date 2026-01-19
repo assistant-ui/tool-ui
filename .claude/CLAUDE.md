@@ -108,6 +108,15 @@ Guidelines:
 4. Update `defaultPreset` in `preview-config.tsx` if needed
 5. Update `content.mdx` and `gallery/page.tsx` references
 
+## MDX Authoring
+
+Doc pages use MDX (`app/docs/{component}/content.mdx`). Key considerations:
+
+- **GFM tables**: Supported via `remark-gfm` in `next.config.ts`. Standard markdown table syntax works.
+- **Custom components**: Available via `mdx-components.tsx` — includes `TypeTable`, `Files`, `Feature`, `FeatureGrid`, preset examples
+- **Prose styling**: Content wraps in `.prose` class from `docs-content.tsx`. Use `not-prose` class to escape for custom layouts.
+- **Auto-linking**: Tool UI component names in text auto-link to their docs pages (configured in `withAutoLink`)
+
 ## Discovery Locations
 
 | What                    | Where                                            |
