@@ -42,11 +42,13 @@ export default function WeatherEffectsSandbox() {
     coverage: { value: 0.5, min: 0, max: 1, step: 0.01 },
     density: { value: 0.7, min: 0, max: 1, step: 0.01 },
     softness: { value: 0.5, min: 0, max: 1, step: 0.01 },
+    cloudScale: { value: 1.0, min: 0.1, max: 5, step: 0.1 },
     windSpeed: { value: 0.3, min: 0, max: 2, step: 0.01 },
     windAngle: { value: 0, min: -Math.PI, max: Math.PI, step: 0.01 },
     turbulence: { value: 0.3, min: 0, max: 1, step: 0.01 },
     lightIntensity: { value: 1.0, min: 0, max: 2, step: 0.01 },
     ambientDarkness: { value: 0.2, min: 0, max: 1, step: 0.01 },
+    backlightIntensity: { value: 0.5, min: 0, max: 2, step: 0.01 },
     numLayers: { value: 3, min: 1, max: 5, step: 1 },
   }) as CloudParams;
 

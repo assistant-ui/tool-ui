@@ -27,11 +27,13 @@ export interface CloudParams {
   coverage: number;
   density: number;
   softness: number;
+  cloudScale: number;
   windSpeed: number;
   windAngle: number;
   turbulence: number;
   lightIntensity: number;
   ambientDarkness: number;
+  backlightIntensity: number;
   numLayers: number;
 }
 
@@ -119,11 +121,13 @@ const DEFAULT_CLOUD: CloudParams = {
   coverage: 0.5,
   density: 0.7,
   softness: 0.5,
+  cloudScale: 1.0,
   windSpeed: 0.3,
   windAngle: 0,
   turbulence: 0.3,
   lightIntensity: 1.0,
   ambientDarkness: 0.2,
+  backlightIntensity: 0.5,
   numLayers: 3,
 };
 
@@ -195,6 +199,8 @@ uniform float u_sunRayLength;
 uniform float u_sunRayIntensity;
 uniform float u_moonGlowIntensity;
 uniform float u_moonGlowSize;
+uniform sampler2D u_moonTexture;
+uniform bool u_hasMoonTexture;
 
 #define PI 3.14159265359
 #define TAU 6.28318530718
@@ -345,7 +351,19 @@ vec3 getSphereNormal(vec2 discUV) {
   return normalize(vec3(discUV.x, discUV.y, z));
 }
 
+vec2 sphereToEquirectangular(vec3 normal) {
+  float longitude = atan(normal.x, normal.z);
+  float u = longitude / TAU + 0.5;
+  float latitude = asin(clamp(normal.y, -1.0, 1.0));
+  float v = latitude / PI + 0.5;
+  return vec2(u, v);
+}
+
 vec3 getMoonSurfaceColor(vec3 normal, vec2 discUV) {
+  if (u_hasMoonTexture) {
+    vec2 texUV = sphereToEquirectangular(normal);
+    return texture(u_moonTexture, texUV).rgb;
+  }
   float brightness = 0.7 + fbm(discUV * 5.0, 3) * 0.3;
   return vec3(brightness * 0.85, brightness * 0.83, brightness * 0.8);
 }
@@ -448,6 +466,11 @@ uniform float u_turbulence;
 uniform float u_lightIntensity;
 uniform float u_ambientDarkness;
 uniform int u_numLayers;
+uniform float u_cloudScale;
+uniform vec2 u_celestialPos;
+uniform float u_celestialSize;
+uniform float u_celestialBrightness;
+uniform float u_backlightIntensity;
 
 #define PI 3.14159265359
 
@@ -478,63 +501,140 @@ float fbm(vec2 p, int octaves) {
   return value;
 }
 
-float cloudLayer(vec2 uv, float time, float scale, float speed, float turbAmount) {
+float cloudLayer(vec2 uv, float time, float layerSeed, float speed, float turbAmount) {
   vec2 wind = vec2(cos(u_windAngle), sin(u_windAngle)) * speed * time;
-  vec2 p = uv * scale + wind;
 
-  // Add turbulence morphing
+  // Each layer gets unique offset, scale, and rotation based on seed
+  float layerScale = (1.8 + hash(vec2(layerSeed, 0.0)) * 1.2) * u_cloudScale;
+  float layerRotation = hash(vec2(layerSeed, 1.0)) * 0.5 - 0.25;
+  vec2 layerOffset = vec2(
+    hash(vec2(layerSeed, 2.0)) * 100.0,
+    hash(vec2(layerSeed, 3.0)) * 100.0
+  );
+
+  // Apply rotation
+  float c = cos(layerRotation);
+  float s = sin(layerRotation);
+  vec2 rotatedUV = vec2(uv.x * c - uv.y * s, uv.x * s + uv.y * c);
+
+  vec2 p = rotatedUV * layerScale + wind + layerOffset;
+
+  // Turbulence with layer-specific offset
+  float turbSeed = layerSeed * 50.0;
   vec2 turbOffset = vec2(
-    fbm(p * 0.5 + time * 0.1, 4),
-    fbm(p * 0.5 + 100.0 + time * 0.1, 4)
+    fbm(p * 0.5 + time * 0.1 + turbSeed, 4),
+    fbm(p * 0.5 + turbSeed + 100.0 + time * 0.1, 4)
   ) * turbAmount;
 
   float n = fbm(p + turbOffset, 6);
   return n;
 }
 
+vec3 cloudLighting(float density, float heightInCloud, float sunAlt, float warmth, float nightFactor, vec2 uv) {
+  float daylight = smoothstep(-0.12, 0.1, sunAlt);
+
+  vec3 dayLitColor = vec3(1.0, 0.98, 0.96);
+  vec3 sunsetLitColor = vec3(1.0, 0.7, 0.45);
+  vec3 nightLitColor = vec3(0.12, 0.14, 0.2);
+  vec3 litColor = mix(dayLitColor, sunsetLitColor, warmth);
+  litColor = mix(litColor, nightLitColor, nightFactor);
+
+  vec3 dayShadowColor = vec3(0.45, 0.5, 0.6);
+  vec3 sunsetShadowColor = vec3(0.35, 0.25, 0.3);
+  vec3 nightShadowColor = vec3(0.03, 0.04, 0.07);
+  vec3 shadowColor = mix(dayShadowColor, sunsetShadowColor, warmth);
+  shadowColor = mix(shadowColor, nightShadowColor, nightFactor);
+  shadowColor *= (1.0 - u_ambientDarkness * 0.3);
+
+  float topLight = heightInCloud * max(0.0, sunAlt);
+  float sideLight = (1.0 - abs(heightInCloud - 0.5) * 2.0) * (1.0 - sunAlt * 0.5);
+  float bottomLight = (1.0 - heightInCloud) * warmth * 0.5;
+  float ambientLight = mix(0.03, 0.2, daylight);
+
+  float lightAmount = (topLight * 0.5 + sideLight * 0.3 + bottomLight) * daylight + ambientLight;
+  lightAmount = clamp(lightAmount * u_lightIntensity, 0.0, 1.0);
+
+  vec3 cloudColor = mix(shadowColor, litColor, lightAmount);
+
+  float rimLight = pow(density, 0.5) * (1.0 - density) * 4.0;
+  vec3 rimColor = mix(vec3(1.0, 1.0, 0.95), vec3(1.0, 0.8, 0.5), warmth);
+  rimColor = mix(rimColor, vec3(0.15, 0.18, 0.25), nightFactor);
+  float rimStrength = mix(0.1, 0.3, daylight);
+  cloudColor += rimColor * rimLight * rimStrength * u_lightIntensity;
+
+  float hotSpot = pow(max(0.0, lightAmount - 0.6) * 2.5, 2.0) * warmth * daylight;
+  cloudColor += vec3(1.0, 0.5, 0.2) * hotSpot * 0.4;
+
+  // Celestial body illumination - clouds near sun/moon get backlit
+  float aspect = u_resolution.x / u_resolution.y;
+  vec2 celestialUV = u_celestialPos;
+  vec2 diff = (uv - celestialUV) * vec2(aspect, 1.0);
+  float distToCelestial = length(diff);
+
+  // Light transmission - thin clouds scatter light, thick clouds block it
+  float transmission = pow(1.0 - density, 2.0); // quadratic falloff - dense clouds block more
+
+  // Backlight glow - extends beyond the celestial body, but blocked by dense clouds
+  float glowRadius = u_celestialSize * 6.0;
+  float proximityGlow = exp(-distToCelestial * distToCelestial / (glowRadius * glowRadius));
+  float backlight = proximityGlow * transmission * u_celestialBrightness;
+
+  // Silver lining - bright edges where thin cloud meets thick cloud near celestial
+  // Peaks at medium density (the transition zone), requires proximity to celestial
+  float edgeDist = u_celestialSize * 3.0;
+  float nearCelestial = smoothstep(edgeDist * 2.5, edgeDist * 0.3, distToCelestial);
+  float edgeFactor = density * (1.0 - density) * 4.0; // peaks at 0.5 density
+  float silverLining = nearCelestial * edgeFactor * u_celestialBrightness;
+
+  // Color based on day/night, scaled by backlight intensity control
+  vec3 backlightColor = mix(vec3(1.0, 0.9, 0.7), vec3(0.7, 0.75, 0.9), nightFactor);
+  cloudColor += backlightColor * (backlight * 0.5 + silverLining * 0.8) * u_backlightIntensity;
+
+  return cloudColor;
+}
+
 void main() {
   vec2 uv = v_uv;
   vec4 scene = texture(u_sceneTexture, uv);
 
-  // Sun altitude from time of day
   float sunAlt = u_timeOfDay < 0.5 ? u_timeOfDay * 2.0 : 2.0 - u_timeOfDay * 2.0;
+  sunAlt = sunAlt * 2.0 - 1.0;
 
-  // Cloud rendering
-  float totalCloud = 0.0;
-  float totalLight = 0.0;
+  float warmth = 1.0 - smoothstep(0.0, 0.4, sunAlt);
+  warmth = warmth * warmth;
+  float nightFactor = 1.0 - smoothstep(-0.12, 0.02, sunAlt);
+  float daylight = smoothstep(-0.12, 0.1, sunAlt);
 
-  for (int i = 0; i < 5; i++) {
-    if (i >= u_numLayers) break;
+  vec3 color = scene.rgb;
+  float accumulatedAlpha = 0.0;
 
+  for (int i = u_numLayers - 1; i >= 0; i--) {
     float layerIdx = float(i);
-    float layerScale = 2.0 + layerIdx * 0.8;
-    float layerSpeed = u_windSpeed * (1.0 - layerIdx * 0.15);
-    float layerTurb = u_turbulence * (1.0 + layerIdx * 0.2);
+    float layerDepth = layerIdx / max(1.0, float(u_numLayers) - 1.0);
 
-    float cloud = cloudLayer(uv, u_time, layerScale, layerSpeed, layerTurb);
+    float layerSeed = layerIdx * 7.31 + 13.0;
+    float layerSpeed = u_windSpeed * (0.6 + hash(vec2(layerSeed, 10.0)) * 0.8);
+    float layerTurb = u_turbulence * (0.7 + hash(vec2(layerSeed, 11.0)) * 0.6);
 
-    // Threshold for coverage
+    float cloud = cloudLayer(uv, u_time, layerSeed, layerSpeed, layerTurb);
+
     float threshold = 1.0 - u_coverage;
     cloud = smoothstep(threshold, threshold + u_softness, cloud);
 
-    // Simple lighting
-    float light = cloud * (0.5 + sunAlt * 0.5) * u_lightIntensity;
+    float heightInCloud = uv.y * 0.6 + cloud * 0.4;
+    vec3 cloudColor = cloudLighting(cloud, heightInCloud, sunAlt, warmth, nightFactor, uv);
 
-    // Accumulate with depth falloff
-    float depth = 1.0 - layerIdx * 0.2;
-    totalCloud += cloud * depth * u_density;
-    totalLight += light * depth;
+    vec3 hazeColor = mix(vec3(0.05, 0.06, 0.1), vec3(0.6, 0.7, 0.85), daylight);
+    float hazeAmount = layerDepth * layerDepth * 0.5;
+    cloudColor = mix(cloudColor, hazeColor, hazeAmount);
+
+    float contrastReduction = 1.0 - layerDepth * 0.3;
+    cloudColor = mix(vec3(0.5), cloudColor, contrastReduction);
+
+    float alpha = cloud * u_density * (0.6 + (1.0 - layerDepth) * 0.4);
+    color = mix(color, cloudColor, alpha * (1.0 - accumulatedAlpha));
+    accumulatedAlpha = accumulatedAlpha + alpha * (1.0 - accumulatedAlpha);
   }
-
-  totalCloud = clamp(totalCloud, 0.0, 1.0);
-
-  // Cloud color based on lighting
-  vec3 cloudBright = vec3(1.0, 0.98, 0.95);
-  vec3 cloudDark = vec3(0.3, 0.32, 0.38) * (1.0 - u_ambientDarkness);
-  vec3 cloudColor = mix(cloudDark, cloudBright, totalLight);
-
-  // Composite over scene
-  vec3 color = mix(scene.rgb, cloudColor, totalCloud * 0.85);
 
   fragColor = vec4(color, 1.0);
 }
@@ -1178,6 +1278,8 @@ export function WeatherEffectsCanvas({
   const lastFlashTimeRef = useRef<number>(-100);
   const nextFlashTimeRef = useRef<number>(0);
   const strikeSeedRef = useRef<number>(Math.random());
+  const moonTextureRef = useRef<WebGLTexture | null>(null);
+  const moonTextureLoadedRef = useRef<boolean>(false);
 
   // Programs
   const programsRef = useRef<{
@@ -1247,6 +1349,28 @@ export function WeatherEffectsCanvas({
     const height = canvas.clientHeight * window.devicePixelRatio;
     fbRef.current.a = createFramebuffer(gl, width, height);
     fbRef.current.b = createFramebuffer(gl, width, height);
+
+    // Load moon texture
+    const moonTexture = gl.createTexture();
+    if (moonTexture) {
+      gl.bindTexture(gl.TEXTURE_2D, moonTexture);
+      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([128, 128, 128, 255]));
+      moonTextureRef.current = moonTexture;
+
+      const image = new Image();
+      image.crossOrigin = "anonymous";
+      image.onload = () => {
+        gl.bindTexture(gl.TEXTURE_2D, moonTexture);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
+        gl.generateMipmap(gl.TEXTURE_2D);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+        moonTextureLoadedRef.current = true;
+      };
+      image.src = "/assets/moon-texture.jpg";
+    }
 
     // Setup fullscreen quad
     const positions = new Float32Array([-1, -1, 1, -1, -1, 1, -1, 1, 1, -1, 1, 1]);
@@ -1334,6 +1458,11 @@ export function WeatherEffectsCanvas({
       gl.uniform1f(gl.getUniformLocation(programs.celestial, "u_moonGlowIntensity"), p.moonGlowIntensity);
       gl.uniform1f(gl.getUniformLocation(programs.celestial, "u_moonGlowSize"), p.moonGlowSize);
 
+      gl.activeTexture(gl.TEXTURE0);
+      gl.bindTexture(gl.TEXTURE_2D, moonTextureRef.current);
+      gl.uniform1i(gl.getUniformLocation(programs.celestial, "u_moonTexture"), 0);
+      gl.uniform1i(gl.getUniformLocation(programs.celestial, "u_hasMoonTexture"), moonTextureLoadedRef.current ? 1 : 0);
+
       gl.drawArrays(gl.TRIANGLES, 0, 6);
       swapBuffers();
     } else {
@@ -1368,6 +1497,20 @@ export function WeatherEffectsCanvas({
       gl.uniform1f(gl.getUniformLocation(programs.cloud, "u_lightIntensity"), p.lightIntensity);
       gl.uniform1f(gl.getUniformLocation(programs.cloud, "u_ambientDarkness"), p.ambientDarkness);
       gl.uniform1i(gl.getUniformLocation(programs.cloud, "u_numLayers"), p.numLayers);
+      gl.uniform1f(gl.getUniformLocation(programs.cloud, "u_cloudScale"), p.cloudScale);
+
+      // Pass celestial position for cloud illumination
+      const celestialP = props.celestial;
+      const sunVis = celestialP.timeOfDay > 0.2 && celestialP.timeOfDay < 0.8 ? 1.0 : 0.0;
+      const moonVis = celestialP.timeOfDay < 0.3 || celestialP.timeOfDay > 0.7 ? 1.0 : 0.0;
+      const celestialSize = sunVis > moonVis ? celestialP.sunSize : celestialP.moonSize;
+      const celestialBrightness = sunVis > moonVis
+        ? Math.min(1.0, celestialP.sunGlowIntensity * 0.3)
+        : Math.min(0.5, celestialP.moonGlowIntensity * 0.15);
+      gl.uniform2f(gl.getUniformLocation(programs.cloud, "u_celestialPos"), celestialP.celestialX, celestialP.celestialY);
+      gl.uniform1f(gl.getUniformLocation(programs.cloud, "u_celestialSize"), celestialSize);
+      gl.uniform1f(gl.getUniformLocation(programs.cloud, "u_celestialBrightness"), celestialBrightness);
+      gl.uniform1f(gl.getUniformLocation(programs.cloud, "u_backlightIntensity"), p.backlightIntensity);
 
       gl.drawArrays(gl.TRIANGLES, 0, 6);
       swapBuffers();
