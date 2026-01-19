@@ -118,6 +118,12 @@ Archive of completed features and improvements. See `TODO.md` for active work.
 - Increased shimmer contrast from rgba(255,255,255,0.4) to rgba(255,255,255,0.7) for better visibility
 - Verified glow pulse and shimmer animations fire exactly once at 100% completion (already correct)
 
+### Landing Page Showcase Polish (Jan 19, 2026)
+- Removed Chart example from showcase (less distinctive)
+- Updated parameter slider colors to vibrant rose/amber/sky theme
+- Added ANSI color codes to terminal test output (green checkmarks, gray counts, yellow timings)
+- Simplified Response Actions docs subtitle to "Lightweight decision buttons for tool outputs."
+
 ### Plan Component Visual Refinement (Jan 15, 2026)
 - Unified step icon sizing with Progress Tracker: container size-5→size-6, Loader2 size-3→size-5, Check/X size-3→size-4
 - Updated pending icon styling to match Progress Tracker: border→border (not border-2), border-muted-foreground/30→border-border

@@ -58,7 +58,7 @@ export const approvalCardPresets: Record<
     description: "Simple deployment approval",
     data: {
       id: "approval-card-deploy",
-      title: "Deploy to Production?",
+      title: "Deploy to Production",
       description: "This will push the latest changes to all users.",
       icon: "rocket",
       confirmLabel: "Deploy",
@@ -69,7 +69,7 @@ export const approvalCardPresets: Record<
     description: "Destructive action with warning styling",
     data: {
       id: "approval-card-destructive",
-      title: "Delete Project?",
+      title: "Delete Project",
       description:
         "This action cannot be undone. All files, settings, and history will be permanently removed.",
       icon: "trash-2",
@@ -83,7 +83,7 @@ export const approvalCardPresets: Record<
     description: "Approval with context details",
     data: {
       id: "approval-card-with-metadata",
-      title: "Send Email Campaign?",
+      title: "Send Email Campaign",
       description: "Review the details before sending to your subscribers.",
       icon: "mail",
       metadata: [

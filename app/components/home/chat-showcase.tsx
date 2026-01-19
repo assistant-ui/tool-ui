@@ -6,7 +6,6 @@ import { cn } from "@/lib/ui/cn";
 import { CitationList } from "@/components/tool-ui/citation";
 import { DataTable } from "@/components/tool-ui/data-table";
 import { LinkPreview } from "@/components/tool-ui/link-preview";
-import { Chart } from "@/components/tool-ui/chart";
 import { Plan } from "@/components/tool-ui/plan";
 import { Terminal } from "@/components/tool-ui/terminal";
 import { CodeBlock } from "@/components/tool-ui/code-block";
@@ -21,7 +20,6 @@ import {
   TABLE_COLUMNS,
   TABLE_DATA,
   LINK_PREVIEW,
-  SPENDING_CHART,
   PLAN_TODO_LABELS,
   OPTION_LIST_OPTIONS,
   ITEM_CAROUSEL_DATA,
@@ -189,11 +187,11 @@ function TypingIndicator() {
 }
 
 const TEST_LINES = [
-  "✓ login flow handles invalid credentials",
-  "✓ session tokens refresh correctly",
-  "✓ logout clears all cookies",
+  "\x1b[32m✓\x1b[0m login flow handles invalid credentials \x1b[90m(3 tests)\x1b[0m \x1b[33m42ms\x1b[0m",
+  "\x1b[32m✓\x1b[0m session tokens refresh correctly \x1b[90m(5 tests)\x1b[0m \x1b[33m128ms\x1b[0m",
+  "\x1b[32m✓\x1b[0m logout clears all cookies \x1b[90m(2 tests)\x1b[0m \x1b[33m18ms\x1b[0m",
   "",
-  "Tests: 3 passed, 3 total",
+  "\x1b[32mTests:\x1b[0m 10 passed, 10 total",
 ];
 
 function AnimatedTerminal({ className }: { className?: string }) {
@@ -449,18 +447,6 @@ function createSceneConfigs(): SceneConfig[] {
       toolFallbackHeight: 280,
     },
     {
-      userMessage: "How did I spend money this week?",
-      preamble: "Broke down your spending by category.",
-      toolUI: (
-        <Chart
-          id="chat-showcase-chart"
-          {...SPENDING_CHART}
-          className="w-full max-w-[560px]"
-        />
-      ),
-      toolFallbackHeight: 240,
-    },
-    {
       userMessage: "Boost the bass a bit on this track",
       preamble: "Bass is up. Here's the full EQ.",
       toolUI: (
@@ -475,8 +461,8 @@ function createSceneConfigs(): SceneConfig[] {
               step: 1,
               value: 4,
               unit: "dB",
-              fillClassName: "bg-chart-2/30 dark:bg-chart-2/40",
-              handleClassName: "bg-chart-2"
+              fillClassName: "bg-rose-500/25 dark:bg-rose-400/30",
+              handleClassName: "bg-rose-500 dark:bg-rose-400"
             },
             {
               id: "mid",
@@ -486,8 +472,8 @@ function createSceneConfigs(): SceneConfig[] {
               step: 1,
               value: -1,
               unit: "dB",
-              fillClassName: "bg-chart-5/30 dark:bg-chart-5/40",
-              handleClassName: "bg-chart-5"
+              fillClassName: "bg-amber-500/25 dark:bg-amber-400/30",
+              handleClassName: "bg-amber-500 dark:bg-amber-400"
             },
             {
               id: "treble",
@@ -497,8 +483,8 @@ function createSceneConfigs(): SceneConfig[] {
               step: 1,
               value: 3,
               unit: "dB",
-              fillClassName: "bg-chart-3/30 dark:bg-chart-3/40",
-              handleClassName: "bg-chart-3"
+              fillClassName: "bg-sky-500/25 dark:bg-sky-400/30",
+              handleClassName: "bg-sky-500 dark:bg-sky-400"
             },
           ]}
           responseActions={PARAMETER_SLIDER_DATA.responseActions}
@@ -638,7 +624,7 @@ Sarah`}
   ];
 }
 
-const SCENE_COUNT = 12;
+const SCENE_COUNT = 11;
 
 type AnimatedSceneProps = {
   config: SceneConfig;
