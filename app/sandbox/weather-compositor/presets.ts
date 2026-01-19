@@ -52,37 +52,74 @@ export interface CelestialParams {
   celestialY: number;
   sunSize: number;
   moonSize: number;
+  sunGlowIntensity: number;
+  sunGlowSize: number;
+  sunRayCount: number;
+  sunRayLength: number;
+  sunRayIntensity: number;
+  moonGlowIntensity: number;
+  moonGlowSize: number;
 }
 
 export interface CloudParams {
+  cloudScale: number;
   coverage: number;
   density: number;
   softness: number;
   windSpeed: number;
+  windAngle: number;
   turbulence: number;
-  numLayers: number;
+  sunAzimuth: number;
+  lightIntensity: number;
   ambientDarkness: number;
+  numLayers: number;
+  layerSpread: number;
+  starSize: number;
+  starTwinkleSpeed: number;
+  starTwinkleAmount: number;
   horizonLine: number;
 }
 
 export interface RainParams {
   glassIntensity: number;
+  zoom: number;
   fallingIntensity: number;
+  fallingSpeed: number;
   fallingAngle: number;
+  fallingStreakLength: number;
   fallingLayers: number;
+  fallingRefraction: number;
+  fallingWaviness: number;
+  fallingThicknessVar: number;
 }
 
 export interface LightningParams {
+  branchDensity: number;
+  displacement: number;
+  glowIntensity: number;
+  flashDuration: number;
+  sceneIllumination: number;
+  afterglowPersistence: number;
   autoMode: boolean;
   autoInterval: number;
-  sceneIllumination: number;
 }
 
 export interface SnowParams {
   intensity: number;
-  snowWindSpeed: number;
+  layers: number;
+  fallSpeed: number;
+  windSpeed: number;
+  windAngle: number;
+  turbulence: number;
   drift: number;
-  snowLayers: number;
+  flutter: number;
+  windShear: number;
+  flakeSize: number;
+  sizeVariation: number;
+  opacity: number;
+  glowAmount: number;
+  sparkle: number;
+  visibility: number;
 }
 
 export interface ConditionOverrides {
@@ -144,37 +181,74 @@ export function getBaseParamsForCondition(
       timeOfDay,
       moonPhase: effectConfig.celestial?.moonPhase ?? 0.5,
       starDensity: effectConfig.celestial?.starDensity ?? 0.5,
-      celestialX: 0.5,
-      celestialY: 0.72,
-      sunSize: 0.06,
-      moonSize: 0.05,
+      celestialX: effectConfig.celestial?.celestialX ?? 0.5,
+      celestialY: effectConfig.celestial?.celestialY ?? 0.72,
+      sunSize: effectConfig.celestial?.sunSize ?? 0.06,
+      moonSize: effectConfig.celestial?.moonSize ?? 0.05,
+      sunGlowIntensity: effectConfig.celestial?.sunGlowIntensity ?? 1.0,
+      sunGlowSize: effectConfig.celestial?.sunGlowSize ?? 0.3,
+      sunRayCount: effectConfig.celestial?.sunRayCount ?? 12,
+      sunRayLength: effectConfig.celestial?.sunRayLength ?? 0.5,
+      sunRayIntensity: effectConfig.celestial?.sunRayIntensity ?? 0.4,
+      moonGlowIntensity: effectConfig.celestial?.moonGlowIntensity ?? 1.0,
+      moonGlowSize: effectConfig.celestial?.moonGlowSize ?? 0.2,
     },
     cloud: {
+      cloudScale: 1.5,
       coverage: effectConfig.cloud?.coverage ?? 0.5,
       density: 0.7,
       softness: 0.3,
       windSpeed: effectConfig.cloud?.speed ?? 0.5,
+      windAngle: 0,
       turbulence: effectConfig.cloud?.turbulence ?? 0.5,
-      numLayers: 3,
+      sunAzimuth: 0,
+      lightIntensity: 1.0,
       ambientDarkness: effectConfig.cloud?.darkness ?? 0.3,
+      numLayers: 3,
+      layerSpread: 0.3,
+      starSize: 1.0,
+      starTwinkleSpeed: 1.0,
+      starTwinkleAmount: 0.5,
       horizonLine: 0.5,
     },
     rain: {
       glassIntensity: hasRain ? (effectConfig.rain?.intensity ?? 0.5) * 0.7 : 0,
+      zoom: 1.0,
       fallingIntensity: hasRain ? effectConfig.rain?.intensity ?? 0.6 : 0,
+      fallingSpeed: 1.0,
       fallingAngle: hasRain ? (effectConfig.rain?.angle ?? 5) * 0.02 : 0.1,
+      fallingStreakLength: 0.8,
       fallingLayers: 3,
+      fallingRefraction: 0.3,
+      fallingWaviness: 0.15,
+      fallingThicknessVar: 0.5,
     },
     lightning: {
+      branchDensity: 0.6,
+      displacement: 0.08,
+      glowIntensity: 0.8,
+      flashDuration: 0.15,
+      sceneIllumination: 0.6,
+      afterglowPersistence: 0.3,
       autoMode: hasLightning ? effectConfig.lightning?.autoTrigger ?? true : false,
       autoInterval: hasLightning ? (lightningIntervalMin + lightningIntervalMax) / 2 : 8,
-      sceneIllumination: 0.6,
     },
     snow: {
       intensity: hasSnow ? effectConfig.snow?.intensity ?? 0.7 : 0,
-      snowWindSpeed: hasSnow ? effectConfig.snow?.windDrift ?? 0.3 : 0.3,
+      layers: 4,
+      fallSpeed: 0.5,
+      windSpeed: hasSnow ? effectConfig.snow?.windDrift ?? 0.3 : 0.3,
+      windAngle: 0,
+      turbulence: 0.3,
       drift: hasSnow ? effectConfig.snow?.windDrift ?? 0.3 : 0.3,
-      snowLayers: 4,
+      flutter: 0.5,
+      windShear: 0.2,
+      flakeSize: 1.0,
+      sizeVariation: 0.5,
+      opacity: 0.8,
+      glowAmount: 0.3,
+      sparkle: 0.2,
+      visibility: 1.0,
     },
   };
 }
