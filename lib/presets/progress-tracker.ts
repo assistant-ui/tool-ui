@@ -25,9 +25,9 @@ function generateProgressTrackerCode(
     props.push(`  elapsedTime={${data.elapsedTime}}`);
   }
 
-  if (data.receipt) {
+  if (data.choice) {
     props.push(
-      `  receipt={${JSON.stringify(data.receipt, null, 4).replace(/\n/g, "\n  ")}}`,
+      `  choice={${JSON.stringify(data.choice, null, 4).replace(/\n/g, "\n  ")}}`,
     );
   }
 
@@ -198,7 +198,7 @@ export const progressTrackerPresets = {
         },
       ],
       elapsedTime: 128500,
-      receipt: {
+      choice: {
         outcome: "success",
         summary: "Deployment complete",
         at: new Date().toISOString(),
@@ -234,7 +234,7 @@ export const progressTrackerPresets = {
         },
       ],
       elapsedTime: 8300,
-      receipt: {
+      choice: {
         outcome: "failed",
         summary: "Migration failed",
         at: new Date().toISOString(),

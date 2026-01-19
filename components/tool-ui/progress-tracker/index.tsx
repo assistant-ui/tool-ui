@@ -6,5 +6,6 @@ export {
   ProgressStepSchema,
   type SerializableProgressTracker,
   type ProgressTrackerProps,
+  type ProgressTrackerChoice,
   type ProgressStep,
 } from "./schema";

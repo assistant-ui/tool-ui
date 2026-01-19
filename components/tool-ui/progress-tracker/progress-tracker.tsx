@@ -120,7 +120,7 @@ export function ProgressTracker({
   onResponseAction,
   onBeforeResponseAction,
   className,
-  receipt,
+  choice,
 }: ProgressTrackerProps) {
   const hasInProgress = steps.some((step) => step.status === "in-progress");
   const hasFailed = steps.some((step) => step.status === "failed");
@@ -155,7 +155,7 @@ export function ProgressTracker({
   );
 
   const normalizedActions = React.useMemo(() => {
-    if (allCompleted || receipt) return null;
+    if (allCompleted || choice) return null;
 
     const config = normalizeActionsConfig(responseActions);
     if (config) return config;
@@ -166,10 +166,10 @@ export function ProgressTracker({
       items: defaultActions,
       align: "right" as const,
     };
-  }, [allCompleted, receipt, responseActions, hasFailed, defaultActions]);
+  }, [allCompleted, choice, responseActions, hasFailed, defaultActions]);
 
-  if (receipt) {
-    const { outcome, summary } = receipt;
+  if (choice) {
+    const { outcome, summary } = choice;
     const isSuccess = outcome === "success";
     const isFailed = outcome === "failed";
 

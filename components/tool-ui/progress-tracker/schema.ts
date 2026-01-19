@@ -1,11 +1,17 @@
 import { z } from "zod";
 import {
   ToolUISurfaceSchema,
+  ToolUIReceiptSchema,
   SerializableActionSchema,
   SerializableActionsConfigSchema,
   parseWithSchema,
 } from "../shared";
-import type { ActionsProp } from "../shared";
+import type { ActionsProp, ToolUIReceipt } from "../shared";
+
+/**
+ * Receipt state for ProgressTracker showing the outcome of a workflow.
+ */
+export type ProgressTrackerChoice = ToolUIReceipt;
 
 export const ProgressStepSchema = z.object({
   id: z.string().min(1),
@@ -19,6 +25,10 @@ export type ProgressStep = z.infer<typeof ProgressStepSchema>;
 export const SerializableProgressTrackerSchema = ToolUISurfaceSchema.extend({
   steps: z.array(ProgressStepSchema).min(1),
   elapsedTime: z.number().optional(),
+  /**
+   * When set, renders the component in receipt state showing the workflow outcome.
+   */
+  choice: ToolUIReceiptSchema.optional(),
   responseActions: z
     .union([z.array(SerializableActionSchema), SerializableActionsConfigSchema])
     .optional(),

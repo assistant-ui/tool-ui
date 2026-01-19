@@ -105,7 +105,7 @@ The component automatically highlights the current step (in-progress or first pe
 
 ## Receipt Pattern
 
-Use the `receipt` prop to render a terminal state after an operation completes, fails, or is cancelled. The receipt displays the full step history with an outcome indicator, making it ideal for conversation history.
+Use the `choice` prop to render a terminal state after an operation completes, fails, or is cancelled. The receipt displays the full step history with an outcome indicator, making it ideal for conversation history.
 
 <Tabs items={["Success", "Failed", "Cancelled"]}>
   <Tab>
@@ -118,7 +118,7 @@ Use the `receipt` prop to render a terminal state after an operation completes, 
           { id: "deploy", label: "Deploying", status: "completed" },
         ]}
         elapsedTime={128500}
-        receipt={{
+        choice={{
           outcome: "success",
           summary: "Deployment complete",
           at: new Date().toISOString(),
@@ -136,7 +136,7 @@ Use the `receipt` prop to render a terminal state after an operation completes, 
           { id: "verify", label: "Verify Schema", status: "pending" },
         ]}
         elapsedTime={8300}
-        receipt={{
+        choice={{
           outcome: "failed",
           summary: "Migration failed",
           at: new Date().toISOString(),
@@ -154,7 +154,7 @@ Use the `receipt` prop to render a terminal state after an operation completes, 
           { id: "step3", label: "Generating", status: "pending" },
         ]}
         elapsedTime={12400}
-        receipt={{
+        choice={{
           outcome: "cancelled",
           summary: "Processing cancelled",
           at: new Date().toISOString(),
@@ -327,9 +327,9 @@ Mount `<ProgressTrackerTool />` under `<AssistantRuntimeProvider>` to register t
       description: "Handler called before action execution (can prevent action by returning false)",
       type: "(actionId: string) => boolean | Promise<boolean>",
     },
-    receipt: {
+    choice: {
       description: "When provided, renders terminal state showing full step history with outcome indicator",
-      type: "ToolUIReceipt",
+      type: "ProgressTrackerChoice",
     },
   }}
 />
