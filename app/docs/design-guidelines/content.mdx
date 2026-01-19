@@ -2,7 +2,6 @@ import { DocsHeader } from "../_components/docs-header";
 import { MockThread, MockMessage } from "../_components/mock-thread";
 import { CollaborationDiagram } from "../_components/collaboration-diagram";
 import { DataTable } from "@/components/tool-ui/data-table";
-import { OptionList } from "@/components/tool-ui/option-list";
 
 <DocsHeader
   title="Design Guidelines"
@@ -165,46 +164,7 @@ Prefer stable IDs derived from your backend (database IDs, canonical URLs) over 
 
 When a user takes an action with consequences, the tool UI should transition to a receipt state that confirms what happened. This gives the user proof and gives the assistant something to reference later.
 
-<div className="mx-auto max-w-2xl">
-  <MockThread caption="A decision tool UI with receipt">
-    <MockMessage role="assistant">
-      <span className="text-foreground">
-        How would you like to handle the duplicate contacts?
-      </span>
-      <div className="mt-3">
-        <OptionList
-          selectionMode="single"
-          confirmed="merge"
-          options={[
-            {
-              id: "merge",
-              label: "Merge duplicates",
-              description: "Combine into single contacts, keeping all data",
-            },
-            {
-              id: "keep",
-              label: "Keep all",
-              description: "Leave duplicates as separate contacts",
-            },
-            {
-              id: "review",
-              label: "Review manually",
-              description: "I'll decide for each duplicate",
-            },
-          ]}
-        />
-      </div>
-    </MockMessage>
-    <MockMessage role="assistant">
-      <span className="text-foreground">
-        Done. I merged 12 duplicate contacts. You can undo this from Settings →
-        Contact History if needed.
-      </span>
-    </MockMessage>
-  </MockThread>
-</div>
-
-The receipt shows what the user chose. The assistant's follow-up confirms the outcome and offers a way to reverse it.
+See the [Receipts](/docs/receipts) page for detailed guidance on receipt states and how to write receipt copy.
 
 ## Anti-Patterns
 
