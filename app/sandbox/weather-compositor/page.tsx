@@ -498,23 +498,32 @@ export default function WeatherCompositorSandbox() {
                   lightningSceneIllumination: interactions.lightningSceneIllumination,
                 }}
               />
-              <div className="pointer-events-none relative z-10 p-6">
-                <div className="text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]">
-                  <h2 className="text-lg font-semibold tracking-tight">San Francisco, CA</h2>
-                  <div className="mt-4 flex items-center gap-4">
-                    <div className="flex flex-col">
-                      <div className="flex items-baseline gap-0.5">
-                        <span className="text-4xl font-normal tabular-nums tracking-tight">72</span>
-                        <span className="text-xl font-light text-white/70">°F</span>
-                      </div>
-                      <div className="flex items-center gap-2 text-sm text-white/80">
-                        <span className="font-medium">{CONDITION_LABELS[activeCondition]}</span>
-                        <span>·</span>
-                        <span className="tabular-nums">H: 78° L: 65°</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+              <div className="relative z-10 h-full w-full [&_[data-slot=weather-widget]]:h-full [&_[data-slot=weather-widget]]:max-w-none [&_article]:h-full [&_[data-slot=card]]:h-full [&_[data-slot=card]]:border-0 [&_[data-slot=card]]:bg-transparent [&_[data-slot=card]]:shadow-none">
+                <WeatherWidget
+                  id="unified-preview"
+                  location="San Francisco, CA"
+                  current={{
+                    temp: 72,
+                    tempMin: 65,
+                    tempMax: 78,
+                    condition: activeCondition,
+                  }}
+                  forecast={[
+                    { day: "Today", tempMin: 65, tempMax: 78, condition: activeCondition },
+                    { day: "Tue", tempMin: 64, tempMax: 77, condition: "partly-cloudy" },
+                    { day: "Wed", tempMin: 61, tempMax: 73, condition: "cloudy" },
+                    { day: "Thu", tempMin: 58, tempMax: 68, condition: "rain" },
+                    { day: "Fri", tempMin: 55, tempMax: 65, condition: "drizzle" },
+                  ]}
+                  unit="fahrenheit"
+                  updatedAt={(() => {
+                    const date = new Date();
+                    date.setHours(Math.floor(timeOfDay * 24), Math.floor((timeOfDay * 24 % 1) * 60), 0, 0);
+                    return date.toISOString();
+                  })()}
+                  effects={{ enabled: false }}
+                  className="[&_*]:text-white [&_*]:drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]"
+                />
               </div>
             </div>
           ) : previewMode === "widget" ? (
