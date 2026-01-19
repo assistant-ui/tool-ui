@@ -522,7 +522,6 @@ export default function WeatherCompositorSandbox() {
                     return date.toISOString();
                   })()}
                   effects={{ enabled: false }}
-                  className="[&_*]:text-white [&_*]:drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]"
                 />
               </div>
             </div>
