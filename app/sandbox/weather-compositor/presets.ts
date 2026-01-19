@@ -62,6 +62,7 @@ export interface CloudParams {
   turbulence: number;
   numLayers: number;
   ambientDarkness: number;
+  horizonLine: number;
 }
 
 export interface RainParams {
@@ -93,8 +94,13 @@ export interface ConditionOverrides {
   snow?: Partial<SnowParams>;
 }
 
+export interface GlobalSettings {
+  timeOfDay: number;
+}
+
 export interface CompositorState {
   activeCondition: WeatherCondition;
+  globalSettings: GlobalSettings;
   overrides: Partial<Record<WeatherCondition, ConditionOverrides>>;
 }
 
@@ -151,6 +157,7 @@ export function getBaseParamsForCondition(
       turbulence: effectConfig.cloud?.turbulence ?? 0.5,
       numLayers: 3,
       ambientDarkness: effectConfig.cloud?.darkness ?? 0.3,
+      horizonLine: 0.5,
     },
     rain: {
       glassIntensity: hasRain ? (effectConfig.rain?.intensity ?? 0.5) * 0.7 : 0,
@@ -197,7 +204,8 @@ export function extractOverrides(
   const layerDiff = diffObjects(current.layers, base.layers);
   if (Object.keys(layerDiff).length > 0) overrides.layers = layerDiff;
 
-  const celestialDiff = diffObjects(current.celestial, base.celestial);
+  // Exclude timeOfDay from celestial comparison (it's a global setting)
+  const celestialDiff = diffObjects(current.celestial, base.celestial, ["timeOfDay"]);
   if (Object.keys(celestialDiff).length > 0) overrides.celestial = celestialDiff;
 
   const cloudDiff = diffObjects(current.cloud, base.cloud);
@@ -217,10 +225,12 @@ export function extractOverrides(
 
 function diffObjects<T extends object>(
   current: T,
-  base: T
+  base: T,
+  exclude: string[] = []
 ): Partial<T> {
   const diff: Partial<T> = {};
   for (const key of Object.keys(current) as (keyof T)[]) {
+    if (exclude.includes(key as string)) continue;
     if (current[key] !== base[key]) {
       diff[key] = current[key];
     }
