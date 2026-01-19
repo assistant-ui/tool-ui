@@ -48,6 +48,7 @@
 }
 
 :root {
+  color-scheme: light;
   --radius: 0.625rem;
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
@@ -83,6 +84,7 @@
 }
 
 .dark {
+  color-scheme: dark;
   --background: oklch(0.145 0 0);
   --foreground: oklch(0.985 0 0);
   --card: oklch(0.205 0 0);
@@ -119,6 +121,7 @@
 /* Isolated theme scopes for docs preview */
 /* Double attribute selector increases specificity to override .dark from ancestors */
 [data-theme="light"][data-theme] {
+  color-scheme: light;
   --wash: oklch(0.95 0 0);
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
@@ -147,6 +150,7 @@
 }
 
 [data-theme="dark"][data-theme] {
+  color-scheme: dark;
   --wash: oklch(0.15 0 0);
   --background: oklch(0.145 0 0);
   --foreground: oklch(0.985 0 0);

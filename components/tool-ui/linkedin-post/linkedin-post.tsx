@@ -70,6 +70,8 @@ function Header({
       <img
         src={author.avatarUrl}
         alt={`${author.name} avatar`}
+        width={48}
+        height={48}
         className="size-12 rounded-full object-cover"
       />
       <div className="flex min-w-0 flex-1 flex-col leading-tight">

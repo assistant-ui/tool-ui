@@ -43,6 +43,8 @@ function ItemImage({ src }: { src?: string }) {
     <img
       src={src}
       alt=""
+      width={48}
+      height={48}
       className="h-12 w-12 shrink-0 rounded-md object-cover"
       onError={() => setHasError(true)}
     />

@@ -209,6 +209,8 @@ function SourceAttribution({
           src={source.iconUrl}
           alt=""
           aria-hidden="true"
+          width={32}
+          height={32}
           className="size-8 shrink-0 rounded-full object-cover"
           loading="lazy"
           decoding="async"

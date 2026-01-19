@@ -167,6 +167,8 @@ export function Citation(props: CitationProps) {
       src={favicon}
       alt=""
       aria-hidden="true"
+      width={14}
+      height={14}
       className="bg-muted size-3.5 shrink-0 rounded object-cover"
     />
   ) : (

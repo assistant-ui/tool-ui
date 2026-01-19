@@ -97,6 +97,8 @@ function Header({
       <img
         src={author.avatarUrl}
         alt={`${author.name} avatar`}
+        width={32}
+        height={32}
         className="size-8 rounded-full object-cover"
       />
       <div className="flex min-w-0 flex-1 items-center gap-1.5">

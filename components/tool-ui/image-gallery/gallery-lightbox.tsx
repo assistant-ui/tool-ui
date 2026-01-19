@@ -55,7 +55,7 @@ export function GalleryLightbox() {
         "m-0 h-full max-h-full w-full max-w-full",
         "overflow-hidden p-0",
         "bg-transparent backdrop:bg-black/95 dark:backdrop:bg-black/90",
-        "focus:outline-none",
+        "focus-visible:outline-none",
       )}
       aria-label="Image lightbox"
     >

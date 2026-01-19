@@ -143,6 +143,8 @@ export function LinkPreview(props: LinkPreviewProps) {
                       src={favicon}
                       alt=""
                       aria-hidden="true"
+                      width={16}
+                      height={16}
                       className="size-4 rounded-full object-cover"
                       loading="lazy"
                       decoding="async"

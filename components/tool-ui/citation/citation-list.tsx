@@ -298,6 +298,8 @@ function OverflowItem({ citation, onClick }: OverflowItemProps) {
           src={citation.favicon}
           alt=""
           aria-hidden="true"
+          width={16}
+          height={16}
           className="bg-muted size-4 shrink-0 rounded object-cover"
         />
       ) : (
@@ -389,6 +391,8 @@ function StackedCitations({
                       src={citation.favicon}
                       alt=""
                       aria-hidden="true"
+                      width={18}
+                      height={18}
                       className="size-4.5 rounded-full object-cover"
                     />
                   ) : (

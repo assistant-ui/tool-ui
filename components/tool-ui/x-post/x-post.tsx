@@ -35,6 +35,8 @@ function Avatar({ src, alt }: { src: string; alt: string }) {
     <img
       src={src}
       alt={alt}
+      width={40}
+      height={40}
       className="size-10 shrink-0 rounded-full object-cover"
     />
   );
@@ -196,6 +198,8 @@ function QuotedPostCard({ post }: { post: XPostData }) {
         <img
           src={post.author.avatarUrl}
           alt={`${post.author.name} avatar`}
+          width={16}
+          height={16}
           className="size-4 rounded-full object-cover"
         />
         <span className="truncate font-semibold">{post.author.name}</span>
