@@ -56,6 +56,22 @@ const Feature = dynamic(() =>
   import("@/app/components/mdx/features").then((m) => m.Feature)
 );
 
+function slugify(text: string): string {
+  return text
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
+}
+
+function createHeading(level: number) {
+  return function Heading({ children, ...props }: React.ComponentPropsWithoutRef<"h2">) {
+    const text = React.Children.toArray(children).join("");
+    const id = props.id || slugify(text);
+
+    return React.createElement(`h${level}`, { ...props, id }, children);
+  };
+}
+
 export function useMDXComponents(components: MDXComponents): MDXComponents {
   // Wrap selected default components to auto-link Tool UI mentions
   const Base = defaultMdxComponents as MDXComponents;
@@ -75,6 +91,9 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
 
   return {
     ...defaultMdxComponents,
+
+    // Ensure headings have IDs for TOC
+    h2: createHeading(2),
 
     // Auto-link text mentions in common containers
     p: P,
