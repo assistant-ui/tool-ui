@@ -7,8 +7,9 @@ import { RainCanvas } from "@/app/sandbox/rain-effect/rain-canvas";
 import { LightningCanvas } from "@/app/sandbox/lightning-effect/lightning-canvas";
 import { SnowCanvas } from "@/app/sandbox/snow-effect/snow-canvas";
 import { CelestialCanvas } from "@/components/tool-ui/weather-widget/effects/celestial-canvas";
-import { Download, Upload, RotateCcw, Eye, Layers } from "lucide-react";
+import { Download, Upload, RotateCcw, Eye, Layers, Sparkles } from "lucide-react";
 import { WeatherWidget } from "@/components/tool-ui/weather-widget";
+import { WeatherEffectsCanvas } from "@/components/tool-ui/weather-widget/effects/weather-effects-canvas";
 import type { WeatherCondition } from "@/components/tool-ui/weather-widget/schema";
 import {
   WEATHER_CONDITIONS,
@@ -81,7 +82,7 @@ export default function WeatherCompositorSandbox() {
   const [activeCondition, setActiveCondition] = useState<WeatherCondition>("clear");
   const [globalSettings, setGlobalSettings] = useState<GlobalSettings>(DEFAULT_GLOBAL_SETTINGS);
   const [overrides, setOverrides] = useState<Partial<Record<WeatherCondition, ConditionOverrides>>>({});
-  const [showWidgetPreview, setShowWidgetPreview] = useState(false);
+  const [previewMode, setPreviewMode] = useState<"layers" | "widget" | "unified">("layers");
   const isInitializing = useRef(true);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -203,6 +204,11 @@ export default function WeatherCompositorSandbox() {
     sparkle: { value: mergedParams.snow.sparkle, min: 0, max: 3, step: 0.05, label: "Sparkle" },
     visibility: { value: mergedParams.snow.visibility, min: 0, max: 2, step: 0.05, label: "Visibility" },
   }), [activeCondition]);
+
+  const [interactions] = useControls("Interactions (Unified)", () => ({
+    rainRefractionStrength: { value: 1.0, min: 0, max: 3, step: 0.05, label: "Rain Refraction" },
+    lightningSceneIllumination: { value: 0.6, min: 0, max: 2, step: 0.05, label: "Lightning Illumination" },
+  }), []);
 
   // Combine Leva values with global timeOfDay for full params
   const currentParams: FullCompositorParams = {
@@ -376,15 +382,37 @@ export default function WeatherCompositorSandbox() {
               <RotateCcw className="size-4" />
             </button>
             <button
-              onClick={() => setShowWidgetPreview(!showWidgetPreview)}
+              onClick={() => setPreviewMode("layers")}
               className={`rounded p-1.5 transition-colors ${
-                showWidgetPreview
+                previewMode === "layers"
                   ? "bg-blue-500/30 text-blue-300"
                   : "text-white/60 hover:bg-white/10 hover:text-white"
               }`}
-              title={showWidgetPreview ? "Show effect layers" : "Show actual widget"}
+              title="Show separate effect layers"
             >
-              {showWidgetPreview ? <Layers className="size-4" /> : <Eye className="size-4" />}
+              <Layers className="size-4" />
+            </button>
+            <button
+              onClick={() => setPreviewMode("widget")}
+              className={`rounded p-1.5 transition-colors ${
+                previewMode === "widget"
+                  ? "bg-blue-500/30 text-blue-300"
+                  : "text-white/60 hover:bg-white/10 hover:text-white"
+              }`}
+              title="Show widget with old compositor"
+            >
+              <Eye className="size-4" />
+            </button>
+            <button
+              onClick={() => setPreviewMode("unified")}
+              className={`rounded p-1.5 transition-colors ${
+                previewMode === "unified"
+                  ? "bg-purple-500/30 text-purple-300"
+                  : "text-white/60 hover:bg-white/10 hover:text-white"
+              }`}
+              title="Show unified canvas (new!)"
+            >
+              <Sparkles className="size-4" />
             </button>
             <input
               ref={fileInputRef}
@@ -399,11 +427,97 @@ export default function WeatherCompositorSandbox() {
         <div
           className="relative overflow-hidden rounded-xl border border-white/10"
           style={{
-            width: showWidgetPreview ? "480px" : "400px",
-            height: showWidgetPreview ? "340px" : "280px",
+            width: previewMode !== "layers" ? "480px" : "400px",
+            height: previewMode !== "layers" ? "340px" : "280px",
           }}
         >
-          {showWidgetPreview ? (
+          {previewMode === "unified" ? (
+            <div className="relative h-full w-full">
+              <WeatherEffectsCanvas
+                className="absolute inset-0"
+                layers={{
+                  celestial: layers.celestial,
+                  clouds: layers.clouds,
+                  rain: layers.rain,
+                  lightning: layers.lightning,
+                  snow: layers.snow,
+                }}
+                celestial={{
+                  timeOfDay,
+                  moonPhase: celestial.moonPhase,
+                  starDensity: celestial.starDensity,
+                  celestialX: celestial.celestialX,
+                  celestialY: celestial.celestialY,
+                  sunSize: celestial.sunSize,
+                  moonSize: celestial.moonSize,
+                  sunGlowIntensity: celestial.sunGlowIntensity,
+                  sunGlowSize: celestial.sunGlowSize,
+                  sunRayCount: celestial.sunRayCount,
+                  sunRayLength: celestial.sunRayLength,
+                  sunRayIntensity: celestial.sunRayIntensity,
+                  moonGlowIntensity: celestial.moonGlowIntensity,
+                  moonGlowSize: celestial.moonGlowSize,
+                }}
+                cloud={{
+                  coverage: cloud.coverage,
+                  density: cloud.density,
+                  softness: cloud.softness,
+                  windSpeed: cloud.windSpeed,
+                  windAngle: cloud.windAngle,
+                  turbulence: cloud.turbulence,
+                  lightIntensity: cloud.lightIntensity,
+                  ambientDarkness: cloud.ambientDarkness,
+                  numLayers: cloud.numLayers,
+                }}
+                rain={{
+                  glassIntensity: rain.glassIntensity,
+                  glassZoom: rain.zoom,
+                  fallingIntensity: rain.fallingIntensity,
+                  fallingSpeed: rain.fallingSpeed,
+                  fallingAngle: rain.fallingAngle,
+                  fallingStreakLength: rain.fallingStreakLength,
+                  fallingLayers: rain.fallingLayers,
+                }}
+                lightning={{
+                  enabled: true,
+                  autoMode: lightning.autoMode,
+                  autoInterval: lightning.autoInterval,
+                  flashIntensity: lightning.glowIntensity,
+                  branchDensity: lightning.branchDensity,
+                }}
+                snow={{
+                  intensity: snow.intensity,
+                  layers: snow.layers,
+                  fallSpeed: snow.fallSpeed,
+                  windSpeed: snow.windSpeed,
+                  drift: snow.drift,
+                  flakeSize: snow.flakeSize,
+                }}
+                interactions={{
+                  rainRefractionStrength: interactions.rainRefractionStrength,
+                  lightningSceneIllumination: interactions.lightningSceneIllumination,
+                }}
+              />
+              <div className="pointer-events-none relative z-10 p-6">
+                <div className="text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]">
+                  <h2 className="text-lg font-semibold tracking-tight">San Francisco, CA</h2>
+                  <div className="mt-4 flex items-center gap-4">
+                    <div className="flex flex-col">
+                      <div className="flex items-baseline gap-0.5">
+                        <span className="text-4xl font-normal tabular-nums tracking-tight">72</span>
+                        <span className="text-xl font-light text-white/70">°F</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-sm text-white/80">
+                        <span className="font-medium">{CONDITION_LABELS[activeCondition]}</span>
+                        <span>·</span>
+                        <span className="tabular-nums">H: 78° L: 65°</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ) : previewMode === "widget" ? (
             <WeatherWidget
               id="compositor-preview"
               location="San Francisco, CA"
