@@ -40,7 +40,7 @@ export const SerializableOrderSummarySchema = z.object({
   title: z.string().optional(),
   items: z.array(OrderItemSchema).min(1),
   pricing: PricingSchema,
-  decision: OrderDecisionSchema.optional(),
+  choice: OrderDecisionSchema.optional(),
 });
 
 export type SerializableOrderSummary = z.infer<

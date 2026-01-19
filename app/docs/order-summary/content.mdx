@@ -124,7 +124,7 @@ When `decision` is set, the component renders in a dimmed receipt state showing 
           total: 139.32,
           currency: "USD",
         }}
-        decision={{
+        choice={{
           action: "confirm",
           orderId: "ORD-2024-8847",
           confirmedAt: "2024-12-15T14:32:00Z",
@@ -279,7 +279,7 @@ export const OrderSummaryTool = makeAssistantTool<
     return (
       <OrderSummaryErrorBoundary>
         {result !== undefined ? (
-          <OrderSummary {...data} decision={result} />
+          <OrderSummary {...data} choice={result} />
         ) : (
           <OrderSummary
             {...data}

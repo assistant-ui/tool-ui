@@ -25,9 +25,9 @@ function generateOrderSummaryCode(data: SerializableOrderSummary): string {
     `  pricing={${JSON.stringify(data.pricing, null, 4).replace(/\n/g, "\n  ")}}`
   );
 
-  if (data.decision) {
+  if (data.choice) {
     props.push(
-      `  decision={${JSON.stringify(data.decision, null, 4).replace(/\n/g, "\n  ")}}`
+      `  choice={${JSON.stringify(data.choice, null, 4).replace(/\n/g, "\n  ")}}`
     );
   }
 
@@ -176,7 +176,7 @@ export const orderSummaryPresets: Record<
         total: 187.15,
         currency: "USD",
       },
-      decision: {
+      choice: {
         action: "confirm",
         orderId: "ORD-2024-8847",
         confirmedAt: "2024-12-15T14:32:00Z",

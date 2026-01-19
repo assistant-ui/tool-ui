@@ -48,7 +48,7 @@ export const SerializablePreferencesPanelSchema = z.object({
   receipt: ToolUIReceiptSchema.optional(),
   title: z.string().min(1).optional(),
   sections: z.array(PreferenceSectionSchema).min(1),
-  confirmed: z.record(z.string(), z.union([z.string(), z.boolean()])).optional(),
+  choice: z.record(z.string(), z.union([z.string(), z.boolean()])).optional(),
   error: z.record(z.string(), z.string()).optional(),
   responseActions: z
     .union([

@@ -22,7 +22,7 @@ function getLucideIcon(name: string): LucideIcon | null {
 interface ApprovalCardReceiptProps {
   id: string;
   title: string;
-  decision: ApprovalDecision;
+  choice: ApprovalDecision;
   actionLabel?: string;
   className?: string;
 }
@@ -30,11 +30,11 @@ interface ApprovalCardReceiptProps {
 function ApprovalCardReceipt({
   id,
   title,
-  decision,
+  choice,
   actionLabel,
   className,
 }: ApprovalCardReceiptProps) {
-  const isApproved = decision === "approved";
+  const isApproved = choice === "approved";
   const displayLabel = actionLabel ?? (isApproved ? "Approved" : "Denied");
 
   return (
@@ -57,10 +57,8 @@ function ApprovalCardReceipt({
       >
         <span
           className={cn(
-            "flex size-8 shrink-0 items-center justify-center rounded-full",
-            isApproved
-              ? "bg-primary/10 text-primary"
-              : "bg-muted text-muted-foreground",
+            "flex size-8 shrink-0 items-center justify-center rounded-full bg-muted",
+            isApproved ? "text-primary" : "text-muted-foreground",
           )}
         >
           {isApproved ? (
@@ -120,7 +118,7 @@ export function ApprovalCard({
   cancelLabel,
   className,
   isLoading,
-  decision,
+  choice,
   onConfirm,
   onCancel,
 }: ApprovalCardProps) {
@@ -150,15 +148,15 @@ export function ApprovalCard({
     [onCancel],
   );
 
-  if (decision) {
-    const actionLabel =
-      decision === "approved" ? resolvedConfirmLabel : resolvedCancelLabel;
+  if (choice) {
+    const customLabel =
+      choice === "approved" ? confirmLabel : cancelLabel;
     return (
       <ApprovalCardReceipt
         id={id}
         title={title}
-        decision={decision}
-        actionLabel={actionLabel}
+        choice={choice}
+        actionLabel={customLabel}
         className={className}
       />
     );

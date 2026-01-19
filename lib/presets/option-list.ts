@@ -27,8 +27,8 @@ function generateOptionListCode(data: SerializableOptionList): string {
     props.push(`  maxSelections={${data.maxSelections}}`);
   }
 
-  if (data.confirmed) {
-    props.push(`  confirmed="${data.confirmed}"`);
+  if (data.choice) {
+    props.push(`  choice="${data.choice}"`);
   }
 
   if (data.responseActions) {
@@ -147,7 +147,7 @@ export const optionListPresets: Record<OptionListPresetName, PresetWithCodeGen<S
         },
       ],
       selectionMode: "single",
-      confirmed: "drive",
+      choice: "drive",
     } satisfies SerializableOptionList,
     generateExampleCode: generateOptionListCode,
   },

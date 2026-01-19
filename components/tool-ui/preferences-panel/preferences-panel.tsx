@@ -438,7 +438,7 @@ interface PreferencesReceiptProps {
   id: string;
   title?: string;
   sections: PreferenceSection[];
-  confirmed: PreferencesValue;
+  choice: PreferencesValue;
   error?: Record<string, string>;
   className?: string;
 }
@@ -447,7 +447,7 @@ function PreferencesReceipt({
   id,
   title,
   sections,
-  confirmed,
+  choice,
   error,
   className,
 }: PreferencesReceiptProps) {
@@ -469,7 +469,7 @@ function PreferencesReceipt({
             <div key={index}>
               <PreferencesSection
                 section={section}
-                values={confirmed}
+                values={choice}
                 errors={error}
                 isReceipt={true}
                 hasTitle={!!title}
@@ -488,7 +488,7 @@ export function PreferencesPanel({
   sections,
   value: controlledValue,
   onChange,
-  confirmed,
+  choice,
   error,
   onSave,
   onCancel,
@@ -579,13 +579,13 @@ export function PreferencesPanel({
     });
   }, [normalizedActions.items, isLoading, isDirty]);
 
-  if (confirmed !== undefined) {
+  if (choice !== undefined) {
     return (
       <PreferencesReceipt
         id={id}
         title={title}
         sections={sections}
-        confirmed={confirmed}
+        choice={choice}
         error={error}
         className={className}
       />

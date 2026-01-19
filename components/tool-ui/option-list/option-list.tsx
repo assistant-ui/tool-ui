@@ -234,7 +234,7 @@ export function OptionList({
   maxSelections,
   value,
   defaultValue,
-  confirmed,
+  choice,
   onChange,
   onConfirm,
   onCancel,
@@ -549,8 +549,8 @@ export function OptionList({
     selectedCount,
   ]);
 
-  if (confirmed !== undefined && confirmed !== null) {
-    const selectedIds = parseSelectionToIdSet(confirmed, selectionMode);
+  if (choice !== undefined && choice !== null) {
+    const selectedIds = parseSelectionToIdSet(choice, selectionMode);
     return (
       <OptionListConfirmation
         id={id}

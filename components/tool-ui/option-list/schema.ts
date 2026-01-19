@@ -41,17 +41,17 @@ export const OptionListPropsSchema = z.object({
    * Controlled selection value (advanced / runtime only).
    *
    * For Tool UI tool payloads, prefer `defaultValue` (initial selection) and
-   * `confirmed` (receipt state). Controlled `value` is intentionally excluded
+   * `choice` (receipt state). Controlled `value` is intentionally excluded
    * from `SerializableOptionListSchema` to avoid accidental "controlled but
    * non-interactive" states when an LLM includes `value` in args.
    */
   value: z.union([z.array(z.string()), z.string(), z.null()]).optional(),
   defaultValue: z.union([z.array(z.string()), z.string(), z.null()]).optional(),
   /**
-   * When set, renders the component in receipt/confirmed state.
+   * When set, renders the component in receipt state showing the user's choice.
    *
    * In receipt state:
-   * - Only the confirmed option(s) are shown
+   * - Only the chosen option(s) are shown
    * - Response actions are hidden
    * - The component is read-only
    *
@@ -61,11 +61,11 @@ export const OptionListPropsSchema = z.object({
    * ```tsx
    * // In makeAssistantToolUI render:
    * if (result) {
-   *   return <OptionList {...args} confirmed={result} />;
+   *   return <OptionList {...args} choice={result} />;
    * }
    * ```
    */
-  confirmed: z.union([z.array(z.string()), z.string(), z.null()]).optional(),
+  choice: z.union([z.array(z.string()), z.string(), z.null()]).optional(),
   responseActions: z
     .union([z.array(ActionSchema), SerializableActionsConfigSchema])
     .optional(),
@@ -79,14 +79,14 @@ export type OptionListOption = z.infer<typeof OptionListOptionSchema>;
 
 export type OptionListProps = Omit<
   z.infer<typeof OptionListPropsSchema>,
-  "value" | "defaultValue" | "confirmed"
+  "value" | "defaultValue" | "choice"
 > & {
   /** @see OptionListPropsSchema.id */
   id: string;
   value?: OptionListSelection;
   defaultValue?: OptionListSelection;
-  /** @see OptionListPropsSchema.confirmed */
-  confirmed?: OptionListSelection;
+  /** @see OptionListPropsSchema.choice */
+  choice?: OptionListSelection;
   onChange?: (value: OptionListSelection) => void;
   onConfirm?: (value: OptionListSelection) => void | Promise<void>;
   onCancel?: () => void;

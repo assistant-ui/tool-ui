@@ -20,9 +20,9 @@ function generatePreferencesPanelCode(data: SerializablePreferencesPanel): strin
     `  sections={${JSON.stringify(data.sections, null, 4).replace(/\n/g, "\n  ")}}`,
   );
 
-  if (data.confirmed) {
+  if (data.choice) {
     props.push(
-      `  confirmed={${JSON.stringify(data.confirmed, null, 4).replace(/\n/g, "\n  ")}}`,
+      `  choice={${JSON.stringify(data.choice, null, 4).replace(/\n/g, "\n  ")}}`,
     );
   }
 
@@ -259,7 +259,7 @@ export const preferencesPanelPresets: Record<PreferencesPanelPresetName, PresetW
           ],
         },
       ],
-      confirmed: {
+      choice: {
         "profile-visibility": "private",
         "activity-status": false,
         "analytics": false,
@@ -310,7 +310,7 @@ export const preferencesPanelPresets: Record<PreferencesPanelPresetName, PresetW
           ],
         },
       ],
-      confirmed: {
+      choice: {
         "profile-visibility": "private",
         "activity-status": false,
         "analytics": false,

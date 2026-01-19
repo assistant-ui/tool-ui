@@ -49,12 +49,12 @@ function generateOptionListCode(preset: OptionListPresetName): string {
     props.push(`  maxSelections={${list.maxSelections}}`);
   }
 
-  if (list.confirmed) {
-    const confirmedValue =
-      typeof list.confirmed === "string"
-        ? `"${list.confirmed}"`
-        : JSON.stringify(list.confirmed);
-    props.push(`  confirmed={${confirmedValue}}`);
+  if (list.choice) {
+    const choiceValue =
+      typeof list.choice === "string"
+        ? `"${list.choice}"`
+        : JSON.stringify(list.choice);
+    props.push(`  choice={${choiceValue}}`);
   }
 
   if (list.responseActions) {
@@ -69,7 +69,7 @@ function generateOptionListCode(preset: OptionListPresetName): string {
     }
   }
 
-  if (!list.confirmed) {
+  if (!list.choice) {
     props.push(`  onConfirm={(selection) => console.log(selection)}`);
   }
 
@@ -382,8 +382,8 @@ function generateApprovalCardCode(preset: ApprovalCardPresetName): string {
     props.push(`  cancelLabel="${data.cancelLabel}"`);
   }
 
-  if (data.decision) {
-    props.push(`  decision="${data.decision}"`);
+  if (data.choice) {
+    props.push(`  choice="${data.choice}"`);
   }
 
   return `<ApprovalCard\n${props.join("\n")}\n/>`;

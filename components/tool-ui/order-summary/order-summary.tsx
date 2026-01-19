@@ -176,14 +176,14 @@ export function OrderSummary({
   title = "Order Summary",
   items,
   pricing,
-  decision,
+  choice,
   className,
   isLoading = false,
   responseActions,
   onResponseAction,
 }: OrderSummaryProps) {
   const titleId = `${id}-title`;
-  const isReceipt = decision !== undefined;
+  const isReceipt = choice !== undefined;
   const actions = responseActions ?? defaultActions;
 
   const handleAction = useCallback(
@@ -218,8 +218,8 @@ export function OrderSummary({
             </h2>
             {isReceipt && (
               <ReceiptBadge
-                orderId={decision.orderId}
-                confirmedAt={decision.confirmedAt}
+                orderId={choice.orderId}
+                confirmedAt={choice.confirmedAt}
               />
             )}
           </div>

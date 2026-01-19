@@ -69,7 +69,7 @@ When `decision` is set, the component renders in a compact receipt state showing
       <ApprovalCard
         id="receipt-approved-example"
         title="Deploy to Production"
-        decision="approved"
+        choice="approved"
         confirmLabel="Deploy"
       />
     </div>
@@ -79,7 +79,7 @@ When `decision` is set, the component renders in a compact receipt state showing
       <ApprovalCard
         id="receipt-denied-example"
         title="Delete Project"
-        decision="denied"
+        choice="denied"
         variant="destructive"
         confirmLabel="Delete"
         cancelLabel="Keep"
@@ -206,7 +206,7 @@ export const ApprovalTool = makeAssistantTool<
     return (
       <ApprovalCardErrorBoundary>
         {result !== undefined ? (
-          <ApprovalCard {...approvalCard} decision={result} />
+          <ApprovalCard {...approvalCard} choice={result} />
         ) : (
           <ApprovalCard
             {...approvalCard}

@@ -118,7 +118,7 @@ export const SelectFormatTool = makeAssistantTool<
     return (
       <OptionListErrorBoundary>
         {result !== undefined ? (
-          <OptionList {...optionList} value={undefined} confirmed={result} />
+          <OptionList {...optionList} value={undefined} choice={result} />
         ) : (
           <OptionList
             {...optionList}
