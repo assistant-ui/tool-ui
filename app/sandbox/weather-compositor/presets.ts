@@ -72,6 +72,7 @@ export interface CloudParams {
   sunAzimuth: number;
   lightIntensity: number;
   ambientDarkness: number;
+  backlightIntensity: number;
   numLayers: number;
   layerSpread: number;
   starSize: number;
@@ -204,6 +205,7 @@ export function getBaseParamsForCondition(
       sunAzimuth: 0,
       lightIntensity: 1.0,
       ambientDarkness: effectConfig.cloud?.darkness ?? 0.3,
+      backlightIntensity: 0.5,
       numLayers: 3,
       layerSpread: 0.3,
       starSize: 1.0,

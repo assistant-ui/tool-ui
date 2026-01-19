@@ -152,15 +152,17 @@ export default function WeatherCompositorSandbox() {
     windSpeed: { value: mergedParams.cloud.windSpeed, min: 0, max: 5, step: 0.05, label: "Wind Speed" },
     windAngle: { value: mergedParams.cloud.windAngle, min: -Math.PI, max: Math.PI, step: 0.1, label: "Wind Angle" },
     turbulence: { value: mergedParams.cloud.turbulence, min: 0, max: 5, step: 0.05, label: "Turbulence" },
-    sunAzimuth: { value: mergedParams.cloud.sunAzimuth, min: -Math.PI, max: Math.PI, step: 0.1, label: "Sun Azimuth" },
     lightIntensity: { value: mergedParams.cloud.lightIntensity, min: 0, max: 5, step: 0.05, label: "Light Intensity" },
     ambientDarkness: { value: mergedParams.cloud.ambientDarkness, min: 0, max: 1, step: 0.05, label: "Darkness" },
+    backlightIntensity: { value: mergedParams.cloud.backlightIntensity ?? 0.5, min: 0, max: 2, step: 0.05, label: "Backlight" },
     numLayers: { value: mergedParams.cloud.numLayers, min: 1, max: 10, step: 1, label: "Layers" },
-    layerSpread: { value: mergedParams.cloud.layerSpread, min: 0, max: 2, step: 0.05, label: "Layer Spread" },
-    starSize: { value: mergedParams.cloud.starSize, min: 0.1, max: 5, step: 0.1, label: "Star Size" },
-    starTwinkleSpeed: { value: mergedParams.cloud.starTwinkleSpeed, min: 0, max: 10, step: 0.1, label: "Twinkle Speed" },
-    starTwinkleAmount: { value: mergedParams.cloud.starTwinkleAmount, min: 0, max: 2, step: 0.05, label: "Twinkle Amount" },
-    horizonLine: { value: mergedParams.cloud.horizonLine, min: 0, max: 1, step: 0.01, label: "Horizon" },
+    // Legacy params for original CloudCanvas only:
+    sunAzimuth: { value: mergedParams.cloud.sunAzimuth, min: -Math.PI, max: Math.PI, step: 0.1, label: "Sun Azimuth (legacy)" },
+    layerSpread: { value: mergedParams.cloud.layerSpread, min: 0, max: 2, step: 0.05, label: "Layer Spread (legacy)" },
+    starSize: { value: mergedParams.cloud.starSize, min: 0.1, max: 5, step: 0.1, label: "Star Size (legacy)" },
+    starTwinkleSpeed: { value: mergedParams.cloud.starTwinkleSpeed, min: 0, max: 10, step: 0.1, label: "Twinkle Speed (legacy)" },
+    starTwinkleAmount: { value: mergedParams.cloud.starTwinkleAmount, min: 0, max: 2, step: 0.05, label: "Twinkle Amount (legacy)" },
+    horizonLine: { value: mergedParams.cloud.horizonLine, min: 0, max: 1, step: 0.01, label: "Horizon (legacy)" },
   }), [activeCondition]);
 
   const [rain, setRain] = useControls("Rain", () => ({
@@ -462,11 +464,13 @@ export default function WeatherCompositorSandbox() {
                   coverage: cloud.coverage,
                   density: cloud.density,
                   softness: cloud.softness,
+                  cloudScale: cloud.cloudScale,
                   windSpeed: cloud.windSpeed,
                   windAngle: cloud.windAngle,
                   turbulence: cloud.turbulence,
                   lightIntensity: cloud.lightIntensity,
                   ambientDarkness: cloud.ambientDarkness,
+                  backlightIntensity: cloud.backlightIntensity,
                   numLayers: cloud.numLayers,
                 }}
                 rain={{
