@@ -40,11 +40,29 @@ export interface AtmosphereConfig {
   starVisibility: number;
 }
 
+export interface CelestialConfig {
+  timeOfDay: number;
+  moonPhase: number;
+  starDensity: number;
+  celestialX: number;
+  celestialY: number;
+  sunSize: number;
+  moonSize: number;
+  sunGlowIntensity: number;
+  sunGlowSize: number;
+  sunRayCount: number;
+  sunRayLength: number;
+  sunRayIntensity: number;
+  moonGlowIntensity: number;
+  moonGlowSize: number;
+}
+
 export interface EffectLayerConfig {
   cloud?: CloudLayerConfig;
   rain?: RainLayerConfig;
   lightning?: LightningLayerConfig;
   snow?: SnowLayerConfig;
+  celestial?: CelestialConfig;
   atmosphere: AtmosphereConfig;
 }
 

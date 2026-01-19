@@ -5,6 +5,7 @@ import { CloudCanvas } from "@/app/sandbox/cloud-effect/cloud-canvas";
 import { RainCanvas } from "@/app/sandbox/rain-effect/rain-canvas";
 import { LightningCanvas } from "@/app/sandbox/lightning-effect/lightning-canvas";
 import { SnowCanvas } from "@/app/sandbox/snow-effect/snow-canvas";
+import { CelestialCanvas } from "./celestial-canvas";
 import type { WeatherCondition } from "../schema";
 import type { EffectSettings } from "./types";
 import {
@@ -13,6 +14,7 @@ import {
   configToRainProps,
   configToLightningProps,
   configToSnowProps,
+  configToCelestialProps,
 } from "./parameter-mapper";
 
 interface EffectCompositorProps {
@@ -64,11 +66,13 @@ export function EffectCompositor({
     return null;
   }
 
+  const celestialProps = configToCelestialProps(effectConfig);
   const cloudProps = configToCloudProps(effectConfig);
   const rainProps = configToRainProps(effectConfig);
   const lightningProps = configToLightningProps(effectConfig);
   const snowProps = configToSnowProps(effectConfig);
 
+  const hasCelestial = celestialProps !== null;
   const hasCloud = cloudProps !== null;
   const hasRain = rainProps !== null;
   const hasLightning = lightningProps !== null;
@@ -90,6 +94,26 @@ export function EffectCompositor({
       }}
       aria-hidden="true"
     >
+      {hasCelestial && (
+        <CelestialCanvas
+          className="absolute inset-0"
+          timeOfDay={celestialProps.timeOfDay}
+          moonPhase={celestialProps.moonPhase}
+          starDensity={celestialProps.starDensity}
+          celestialX={celestialProps.celestialX}
+          celestialY={celestialProps.celestialY}
+          sunSize={celestialProps.sunSize}
+          moonSize={celestialProps.moonSize}
+          sunGlowIntensity={celestialProps.sunGlowIntensity}
+          sunGlowSize={celestialProps.sunGlowSize}
+          sunRayCount={celestialProps.sunRayCount}
+          sunRayLength={celestialProps.sunRayLength}
+          sunRayIntensity={celestialProps.sunRayIntensity}
+          moonGlowIntensity={celestialProps.moonGlowIntensity}
+          moonGlowSize={celestialProps.moonGlowSize}
+        />
+      )}
+
       {hasCloud && (
         <CloudCanvas
           className="absolute inset-0"

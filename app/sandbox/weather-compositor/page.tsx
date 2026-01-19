@@ -7,7 +7,8 @@ import { RainCanvas } from "@/app/sandbox/rain-effect/rain-canvas";
 import { LightningCanvas } from "@/app/sandbox/lightning-effect/lightning-canvas";
 import { SnowCanvas } from "@/app/sandbox/snow-effect/snow-canvas";
 import { CelestialCanvas } from "@/components/tool-ui/weather-widget/effects/celestial-canvas";
-import { Download, Upload, RotateCcw } from "lucide-react";
+import { Download, Upload, RotateCcw, Eye, Layers } from "lucide-react";
+import { WeatherWidget } from "@/components/tool-ui/weather-widget";
 import type { WeatherCondition } from "@/components/tool-ui/weather-widget/schema";
 import {
   WEATHER_CONDITIONS,
@@ -80,6 +81,7 @@ export default function WeatherCompositorSandbox() {
   const [activeCondition, setActiveCondition] = useState<WeatherCondition>("clear");
   const [globalSettings, setGlobalSettings] = useState<GlobalSettings>(DEFAULT_GLOBAL_SETTINGS);
   const [overrides, setOverrides] = useState<Partial<Record<WeatherCondition, ConditionOverrides>>>({});
+  const [showWidgetPreview, setShowWidgetPreview] = useState(false);
   const isInitializing = useRef(true);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -127,42 +129,79 @@ export default function WeatherCompositorSandbox() {
 
   const [celestial, setCelestial] = useControls("Celestial", () => ({
     moonPhase: { value: mergedParams.celestial.moonPhase, min: 0, max: 1, step: 0.01, label: "Moon Phase" },
-    starDensity: { value: mergedParams.celestial.starDensity, min: 0, max: 1, step: 0.05, label: "Star Density" },
+    starDensity: { value: mergedParams.celestial.starDensity, min: 0, max: 2, step: 0.05, label: "Star Density" },
     celestialX: { value: mergedParams.celestial.celestialX, min: 0, max: 1, step: 0.01, label: "Position X" },
     celestialY: { value: mergedParams.celestial.celestialY, min: 0, max: 1, step: 0.01, label: "Position Y" },
-    sunSize: { value: mergedParams.celestial.sunSize, min: 0.02, max: 0.2, step: 0.005, label: "Sun Size" },
-    moonSize: { value: mergedParams.celestial.moonSize, min: 0.02, max: 0.15, step: 0.005, label: "Moon Size" },
+    sunSize: { value: mergedParams.celestial.sunSize, min: 0.01, max: 0.8, step: 0.005, label: "Sun Size" },
+    moonSize: { value: mergedParams.celestial.moonSize, min: 0.01, max: 0.6, step: 0.005, label: "Moon Size" },
+    sunGlowIntensity: { value: mergedParams.celestial.sunGlowIntensity, min: 0, max: 5, step: 0.05, label: "Sun Glow" },
+    sunGlowSize: { value: mergedParams.celestial.sunGlowSize, min: 0.05, max: 2, step: 0.05, label: "Sun Glow Size" },
+    sunRayCount: { value: mergedParams.celestial.sunRayCount, min: 0, max: 48, step: 1, label: "Sun Ray Count" },
+    sunRayLength: { value: mergedParams.celestial.sunRayLength, min: 0, max: 3, step: 0.05, label: "Sun Ray Length" },
+    sunRayIntensity: { value: mergedParams.celestial.sunRayIntensity, min: 0, max: 3, step: 0.05, label: "Sun Ray Intensity" },
+    moonGlowIntensity: { value: mergedParams.celestial.moonGlowIntensity, min: 0, max: 5, step: 0.05, label: "Moon Glow" },
+    moonGlowSize: { value: mergedParams.celestial.moonGlowSize, min: 0.05, max: 1.5, step: 0.02, label: "Moon Glow Size" },
   }), [activeCondition]);
 
   const [cloud, setCloud] = useControls("Clouds", () => ({
+    cloudScale: { value: mergedParams.cloud.cloudScale, min: 0.1, max: 10, step: 0.1, label: "Scale" },
     coverage: { value: mergedParams.cloud.coverage, min: 0, max: 1, step: 0.01, label: "Coverage" },
-    density: { value: mergedParams.cloud.density, min: 0, max: 1, step: 0.01, label: "Density" },
-    softness: { value: mergedParams.cloud.softness, min: 0, max: 1, step: 0.01, label: "Softness" },
-    windSpeed: { value: mergedParams.cloud.windSpeed, min: 0, max: 2, step: 0.05, label: "Wind Speed" },
-    turbulence: { value: mergedParams.cloud.turbulence, min: 0, max: 2, step: 0.05, label: "Turbulence" },
-    numLayers: { value: mergedParams.cloud.numLayers, min: 1, max: 6, step: 1, label: "Layers" },
+    density: { value: mergedParams.cloud.density, min: 0, max: 2, step: 0.01, label: "Density" },
+    softness: { value: mergedParams.cloud.softness, min: 0, max: 2, step: 0.01, label: "Softness" },
+    windSpeed: { value: mergedParams.cloud.windSpeed, min: 0, max: 5, step: 0.05, label: "Wind Speed" },
+    windAngle: { value: mergedParams.cloud.windAngle, min: -Math.PI, max: Math.PI, step: 0.1, label: "Wind Angle" },
+    turbulence: { value: mergedParams.cloud.turbulence, min: 0, max: 5, step: 0.05, label: "Turbulence" },
+    sunAzimuth: { value: mergedParams.cloud.sunAzimuth, min: -Math.PI, max: Math.PI, step: 0.1, label: "Sun Azimuth" },
+    lightIntensity: { value: mergedParams.cloud.lightIntensity, min: 0, max: 5, step: 0.05, label: "Light Intensity" },
     ambientDarkness: { value: mergedParams.cloud.ambientDarkness, min: 0, max: 1, step: 0.05, label: "Darkness" },
+    numLayers: { value: mergedParams.cloud.numLayers, min: 1, max: 10, step: 1, label: "Layers" },
+    layerSpread: { value: mergedParams.cloud.layerSpread, min: 0, max: 2, step: 0.05, label: "Layer Spread" },
+    starSize: { value: mergedParams.cloud.starSize, min: 0.1, max: 5, step: 0.1, label: "Star Size" },
+    starTwinkleSpeed: { value: mergedParams.cloud.starTwinkleSpeed, min: 0, max: 10, step: 0.1, label: "Twinkle Speed" },
+    starTwinkleAmount: { value: mergedParams.cloud.starTwinkleAmount, min: 0, max: 2, step: 0.05, label: "Twinkle Amount" },
     horizonLine: { value: mergedParams.cloud.horizonLine, min: 0, max: 1, step: 0.01, label: "Horizon" },
   }), [activeCondition]);
 
   const [rain, setRain] = useControls("Rain", () => ({
-    glassIntensity: { value: mergedParams.rain.glassIntensity, min: 0, max: 1, step: 0.05, label: "Glass Drops" },
-    fallingIntensity: { value: mergedParams.rain.fallingIntensity, min: 0, max: 1, step: 0.05, label: "Falling Rain" },
-    fallingAngle: { value: mergedParams.rain.fallingAngle, min: -0.5, max: 0.5, step: 0.02, label: "Angle" },
-    fallingLayers: { value: mergedParams.rain.fallingLayers, min: 1, max: 5, step: 1, label: "Layers" },
+    glassIntensity: { value: mergedParams.rain.glassIntensity, min: 0, max: 2, step: 0.05, label: "Glass Drops" },
+    zoom: { value: mergedParams.rain.zoom, min: 0.1, max: 5, step: 0.05, label: "Zoom" },
+    fallingIntensity: { value: mergedParams.rain.fallingIntensity, min: 0, max: 2, step: 0.05, label: "Falling Rain" },
+    fallingSpeed: { value: mergedParams.rain.fallingSpeed, min: 0.05, max: 10, step: 0.1, label: "Fall Speed" },
+    fallingAngle: { value: mergedParams.rain.fallingAngle, min: -1.5, max: 1.5, step: 0.02, label: "Angle" },
+    fallingStreakLength: { value: mergedParams.rain.fallingStreakLength, min: 0.1, max: 5, step: 0.05, label: "Streak Length" },
+    fallingLayers: { value: mergedParams.rain.fallingLayers, min: 1, max: 10, step: 1, label: "Layers" },
+    fallingRefraction: { value: mergedParams.rain.fallingRefraction, min: 0, max: 2, step: 0.05, label: "Refraction" },
+    fallingWaviness: { value: mergedParams.rain.fallingWaviness, min: 0, max: 2, step: 0.02, label: "Waviness" },
+    fallingThicknessVar: { value: mergedParams.rain.fallingThicknessVar, min: 0, max: 2, step: 0.05, label: "Thickness Var" },
   }), [activeCondition]);
 
   const [lightning, setLightning] = useControls("Lightning", () => ({
+    branchDensity: { value: mergedParams.lightning.branchDensity, min: 0, max: 2, step: 0.05, label: "Branch Density" },
+    displacement: { value: mergedParams.lightning.displacement, min: 0, max: 1, step: 0.01, label: "Displacement" },
+    glowIntensity: { value: mergedParams.lightning.glowIntensity, min: 0, max: 5, step: 0.05, label: "Glow Intensity" },
+    flashDuration: { value: mergedParams.lightning.flashDuration, min: 0.01, max: 2, step: 0.01, label: "Flash Duration" },
+    sceneIllumination: { value: mergedParams.lightning.sceneIllumination, min: 0, max: 2, step: 0.05, label: "Scene Light" },
+    afterglowPersistence: { value: mergedParams.lightning.afterglowPersistence, min: 0, max: 2, step: 0.05, label: "Afterglow" },
     autoMode: { value: mergedParams.lightning.autoMode, label: "Auto Trigger" },
-    autoInterval: { value: mergedParams.lightning.autoInterval, min: 2, max: 15, step: 0.5, label: "Interval (s)" },
-    sceneIllumination: { value: mergedParams.lightning.sceneIllumination, min: 0, max: 1, step: 0.05, label: "Scene Light" },
+    autoInterval: { value: mergedParams.lightning.autoInterval, min: 0.5, max: 60, step: 0.5, label: "Interval (s)" },
   }), [activeCondition]);
 
   const [snow, setSnow] = useControls("Snow", () => ({
-    intensity: { value: mergedParams.snow.intensity, min: 0, max: 1, step: 0.05, label: "Intensity" },
-    snowWindSpeed: { value: mergedParams.snow.snowWindSpeed, min: 0, max: 1, step: 0.05, label: "Wind Speed" },
-    drift: { value: mergedParams.snow.drift, min: 0, max: 1, step: 0.05, label: "Drift" },
-    snowLayers: { value: mergedParams.snow.snowLayers, min: 1, max: 6, step: 1, label: "Layers" },
+    intensity: { value: mergedParams.snow.intensity, min: 0, max: 2, step: 0.05, label: "Intensity" },
+    layers: { value: mergedParams.snow.layers, min: 1, max: 12, step: 1, label: "Layers" },
+    fallSpeed: { value: mergedParams.snow.fallSpeed, min: 0.01, max: 5, step: 0.05, label: "Fall Speed" },
+    windSpeed: { value: mergedParams.snow.windSpeed, min: 0, max: 3, step: 0.05, label: "Wind Speed" },
+    windAngle: { value: mergedParams.snow.windAngle, min: -Math.PI, max: Math.PI, step: 0.1, label: "Wind Angle" },
+    turbulence: { value: mergedParams.snow.turbulence, min: 0, max: 3, step: 0.05, label: "Turbulence" },
+    drift: { value: mergedParams.snow.drift, min: 0, max: 3, step: 0.05, label: "Drift" },
+    flutter: { value: mergedParams.snow.flutter, min: 0, max: 3, step: 0.05, label: "Flutter" },
+    windShear: { value: mergedParams.snow.windShear, min: 0, max: 3, step: 0.05, label: "Wind Shear" },
+    flakeSize: { value: mergedParams.snow.flakeSize, min: 0.1, max: 5, step: 0.05, label: "Flake Size" },
+    sizeVariation: { value: mergedParams.snow.sizeVariation, min: 0, max: 2, step: 0.05, label: "Size Variation" },
+    opacity: { value: mergedParams.snow.opacity, min: 0, max: 2, step: 0.05, label: "Opacity" },
+    glowAmount: { value: mergedParams.snow.glowAmount, min: 0, max: 3, step: 0.05, label: "Glow" },
+    sparkle: { value: mergedParams.snow.sparkle, min: 0, max: 3, step: 0.05, label: "Sparkle" },
+    visibility: { value: mergedParams.snow.visibility, min: 0, max: 2, step: 0.05, label: "Visibility" },
   }), [activeCondition]);
 
   // Combine Leva values with global timeOfDay for full params
@@ -216,6 +255,13 @@ export default function WeatherCompositorSandbox() {
       celestialY: merged.celestial.celestialY,
       sunSize: merged.celestial.sunSize,
       moonSize: merged.celestial.moonSize,
+      sunGlowIntensity: merged.celestial.sunGlowIntensity,
+      sunGlowSize: merged.celestial.sunGlowSize,
+      sunRayCount: merged.celestial.sunRayCount,
+      sunRayLength: merged.celestial.sunRayLength,
+      sunRayIntensity: merged.celestial.sunRayIntensity,
+      moonGlowIntensity: merged.celestial.moonGlowIntensity,
+      moonGlowSize: merged.celestial.moonGlowSize,
     });
     setCloud(merged.cloud);
     setRain(merged.rain);
@@ -262,6 +308,13 @@ export default function WeatherCompositorSandbox() {
       celestialY: base.celestial.celestialY,
       sunSize: base.celestial.sunSize,
       moonSize: base.celestial.moonSize,
+      sunGlowIntensity: base.celestial.sunGlowIntensity,
+      sunGlowSize: base.celestial.sunGlowSize,
+      sunRayCount: base.celestial.sunRayCount,
+      sunRayLength: base.celestial.sunRayLength,
+      sunRayIntensity: base.celestial.sunRayIntensity,
+      moonGlowIntensity: base.celestial.moonGlowIntensity,
+      moonGlowSize: base.celestial.moonGlowSize,
     });
     setCloud(base.cloud);
     setRain(base.rain);
@@ -322,6 +375,17 @@ export default function WeatherCompositorSandbox() {
             >
               <RotateCcw className="size-4" />
             </button>
+            <button
+              onClick={() => setShowWidgetPreview(!showWidgetPreview)}
+              className={`rounded p-1.5 transition-colors ${
+                showWidgetPreview
+                  ? "bg-blue-500/30 text-blue-300"
+                  : "text-white/60 hover:bg-white/10 hover:text-white"
+              }`}
+              title={showWidgetPreview ? "Show effect layers" : "Show actual widget"}
+            >
+              {showWidgetPreview ? <Layers className="size-4" /> : <Eye className="size-4" />}
+            </button>
             <input
               ref={fileInputRef}
               type="file"
@@ -339,69 +403,133 @@ export default function WeatherCompositorSandbox() {
             height: "280px",
           }}
         >
-          {layers.celestial && (
-            <CelestialCanvas
-              className="absolute inset-0"
-              timeOfDay={timeOfDay}
-              moonPhase={celestial.moonPhase}
-              starDensity={celestial.starDensity}
-              celestialX={celestial.celestialX}
-              celestialY={celestial.celestialY}
-              sunSize={celestial.sunSize}
-              moonSize={celestial.moonSize}
+          {showWidgetPreview ? (
+            <WeatherWidget
+              id="compositor-preview"
+              location="San Francisco"
+              current={{
+                temp: 72,
+                tempMin: 65,
+                tempMax: 78,
+                condition: activeCondition,
+              }}
+              forecast={[
+                { day: "Mon", tempMin: 62, tempMax: 75, condition: activeCondition },
+                { day: "Tue", tempMin: 64, tempMax: 77, condition: "partly-cloudy" },
+                { day: "Wed", tempMin: 61, tempMax: 73, condition: "cloudy" },
+              ]}
+              unit="fahrenheit"
+              updatedAt={(() => {
+                const date = new Date();
+                date.setHours(Math.floor(timeOfDay * 24), Math.floor((timeOfDay * 24 % 1) * 60), 0, 0);
+                return date.toISOString();
+              })()}
+              effects={{ enabled: true }}
             />
-          )}
+          ) : (
+            <>
+              {layers.celestial && (
+                <CelestialCanvas
+                  className="absolute inset-0"
+                  timeOfDay={timeOfDay}
+                  moonPhase={celestial.moonPhase}
+                  starDensity={celestial.starDensity}
+                  celestialX={celestial.celestialX}
+                  celestialY={celestial.celestialY}
+                  sunSize={celestial.sunSize}
+                  moonSize={celestial.moonSize}
+                  sunGlowIntensity={celestial.sunGlowIntensity}
+                  sunGlowSize={celestial.sunGlowSize}
+                  sunRayCount={celestial.sunRayCount}
+                  sunRayLength={celestial.sunRayLength}
+                  sunRayIntensity={celestial.sunRayIntensity}
+                  moonGlowIntensity={celestial.moonGlowIntensity}
+                  moonGlowSize={celestial.moonGlowSize}
+                />
+              )}
 
-          {layers.clouds && (
-            <CloudCanvas
-              className="absolute inset-0"
-              coverage={cloud.coverage}
-              density={cloud.density}
-              softness={cloud.softness}
-              windSpeed={cloud.windSpeed}
-              turbulence={cloud.turbulence}
-              numLayers={cloud.numLayers}
-              sunAltitude={timeOfDay < 0.5 ? timeOfDay * 2 : 2 - timeOfDay * 2}
-              ambientDarkness={cloud.ambientDarkness}
-              horizonLine={cloud.horizonLine}
-              starDensity={0}
-              transparentBackground={true}
-            />
-          )}
+              {layers.clouds && (
+                <CloudCanvas
+                  className="absolute inset-0"
+                  cloudScale={cloud.cloudScale}
+                  coverage={cloud.coverage}
+                  density={cloud.density}
+                  softness={cloud.softness}
+                  windSpeed={cloud.windSpeed}
+                  windAngle={cloud.windAngle}
+                  turbulence={cloud.turbulence}
+                  sunAltitude={timeOfDay < 0.5 ? timeOfDay * 2 : 2 - timeOfDay * 2}
+                  sunAzimuth={cloud.sunAzimuth}
+                  lightIntensity={cloud.lightIntensity}
+                  ambientDarkness={cloud.ambientDarkness}
+                  numLayers={cloud.numLayers}
+                  layerSpread={cloud.layerSpread}
+                  starDensity={0}
+                  starSize={cloud.starSize}
+                  starTwinkleSpeed={cloud.starTwinkleSpeed}
+                  starTwinkleAmount={cloud.starTwinkleAmount}
+                  horizonLine={cloud.horizonLine}
+                  transparentBackground={true}
+                />
+              )}
 
-          {layers.rain && (
-            <div className="absolute inset-0" style={{ mixBlendMode: "screen" }}>
-              <RainCanvas
-                className="absolute inset-0"
-                glassIntensity={rain.glassIntensity}
-                fallingIntensity={rain.fallingIntensity}
-                fallingAngle={rain.fallingAngle}
-                fallingLayers={rain.fallingLayers}
-              />
-            </div>
-          )}
+              {layers.rain && (
+                <div className="absolute inset-0" style={{ mixBlendMode: "screen" }}>
+                  <RainCanvas
+                    className="absolute inset-0"
+                    glassIntensity={rain.glassIntensity}
+                    zoom={rain.zoom}
+                    fallingIntensity={rain.fallingIntensity}
+                    fallingSpeed={rain.fallingSpeed}
+                    fallingAngle={rain.fallingAngle}
+                    fallingStreakLength={rain.fallingStreakLength}
+                    fallingLayers={rain.fallingLayers}
+                    fallingRefraction={rain.fallingRefraction}
+                    fallingWaviness={rain.fallingWaviness}
+                    fallingThicknessVar={rain.fallingThicknessVar}
+                  />
+                </div>
+              )}
 
-          {layers.lightning && (
-            <div className="absolute inset-0" style={{ mixBlendMode: "screen" }}>
-              <LightningCanvas
-                className="absolute inset-0"
-                autoMode={lightning.autoMode}
-                autoInterval={lightning.autoInterval}
-                sceneIllumination={lightning.sceneIllumination}
-              />
-            </div>
-          )}
+              {layers.lightning && (
+                <div className="absolute inset-0" style={{ mixBlendMode: "screen" }}>
+                  <LightningCanvas
+                    className="absolute inset-0"
+                    branchDensity={lightning.branchDensity}
+                    displacement={lightning.displacement}
+                    glowIntensity={lightning.glowIntensity}
+                    flashDuration={lightning.flashDuration}
+                    sceneIllumination={lightning.sceneIllumination}
+                    afterglowPersistence={lightning.afterglowPersistence}
+                    autoMode={lightning.autoMode}
+                    autoInterval={lightning.autoInterval}
+                  />
+                </div>
+              )}
 
-          {layers.snow && (
-            <div className="absolute inset-0" style={{ mixBlendMode: "plus-lighter" }}>
-              <SnowCanvas
-                className="absolute inset-0"
-                intensity={snow.intensity}
-                windSpeed={snow.snowWindSpeed}
-                drift={snow.drift}
-                layers={snow.snowLayers}
-              />
-            </div>
+              {layers.snow && (
+                <div className="absolute inset-0" style={{ mixBlendMode: "plus-lighter" }}>
+                  <SnowCanvas
+                    className="absolute inset-0"
+                    intensity={snow.intensity}
+                    layers={snow.layers}
+                    fallSpeed={snow.fallSpeed}
+                    windSpeed={snow.windSpeed}
+                    windAngle={snow.windAngle}
+                    turbulence={snow.turbulence}
+                    drift={snow.drift}
+                    flutter={snow.flutter}
+                    windShear={snow.windShear}
+                    flakeSize={snow.flakeSize}
+                    sizeVariation={snow.sizeVariation}
+                    opacity={snow.opacity}
+                    glowAmount={snow.glowAmount}
+                    sparkle={snow.sparkle}
+                    visibility={snow.visibility}
+                  />
+                </div>
+              )}
+            </>
           )}
 
           <div className="pointer-events-none absolute bottom-4 left-4 rounded bg-black/50 px-2 py-1 text-sm text-white/80 backdrop-blur-sm">
