@@ -185,6 +185,7 @@ function OptionListConfirmation({
       className={cn(
         "@container/option-list flex w-full max-w-md min-w-80 flex-col",
         "text-foreground",
+        "motion-safe:animate-[fade-blur-in_300ms_cubic-bezier(0.16,1,0.3,1)_both]",
         className,
       )}
       data-slot="option-list"
@@ -195,7 +196,7 @@ function OptionListConfirmation({
     >
       <div
         className={cn(
-          "bg-card/60 flex w-full flex-col overflow-hidden rounded-2xl border px-5 py-2.5 opacity-95 shadow-xs",
+          "bg-card/60 flex w-full flex-col overflow-hidden rounded-2xl border px-5 py-2.5 shadow-xs",
         )}
       >
         {confirmedOptions.map((option, index) => (
@@ -549,77 +550,79 @@ export function OptionList({
     selectedCount,
   ]);
 
-  if (choice !== undefined && choice !== null) {
-    const selectedIds = parseSelectionToIdSet(choice, selectionMode);
-    return (
-      <OptionListConfirmation
-        id={id}
-        options={options}
-        selectedIds={selectedIds}
-        className={className}
-      />
-    );
-  }
+  const isReceipt = choice !== undefined && choice !== null;
+  const viewKey = isReceipt ? `receipt-${String(choice)}` : "interactive";
 
   return (
-    <div
-      className={cn(
-        "@container/option-list flex w-full max-w-md min-w-80 flex-col gap-3",
-        "text-foreground",
-        className,
-      )}
-      data-slot="option-list"
-      data-tool-ui-id={id}
-      role="group"
-      aria-label="Option list"
-    >
-      <div
-        className={cn(
-          "group/list bg-card flex w-full flex-col overflow-hidden rounded-2xl border px-4 py-1.5 shadow-xs",
-        )}
-        role="listbox"
-        aria-multiselectable={selectionMode === "multi"}
-        onKeyDown={handleListboxKeyDown}
-      >
-        {optionStates.map(({ option, isSelected, isDisabled }, index) => {
-          return (
-            <Fragment key={option.id}>
-              {index > 0 && (
-                <Separator
-                  className="transition-opacity [@media(hover:hover)]:[&:has(+_:hover)]:opacity-0 [@media(hover:hover)]:[.peer:hover+&]:opacity-0"
-                  orientation="horizontal"
-                />
-              )}
-              <OptionItem
-                option={option}
-                isSelected={isSelected}
-                isDisabled={isDisabled}
-                selectionMode={selectionMode}
-                isFirst={index === 0}
-                isLast={index === optionStates.length - 1}
-                tabIndex={index === activeIndex ? 0 : -1}
-                onFocus={() => setActiveIndex(index)}
-                buttonRef={(el) => {
-                  optionRefs.current[index] = el;
-                }}
-                onToggle={() => toggleSelection(option.id)}
-              />
-            </Fragment>
-          );
-        })}
-      </div>
-
-      <div className="@container/actions">
-        <ActionButtons
-          actions={actionsWithDisabledState}
-          align={normalizedFooterActions.align}
-          confirmTimeout={normalizedFooterActions.confirmTimeout}
-          onAction={handleFooterAction}
-          onBeforeAction={
-            hasCustomResponseActions ? onBeforeResponseAction : undefined
-          }
+    <div key={viewKey} className="contents">
+      {isReceipt ? (
+        <OptionListConfirmation
+          id={id}
+          options={options}
+          selectedIds={parseSelectionToIdSet(choice, selectionMode)}
+          className={className}
         />
-      </div>
+      ) : (
+        <div
+          className={cn(
+            "@container/option-list flex w-full max-w-md min-w-80 flex-col gap-3",
+            "text-foreground",
+            className,
+          )}
+          data-slot="option-list"
+          data-tool-ui-id={id}
+          role="group"
+          aria-label="Option list"
+        >
+          <div
+            className={cn(
+              "group/list bg-card flex w-full flex-col overflow-hidden rounded-2xl border px-4 py-1.5 shadow-xs",
+            )}
+            role="listbox"
+            aria-multiselectable={selectionMode === "multi"}
+            onKeyDown={handleListboxKeyDown}
+          >
+            {optionStates.map(({ option, isSelected, isDisabled }, index) => {
+              return (
+                <Fragment key={option.id}>
+                  {index > 0 && (
+                    <Separator
+                      className="transition-opacity [@media(hover:hover)]:[&:has(+_:hover)]:opacity-0 [@media(hover:hover)]:[.peer:hover+&]:opacity-0"
+                      orientation="horizontal"
+                    />
+                  )}
+                  <OptionItem
+                    option={option}
+                    isSelected={isSelected}
+                    isDisabled={isDisabled}
+                    selectionMode={selectionMode}
+                    isFirst={index === 0}
+                    isLast={index === optionStates.length - 1}
+                    tabIndex={index === activeIndex ? 0 : -1}
+                    onFocus={() => setActiveIndex(index)}
+                    buttonRef={(el) => {
+                      optionRefs.current[index] = el;
+                    }}
+                    onToggle={() => toggleSelection(option.id)}
+                  />
+                </Fragment>
+              );
+            })}
+          </div>
+
+          <div className="@container/actions">
+            <ActionButtons
+              actions={actionsWithDisabledState}
+              align={normalizedFooterActions.align}
+              confirmTimeout={normalizedFooterActions.confirmTimeout}
+              onAction={handleFooterAction}
+              onBeforeAction={
+                hasCustomResponseActions ? onBeforeResponseAction : undefined
+              }
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }

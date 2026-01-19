@@ -96,16 +96,16 @@ export function ProgressTrackerProgress({ className }: { className?: string }) {
         <div className="flex flex-col gap-3">
           {[1, 2, 3].map((i) => (
             <div key={i} className="flex items-start gap-3">
-              <div className="bg-muted size-6 animate-pulse rounded-full" />
+              <div className="bg-muted size-6 rounded-full motion-safe:animate-pulse" />
               <div className="flex flex-1 flex-col gap-1">
-                <div className="bg-muted h-5 w-3/4 animate-pulse rounded" />
-                <div className="bg-muted h-4 w-full animate-pulse rounded" />
+                <div className="bg-muted h-5 w-3/4 rounded motion-safe:animate-pulse" />
+                <div className="bg-muted h-4 w-full rounded motion-safe:animate-pulse" />
               </div>
             </div>
           ))}
         </div>
         <div className="flex justify-end">
-          <div className="bg-muted h-9 w-20 animate-pulse rounded-full" />
+          <div className="bg-muted h-9 w-20 rounded-full motion-safe:animate-pulse" />
         </div>
       </div>
     </div>
@@ -168,188 +168,196 @@ export function ProgressTracker({
     };
   }, [allCompleted, choice, responseActions, hasFailed, defaultActions]);
 
-  if (choice) {
-    const { outcome, summary } = choice;
-    const isSuccess = outcome === "success";
-    const isFailed = outcome === "failed";
+  const viewKey = choice ? `receipt-${choice.outcome}` : "interactive";
+  const receiptOutcome = choice?.outcome;
+  const receiptSummary = choice?.summary;
+  const isReceiptSuccess = receiptOutcome === "success";
+  const isReceiptFailed = receiptOutcome === "failed";
 
-    return (
-      <div
-        className={cn(
-          "flex w-full min-w-80 max-w-md flex-col",
-          "text-foreground select-none",
-          className,
-        )}
-        data-slot="progress-tracker"
-        data-tool-ui-id={id}
-        data-receipt="true"
-        role="status"
-        aria-label={summary}
-      >
-        <div className="bg-card/60 flex w-full flex-col gap-4 rounded-2xl border p-5 opacity-95 shadow-xs">
-          <div className="flex items-center justify-between">
+  return (
+    <div key={viewKey} className="contents">
+      {choice ? (
+        <div
+          className={cn(
+            "flex w-full min-w-80 max-w-md flex-col",
+            "text-foreground select-none",
+            "motion-safe:animate-[fade-blur-in_300ms_cubic-bezier(0.16,1,0.3,1)_both]",
+            className,
+          )}
+          data-slot="progress-tracker"
+          data-tool-ui-id={id}
+          data-receipt="true"
+          role="status"
+          aria-label={receiptSummary}
+        >
+          <div className="bg-card/60 flex w-full flex-col gap-4 rounded-2xl border p-5 shadow-xs">
+            <div className="flex items-center justify-between">
+              {elapsedTime !== undefined && elapsedTime > 0 && (
+                <div className="flex items-center gap-1.5 text-xs text-muted-foreground font-mono">
+                  <Timer className="size-3.5 -mt-px" />
+                  <span>{formatElapsedTime(elapsedTime)}</span>
+                </div>
+              )}
+              <span
+                className={cn(
+                  "flex items-center gap-1.5 text-xs font-medium",
+                  isReceiptSuccess && "text-emerald-600 dark:text-emerald-500",
+                  isReceiptFailed && "text-destructive",
+                  !isReceiptSuccess &&
+                    !isReceiptFailed &&
+                    "text-muted-foreground",
+                )}
+              >
+                {isReceiptSuccess ? (
+                  <Check className="size-3.5" />
+                ) : isReceiptFailed ? (
+                  <AlertCircle className="size-3.5" />
+                ) : (
+                  <Check className="size-3.5" />
+                )}
+                {receiptSummary}
+              </span>
+            </div>
+
+            <ul role="list" className="flex flex-col gap-2">
+              {steps.map((step, index) => (
+                <li
+                  key={step.id}
+                  className="relative flex items-start gap-3 -mx-2 rounded-lg px-2 py-1.5"
+                >
+                  {index < steps.length - 1 && (
+                    <div
+                      className="absolute left-5 top-8 w-px bg-border"
+                      style={{
+                        height: "calc(100% + 0.5rem)",
+                      }}
+                      aria-hidden="true"
+                    />
+                  )}
+                  <div className="relative z-10">
+                    <StepIndicator status={step.status} />
+                  </div>
+                  <div className="flex flex-1 flex-col gap-0.5">
+                    <span className="text-sm font-medium leading-6">
+                      {step.label}
+                    </span>
+                    {step.description && (
+                      <span className="text-muted-foreground text-sm">
+                        {step.description}
+                      </span>
+                    )}
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      ) : (
+        <article
+          className={cn(
+            "flex w-full min-w-80 max-w-md flex-col gap-3",
+            "text-foreground select-none",
+            className,
+          )}
+          data-slot="progress-tracker"
+          data-tool-ui-id={id}
+          role="status"
+          aria-live="polite"
+          aria-busy={hasInProgress}
+        >
+          <div className="bg-card flex w-full flex-col gap-4 rounded-2xl border p-5 shadow-xs">
             {elapsedTime !== undefined && elapsedTime > 0 && (
               <div className="flex items-center gap-1.5 text-xs text-muted-foreground font-mono">
                 <Timer className="size-3.5 -mt-px" />
                 <span>{formatElapsedTime(elapsedTime)}</span>
               </div>
             )}
-            <span
-              className={cn(
-                "flex items-center gap-1.5 text-xs font-medium",
-                isSuccess && "text-emerald-600 dark:text-emerald-500",
-                isFailed && "text-destructive",
-                !isSuccess && !isFailed && "text-muted-foreground",
-              )}
-            >
-              {isSuccess ? (
-                <Check className="size-3.5" />
-              ) : isFailed ? (
-                <AlertCircle className="size-3.5" />
-              ) : (
-                <Check className="size-3.5" />
-              )}
-              {summary}
-            </span>
-          </div>
 
-          <ul role="list" className="flex flex-col gap-2">
-            {steps.map((step, index) => (
-              <li
-                key={step.id}
-                className="relative flex items-start gap-3 -mx-2 rounded-lg px-2 py-1.5"
-              >
-                {index < steps.length - 1 && (
-                  <div
-                    className="absolute left-5 top-8 w-px bg-border"
-                    style={{
-                      height: "calc(100% + 0.5rem)",
-                    }}
-                    aria-hidden="true"
-                  />
-                )}
-                <div className="relative z-10">
-                  <StepIndicator status={step.status} />
-                </div>
-                <div className="flex flex-1 flex-col gap-0.5">
-                  <span className="text-sm font-medium leading-6">
-                    {step.label}
-                  </span>
-                  {step.description && (
-                    <span className="text-muted-foreground text-sm">
-                      {step.description}
-                    </span>
-                  )}
-                </div>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </div>
-    );
-  }
+            <ul role="list" className="flex flex-col gap-3">
+              {steps.map((step, index) => {
+                const isCurrent = step.id === currentStepId;
+                const isActive = step.status === "in-progress";
+                const hasDescription = !!step.description;
 
-  return (
-    <article
-      className={cn(
-        "flex w-full min-w-80 max-w-md flex-col gap-3",
-        "text-foreground select-none",
-        className,
-      )}
-      data-slot="progress-tracker"
-      data-tool-ui-id={id}
-      role="status"
-      aria-live="polite"
-      aria-busy={hasInProgress}
-    >
-      <div className="bg-card flex w-full flex-col gap-4 rounded-2xl border p-5 shadow-xs">
-        {elapsedTime !== undefined && elapsedTime > 0 && (
-          <div className="flex items-center gap-1.5 text-xs text-muted-foreground font-mono">
-            <Timer className="size-3.5 -mt-px" />
-            <span>{formatElapsedTime(elapsedTime)}</span>
-          </div>
-        )}
-
-        <ul role="list" className="flex flex-col gap-3">
-          {steps.map((step, index) => {
-            const isCurrent = step.id === currentStepId;
-            const isActive = step.status === "in-progress";
-            const hasDescription = !!step.description;
-
-            return (
-              <li
-                key={step.id}
-                className="relative -mx-2"
-                aria-current={isCurrent ? "step" : undefined}
-              >
-                {index < steps.length - 1 && (
-                  <div
-                    className={cn(
-                      "absolute left-5 top-6 w-px bg-border",
-                      "motion-safe:transition-all motion-safe:duration-300",
-                    )}
-                    style={{
-                      height: "calc(100% + 0.25rem)",
-                    }}
-                    aria-hidden="true"
-                  />
-                )}
-                <div
-                  className={cn(
-                    "relative z-10 flex items-start gap-3 rounded-lg px-2 py-1.5",
-                    "motion-safe:transition-all motion-safe:duration-300",
-                    isCurrent && "bg-primary/5",
-                  )}
-                  style={{
-                    backdropFilter: isCurrent ? "blur(2px)" : undefined,
-                  }}
-                >
-                  <div className="relative z-10">
-                    <StepIndicator status={step.status} />
-                  </div>
-                  <div className="flex flex-1 flex-col">
-                    <span
-                      className={cn(
-                        "text-sm font-medium leading-6",
-                        step.status === "pending" && "text-muted-foreground",
-                        step.status === "in-progress" && "motion-safe:shimmer shimmer-invert text-foreground",
-                      )}
-                    >
-                      {step.label}
-                    </span>
-                    {hasDescription && (
+                return (
+                  <li
+                    key={step.id}
+                    className="relative -mx-2"
+                    aria-current={isCurrent ? "step" : undefined}
+                  >
+                    {index < steps.length - 1 && (
                       <div
                         className={cn(
-                          "grid motion-safe:transition-[grid-template-rows,opacity] motion-safe:duration-300 motion-safe:ease-out",
-                          isActive ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0",
+                          "absolute left-5 top-6 w-px bg-border",
+                          "motion-safe:transition-all motion-safe:duration-300",
                         )}
-                      >
-                        <div className="overflow-hidden">
-                          <span className="text-muted-foreground text-sm block pt-0.5">
-                            {step.description}
-                          </span>
-                        </div>
-                      </div>
+                        style={{
+                          height: "calc(100% + 0.25rem)",
+                        }}
+                        aria-hidden="true"
+                      />
                     )}
-                  </div>
-                </div>
-              </li>
-            );
-          })}
-        </ul>
-      </div>
+                    <div
+                      className={cn(
+                        "relative z-10 flex items-start gap-3 rounded-lg px-2 py-1.5",
+                        "motion-safe:transition-all motion-safe:duration-300",
+                        isCurrent && "bg-primary/5",
+                      )}
+                      style={{
+                        backdropFilter: isCurrent ? "blur(2px)" : undefined,
+                      }}
+                    >
+                      <div className="relative z-10">
+                        <StepIndicator status={step.status} />
+                      </div>
+                      <div className="flex flex-1 flex-col">
+                        <span
+                          className={cn(
+                            "text-sm font-medium leading-6",
+                            step.status === "pending" && "text-muted-foreground",
+                            step.status === "in-progress" &&
+                              "motion-safe:shimmer shimmer-invert text-foreground",
+                          )}
+                        >
+                          {step.label}
+                        </span>
+                        {hasDescription && (
+                          <div
+                            className={cn(
+                              "grid motion-safe:transition-[grid-template-rows,opacity] motion-safe:duration-300 motion-safe:ease-out",
+                              isActive
+                                ? "grid-rows-[1fr] opacity-100"
+                                : "grid-rows-[0fr] opacity-0",
+                            )}
+                          >
+                            <div className="overflow-hidden">
+                              <span className="text-muted-foreground text-sm block pt-0.5">
+                                {step.description}
+                              </span>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
 
-      {normalizedActions && (
-        <div className="@container/actions">
-          <ActionButtons
-            actions={normalizedActions.items}
-            align={normalizedActions.align}
-            confirmTimeout={normalizedActions.confirmTimeout}
-            onAction={handleAction}
-            onBeforeAction={onBeforeResponseAction}
-          />
-        </div>
+          {normalizedActions && (
+            <div className="@container/actions">
+              <ActionButtons
+                actions={normalizedActions.items}
+                align={normalizedActions.align}
+                confirmTimeout={normalizedActions.confirmTimeout}
+                onAction={handleAction}
+                onBeforeAction={onBeforeResponseAction}
+              />
+            </div>
+          )}
+        </article>
       )}
-    </article>
+    </div>
   );
 }

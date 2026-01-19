@@ -229,13 +229,15 @@ export const previewConfigs: Record<
       userMessage: "Deploy the latest changes to production",
       preamble: "I'll need your confirmation before proceeding:",
     },
-    renderComponent: ({ data }) => {
+    renderComponent: ({ data, state, setState }) => {
       const cardData = data as ComponentProps<typeof ApprovalCard>;
+      const choice = state.selection as "approved" | "denied" | undefined;
       return (
         <DynamicApprovalCard
           {...cardData}
-          onConfirm={() => console.log("Approved")}
-          onCancel={() => console.log("Denied")}
+          choice={cardData.choice ?? choice}
+          onConfirm={() => setState({ selection: "approved" })}
+          onCancel={() => setState({ selection: "denied" })}
         />
       );
     },

@@ -91,6 +91,19 @@
   }
 }
 
+@keyframes fade-blur-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+    filter: blur(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+}
+
 @keyframes progress-pulse {
   0%, 100% {
     filter: brightness(1);
@@ -155,6 +168,10 @@
 
   .animate-collapsible-up {
     animation: collapsible-up 150ms ease-out;
+  }
+
+  .animate-fade-blur-in {
+    animation: fade-blur-in 300ms cubic-bezier(0.16, 1, 0.3, 1) both;
   }
 
   .bg-wash {

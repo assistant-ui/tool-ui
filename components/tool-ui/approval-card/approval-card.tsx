@@ -42,6 +42,7 @@ function ApprovalCardReceipt({
       className={cn(
         "flex w-full min-w-64 max-w-md flex-col",
         "text-foreground",
+        "motion-safe:animate-[fade-blur-in_300ms_cubic-bezier(0.16,1,0.3,1)_both]",
         className,
       )}
       data-slot="approval-card"
@@ -52,7 +53,7 @@ function ApprovalCardReceipt({
     >
       <div
         className={cn(
-          "bg-card/60 flex w-full items-center gap-3 rounded-2xl border px-4 py-3 opacity-95 shadow-xs",
+          "bg-card/60 flex w-full items-center gap-3 rounded-2xl border px-4 py-3 shadow-xs",
         )}
       >
         <span
@@ -88,15 +89,15 @@ function ApprovalCardSkeleton({ className }: { className?: string }) {
     >
       <div className="bg-card flex w-full flex-col gap-4 rounded-2xl border p-5 shadow-xs">
         <div className="flex items-start gap-3">
-          <div className="bg-muted size-10 animate-pulse rounded-xl" />
+          <div className="bg-muted size-10 rounded-xl motion-safe:animate-pulse" />
           <div className="flex flex-1 flex-col gap-2">
-            <div className="bg-muted h-5 w-3/4 animate-pulse rounded" />
-            <div className="bg-muted h-4 w-full animate-pulse rounded" />
+            <div className="bg-muted h-5 w-3/4 rounded motion-safe:animate-pulse" />
+            <div className="bg-muted h-4 w-full rounded motion-safe:animate-pulse" />
           </div>
         </div>
         <div className="flex justify-end gap-2">
-          <div className="bg-muted h-9 w-16 animate-pulse rounded-full" />
-          <div className="bg-muted h-9 w-20 animate-pulse rounded-full" />
+          <div className="bg-muted h-9 w-16 rounded-full motion-safe:animate-pulse" />
+          <div className="bg-muted h-9 w-20 rounded-full motion-safe:animate-pulse" />
         </div>
       </div>
     </div>
@@ -148,20 +149,6 @@ export function ApprovalCard({
     [onCancel],
   );
 
-  if (choice) {
-    const customLabel =
-      choice === "approved" ? confirmLabel : cancelLabel;
-    return (
-      <ApprovalCardReceipt
-        id={id}
-        title={title}
-        choice={choice}
-        actionLabel={customLabel}
-        className={className}
-      />
-    );
-  }
-
   const isDestructive = resolvedVariant === "destructive";
 
   const actions: Action[] = [
@@ -179,68 +166,83 @@ export function ApprovalCard({
     },
   ];
 
+  const viewKey = choice ? `receipt-${choice}` : "interactive";
+
   return (
-    <article
-      className={cn(
-        "@container/actions flex w-full min-w-64 max-w-md flex-col",
-        "text-foreground",
-        className,
-      )}
-      data-slot="approval-card"
-      data-tool-ui-id={id}
-      role="dialog"
-      aria-labelledby={`${id}-title`}
-      aria-describedby={description ? `${id}-description` : undefined}
-      onKeyDown={handleKeyDown}
-    >
-      <div className="bg-card flex w-full flex-col gap-4 rounded-2xl border p-5 shadow-xs">
-        <div className="flex items-start gap-3">
-          {Icon && (
-            <span
-              className={cn(
-                "flex size-10 shrink-0 items-center justify-center rounded-xl",
-                isDestructive
-                  ? "bg-destructive/10 text-destructive"
-                  : "bg-primary/10 text-primary",
-              )}
-            >
-              <Icon className="size-5" />
-            </span>
+    <div key={viewKey} className="contents">
+      {choice ? (
+        <ApprovalCardReceipt
+          id={id}
+          title={title}
+          choice={choice}
+          className={className}
+        />
+      ) : (
+        <article
+          className={cn(
+            "@container/actions flex w-full min-w-64 max-w-md flex-col",
+            "text-foreground",
+            className,
           )}
-          <div className="flex flex-1 flex-col gap-1">
-            <h2
-              id={`${id}-title`}
-              className="text-base font-semibold leading-tight"
-            >
-              {title}
-            </h2>
-            {description && (
-              <p
-                id={`${id}-description`}
-                className="text-muted-foreground text-sm"
-              >
-                {description}
-              </p>
-            )}
-          </div>
-        </div>
-
-        {metadata && metadata.length > 0 && (
-          <>
-            <Separator />
-            <dl className="flex flex-col gap-2 text-sm">
-            {metadata.map((item, index) => (
-              <div key={index} className="flex justify-between gap-4">
-                <dt className="text-muted-foreground shrink-0">{item.key}</dt>
-                <dd className="min-w-0 truncate">{item.value}</dd>
+          data-slot="approval-card"
+          data-tool-ui-id={id}
+          role="dialog"
+          aria-labelledby={`${id}-title`}
+          aria-describedby={description ? `${id}-description` : undefined}
+          onKeyDown={handleKeyDown}
+        >
+          <div className="bg-card flex w-full flex-col gap-4 rounded-2xl border p-5 shadow-xs">
+            <div className="flex items-start gap-3">
+              {Icon && (
+                <span
+                  className={cn(
+                    "flex size-10 shrink-0 items-center justify-center rounded-xl",
+                    isDestructive
+                      ? "bg-destructive/10 text-destructive"
+                      : "bg-primary/10 text-primary",
+                  )}
+                >
+                  <Icon className="size-5" />
+                </span>
+              )}
+              <div className="flex flex-1 flex-col gap-1">
+                <h2
+                  id={`${id}-title`}
+                  className="text-base font-semibold leading-tight"
+                >
+                  {title}
+                </h2>
+                {description && (
+                  <p
+                    id={`${id}-description`}
+                    className="text-muted-foreground text-sm"
+                  >
+                    {description}
+                  </p>
+                )}
               </div>
-            ))}
-            </dl>
-          </>
-        )}
+            </div>
 
-        <ActionButtons actions={actions} onAction={handleAction} />
-      </div>
-    </article>
+            {metadata && metadata.length > 0 && (
+              <>
+                <Separator />
+                <dl className="flex flex-col gap-2 text-sm">
+                  {metadata.map((item, index) => (
+                    <div key={index} className="flex justify-between gap-4">
+                      <dt className="text-muted-foreground shrink-0">
+                        {item.key}
+                      </dt>
+                      <dd className="min-w-0 truncate">{item.value}</dd>
+                    </div>
+                  ))}
+                </dl>
+              </>
+            )}
+
+            <ActionButtons actions={actions} onAction={handleAction} />
+          </div>
+        </article>
+      )}
+    </div>
   );
 }

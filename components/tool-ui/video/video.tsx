@@ -139,7 +139,7 @@ function VideoInner(props: Omit<VideoProps, "defaultMuted">) {
             <video
               ref={videoRef}
               className={cn(
-                "relative z-10 h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.01]",
+                "relative z-10 h-full w-full object-cover transition-transform duration-200 group-hover:scale-[1.01]",
                 ratio !== "auto" && "absolute inset-0 h-full w-full",
               )}
               src={src}

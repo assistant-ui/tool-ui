@@ -722,7 +722,7 @@ export function ParameterSliderProgress({ className }: { className?: string }) {
       <div className="bg-card flex w-full flex-col overflow-hidden rounded-2xl border px-5 py-3 shadow-xs">
         {[1, 2, 3].map((i) => (
           <div key={i} className="py-2">
-            <div className="bg-muted/60 ring-border/50 relative h-12 w-full animate-pulse rounded-md ring-1 ring-inset">
+            <div className="bg-muted/60 ring-border/50 relative h-12 w-full rounded-md ring-1 ring-inset motion-safe:animate-pulse">
               <div className="absolute inset-x-3 top-1/2 flex -translate-y-1/2 items-center justify-between">
                 <div className="bg-muted-foreground/20 h-3.5 w-16 rounded" />
                 <div className="bg-muted-foreground/20 h-3.5 w-10 rounded" />
@@ -732,8 +732,8 @@ export function ParameterSliderProgress({ className }: { className?: string }) {
         ))}
       </div>
       <div className="flex justify-end gap-2">
-        <div className="bg-muted h-9 w-16 animate-pulse rounded-full" />
-        <div className="bg-muted h-9 w-16 animate-pulse rounded-full" />
+        <div className="bg-muted h-9 w-16 rounded-full motion-safe:animate-pulse" />
+        <div className="bg-muted h-9 w-16 rounded-full motion-safe:animate-pulse" />
       </div>
     </div>
   );

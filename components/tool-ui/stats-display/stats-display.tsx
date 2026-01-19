@@ -149,7 +149,7 @@ function StatCard({ stat, locale, isSingle = false, index = 0 }: StatCardProps) 
           color={sparklineColor}
           showFill
           fillOpacity={0.09}
-          className="pointer-events-none absolute inset-x-0 top-2 bottom-2 animate-in fade-in slide-in-from-bottom-12 duration-1000 ease-[cubic-bezier(0.16,1,0.3,1)] fill-mode-both"
+          className="pointer-events-none absolute inset-x-0 top-2 bottom-2 animate-in fade-in slide-in-from-bottom-12 duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] fill-mode-both"
           style={{ animationDelay: `${baseDelay}ms` }}
         />
       )}
@@ -182,10 +182,10 @@ function StatCard({ stat, locale, isSingle = false, index = 0 }: StatCardProps) 
 function StatCardSkeleton() {
   return (
     <div className="flex min-h-28 flex-col justify-end gap-1 overflow-clip px-6">
-      <div className="bg-muted h-3 w-16 animate-pulse rounded" />
+      <div className="bg-muted h-3 w-16 rounded motion-safe:animate-pulse" />
       <div className="flex items-baseline gap-2">
-        <div className="bg-muted h-8 w-20 animate-pulse rounded" />
-        <div className="bg-muted h-4 w-10 animate-pulse rounded" />
+        <div className="bg-muted h-8 w-20 rounded motion-safe:animate-pulse" />
+        <div className="bg-muted h-4 w-10 rounded motion-safe:animate-pulse" />
       </div>
     </div>
   );
@@ -264,8 +264,8 @@ export function StatsDisplayProgress({ className }: { className?: string }) {
     >
       <Card>
         <CardHeader>
-          <div className="bg-muted h-6 w-48 animate-pulse rounded" />
-          <div className="bg-muted h-4 w-64 animate-pulse rounded" />
+          <div className="bg-muted h-6 w-48 rounded motion-safe:animate-pulse" />
+          <div className="bg-muted h-4 w-64 rounded motion-safe:animate-pulse" />
         </CardHeader>
         <CardContent className="p-0">
           <div

@@ -243,19 +243,19 @@ export function MessageDraftProgress({ className }: { className?: string }) {
       aria-busy="true"
     >
       <div className="bg-card flex w-full flex-col gap-4 rounded-2xl border p-5 shadow-xs">
-        <div className="bg-muted h-5 w-3/4 animate-pulse rounded" />
+        <div className="bg-muted h-5 w-3/4 rounded motion-safe:animate-pulse" />
         <div className="flex flex-col gap-1">
-          <div className="bg-muted h-4 w-1/2 animate-pulse rounded" />
+          <div className="bg-muted h-4 w-1/2 rounded motion-safe:animate-pulse" />
         </div>
         <div className="bg-muted h-px w-full" />
         <div className="flex flex-col gap-2">
-          <div className="bg-muted h-4 w-full animate-pulse rounded" />
-          <div className="bg-muted h-4 w-full animate-pulse rounded" />
-          <div className="bg-muted h-4 w-2/3 animate-pulse rounded" />
+          <div className="bg-muted h-4 w-full rounded motion-safe:animate-pulse" />
+          <div className="bg-muted h-4 w-full rounded motion-safe:animate-pulse" />
+          <div className="bg-muted h-4 w-2/3 rounded motion-safe:animate-pulse" />
         </div>
         <div className="flex justify-end gap-2">
-          <div className="bg-muted h-9 w-16 animate-pulse rounded-full" />
-          <div className="bg-muted h-9 w-16 animate-pulse rounded-full" />
+          <div className="bg-muted h-9 w-16 rounded-full motion-safe:animate-pulse" />
+          <div className="bg-muted h-9 w-16 rounded-full motion-safe:animate-pulse" />
         </div>
       </div>
     </div>

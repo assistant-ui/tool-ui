@@ -130,7 +130,7 @@ export function LinkPreview(props: LinkPreviewProps) {
                   className={cn(
                     "absolute inset-0 h-full w-full",
                     getFitClass(fit),
-                    "object-center transition-transform duration-300 group-hover:scale-[1.01]",
+                    "object-center transition-transform duration-200 group-hover:scale-[1.01]",
                   )}
                 />
               </div>

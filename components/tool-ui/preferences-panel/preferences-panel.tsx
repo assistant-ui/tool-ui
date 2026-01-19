@@ -648,14 +648,14 @@ export function PreferencesPanelProgress({ className }: { className?: string }) 
       <div className="bg-card flex w-full flex-col rounded-2xl border px-5 py-3 shadow-xs">
         {[1, 2, 3].map((i) => (
           <div key={i} className="flex items-center justify-between gap-4 py-3">
-            <div className="bg-muted-foreground/20 h-4 w-32 animate-pulse rounded" />
-            <div className="bg-muted-foreground/20 h-8 w-24 animate-pulse rounded-full" />
+            <div className="bg-muted-foreground/20 h-4 w-32 rounded motion-safe:animate-pulse" />
+            <div className="bg-muted-foreground/20 h-8 w-24 rounded-full motion-safe:animate-pulse" />
           </div>
         ))}
       </div>
       <div className="flex justify-end gap-2">
-        <div className="bg-muted h-9 w-16 animate-pulse rounded-full" />
-        <div className="bg-muted h-9 w-24 animate-pulse rounded-full" />
+        <div className="bg-muted h-9 w-16 rounded-full motion-safe:animate-pulse" />
+        <div className="bg-muted h-9 w-24 rounded-full motion-safe:animate-pulse" />
       </div>
     </div>
   );

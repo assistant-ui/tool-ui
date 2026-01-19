@@ -77,14 +77,14 @@ export function ItemCard({ item, onItemClick, onItemAction }: ItemCardProps) {
             decoding="async"
             draggable={false}
             className={cn(
-              "h-full w-full object-cover transition-transform duration-300",
+              "h-full w-full object-cover transition-transform duration-200",
               isCardInteractive && "group-hover:scale-105",
             )}
           />
         ) : (
           <div
             className={cn(
-              "h-full w-full transition-transform duration-300",
+              "h-full w-full transition-transform duration-200",
               isCardInteractive && "group-hover:scale-105",
             )}
             style={color ? { backgroundColor: color } : undefined}
