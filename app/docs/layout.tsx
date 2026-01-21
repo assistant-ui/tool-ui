@@ -5,6 +5,7 @@ import ContentLayout from "@/app/components/layout/page-shell";
 import { HeaderFrame } from "@/app/components/layout/app-shell";
 import { ThemeToggle } from "@/app/components/builder/theme-toggle";
 import { DocsNav } from "./_components/docs-nav";
+import { DocsTocProvider } from "./_components/docs-toc-context";
 
 export const metadata: Metadata = {
   title: {
@@ -18,7 +19,9 @@ export default function DocsLayout({ children }: { children: ReactNode }) {
   return (
     <NuqsAdapter>
       <HeaderFrame rightContent={<ThemeToggle />}>
-        <ContentLayout sidebar={<DocsNav />}>{children}</ContentLayout>
+        <DocsTocProvider>
+          <ContentLayout sidebar={<DocsNav />}>{children}</ContentLayout>
+        </DocsTocProvider>
       </HeaderFrame>
     </NuqsAdapter>
   );
