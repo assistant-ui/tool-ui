@@ -43,6 +43,7 @@ const config: NextConfig = {
 const withMDX = createMDX({
   options: {
     remarkPlugins: ["remark-gfm"],
+    rehypePlugins: ["rehype-slug"],
   },
 });
 
