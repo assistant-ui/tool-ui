@@ -24,7 +24,7 @@ interface WorkflowState {
 function loadWorkflowState(): WorkflowState | null {
   if (typeof window === "undefined") return null;
   try {
-    const stored = sessionStorage.getItem(SESSION_KEY);
+    const stored = localStorage.getItem(SESSION_KEY);
     if (!stored) return null;
     return JSON.parse(stored) as WorkflowState;
   } catch {
@@ -42,9 +42,9 @@ function saveWorkflowState(
       checkpoints,
       signedOff: Array.from(signedOff),
     };
-    sessionStorage.setItem(SESSION_KEY, JSON.stringify(state));
+    localStorage.setItem(SESSION_KEY, JSON.stringify(state));
   } catch {
-    console.warn("Failed to save workflow state to sessionStorage");
+    console.warn("Failed to save workflow state to localStorage");
   }
 }
 
