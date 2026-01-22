@@ -8,9 +8,17 @@ import {
   Layers,
   SlidersHorizontal,
   ThermometerSun,
+  Palette,
 } from "lucide-react";
 
 const sandboxes = [
+  {
+    href: "/sandbox/weather-tuning",
+    title: "Weather Tuning Studio",
+    description: "Systematic condition tuning with checkpoints and sign-off workflow",
+    icon: Palette,
+    featured: true,
+  },
   {
     href: "/sandbox/weather-compositor",
     title: "Weather Compositor",

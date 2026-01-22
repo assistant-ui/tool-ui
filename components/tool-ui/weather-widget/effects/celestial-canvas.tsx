@@ -110,16 +110,33 @@ float fbm(vec2 p, int octaves) {
   return value;
 }
 
-float getSunVisibility(float timeOfDay) {
-  float rise = smoothstep(0.2, 0.3, timeOfDay);
-  float set = smoothstep(0.8, 0.7, timeOfDay);
-  return rise * set;
+// Calculate sun Y position based on time of day
+// Sun rises 0.18-0.32, visible during day, sets 0.68-0.82
+// Note: UV y=0 is bottom, y=1 is top, so below horizon means y < 0
+float getSunY(float timeOfDay, float baseY) {
+  float belowHorizon = -0.25;
+  float riseProgress = smoothstep(0.18, 0.32, timeOfDay);
+  float setProgress = smoothstep(0.68, 0.82, timeOfDay);
+  float visible = riseProgress * (1.0 - setProgress);
+  return mix(belowHorizon, baseY, visible);
 }
 
-float getMoonVisibility(float timeOfDay) {
-  float nightStart = smoothstep(0.7, 0.85, timeOfDay);
-  float nightEnd = smoothstep(0.3, 0.15, timeOfDay);
-  return max(nightStart, nightEnd);
+// Calculate moon Y position based on time of day
+// Moon sets 0.12-0.26 (overlaps slightly with sun rise)
+// Moon rises 0.74-0.88 (overlaps slightly with sun set)
+// During overlap both are near horizon so both faded = subtle handoff
+float getMoonY(float timeOfDay, float baseY) {
+  float belowHorizon = -0.25;
+  float risingEvening = smoothstep(0.74, 0.88, timeOfDay);
+  float settingMorning = 1.0 - smoothstep(0.12, 0.26, timeOfDay);
+  float visible = max(risingEvening, settingMorning);
+  return mix(belowHorizon, baseY, visible);
+}
+
+// Fade opacity near horizon for smooth edge (bottom of screen)
+// Extended range so bodies visible earlier in their rise
+float getHorizonFade(float y) {
+  return smoothstep(-0.2, 0.0, y);
 }
 
 vec3 getSkyColor(vec2 uv, float timeOfDay) {
@@ -306,23 +323,31 @@ void main() {
 
   vec3 color = getSkyColor(uv, u_timeOfDay);
 
-  float nightFactor = getMoonVisibility(u_timeOfDay);
-  if (nightFactor > 0.01) {
+  // Calculate separate Y positions for sun and moon
+  float sunY = getSunY(u_timeOfDay, u_celestialPos.y);
+  float moonY = getMoonY(u_timeOfDay, u_celestialPos.y);
+  vec2 sunPos = vec2(u_celestialPos.x, sunY);
+  vec2 moonPos = vec2(u_celestialPos.x, moonY);
+
+  // Stars visible when moon is up (night time)
+  float moonFade = getHorizonFade(moonY);
+  if (moonFade > 0.01) {
     float stars = drawStars(uv, u_starDensity, u_time);
-    color += vec3(stars) * nightFactor;
+    color += vec3(stars) * moonFade;
   }
 
-  float sunVis = getSunVisibility(u_timeOfDay);
-  if (sunVis > 0.01) {
-    vec3 sun = drawSun(uv, u_celestialPos, u_sunSize);
-    color += sun * sunVis;
+  // Draw sun with horizon fade
+  float sunFade = getHorizonFade(sunY);
+  if (sunFade > 0.01) {
+    vec3 sun = drawSun(uv, sunPos, u_sunSize);
+    color += sun * sunFade;
   }
 
-  float moonVis = getMoonVisibility(u_timeOfDay);
-  if (moonVis > 0.01) {
-    vec4 moon = drawMoon(uv, u_celestialPos, u_moonSize, u_moonPhase);
-    float alpha = moon.a * moonVis;
-    color = mix(color, moon.rgb, alpha) + moon.rgb * (1.0 - moon.a) * moonVis;
+  // Draw moon with horizon fade
+  if (moonFade > 0.01) {
+    vec4 moon = drawMoon(uv, moonPos, u_moonSize, u_moonPhase);
+    float alpha = moon.a * moonFade;
+    color = mix(color, moon.rgb, alpha) + moon.rgb * (1.0 - moon.a) * moonFade;
   }
 
   fragColor = vec4(color, 1.0);

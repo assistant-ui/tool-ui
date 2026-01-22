@@ -238,16 +238,33 @@ float fbm(vec2 p, int octaves) {
   return value;
 }
 
-float getSunVisibility(float timeOfDay) {
-  float rise = smoothstep(0.2, 0.3, timeOfDay);
-  float set = smoothstep(0.8, 0.7, timeOfDay);
-  return rise * set;
+// Calculate sun Y position based on time of day
+// Sun rises 0.18-0.32, visible during day, sets 0.68-0.82
+// Note: UV y=0 is bottom, y=1 is top, so below horizon means y < 0
+float getSunY(float timeOfDay, float baseY) {
+  float belowHorizon = -0.25;
+  float riseProgress = smoothstep(0.18, 0.32, timeOfDay);
+  float setProgress = smoothstep(0.68, 0.82, timeOfDay);
+  float visible = riseProgress * (1.0 - setProgress);
+  return mix(belowHorizon, baseY, visible);
 }
 
-float getMoonVisibility(float timeOfDay) {
-  float nightStart = smoothstep(0.7, 0.85, timeOfDay);
-  float nightEnd = smoothstep(0.3, 0.15, timeOfDay);
-  return max(nightStart, nightEnd);
+// Calculate moon Y position based on time of day
+// Moon sets 0.12-0.26 (overlaps slightly with sun rise)
+// Moon rises 0.74-0.88 (overlaps slightly with sun set)
+// During overlap both are near horizon so both faded = subtle handoff
+float getMoonY(float timeOfDay, float baseY) {
+  float belowHorizon = -0.25;
+  float risingEvening = smoothstep(0.74, 0.88, timeOfDay);
+  float settingMorning = 1.0 - smoothstep(0.12, 0.26, timeOfDay);
+  float visible = max(risingEvening, settingMorning);
+  return mix(belowHorizon, baseY, visible);
+}
+
+// Fade opacity near horizon for smooth edge (bottom of screen)
+// Extended range so bodies visible earlier in their rise
+float getHorizonFade(float y) {
+  return smoothstep(-0.2, 0.0, y);
 }
 
 vec3 getSkyColor(vec2 uv, float timeOfDay) {
@@ -423,23 +440,31 @@ void main() {
 
   vec3 color = getSkyColor(uv, u_timeOfDay);
 
-  float nightFactor = getMoonVisibility(u_timeOfDay);
-  if (nightFactor > 0.01) {
+  // Calculate separate Y positions for sun and moon
+  float sunY = getSunY(u_timeOfDay, u_celestialPos.y);
+  float moonY = getMoonY(u_timeOfDay, u_celestialPos.y);
+  vec2 sunPos = vec2(u_celestialPos.x, sunY);
+  vec2 moonPos = vec2(u_celestialPos.x, moonY);
+
+  // Stars visible when moon is up (night time)
+  float moonFade = getHorizonFade(moonY);
+  if (moonFade > 0.01) {
     float stars = drawStars(uv, u_starDensity, u_time);
-    color += vec3(stars) * nightFactor;
+    color += vec3(stars) * moonFade;
   }
 
-  float sunVis = getSunVisibility(u_timeOfDay);
-  if (sunVis > 0.01) {
-    vec3 sun = drawSun(uv, u_celestialPos, u_sunSize);
-    color += sun * sunVis;
+  // Draw sun with horizon fade
+  float sunFade = getHorizonFade(sunY);
+  if (sunFade > 0.01) {
+    vec3 sun = drawSun(uv, sunPos, u_sunSize);
+    color += sun * sunFade;
   }
 
-  float moonVis = getMoonVisibility(u_timeOfDay);
-  if (moonVis > 0.01) {
-    vec4 moon = drawMoon(uv, u_celestialPos, u_moonSize, u_moonPhase);
-    float alpha = moon.a * moonVis;
-    color = mix(color, moon.rgb, alpha) + moon.rgb * (1.0 - moon.a) * moonVis;
+  // Draw moon with horizon fade
+  if (moonFade > 0.01) {
+    vec4 moon = drawMoon(uv, moonPos, u_moonSize, u_moonPhase);
+    float alpha = moon.a * moonFade;
+    color = mix(color, moon.rgb, alpha) + moon.rgb * (1.0 - moon.a) * moonFade;
   }
 
   fragColor = vec4(color, 1.0);
@@ -1181,6 +1206,15 @@ void main() {
 `;
 
 // =============================================================================
+// MATH HELPERS
+// =============================================================================
+
+function smoothstep(edge0: number, edge1: number, x: number): number {
+  const t = Math.max(0, Math.min(1, (x - edge0) / (edge1 - edge0)));
+  return t * t * (3 - 2 * t);
+}
+
+// =============================================================================
 // WEBGL HELPERS
 // =============================================================================
 
@@ -1500,14 +1534,32 @@ export function WeatherEffectsCanvas({
       gl.uniform1f(gl.getUniformLocation(programs.cloud, "u_cloudScale"), p.cloudScale);
 
       // Pass celestial position for cloud illumination
+      // Calculate actual sun/moon Y positions (must match shader logic)
       const celestialP = props.celestial;
-      const sunVis = celestialP.timeOfDay > 0.2 && celestialP.timeOfDay < 0.8 ? 1.0 : 0.0;
-      const moonVis = celestialP.timeOfDay < 0.3 || celestialP.timeOfDay > 0.7 ? 1.0 : 0.0;
-      const celestialSize = sunVis > moonVis ? celestialP.sunSize : celestialP.moonSize;
-      const celestialBrightness = sunVis > moonVis
-        ? Math.min(1.0, celestialP.sunGlowIntensity * 0.3)
-        : Math.min(0.5, celestialP.moonGlowIntensity * 0.15);
-      gl.uniform2f(gl.getUniformLocation(programs.cloud, "u_celestialPos"), celestialP.celestialX, celestialP.celestialY);
+      const t = celestialP.timeOfDay;
+      const baseY = celestialP.celestialY;
+      const belowHorizon = -0.25;
+
+      // Sun Y: rises 0.18-0.32, sets 0.68-0.82
+      const sunRise = smoothstep(0.18, 0.32, t);
+      const sunSet = smoothstep(0.68, 0.82, t);
+      const sunVisible = sunRise * (1 - sunSet);
+      const sunY = belowHorizon + (baseY - belowHorizon) * sunVisible;
+
+      // Moon Y: sets 0.12-0.26, rises 0.74-0.88
+      const moonRising = smoothstep(0.74, 0.88, t);
+      const moonSetting = 1 - smoothstep(0.12, 0.26, t);
+      const moonVisible = Math.max(moonRising, moonSetting);
+      const moonY = belowHorizon + (baseY - belowHorizon) * moonVisible;
+
+      // Use whichever body is more visible
+      const useSun = sunVisible > moonVisible;
+      const celestialY = useSun ? sunY : moonY;
+      const celestialSize = useSun ? celestialP.sunSize : celestialP.moonSize;
+      const celestialBrightness = useSun
+        ? Math.min(1.0, celestialP.sunGlowIntensity * 0.3) * sunVisible
+        : Math.min(0.5, celestialP.moonGlowIntensity * 0.15) * moonVisible;
+      gl.uniform2f(gl.getUniformLocation(programs.cloud, "u_celestialPos"), celestialP.celestialX, celestialY);
       gl.uniform1f(gl.getUniformLocation(programs.cloud, "u_celestialSize"), celestialSize);
       gl.uniform1f(gl.getUniformLocation(programs.cloud, "u_celestialBrightness"), celestialBrightness);
       gl.uniform1f(gl.getUniformLocation(programs.cloud, "u_backlightIntensity"), p.backlightIntensity);

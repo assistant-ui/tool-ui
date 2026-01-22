@@ -32,6 +32,8 @@ export function getMoonPhase(timestamp?: string): number {
   }
 
   const date = new Date(timestamp);
+  // Normalize to midnight UTC so phase only changes day-to-day, not hour-to-hour
+  date.setUTCHours(0, 0, 0, 0);
   // Known new moon reference: January 6, 2000
   const knownNewMoon = new Date("2000-01-06T00:00:00Z");
   const daysSinceNewMoon = (date.getTime() - knownNewMoon.getTime()) / (1000 * 60 * 60 * 24);
