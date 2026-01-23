@@ -154,7 +154,7 @@ export default function ComponentsGalleryPage() {
           </div>
 
           <div className="mb-5 flex break-inside-avoid justify-center 2xl:mb-5">
-            <QuestionFlow {...questionFlowPresets.progressive.data} />
+            <QuestionFlow {...questionFlowPresets.upfront.data} />
           </div>
 
           <div className="mb-5 flex break-inside-avoid justify-center 2xl:mb-5">

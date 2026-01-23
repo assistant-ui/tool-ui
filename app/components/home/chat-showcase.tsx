@@ -14,6 +14,7 @@ import { ItemCarousel } from "@/components/tool-ui/item-carousel";
 import { ParameterSlider } from "@/components/tool-ui/parameter-slider";
 import { StatsDisplay } from "@/components/tool-ui/stats-display";
 import { ProgressTracker } from "@/components/tool-ui/progress-tracker";
+import { QuestionFlow } from "@/components/tool-ui/question-flow";
 import { MessageDraft } from "@/components/tool-ui/message-draft";
 import {
   type Flight,
@@ -305,6 +306,86 @@ function AnimatedProgressTracker({ className }: { className?: string }) {
   );
 }
 
+const QUESTION_FLOW_STEPS = [
+  {
+    id: "language",
+    title: "Pick a language",
+    options: [
+      { id: "python", label: "Python" },
+      { id: "typescript", label: "TypeScript" },
+      { id: "go", label: "Go" },
+    ],
+  },
+  {
+    id: "framework",
+    title: "Choose a framework",
+    options: [
+      { id: "fastapi", label: "FastAPI" },
+      { id: "django", label: "Django" },
+      { id: "flask", label: "Flask" },
+    ],
+  },
+  {
+    id: "database",
+    title: "Select your database",
+    options: [
+      { id: "postgres", label: "PostgreSQL" },
+      { id: "mysql", label: "MySQL" },
+      { id: "mongodb", label: "MongoDB" },
+    ],
+  },
+];
+
+function AnimatedQuestionFlow({ className }: { className?: string }) {
+  const [currentStep, setCurrentStep] = useState(0);
+  const [isComplete, setIsComplete] = useState(false);
+
+  useEffect(() => {
+    if (isComplete) return;
+
+    if (currentStep >= QUESTION_FLOW_STEPS.length) {
+      setIsComplete(true);
+      return;
+    }
+
+    const delay = currentStep === 0 ? 800 : 1100;
+    const timeoutId = window.setTimeout(() => {
+      setCurrentStep((s) => s + 1);
+    }, delay);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [currentStep, isComplete]);
+
+  if (isComplete) {
+    return (
+      <QuestionFlow
+        id="chat-showcase-question-flow"
+        choice={{
+          title: "Project configured",
+          summary: [
+            { label: "Language", value: "Python" },
+            { label: "Framework", value: "FastAPI" },
+            { label: "Database", value: "PostgreSQL" },
+          ],
+        }}
+        className={className}
+      />
+    );
+  }
+
+  const step = QUESTION_FLOW_STEPS[currentStep];
+
+  return (
+    <QuestionFlow
+      id="chat-showcase-question-flow"
+      step={currentStep + 1}
+      title={step?.title ?? ""}
+      options={step?.options ?? []}
+      className={className}
+    />
+  );
+}
+
 type ChatBubbleProps = {
   role: "user" | "assistant";
   children: React.ReactNode;
@@ -553,6 +634,12 @@ function createSceneConfigs(): SceneConfig[] {
       toolFallbackHeight: 320,
     },
     {
+      userMessage: "Set up a new Python project",
+      preamble: "A few questions first.",
+      toolUI: <AnimatedQuestionFlow className="w-full max-w-[480px]" />,
+      toolFallbackHeight: 280,
+    },
+    {
       userMessage: "Need a localStorage hook",
       preamble: "Got you. Handles JSON parsing and updates.",
       toolUI: (
@@ -624,7 +711,7 @@ Sarah`}
   ];
 }
 
-const SCENE_COUNT = 11;
+const SCENE_COUNT = 12;
 
 type AnimatedSceneProps = {
   config: SceneConfig;
