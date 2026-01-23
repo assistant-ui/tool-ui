@@ -132,6 +132,12 @@ export const componentsRegistry: ComponentMeta[] = [
     description: "Show command-line output and logs",
     path: "/docs/terminal",
   },
+  {
+    id: "question-flow",
+    label: "Question Flow",
+    description: "Multi-step guided questions with branching",
+    path: "/docs/question-flow",
+  },
 ];
 
 export function getComponentById(id: string): ComponentMeta | undefined {

@@ -1,6 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import { useState } from "react";
 import type { ComponentProps, ComponentType, ReactNode } from "react";
 import type { PresetWithCodeGen } from "@/lib/presets/types";
 
@@ -24,6 +25,7 @@ import type { PreferencesPanel } from "@/components/tool-ui/preferences-panel";
 import type { ProgressTracker } from "@/components/tool-ui/progress-tracker";
 import type { StatsDisplay } from "@/components/tool-ui/stats-display";
 import type { Terminal } from "@/components/tool-ui/terminal";
+import type { QuestionFlow } from "@/components/tool-ui/question-flow";
 
 import {
   approvalCardPresets,
@@ -91,6 +93,11 @@ import {
   terminalPresets,
   type TerminalPresetName,
 } from "@/lib/presets/terminal";
+import {
+  questionFlowPresets,
+  type QuestionFlowPresetName,
+} from "@/lib/presets/question-flow";
+import type { SerializableUpfrontMode } from "@/components/tool-ui/question-flow";
 
 const DynamicApprovalCard = dynamic(() =>
   import("@/components/tool-ui/approval-card").then((m) => m.ApprovalCard)
@@ -155,6 +162,57 @@ const DynamicStatsDisplay = dynamic(() =>
 const DynamicTerminal = dynamic(() =>
   import("@/components/tool-ui/terminal").then((m) => m.Terminal)
 );
+const DynamicQuestionFlow = dynamic(() =>
+  import("@/components/tool-ui/question-flow").then((m) => m.QuestionFlow)
+);
+
+function QuestionFlowUpfrontWithReceipt({
+  data,
+}: {
+  data: SerializableUpfrontMode;
+}) {
+  const [completedAnswers, setCompletedAnswers] = useState<Record<
+    string,
+    string[]
+  > | null>(null);
+
+  if (completedAnswers) {
+    const summary = data.steps.map((step) => {
+      const selectedIds = completedAnswers[step.id] ?? [];
+      const selectedLabels = selectedIds
+        .map((id) => step.options.find((opt) => opt.id === id)?.label ?? id)
+        .join(", ");
+      return {
+        label: step.title.replace(/^(Select|Choose)\s+(a\s+|your\s+)?/i, ""),
+        value: selectedLabels || "None",
+      };
+    });
+
+    const title = data.id
+      .replace(/^question-flow-?/, "")
+      .replace(/-/g, " ")
+      .replace(/\b\w/g, (c) => c.toUpperCase());
+
+    return (
+      <DynamicQuestionFlow
+        id={data.id}
+        choice={{
+          title,
+          summary,
+        }}
+      />
+    );
+  }
+
+  return (
+    <DynamicQuestionFlow
+      {...data}
+      onComplete={(answers: Record<string, string[]>) =>
+        setCompletedAnswers(answers)
+      }
+    />
+  );
+}
 
 export type ComponentId =
   | "approval-card"
@@ -176,7 +234,8 @@ export type ComponentId =
   | "preferences-panel"
   | "progress-tracker"
   | "stats-display"
-  | "terminal";
+  | "terminal"
+  | "question-flow";
 
 export interface ChatContext {
   userMessage: string;
@@ -677,6 +736,42 @@ export const previewConfigs: Record<
         }
       />
     ),
+  },
+  "question-flow": {
+    presets: questionFlowPresets as Record<string, PresetWithCodeGen<unknown>>,
+    defaultPreset: "upfront" satisfies QuestionFlowPresetName,
+    wrapper: MaxWidthWrapper,
+    chatContext: {
+      userMessage: "Help me set up a new project",
+      preamble: "Let's configure your project step by step:",
+    },
+    renderComponent: ({ data, presetName }) => {
+      const flowData = data as Parameters<typeof QuestionFlow>[0];
+      const isUpfront = "steps" in flowData && flowData.steps !== undefined;
+      const isReceipt = "choice" in flowData && flowData.choice !== undefined;
+
+      if (isReceipt) {
+        return <DynamicQuestionFlow key={presetName} {...flowData} />;
+      }
+
+      if (isUpfront) {
+        return (
+          <QuestionFlowUpfrontWithReceipt
+            key={presetName}
+            data={flowData as SerializableUpfrontMode}
+          />
+        );
+      }
+
+      return (
+        <DynamicQuestionFlow
+          key={presetName}
+          {...flowData}
+          onSelect={(ids: string[]) => console.log("Selected:", ids)}
+          onBack={() => console.log("Go back")}
+        />
+      );
+    },
   },
 };
 

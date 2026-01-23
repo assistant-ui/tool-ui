@@ -1,0 +1,302 @@
+import { DocsHeader } from "../_components/docs-header";
+
+<DocsHeader
+  title="Question Flow"
+  description="Guide users through multi-step configuration flows."
+  mdxPath="app/docs/question-flow/content.mdx"
+/>
+
+<QuestionFlowPresetExample preset="progressive" />
+
+## Key Features
+
+<FeatureGrid>
+  <Feature icon="GitBranch" title="Progressive mode">
+    AI generates each step dynamically based on previous answers
+  </Feature>
+  <Feature icon="ListChecks" title="Upfront mode">
+    Define all steps upfront, component manages navigation internally
+  </Feature>
+  <Feature icon="CheckSquare" title="Single or multi-select">
+    Each step can allow one choice or multiple selections
+  </Feature>
+  <Feature icon="Receipt" title="Receipt state">
+    Display a summary of completed configuration choices
+  </Feature>
+</FeatureGrid>
+
+## Modes
+
+QuestionFlow supports two operational modes, determined by the props you pass:
+
+### Progressive Mode
+
+Pass `step`, `title`, and `options` to render a single step. The AI controls progression by generating new steps based on user selections.
+
+<QuestionFlowPresetExample preset="progressive" />
+
+### Upfront Mode
+
+Pass `steps` with all step definitions. The component manages internal state and navigation.
+
+<QuestionFlowPresetExample preset="upfront" />
+
+### Multi-Select Steps
+
+Set `selectionMode="multi"` to allow multiple selections per step.
+
+<QuestionFlowPresetExample preset="multi-select" />
+
+## Receipt State
+
+Pass `choice` with a title and summary to render a read-only confirmation of completed configuration.
+
+<QuestionFlowPresetExample preset="receipt" />
+
+## Source and Install
+
+Copy [`components/tool-ui/question-flow`](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/question-flow) and the [`shared`](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/shared) directory into your project. The `shared` folder contains utilities used by all Tool UI components. The `tool-ui` directory should sit alongside your shadcn `ui` directory.
+
+### Prerequisites
+
+This component requires the following [shadcn/ui](https://ui.shadcn.com) components:
+
+```bash
+pnpm dlx shadcn@latest add button separator
+```
+
+### Directory Structure
+
+<Files>
+  <Folder name="components" defaultOpen>
+    <Folder name="ui">
+      <File name="button.tsx" />
+      <File name="separator.tsx" />
+      <File name="..." />
+    </Folder>
+    <Folder name="tool-ui" defaultOpen>
+      <Folder name="shared" defaultOpen>
+        <File name="action-buttons.tsx" />
+        <File name="schema.ts" />
+        <File name="index.ts" />
+        <File name="..." />
+      </Folder>
+      <Folder name="question-flow" defaultOpen>
+        <File name="question-flow.tsx" />
+        <File name="schema.ts" />
+        <File name="index.tsx" />
+        <File name="..." />
+      </Folder>
+    </Folder>
+  </Folder>
+</Files>
+
+### Download
+
+- [**Shared Dependencies (GitHub)**](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/shared) ([ZIP](https://download-directory.github.io/?url=https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/shared))
+- [**Question Flow (GitHub)**](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/question-flow) ([ZIP](https://download-directory.github.io/?url=https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/question-flow))
+
+## Usage
+
+```tsx
+"use client";
+
+import { makeAssistantTool } from "@assistant-ui/react";
+import {
+  QuestionFlow,
+  QuestionFlowErrorBoundary,
+  parseSerializableQuestionFlow,
+  SerializableQuestionFlowSchema,
+  type SerializableQuestionFlow,
+} from "@/components/tool-ui/question-flow";
+
+export const ConfigureProjectTool = makeAssistantTool<
+  SerializableQuestionFlow,
+  Record<string, string[]>
+>({
+  toolName: "configureProject",
+  description: "Guide user through project configuration.",
+  parameters: SerializableQuestionFlowSchema,
+  render: ({ args, result, addResult, toolCallId }) => {
+    if (!args || typeof args !== "object") return null;
+
+    const questionFlow = parseSerializableQuestionFlow({
+      ...args,
+      id: (args as any)?.id ?? `wizard-${toolCallId}`,
+    });
+
+    return (
+      <QuestionFlowErrorBoundary>
+        {result !== undefined ? (
+          <QuestionFlow
+            id={questionFlow.id}
+            choice={{
+              title: "Project configured",
+              summary: Object.entries(result).map(([key, values]) => ({
+                label: key,
+                value: values.join(", "),
+              })),
+            }}
+          />
+        ) : (
+          <QuestionFlow
+            {...questionFlow}
+            onComplete={(answers) => addResult(answers)}
+          />
+        )}
+      </QuestionFlowErrorBoundary>
+    );
+  },
+});
+```
+
+Mount `<ConfigureProjectTool />` under `<AssistantRuntimeProvider>` to register the tool and its UI.
+
+## Progressive Mode Props
+
+<TypeTable
+  type={{
+    id: {
+      description: "Unique wizard identifier",
+      type: "string",
+      required: true,
+    },
+    step: {
+      description: "Current step number (1-indexed)",
+      type: "number",
+      required: true,
+    },
+    title: {
+      description: "Step title",
+      type: "string",
+      required: true,
+    },
+    description: {
+      description: "Optional step description",
+      type: "string",
+    },
+    options: {
+      description: "Available choices for this step",
+      type: "QuestionFlowOption[]",
+      required: true,
+    },
+    selectionMode: {
+      description: "Selection behavior for this step",
+      type: "'single' | 'multi'",
+      default: "'single'",
+    },
+    onSelect: {
+      description: "Called when user selects option(s) and clicks Next",
+      type: "(optionIds: string[]) => void | Promise<void>",
+    },
+    onBack: {
+      description: "Called when user clicks Back",
+      type: "() => void",
+    },
+  }}
+/>
+
+## Upfront Mode Props
+
+<TypeTable
+  type={{
+    id: {
+      description: "Unique wizard identifier",
+      type: "string",
+      required: true,
+    },
+    steps: {
+      description: "All step definitions",
+      type: "QuestionFlowDefinition[]",
+      required: true,
+    },
+    onComplete: {
+      description: "Called with all answers when wizard finishes",
+      type: "(answers: Record<string, string[]>) => void | Promise<void>",
+    },
+  }}
+/>
+
+## Receipt Mode Props
+
+<TypeTable
+  type={{
+    id: {
+      description: "Unique wizard identifier",
+      type: "string",
+      required: true,
+    },
+    choice: {
+      description: "Configuration summary to display",
+      type: "QuestionFlowChoice",
+      required: true,
+    },
+  }}
+/>
+
+## Option Schema
+
+<TypeTable
+  type={{
+    id: {
+      description: "Unique option identifier",
+      type: "string",
+      required: true,
+    },
+    label: {
+      description: "Display text",
+      type: "string",
+      required: true,
+    },
+    description: {
+      description: "Secondary text",
+      type: "string",
+    },
+    icon: {
+      description: "Optional icon element",
+      type: "ReactNode",
+    },
+    disabled: {
+      description: "Disable this option",
+      type: "boolean",
+    },
+  }}
+/>
+
+## Step Definition Schema
+
+<TypeTable
+  type={{
+    id: {
+      description: "Unique step identifier (used as answer key)",
+      type: "string",
+      required: true,
+    },
+    title: {
+      description: "Step title",
+      type: "string",
+      required: true,
+    },
+    description: {
+      description: "Optional step description",
+      type: "string",
+    },
+    options: {
+      description: "Available choices",
+      type: "QuestionFlowOption[]",
+      required: true,
+    },
+    selectionMode: {
+      description: "Selection behavior",
+      type: "'single' | 'multi'",
+      default: "'single'",
+    },
+  }}
+/>
+
+## Accessibility
+
+- Option buttons use keyboard-accessible controls
+- Focus management follows WAI-ARIA patterns for step navigation
+- Progress indicator provides context for screen readers
+- Back and Next buttons are keyboard-accessible

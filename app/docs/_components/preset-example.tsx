@@ -28,6 +28,11 @@ import {
   approvalCardPresets,
   ApprovalCardPresetName,
 } from "@/lib/presets/approval-card";
+import { QuestionFlow } from "@/components/tool-ui/question-flow";
+import {
+  questionFlowPresets,
+  QuestionFlowPresetName,
+} from "@/lib/presets/question-flow";
 
 function generateOptionListCode(preset: OptionListPresetName): string {
   const list = optionListPresets[preset].data;
@@ -404,6 +409,30 @@ export function ApprovalCardPresetExample({
       <Tab value="Preview">
         <div className="not-prose mx-auto max-w-sm">
           <ApprovalCard {...data} />
+        </div>
+      </Tab>
+      <Tab value="Code">
+        <DynamicCodeBlock lang="tsx" code={code} />
+      </Tab>
+    </Tabs>
+  );
+}
+
+interface QuestionFlowPresetExampleProps {
+  preset: QuestionFlowPresetName;
+}
+
+export function QuestionFlowPresetExample({
+  preset,
+}: QuestionFlowPresetExampleProps) {
+  const presetData = questionFlowPresets[preset];
+  const code = presetData.generateExampleCode(presetData.data);
+
+  return (
+    <Tabs items={["Preview", "Code"]}>
+      <Tab value="Preview">
+        <div className="not-prose mx-auto max-w-md">
+          <QuestionFlow {...presetData.data} />
         </div>
       </Tab>
       <Tab value="Code">
