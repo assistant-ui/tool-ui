@@ -7,6 +7,7 @@ import { TIME_CHECKPOINT_ORDER } from "../lib/constants";
 interface CheckpointDotsProps {
   checkpoints?: ConditionCheckpoints;
   className?: string;
+  size?: "sm" | "md";
 }
 
 const DEFAULT_CHECKPOINTS: ConditionCheckpoints = {
@@ -19,6 +20,7 @@ const DEFAULT_CHECKPOINTS: ConditionCheckpoints = {
 export function CheckpointDots({
   checkpoints = DEFAULT_CHECKPOINTS,
   className,
+  size = "md",
 }: CheckpointDotsProps) {
   return (
     <div className={cn("flex gap-1", className)}>
@@ -28,10 +30,11 @@ export function CheckpointDots({
           <div
             key={checkpoint}
             className={cn(
-              "size-1.5 rounded-full transition-colors",
+              "rounded-full transition-colors",
+              size === "sm" ? "size-1" : "size-1.5",
               status === "reviewed"
-                ? "bg-emerald-400"
-                : "bg-zinc-600"
+                ? "bg-green-500 dark:bg-green-400"
+                : "bg-muted-foreground/30"
             )}
             title={`${checkpoint}: ${status}`}
           />

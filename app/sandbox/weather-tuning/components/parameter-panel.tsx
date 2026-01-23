@@ -7,6 +7,7 @@ import {
   AccordionContent,
 } from "@/components/ui/accordion";
 import { cn } from "@/lib/ui/cn";
+import { Sun, Cloud, CloudRain, Zap, Snowflake } from "lucide-react";
 import type { FullCompositorParams } from "../../weather-compositor/presets";
 import { ParameterRow, ParameterToggleRow } from "./parameter-row";
 
@@ -35,11 +36,19 @@ function countChanges<T extends object>(current: T, base: T): number {
 function DeltaBadge({ count }: { count: number }) {
   if (count === 0) return null;
   return (
-    <span className="rounded bg-amber-500/20 px-1.5 py-0.5 text-xs text-amber-400">
-      {count} changed
+    <span className="rounded bg-amber-500/10 px-1 py-0.5 font-mono text-[9px] text-amber-600/60 dark:text-amber-400/60">
+      {count}
     </span>
   );
 }
+
+const LAYER_CONFIG = {
+  celestial: { icon: Sun, label: "Celestial", color: "from-amber-500 to-orange-500" },
+  clouds: { icon: Cloud, label: "Clouds", color: "from-slate-400 to-slate-500" },
+  rain: { icon: CloudRain, label: "Rain", color: "from-blue-500 to-cyan-500" },
+  lightning: { icon: Zap, label: "Lightning", color: "from-purple-500 to-indigo-500" },
+  snow: { icon: Snowflake, label: "Snow", color: "from-slate-200 to-blue-300" },
+} as const;
 
 export function ParameterPanel({
   params,
@@ -99,52 +108,76 @@ export function ParameterPanel({
   const expandedArray = Array.from(expandedGroups);
 
   return (
-    <Accordion
-      type="multiple"
-      value={expandedArray}
-      onValueChange={(value) => {
-        const newExpanded = new Set(value);
-        for (const group of expandedArray) {
-          if (!newExpanded.has(group)) {
-            onToggleGroup(group);
-          }
-        }
-        for (const group of value) {
-          if (!expandedGroups.has(group)) {
-            onToggleGroup(group);
-          }
-        }
-      }}
-      className="w-full"
-    >
-      <div className="flex flex-wrap items-center gap-2 border-b border-zinc-700 py-3">
-        <span className="text-sm text-zinc-400">Layers:</span>
-        {(["celestial", "clouds", "rain", "lightning", "snow"] as const).map((layer) => {
-          const isEnabled = params.layers[layer];
-          const baseEnabled = baseParams.layers[layer];
-          const isChanged = isEnabled !== baseEnabled;
-          return (
-            <button
-              key={layer}
-              onClick={() => updateLayer(layer, !isEnabled)}
-              className={cn(
-                "rounded px-2 py-1 text-xs font-medium transition-colors",
-                isEnabled
-                  ? "bg-blue-500/20 text-blue-400"
-                  : "bg-zinc-800 text-zinc-500 hover:bg-zinc-700",
-                isChanged && "ring-1 ring-amber-500/50"
-              )}
-            >
-              {layer.charAt(0).toUpperCase() + layer.slice(1)}
-            </button>
-          );
-        })}
+    <div className="flex h-full flex-col">
+      <div className="sticky top-0 z-10 border-b border-border/30 bg-card/80 px-3 py-2.5 backdrop-blur-xl">
+        <div className="mb-2">
+          <span className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground/40">
+            Layers
+          </span>
+        </div>
+        <div className="flex flex-wrap gap-1">
+          {(["celestial", "clouds", "rain", "lightning", "snow"] as const).map((layer) => {
+            const config = LAYER_CONFIG[layer];
+            const Icon = config.icon;
+            const isEnabled = params.layers[layer];
+            const baseEnabled = baseParams.layers[layer];
+            const isChanged = isEnabled !== baseEnabled;
+
+            return (
+              <button
+                key={layer}
+                onClick={() => updateLayer(layer, !isEnabled)}
+                className={cn(
+                  "group flex items-center gap-1 rounded px-2 py-1 text-[10px] transition-all",
+                  isEnabled
+                    ? "bg-accent/60 text-foreground/80"
+                    : "bg-muted/30 text-muted-foreground/50 hover:bg-muted/50 hover:text-muted-foreground",
+                  isChanged && "ring-1 ring-amber-500/30"
+                )}
+              >
+                <div
+                  className={cn(
+                    "flex size-3.5 items-center justify-center rounded transition-all",
+                    isEnabled
+                      ? "bg-gradient-to-br " + config.color
+                      : "bg-muted/50"
+                  )}
+                >
+                  <Icon className={cn("size-2", isEnabled ? "text-white" : "text-muted-foreground/50")} />
+                </div>
+                {config.label}
+              </button>
+            );
+          })}
+        </div>
       </div>
 
+      <Accordion
+        type="multiple"
+        value={expandedArray}
+        onValueChange={(value) => {
+          const newExpanded = new Set(value);
+          for (const group of expandedArray) {
+            if (!newExpanded.has(group)) {
+              onToggleGroup(group);
+            }
+          }
+          for (const group of value) {
+            if (!expandedGroups.has(group)) {
+              onToggleGroup(group);
+            }
+          }
+        }}
+        className="flex-1 px-3 pb-3"
+      >
+
       {params.layers.celestial && (
-      <AccordionItem value="celestial" className="border-zinc-700">
-        <AccordionTrigger className="text-zinc-200 hover:text-white">
+      <AccordionItem value="celestial" className="border-border/30">
+        <AccordionTrigger className="py-2.5 text-xs text-muted-foreground hover:text-foreground hover:no-underline [&[data-state=open]>svg]:rotate-180">
           <div className="flex items-center gap-2">
+            <div className="flex size-5 items-center justify-center rounded bg-gradient-to-br from-amber-500 to-orange-500">
+              <Sun className="size-3 text-white" />
+            </div>
             <span>Celestial</span>
             <DeltaBadge
               count={countChanges(params.celestial, baseParams.celestial)}
@@ -323,9 +356,12 @@ export function ParameterPanel({
       )}
 
       {params.layers.clouds && (
-      <AccordionItem value="cloud" className="border-zinc-700">
-        <AccordionTrigger className="text-zinc-200 hover:text-white">
+      <AccordionItem value="cloud" className="border-border/30">
+        <AccordionTrigger className="py-2.5 text-xs text-muted-foreground hover:text-foreground hover:no-underline [&[data-state=open]>svg]:rotate-180">
           <div className="flex items-center gap-2">
+            <div className="flex size-5 items-center justify-center rounded bg-gradient-to-br from-slate-400 to-slate-500">
+              <Cloud className="size-3 text-white" />
+            </div>
             <span>Clouds</span>
             <DeltaBadge count={countChanges(params.cloud, baseParams.cloud)} />
           </div>
@@ -452,9 +488,12 @@ export function ParameterPanel({
       )}
 
       {params.layers.rain && (
-      <AccordionItem value="rain" className="border-zinc-700">
-        <AccordionTrigger className="text-zinc-200 hover:text-white">
+      <AccordionItem value="rain" className="border-border/30">
+        <AccordionTrigger className="py-2.5 text-xs text-muted-foreground hover:text-foreground hover:no-underline [&[data-state=open]>svg]:rotate-180">
           <div className="flex items-center gap-2">
+            <div className="flex size-5 items-center justify-center rounded bg-gradient-to-br from-blue-500 to-cyan-500">
+              <CloudRain className="size-3 text-white" />
+            </div>
             <span>Rain</span>
             <DeltaBadge count={countChanges(params.rain, baseParams.rain)} />
           </div>
@@ -546,9 +585,12 @@ export function ParameterPanel({
       )}
 
       {params.layers.lightning && (
-      <AccordionItem value="lightning" className="border-zinc-700">
-        <AccordionTrigger className="text-zinc-200 hover:text-white">
+      <AccordionItem value="lightning" className="border-border/30">
+        <AccordionTrigger className="py-2.5 text-xs text-muted-foreground hover:text-foreground hover:no-underline [&[data-state=open]>svg]:rotate-180">
           <div className="flex items-center gap-2">
+            <div className="flex size-5 items-center justify-center rounded bg-gradient-to-br from-purple-500 to-indigo-500">
+              <Zap className="size-3 text-white" />
+            </div>
             <span>Lightning</span>
             <DeltaBadge
               count={countChanges(params.lightning, baseParams.lightning)}
@@ -634,9 +676,12 @@ export function ParameterPanel({
       )}
 
       {params.layers.snow && (
-      <AccordionItem value="snow" className="border-zinc-700">
-        <AccordionTrigger className="text-zinc-200 hover:text-white">
+      <AccordionItem value="snow" className="border-border/30">
+        <AccordionTrigger className="py-2.5 text-xs text-muted-foreground hover:text-foreground hover:no-underline [&[data-state=open]>svg]:rotate-180">
           <div className="flex items-center gap-2">
+            <div className="flex size-5 items-center justify-center rounded bg-gradient-to-br from-slate-200 to-blue-300">
+              <Snowflake className="size-3 text-slate-700" />
+            </div>
             <span>Snow</span>
             <DeltaBadge count={countChanges(params.snow, baseParams.snow)} />
           </div>
@@ -702,6 +747,7 @@ export function ParameterPanel({
         </AccordionContent>
       </AccordionItem>
       )}
-    </Accordion>
+      </Accordion>
+    </div>
   );
 }

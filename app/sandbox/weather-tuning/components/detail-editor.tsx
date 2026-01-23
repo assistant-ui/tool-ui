@@ -1,15 +1,14 @@
 "use client";
 
 import { useMemo } from "react";
-import { Button } from "@/components/ui/button";
-import { RotateCcw, Columns2, Eye, EyeOff } from "lucide-react";
+import { RotateCcw, Columns2, Eye, EyeOff, CheckCircle2 } from "lucide-react";
+import { cn } from "@/lib/ui/cn";
 import type { WeatherCondition } from "@/components/tool-ui/weather-widget/schema";
 import { WeatherEffectsCanvas } from "@/components/tool-ui/weather-widget/effects";
 import { WeatherWidget } from "@/components/tool-ui/weather-widget";
 import { CONDITION_LABELS } from "../../weather-compositor/presets";
 import type { FullCompositorParams } from "../../weather-compositor/presets";
 import { ParameterPanel } from "./parameter-panel";
-import { CheckpointDots } from "./checkpoint-dots";
 import { TIME_CHECKPOINT_ORDER, TIME_CHECKPOINTS } from "../lib/constants";
 import type { ConditionCheckpoints, TimeCheckpoint } from "../types";
 
@@ -114,102 +113,164 @@ export function DetailEditor({
     ? TIME_CHECKPOINT_ORDER.every((cp) => checkpoints[cp] === "reviewed")
     : false;
 
+  const reviewedCount = checkpoints
+    ? TIME_CHECKPOINT_ORDER.filter((cp) => checkpoints[cp] === "reviewed").length
+    : 0;
+
   return (
-    <div className="flex h-full flex-col overflow-hidden rounded-lg border border-zinc-700 bg-zinc-900/50">
-      <div className="flex shrink-0 items-center justify-between border-b border-zinc-700 px-4 py-3">
-        <div className="flex items-center gap-4">
-          <h2 className="text-lg font-medium text-white">{label}</h2>
-          <CheckpointDots checkpoints={checkpoints} />
+    <div className="flex h-full gap-5">
+      <div className="flex w-[420px] shrink-0 flex-col gap-3">
+        <div className="relative aspect-[4/3] overflow-hidden rounded-xl border border-border shadow-xl">
+          <div className="absolute inset-0 bg-black">
+            <WeatherEffectsCanvas className="absolute inset-0" {...canvasProps} />
+          </div>
+
+          {showWidgetOverlay && (
+            <div className="relative z-10 flex h-full items-center justify-center p-6 [&_[data-slot=weather-widget]]:max-w-[260px] [&_article]:h-auto [&_[data-slot=card]]:border-0 [&_[data-slot=card]]:bg-black/40 [&_[data-slot=card]]:backdrop-blur-xl">
+              <WeatherWidget
+                id="tuning-preview"
+                location="San Francisco, CA"
+                current={{
+                  temp: 72,
+                  tempMin: 65,
+                  tempMax: 78,
+                  condition: condition,
+                }}
+                forecast={[
+                  { day: "Today", tempMin: 65, tempMax: 78, condition: condition },
+                  { day: "Tue", tempMin: 64, tempMax: 77, condition: "partly-cloudy" },
+                  { day: "Wed", tempMin: 62, tempMax: 75, condition: "cloudy" },
+                  { day: "Thu", tempMin: 60, tempMax: 73, condition: "rain" },
+                  { day: "Fri", tempMin: 63, tempMax: 76, condition: "clear" },
+                ]}
+                effects={{ enabled: false }}
+              />
+            </div>
+          )}
+
+          <div className="absolute bottom-2.5 left-2.5 right-2.5 z-20 flex items-center justify-between">
+            <button
+              onClick={onToggleWidgetOverlay}
+              className="flex items-center gap-1 rounded bg-black/50 px-2 py-1 text-[10px] text-white/70 backdrop-blur-sm transition-all hover:bg-black/70 hover:text-white"
+            >
+              {showWidgetOverlay ? (
+                <EyeOff className="size-3" />
+              ) : (
+                <Eye className="size-3" />
+              )}
+              {showWidgetOverlay ? "Hide" : "Show"}
+            </button>
+
+            <button
+              onClick={onCompare}
+              className="flex items-center gap-1 rounded bg-black/50 px-2 py-1 text-[10px] text-white/70 backdrop-blur-sm transition-all hover:bg-black/70 hover:text-white"
+            >
+              <Columns2 className="size-3" />
+              Compare
+            </button>
+          </div>
+
+          <div className="absolute left-2.5 top-2.5 z-20">
+            <div className="rounded bg-black/50 px-2 py-1 backdrop-blur-sm">
+              <h2 className="text-xs font-medium text-white">{label}</h2>
+            </div>
+          </div>
         </div>
-        <div className="flex items-center gap-2">
-          <Button variant="ghost" size="sm" onClick={onCompare} className="gap-2">
-            <Columns2 className="size-4" />
-            Compare
-          </Button>
-          <Button variant="ghost" size="sm" onClick={onReset} className="gap-2">
-            <RotateCcw className="size-4" />
+
+        <div className="rounded-lg border border-border/40 bg-card/50 p-3">
+          <div className="mb-2 flex items-center justify-between">
+            <span className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground/50">
+              Checkpoints
+            </span>
+            <span className="font-mono text-[10px] text-muted-foreground/40">
+              {reviewedCount}/4
+            </span>
+          </div>
+
+          <div className="grid grid-cols-4 gap-1.5">
+            {TIME_CHECKPOINT_ORDER.map((checkpoint) => {
+              const { value, emoji, label } = TIME_CHECKPOINTS[checkpoint];
+              const status = checkpoints?.[checkpoint] ?? "pending";
+              const isActive = Math.abs(currentTime - value) < 0.02;
+              const isReviewed = status === "reviewed";
+
+              return (
+                <button
+                  key={checkpoint}
+                  onClick={() => onCheckpointClick(checkpoint)}
+                  className={cn(
+                    "group relative flex flex-col items-center gap-1 rounded-md border py-2 transition-all",
+                    isActive
+                      ? "border-foreground/20 bg-accent/80"
+                      : isReviewed
+                        ? "border-green-500/20 bg-green-500/5 hover:bg-green-500/10"
+                        : "border-border/30 bg-muted/20 hover:bg-accent/40"
+                  )}
+                  title={`${label} (${status})`}
+                >
+                  <span className="text-base">{emoji}</span>
+                  <span
+                    className={cn(
+                      "text-[8px] font-medium uppercase tracking-wider",
+                      isActive
+                        ? "text-foreground/70"
+                        : isReviewed
+                          ? "text-green-600/60 dark:text-green-400/60"
+                          : "text-muted-foreground/40"
+                    )}
+                  >
+                    {checkpoint}
+                  </span>
+                  {isReviewed && (
+                    <div className="absolute right-1 top-1">
+                      <CheckCircle2 className="size-2.5 text-green-600/50 dark:text-green-400/50" />
+                    </div>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        <div className="flex gap-1.5">
+          <button
+            onClick={onReset}
+            className="flex flex-1 items-center justify-center gap-1.5 rounded-md border border-border/40 bg-card/30 px-3 py-1.5 text-xs text-muted-foreground/60 transition-all hover:bg-accent/50 hover:text-muted-foreground"
+          >
+            <RotateCcw className="size-3" />
             Reset
-          </Button>
-          <Button
-            variant={isSignedOff ? "secondary" : "default"}
-            size="sm"
+          </button>
+          <button
             onClick={onSignOff}
             disabled={!allCheckpointsReviewed && !isSignedOff}
+            className={cn(
+              "flex flex-1 items-center justify-center gap-1.5 rounded-md px-3 py-1.5 text-xs transition-all",
+              isSignedOff
+                ? "border border-green-500/20 bg-green-500/10 text-green-600/70 dark:text-green-400/70"
+                : allCheckpointsReviewed
+                  ? "bg-foreground/10 text-foreground/70 hover:bg-foreground/15"
+                  : "cursor-not-allowed bg-muted/20 text-muted-foreground/30"
+            )}
             title={
               !allCheckpointsReviewed && !isSignedOff
-                ? "Review all time checkpoints first"
+                ? "Review all checkpoints first"
                 : undefined
             }
           >
-            {isSignedOff ? "Signed Off ✓" : "Sign Off"}
-          </Button>
-        </div>
-      </div>
-
-      <div className="flex shrink-0 items-center gap-2 border-b border-zinc-700 px-4 py-2">
-        <span className="text-sm text-zinc-400">Checkpoints:</span>
-        {TIME_CHECKPOINT_ORDER.map((checkpoint) => {
-          const { value, emoji, label } = TIME_CHECKPOINTS[checkpoint];
-          const status = checkpoints?.[checkpoint] ?? "pending";
-          const isActive = Math.abs(currentTime - value) < 0.02;
-
-          return (
-            <button
-              key={checkpoint}
-              onClick={() => onCheckpointClick(checkpoint)}
-              className={`flex items-center gap-1 rounded px-2 py-1 text-sm transition-colors ${
-                isActive
-                  ? "bg-blue-500/20 text-blue-400"
-                  : status === "reviewed"
-                    ? "bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20"
-                    : "text-zinc-500 hover:bg-zinc-800 hover:text-zinc-300"
-              }`}
-              title={`${label} (${status})`}
-            >
-              <span>{emoji}</span>
-              {status === "reviewed" && <span className="text-xs">✓</span>}
-            </button>
-          );
-        })}
-      </div>
-
-      <div className="flex min-h-0 flex-1">
-        <div className="relative shrink-0 border-r border-zinc-700 bg-black p-4">
-          <div className="relative h-full w-[384px]">
-            <WeatherEffectsCanvas className="absolute inset-0 rounded-xl" {...canvasProps} />
-            {showWidgetOverlay && (
-              <div className="relative z-10 h-full w-full [&_[data-slot=weather-widget]]:h-full [&_[data-slot=weather-widget]]:max-w-none [&_article]:h-full [&_[data-slot=card]]:h-full [&_[data-slot=card]]:border-0 [&_[data-slot=card]]:bg-transparent [&_[data-slot=card]]:shadow-none">
-                <WeatherWidget
-                  id="tuning-preview"
-                  location="San Francisco, CA"
-                  current={{
-                    temp: 72,
-                    tempMin: 65,
-                    tempMax: 78,
-                    condition: condition,
-                  }}
-                  forecast={[
-                    { day: "Today", tempMin: 65, tempMax: 78, condition: condition },
-                    { day: "Tue", tempMin: 64, tempMax: 77, condition: "partly-cloudy" },
-                    { day: "Wed", tempMin: 62, tempMax: 75, condition: "cloudy" },
-                    { day: "Thu", tempMin: 60, tempMax: 73, condition: "rain" },
-                    { day: "Fri", tempMin: 63, tempMax: 76, condition: "clear" },
-                  ]}
-                  effects={{ enabled: false }}
-                />
-              </div>
+            {isSignedOff ? (
+              <>
+                <CheckCircle2 className="size-3" />
+                Done
+              </>
+            ) : (
+              "Sign Off"
             )}
-          </div>
-          <button
-            onClick={onToggleWidgetOverlay}
-            className="absolute bottom-6 left-6 z-20 flex items-center gap-1.5 rounded bg-black/60 px-2 py-1 text-xs text-zinc-300 backdrop-blur transition-colors hover:bg-black/80"
-          >
-            {showWidgetOverlay ? <EyeOff className="size-3" /> : <Eye className="size-3" />}
-            {showWidgetOverlay ? "Hide" : "Show"} Widget
           </button>
         </div>
+      </div>
 
-        <div className="min-h-0 flex-1 overflow-y-auto p-4">
+      <div className="min-h-0 min-w-0 flex-1 overflow-hidden rounded-lg border border-border/40 bg-card/30">
+        <div className="scrollbar-subtle h-full overflow-y-auto">
           <ParameterPanel
             params={params}
             baseParams={baseParams}
