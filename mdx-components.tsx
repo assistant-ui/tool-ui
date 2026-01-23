@@ -49,6 +49,11 @@ const ItemCarouselPresetExample = dynamic(() =>
     (m) => m.ItemCarouselPresetExample
   )
 );
+const QuestionFlowPresetExample = dynamic(() =>
+  import("@/app/docs/_components/preset-example").then(
+    (m) => m.QuestionFlowPresetExample
+  )
+);
 const FeatureGrid = dynamic(() =>
   import("@/app/components/mdx/features").then((m) => m.FeatureGrid)
 );
@@ -131,6 +136,7 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
     TerminalPresetExample,
     PlanPresetExample,
     ItemCarouselPresetExample,
+    QuestionFlowPresetExample,
     FeatureGrid,
     Feature,
     ...components,

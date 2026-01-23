@@ -52,6 +52,9 @@ const PreferencesPanel = dynamic(() =>
 const ProgressTracker = dynamic(() =>
   import("@/components/tool-ui/progress-tracker").then((m) => m.ProgressTracker)
 );
+const QuestionFlow = dynamic(() =>
+  import("@/components/tool-ui/question-flow").then((m) => m.QuestionFlow)
+);
 const MessageDraft = dynamic(() =>
   import("@/components/tool-ui/message-draft").then((m) => m.MessageDraft)
 );
@@ -74,6 +77,7 @@ import { chartPresets } from "@/lib/presets/chart";
 import { statsDisplayPresets } from "@/lib/presets/stats-display";
 import { preferencesPanelPresets } from "@/lib/presets/preferences-panel";
 import { progressTrackerPresets } from "@/lib/presets/progress-tracker";
+import { questionFlowPresets } from "@/lib/presets/question-flow";
 import { messageDraftPresets } from "@/lib/presets/message-draft";
 
 export const metadata: Metadata = {
@@ -147,6 +151,10 @@ export default function ComponentsGalleryPage() {
 
           <div className="mb-5 flex break-inside-avoid justify-center 2xl:mb-5">
             <ProgressTracker {...progressTrackerPresets["in-progress"].data} />
+          </div>
+
+          <div className="mb-5 flex break-inside-avoid justify-center 2xl:mb-5">
+            <QuestionFlow {...questionFlowPresets.progressive.data} />
           </div>
 
           <div className="mb-5 flex break-inside-avoid justify-center 2xl:mb-5">
