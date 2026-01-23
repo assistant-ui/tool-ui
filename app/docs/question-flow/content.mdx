@@ -6,7 +6,7 @@ import { DocsHeader } from "../_components/docs-header";
   mdxPath="app/docs/question-flow/content.mdx"
 />
 
-<QuestionFlowPresetExample preset="progressive" />
+<QuestionFlowPresetExample preset="upfront" />
 
 ## Key Features
 
@@ -33,11 +33,11 @@ QuestionFlow has two modes:
 
 Pass `step`, `title`, and `options` to render a single step. The AI controls progression by generating new steps based on user selections.
 
+<QuestionFlowPresetExample preset="progressive" />
+
 ### Upfront Mode
 
 Pass `steps` with all step definitions. The component manages internal state and navigation.
-
-<QuestionFlowPresetExample preset="upfront" />
 
 ### Multi-Select Steps
 
