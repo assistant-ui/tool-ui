@@ -31,7 +31,7 @@ import { DocsHeader } from "../_components/docs-header";
 
 ## Design Details
 
-The Item Carousel is built with careful attention to interaction design:
+How the Item Carousel handles common interaction patterns:
 
 **Responsive button layout:** Each card is its own container (`@container/card`). When the card is narrow, buttons stack vertically with the primary action on top. Above 176px, they flow horizontally with primary on the right. This uses `flex-col-reverse` to maintain consistent DOM order while adapting visual hierarchy.
 
