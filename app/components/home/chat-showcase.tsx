@@ -9,7 +9,6 @@ import { LinkPreview } from "@/components/tool-ui/link-preview";
 import { Plan } from "@/components/tool-ui/plan";
 import { Terminal } from "@/components/tool-ui/terminal";
 import { CodeBlock } from "@/components/tool-ui/code-block";
-import { OptionList } from "@/components/tool-ui/option-list";
 import { ItemCarousel } from "@/components/tool-ui/item-carousel";
 import { ParameterSlider } from "@/components/tool-ui/parameter-slider";
 import { StatsDisplay } from "@/components/tool-ui/stats-display";
@@ -22,7 +21,6 @@ import {
   TABLE_DATA,
   LINK_PREVIEW,
   PLAN_TODO_LABELS,
-  OPTION_LIST_OPTIONS,
   ITEM_CAROUSEL_DATA,
   LLM_CITATIONS,
   PARAMETER_SLIDER_DATA,
@@ -306,32 +304,32 @@ function AnimatedProgressTracker({ className }: { className?: string }) {
   );
 }
 
-const QUESTION_FLOW_STEPS = [
+const MOVIE_FLOW_STEPS = [
   {
-    id: "language",
-    title: "Pick a language",
+    id: "mood",
+    title: "What mood are you in?",
     options: [
-      { id: "python", label: "Python" },
-      { id: "typescript", label: "TypeScript" },
-      { id: "go", label: "Go" },
+      { id: "laugh", label: "Make me laugh" },
+      { id: "think", label: "Make me think" },
+      { id: "edge", label: "Keep me on the edge" },
     ],
   },
   {
-    id: "framework",
-    title: "Choose a framework",
+    id: "length",
+    title: "How much time do you have?",
     options: [
-      { id: "fastapi", label: "FastAPI" },
-      { id: "django", label: "Django" },
-      { id: "flask", label: "Flask" },
+      { id: "short", label: "Under 90 minutes" },
+      { id: "medium", label: "90–120 minutes" },
+      { id: "long", label: "I've got all night" },
     ],
   },
   {
-    id: "database",
-    title: "Select your database",
+    id: "era",
+    title: "Any era preference?",
     options: [
-      { id: "postgres", label: "PostgreSQL" },
-      { id: "mysql", label: "MySQL" },
-      { id: "mongodb", label: "MongoDB" },
+      { id: "classic", label: "Classic (pre-2000)" },
+      { id: "modern", label: "Modern (2000–2020)" },
+      { id: "recent", label: "Recent (last 5 years)" },
     ],
   },
 ];
@@ -343,7 +341,7 @@ function AnimatedQuestionFlow({ className }: { className?: string }) {
   useEffect(() => {
     if (isComplete) return;
 
-    if (currentStep >= QUESTION_FLOW_STEPS.length) {
+    if (currentStep >= MOVIE_FLOW_STEPS.length) {
       setIsComplete(true);
       return;
     }
@@ -361,11 +359,11 @@ function AnimatedQuestionFlow({ className }: { className?: string }) {
       <QuestionFlow
         id="chat-showcase-question-flow"
         choice={{
-          title: "Project configured",
+          title: "Movie preferences",
           summary: [
-            { label: "Language", value: "Python" },
-            { label: "Framework", value: "FastAPI" },
-            { label: "Database", value: "PostgreSQL" },
+            { label: "Mood", value: "Make me laugh" },
+            { label: "Length", value: "90–120 minutes" },
+            { label: "Era", value: "Modern (2000–2020)" },
           ],
         }}
         className={className}
@@ -373,7 +371,7 @@ function AnimatedQuestionFlow({ className }: { className?: string }) {
     );
   }
 
-  const step = QUESTION_FLOW_STEPS[currentStep];
+  const step = MOVIE_FLOW_STEPS[currentStep];
 
   return (
     <QuestionFlow
@@ -621,20 +619,6 @@ function createSceneConfigs(): SceneConfig[] {
     },
     {
       userMessage: "Help me find a movie for tonight",
-      preamble: "Let's narrow things down. What sounds good?",
-      toolUI: (
-        <OptionList
-          id="chat-showcase-option-list"
-          options={OPTION_LIST_OPTIONS}
-          selectionMode="multi"
-          defaultValue={["comedy", "comfort"]}
-          className="w-full max-w-[480px]"
-        />
-      ),
-      toolFallbackHeight: 320,
-    },
-    {
-      userMessage: "Set up a new Python project",
       preamble: "A few questions first.",
       toolUI: <AnimatedQuestionFlow className="w-full max-w-[480px]" />,
       toolFallbackHeight: 280,
@@ -711,7 +695,7 @@ Sarah`}
   ];
 }
 
-const SCENE_COUNT = 12;
+const SCENE_COUNT = 11;
 
 type AnimatedSceneProps = {
   config: SceneConfig;
