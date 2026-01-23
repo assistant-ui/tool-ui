@@ -80,12 +80,12 @@ export const questionFlowPresets: Record<
       id: "question-flow-database",
       step: 2,
       title: "Select database type",
-      description: "Choose the database that best fits your project requirements.",
+      description: "Where should we store your data?",
       options: [
         {
           id: "postgres",
           label: "PostgreSQL",
-          description: "Open source, feature-rich, great for complex queries",
+          description: "Open source with strong SQL support",
         },
         {
           id: "mysql",
@@ -95,7 +95,7 @@ export const questionFlowPresets: Record<
         {
           id: "sqlite",
           label: "SQLite",
-          description: "Embedded, zero configuration, perfect for prototypes",
+          description: "Embedded, no setup required",
         },
       ],
     } satisfies SerializableProgressiveMode,

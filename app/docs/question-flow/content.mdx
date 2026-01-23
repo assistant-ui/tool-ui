@@ -2,7 +2,7 @@ import { DocsHeader } from "../_components/docs-header";
 
 <DocsHeader
   title="Question Flow"
-  description="Guide users through multi-step configuration flows."
+  description="Multi-step guided questions with branching."
   mdxPath="app/docs/question-flow/content.mdx"
 />
 
@@ -27,13 +27,11 @@ import { DocsHeader } from "../_components/docs-header";
 
 ## Modes
 
-QuestionFlow supports two operational modes, determined by the props you pass:
+QuestionFlow has two modes:
 
 ### Progressive Mode
 
 Pass `step`, `title`, and `options` to render a single step. The AI controls progression by generating new steps based on user selections.
-
-<QuestionFlowPresetExample preset="progressive" />
 
 ### Upfront Mode
 
@@ -49,9 +47,15 @@ Set `selectionMode="multi"` to allow multiple selections per step.
 
 ## Receipt State
 
-Pass `choice` with a title and summary to render a read-only confirmation of completed configuration.
+Pass `choice` with a title and summary to show what was configured.
 
 <QuestionFlowPresetExample preset="receipt" />
+
+The receipt state:
+
+- Shows a "Complete" badge with the configuration title
+- Displays a summary of all choices made during the flow
+- Is read-only (no interaction)
 
 ## Source and Install
 
