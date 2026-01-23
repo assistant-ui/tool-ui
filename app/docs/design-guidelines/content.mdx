@@ -11,11 +11,11 @@ import { DataTable } from "@/components/tool-ui/data-table";
 
 ## The Collaboration Model
 
-In AI chat, users interact with both the assistant and any tool UIs it renders. Most tool UIs treat this relationship as incidental: a tool UI appears, the user clicks something, done. We treat it as foundational. The assistant, the tool UI, and the user form a collaborative triad.
+In AI chat, users interact with both the assistant and any tool UIs it renders. Most tool UIs treat this relationship as incidental: a tool UI appears, the user clicks something, done. We think it matters more than that. The assistant, the tool UI, and the user form a collaborative triad.
 
 <CollaborationDiagram />
 
-The assistant contextualizes, interprets, and narrates. The tool UI provides structure that prose cannot: sortable tables, precise controls, rich media. Neither replaces the other.
+The assistant contextualizes, interprets, and narrates. The tool UI provides structure that prose cannot: sortable tables, precise controls, rich media. They work together.
 
 <div className="mx-auto max-w-2xl">
   <MockThread caption="The triadic loop in action">
@@ -132,15 +132,15 @@ The assistant introduces the tool UI, the user scans it and asks a follow-up, th
 
 Every Tool UI has a primary role:
 
-- **Information:** Display data (tables, cards, charts). The focus is on comprehension rather than interaction.
+- **Information:** Display data (tables, cards, charts). Users read more than they click.
 
-- **Decision:** Capture consequential choices (approve/reject, send/cancel). These require clear options and receipts that prove what happened.
+- **Decision:** Capture choices that matter (approve/reject, send/cancel). These need clear options and receipts that prove what happened.
 
 - **Control:** Adjust parameters without commitment (filters, sort orders, date ranges). Changes are reversible.
 
-- **State:** Expose internal activity (progress indicators, status logs, loading states).
+- **State:** Show internal activity (progress indicators, status logs, loading states).
 
-Some tool UIs combine roles. A data table with row actions is "information with control." When combining, the primary role should dominate.
+Some tool UIs combine roles. A data table with row actions is "information with control." When combining, pick one role to lead.
 
 ## Constraints
 
@@ -158,7 +158,7 @@ If the assistant can't point at something later, you lose half the value of rend
 - **`id`**: Identifies this specific tool UI in the conversation ("the preview above", "that table").
 - **`assetId` / row IDs / option IDs**: Identify real objects ("that link", "row 4", "the merge option").
 
-Prefer stable IDs derived from your backend (database IDs, canonical URLs) over array indexes or UUIDs generated at render time. When something can be acted on, it should have an ID the assistant can cite.
+Use stable IDs from your backend (database IDs, canonical URLs) rather than array indexes or UUIDs generated at render time. Anything the user can act on should have an ID the assistant can cite.
 
 ## Receipts
 
@@ -168,8 +168,8 @@ See the [Receipts](/docs/receipts) page for detailed guidance on receipt states 
 
 ## Anti-Patterns
 
-- **Input fields:** Input fields introduce dissonance by competing with the primary composer input. Consider whether it would be more appropriate to capture that information through dialogue with the assistant or, in rare cases, link to a dedicated form outside of or detached from the chat context.
-- **Hidden mutations:** Actions that change state should produce visible indication of what happened; terminal decisions should produce a receipt that reflects what choice the user made.
+- **Input fields:** Input fields compete with the main chat composer. Ask whether the assistant could gather that information through conversation, or link to a form outside the chat.
+- **Hidden mutations:** Actions that change state should show what happened. Terminal decisions need a receipt showing what the user chose.
 - **Kitchen sinks:** If it needs tabs or navigation, consider breaking it into separate Tool UIs.
-- **Uncontextualized tool UIs:** Always have the assistant introduce a tool UI, providing context that clarifies what's being shown.
-- **Redundant narration:** The assistant shouldn't describe what the tool UI already shows. Conversely, the tool UI shouldn't echo what the assistant just said. If the assistant asks "Where to?", the tool UI doesn't need a header saying "Where to?"; just show the options. Divide the work: the assistant provides context, the tool UI provides structure.
+- **Uncontextualized tool UIs:** Always have the assistant introduce a tool UI and explain what it shows.
+- **Redundant narration:** The assistant shouldn't describe what the tool UI already shows. The tool UI shouldn't echo what the assistant just said. If the assistant asks "Where to?", the tool UI doesn't need a header saying "Where to?"; just show the options. Divide the work: the assistant provides context, the tool UI provides structure.

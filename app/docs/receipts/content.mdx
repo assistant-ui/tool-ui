@@ -9,11 +9,11 @@ import { ApprovalCard } from "@/components/tool-ui/approval-card";
   mdxPath="app/docs/receipts/content.mdx"
 />
 
-When a user takes an action with consequences, the tool UI should transition to a **receipt state** that confirms what happened. This gives the user proof of their decision and gives the assistant something to reference later.
+When a user takes an action with consequences, the tool UI should transition to a **receipt state** that confirms what happened. This gives the user proof of their decision and something the assistant can reference later.
 
 ## Why Receipts Matter
 
-Without receipts, consequential actions vanish into the conversation history. The user can't verify what they chose. The assistant can't reference specific decisions. Receipts solve both problems.
+Without receipts, consequential actions vanish into the conversation history. The user can't verify what they chose, and the assistant can't reference specific decisions.
 
 <div className="mx-auto max-w-2xl">
   <MockThread caption="A decision with receipt">
@@ -126,4 +126,4 @@ Skip receipts for **reversible controls** like:
 - Adjusting parameters
 - Navigating between views
 
-The assistant's follow-up message should acknowledge the receipt and, when appropriate, offer a way to undo or modify the decision.
+The assistant's follow-up message should reference the receipt and, when appropriate, offer a way to undo or modify the decision.

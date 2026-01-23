@@ -82,8 +82,8 @@ flowchart LR
 
 **What this demonstrates:**
 
-- `SerializableLinkPreviewSchema` ensures type-safe output
-- Actions are defined with both UI labels and canonical sentences for conversation coherence
+- `SerializableLinkPreviewSchema` enforces type-safe output
+- Actions have both UI labels and canonical sentences for conversation coherence
 - The schema guarantees the frontend receives reconstructable, addressable data
 
 ```ts title="Server: define a tool with an output schema"
@@ -173,7 +173,7 @@ Every Tool UI surface is addressable and reconstructable. Here's the common sche
 
 - `id` makes the tool UI referenceable by the assistant ("the link preview above")
 - `role` declares the primary purpose (information, decision, control, state, or composite)
-- `actions` with `sentence` fields enable natural language interaction
+- `actions` with `sentence` fields let the assistant speak about user choices
 - `receipt` provides durable proof of side effects with timestamps and identifiers
 
 ```ts
