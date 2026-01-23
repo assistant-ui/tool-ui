@@ -98,6 +98,7 @@ export interface QuestionFlowProgressiveProps
   extends BaseRuntimeProps,
     Omit<SerializableProgressiveMode, "options"> {
   options: QuestionFlowOption[];
+  defaultValue?: string[];
   onSelect?: (optionIds: string[]) => void | Promise<void>;
   onBack?: () => void;
   steps?: never;

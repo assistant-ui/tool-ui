@@ -596,12 +596,15 @@ function QuestionFlowProgressive({
   description,
   options,
   selectionMode = "single",
+  defaultValue,
   onSelect,
   onBack,
   className,
   isLoading,
 }: QuestionFlowProgressiveProps) {
-  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(
+    () => new Set(defaultValue ?? []),
+  );
 
   const handleToggle = useCallback(
     (optionId: string) => {

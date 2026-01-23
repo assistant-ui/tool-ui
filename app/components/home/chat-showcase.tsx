@@ -13,7 +13,6 @@ import { ItemCarousel } from "@/components/tool-ui/item-carousel";
 import { ParameterSlider } from "@/components/tool-ui/parameter-slider";
 import { StatsDisplay } from "@/components/tool-ui/stats-display";
 import { ProgressTracker } from "@/components/tool-ui/progress-tracker";
-import { QuestionFlow } from "@/components/tool-ui/question-flow";
 import { MessageDraft } from "@/components/tool-ui/message-draft";
 import {
   type Flight,
@@ -304,86 +303,6 @@ function AnimatedProgressTracker({ className }: { className?: string }) {
   );
 }
 
-const MOVIE_FLOW_STEPS = [
-  {
-    id: "mood",
-    title: "What mood are you in?",
-    options: [
-      { id: "laugh", label: "Make me laugh" },
-      { id: "think", label: "Make me think" },
-      { id: "edge", label: "Keep me on the edge" },
-    ],
-  },
-  {
-    id: "length",
-    title: "How much time do you have?",
-    options: [
-      { id: "short", label: "Under 90 minutes" },
-      { id: "medium", label: "90–120 minutes" },
-      { id: "long", label: "I've got all night" },
-    ],
-  },
-  {
-    id: "era",
-    title: "Any era preference?",
-    options: [
-      { id: "classic", label: "Classic (pre-2000)" },
-      { id: "modern", label: "Modern (2000–2020)" },
-      { id: "recent", label: "Recent (last 5 years)" },
-    ],
-  },
-];
-
-function AnimatedQuestionFlow({ className }: { className?: string }) {
-  const [currentStep, setCurrentStep] = useState(0);
-  const [isComplete, setIsComplete] = useState(false);
-
-  useEffect(() => {
-    if (isComplete) return;
-
-    if (currentStep >= MOVIE_FLOW_STEPS.length) {
-      setIsComplete(true);
-      return;
-    }
-
-    const delay = currentStep === 0 ? 800 : 1100;
-    const timeoutId = window.setTimeout(() => {
-      setCurrentStep((s) => s + 1);
-    }, delay);
-
-    return () => window.clearTimeout(timeoutId);
-  }, [currentStep, isComplete]);
-
-  if (isComplete) {
-    return (
-      <QuestionFlow
-        id="chat-showcase-question-flow"
-        choice={{
-          title: "Movie preferences",
-          summary: [
-            { label: "Mood", value: "Make me laugh" },
-            { label: "Length", value: "90–120 minutes" },
-            { label: "Era", value: "Modern (2000–2020)" },
-          ],
-        }}
-        className={className}
-      />
-    );
-  }
-
-  const step = MOVIE_FLOW_STEPS[currentStep];
-
-  return (
-    <QuestionFlow
-      id="chat-showcase-question-flow"
-      step={currentStep + 1}
-      title={step?.title ?? ""}
-      options={step?.options ?? []}
-      className={className}
-    />
-  );
-}
-
 type ChatBubbleProps = {
   role: "user" | "assistant";
   children: React.ReactNode;
@@ -618,12 +537,6 @@ function createSceneConfigs(): SceneConfig[] {
       toolFallbackHeight: 320,
     },
     {
-      userMessage: "Help me find a movie for tonight",
-      preamble: "A few questions first.",
-      toolUI: <AnimatedQuestionFlow className="w-full max-w-[480px]" />,
-      toolFallbackHeight: 280,
-    },
-    {
       userMessage: "Need a localStorage hook",
       preamble: "Got you. Handles JSON parsing and updates.",
       toolUI: (
@@ -695,7 +608,7 @@ Sarah`}
   ];
 }
 
-const SCENE_COUNT = 11;
+const SCENE_COUNT = 10;
 
 type AnimatedSceneProps = {
   config: SceneConfig;
