@@ -143,6 +143,7 @@ export function DetailEditor({
                 { day: "Fri", tempMin: 63, tempMax: 76, condition: "clear" },
               ]}
               unit="fahrenheit"
+              timeOfDay={params.celestial.timeOfDay}
             />
           )}
 

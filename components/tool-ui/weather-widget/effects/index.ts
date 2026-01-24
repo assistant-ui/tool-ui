@@ -1,6 +1,18 @@
 export { EffectCompositor } from "./effect-compositor";
 export type { CustomEffectProps } from "./effect-compositor";
-export { mapWeatherToEffects, getSunAltitude, isNightTime, getTimeOfDay, getMoonPhase } from "./parameter-mapper";
+export {
+  mapWeatherToEffects,
+  getSunAltitude,
+  isNightTime,
+  getTimeOfDay,
+  getMoonPhase,
+  getSceneBrightness,
+  getSceneBrightnessFromTimeOfDay,
+  timeOfDayToSunAltitude,
+  getWeatherTheme,
+} from "./parameter-mapper";
+export type { WeatherTheme } from "./parameter-mapper";
+export { useWeatherTheme } from "./use-weather-theme";
 export type {
   EffectSettings,
   EffectQuality,

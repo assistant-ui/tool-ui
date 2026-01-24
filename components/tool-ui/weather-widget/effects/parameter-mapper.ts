@@ -78,6 +78,133 @@ export function isNightTime(sunAltitude: number): boolean {
 }
 
 /**
+ * Condition-based brightness modifiers.
+ * 1.0 = no attenuation (clear), lower = darker scene.
+ * Derived from CONDITION_PRESETS cloud.darkness values.
+ */
+const CONDITION_BRIGHTNESS: Record<WeatherCondition, number> = {
+  clear: 1.0,
+  "partly-cloudy": 0.9,
+  cloudy: 0.8,
+  overcast: 0.65,
+  fog: 0.7,
+  drizzle: 0.7,
+  rain: 0.6,
+  "heavy-rain": 0.45,
+  thunderstorm: 0.3,
+  snow: 0.8,
+  sleet: 0.65,
+  hail: 0.5,
+  windy: 0.9,
+};
+
+/**
+ * Calculate expected scene brightness from timestamp and condition.
+ * Returns 0-1 where 0 = very dark (use dark theme), 1 = very bright (use light theme).
+ *
+ * This is a predictive calculation - it estimates brightness from weather data
+ * rather than sampling the actual rendered canvas.
+ */
+export function getSceneBrightness(
+  timestamp?: string,
+  condition: WeatherCondition = "clear"
+): number {
+  const sunAltitude = getSunAltitude(timestamp);
+
+  // Solar contribution: convert -1..1 to 0..1, with a curve
+  // Night (sunAltitude < 0) contributes very little light
+  // Dawn/dusk (0-0.3) is dim, midday (0.7-1.0) is bright
+  let solarBrightness: number;
+  if (sunAltitude < 0) {
+    // Night: 0.05 to 0.15 based on how deep into night
+    solarBrightness = 0.05 + (1 + sunAltitude) * 0.1;
+  } else {
+    // Day: 0.15 to 1.0
+    solarBrightness = 0.15 + sunAltitude * 0.85;
+  }
+
+  // Apply condition modifier
+  const conditionModifier = CONDITION_BRIGHTNESS[condition];
+
+  // Combine: solar * condition, but condition can't make night bright
+  const brightness = solarBrightness * conditionModifier;
+
+  // Clamp to 0-1
+  return Math.max(0, Math.min(1, brightness));
+}
+
+/**
+ * Determine UI theme based on scene brightness.
+ * Includes hysteresis to prevent rapid toggling at threshold.
+ */
+export type WeatherTheme = "light" | "dark";
+
+export function getWeatherTheme(
+  brightness: number,
+  currentTheme?: WeatherTheme
+): WeatherTheme {
+  // Hysteresis thresholds
+  const DARK_THRESHOLD = 0.35;
+  const LIGHT_THRESHOLD = 0.45;
+
+  if (brightness < DARK_THRESHOLD) {
+    return "dark";
+  }
+  if (brightness > LIGHT_THRESHOLD) {
+    return "light";
+  }
+
+  // In the hysteresis zone (0.35-0.45): keep current theme
+  return currentTheme ?? "dark";
+}
+
+/**
+ * Convert timeOfDay (0-1) to sun altitude (-1 to 1).
+ * 0 = midnight (-1), 0.25 = 6am (0), 0.5 = noon (1), 0.75 = 6pm (0)
+ */
+export function timeOfDayToSunAltitude(timeOfDay: number): number {
+  // Map 0-1 to 0-24 hours
+  const hours = timeOfDay * 24;
+
+  if (hours < 6) {
+    // Before 6am: deep night to dawn (-1 to 0)
+    return -1 + hours / 6;
+  } else if (hours < 12) {
+    // 6am to noon: rising (0 to 1)
+    return (hours - 6) / 6;
+  } else if (hours < 18) {
+    // Noon to 6pm: falling (1 to 0)
+    return 1 - (hours - 12) / 6;
+  } else {
+    // After 6pm: dusk to night (0 to -1)
+    return -(hours - 18) / 6;
+  }
+}
+
+/**
+ * Calculate scene brightness from timeOfDay (0-1) and condition.
+ * Returns 0-1 where 0 = very dark (use dark theme), 1 = very bright (use light theme).
+ */
+export function getSceneBrightnessFromTimeOfDay(
+  timeOfDay: number,
+  condition: WeatherCondition = "clear"
+): number {
+  const sunAltitude = timeOfDayToSunAltitude(timeOfDay);
+
+  let solarBrightness: number;
+  if (sunAltitude < 0) {
+    solarBrightness = 0.05 + (1 + sunAltitude) * 0.1;
+  } else {
+    solarBrightness = 0.15 + sunAltitude * 0.85;
+  }
+
+  const conditionModifier = CONDITION_BRIGHTNESS[condition];
+  const brightness = solarBrightness * conditionModifier;
+
+  return Math.max(0, Math.min(1, brightness));
+}
+
+/**
  * Map wind speed (mph) to effect intensity.
  * 0-10 mph: subtle, 10-25 mph: moderate, 25+ mph: dramatic
  */

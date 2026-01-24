@@ -135,6 +135,16 @@ Archive of completed features and improvements. See `TODO.md` for active work.
 - Removed border from container housing plan steps and progress (cleaner look)
 - Removed strikethrough treatment from completed steps (kept muted-foreground dimming)
 
+### WeatherDataOverlay Polish (Jan 23, 2026)
+- Removed condition pill from top right corner
+- Removed "Location" label above location name
+- Tinted glass layers opposite text color (white glass for dark theme, black glass for light theme)
+- Increased minimum type sizes proportionally across the overlay
+- Refined layout for balance with celestial elements (sun/moon in top-right quadrant)
+- Left-aligned hero temperature section
+- Consolidated stats into single row with high/low temps
+- Reduced glass background opacity for subtler effect
+
 ### Message Draft Component (Jan 16, 2026)
 - Created new Message Draft component for email/Slack message review before sending
 - Removed channel indicator labels (email/slack at top) — channels are clear from context

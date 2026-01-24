@@ -14,7 +14,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { cn, Card, CardHeader, CardTitle, CardContent } from "./_adapter";
-import { EffectCompositor } from "./effects";
+import { EffectCompositor, useWeatherTheme } from "./effects";
 import type {
   WeatherWidgetProps,
   WeatherCondition,
@@ -107,26 +107,29 @@ interface ForecastDayCardProps {
   day: ForecastDay;
   unit: "celsius" | "fahrenheit";
   index: number;
+  primaryTextClass?: string;
+  secondaryTextClass?: string;
 }
 
-function ForecastDayCard({ day, unit, index }: ForecastDayCardProps) {
+function ForecastDayCard({ day, unit, index, primaryTextClass, secondaryTextClass }: ForecastDayCardProps) {
   const baseDelay = 100 + index * 50;
+  const secondary = secondaryTextClass ?? "text-muted-foreground";
 
   return (
     <div
       className="flex flex-col items-center gap-1 py-2 animate-in fade-in slide-in-from-bottom-2 duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] fill-mode-both"
       style={{ animationDelay: `${baseDelay}ms` }}
     >
-      <span className="text-muted-foreground text-xs font-medium">
+      <span className={cn("text-xs font-medium", secondary)}>
         {day.day}
       </span>
       <ConditionIcon
         condition={day.condition}
-        className="text-muted-foreground size-5"
+        className={cn("size-5", secondary)}
       />
       <div className="flex flex-col items-center tabular-nums">
-        <span className="text-sm font-medium">{formatTemperature(day.tempMax, unit)}</span>
-        <span className="text-muted-foreground text-xs">
+        <span className={cn("text-sm font-medium", primaryTextClass)}>{formatTemperature(day.tempMax, unit)}</span>
+        <span className={cn("text-xs", secondary)}>
           {formatTemperature(day.tempMin, unit)}
         </span>
       </div>
@@ -168,6 +171,21 @@ export function WeatherWidget({
   const conditionLabel = conditionLabels[current.condition];
   const effectsEnabled = effects?.enabled !== false && !isLoading;
 
+  const { theme } = useWeatherTheme({
+    timestamp: updatedAt,
+    condition: current.condition,
+    enabled: effectsEnabled,
+  });
+
+  const isDark = theme === "dark";
+
+  const textShadow = isDark
+    ? "drop-shadow-[0_1px_3px_rgba(0,0,0,0.8)]"
+    : "drop-shadow-[0_1px_2px_rgba(0,0,0,0.3)]";
+
+  const primaryText = isDark ? "text-white" : "text-foreground";
+  const secondaryText = isDark ? "text-white/70" : "text-muted-foreground";
+
   return (
     <article
       data-slot="weather-widget"
@@ -187,15 +205,17 @@ export function WeatherWidget({
         <CardHeader
           className={cn(
             "relative z-10 pb-2",
-            effectsEnabled && "drop-shadow-[0_1px_2px_rgba(0,0,0,0.3)]",
+            effectsEnabled && textShadow,
           )}
         >
-          <CardTitle className="text-lg font-semibold tracking-tight">{location}</CardTitle>
+          <CardTitle className={cn("text-lg font-semibold tracking-tight", effectsEnabled && primaryText)}>
+            {location}
+          </CardTitle>
         </CardHeader>
         <CardContent
           className={cn(
             "relative z-10 space-y-4",
-            effectsEnabled && "drop-shadow-[0_1px_2px_rgba(0,0,0,0.3)]",
+            effectsEnabled && textShadow,
           )}
         >
           {isLoading ? (
@@ -213,21 +233,21 @@ export function WeatherWidget({
             >
               <ConditionIcon
                 condition={current.condition}
-                className="text-muted-foreground size-12"
+                className={cn("size-12", effectsEnabled ? secondaryText : "text-muted-foreground")}
               />
               <div className="flex flex-col">
                 <div className="flex items-baseline gap-0.5">
                   <span
-                    className="text-4xl font-normal tabular-nums tracking-tight"
+                    className={cn("text-4xl font-normal tabular-nums tracking-tight", effectsEnabled && primaryText)}
                     aria-label={`${Math.round(current.temp)} degrees ${unit === "celsius" ? "Celsius" : "Fahrenheit"}`}
                   >
                     {Math.round(current.temp)}
                   </span>
-                  <span className="text-muted-foreground text-xl font-light">
+                  <span className={cn("text-xl font-light", effectsEnabled ? secondaryText : "text-muted-foreground")}>
                     °{unitLabel}
                   </span>
                 </div>
-                <div className="text-muted-foreground flex items-center gap-2 text-sm">
+                <div className={cn("flex items-center gap-2 text-sm", effectsEnabled ? secondaryText : "text-muted-foreground")}>
                   <span className="font-medium">{conditionLabel}</span>
                   <span aria-hidden="true">·</span>
                   <span className="tabular-nums">
@@ -253,7 +273,13 @@ export function WeatherWidget({
               >
                 {forecast.map((day, index) => (
                   <div key={day.day} role="listitem">
-                    <ForecastDayCard day={day} unit={unit} index={index} />
+                    <ForecastDayCard
+                      day={day}
+                      unit={unit}
+                      index={index}
+                      primaryTextClass={effectsEnabled ? primaryText : undefined}
+                      secondaryTextClass={effectsEnabled ? secondaryText : undefined}
+                    />
                   </div>
                 ))}
               </div>
@@ -262,7 +288,10 @@ export function WeatherWidget({
 
           {updatedAt && !isLoading && (
             <p
-              className="text-muted-foreground text-[13px] animate-in fade-in duration-500 fill-mode-both"
+              className={cn(
+                "text-[13px] animate-in fade-in duration-500 fill-mode-both",
+                effectsEnabled ? secondaryText : "text-muted-foreground"
+              )}
               style={{ animationDelay: "300ms" }}
             >
               Updated {formatRelativeTime(updatedAt, locale)}
