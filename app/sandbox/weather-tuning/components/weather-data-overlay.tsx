@@ -1,7 +1,13 @@
 "use client";
 
+import { useState, useEffect, useRef, useCallback } from "react";
 import { cn } from "@/lib/ui/cn";
 import type { WeatherCondition } from "@/components/tool-ui/weather-widget/schema";
+import {
+  getSceneBrightnessFromTimeOfDay,
+  getWeatherTheme,
+  type WeatherTheme,
+} from "@/components/tool-ui/weather-widget/effects";
 import {
   Sun,
   Cloud,
@@ -14,9 +20,33 @@ import {
   CloudHail,
   Wind,
   Droplets,
-  Eye,
   type LucideIcon,
 } from "lucide-react";
+
+function getPeakIntensity(timeOfDay: number): number {
+  const noonDistance = Math.abs(timeOfDay - 0.5);
+  const midnightDistance = Math.min(timeOfDay, 1 - timeOfDay);
+  const minDistance = Math.min(noonDistance, midnightDistance);
+  return Math.max(0, 1 - minDistance * 4);
+}
+
+function sineEasedGradient(
+  x: number,
+  y: number,
+  radius: number,
+  peakOpacity: number,
+  steps = 8
+): string {
+  const stops: string[] = [];
+  for (let i = 0; i <= steps; i++) {
+    const t = i / steps;
+    const eased = Math.sin((t * Math.PI) / 2);
+    const opacity = peakOpacity * (1 - eased);
+    const position = t * 100;
+    stops.push(`rgba(255,255,255,${opacity.toFixed(4)}) ${position.toFixed(1)}%`);
+  }
+  return `radial-gradient(circle ${radius}px at ${x}px ${y}px, ${stops.join(', ')})`;
+}
 
 const conditionIcons: Record<WeatherCondition, LucideIcon> = {
   clear: Sun,
@@ -34,21 +64,6 @@ const conditionIcons: Record<WeatherCondition, LucideIcon> = {
   windy: Wind,
 };
 
-const conditionLabels: Record<WeatherCondition, string> = {
-  clear: "Clear",
-  "partly-cloudy": "Partly Cloudy",
-  cloudy: "Cloudy",
-  overcast: "Overcast",
-  fog: "Foggy",
-  drizzle: "Drizzle",
-  rain: "Rain",
-  "heavy-rain": "Heavy Rain",
-  thunderstorm: "Thunderstorm",
-  snow: "Snow",
-  sleet: "Sleet",
-  hail: "Hail",
-  windy: "Windy",
-};
 
 interface ForecastDay {
   day: string;
@@ -68,6 +83,7 @@ interface WeatherDataOverlayProps {
   visibility?: number;
   forecast?: ForecastDay[];
   unit?: "celsius" | "fahrenheit";
+  timeOfDay?: number;
   className?: string;
 }
 
@@ -82,146 +98,249 @@ export function WeatherDataOverlay({
   visibility = 10,
   forecast = [],
   unit = "fahrenheit",
+  timeOfDay = 0.5,
   className,
 }: WeatherDataOverlayProps) {
-  const ConditionIcon = conditionIcons[condition];
-  const conditionLabel = conditionLabels[condition];
+  const [theme, setTheme] = useState<WeatherTheme>("dark");
+  const [glowState, setGlowState] = useState<{ x: number; y: number; intensity: number }>({ x: 0, y: 0, intensity: 0 });
+  const cardRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const brightness = getSceneBrightnessFromTimeOfDay(timeOfDay, condition);
+    const newTheme = getWeatherTheme(brightness, theme);
+    if (newTheme !== theme) {
+      setTheme(newTheme);
+    }
+  }, [timeOfDay, condition, theme]);
+
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    const handleMouseMove = (e: MouseEvent) => {
+      if (!cardRef.current) return;
+      const cardRect = cardRef.current.getBoundingClientRect();
+
+      const clampedX = Math.max(cardRect.left, Math.min(e.clientX, cardRect.right));
+      const clampedY = Math.max(cardRect.top, Math.min(e.clientY, cardRect.bottom));
+
+      const distanceX = e.clientX < cardRect.left ? cardRect.left - e.clientX :
+                        e.clientX > cardRect.right ? e.clientX - cardRect.right : 0;
+      const distanceY = e.clientY < cardRect.top ? cardRect.top - e.clientY :
+                        e.clientY > cardRect.bottom ? e.clientY - cardRect.bottom : 0;
+      const distance = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
+
+      const maxDistance = 150;
+      const intensity = Math.max(0, 1 - distance / maxDistance);
+
+      setGlowState({
+        x: clampedX - cardRect.left,
+        y: clampedY - cardRect.top,
+        intensity,
+      });
+    };
+
+    const handleMouseLeave = () => {
+      setGlowState(prev => ({ ...prev, intensity: 0 }));
+    };
+
+    container.addEventListener('mousemove', handleMouseMove);
+    container.addEventListener('mouseleave', handleMouseLeave);
+
+    return () => {
+      container.removeEventListener('mousemove', handleMouseMove);
+      container.removeEventListener('mouseleave', handleMouseLeave);
+    };
+  }, []);
+
   const unitSymbol = unit === "celsius" ? "C" : "F";
+  const peakIntensity = getPeakIntensity(timeOfDay);
+
+  const isDark = theme === "dark";
+  const textPrimary = isDark ? "text-white" : "text-black";
+  const textSecondary = isDark ? "text-white/80" : "text-black/80";
+  const textMuted = isDark ? "text-white/50" : "text-black/50";
+  const textSubtle = isDark ? "text-white/40" : "text-black/40";
+
+  const baseBgOpacity = isDark ? 0.04 : 0.04;
+  const baseBorderOpacity = isDark ? 0.03 : 0.15;
+  const bgOpacity = baseBgOpacity * (1 - peakIntensity * 0.7);
+  const borderOpacity = baseBorderOpacity + peakIntensity * 0.02;
+  const midnightDistance = Math.min(timeOfDay, 1 - timeOfDay);
+  const baseBlur = isDark ? 2 + midnightDistance * 38 : 24;
+  const blurAmount = isDark ? baseBlur : baseBlur - peakIntensity * (baseBlur - 8);
+
+  // Dawn intensity peaks around timeOfDay 0.2-0.3 (morning transition)
+  const isDawn = timeOfDay > 0.1 && timeOfDay < 0.4;
+  const dawnIntensity = isDawn ? 1 - Math.abs(timeOfDay - 0.25) * 4 : 0;
+  const forecastTextShadow = dawnIntensity > 0
+    ? `0 0.5px 1px rgba(0,0,0,${(dawnIntensity * 0.4).toFixed(2)})`
+    : undefined;
+
+  const shadowStyle = isDark
+    ? "0 1px 8px rgba(0,0,0,0.3)"
+    : "0 1px 8px rgba(255,255,255,0.3)";
 
   return (
     <div
+      ref={containerRef}
       className={cn(
-        "pointer-events-none absolute inset-0 z-10 flex flex-col justify-between p-4",
+        "pointer-events-auto absolute inset-0 z-10 flex select-none flex-col p-4",
         className
       )}
     >
-      {/* Top row - Location & Condition */}
-      <div className="flex items-start justify-between">
-        <div className="flex flex-col">
-          <span
-            className="text-[9px] font-semibold uppercase tracking-[0.25em] text-white/40"
-            style={{ fontFamily: "system-ui, sans-serif" }}
-          >
-            Location
-          </span>
-          <h2
-            className="text-[15px] font-medium tracking-tight text-white drop-shadow-md"
-            style={{
-              fontFamily: '"SF Pro Display", system-ui, sans-serif',
-              textShadow: "0 1px 8px rgba(0,0,0,0.3)",
-            }}
-          >
-            {location}
-          </h2>
-        </div>
+      {/* Top-left: Location - small, unobtrusive */}
+      <h2
+        className={cn("text-[15px] font-light tracking-tight", textSecondary)}
+        style={{
+          fontFamily: '"SF Pro Display", system-ui, sans-serif',
+          textShadow: shadowStyle,
+        }}
+      >
+        {location}
+      </h2>
 
-        <div className="flex items-center gap-1.5 rounded-full bg-white/[0.12] px-2.5 py-1 backdrop-blur-xl border border-white/[0.08]">
-          <ConditionIcon className="size-3.5 text-white/90" strokeWidth={1.5} />
-          <span
-            className="text-[11px] font-medium text-white/90"
-            style={{ fontFamily: "system-ui, sans-serif" }}
-          >
-            {conditionLabel}
-          </span>
-        </div>
-      </div>
+      {/* Spacer - pushes content down, leaves room for celestial in top-right */}
+      <div className="flex-1" />
 
-      {/* Center - Hero Temperature */}
-      <div className="flex flex-col items-center justify-center -mt-4">
-        <div className="relative flex items-start">
-          <span
-            className="text-[80px] font-[200] leading-none tracking-[-0.04em] text-white"
-            style={{
-              fontFamily: '"SF Pro Display", "Helvetica Neue", system-ui, sans-serif',
-              fontFeatureSettings: '"tnum"',
-              textShadow: "0 2px 20px rgba(0,0,0,0.25)",
-            }}
-          >
-            {Math.round(temperature)}
-          </span>
-          <span
-            className="mt-3 text-[28px] font-[200] text-white/50"
-            style={{
-              fontFamily: '"SF Pro Display", system-ui, sans-serif',
-            }}
-          >
-            °{unitSymbol}
-          </span>
-        </div>
-
-        {/* High / Low */}
-        <div
-          className="mt-0.5 flex items-center gap-3"
-          style={{ fontFamily: "system-ui, sans-serif" }}
-        >
-          <span className="text-[13px] font-medium text-white/80">
-            H:{Math.round(tempHigh)}°
-          </span>
-          <div className="h-3 w-px bg-white/20" />
-          <span className="text-[13px] font-medium text-white/50">
-            L:{Math.round(tempLow)}°
-          </span>
-        </div>
-
-        {/* Quick stats */}
-        <div
-          className="mt-3 flex items-center gap-5"
-          style={{ fontFamily: "system-ui, sans-serif" }}
-        >
-          <div className="flex items-center gap-1.5">
-            <Droplets className="size-3 text-white/40" strokeWidth={1.5} />
-            <span className="text-[11px] font-medium tabular-nums text-white/60">
-              {humidity}%
+      {/* Bottom-left: Main weather data */}
+      <div className="flex flex-col gap-4">
+        {/* Hero temperature */}
+        <div className="flex flex-col items-start">
+          <div className="relative flex items-start">
+            <span
+              className={cn("text-[72px] font-[200] leading-none tracking-[-0.04em]", textPrimary)}
+              style={{
+                fontFamily: '"SF Pro Display", "Helvetica Neue", system-ui, sans-serif',
+                fontFeatureSettings: '"tnum"',
+                textShadow: isDark ? "0 2px 20px rgba(0,0,0,0.25)" : "0 2px 20px rgba(255,255,255,0.3)",
+              }}
+            >
+              {Math.round(temperature)}
+            </span>
+            <span
+              className={cn("mt-2 text-[28px] font-[200]", textMuted)}
+              style={{
+                fontFamily: '"SF Pro Display", system-ui, sans-serif',
+              }}
+            >
+              °{unitSymbol}
             </span>
           </div>
-          <div className="flex items-center gap-1.5">
-            <Wind className="size-3 text-white/40" strokeWidth={1.5} />
-            <span className="text-[11px] font-medium tabular-nums text-white/60">
-              {windSpeed} mph
-            </span>
-          </div>
-          <div className="flex items-center gap-1.5">
-            <Eye className="size-3 text-white/40" strokeWidth={1.5} />
-            <span className="text-[11px] font-medium tabular-nums text-white/60">
-              {visibility} mi
-            </span>
+
+          {/* High / Low range + Stats */}
+          <div
+            className="mt-2 flex items-center gap-5"
+            style={{ fontFamily: '"SF Pro Display", system-ui, sans-serif' }}
+          >
+            {/* Temperature range with gradient bar */}
+            <div className="flex items-center gap-2">
+              <span className={cn("text-[15px] font-light tabular-nums", textSecondary)}>
+                {Math.round(tempLow)}°
+              </span>
+              <div
+                className="h-[1.5px] w-12 rounded-full"
+                style={{
+                  background: isDark
+                    ? 'linear-gradient(90deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0.5) 100%)'
+                    : 'linear-gradient(90deg, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.4) 100%)'
+                }}
+              />
+              <span className={cn("text-[15px] font-normal tabular-nums", textPrimary)}>
+                {Math.round(tempHigh)}°
+              </span>
+            </div>
+
+            <div className={cn("h-3 w-px", isDark ? "bg-white/10" : "bg-black/10")} />
+
+            {/* Stats */}
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-1">
+                <Droplets className={cn("size-3", textSubtle)} strokeWidth={1.5} />
+                <span className={cn("text-[12px] font-light tabular-nums", textMuted)}>
+                  {humidity}%
+                </span>
+              </div>
+              <div className="flex items-center gap-1">
+                <Wind className={cn("size-3", textSubtle)} strokeWidth={1.5} />
+                <span className={cn("text-[12px] font-light tabular-nums", textMuted)}>
+                  {windSpeed} mph
+                </span>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* Bottom - Forecast strip */}
-      {forecast.length > 0 && (
-        <div className="rounded-xl bg-white/[0.08] backdrop-blur-xl border border-white/[0.06] p-2.5">
-          <div className="flex items-center justify-between">
-            {forecast.slice(0, 5).map((day, index) => {
-              const DayIcon = conditionIcons[day.condition];
-              return (
-                <div
-                  key={day.day}
-                  className={cn(
-                    "flex flex-1 flex-col items-center gap-0.5 py-0.5",
-                    index === 0 ? "opacity-100" : "opacity-60"
-                  )}
-                  style={{ fontFamily: "system-ui, sans-serif" }}
-                >
-                  <span className="text-[8px] font-semibold uppercase tracking-[0.1em] text-white/50">
-                    {index === 0 ? "Now" : day.day}
-                  </span>
-                  <DayIcon className="my-0.5 size-4 text-white/80" strokeWidth={1.5} />
-                  <div className="flex flex-col items-center leading-tight">
-                    <span className="text-[12px] font-medium tabular-nums text-white/95">
-                      {Math.round(day.tempMax)}°
+        {/* Forecast strip */}
+        {forecast.length > 0 && (
+          <div ref={cardRef} className="relative">
+            {/* Edge shine - outside overflow-hidden so it aligns with border */}
+            <div
+              className="pointer-events-none absolute inset-0 z-10 rounded-xl transition-opacity duration-300 ease-out"
+              style={{
+                opacity: glowState.intensity,
+                background: sineEasedGradient(glowState.x, glowState.y, 100, isDark ? 0.6 : 1),
+                mask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
+                maskComposite: 'exclude',
+                WebkitMaskComposite: 'xor',
+                padding: '1px',
+              }}
+            />
+            <div
+              className="relative overflow-hidden rounded-xl border p-3"
+              style={{
+                backgroundColor: isDark
+                  ? `rgba(255, 255, 255, ${bgOpacity})`
+                  : `rgba(0, 0, 0, ${bgOpacity})`,
+                borderColor: `rgba(255, 255, 255, ${borderOpacity})`,
+                backdropFilter: `blur(${blurAmount}px)`,
+                WebkitBackdropFilter: `blur(${blurAmount}px)`,
+              }}
+            >
+              {/* Inner glow */}
+              <div
+                className="pointer-events-none absolute inset-0 transition-opacity duration-300 ease-out mix-blend-color-dodge"
+                style={{
+                  opacity: glowState.intensity,
+                  background: sineEasedGradient(glowState.x, glowState.y, 120, isDark ? 0.06 : 0.15),
+                }}
+              />
+              <div className="relative flex items-center justify-between">
+              {forecast.slice(0, 5).map((day, index) => {
+                const DayIcon = conditionIcons[day.condition];
+                return (
+                  <div
+                    key={day.day}
+                    className={cn(
+                      "flex flex-1 flex-col items-center gap-0.5 py-0.5",
+                      index === 0 ? "opacity-100" : "opacity-60"
+                    )}
+                    style={{
+                      fontFamily: "system-ui, sans-serif",
+                      textShadow: forecastTextShadow,
+                    }}
+                  >
+                    <span className={cn("text-[10px] font-medium uppercase tracking-[0.1em]", textMuted)}>
+                      {index === 0 ? "Now" : day.day}
                     </span>
-                    <span className="text-[10px] tabular-nums text-white/40">
-                      {Math.round(day.tempMin)}°
-                    </span>
+                    <DayIcon className={cn("my-0.5 size-5", textSecondary)} strokeWidth={1.5} />
+                    <div className="flex flex-col items-center leading-tight">
+                      <span className={cn("text-[14px] font-normal tabular-nums", textPrimary)}>
+                        {Math.round(day.tempMax)}°
+                      </span>
+                      <span className={cn("text-[12px] font-light tabular-nums", textSubtle)}>
+                        {Math.round(day.tempMin)}°
+                      </span>
+                    </div>
                   </div>
-                </div>
-              );
-            })}
+                );
+              })}
+              </div>
+            </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }
