@@ -140,7 +140,7 @@ export default function WeatherTuningPage() {
           </div>
         </div>
 
-        <ExportPanel overrides={state.overrides} signedOff={state.signedOff} />
+        <ExportPanel checkpointOverrides={state.checkpointOverrides} signedOff={state.signedOff} />
       </header>
 
       <div className="relative z-10 flex min-h-0 flex-1">
@@ -185,6 +185,7 @@ export default function WeatherTuningPage() {
                   checkpoints={state.getConditionCheckpoints(
                     state.selectedCondition
                   )}
+                  activeEditCheckpoint={state.activeEditCheckpoint}
                   isSignedOff={state.signedOff.has(state.selectedCondition)}
                   expandedGroups={state.expandedGroups}
                   currentTime={state.globalTimeOfDay}
@@ -201,6 +202,13 @@ export default function WeatherTuningPage() {
                   onCompare={handleCompare}
                   onToggleWidgetOverlay={() =>
                     state.setShowWidgetOverlay(!state.showWidgetOverlay)
+                  }
+                  onCopyLayer={(sourceCondition, layerKey) =>
+                    state.copyLayerFromCondition(
+                      sourceCondition,
+                      state.selectedCondition!,
+                      layerKey
+                    )
                   }
                 />
               )

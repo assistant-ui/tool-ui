@@ -5,6 +5,7 @@ import type { WeatherCondition } from "@/components/tool-ui/weather-widget/schem
 import type {
   ConditionOverrides,
   FullCompositorParams,
+  CheckpointOverrides,
 } from "../../weather-compositor/presets";
 import {
   getBaseParamsForCondition,
@@ -13,6 +14,10 @@ import {
   loadFromStorage,
   saveToStorage,
 } from "../../weather-compositor/presets";
+import {
+  getInterpolatedOverrides,
+  getNearestCheckpoint,
+} from "../../weather-compositor/interpolation";
 import type { ConditionCheckpoints, CompareMode, TimeCheckpoint } from "../types";
 import { SESSION_KEY, DEFAULT_TIME_OF_DAY, TIME_CHECKPOINTS, TIME_CHECKPOINT_ORDER } from "../lib/constants";
 
@@ -48,11 +53,23 @@ function saveWorkflowState(
   }
 }
 
+function createEmptyCheckpointOverrides(): CheckpointOverrides {
+  return {
+    dawn: {},
+    noon: {},
+    dusk: {},
+    midnight: {},
+  };
+}
+
 export function useTuningState() {
-  const [overrides, setOverrides] = useState<
-    Partial<Record<WeatherCondition, ConditionOverrides>>
+  const [checkpointOverrides, setCheckpointOverrides] = useState<
+    Partial<Record<WeatherCondition, CheckpointOverrides>>
   >({});
   const [globalTimeOfDay, setGlobalTimeOfDay] = useState(DEFAULT_TIME_OF_DAY);
+  const [activeEditCheckpoint, setActiveEditCheckpoint] = useState<TimeCheckpoint>(
+    () => getNearestCheckpoint(DEFAULT_TIME_OF_DAY)
+  );
   const [selectedCondition, setSelectedCondition] =
     useState<WeatherCondition | null>("clear");
   const [expandedGroups, setExpandedGroups] = useState<Set<string>>(
@@ -74,8 +91,9 @@ export function useTuningState() {
   useEffect(() => {
     const compositorState = loadFromStorage();
     if (compositorState) {
-      setOverrides(compositorState.overrides);
+      setCheckpointOverrides(compositorState.checkpointOverrides);
       setGlobalTimeOfDay(compositorState.globalSettings.timeOfDay);
+      setActiveEditCheckpoint(getNearestCheckpoint(compositorState.globalSettings.timeOfDay));
     }
 
     const workflowState = loadWorkflowState();
@@ -91,11 +109,12 @@ export function useTuningState() {
     if (!isHydrated) return;
 
     saveToStorage({
+      version: 2,
       activeCondition: selectedCondition ?? "clear",
       globalSettings: { timeOfDay: globalTimeOfDay },
-      overrides,
+      checkpointOverrides,
     });
-  }, [overrides, globalTimeOfDay, selectedCondition, isHydrated]);
+  }, [checkpointOverrides, globalTimeOfDay, selectedCondition, isHydrated]);
 
   useEffect(() => {
     if (!isHydrated) return;
@@ -106,9 +125,7 @@ export function useTuningState() {
   useEffect(() => {
     if (!selectedCondition) return;
 
-    const base = getBaseParamsForCondition(selectedCondition);
-    const conditionOverrides = overrides[selectedCondition];
-    const params = mergeWithOverrides(base, conditionOverrides);
+    const params = getParamsForCondition(selectedCondition);
 
     const groups = new Set<string>();
     if (params.layers.celestial) groups.add("celestial");
@@ -130,16 +147,36 @@ export function useTuningState() {
     return date.toISOString();
   }, []);
 
+  const getBaseParamsForCheckpoint = useCallback(
+    (condition: WeatherCondition, checkpoint: TimeCheckpoint): FullCompositorParams => {
+      const checkpointTime = TIME_CHECKPOINTS[checkpoint].value;
+      const timestamp = getTimestamp(checkpointTime);
+      const base = getBaseParamsForCondition(condition, timestamp);
+      base.celestial.timeOfDay = checkpointTime;
+      return base;
+    },
+    [getTimestamp]
+  );
+
   const getParamsForCondition = useCallback(
     (condition: WeatherCondition): FullCompositorParams => {
       const timestamp = getTimestamp(globalTimeOfDay);
       const base = getBaseParamsForCondition(condition, timestamp);
-      const conditionOverrides = overrides[condition];
-      const merged = mergeWithOverrides(base, conditionOverrides);
+      const conditionCheckpointOverrides = checkpointOverrides[condition];
+
+      const getBaseForCheckpoint = (checkpoint: TimeCheckpoint) =>
+        getBaseParamsForCheckpoint(condition, checkpoint);
+
+      const interpolatedOverrides = getInterpolatedOverrides(
+        conditionCheckpointOverrides,
+        globalTimeOfDay,
+        getBaseForCheckpoint
+      );
+      const merged = mergeWithOverrides(base, interpolatedOverrides);
       merged.celestial.timeOfDay = globalTimeOfDay;
       return merged;
     },
-    [overrides, globalTimeOfDay, getTimestamp]
+    [checkpointOverrides, globalTimeOfDay, getTimestamp, getBaseParamsForCheckpoint]
   );
 
   const getBaseParams = useCallback(
@@ -152,27 +189,33 @@ export function useTuningState() {
     [globalTimeOfDay, getTimestamp]
   );
 
-  const updateOverrides = useCallback(
-    (condition: WeatherCondition, newOverrides: ConditionOverrides) => {
-      setOverrides((prev) => ({
-        ...prev,
-        [condition]: newOverrides,
-      }));
+  const updateCheckpointOverrides = useCallback(
+    (condition: WeatherCondition, checkpoint: TimeCheckpoint, newOverrides: ConditionOverrides) => {
+      setCheckpointOverrides((prev) => {
+        const existing = prev[condition] ?? createEmptyCheckpointOverrides();
+        return {
+          ...prev,
+          [condition]: {
+            ...existing,
+            [checkpoint]: newOverrides,
+          },
+        };
+      });
     },
     []
   );
 
   const updateParams = useCallback(
     (condition: WeatherCondition, newParams: FullCompositorParams) => {
-      const base = getBaseParams(condition);
+      const base = getBaseParamsForCheckpoint(condition, activeEditCheckpoint);
       const newOverrides = extractOverrides(newParams, base);
-      updateOverrides(condition, newOverrides);
+      updateCheckpointOverrides(condition, activeEditCheckpoint, newOverrides);
     },
-    [getBaseParams, updateOverrides]
+    [getBaseParamsForCheckpoint, activeEditCheckpoint, updateCheckpointOverrides]
   );
 
   const resetCondition = useCallback((condition: WeatherCondition) => {
-    setOverrides((prev) => {
+    setCheckpointOverrides((prev) => {
       const next = { ...prev };
       delete next[condition];
       return next;
@@ -188,6 +231,42 @@ export function useTuningState() {
       return next;
     });
   }, []);
+
+  type LayerKey = "layers" | "celestial" | "cloud" | "rain" | "lightning" | "snow";
+
+  const copyLayerFromCondition = useCallback(
+    (
+      sourceCondition: WeatherCondition,
+      targetCondition: WeatherCondition,
+      layerKey: LayerKey
+    ) => {
+      const sourceCheckpoints = checkpointOverrides[sourceCondition];
+      if (!sourceCheckpoints) return;
+
+      setCheckpointOverrides((prev) => {
+        const existing = prev[targetCondition] ?? createEmptyCheckpointOverrides();
+        const updated = { ...existing };
+
+        for (const checkpoint of TIME_CHECKPOINT_ORDER) {
+          const sourceOverrides = sourceCheckpoints[checkpoint];
+          const sourceLayerData = sourceOverrides?.[layerKey];
+
+          if (sourceLayerData && Object.keys(sourceLayerData).length > 0) {
+            updated[checkpoint] = {
+              ...updated[checkpoint],
+              [layerKey]: { ...sourceLayerData },
+            };
+          }
+        }
+
+        return {
+          ...prev,
+          [targetCondition]: updated,
+        };
+      });
+    },
+    [checkpointOverrides]
+  );
 
   const toggleGroup = useCallback((group: string) => {
     setExpandedGroups((prev) => {
@@ -205,18 +284,22 @@ export function useTuningState() {
 
   const getOverrideCount = useCallback(
     (condition: WeatherCondition): number => {
-      const conditionOverrides = overrides[condition];
-      if (!conditionOverrides) return 0;
+      const conditionCheckpointOverrides = checkpointOverrides[condition];
+      if (!conditionCheckpointOverrides) return 0;
 
       let count = 0;
-      for (const group of Object.values(conditionOverrides)) {
-        if (group && typeof group === "object") {
-          count += Object.keys(group).length;
+      for (const checkpoint of TIME_CHECKPOINT_ORDER) {
+        const checkpointData = conditionCheckpointOverrides[checkpoint];
+        if (!checkpointData) continue;
+        for (const group of Object.values(checkpointData)) {
+          if (group && typeof group === "object") {
+            count += Object.keys(group).length;
+          }
         }
       }
       return count;
     },
-    [overrides]
+    [checkpointOverrides]
   );
 
   const markCheckpointReviewed = useCallback(
@@ -244,6 +327,7 @@ export function useTuningState() {
     (condition: WeatherCondition, checkpoint: TimeCheckpoint) => {
       const { value } = TIME_CHECKPOINTS[checkpoint];
       setGlobalTimeOfDay(value);
+      setActiveEditCheckpoint(checkpoint);
       markCheckpointReviewed(condition, checkpoint);
     },
     [markCheckpointReviewed]
@@ -284,9 +368,11 @@ export function useTuningState() {
   );
 
   return {
-    overrides,
+    checkpointOverrides,
     globalTimeOfDay,
     setGlobalTimeOfDay,
+    activeEditCheckpoint,
+    setActiveEditCheckpoint,
     selectedCondition,
     setSelectedCondition,
     expandedGroups,
@@ -306,9 +392,11 @@ export function useTuningState() {
 
     getParamsForCondition,
     getBaseParams,
-    updateOverrides,
+    getBaseParamsForCheckpoint,
+    updateCheckpointOverrides,
     updateParams,
     resetCondition,
+    copyLayerFromCondition,
     getOverrideCount,
     markCheckpointReviewed,
     goToCheckpoint,

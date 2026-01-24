@@ -22,9 +22,12 @@ import {
   exportToFile,
   importFromFile,
   type FullCompositorParams,
-  type ConditionOverrides,
+  type CheckpointOverrides,
   type GlobalSettings,
 } from "./presets";
+import { getInterpolatedOverrides, getNearestCheckpoint } from "./interpolation";
+import { TIME_CHECKPOINTS } from "../weather-tuning/lib/constants";
+import type { TimeCheckpoint } from "../weather-tuning/types";
 
 function formatTimeLabel(timeOfDay: number): string {
   const totalMinutes = timeOfDay * 24 * 60;
@@ -77,11 +80,15 @@ const DEFAULT_GLOBAL_SETTINGS: GlobalSettings = {
   timeOfDay: 0.5,
 };
 
+function createEmptyCheckpointOverrides(): CheckpointOverrides {
+  return { dawn: {}, noon: {}, dusk: {}, midnight: {} };
+}
+
 export default function WeatherCompositorSandbox() {
   const [isMounted, setIsMounted] = useState(false);
   const [activeCondition, setActiveCondition] = useState<WeatherCondition>("clear");
   const [globalSettings, setGlobalSettings] = useState<GlobalSettings>(DEFAULT_GLOBAL_SETTINGS);
-  const [overrides, setOverrides] = useState<Partial<Record<WeatherCondition, ConditionOverrides>>>({});
+  const [checkpointOverrides, setCheckpointOverrides] = useState<Partial<Record<WeatherCondition, CheckpointOverrides>>>({});
   const [previewMode, setPreviewMode] = useState<"layers" | "widget" | "unified">("layers");
   const isInitializing = useRef(true);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -92,18 +99,30 @@ export default function WeatherCompositorSandbox() {
     if (stored) {
       setActiveCondition(stored.activeCondition);
       setGlobalSettings(stored.globalSettings ?? DEFAULT_GLOBAL_SETTINGS);
-      setOverrides(stored.overrides);
+      setCheckpointOverrides(stored.checkpointOverrides);
     }
     setTimeout(() => {
       isInitializing.current = false;
     }, 100);
   }, []);
 
+  const getBaseForCheckpoint = useCallback(
+    (checkpoint: TimeCheckpoint) => {
+      const checkpointTime = TIME_CHECKPOINTS[checkpoint].value;
+      return getBaseParamsForCondition(activeCondition, new Date(Date.now()).toISOString().replace(/T\d{2}:\d{2}/, `T${String(Math.floor(checkpointTime * 24)).padStart(2, '0')}:${String(Math.floor((checkpointTime * 24 % 1) * 60)).padStart(2, '0')}`));
+    },
+    [activeCondition]
+  );
+
   const baseParams = useMemo(
     () => getBaseParamsForCondition(activeCondition),
     [activeCondition]
   );
-  const currentOverrides = overrides[activeCondition];
+  const currentConditionCheckpoints = checkpointOverrides[activeCondition];
+  const currentOverrides = useMemo(
+    () => getInterpolatedOverrides(currentConditionCheckpoints, globalSettings.timeOfDay, getBaseForCheckpoint),
+    [currentConditionCheckpoints, globalSettings.timeOfDay, getBaseForCheckpoint]
+  );
   const mergedParams = useMemo(
     () => mergeWithOverrides(baseParams, currentOverrides),
     [baseParams, currentOverrides]
@@ -142,6 +161,9 @@ export default function WeatherCompositorSandbox() {
     sunRayIntensity: { value: mergedParams.celestial.sunRayIntensity, min: 0, max: 3, step: 0.05, label: "Sun Ray Intensity" },
     moonGlowIntensity: { value: mergedParams.celestial.moonGlowIntensity, min: 0, max: 5, step: 0.05, label: "Moon Glow" },
     moonGlowSize: { value: mergedParams.celestial.moonGlowSize, min: 0.05, max: 1.5, step: 0.02, label: "Moon Glow Size" },
+    skyBrightness: { value: mergedParams.celestial.skyBrightness, min: 0, max: 2, step: 0.05, label: "Sky Brightness" },
+    skySaturation: { value: mergedParams.celestial.skySaturation, min: 0, max: 2, step: 0.05, label: "Sky Saturation" },
+    skyContrast: { value: mergedParams.celestial.skyContrast, min: 0, max: 1, step: 0.05, label: "Sky Contrast" },
   }), [activeCondition]);
 
   const [cloud, setCloud] = useControls("Clouds", () => ({
@@ -229,33 +251,55 @@ export default function WeatherCompositorSandbox() {
 
     const newOverrides = extractOverrides(debouncedParams, baseParams);
     const hasChanges = Object.keys(newOverrides).length > 0;
+    const activeCheckpoint = getNearestCheckpoint(globalSettings.timeOfDay);
 
-    setOverrides(prev => {
-      const updated = { ...prev };
+    setCheckpointOverrides(prev => {
+      const existing = prev[activeCondition] ?? createEmptyCheckpointOverrides();
       if (hasChanges) {
-        updated[activeCondition] = newOverrides;
+        return {
+          ...prev,
+          [activeCondition]: {
+            ...existing,
+            [activeCheckpoint]: newOverrides,
+          },
+        };
       } else {
-        delete updated[activeCondition];
+        const updated = {
+          ...existing,
+          [activeCheckpoint]: {},
+        };
+        const allEmpty = Object.values(updated).every(
+          (o) => Object.keys(o).length === 0
+        );
+        if (allEmpty) {
+          const next = { ...prev };
+          delete next[activeCondition];
+          return next;
+        }
+        return { ...prev, [activeCondition]: updated };
       }
-      return updated;
     });
-  }, [debouncedParams, activeCondition, baseParams, isMounted]);
+  }, [debouncedParams, activeCondition, baseParams, isMounted, globalSettings.timeOfDay]);
 
-  const stateToSave = useDebounce({ activeCondition, globalSettings, overrides }, 500);
+  const stateToSave = useDebounce({ activeCondition, globalSettings, checkpointOverrides }, 500);
 
   useEffect(() => {
     if (!isMounted || isInitializing.current) return;
-    saveToStorage(stateToSave);
+    saveToStorage({ version: 2, ...stateToSave });
   }, [stateToSave, isMounted]);
 
   const handleConditionChange = useCallback((condition: WeatherCondition) => {
     setActiveCondition(condition);
     const newBase = getBaseParamsForCondition(condition);
-    const existingOverrides = overrides[condition];
-    const merged = mergeWithOverrides(newBase, existingOverrides);
+    const existingCheckpoints = checkpointOverrides[condition];
+    const getBaseForNewCondition = (checkpoint: TimeCheckpoint) => {
+      const checkpointTime = TIME_CHECKPOINTS[checkpoint].value;
+      return getBaseParamsForCondition(condition, new Date(Date.now()).toISOString().replace(/T\d{2}:\d{2}/, `T${String(Math.floor(checkpointTime * 24)).padStart(2, '0')}:${String(Math.floor((checkpointTime * 24 % 1) * 60)).padStart(2, '0')}`));
+    };
+    const interpolatedOverrides = getInterpolatedOverrides(existingCheckpoints, globalSettings.timeOfDay, getBaseForNewCondition);
+    const merged = mergeWithOverrides(newBase, interpolatedOverrides);
 
     setLayers(merged.layers);
-    // Don't reset timeOfDay - it's global
     setCelestial({
       moonPhase: merged.celestial.moonPhase,
       starDensity: merged.celestial.starDensity,
@@ -275,11 +319,11 @@ export default function WeatherCompositorSandbox() {
     setRain(merged.rain);
     setLightning(merged.lightning);
     setSnow(merged.snow);
-  }, [overrides, setLayers, setCelestial, setCloud, setRain, setLightning, setSnow]);
+  }, [checkpointOverrides, globalSettings.timeOfDay, setLayers, setCelestial, setCloud, setRain, setLightning, setSnow]);
 
   const handleExport = useCallback(() => {
-    exportToFile({ activeCondition, globalSettings, overrides });
-  }, [activeCondition, globalSettings, overrides]);
+    exportToFile({ version: 2, activeCondition, globalSettings, checkpointOverrides });
+  }, [activeCondition, globalSettings, checkpointOverrides]);
 
   const handleImport = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -289,7 +333,7 @@ export default function WeatherCompositorSandbox() {
       const imported = await importFromFile(file);
       setActiveCondition(imported.activeCondition);
       setGlobalSettings(imported.globalSettings ?? DEFAULT_GLOBAL_SETTINGS);
-      setOverrides(imported.overrides);
+      setCheckpointOverrides(imported.checkpointOverrides);
       setGlobal({ timeOfDay: imported.globalSettings?.timeOfDay ?? 0.5 });
       handleConditionChange(imported.activeCondition);
     } catch (err) {
@@ -302,7 +346,7 @@ export default function WeatherCompositorSandbox() {
   }, [handleConditionChange, setGlobal]);
 
   const handleReset = useCallback(() => {
-    setOverrides(prev => {
+    setCheckpointOverrides(prev => {
       const updated = { ...prev };
       delete updated[activeCondition];
       return updated;
@@ -357,7 +401,7 @@ export default function WeatherCompositorSandbox() {
               key={condition}
               condition={condition}
               isActive={condition === activeCondition}
-              hasOverrides={overrides[condition] !== undefined}
+              hasOverrides={checkpointOverrides[condition] !== undefined}
               onClick={() => handleConditionChange(condition)}
             />
           ))}

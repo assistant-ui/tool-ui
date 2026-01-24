@@ -12,11 +12,14 @@ import { ParameterPanel } from "./parameter-panel";
 import { TIME_CHECKPOINT_ORDER, TIME_CHECKPOINTS } from "../lib/constants";
 import type { ConditionCheckpoints, TimeCheckpoint } from "../types";
 
+type LayerKey = "layers" | "celestial" | "cloud" | "rain" | "lightning" | "snow";
+
 interface DetailEditorProps {
   condition: WeatherCondition;
   params: FullCompositorParams;
   baseParams: FullCompositorParams;
   checkpoints?: ConditionCheckpoints;
+  activeEditCheckpoint: TimeCheckpoint;
   isSignedOff: boolean;
   expandedGroups: Set<string>;
   currentTime: number;
@@ -28,6 +31,7 @@ interface DetailEditorProps {
   onCheckpointClick: (checkpoint: TimeCheckpoint) => void;
   onCompare: () => void;
   onToggleWidgetOverlay: () => void;
+  onCopyLayer?: (sourceCondition: WeatherCondition, layerKey: LayerKey) => void;
 }
 
 function mapParamsToCanvasProps(params: FullCompositorParams) {
@@ -48,6 +52,9 @@ function mapParamsToCanvasProps(params: FullCompositorParams) {
       sunRayIntensity: params.celestial.sunRayIntensity,
       moonGlowIntensity: params.celestial.moonGlowIntensity,
       moonGlowSize: params.celestial.moonGlowSize,
+      skyBrightness: params.celestial.skyBrightness,
+      skySaturation: params.celestial.skySaturation,
+      skyContrast: params.celestial.skyContrast,
     },
     cloud: {
       coverage: params.cloud.coverage,
@@ -94,6 +101,7 @@ export function DetailEditor({
   params,
   baseParams,
   checkpoints,
+  activeEditCheckpoint,
   isSignedOff,
   expandedGroups,
   currentTime,
@@ -105,6 +113,7 @@ export function DetailEditor({
   onCheckpointClick,
   onCompare,
   onToggleWidgetOverlay,
+  onCopyLayer,
 }: DetailEditorProps) {
   const canvasProps = useMemo(() => mapParamsToCanvasProps(params), [params]);
   const label = CONDITION_LABELS[condition];
@@ -194,6 +203,7 @@ export function DetailEditor({
               const status = checkpoints?.[checkpoint] ?? "pending";
               const isActive = Math.abs(currentTime - value) < 0.02;
               const isReviewed = status === "reviewed";
+              const isEditing = checkpoint === activeEditCheckpoint;
 
               return (
                 <button
@@ -201,27 +211,38 @@ export function DetailEditor({
                   onClick={() => onCheckpointClick(checkpoint)}
                   className={cn(
                     "group relative flex flex-col items-center gap-1 rounded-md border py-2 transition-all",
-                    isActive
-                      ? "border-foreground/20 bg-accent/80"
-                      : isReviewed
-                        ? "border-green-500/20 bg-green-500/5 hover:bg-green-500/10"
-                        : "border-border/30 bg-muted/20 hover:bg-accent/40"
+                    isEditing
+                      ? "border-blue-500/40 bg-blue-500/10 ring-1 ring-blue-500/20"
+                      : isActive
+                        ? "border-foreground/20 bg-accent/80"
+                        : isReviewed
+                          ? "border-green-500/20 bg-green-500/5 hover:bg-green-500/10"
+                          : "border-border/30 bg-muted/20 hover:bg-accent/40"
                   )}
-                  title={`${label} (${status})`}
+                  title={`${label} (${status})${isEditing ? " - editing" : ""}`}
                 >
                   <span className="text-base">{emoji}</span>
                   <span
                     className={cn(
                       "text-[8px] font-medium uppercase tracking-wider",
-                      isActive
-                        ? "text-foreground/70"
-                        : isReviewed
-                          ? "text-green-600/60 dark:text-green-400/60"
-                          : "text-muted-foreground/40"
+                      isEditing
+                        ? "text-blue-600/80 dark:text-blue-400/80"
+                        : isActive
+                          ? "text-foreground/70"
+                          : isReviewed
+                            ? "text-green-600/60 dark:text-green-400/60"
+                            : "text-muted-foreground/40"
                     )}
                   >
                     {checkpoint}
                   </span>
+                  {isEditing && (
+                    <div className="absolute left-1 top-1">
+                      <span className="rounded bg-blue-500/80 px-1 py-0.5 text-[6px] font-bold text-white">
+                        E
+                      </span>
+                    </div>
+                  )}
                   {isReviewed && (
                     <div className="absolute right-1 top-1">
                       <CheckCircle2 className="size-2.5 text-green-600/50 dark:text-green-400/50" />
@@ -278,6 +299,9 @@ export function DetailEditor({
             onParamsChange={onParamsChange}
             expandedGroups={expandedGroups}
             onToggleGroup={onToggleGroup}
+            activeEditCheckpoint={activeEditCheckpoint}
+            currentCondition={condition}
+            onCopyLayer={onCopyLayer}
           />
         </div>
       </div>

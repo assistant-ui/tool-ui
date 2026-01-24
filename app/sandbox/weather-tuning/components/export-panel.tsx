@@ -12,17 +12,17 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Download, FileJson, FileCode, Check } from "lucide-react";
 import type { WeatherCondition } from "@/components/tool-ui/weather-widget/schema";
-import type { ConditionOverrides } from "../../weather-compositor/presets";
+import type { CheckpointOverrides } from "../../weather-compositor/presets";
 import { useCodeGen } from "../hooks/use-code-gen";
 
 interface ExportPanelProps {
-  overrides: Partial<Record<WeatherCondition, ConditionOverrides>>;
+  checkpointOverrides: Partial<Record<WeatherCondition, CheckpointOverrides>>;
   signedOff: Set<WeatherCondition>;
 }
 
-export function ExportPanel({ overrides, signedOff }: ExportPanelProps) {
+export function ExportPanel({ checkpointOverrides, signedOff }: ExportPanelProps) {
   const [copied, setCopied] = useState<string | null>(null);
-  const { copyToClipboard, downloadFile } = useCodeGen(overrides, signedOff);
+  const { copyToClipboard, downloadFile } = useCodeGen(checkpointOverrides, signedOff);
 
   const handleCopy = async (
     format: "json-overrides" | "json-full" | "typescript"
@@ -38,7 +38,7 @@ export function ExportPanel({ overrides, signedOff }: ExportPanelProps) {
     downloadFile({ format, includeMetadata: format === "json-full" });
   };
 
-  const overrideCount = Object.keys(overrides).length;
+  const overrideCount = Object.keys(checkpointOverrides).length;
 
   return (
     <DropdownMenu>

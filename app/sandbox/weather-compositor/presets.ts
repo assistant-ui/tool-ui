@@ -59,6 +59,9 @@ export interface CelestialParams {
   sunRayIntensity: number;
   moonGlowIntensity: number;
   moonGlowSize: number;
+  skyBrightness: number;
+  skySaturation: number;
+  skyContrast: number;
 }
 
 export interface CloudParams {
@@ -136,10 +139,24 @@ export interface GlobalSettings {
   timeOfDay: number;
 }
 
-export interface CompositorState {
+export interface CheckpointOverrides {
+  dawn: ConditionOverrides;
+  noon: ConditionOverrides;
+  dusk: ConditionOverrides;
+  midnight: ConditionOverrides;
+}
+
+export interface CompositorStateV1 {
   activeCondition: WeatherCondition;
   globalSettings: GlobalSettings;
   overrides: Partial<Record<WeatherCondition, ConditionOverrides>>;
+}
+
+export interface CompositorState {
+  version: 2;
+  activeCondition: WeatherCondition;
+  globalSettings: GlobalSettings;
+  checkpointOverrides: Partial<Record<WeatherCondition, CheckpointOverrides>>;
 }
 
 export interface FullCompositorParams {
@@ -193,6 +210,9 @@ export function getBaseParamsForCondition(
       sunRayIntensity: effectConfig.celestial?.sunRayIntensity ?? 0.4,
       moonGlowIntensity: effectConfig.celestial?.moonGlowIntensity ?? 1.0,
       moonGlowSize: effectConfig.celestial?.moonGlowSize ?? 0.2,
+      skyBrightness: 1.0,
+      skySaturation: 1.0,
+      skyContrast: 1.0,
     },
     cloud: {
       cloudScale: 1.5,
@@ -316,12 +336,68 @@ function diffObjects<T extends object>(
 
 const STORAGE_KEY = "weather-compositor-state";
 
+function createEmptyCheckpointOverrides(): CheckpointOverrides {
+  return {
+    dawn: {},
+    noon: {},
+    dusk: {},
+    midnight: {},
+  };
+}
+
+function migrateV1ToV2(v1: CompositorStateV1): CompositorState {
+  const checkpointOverrides: Partial<Record<WeatherCondition, CheckpointOverrides>> = {};
+
+  for (const [condition, override] of Object.entries(v1.overrides)) {
+    if (override && Object.keys(override).length > 0) {
+      checkpointOverrides[condition as WeatherCondition] = {
+        dawn: structuredClone(override),
+        noon: structuredClone(override),
+        dusk: structuredClone(override),
+        midnight: structuredClone(override),
+      };
+    }
+  }
+
+  return {
+    version: 2,
+    activeCondition: v1.activeCondition,
+    globalSettings: v1.globalSettings,
+    checkpointOverrides,
+  };
+}
+
+function isV1State(state: unknown): state is CompositorStateV1 {
+  if (!state || typeof state !== "object") return false;
+  const s = state as Record<string, unknown>;
+  return s.version === undefined && "overrides" in s;
+}
+
+function isV2State(state: unknown): state is CompositorState {
+  if (!state || typeof state !== "object") return false;
+  const s = state as Record<string, unknown>;
+  return s.version === 2 && "checkpointOverrides" in s;
+}
+
 export function loadFromStorage(): CompositorState | null {
   if (typeof window === "undefined") return null;
   try {
     const stored = localStorage.getItem(STORAGE_KEY);
     if (!stored) return null;
-    return JSON.parse(stored) as CompositorState;
+
+    const parsed = JSON.parse(stored);
+
+    if (isV2State(parsed)) {
+      return parsed;
+    }
+
+    if (isV1State(parsed)) {
+      const migrated = migrateV1ToV2(parsed);
+      saveToStorage(migrated);
+      return migrated;
+    }
+
+    return null;
   } catch {
     return null;
   }
@@ -334,6 +410,13 @@ export function saveToStorage(state: CompositorState): void {
   } catch {
     console.warn("Failed to save compositor state to localStorage");
   }
+}
+
+export function getCheckpointOverridesForCondition(
+  state: CompositorState,
+  condition: WeatherCondition
+): CheckpointOverrides {
+  return state.checkpointOverrides[condition] ?? createEmptyCheckpointOverrides();
 }
 
 export function exportToFile(state: CompositorState): void {
@@ -352,8 +435,19 @@ export function importFromFile(file: File): Promise<CompositorState> {
     const reader = new FileReader();
     reader.onload = (e) => {
       try {
-        const state = JSON.parse(e.target?.result as string) as CompositorState;
-        resolve(state);
+        const parsed = JSON.parse(e.target?.result as string);
+
+        if (isV2State(parsed)) {
+          resolve(parsed);
+          return;
+        }
+
+        if (isV1State(parsed)) {
+          resolve(migrateV1ToV2(parsed));
+          return;
+        }
+
+        reject(new Error("Invalid file format"));
       } catch {
         reject(new Error("Invalid JSON file"));
       }

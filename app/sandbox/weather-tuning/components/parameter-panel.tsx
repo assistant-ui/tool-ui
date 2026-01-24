@@ -7,9 +7,21 @@ import {
   AccordionContent,
 } from "@/components/ui/accordion";
 import { cn } from "@/lib/ui/cn";
-import { Sun, Cloud, CloudRain, Zap, Snowflake } from "lucide-react";
+import { Sun, Cloud, CloudRain, Zap, Snowflake, Pencil, Copy } from "lucide-react";
 import type { FullCompositorParams } from "../../weather-compositor/presets";
+import { WEATHER_CONDITIONS, CONDITION_LABELS } from "../../weather-compositor/presets";
 import { ParameterRow, ParameterToggleRow } from "./parameter-row";
+import type { TimeCheckpoint } from "../types";
+import type { WeatherCondition } from "@/components/tool-ui/weather-widget/schema";
+import { TIME_CHECKPOINTS } from "../lib/constants";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+
+type LayerKey = "layers" | "celestial" | "cloud" | "rain" | "lightning" | "snow";
 
 interface ParameterPanelProps {
   params: FullCompositorParams;
@@ -17,6 +29,9 @@ interface ParameterPanelProps {
   onParamsChange: (params: FullCompositorParams) => void;
   expandedGroups: Set<string>;
   onToggleGroup: (group: string) => void;
+  activeEditCheckpoint: TimeCheckpoint;
+  currentCondition?: WeatherCondition;
+  onCopyLayer?: (sourceCondition: WeatherCondition, layerKey: LayerKey) => void;
 }
 
 function countChanges<T extends object>(current: T, base: T): number {
@@ -50,13 +65,53 @@ const LAYER_CONFIG = {
   snow: { icon: Snowflake, label: "Snow", color: "from-slate-200 to-blue-300" },
 } as const;
 
+function CopyFromDropdown({
+  currentCondition,
+  onCopy,
+}: {
+  layerKey: LayerKey;
+  currentCondition: WeatherCondition;
+  onCopy: (sourceCondition: WeatherCondition) => void;
+}) {
+  const otherConditions = WEATHER_CONDITIONS.filter((c) => c !== currentCondition);
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <button
+          className="rounded p-1 text-muted-foreground/40 transition-colors hover:bg-accent/50 hover:text-muted-foreground"
+          title="Copy settings from another condition"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <Copy className="size-3" />
+        </button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="min-w-[140px]">
+        {otherConditions.map((condition) => (
+          <DropdownMenuItem
+            key={condition}
+            onClick={() => onCopy(condition)}
+            className="text-xs"
+          >
+            {CONDITION_LABELS[condition]}
+          </DropdownMenuItem>
+        ))}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}
+
 export function ParameterPanel({
   params,
   baseParams,
   onParamsChange,
   expandedGroups,
   onToggleGroup,
+  activeEditCheckpoint,
+  currentCondition,
+  onCopyLayer,
 }: ParameterPanelProps) {
+  const checkpointInfo = TIME_CHECKPOINTS[activeEditCheckpoint];
   const updateLayer = (key: keyof typeof params.layers, value: boolean) => {
     onParamsChange({
       ...params,
@@ -110,10 +165,16 @@ export function ParameterPanel({
   return (
     <div className="flex h-full flex-col">
       <div className="sticky top-0 z-10 border-b border-border/30 bg-card/80 px-3 py-2.5 backdrop-blur-xl">
-        <div className="mb-2">
+        <div className="mb-2 flex items-center justify-between">
           <span className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground/40">
             Layers
           </span>
+          <div className="flex items-center gap-1.5 rounded bg-blue-500/10 px-1.5 py-0.5">
+            <Pencil className="size-2.5 text-blue-500/70" />
+            <span className="text-[9px] font-medium text-blue-600/70 dark:text-blue-400/70">
+              Editing {checkpointInfo.label}
+            </span>
+          </div>
         </div>
         <div className="flex flex-wrap gap-1">
           {(["celestial", "clouds", "rain", "lightning", "snow"] as const).map((layer) => {
@@ -174,14 +235,23 @@ export function ParameterPanel({
       {params.layers.celestial && (
       <AccordionItem value="celestial" className="border-border/30">
         <AccordionTrigger className="py-2.5 text-xs text-muted-foreground hover:text-foreground hover:no-underline [&[data-state=open]>svg]:rotate-180">
-          <div className="flex items-center gap-2">
-            <div className="flex size-5 items-center justify-center rounded bg-gradient-to-br from-amber-500 to-orange-500">
-              <Sun className="size-3 text-white" />
+          <div className="flex flex-1 items-center justify-between">
+            <div className="flex items-center gap-2">
+              <div className="flex size-5 items-center justify-center rounded bg-gradient-to-br from-amber-500 to-orange-500">
+                <Sun className="size-3 text-white" />
+              </div>
+              <span>Celestial</span>
+              <DeltaBadge
+                count={countChanges(params.celestial, baseParams.celestial)}
+              />
             </div>
-            <span>Celestial</span>
-            <DeltaBadge
-              count={countChanges(params.celestial, baseParams.celestial)}
-            />
+            {currentCondition && onCopyLayer && (
+              <CopyFromDropdown
+                layerKey="celestial"
+                currentCondition={currentCondition}
+                onCopy={(source) => onCopyLayer(source, "celestial")}
+              />
+            )}
           </div>
         </AccordionTrigger>
         <AccordionContent>
@@ -350,6 +420,39 @@ export function ParameterPanel({
                 updateCelestial("moonGlowSize", baseParams.celestial.moonGlowSize)
               }
             />
+            <ParameterRow
+              label="Sky Brightness"
+              value={params.celestial.skyBrightness}
+              baseValue={baseParams.celestial.skyBrightness}
+              min={0}
+              max={2}
+              onChange={(v) => updateCelestial("skyBrightness", v)}
+              onReset={() =>
+                updateCelestial("skyBrightness", baseParams.celestial.skyBrightness)
+              }
+            />
+            <ParameterRow
+              label="Sky Saturation"
+              value={params.celestial.skySaturation}
+              baseValue={baseParams.celestial.skySaturation}
+              min={0}
+              max={2}
+              onChange={(v) => updateCelestial("skySaturation", v)}
+              onReset={() =>
+                updateCelestial("skySaturation", baseParams.celestial.skySaturation)
+              }
+            />
+            <ParameterRow
+              label="Sky Contrast"
+              value={params.celestial.skyContrast}
+              baseValue={baseParams.celestial.skyContrast}
+              min={0}
+              max={1}
+              onChange={(v) => updateCelestial("skyContrast", v)}
+              onReset={() =>
+                updateCelestial("skyContrast", baseParams.celestial.skyContrast)
+              }
+            />
           </div>
         </AccordionContent>
       </AccordionItem>
@@ -358,12 +461,21 @@ export function ParameterPanel({
       {params.layers.clouds && (
       <AccordionItem value="cloud" className="border-border/30">
         <AccordionTrigger className="py-2.5 text-xs text-muted-foreground hover:text-foreground hover:no-underline [&[data-state=open]>svg]:rotate-180">
-          <div className="flex items-center gap-2">
-            <div className="flex size-5 items-center justify-center rounded bg-gradient-to-br from-slate-400 to-slate-500">
-              <Cloud className="size-3 text-white" />
+          <div className="flex flex-1 items-center justify-between">
+            <div className="flex items-center gap-2">
+              <div className="flex size-5 items-center justify-center rounded bg-gradient-to-br from-slate-400 to-slate-500">
+                <Cloud className="size-3 text-white" />
+              </div>
+              <span>Clouds</span>
+              <DeltaBadge count={countChanges(params.cloud, baseParams.cloud)} />
             </div>
-            <span>Clouds</span>
-            <DeltaBadge count={countChanges(params.cloud, baseParams.cloud)} />
+            {currentCondition && onCopyLayer && (
+              <CopyFromDropdown
+                layerKey="cloud"
+                currentCondition={currentCondition}
+                onCopy={(source) => onCopyLayer(source, "cloud")}
+              />
+            )}
           </div>
         </AccordionTrigger>
         <AccordionContent>
@@ -382,7 +494,7 @@ export function ParameterPanel({
               value={params.cloud.density}
               baseValue={baseParams.cloud.density}
               min={0}
-              max={1}
+              max={1.5}
               onChange={(v) => updateCloud("density", v)}
               onReset={() => updateCloud("density", baseParams.cloud.density)}
             />
@@ -490,12 +602,21 @@ export function ParameterPanel({
       {params.layers.rain && (
       <AccordionItem value="rain" className="border-border/30">
         <AccordionTrigger className="py-2.5 text-xs text-muted-foreground hover:text-foreground hover:no-underline [&[data-state=open]>svg]:rotate-180">
-          <div className="flex items-center gap-2">
-            <div className="flex size-5 items-center justify-center rounded bg-gradient-to-br from-blue-500 to-cyan-500">
-              <CloudRain className="size-3 text-white" />
+          <div className="flex flex-1 items-center justify-between">
+            <div className="flex items-center gap-2">
+              <div className="flex size-5 items-center justify-center rounded bg-gradient-to-br from-blue-500 to-cyan-500">
+                <CloudRain className="size-3 text-white" />
+              </div>
+              <span>Rain</span>
+              <DeltaBadge count={countChanges(params.rain, baseParams.rain)} />
             </div>
-            <span>Rain</span>
-            <DeltaBadge count={countChanges(params.rain, baseParams.rain)} />
+            {currentCondition && onCopyLayer && (
+              <CopyFromDropdown
+                layerKey="rain"
+                currentCondition={currentCondition}
+                onCopy={(source) => onCopyLayer(source, "rain")}
+              />
+            )}
           </div>
         </AccordionTrigger>
         <AccordionContent>
@@ -587,14 +708,23 @@ export function ParameterPanel({
       {params.layers.lightning && (
       <AccordionItem value="lightning" className="border-border/30">
         <AccordionTrigger className="py-2.5 text-xs text-muted-foreground hover:text-foreground hover:no-underline [&[data-state=open]>svg]:rotate-180">
-          <div className="flex items-center gap-2">
-            <div className="flex size-5 items-center justify-center rounded bg-gradient-to-br from-purple-500 to-indigo-500">
-              <Zap className="size-3 text-white" />
+          <div className="flex flex-1 items-center justify-between">
+            <div className="flex items-center gap-2">
+              <div className="flex size-5 items-center justify-center rounded bg-gradient-to-br from-purple-500 to-indigo-500">
+                <Zap className="size-3 text-white" />
+              </div>
+              <span>Lightning</span>
+              <DeltaBadge
+                count={countChanges(params.lightning, baseParams.lightning)}
+              />
             </div>
-            <span>Lightning</span>
-            <DeltaBadge
-              count={countChanges(params.lightning, baseParams.lightning)}
-            />
+            {currentCondition && onCopyLayer && (
+              <CopyFromDropdown
+                layerKey="lightning"
+                currentCondition={currentCondition}
+                onCopy={(source) => onCopyLayer(source, "lightning")}
+              />
+            )}
           </div>
         </AccordionTrigger>
         <AccordionContent>
@@ -678,12 +808,21 @@ export function ParameterPanel({
       {params.layers.snow && (
       <AccordionItem value="snow" className="border-border/30">
         <AccordionTrigger className="py-2.5 text-xs text-muted-foreground hover:text-foreground hover:no-underline [&[data-state=open]>svg]:rotate-180">
-          <div className="flex items-center gap-2">
-            <div className="flex size-5 items-center justify-center rounded bg-gradient-to-br from-slate-200 to-blue-300">
-              <Snowflake className="size-3 text-slate-700" />
+          <div className="flex flex-1 items-center justify-between">
+            <div className="flex items-center gap-2">
+              <div className="flex size-5 items-center justify-center rounded bg-gradient-to-br from-slate-200 to-blue-300">
+                <Snowflake className="size-3 text-slate-700" />
+              </div>
+              <span>Snow</span>
+              <DeltaBadge count={countChanges(params.snow, baseParams.snow)} />
             </div>
-            <span>Snow</span>
-            <DeltaBadge count={countChanges(params.snow, baseParams.snow)} />
+            {currentCondition && onCopyLayer && (
+              <CopyFromDropdown
+                layerKey="snow"
+                currentCondition={currentCondition}
+                onCopy={(source) => onCopyLayer(source, "snow")}
+              />
+            )}
           </div>
         </AccordionTrigger>
         <AccordionContent>
