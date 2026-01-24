@@ -5,7 +5,7 @@ import { RotateCcw, Columns2, Eye, EyeOff, CheckCircle2 } from "lucide-react";
 import { cn } from "@/lib/ui/cn";
 import type { WeatherCondition } from "@/components/tool-ui/weather-widget/schema";
 import { WeatherEffectsCanvas } from "@/components/tool-ui/weather-widget/effects";
-import { WeatherWidget } from "@/components/tool-ui/weather-widget";
+import { WeatherDataOverlay } from "./weather-data-overlay";
 import { CONDITION_LABELS } from "../../weather-compositor/presets";
 import type { FullCompositorParams } from "../../weather-compositor/presets";
 import { ParameterPanel } from "./parameter-panel";
@@ -126,26 +126,24 @@ export function DetailEditor({
           </div>
 
           {showWidgetOverlay && (
-            <div className="relative z-10 flex h-full items-center justify-center p-6 [&_[data-slot=weather-widget]]:max-w-[260px] [&_article]:h-auto [&_[data-slot=card]]:border-0 [&_[data-slot=card]]:bg-black/40 [&_[data-slot=card]]:backdrop-blur-xl">
-              <WeatherWidget
-                id="tuning-preview"
-                location="San Francisco, CA"
-                current={{
-                  temp: 72,
-                  tempMin: 65,
-                  tempMax: 78,
-                  condition: condition,
-                }}
-                forecast={[
-                  { day: "Today", tempMin: 65, tempMax: 78, condition: condition },
-                  { day: "Tue", tempMin: 64, tempMax: 77, condition: "partly-cloudy" },
-                  { day: "Wed", tempMin: 62, tempMax: 75, condition: "cloudy" },
-                  { day: "Thu", tempMin: 60, tempMax: 73, condition: "rain" },
-                  { day: "Fri", tempMin: 63, tempMax: 76, condition: "clear" },
-                ]}
-                effects={{ enabled: false }}
-              />
-            </div>
+            <WeatherDataOverlay
+              location="San Francisco, CA"
+              condition={condition}
+              temperature={72}
+              tempHigh={78}
+              tempLow={65}
+              humidity={45}
+              windSpeed={8}
+              visibility={10}
+              forecast={[
+                { day: "Today", tempMin: 65, tempMax: 78, condition: condition },
+                { day: "Tue", tempMin: 64, tempMax: 77, condition: "partly-cloudy" },
+                { day: "Wed", tempMin: 62, tempMax: 75, condition: "cloudy" },
+                { day: "Thu", tempMin: 60, tempMax: 73, condition: "rain" },
+                { day: "Fri", tempMin: 63, tempMax: 76, condition: "clear" },
+              ]}
+              unit="fahrenheit"
+            />
           )}
 
           <div className="absolute bottom-2.5 left-2.5 right-2.5 z-20 flex items-center justify-between">
@@ -170,11 +168,13 @@ export function DetailEditor({
             </button>
           </div>
 
-          <div className="absolute left-2.5 top-2.5 z-20">
-            <div className="rounded bg-black/50 px-2 py-1 backdrop-blur-sm">
-              <h2 className="text-xs font-medium text-white">{label}</h2>
+          {!showWidgetOverlay && (
+            <div className="absolute left-2.5 top-2.5 z-20">
+              <div className="rounded bg-black/50 px-2 py-1 backdrop-blur-sm">
+                <h2 className="text-xs font-medium text-white">{label}</h2>
+              </div>
             </div>
-          </div>
+          )}
         </div>
 
         <div className="rounded-lg border border-border/40 bg-card/50 p-3">
