@@ -1,7 +1,7 @@
 "use client";
 
 import type { CSSProperties } from "react";
-import { useId, useRef, useEffect, useState } from "react";
+import { useId } from "react";
 import { cn } from "./_adapter";
 
 export interface SparklineProps {
@@ -26,14 +26,6 @@ export function Sparkline({
   fillOpacity = 0.09,
 }: SparklineProps) {
   const gradientId = useId();
-  const polylineRef = useRef<SVGPolylineElement>(null);
-  const [pathLength, setPathLength] = useState(0);
-
-  useEffect(() => {
-    if (polylineRef.current) {
-      setPathLength(polylineRef.current.getTotalLength());
-    }
-  }, [data]);
 
   if (data.length < 2) {
     return null;
@@ -88,7 +80,6 @@ export function Sparkline({
         </>
       )}
       <polyline
-        ref={polylineRef}
         points={linePointsString}
         fill="none"
         stroke={color}
@@ -98,48 +89,46 @@ export function Sparkline({
         strokeLinejoin="round"
         vectorEffect="non-scaling-stroke"
       />
-      {pathLength > 0 && (
-        <>
-          <polyline
-            points={linePointsString}
-            fill="none"
-            stroke={color}
-            strokeWidth={0.75}
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            vectorEffect="non-scaling-stroke"
-            strokeDasharray="115 200"
-            strokeDashoffset={pathLength}
-            strokeOpacity={0}
-            className="animate-[glint-slow_0.8s_ease-out_forwards]"
-            style={{ animationDelay }}
-          />
-          <polyline
-            points={linePointsString}
-            fill="none"
-            stroke={color}
-            strokeWidth={0.75}
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            vectorEffect="non-scaling-stroke"
-            strokeDasharray="34 110"
-            strokeDashoffset={pathLength}
-            strokeOpacity={0}
-            className="animate-[glint_0.8s_ease-out_forwards]"
-            style={{ animationDelay }}
-          />
-        </>
-      )}
+      <polyline
+        points={linePointsString}
+        fill="none"
+        stroke={color}
+        strokeWidth={0.75}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        vectorEffect="non-scaling-stroke"
+        pathLength={1}
+        strokeDasharray="0.36 0.64"
+        strokeDashoffset={1}
+        strokeOpacity={0}
+        className="animate-[sparkline-glint-slow_0.8s_ease-out_forwards]"
+        style={{ animationDelay }}
+      />
+      <polyline
+        points={linePointsString}
+        fill="none"
+        stroke={color}
+        strokeWidth={0.75}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        vectorEffect="non-scaling-stroke"
+        pathLength={1}
+        strokeDasharray="0.24 0.76"
+        strokeDashoffset={1}
+        strokeOpacity={0}
+        className="animate-[sparkline-glint_0.8s_ease-out_forwards]"
+        style={{ animationDelay }}
+      />
       <style>{`
-        @keyframes glint {
-          0% { stroke-dashoffset: ${pathLength}; stroke-opacity: 0; }
+        @keyframes sparkline-glint {
+          0% { stroke-dashoffset: 1; stroke-opacity: 0; }
           20% { stroke-opacity: 0.9; }
-          100% { stroke-dashoffset: ${-pathLength}; stroke-opacity: 0; }
+          100% { stroke-dashoffset: -1; stroke-opacity: 0; }
         }
-        @keyframes glint-slow {
-          0% { stroke-dashoffset: ${pathLength}; stroke-opacity: 0; }
+        @keyframes sparkline-glint-slow {
+          0% { stroke-dashoffset: 1; stroke-opacity: 0; }
           20% { stroke-opacity: 0.2; }
-          100% { stroke-dashoffset: ${-pathLength}; stroke-opacity: 0; }
+          100% { stroke-dashoffset: -1; stroke-opacity: 0; }
         }
       `}</style>
     </svg>

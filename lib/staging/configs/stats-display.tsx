@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useId, useRef, useEffect, useCallback, type CSSProperties } from "react";
+import { useState, useId, useCallback, useEffect, type CSSProperties } from "react";
 import { useControls, button, Leva } from "leva";
 import type { StagingConfig } from "../types";
 import { cn, Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/tool-ui/stats-display/_adapter";
@@ -60,14 +60,6 @@ function TunableSparkline({
   baseDelay = 0,
 }: TunableSparklineProps) {
   const gradientId = useId();
-  const polylineRef = useRef<SVGPolylineElement>(null);
-  const [pathLength, setPathLength] = useState(0);
-
-  useEffect(() => {
-    if (polylineRef.current) {
-      setPathLength(polylineRef.current.getTotalLength());
-    }
-  }, [data]);
 
   if (data.length < 2) {
     return null;
@@ -132,7 +124,6 @@ function TunableSparkline({
         </>
       )}
       <polyline
-        ref={polylineRef}
         points={linePointsString}
         fill="none"
         stroke={color}
@@ -142,50 +133,48 @@ function TunableSparkline({
         strokeLinejoin="round"
         vectorEffect="non-scaling-stroke"
       />
-      {pathLength > 0 && (
-        <>
-          <polyline
-            points={linePointsString}
-            fill="none"
-            stroke={color}
-            strokeWidth={animation.slowGlintStrokeWidth}
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            vectorEffect="non-scaling-stroke"
-            strokeDasharray={`${animation.slowGlintDashSize} ${animation.slowGlintGapSize}`}
-            strokeDashoffset={pathLength}
-            strokeOpacity={0}
-            style={{
-              animation: `glint-slow-tunable ${animation.glintDuration}s ease-out ${slowGlintDelay} forwards`,
-            }}
-          />
-          <polyline
-            points={linePointsString}
-            fill="none"
-            stroke={color}
-            strokeWidth={animation.glintStrokeWidth}
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            vectorEffect="non-scaling-stroke"
-            strokeDasharray={`${animation.glintDashSize} ${animation.glintGapSize}`}
-            strokeDashoffset={pathLength}
-            strokeOpacity={0}
-            style={{
-              animation: `glint-tunable ${animation.glintDuration}s ease-out ${glintDelay} forwards`,
-            }}
-          />
-        </>
-      )}
+      <polyline
+        points={linePointsString}
+        fill="none"
+        stroke={color}
+        strokeWidth={animation.slowGlintStrokeWidth}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        vectorEffect="non-scaling-stroke"
+        pathLength={1}
+        strokeDasharray={`${animation.slowGlintDashSize} ${animation.slowGlintGapSize}`}
+        strokeDashoffset={1}
+        strokeOpacity={0}
+        style={{
+          animation: `glint-slow-tunable ${animation.glintDuration}s ease-out ${slowGlintDelay} forwards`,
+        }}
+      />
+      <polyline
+        points={linePointsString}
+        fill="none"
+        stroke={color}
+        strokeWidth={animation.glintStrokeWidth}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        vectorEffect="non-scaling-stroke"
+        pathLength={1}
+        strokeDasharray={`${animation.glintDashSize} ${animation.glintGapSize}`}
+        strokeDashoffset={1}
+        strokeOpacity={0}
+        style={{
+          animation: `glint-tunable ${animation.glintDuration}s ease-out ${glintDelay} forwards`,
+        }}
+      />
       <style>{`
         @keyframes glint-tunable {
-          0% { stroke-dashoffset: ${pathLength}; stroke-opacity: 0; }
+          0% { stroke-dashoffset: 1; stroke-opacity: 0; }
           20% { stroke-opacity: ${animation.glintPeakOpacity}; }
-          100% { stroke-dashoffset: ${-pathLength}; stroke-opacity: 0; }
+          100% { stroke-dashoffset: -1; stroke-opacity: 0; }
         }
         @keyframes glint-slow-tunable {
-          0% { stroke-dashoffset: ${pathLength}; stroke-opacity: 0; }
+          0% { stroke-dashoffset: 1; stroke-opacity: 0; }
           20% { stroke-opacity: ${animation.slowGlintPeakOpacity}; }
-          100% { stroke-dashoffset: ${-pathLength}; stroke-opacity: 0; }
+          100% { stroke-dashoffset: -1; stroke-opacity: 0; }
         }
       `}</style>
     </svg>
@@ -513,16 +502,16 @@ function TuningPanel({ data }: TuningPanelProps) {
   const glintAnimation = useControls("Glint Effect", {
     glintDuration: { value: 0.8, min: 0.1, max: 3, step: 0.1, label: "Duration (s)" },
     glintDelay: { value: 0, min: 0, max: 2000, step: 50, label: "Delay (ms)" },
-    glintDashSize: { value: 34, min: 4, max: 150, step: 2, label: "Dash Size" },
-    glintGapSize: { value: 110, min: 20, max: 400, step: 10, label: "Gap Size" },
+    glintDashSize: { value: 0.24, min: 0.05, max: 0.8, step: 0.02, label: "Dash (0-1)" },
+    glintGapSize: { value: 0.76, min: 0.2, max: 1.5, step: 0.02, label: "Gap (0-1)" },
     glintStrokeWidth: { value: 0.75, min: 0.5, max: 6, step: 0.25, label: "Stroke Width" },
     glintPeakOpacity: { value: 0.9, min: 0, max: 1, step: 0.05, label: "Peak Opacity" },
   });
 
   const slowGlintAnimation = useControls("Slow Glint", {
     slowGlintDelay: { value: 0, min: 0, max: 2000, step: 50, label: "Delay (ms)" },
-    slowGlintDashSize: { value: 115, min: 10, max: 200, step: 5, label: "Dash Size" },
-    slowGlintGapSize: { value: 200, min: 50, max: 600, step: 25, label: "Gap Size" },
+    slowGlintDashSize: { value: 0.36, min: 0.1, max: 0.8, step: 0.02, label: "Dash (0-1)" },
+    slowGlintGapSize: { value: 0.64, min: 0.2, max: 1.5, step: 0.02, label: "Gap (0-1)" },
     slowGlintStrokeWidth: { value: 0.75, min: 0.5, max: 6, step: 0.25, label: "Stroke Width" },
     slowGlintPeakOpacity: { value: 0.2, min: 0, max: 1, step: 0.05, label: "Peak Opacity" },
   });
