@@ -1,6 +1,5 @@
 :root {
   --cubic-ease-in-out: cubic-bezier(0.62, -0.05, 0.71, 1.15);
-  --cubic-ease-in-out-2: cubic-bezier(0.64, -0.08, 0.61, 1.13);
 }
 
 @keyframes accordion-down {
@@ -105,7 +104,8 @@
 }
 
 @keyframes progress-pulse {
-  0%, 100% {
+  0%,
+  100% {
     filter: brightness(1);
   }
   50% {
@@ -123,7 +123,8 @@
 }
 
 @keyframes glow-pulse {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 0;
   }
   50% {
@@ -273,7 +274,12 @@
     --glow-surface-from: var(--background);
     --glow-surface-to: #f7f7f7;
     background:
-      linear-gradient(to bottom, var(--glow-surface-from), var(--glow-surface-to)) padding-box,
+      linear-gradient(
+          to bottom,
+          var(--glow-surface-from),
+          var(--glow-surface-to)
+        )
+        padding-box,
       var(--glow-gradient) border-box;
     border: 1px solid transparent;
   }
