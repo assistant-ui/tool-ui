@@ -21,6 +21,9 @@ export interface CelestialParams {
   sunRayIntensity: number;
   moonGlowIntensity: number;
   moonGlowSize: number;
+  skyBrightness: number;
+  skySaturation: number;
+  skyContrast: number;
 }
 
 export interface CloudParams {
@@ -115,6 +118,9 @@ const DEFAULT_CELESTIAL: CelestialParams = {
   sunRayIntensity: 0.10,
   moonGlowIntensity: 3.45,
   moonGlowSize: 0.94,
+  skyBrightness: 1.0,
+  skySaturation: 1.0,
+  skyContrast: 1.0,
 };
 
 const DEFAULT_CLOUD: CloudParams = {
@@ -199,6 +205,9 @@ uniform float u_sunRayLength;
 uniform float u_sunRayIntensity;
 uniform float u_moonGlowIntensity;
 uniform float u_moonGlowSize;
+uniform float u_skyBrightness;
+uniform float u_skySaturation;
+uniform float u_skyContrast;
 uniform sampler2D u_moonTexture;
 uniform bool u_hasMoonTexture;
 
@@ -287,7 +296,23 @@ vec3 getSkyColor(vec2 uv, float timeOfDay) {
   vec3 topColor = dayTop * dayAmount + sunsetTop * sunsetAmount + nightTop * nightAmount;
   vec3 horizonColor = dayHorizon * dayAmount + sunsetHorizon * sunsetAmount + nightHorizon * nightAmount;
 
-  return mix(topColor, horizonColor, gradientFactor);
+  vec3 avgColor = (topColor + horizonColor) * 0.5;
+  topColor = mix(avgColor, topColor, u_skyContrast);
+  horizonColor = mix(avgColor, horizonColor, u_skyContrast);
+
+  vec3 color = mix(topColor, horizonColor, gradientFactor);
+
+  color *= u_skyBrightness;
+
+  float gray = dot(color, vec3(0.299, 0.587, 0.114));
+  if (u_skySaturation <= 1.0) {
+    color = mix(vec3(gray), color, u_skySaturation);
+  } else {
+    float boost = u_skySaturation - 1.0;
+    color = color + (color - vec3(gray)) * boost;
+  }
+
+  return clamp(color, 0.0, 1.0);
 }
 
 float drawStars(vec2 uv, float density, float time) {
@@ -1491,6 +1516,9 @@ export function WeatherEffectsCanvas({
       gl.uniform1f(gl.getUniformLocation(programs.celestial, "u_sunRayIntensity"), p.sunRayIntensity);
       gl.uniform1f(gl.getUniformLocation(programs.celestial, "u_moonGlowIntensity"), p.moonGlowIntensity);
       gl.uniform1f(gl.getUniformLocation(programs.celestial, "u_moonGlowSize"), p.moonGlowSize);
+      gl.uniform1f(gl.getUniformLocation(programs.celestial, "u_skyBrightness"), p.skyBrightness);
+      gl.uniform1f(gl.getUniformLocation(programs.celestial, "u_skySaturation"), p.skySaturation);
+      gl.uniform1f(gl.getUniformLocation(programs.celestial, "u_skyContrast"), p.skyContrast);
 
       gl.activeTexture(gl.TEXTURE0);
       gl.bindTexture(gl.TEXTURE_2D, moonTextureRef.current);

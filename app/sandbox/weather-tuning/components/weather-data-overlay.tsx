@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef } from "react";
 import { cn } from "@/lib/ui/cn";
 import type { WeatherCondition } from "@/components/tool-ui/weather-widget/schema";
 import {
@@ -95,7 +95,7 @@ export function WeatherDataOverlay({
   tempLow,
   humidity = 45,
   windSpeed = 8,
-  visibility = 10,
+  visibility: _visibility = 10,
   forecast = [],
   unit = "fahrenheit",
   timeOfDay = 0.5,
