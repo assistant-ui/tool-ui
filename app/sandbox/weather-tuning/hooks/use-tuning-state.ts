@@ -80,6 +80,7 @@ export function useTuningState() {
     null
   );
   const [showWidgetOverlay, setShowWidgetOverlay] = useState(false);
+  const [isPreviewing, setIsPreviewing] = useState(false);
   const [checkpoints, setCheckpoints] = useState<
     Partial<Record<WeatherCondition, ConditionCheckpoints>>
   >({});
@@ -328,10 +329,22 @@ export function useTuningState() {
       const { value } = TIME_CHECKPOINTS[checkpoint];
       setGlobalTimeOfDay(value);
       setActiveEditCheckpoint(checkpoint);
+      setIsPreviewing(false);
       markCheckpointReviewed(condition, checkpoint);
     },
     [markCheckpointReviewed]
   );
+
+  const scrubTime = useCallback((time: number) => {
+    setGlobalTimeOfDay(time);
+    setIsPreviewing(true);
+  }, []);
+
+  const exitPreview = useCallback(() => {
+    setIsPreviewing(false);
+    const nearest = getNearestCheckpoint(globalTimeOfDay);
+    setActiveEditCheckpoint(nearest);
+  }, [globalTimeOfDay]);
 
   const toggleSignOff = useCallback((condition: WeatherCondition) => {
     setSignedOff((prev) => {
@@ -383,6 +396,8 @@ export function useTuningState() {
     setCompareTarget,
     showWidgetOverlay,
     setShowWidgetOverlay,
+    isPreviewing,
+    setIsPreviewing,
     checkpoints,
     setCheckpoints,
     signedOff,
@@ -400,6 +415,8 @@ export function useTuningState() {
     getOverrideCount,
     markCheckpointReviewed,
     goToCheckpoint,
+    scrubTime,
+    exitPreview,
     toggleSignOff,
     getConditionCheckpoints,
     allCheckpointsReviewed,

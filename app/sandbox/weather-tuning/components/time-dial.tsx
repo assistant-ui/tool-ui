@@ -2,14 +2,27 @@
 
 import { useRef, useCallback } from "react";
 import { cn } from "@/lib/ui/cn";
+import { Pencil, Eye } from "lucide-react";
 import { TIME_CHECKPOINTS, TIME_CHECKPOINT_ORDER } from "../lib/constants";
+import type { TimeCheckpoint } from "../types";
 
 interface TimeDialProps {
   value: number;
-  onChange: (value: number) => void;
+  isPreviewing: boolean;
+  activeEditCheckpoint: TimeCheckpoint;
+  onScrub: (value: number) => void;
+  onCheckpointClick: (checkpoint: TimeCheckpoint) => void;
+  onExitPreview: () => void;
 }
 
-export function TimeDial({ value, onChange }: TimeDialProps) {
+export function TimeDial({
+  value,
+  isPreviewing,
+  activeEditCheckpoint,
+  onScrub,
+  onCheckpointClick,
+  onExitPreview,
+}: TimeDialProps) {
   const dialRef = useRef<HTMLDivElement>(null);
   const isDragging = useRef(false);
 
@@ -43,9 +56,9 @@ export function TimeDial({ value, onChange }: TimeDialProps) {
       const angle =
         Math.atan2(clientY - centerY, clientX - centerX) * (180 / Math.PI);
       const newValue = getValueFromAngle(angle);
-      onChange(newValue);
+      onScrub(newValue);
     },
-    [onChange]
+    [onScrub]
   );
 
   const handleMouseDown = (e: React.MouseEvent) => {
@@ -81,6 +94,8 @@ export function TimeDial({ value, onChange }: TimeDialProps) {
         ? "from-orange-500 via-purple-500 to-indigo-600"
         : "from-sky-400 via-blue-400 to-blue-500";
 
+  const editCheckpointInfo = TIME_CHECKPOINTS[activeEditCheckpoint];
+
   return (
     <div className="flex items-center gap-5">
       <div className="relative">
@@ -107,25 +122,28 @@ export function TimeDial({ value, onChange }: TimeDialProps) {
             const radius = 24;
             const x = Math.cos(radians) * radius;
             const y = Math.sin(radians) * radius;
-            const isActive = Math.abs(value - cpValue) < 0.04;
+            const isViewingHere = Math.abs(value - cpValue) < 0.04;
+            const isEditingHere = checkpoint === activeEditCheckpoint;
 
             return (
               <button
                 key={checkpoint}
                 onClick={(e) => {
                   e.stopPropagation();
-                  onChange(cpValue);
+                  onCheckpointClick(checkpoint);
                 }}
                 className={cn(
                   "absolute flex size-5 items-center justify-center rounded-full text-[10px] transition-all",
-                  isActive
-                    ? "scale-110 bg-foreground/10"
-                    : "bg-muted/50 hover:bg-accent/50"
+                  isEditingHere
+                    ? "scale-110 bg-blue-500/30 ring-2 ring-blue-500/50"
+                    : isViewingHere
+                      ? "scale-110 bg-foreground/10"
+                      : "bg-muted/50 hover:bg-accent/50"
                 )}
                 style={{
                   transform: `translate(${x}px, ${y}px)`,
                 }}
-                title={TIME_CHECKPOINTS[checkpoint].label}
+                title={`${TIME_CHECKPOINTS[checkpoint].label}${isEditingHere ? " (editing)" : ""}`}
               >
                 {emoji}
               </button>
@@ -167,27 +185,50 @@ export function TimeDial({ value, onChange }: TimeDialProps) {
 
       <div className="h-8 w-px bg-border/30" />
 
+      {isPreviewing && (
+        <button
+          onClick={onExitPreview}
+          className="flex items-center gap-1.5 rounded-md bg-amber-500/10 px-2.5 py-1.5 text-xs text-amber-600 transition-colors hover:bg-amber-500/20 dark:text-amber-400"
+        >
+          <Eye className="size-3" />
+          <span>Preview</span>
+          <span className="text-[10px] text-amber-600/60 dark:text-amber-400/60">
+            (click to edit {editCheckpointInfo.label})
+          </span>
+        </button>
+      )}
+
       <div className="flex gap-0.5">
         {TIME_CHECKPOINT_ORDER.map((checkpoint) => {
           const { value: cpValue, emoji, label } = TIME_CHECKPOINTS[checkpoint];
-          const isActive = Math.abs(value - cpValue) < 0.04;
+          const isViewingHere = Math.abs(value - cpValue) < 0.04;
+          const isEditingHere = checkpoint === activeEditCheckpoint;
 
           return (
             <button
               key={checkpoint}
-              onClick={() => onChange(cpValue)}
+              onClick={() => onCheckpointClick(checkpoint)}
               className={cn(
-                "flex flex-col items-center gap-0.5 rounded-md px-2 py-1 transition-all",
-                isActive
-                  ? "bg-accent/60 text-foreground/80"
-                  : "text-muted-foreground/50 hover:bg-accent/30 hover:text-muted-foreground"
+                "relative flex flex-col items-center gap-0.5 rounded-md px-2 py-1 transition-all",
+                isEditingHere
+                  ? "bg-blue-500/15 text-blue-600 ring-1 ring-blue-500/30 dark:text-blue-400"
+                  : isViewingHere && isPreviewing
+                    ? "bg-amber-500/10 text-amber-600/80 dark:text-amber-400/80"
+                    : isViewingHere
+                      ? "bg-accent/60 text-foreground/80"
+                      : "text-muted-foreground/50 hover:bg-accent/30 hover:text-muted-foreground"
               )}
-              title={label}
+              title={`${label}${isEditingHere ? " (editing)" : ""}`}
             >
               <span className="text-sm">{emoji}</span>
               <span className="text-[8px] font-medium uppercase tracking-wider">
                 {checkpoint}
               </span>
+              {isEditingHere && (
+                <div className="absolute -right-0.5 -top-0.5">
+                  <Pencil className="size-2.5 text-blue-500" />
+                </div>
+              )}
             </button>
           );
         })}
