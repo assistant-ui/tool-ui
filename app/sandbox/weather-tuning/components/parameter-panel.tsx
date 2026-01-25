@@ -7,7 +7,7 @@ import {
   AccordionContent,
 } from "@/components/ui/accordion";
 import { cn } from "@/lib/ui/cn";
-import { Sun, Cloud, CloudRain, Zap, Snowflake, Pencil, Copy } from "lucide-react";
+import { Sun, Cloud, CloudRain, Zap, Snowflake, Pencil, Copy, Eye } from "lucide-react";
 import type { FullCompositorParams } from "../../weather-compositor/presets";
 import { WEATHER_CONDITIONS, CONDITION_LABELS } from "../../weather-compositor/presets";
 import { ParameterRow, ParameterToggleRow } from "./parameter-row";
@@ -30,6 +30,7 @@ interface ParameterPanelProps {
   expandedGroups: Set<string>;
   onToggleGroup: (group: string) => void;
   activeEditCheckpoint: TimeCheckpoint;
+  isPreviewing: boolean;
   currentCondition?: WeatherCondition;
   onCopyLayer?: (sourceCondition: WeatherCondition, layerKey: LayerKey) => void;
 }
@@ -78,13 +79,20 @@ function CopyFromDropdown({
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <button
-          className="rounded p-1 text-muted-foreground/40 transition-colors hover:bg-accent/50 hover:text-muted-foreground"
+        <div
+          role="button"
+          tabIndex={0}
+          className="cursor-pointer rounded p-1 text-muted-foreground/40 transition-colors hover:bg-accent/50 hover:text-muted-foreground"
           title="Copy settings from another condition"
           onClick={(e) => e.stopPropagation()}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.stopPropagation();
+            }
+          }}
         >
           <Copy className="size-3" />
-        </button>
+        </div>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="min-w-[140px]">
         {otherConditions.map((condition) => (
@@ -108,6 +116,7 @@ export function ParameterPanel({
   expandedGroups,
   onToggleGroup,
   activeEditCheckpoint,
+  isPreviewing,
   currentCondition,
   onCopyLayer,
 }: ParameterPanelProps) {
@@ -169,12 +178,21 @@ export function ParameterPanel({
           <span className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground/40">
             Layers
           </span>
-          <div className="flex items-center gap-1.5 rounded bg-blue-500/10 px-1.5 py-0.5">
-            <Pencil className="size-2.5 text-blue-500/70" />
-            <span className="text-[9px] font-medium text-blue-600/70 dark:text-blue-400/70">
-              Editing {checkpointInfo.label}
-            </span>
-          </div>
+          {isPreviewing ? (
+            <div className="flex items-center gap-1.5 rounded bg-amber-500/10 px-1.5 py-0.5">
+              <Eye className="size-2.5 text-amber-500/70" />
+              <span className="text-[9px] font-medium text-amber-600/70 dark:text-amber-400/70">
+                Preview Mode
+              </span>
+            </div>
+          ) : (
+            <div className="flex items-center gap-1.5 rounded bg-blue-500/10 px-1.5 py-0.5">
+              <Pencil className="size-2.5 text-blue-500/70" />
+              <span className="text-[9px] font-medium text-blue-600/70 dark:text-blue-400/70">
+                Editing {checkpointInfo.label}
+              </span>
+            </div>
+          )}
         </div>
         <div className="flex flex-wrap gap-1">
           {(["celestial", "clouds", "rain", "lightning", "snow"] as const).map((layer) => {

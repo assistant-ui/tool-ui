@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
-import { RotateCcw, Columns2, Eye, EyeOff, CheckCircle2 } from "lucide-react";
+import { RotateCcw, Columns2, Eye, EyeOff, CheckCircle2, Pencil } from "lucide-react";
 import { cn } from "@/lib/ui/cn";
 import type { WeatherCondition } from "@/components/tool-ui/weather-widget/schema";
 import { WeatherEffectsCanvas } from "@/components/tool-ui/weather-widget/effects";
@@ -20,6 +20,7 @@ interface DetailEditorProps {
   baseParams: FullCompositorParams;
   checkpoints?: ConditionCheckpoints;
   activeEditCheckpoint: TimeCheckpoint;
+  isPreviewing: boolean;
   isSignedOff: boolean;
   expandedGroups: Set<string>;
   currentTime: number;
@@ -102,6 +103,7 @@ export function DetailEditor({
   baseParams,
   checkpoints,
   activeEditCheckpoint,
+  isPreviewing,
   isSignedOff,
   expandedGroups,
   currentTime,
@@ -185,6 +187,25 @@ export function DetailEditor({
               </div>
             </div>
           )}
+
+          <div className="absolute right-2.5 top-2.5 z-20">
+            {isPreviewing ? (
+              <div className="flex items-center gap-1.5 rounded-md bg-amber-500/90 px-2.5 py-1.5 shadow-lg backdrop-blur-sm">
+                <Eye className="size-3 text-white/90" />
+                <span className="text-xs font-medium text-white">
+                  Preview Mode
+                </span>
+              </div>
+            ) : (
+              <div className="flex items-center gap-1.5 rounded-md bg-blue-600/90 px-2.5 py-1.5 shadow-lg backdrop-blur-sm">
+                <Pencil className="size-3 text-white/90" />
+                <span className="text-xs font-medium text-white">
+                  Editing {TIME_CHECKPOINTS[activeEditCheckpoint].label}
+                </span>
+                <span className="text-sm">{TIME_CHECKPOINTS[activeEditCheckpoint].emoji}</span>
+              </div>
+            )}
+          </div>
         </div>
 
         <div className="rounded-lg border border-border/40 bg-card/50 p-3">
@@ -212,7 +233,7 @@ export function DetailEditor({
                   className={cn(
                     "group relative flex flex-col items-center gap-1 rounded-md border py-2 transition-all",
                     isEditing
-                      ? "border-blue-500/40 bg-blue-500/10 ring-1 ring-blue-500/20"
+                      ? "border-blue-500/50 bg-blue-500/15 ring-2 ring-blue-500/30"
                       : isActive
                         ? "border-foreground/20 bg-accent/80"
                         : isReviewed
@@ -226,7 +247,7 @@ export function DetailEditor({
                     className={cn(
                       "text-[8px] font-medium uppercase tracking-wider",
                       isEditing
-                        ? "text-blue-600/80 dark:text-blue-400/80"
+                        ? "text-blue-600 dark:text-blue-400"
                         : isActive
                           ? "text-foreground/70"
                           : isReviewed
@@ -237,13 +258,13 @@ export function DetailEditor({
                     {checkpoint}
                   </span>
                   {isEditing && (
-                    <div className="absolute left-1 top-1">
-                      <span className="rounded bg-blue-500/80 px-1 py-0.5 text-[6px] font-bold text-white">
-                        E
+                    <div className="absolute -top-1.5 left-1/2 -translate-x-1/2">
+                      <span className="whitespace-nowrap rounded-full bg-blue-500 px-1.5 py-0.5 text-[8px] font-semibold text-white shadow-sm">
+                        EDITING
                       </span>
                     </div>
                   )}
-                  {isReviewed && (
+                  {isReviewed && !isEditing && (
                     <div className="absolute right-1 top-1">
                       <CheckCircle2 className="size-2.5 text-green-600/50 dark:text-green-400/50" />
                     </div>
@@ -300,6 +321,7 @@ export function DetailEditor({
             expandedGroups={expandedGroups}
             onToggleGroup={onToggleGroup}
             activeEditCheckpoint={activeEditCheckpoint}
+            isPreviewing={isPreviewing}
             currentCondition={condition}
             onCopyLayer={onCopyLayer}
           />

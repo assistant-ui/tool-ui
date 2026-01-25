@@ -11,6 +11,7 @@ import { ComparisonView } from "./components/comparison-view";
 import { ExportPanel } from "./components/export-panel";
 import { TIME_CHECKPOINT_ORDER } from "./lib/constants";
 import { WEATHER_CONDITIONS } from "../weather-compositor/presets";
+import type { TimeCheckpoint } from "./types";
 
 export default function WeatherTuningPage() {
   const state = useTuningState();
@@ -156,7 +157,15 @@ export default function WeatherTuningPage() {
           <div className="flex items-center justify-center border-b border-border/40 px-6 py-3">
             <TimeDial
               value={state.globalTimeOfDay}
-              onChange={state.setGlobalTimeOfDay}
+              isPreviewing={state.isPreviewing}
+              activeEditCheckpoint={state.activeEditCheckpoint}
+              onScrub={state.scrubTime}
+              onCheckpointClick={(checkpoint: TimeCheckpoint) => {
+                if (state.selectedCondition) {
+                  state.goToCheckpoint(state.selectedCondition, checkpoint);
+                }
+              }}
+              onExitPreview={state.exitPreview}
             />
           </div>
 
@@ -186,6 +195,7 @@ export default function WeatherTuningPage() {
                     state.selectedCondition
                   )}
                   activeEditCheckpoint={state.activeEditCheckpoint}
+                  isPreviewing={state.isPreviewing}
                   isSignedOff={state.signedOff.has(state.selectedCondition)}
                   expandedGroups={state.expandedGroups}
                   currentTime={state.globalTimeOfDay}
