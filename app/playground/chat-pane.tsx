@@ -10,7 +10,7 @@ import {
 import {
   AssistantRuntimeProvider,
   ThreadPrimitive,
-  useAssistantState,
+  useAuiState,
 } from "@assistant-ui/react";
 import {
   AssistantChatTransport,
@@ -189,7 +189,7 @@ const createTransportForPrototype = (slug: string) =>
 
 // Component to sync tool call results to localStorage
 const ToolResultPersistence = ({ slug }: { slug: string }) => {
-  const messages = useAssistantState(({ thread }) => thread.messages);
+  const messages = useAuiState(({ thread }) => thread.messages);
 
   useEffect(() => {
     if (!messages || messages.length === 0) return;

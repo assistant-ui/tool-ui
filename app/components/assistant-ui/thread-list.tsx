@@ -2,7 +2,7 @@ import { useCallback, type FC } from "react";
 import {
   ThreadListItemPrimitive,
   ThreadListPrimitive,
-  useAssistantState,
+  useAuiState,
 } from "@assistant-ui/react";
 import { ArchiveIcon, HistoryIcon, PlusIcon } from "lucide-react";
 
@@ -60,7 +60,7 @@ const ThreadListItems: FC<ThreadListItemsProps> = ({
   emptyState,
   onReplay,
 }) => {
-  const threadsState = useAssistantState(
+  const threadsState = useAuiState(
     useCallback((state) => state.threads, []),
   );
   const isLoading = threadsState.isLoading;
@@ -131,7 +131,7 @@ const ThreadListItemTitle: FC = () => {
 const ThreadListItemActions: FC<{ onReplay?: (threadId: string) => void }> = ({
   onReplay,
 }) => {
-  const threadId = useAssistantState(({ threadListItem }) => threadListItem.id);
+  const threadId = useAuiState(({ threadListItem }) => threadListItem.id);
 
   return (
     <div className="flex items-center gap-1 pr-2">

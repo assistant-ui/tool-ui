@@ -2,7 +2,7 @@ import type { FC } from "react";
 import {
   ThreadListItemPrimitive,
   ThreadListPrimitive,
-  useAssistantState,
+  useAuiState,
 } from "@assistant-ui/react";
 import { ArchiveIcon, PlusIcon } from "lucide-react";
 
@@ -34,7 +34,7 @@ const ThreadListNew: FC = () => {
 };
 
 const ThreadListItems: FC = () => {
-  const isLoading = useAssistantState(({ threads }) => threads.isLoading);
+  const isLoading = useAuiState(({ threads }) => threads.isLoading);
 
   if (isLoading) {
     return <ThreadListSkeleton />;

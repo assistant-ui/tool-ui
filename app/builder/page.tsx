@@ -5,8 +5,8 @@ import {
   ThreadPrimitive,
   ComposerPrimitive,
   MessagePrimitive,
-  useAssistantApi,
-  useAssistantState,
+  useAui,
+  useAuiState,
   makeAssistantToolUI,
   ActionBarPrimitive,
   BranchPickerPrimitive,
@@ -252,7 +252,7 @@ const MCPModal: FC<{
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }> = ({ open, onOpenChange }) => {
-  const api = useAssistantApi();
+  const aui = useAui();
   const [mcpUrl, setMcpUrl] = useState("");
   const [transportType, setTransportType] = useState<"http" | "sse">("http");
   const [tools, setTools] = useState<MCPTool[]>([]);
@@ -313,7 +313,7 @@ ${JSON.stringify(tool.inputSchema, null, 2)}
 \`\`\``;
 
     // Send the message to the current thread
-    api.thread().append({
+    aui.thread().append({
       role: "user",
       content: [{ type: "text", text: prompt }],
     });
@@ -415,7 +415,7 @@ ${JSON.stringify(tool.inputSchema, null, 2)}
 
 const Composer: FC = () => {
   const [mcpModalOpen, setMcpModalOpen] = useState(false);
-  const isNewThread = useAssistantState(
+  const isNewThread = useAuiState(
     ({ threadListItem }) => threadListItem.status === "new",
   );
 
