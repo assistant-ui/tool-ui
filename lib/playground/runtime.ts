@@ -96,7 +96,7 @@ export const buildToolSet = (prototype: Prototype): ToolSet => {
   return Object.fromEntries(entries) as ToolSet;
 };
 
-export const streamPrototypeResponse = (
+export const streamPrototypeResponse = async (
   prototype: Prototype,
   messages: UIMessage[],
   clientTools?: unknown,
@@ -116,7 +116,7 @@ export const streamPrototypeResponse = (
   return streamText({
     model,
     system: prototype.systemPrompt,
-    messages: convertToModelMessages(messages),
+    messages: await convertToModelMessages(messages),
     tools,
     stopWhen: stepCountIs(100),
   });

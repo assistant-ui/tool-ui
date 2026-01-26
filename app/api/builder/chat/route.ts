@@ -62,7 +62,7 @@ export async function POST(req: Request) {
       );
     }
 
-    const modelMessages = convertToModelMessages(messages);
+    const modelMessages = await convertToModelMessages(messages);
 
     // Choose model based on what's available
     const model = process.env.ANTHROPIC_API_KEY

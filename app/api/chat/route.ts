@@ -58,7 +58,7 @@ export async function POST(req: Request) {
       );
     }
 
-    const modelMessages = convertToModelMessages(messages);
+    const modelMessages = await convertToModelMessages(messages);
 
     const result = streamText({
       model: openai("gpt-5-nano"),

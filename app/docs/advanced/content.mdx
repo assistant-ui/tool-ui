@@ -8,7 +8,7 @@ import { DocsHeader } from "../_components/docs-header";
 
 ## Tool Type Inference
 
-With `InferUITools` in AI SDK 5, you can infer tool input/output types from your tool set and get fully typed `message.parts` in the UI.
+With `InferUITools` in AI SDK 6, you can infer tool input/output types from your tool set and get fully typed `message.parts` in the UI.
 
 - [**InferUITools reference**](https://ai-sdk.dev/docs/reference/ai-sdk-ui/infer-ui-tools)
 
@@ -61,7 +61,7 @@ export async function POST(req: Request) {
 
   const result = streamText({
     model: openai("gpt-5-nano"),
-    messages: convertToModelMessages(messages),
+    messages: await convertToModelMessages(messages),
     tools,
   });
 

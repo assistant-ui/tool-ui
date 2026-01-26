@@ -104,6 +104,6 @@ export async function POST(request: NextRequest) {
       ? (body as Record<string, unknown>).tools
       : undefined;
 
-  const result = streamPrototypeResponse(prototype, messages, clientTools);
+  const result = await streamPrototypeResponse(prototype, messages, clientTools);
   return result.toUIMessageStreamResponse();
 }
