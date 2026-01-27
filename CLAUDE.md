@@ -1,6 +1,6 @@
-# CLAUDE.md
+# Tool UI
 
-Tool UI is a copy/paste component library (shadcn/ui model) for AI assistant interfaces. Users copy component directories into projects and modify them. Source code is the product—readability over cleverness.
+Copy/paste component library (shadcn/ui model) for AI assistant interfaces. Users copy component directories into projects and modify them. Source code is the product—readability over cleverness.
 
 ## Commands
 
@@ -21,7 +21,7 @@ pnpm test         # Run tests (Vitest)
 
 ### Component Structure
 
-Each component lives in `components/tool-ui/{name}/`. Reference implementation: `components/tool-ui/approval-card/`
+Each component lives in `components/tool-ui/{name}/`. Reference: `components/tool-ui/approval-card/`
 
 Key files:
 - `index.tsx` — Barrel exports
@@ -45,7 +45,7 @@ Interconnected registries:
 
 ### Component API
 
-- **Tailwind for layout**: No `maxWidth` or `padding` props—users customize via `className`
+- **Tailwind for layout**: No `maxWidth`/`padding` props—users customize via `className`
 - **Standard widths**: Cards use `min-w-80 max-w-md`, compact components use `max-w-sm`
 - **Flat props**: Avoid nested config objects
 - **Semantic action IDs**: Use `id: "confirm"` / `id: "cancel"` for response actions
@@ -61,14 +61,14 @@ Reference: `components/tool-ui/approval-card/approval-card.tsx:183`
 
 ## Discovery
 
-| What                    | Where                                   |
-| ----------------------- | --------------------------------------- |
-| Tool UI components      | `components/tool-ui/` (scan barrels)    |
-| Component docs metadata | `lib/docs/component-registry.ts`        |
-| Preset configurations   | `lib/presets/*.ts`                      |
-| Types & validation      | Colocated `schema.ts` files             |
-| assistant-ui reference  | `private/reference-docs/assistant-ui/`  |
-| Design system specs     | `private/design-system/`                |
+| What                    | Where                                  |
+| ----------------------- | -------------------------------------- |
+| Tool UI components      | `components/tool-ui/` (scan barrels)   |
+| Component docs metadata | `lib/docs/component-registry.ts`       |
+| Preset configurations   | `lib/presets/*.ts`                     |
+| Types & validation      | Colocated `schema.ts` files            |
+| assistant-ui reference  | `private/reference-docs/assistant-ui/` |
+| Design system specs     | `private/design-system/`               |
 
 ## Task Guides
 
