@@ -5,7 +5,11 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useQueryState } from "nuqs";
 import { LayoutDashboardIcon } from "lucide-react";
-import { componentsRegistry } from "@/lib/docs/component-registry";
+import {
+  componentsRegistry,
+  CATEGORY_META,
+  type ComponentCategory,
+} from "@/lib/docs/component-registry";
 import { cn } from "@/lib/ui/cn";
 import { BASE_DOCS_PAGES } from "./docs-pages";
 
@@ -58,6 +62,16 @@ export function DocsNav() {
 
   const galleryPath = "/docs/gallery";
   const isGalleryActive = pathname === galleryPath;
+
+  const categorizedComponents = (
+    Object.entries(CATEGORY_META) as [ComponentCategory, (typeof CATEGORY_META)[ComponentCategory]][]
+  )
+    .sort(([, a], [, b]) => a.order - b.order)
+    .map(([category, meta]) => ({
+      category,
+      label: meta.label,
+      components: componentsRegistry.filter((c) => c.category === category),
+    }));
 
   return (
     <aside
@@ -113,35 +127,37 @@ export function DocsNav() {
           })}
         </div>
 
-        <div className="flex flex-col gap-1 px-4 pt-8">
-          {!collapsed && (
-            <div className="text-primary/60 mb-3 cursor-default px-4 text-xs tracking-widest uppercase select-none">
-              Components
-            </div>
-          )}
-          {componentsRegistry.map((component) => {
-            const isActive = pathname === component.path;
-            const href =
-              currentTab === "examples"
-                ? `${component.path}?tab=examples`
-                : component.path;
-            return (
-              <Link
-                key={component.id}
-                href={href}
-                className={buildLinkClasses(isActive)}
-                title={collapsed ? component.label : undefined}
-                onMouseDown={handleLinkMouseDown}
-              >
-                {!collapsed && (
-                  <div className="overflow-hidden">
-                    <span className="truncate">{component.label}</span>
-                  </div>
-                )}
-              </Link>
-            );
-          })}
-        </div>
+        {categorizedComponents.map(({ category, label, components }) => (
+          <div key={category} className="flex flex-col gap-1 px-4 pt-8">
+            {!collapsed && (
+              <div className="text-primary/60 mb-3 cursor-default px-4 text-xs tracking-widest uppercase select-none">
+                {label}
+              </div>
+            )}
+            {components.map((component) => {
+              const isActive = pathname === component.path;
+              const href =
+                currentTab === "examples"
+                  ? `${component.path}?tab=examples`
+                  : component.path;
+              return (
+                <Link
+                  key={component.id}
+                  href={href}
+                  className={buildLinkClasses(isActive)}
+                  title={collapsed ? component.label : undefined}
+                  onMouseDown={handleLinkMouseDown}
+                >
+                  {!collapsed && (
+                    <div className="overflow-hidden">
+                      <span className="truncate">{component.label}</span>
+                    </div>
+                  )}
+                </Link>
+              );
+            })}
+          </div>
+        ))}
       </nav>
     </aside>
   );
