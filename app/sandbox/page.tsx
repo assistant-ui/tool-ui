@@ -40,6 +40,12 @@ const sandboxes = [
     icon: ThermometerSun,
   },
   {
+    href: "/sandbox/weather-widget-stress",
+    title: "Weather Widget Stress Lab",
+    description: "Stress test variants, performance, and edge cases",
+    icon: ThermometerSun,
+  },
+  {
     href: "/sandbox/celestial-effect",
     title: "Celestial Effect",
     description: "Sun, moon, stars, and sky gradients",

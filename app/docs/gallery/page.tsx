@@ -92,6 +92,8 @@ export const metadata: Metadata = {
 export const revalidate = 3600;
 
 export default function ComponentsGalleryPage() {
+  const galleryImage = imagePresets["with-source"].data.image;
+
   return (
     <DocsBorderedShell>
       <div className="scrollbar-subtle z-10 min-h-0 flex-1 overflow-y-auto overscroll-contain p-6 sm:p-10 lg:p-12">
@@ -113,7 +115,10 @@ export default function ComponentsGalleryPage() {
           </div>
 
           <div className="mb-5 flex break-inside-avoid justify-center 2xl:mb-5">
-            <WeatherWidget {...weatherWidgetPresets["sunny-forecast"].data} />
+            <WeatherWidget
+              {...weatherWidgetPresets["sunny-forecast"].data}
+              effects={{ enabled: true, quality: "low" }}
+            />
           </div>
 
           <div className="mb-5 flex break-inside-avoid justify-center 2xl:mb-5">
@@ -194,7 +199,7 @@ export default function ComponentsGalleryPage() {
           </div>
 
           <div className="mb-5 flex break-inside-avoid justify-center 2xl:mb-5">
-            <Image {...imagePresets["with-source"].data.image} />
+            <Image {...galleryImage} alt={galleryImage.alt} />
           </div>
 
           <div className="mb-5 flex break-inside-avoid justify-center 2xl:mb-5">

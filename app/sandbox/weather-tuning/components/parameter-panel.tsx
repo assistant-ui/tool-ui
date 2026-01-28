@@ -549,9 +549,9 @@ export function ParameterPanel({
               label="Wind Angle"
               value={params.cloud.windAngle}
               baseValue={baseParams.cloud.windAngle}
-              min={-180}
-              max={180}
-              step={1}
+              min={-Math.PI}
+              max={Math.PI}
+              step={0.1}
               onChange={(v) => updateCloud("windAngle", v)}
               onReset={() => updateCloud("windAngle", baseParams.cloud.windAngle)}
             />

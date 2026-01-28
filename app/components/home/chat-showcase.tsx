@@ -429,7 +429,7 @@ function PreambleBubble({
   );
 }
 
-function createSceneConfigs(): SceneConfig[] {
+function createSceneConfigs(reducedMotion: boolean): SceneConfig[] {
   const { title: _title, ...statsDataWithoutTitle } = STATS_DISPLAY_DATA;
 
   return [
@@ -467,6 +467,11 @@ function createSceneConfigs(): SceneConfig[] {
           ]}
           unit="fahrenheit"
           className="w-full max-w-[400px]"
+          effects={{
+            enabled: !reducedMotion,
+            reducedMotion,
+            quality: "auto",
+          }}
         />
       ),
       toolFallbackHeight: 280,
@@ -801,7 +806,7 @@ function AnimatedScene({
 
 export function ChatShowcase() {
   const reducedMotion = useReducedMotion();
-  const sceneConfigs = useMemo(() => createSceneConfigs(), []);
+  const sceneConfigs = useMemo(() => createSceneConfigs(reducedMotion), [reducedMotion]);
 
   const [sceneIndex, setSceneIndex] = useState(0);
   const [sceneRunId, setSceneRunId] = useState(0);

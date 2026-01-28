@@ -22,18 +22,26 @@ interface ExportPanelProps {
 
 export function ExportPanel({ checkpointOverrides, signedOff }: ExportPanelProps) {
   const [copied, setCopied] = useState<string | null>(null);
+  const [copyError, setCopyError] = useState<string | null>(null);
   const { copyToClipboard, downloadFile } = useCodeGen(checkpointOverrides, signedOff);
 
   const handleCopy = async (
-    format: "json-overrides" | "json-full" | "typescript"
+    format: "json-overrides" | "json-full" | "typescript" | "typescript-tool-ui"
   ) => {
-    await copyToClipboard({ format });
+    setCopyError(null);
+    const ok = await copyToClipboard({ format, includeMetadata: format === "json-full" });
+    if (!ok) {
+      setCopyError("Copy blocked by the browser. Downloaded instead.");
+      downloadFile({ format, includeMetadata: format === "json-full" });
+      setTimeout(() => setCopyError(null), 4000);
+      return;
+    }
     setCopied(format);
     setTimeout(() => setCopied(null), 2000);
   };
 
   const handleDownload = (
-    format: "json-overrides" | "json-full" | "typescript"
+    format: "json-overrides" | "json-full" | "typescript" | "typescript-tool-ui"
   ) => {
     downloadFile({ format, includeMetadata: format === "json-full" });
   };
@@ -55,6 +63,11 @@ export function ExportPanel({ checkpointOverrides, signedOff }: ExportPanelProps
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-56">
         <DropdownMenuLabel>Copy to Clipboard</DropdownMenuLabel>
+        {copyError && (
+          <DropdownMenuItem disabled className="opacity-100 text-red-400">
+            {copyError}
+          </DropdownMenuItem>
+        )}
         <DropdownMenuItem onClick={() => handleCopy("json-overrides")}>
           <FileJson className="mr-2 size-4" />
           <span className="flex-1">JSON (overrides only)</span>
@@ -70,6 +83,11 @@ export function ExportPanel({ checkpointOverrides, signedOff }: ExportPanelProps
           <span className="flex-1">TypeScript</span>
           {copied === "typescript" && <Check className="size-4 text-emerald-400" />}
         </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => handleCopy("typescript-tool-ui")}>
+          <FileCode className="mr-2 size-4" />
+          <span className="flex-1">TypeScript (Tool UI)</span>
+          {copied === "typescript-tool-ui" && <Check className="size-4 text-emerald-400" />}
+        </DropdownMenuItem>
 
         <DropdownMenuSeparator />
 
@@ -81,6 +99,10 @@ export function ExportPanel({ checkpointOverrides, signedOff }: ExportPanelProps
         <DropdownMenuItem onClick={() => handleDownload("typescript")}>
           <Download className="mr-2 size-4" />
           tuned-overrides.ts
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => handleDownload("typescript-tool-ui")}>
+          <Download className="mr-2 size-4" />
+          tuned-presets.ts
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
