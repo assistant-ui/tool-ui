@@ -1,10 +1,28 @@
 "use client";
 
-import { useState, useId, useCallback, useEffect, type CSSProperties } from "react";
+import {
+  useState,
+  useId,
+  useCallback,
+  useEffect,
+  type CSSProperties,
+} from "react";
 import { useControls, button, Leva } from "leva";
 import type { StagingConfig } from "../types";
-import { cn, Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/tool-ui/stats-display/_adapter";
-import type { StatsDisplayProps, StatItem, StatFormat, StatDiff } from "@/components/tool-ui/stats-display/schema";
+import {
+  cn,
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+} from "@/components/tool-ui/stats-display/_adapter";
+import type {
+  StatsDisplayProps,
+  StatItem,
+  StatFormat,
+  StatDiff,
+} from "@/components/tool-ui/stats-display/schema";
 
 interface SparklineAnimationParams {
   slideDuration: number;
@@ -75,7 +93,8 @@ function TunableSparkline({
 
   const linePoints = data.map((value, index) => {
     const x = padding + (index / (data.length - 1)) * usableWidth;
-    const y = padding + usableHeight - ((value - minVal) / range) * usableHeight;
+    const y =
+      padding + usableHeight - ((value - minVal) / range) * usableHeight;
     return { x, y };
   });
 
@@ -96,18 +115,24 @@ function TunableSparkline({
       viewBox={`0 0 ${width} ${height}`}
       aria-hidden="true"
       className={cn("h-full w-full shrink-0", className)}
-      style={{
-        ...style,
-        "--slide-duration": `${animation.slideDuration}ms`,
-        "--slide-distance": `${animation.slideDistance}px`,
-      } as CSSProperties}
+      style={
+        {
+          ...style,
+          "--slide-duration": `${animation.slideDuration}ms`,
+          "--slide-distance": `${animation.slideDistance}px`,
+        } as CSSProperties
+      }
       preserveAspectRatio="none"
     >
       {showFill && (
         <>
           <defs>
             <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor={color} stopOpacity={animation.fillOpacity} />
+              <stop
+                offset="0%"
+                stopColor={color}
+                stopOpacity={animation.fillOpacity}
+              />
               <stop offset="100%" stopColor={color} stopOpacity={0} />
             </linearGradient>
           </defs>
@@ -206,10 +231,16 @@ function FormattedValue({ value, format, locale }: FormattedValueProps) {
           <span className="font-light tabular-nums" aria-label={fullNumber}>
             {parts.map((part, i) =>
               part.type === "compact" ? (
-                <span key={i} className="ml-0.5 text-[0.65em] opacity-80" aria-hidden="true">{part.value}</span>
+                <span
+                  key={i}
+                  className="ml-0.5 text-[0.65em] opacity-80"
+                  aria-hidden="true"
+                >
+                  {part.value}
+                </span>
               ) : (
                 <span key={i}>{part.value}</span>
-              )
+              ),
             )}
           </span>
         );
@@ -236,7 +267,11 @@ function FormattedValue({ value, format, locale }: FormattedValueProps) {
         minimumFractionDigits: decimals,
         maximumFractionDigits: decimals,
       }).format(value);
-      return <span className="font-light tabular-nums" aria-label={spokenValue}>{formatted}</span>;
+      return (
+        <span className="font-light tabular-nums" aria-label={spokenValue}>
+          {formatted}
+        </span>
+      );
     }
     case "percent": {
       const decimals = format.decimals ?? 2;
@@ -244,9 +279,14 @@ function FormattedValue({ value, format, locale }: FormattedValueProps) {
       const numeric = basis === "fraction" ? value * 100 : value;
       const formatted = numeric.toFixed(decimals);
       return (
-        <span className="font-light tabular-nums" aria-label={`${formatted} percent`}>
+        <span
+          className="font-light tabular-nums"
+          aria-label={`${formatted} percent`}
+        >
           {formatted}
-          <span className="ml-0.5 text-[0.65em] opacity-80" aria-hidden="true">%</span>
+          <span className="ml-0.5 text-[0.65em] opacity-80" aria-hidden="true">
+            %
+          </span>
         </span>
       );
     }
@@ -286,10 +326,20 @@ function DeltaValue({ diff }: DeltaValueProps) {
   const display = `${sign}${formatted}%`;
 
   return (
-    <span className={cn("inline-flex items-center gap-1 rounded-full px-1.5 py-0.5 text-xs font-semibold tabular-nums", colorClass, bgClass)}>
-      {!upIsPositive && <span className="text-[0.9em]">{isGood ? "↓" : "↑"}</span>}
+    <span
+      className={cn(
+        "inline-flex items-center gap-1 rounded-full px-1.5 py-0.5 text-xs font-semibold tabular-nums",
+        colorClass,
+        bgClass,
+      )}
+    >
+      {!upIsPositive && (
+        <span className="text-[0.9em]">{isGood ? "↓" : "↑"}</span>
+      )}
       {display}
-      {label && <span className="text-muted-foreground font-normal">{label}</span>}
+      {label && (
+        <span className="text-muted-foreground font-normal">{label}</span>
+      )}
     </span>
   );
 }
@@ -319,7 +369,7 @@ function TunableStatCard({
     <div
       className={cn(
         "relative flex min-h-28 flex-col gap-1 px-6",
-        isSingle ? "justify-center" : "justify-end"
+        isSingle ? "justify-center" : "justify-end",
       )}
     >
       {hasSparkline && (
@@ -351,10 +401,12 @@ function TunableStatCard({
           animation: `slide-in-value ${cardAnimation.valueDuration}ms cubic-bezier(0.16, 1, 0.3, 1) ${baseDelay + cardAnimation.valueDelay}ms forwards, fade-in-tunable ${cardAnimation.valueDuration}ms cubic-bezier(0.16, 1, 0.3, 1) ${baseDelay + cardAnimation.valueDelay}ms forwards`,
         }}
       >
-        <span className={cn(
-          "font-light tracking-normal",
-          isSingle ? "text-5xl" : "text-3xl"
-        )}>
+        <span
+          className={cn(
+            "font-light tracking-normal",
+            isSingle ? "text-5xl" : "text-3xl",
+          )}
+        >
           <FormattedValue
             value={stat.value}
             format={stat.format}
@@ -401,7 +453,9 @@ function TunableStatsDisplay({
   sparklineAnimation,
   cardAnimation,
 }: TunableStatsDisplayProps) {
-  const locale = localeProp ?? (typeof navigator !== "undefined" ? navigator.language : undefined);
+  const locale =
+    localeProp ??
+    (typeof navigator !== "undefined" ? navigator.language : undefined);
   const hasHeader = Boolean(title || description);
   const isSingle = stats.length === 1;
 
@@ -420,14 +474,14 @@ function TunableStatsDisplay({
       data-tool-ui-id={id}
       aria-busy={isLoading}
       className={cn(
-        "w-full min-w-80 max-w-xl",
+        "w-full max-w-xl min-w-80",
         isSingle && "max-w-sm",
-        className
+        className,
       )}
     >
-      <Card className={cn("overflow-clip !pb-0 !pt-2", hasHeader && "!gap-0")}>
+      <Card className={cn("overflow-clip !pt-2 !pb-0", hasHeader && "!gap-0")}>
         {hasHeader && (
-          <CardHeader className="border-b border-border !pt-3 !pb-4">
+          <CardHeader className="border-border border-b !pt-3 !pb-4">
             {title && <CardTitle className="text-pretty">{title}</CardTitle>}
             {description && (
               <CardDescription className="text-pretty">
@@ -438,7 +492,7 @@ function TunableStatsDisplay({
         )}
         <CardContent className="@container overflow-hidden p-0">
           <div
-            className="grid @[440px]:-ml-px @[440px]:-mt-px"
+            className="grid @[440px]:-mt-px @[440px]:-ml-px"
             style={{
               gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
             }}
@@ -447,8 +501,8 @@ function TunableStatsDisplay({
               <div
                 key={stat.key}
                 className={cn(
-                  "overflow-clip py-3 first:pt-0 @[440px]:py-3 @[440px]:first:pt-3 @[440px]:border-l @[440px]:border-t @[440px]:border-border",
-                  index > 0 && "border-border border-t"
+                  "@[440px]:border-border overflow-clip py-3 first:pt-0 @[440px]:border-t @[440px]:border-l @[440px]:py-3 @[440px]:first:pt-3",
+                  index > 0 && "border-border border-t",
                 )}
               >
                 <TunableStatCard
@@ -477,10 +531,16 @@ function TuningPanel({ data }: TuningPanelProps) {
 
   const loopControls = useControls("Playback", {
     autoLoop: { value: false, label: "Auto Loop" },
-    loopInterval: { value: 3000, min: 1000, max: 10000, step: 500, label: "Interval (ms)" },
+    loopInterval: {
+      value: 3000,
+      min: 1000,
+      max: 10000,
+      step: 500,
+      label: "Interval (ms)",
+    },
   });
 
-  const replay = useCallback(() => setKey(k => k + 1), []);
+  const replay = useCallback(() => setKey((k) => k + 1), []);
 
   useEffect(() => {
     if (!loopControls.autoLoop) return;
@@ -491,39 +551,177 @@ function TuningPanel({ data }: TuningPanelProps) {
   }, [loopControls.autoLoop, loopControls.loopInterval, replay]);
 
   const sparklineAnimation = useControls("Sparkline", {
-    slideDuration: { value: 1000, min: 100, max: 3000, step: 50, label: "Slide Duration (ms)" },
-    slideDistance: { value: 48, min: 0, max: 100, step: 4, label: "Slide Distance (px)" },
-    fadeDuration: { value: 1500, min: 100, max: 3000, step: 50, label: "Fade Duration (ms)" },
-    fillFadeDuration: { value: 1000, min: 100, max: 3000, step: 50, label: "Fill Fade Duration" },
-    fillOpacity: { value: 0.09, min: 0, max: 0.5, step: 0.01, label: "Fill Opacity" },
-    baseStrokeOpacity: { value: 0.15, min: 0, max: 1, step: 0.05, label: "Base Stroke Opacity" },
+    slideDuration: {
+      value: 1000,
+      min: 100,
+      max: 3000,
+      step: 50,
+      label: "Slide Duration (ms)",
+    },
+    slideDistance: {
+      value: 48,
+      min: 0,
+      max: 100,
+      step: 4,
+      label: "Slide Distance (px)",
+    },
+    fadeDuration: {
+      value: 1500,
+      min: 100,
+      max: 3000,
+      step: 50,
+      label: "Fade Duration (ms)",
+    },
+    fillFadeDuration: {
+      value: 1000,
+      min: 100,
+      max: 3000,
+      step: 50,
+      label: "Fill Fade Duration",
+    },
+    fillOpacity: {
+      value: 0.09,
+      min: 0,
+      max: 0.5,
+      step: 0.01,
+      label: "Fill Opacity",
+    },
+    baseStrokeOpacity: {
+      value: 0.15,
+      min: 0,
+      max: 1,
+      step: 0.05,
+      label: "Base Stroke Opacity",
+    },
   });
 
   const glintAnimation = useControls("Glint Effect", {
-    glintDuration: { value: 0.8, min: 0.1, max: 3, step: 0.1, label: "Duration (s)" },
+    glintDuration: {
+      value: 0.8,
+      min: 0.1,
+      max: 3,
+      step: 0.1,
+      label: "Duration (s)",
+    },
     glintDelay: { value: 0, min: 0, max: 2000, step: 50, label: "Delay (ms)" },
-    glintDashSize: { value: 0.24, min: 0.05, max: 0.8, step: 0.02, label: "Dash (0-1)" },
-    glintGapSize: { value: 0.76, min: 0.2, max: 1.5, step: 0.02, label: "Gap (0-1)" },
-    glintStrokeWidth: { value: 0.75, min: 0.5, max: 6, step: 0.25, label: "Stroke Width" },
-    glintPeakOpacity: { value: 0.9, min: 0, max: 1, step: 0.05, label: "Peak Opacity" },
+    glintDashSize: {
+      value: 0.24,
+      min: 0.05,
+      max: 0.8,
+      step: 0.02,
+      label: "Dash (0-1)",
+    },
+    glintGapSize: {
+      value: 0.76,
+      min: 0.2,
+      max: 1.5,
+      step: 0.02,
+      label: "Gap (0-1)",
+    },
+    glintStrokeWidth: {
+      value: 0.75,
+      min: 0.5,
+      max: 6,
+      step: 0.25,
+      label: "Stroke Width",
+    },
+    glintPeakOpacity: {
+      value: 0.9,
+      min: 0,
+      max: 1,
+      step: 0.05,
+      label: "Peak Opacity",
+    },
   });
 
   const slowGlintAnimation = useControls("Slow Glint", {
-    slowGlintDelay: { value: 0, min: 0, max: 2000, step: 50, label: "Delay (ms)" },
-    slowGlintDashSize: { value: 0.36, min: 0.1, max: 0.8, step: 0.02, label: "Dash (0-1)" },
-    slowGlintGapSize: { value: 0.64, min: 0.2, max: 1.5, step: 0.02, label: "Gap (0-1)" },
-    slowGlintStrokeWidth: { value: 0.75, min: 0.5, max: 6, step: 0.25, label: "Stroke Width" },
-    slowGlintPeakOpacity: { value: 0.2, min: 0, max: 1, step: 0.05, label: "Peak Opacity" },
+    slowGlintDelay: {
+      value: 0,
+      min: 0,
+      max: 2000,
+      step: 50,
+      label: "Delay (ms)",
+    },
+    slowGlintDashSize: {
+      value: 0.36,
+      min: 0.1,
+      max: 0.8,
+      step: 0.02,
+      label: "Dash (0-1)",
+    },
+    slowGlintGapSize: {
+      value: 0.64,
+      min: 0.2,
+      max: 1.5,
+      step: 0.02,
+      label: "Gap (0-1)",
+    },
+    slowGlintStrokeWidth: {
+      value: 0.75,
+      min: 0.5,
+      max: 6,
+      step: 0.25,
+      label: "Stroke Width",
+    },
+    slowGlintPeakOpacity: {
+      value: 0.2,
+      min: 0,
+      max: 1,
+      step: 0.05,
+      label: "Peak Opacity",
+    },
   });
 
   const cardAnimation = useControls("Stat Cards", {
-    staggerOffset: { value: 175, min: 0, max: 500, step: 25, label: "Stagger (ms)" },
-    labelDelay: { value: 75, min: 0, max: 500, step: 25, label: "Label Delay (ms)" },
-    labelDuration: { value: 500, min: 100, max: 2000, step: 50, label: "Label Duration" },
-    labelSlide: { value: 4, min: 0, max: 32, step: 2, label: "Label Slide (px)" },
-    valueDelay: { value: 150, min: 0, max: 500, step: 25, label: "Value Delay (ms)" },
-    valueDuration: { value: 500, min: 100, max: 2000, step: 50, label: "Value Duration" },
-    valueSlide: { value: 8, min: 0, max: 32, step: 2, label: "Value Slide (px)" },
+    staggerOffset: {
+      value: 175,
+      min: 0,
+      max: 500,
+      step: 25,
+      label: "Stagger (ms)",
+    },
+    labelDelay: {
+      value: 75,
+      min: 0,
+      max: 500,
+      step: 25,
+      label: "Label Delay (ms)",
+    },
+    labelDuration: {
+      value: 500,
+      min: 100,
+      max: 2000,
+      step: 50,
+      label: "Label Duration",
+    },
+    labelSlide: {
+      value: 4,
+      min: 0,
+      max: 32,
+      step: 2,
+      label: "Label Slide (px)",
+    },
+    valueDelay: {
+      value: 150,
+      min: 0,
+      max: 500,
+      step: 25,
+      label: "Value Delay (ms)",
+    },
+    valueDuration: {
+      value: 500,
+      min: 100,
+      max: 2000,
+      step: 50,
+      label: "Value Duration",
+    },
+    valueSlide: {
+      value: 8,
+      min: 0,
+      max: 32,
+      step: 2,
+      label: "Value Slide (px)",
+    },
   });
 
   const copyConfig = useCallback(() => {
@@ -603,11 +801,7 @@ function TuningPanel({ data }: TuningPanelProps) {
           cardAnimation={cardAnimation}
         />
       </div>
-      <Leva
-        flat
-        hideCopyButton
-        titleBar={{ title: "Animation Tuning" }}
-      />
+      <Leva flat hideCopyButton titleBar={{ title: "Animation Tuning" }} />
     </div>
   );
 }

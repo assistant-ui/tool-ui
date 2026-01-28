@@ -12,12 +12,12 @@ export interface CategoryMeta {
 }
 
 export const CATEGORY_META: Record<ComponentCategory, CategoryMeta> = {
-  media: { label: "Media", order: 1 },
-  artifacts: { label: "Artifacts", order: 2 },
+  progress: { label: "Progress", order: 1 },
+  input: { label: "Input", order: 2 },
   display: { label: "Display", order: 3 },
-  input: { label: "Input", order: 4 },
+  artifacts: { label: "Artifacts", order: 4 },
   confirmation: { label: "Confirmation", order: 5 },
-  progress: { label: "Progress", order: 6 },
+  media: { label: "Media", order: 6 },
 };
 
 export interface ComponentMeta {
