@@ -1,13 +1,8 @@
 "use client";
 
 import { useMemo, useState, useEffect } from "react";
-import { CloudCanvas } from "@/app/sandbox/cloud-effect/cloud-canvas";
-import { RainCanvas } from "@/app/sandbox/rain-effect/rain-canvas";
-import { LightningCanvas } from "@/app/sandbox/lightning-effect/lightning-canvas";
-import { SnowCanvas } from "@/app/sandbox/snow-effect/snow-canvas";
-import { CelestialCanvas } from "./celestial-canvas";
 import type { WeatherCondition } from "../schema";
-import type { EffectSettings } from "./types";
+import type { EffectLayerConfig, EffectSettings } from "./types";
 import {
   mapWeatherToEffects,
   configToCloudProps,
@@ -16,6 +11,162 @@ import {
   configToSnowProps,
   configToCelestialProps,
 } from "./parameter-mapper";
+import {
+  WeatherEffectsCanvas,
+  type LayerToggles,
+  type WeatherEffectsCanvasProps,
+} from "./weather-effects-canvas";
+import { TUNED_WEATHER_EFFECTS_CHECKPOINT_OVERRIDES } from "./tuned-presets";
+import { applyWeatherEffectsOverrides, getNearestCheckpoint } from "./tuning";
+
+function sunAltitudeToLightIntensity(sunAltitude: number): number {
+  // Mirrors the solar contribution curve used by getSceneBrightness.
+  const light =
+    sunAltitude < 0
+      ? 0.05 + (1 + sunAltitude) * 0.1
+      : 0.15 + sunAltitude * 0.85;
+  return Math.max(0, Math.min(1, light));
+}
+
+function mapEffectConfigToCanvasProps(config: EffectLayerConfig): WeatherEffectsCanvasProps {
+  const celestial = configToCelestialProps(config) ?? undefined;
+  const rain = configToRainProps(config) ?? undefined;
+  const snow = configToSnowProps(config) ?? undefined;
+  const lightningBase = configToLightningProps(config) ?? undefined;
+  const cloudBase = configToCloudProps(config) ?? undefined;
+
+  const cloud: WeatherEffectsCanvasProps["cloud"] = cloudBase
+    ? {
+      coverage: cloudBase.coverage,
+      windSpeed: cloudBase.windSpeed,
+      turbulence: cloudBase.turbulence,
+      ambientDarkness: cloudBase.ambientDarkness,
+      lightIntensity: sunAltitudeToLightIntensity(cloudBase.sunAltitude),
+    }
+    : undefined;
+
+  const lightning: WeatherEffectsCanvasProps["lightning"] = config.lightning
+    ? {
+      enabled: config.lightning.enabled,
+      autoMode: lightningBase?.autoMode ?? config.lightning.autoTrigger,
+      autoInterval:
+        lightningBase?.autoInterval ??
+        (config.lightning.intervalMin + config.lightning.intervalMax) / 2,
+    }
+    : undefined;
+
+  const layers: Partial<LayerToggles> = {
+    celestial: Boolean(celestial),
+    clouds: Boolean(cloud),
+    rain: Boolean(config.rain),
+    lightning: Boolean(config.lightning?.enabled),
+    snow: Boolean(config.snow),
+  };
+
+  return { layers, celestial, cloud, rain, lightning, snow };
+}
+
+function mapCustomEffectPropsToCanvasProps(
+  custom: CustomEffectProps
+): WeatherEffectsCanvasProps | null {
+  const layerOverrides = custom.layers;
+
+  const hasCelestial =
+    layerOverrides?.celestial !== false && custom.celestial !== undefined;
+  const hasCloud =
+    layerOverrides?.clouds !== false && custom.cloud !== undefined;
+  const hasRain =
+    layerOverrides?.rain !== false && custom.rain !== undefined;
+  const hasLightning =
+    layerOverrides?.lightning !== false && custom.lightning !== undefined;
+  const hasSnow =
+    layerOverrides?.snow !== false && custom.snow !== undefined;
+
+  if (!hasCelestial && !hasCloud && !hasRain && !hasLightning && !hasSnow) {
+    return null;
+  }
+
+  const layers: Partial<LayerToggles> = {
+    celestial: hasCelestial,
+    clouds: hasCloud,
+    rain: hasRain,
+    lightning: hasLightning,
+    snow: hasSnow,
+  };
+
+  const celestial: WeatherEffectsCanvasProps["celestial"] = hasCelestial
+    ? custom.celestial
+    : undefined;
+
+  const cloud: WeatherEffectsCanvasProps["cloud"] = hasCloud && custom.cloud
+    ? {
+      coverage: custom.cloud.coverage,
+      density: custom.cloud.density,
+      softness: custom.cloud.softness,
+      cloudScale: custom.cloud.cloudScale,
+      windSpeed: custom.cloud.windSpeed,
+      windAngle: custom.cloud.windAngle,
+      turbulence: custom.cloud.turbulence,
+      lightIntensity:
+        custom.cloud.lightIntensity ??
+        sunAltitudeToLightIntensity(custom.cloud.sunAltitude),
+      ambientDarkness: custom.cloud.ambientDarkness,
+      numLayers: custom.cloud.numLayers,
+    }
+    : undefined;
+
+  const rain: WeatherEffectsCanvasProps["rain"] = hasRain && custom.rain
+    ? {
+      glassIntensity: custom.rain.glassIntensity,
+      glassZoom: custom.rain.zoom,
+      fallingIntensity: custom.rain.fallingIntensity,
+      fallingSpeed: custom.rain.fallingSpeed,
+      fallingAngle: custom.rain.fallingAngle,
+      fallingStreakLength: custom.rain.fallingStreakLength,
+      fallingLayers: custom.rain.fallingLayers,
+    }
+    : undefined;
+
+  const lightning: WeatherEffectsCanvasProps["lightning"] =
+    hasLightning && custom.lightning
+      ? {
+        enabled: true,
+        autoMode: custom.lightning.autoMode,
+        autoInterval: custom.lightning.autoInterval,
+        flashIntensity: custom.lightning.glowIntensity,
+        branchDensity: custom.lightning.branchDensity,
+      }
+      : undefined;
+
+  const snow: WeatherEffectsCanvasProps["snow"] = hasSnow && custom.snow
+    ? {
+      intensity: custom.snow.intensity,
+      layers: custom.snow.layers,
+      fallSpeed: custom.snow.fallSpeed,
+      windSpeed: custom.snow.windSpeed,
+      drift: custom.snow.drift,
+      flakeSize: custom.snow.flakeSize,
+    }
+    : undefined;
+
+  const interactions: Partial<NonNullable<WeatherEffectsCanvasProps["interactions"]>> = {};
+  if (custom.rain?.fallingRefraction !== undefined) {
+    interactions.rainRefractionStrength = custom.rain.fallingRefraction;
+  }
+  if (custom.lightning?.sceneIllumination !== undefined) {
+    interactions.lightningSceneIllumination = custom.lightning.sceneIllumination;
+  }
+
+  return {
+    layers,
+    celestial,
+    cloud,
+    rain,
+    lightning,
+    snow,
+    interactions: Object.keys(interactions).length > 0 ? interactions : undefined,
+  };
+}
 
 /**
  * Custom effect layer props for direct control.
@@ -144,6 +295,27 @@ export function EffectCompositor({
     setIsMounted(true);
   }, []);
 
+  const dpr = useMemo(() => {
+    if (typeof window === "undefined") return undefined;
+
+    const base = window.devicePixelRatio || 1;
+    const quality = settings?.quality ?? "auto";
+
+    // Keep high-density screens from exploding GPU cost by default.
+    const cap =
+      quality === "low"
+        ? 1.0
+        : quality === "medium"
+          ? 1.5
+          : quality === "high"
+            ? 2.0
+            : window.innerWidth < 768
+              ? 1.5
+              : 2.0;
+
+    return Math.max(1, Math.min(base, cap));
+  }, [settings?.quality]);
+
   const effectConfig = useMemo(() => {
     if (!enabled || hasCustomProps) return null;
 
@@ -158,73 +330,28 @@ export function EffectCompositor({
     });
   }, [condition, windSpeed, windDirection, precipitation, humidity, visibility, timestamp, enabled, hasCustomProps]);
 
-  // Derive props from either customProps or effectConfig
-  const derivedProps = useMemo(() => {
-    if (hasCustomProps) {
-      const layers = customProps.layers;
-      return {
-        hasCelestial: layers?.celestial !== false && customProps.celestial !== undefined,
-        hasCloud: layers?.clouds !== false && customProps.cloud !== undefined,
-        hasRain: layers?.rain !== false && customProps.rain !== undefined,
-        hasLightning: layers?.lightning !== false && customProps.lightning !== undefined,
-        hasSnow: layers?.snow !== false && customProps.snow !== undefined,
-        celestial: customProps.celestial,
-        cloud: customProps.cloud,
-        rain: customProps.rain,
-        lightning: customProps.lightning,
-        snow: customProps.snow,
-        isCustom: true as const,
-      };
+  const canvasProps = useMemo<WeatherEffectsCanvasProps | null>(() => {
+    if (!enabled || reducedMotion) return null;
+
+    if (hasCustomProps && customProps) {
+      return mapCustomEffectPropsToCanvasProps(customProps);
     }
 
-    if (!effectConfig) {
-      return {
-        hasCelestial: false,
-        hasCloud: false,
-        hasRain: false,
-        hasLightning: false,
-        hasSnow: false,
-        celestial: undefined,
-        cloud: undefined,
-        rain: undefined,
-        lightning: undefined,
-        snow: undefined,
-        isCustom: false as const,
-      };
-    }
+    if (!effectConfig) return null;
+    const base = mapEffectConfigToCanvasProps(effectConfig);
 
-    const celestialProps = configToCelestialProps(effectConfig);
-    const cloudProps = configToCloudProps(effectConfig);
-    const rainProps = configToRainProps(effectConfig);
-    const lightningProps = configToLightningProps(effectConfig);
-    const snowProps = configToSnowProps(effectConfig);
+    const tuned = TUNED_WEATHER_EFFECTS_CHECKPOINT_OVERRIDES[condition];
+    const timeOfDay = effectConfig.celestial?.timeOfDay;
+    if (!tuned || timeOfDay === undefined) return base;
 
-    return {
-      hasCelestial: celestialProps !== null,
-      hasCloud: cloudProps !== null,
-      hasRain: rainProps !== null,
-      hasLightning: lightningProps !== null,
-      hasSnow: snowProps !== null,
-      celestial: celestialProps ?? undefined,
-      cloud: cloudProps ?? undefined,
-      rain: rainProps ?? undefined,
-      lightning: lightningProps ?? undefined,
-      snow: snowProps ?? undefined,
-      isCustom: false as const,
-    };
-  }, [hasCustomProps, customProps, effectConfig]);
+    const checkpoint = getNearestCheckpoint(timeOfDay);
+    const overrides = tuned[checkpoint];
+    return applyWeatherEffectsOverrides(base, overrides);
+  }, [enabled, reducedMotion, hasCustomProps, customProps, effectConfig, condition]);
 
-  if (!isMounted || !enabled || reducedMotion) {
+  if (!isMounted || !enabled || reducedMotion || !canvasProps) {
     return null;
   }
-
-  const { hasCelestial, hasCloud, hasRain, hasLightning, hasSnow, celestial, cloud, rain, lightning, snow, isCustom } = derivedProps;
-
-  // Type helpers for accessing optional props (only exist in custom mode)
-  const cloudCustom = isCustom ? cloud as CustomEffectProps["cloud"] : undefined;
-  const rainCustom = isCustom ? rain as CustomEffectProps["rain"] : undefined;
-  const lightningCustom = isCustom ? lightning as CustomEffectProps["lightning"] : undefined;
-  const snowCustom = isCustom ? snow as CustomEffectProps["snow"] : undefined;
 
   return (
     <div
@@ -238,116 +365,7 @@ export function EffectCompositor({
       }}
       aria-hidden="true"
     >
-      {hasCelestial && celestial && (
-        <CelestialCanvas
-          className="absolute inset-0"
-          timeOfDay={celestial.timeOfDay}
-          moonPhase={celestial.moonPhase}
-          starDensity={celestial.starDensity}
-          celestialX={celestial.celestialX}
-          celestialY={celestial.celestialY}
-          sunSize={celestial.sunSize}
-          moonSize={celestial.moonSize}
-          sunGlowIntensity={celestial.sunGlowIntensity}
-          sunGlowSize={celestial.sunGlowSize}
-          sunRayCount={celestial.sunRayCount}
-          sunRayLength={celestial.sunRayLength}
-          sunRayIntensity={celestial.sunRayIntensity}
-          moonGlowIntensity={celestial.moonGlowIntensity}
-          moonGlowSize={celestial.moonGlowSize}
-        />
-      )}
-
-      {hasCloud && cloud && (
-        <CloudCanvas
-          className="absolute inset-0"
-          cloudScale={cloudCustom?.cloudScale}
-          coverage={cloud.coverage}
-          density={cloudCustom?.density}
-          softness={cloudCustom?.softness}
-          windSpeed={cloud.windSpeed}
-          windAngle={cloudCustom?.windAngle}
-          turbulence={cloud.turbulence}
-          sunAltitude={cloud.sunAltitude}
-          sunAzimuth={cloudCustom?.sunAzimuth}
-          lightIntensity={cloudCustom?.lightIntensity}
-          ambientDarkness={cloud.ambientDarkness}
-          numLayers={cloudCustom?.numLayers ?? 3}
-          layerSpread={cloudCustom?.layerSpread}
-          starDensity={cloud.starDensity}
-          starSize={cloudCustom?.starSize}
-          starTwinkleSpeed={cloudCustom?.starTwinkleSpeed}
-          starTwinkleAmount={cloudCustom?.starTwinkleAmount}
-          horizonLine={cloudCustom?.horizonLine}
-          transparentBackground={true}
-        />
-      )}
-
-      {hasRain && rain && (
-        <div
-          className="absolute inset-0"
-          style={{ mixBlendMode: "screen" }}
-        >
-          <RainCanvas
-            className="absolute inset-0"
-            glassIntensity={rain.glassIntensity}
-            zoom={rainCustom?.zoom}
-            fallingIntensity={rain.fallingIntensity}
-            fallingSpeed={rainCustom?.fallingSpeed}
-            fallingAngle={rain.fallingAngle}
-            fallingStreakLength={rainCustom?.fallingStreakLength}
-            fallingLayers={rainCustom?.fallingLayers ?? 3}
-            fallingRefraction={rainCustom?.fallingRefraction}
-            fallingWaviness={rainCustom?.fallingWaviness}
-            fallingThicknessVar={rainCustom?.fallingThicknessVar}
-          />
-        </div>
-      )}
-
-      {hasLightning && lightning && (
-        <div
-          className="absolute inset-0"
-          style={{ mixBlendMode: "screen" }}
-        >
-          <LightningCanvas
-            className="absolute inset-0"
-            branchDensity={isCustom ? lightningCustom?.branchDensity : undefined}
-            displacement={isCustom ? lightningCustom?.displacement : undefined}
-            glowIntensity={isCustom ? lightningCustom?.glowIntensity : undefined}
-            flashDuration={isCustom ? lightningCustom?.flashDuration : undefined}
-            sceneIllumination={isCustom ? lightningCustom?.sceneIllumination : 0.6}
-            afterglowPersistence={isCustom ? lightningCustom?.afterglowPersistence : undefined}
-            autoMode={lightning.autoMode}
-            autoInterval={lightning.autoInterval}
-          />
-        </div>
-      )}
-
-      {hasSnow && snow && (
-        <div
-          className="absolute inset-0"
-          style={{ mixBlendMode: "plus-lighter" }}
-        >
-          <SnowCanvas
-            className="absolute inset-0"
-            intensity={snow.intensity}
-            layers={isCustom ? snowCustom?.layers : 4}
-            fallSpeed={isCustom ? snowCustom?.fallSpeed : undefined}
-            windSpeed={snow.windSpeed}
-            windAngle={isCustom ? snowCustom?.windAngle : undefined}
-            turbulence={isCustom ? snowCustom?.turbulence : undefined}
-            drift={snow.drift}
-            flutter={isCustom ? snowCustom?.flutter : undefined}
-            windShear={isCustom ? snowCustom?.windShear : undefined}
-            flakeSize={isCustom ? snowCustom?.flakeSize : undefined}
-            sizeVariation={isCustom ? snowCustom?.sizeVariation : undefined}
-            opacity={isCustom ? snowCustom?.opacity : undefined}
-            glowAmount={isCustom ? snowCustom?.glowAmount : undefined}
-            sparkle={isCustom ? snowCustom?.sparkle : undefined}
-            visibility={isCustom ? snowCustom?.visibility : undefined}
-          />
-        </div>
-      )}
+      <WeatherEffectsCanvas className="absolute inset-0" dpr={dpr} {...canvasProps} />
     </div>
   );
 }

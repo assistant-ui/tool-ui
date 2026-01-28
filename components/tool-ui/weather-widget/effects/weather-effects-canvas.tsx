@@ -82,6 +82,11 @@ export interface LayerToggles {
 
 export interface WeatherEffectsCanvasProps {
   className?: string;
+  /**
+   * Override device pixel ratio used for rendering.
+   * When omitted, defaults to `window.devicePixelRatio`.
+   */
+  dpr?: number;
   layers?: Partial<LayerToggles>;
   celestial?: Partial<CelestialParams>;
   cloud?: Partial<CloudParams>;
@@ -1243,13 +1248,37 @@ function smoothstep(edge0: number, edge1: number, x: number): number {
 // WEBGL HELPERS
 // =============================================================================
 
+const MAX_CONCURRENT_WEATHER_WEBGL_CANVASES = 8;
+const allocatedWeatherWebglCanvases = new Set<HTMLCanvasElement>();
+
+function tryAcquireWeatherWebglCanvas(canvas: HTMLCanvasElement): boolean {
+  if (allocatedWeatherWebglCanvases.has(canvas)) return true;
+  if (allocatedWeatherWebglCanvases.size >= MAX_CONCURRENT_WEATHER_WEBGL_CANVASES) return false;
+  allocatedWeatherWebglCanvases.add(canvas);
+  return true;
+}
+
+function releaseWeatherWebglCanvas(canvas: HTMLCanvasElement): void {
+  allocatedWeatherWebglCanvases.delete(canvas);
+}
+
 function createShader(gl: WebGL2RenderingContext, type: GLenum, source: string): WebGLShader | null {
+  if (gl.isContextLost()) return null;
   const shader = gl.createShader(type);
   if (!shader) return null;
   gl.shaderSource(shader, source);
   gl.compileShader(shader);
   if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-    console.error("Shader compile error:", gl.getShaderInfoLog(shader));
+    const info = gl.getShaderInfoLog(shader);
+    if (!gl.isContextLost()) {
+      const kind =
+        type === gl.VERTEX_SHADER
+          ? "vertex"
+          : type === gl.FRAGMENT_SHADER
+            ? "fragment"
+            : String(type);
+      console.error(`Shader compile error (${kind}):`, info ?? "(no info log)");
+    }
     gl.deleteShader(shader);
     return null;
   }
@@ -1257,21 +1286,42 @@ function createShader(gl: WebGL2RenderingContext, type: GLenum, source: string):
 }
 
 function createProgram(gl: WebGL2RenderingContext, vertexSource: string, fragmentSource: string): WebGLProgram | null {
+  if (gl.isContextLost()) return null;
   const vertexShader = createShader(gl, gl.VERTEX_SHADER, vertexSource);
   const fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, fragmentSource);
-  if (!vertexShader || !fragmentShader) return null;
+  if (!vertexShader || !fragmentShader) {
+    if (vertexShader) gl.deleteShader(vertexShader);
+    if (fragmentShader) gl.deleteShader(fragmentShader);
+    return null;
+  }
 
   const program = gl.createProgram();
-  if (!program) return null;
+  if (!program) {
+    gl.deleteShader(vertexShader);
+    gl.deleteShader(fragmentShader);
+    return null;
+  }
   gl.attachShader(program, vertexShader);
   gl.attachShader(program, fragmentShader);
   gl.linkProgram(program);
 
   if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
-    console.error("Program link error:", gl.getProgramInfoLog(program));
+    const info = gl.getProgramInfoLog(program);
+    if (!gl.isContextLost()) {
+      console.error("Program link error:", info ?? "(no info log)");
+    }
     gl.deleteProgram(program);
+    gl.deleteShader(vertexShader);
+    gl.deleteShader(fragmentShader);
     return null;
   }
+
+  // Shaders can be deleted after a successful link.
+  gl.detachShader(program, vertexShader);
+  gl.detachShader(program, fragmentShader);
+  gl.deleteShader(vertexShader);
+  gl.deleteShader(fragmentShader);
+
   return program;
 }
 
@@ -1294,10 +1344,25 @@ function createFramebuffer(gl: WebGL2RenderingContext, width: number, height: nu
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
 
   const fbo = gl.createFramebuffer();
-  if (!fbo) return null;
+  if (!fbo) {
+    gl.deleteTexture(texture);
+    return null;
+  }
 
   gl.bindFramebuffer(gl.FRAMEBUFFER, fbo);
   gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, texture, 0);
+
+  const status = gl.checkFramebufferStatus(gl.FRAMEBUFFER);
+  if (status !== gl.FRAMEBUFFER_COMPLETE) {
+    if (!gl.isContextLost()) {
+      console.error("Framebuffer incomplete:", status);
+    }
+    gl.deleteFramebuffer(fbo);
+    gl.deleteTexture(texture);
+    gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+    gl.bindTexture(gl.TEXTURE_2D, null);
+    return null;
+  }
 
   gl.bindFramebuffer(gl.FRAMEBUFFER, null);
   gl.bindTexture(gl.TEXTURE_2D, null);
@@ -1322,6 +1387,7 @@ function resizeFramebuffer(gl: WebGL2RenderingContext, fb: Framebuffer, width: n
 
 export function WeatherEffectsCanvas({
   className,
+  dpr: dprProp,
   layers: layersProp,
   celestial: celestialProp,
   cloud: cloudProp,
@@ -1336,9 +1402,18 @@ export function WeatherEffectsCanvas({
   const startTimeRef = useRef<number>(0);
   const lastFlashTimeRef = useRef<number>(-100);
   const nextFlashTimeRef = useRef<number>(0);
-  const strikeSeedRef = useRef<number>(Math.random());
+  const strikeSeedRef = useRef<number>(0);
   const moonTextureRef = useRef<WebGLTexture | null>(null);
   const moonTextureLoadedRef = useRef<boolean>(false);
+  const positionBufferRef = useRef<WebGLBuffer | null>(null);
+  const uniformLocationCacheRef = useRef<
+    WeakMap<WebGLProgram, Map<string, WebGLUniformLocation | null>>
+  >(new WeakMap());
+  const isVisibleRef = useRef<boolean>(false);
+  const isRunningRef = useRef<boolean>(false);
+  const isContextLostRef = useRef<boolean>(false);
+  const initFailedRef = useRef<boolean>(false);
+  const hasWebglBudgetSlotRef = useRef<boolean | null>(null);
 
   // Programs
   const programsRef = useRef<{
@@ -1372,6 +1447,7 @@ export function WeatherEffectsCanvas({
     lightning: { ...DEFAULT_LIGHTNING, ...lightningProp },
     snow: { ...DEFAULT_SNOW, ...snowProp },
     interactions: { ...DEFAULT_INTERACTIONS, ...interactionsProp },
+    dpr: dprProp,
   });
 
   propsRef.current = {
@@ -1382,18 +1458,123 @@ export function WeatherEffectsCanvas({
     lightning: { ...DEFAULT_LIGHTNING, ...lightningProp },
     snow: { ...DEFAULT_SNOW, ...snowProp },
     interactions: { ...DEFAULT_INTERACTIONS, ...interactionsProp },
+    dpr: dprProp,
   };
 
+  const getUniformLocationCached = useCallback(
+    (gl: WebGL2RenderingContext, program: WebGLProgram, name: string) => {
+      let programCache = uniformLocationCacheRef.current.get(program);
+      if (!programCache) {
+        programCache = new Map();
+        uniformLocationCacheRef.current.set(program, programCache);
+      }
+
+      const cached = programCache.get(name);
+      if (cached !== undefined) {
+        return cached;
+      }
+
+      const location = gl.getUniformLocation(program, name);
+      programCache.set(name, location);
+      return location;
+    },
+    []
+  );
+
+  const stopRenderLoop = useCallback(() => {
+    if (animationFrameRef.current) {
+      cancelAnimationFrame(animationFrameRef.current);
+      animationFrameRef.current = 0;
+    }
+    isRunningRef.current = false;
+  }, []);
+
+  const disposeGL = useCallback(() => {
+    stopRenderLoop();
+
+    const gl = glRef.current;
+    const isContextLost = isContextLostRef.current;
+
+    if (gl && !isContextLost) {
+      // Programs
+      for (const program of Object.values(programsRef.current)) {
+        if (program) gl.deleteProgram(program);
+      }
+
+      // Ping-pong framebuffers + textures
+      for (const fb of [fbRef.current.a, fbRef.current.b]) {
+        if (!fb) continue;
+        gl.deleteFramebuffer(fb.fbo);
+        gl.deleteTexture(fb.texture);
+      }
+
+      // Moon texture
+      if (moonTextureRef.current) {
+        gl.deleteTexture(moonTextureRef.current);
+      }
+
+      // Fullscreen quad buffer
+      if (positionBufferRef.current) {
+        gl.deleteBuffer(positionBufferRef.current);
+      }
+    }
+
+    // Clear refs regardless (context-loss-safe).
+    programsRef.current = {
+      celestial: null,
+      cloud: null,
+      rain: null,
+      lightning: null,
+      snow: null,
+      composite: null,
+    };
+    fbRef.current = { a: null, b: null };
+    moonTextureRef.current = null;
+    moonTextureLoadedRef.current = false;
+    positionBufferRef.current = null;
+    glRef.current = null;
+    uniformLocationCacheRef.current = new WeakMap();
+  }, [stopRenderLoop]);
+
   const initGL = useCallback(() => {
+    if (initFailedRef.current) return false;
+
     const canvas = canvasRef.current;
     if (!canvas) return false;
 
+    if (hasWebglBudgetSlotRef.current === false) return false;
+    if (hasWebglBudgetSlotRef.current === null) {
+      const ok = tryAcquireWeatherWebglCanvas(canvas);
+      if (!ok) {
+        hasWebglBudgetSlotRef.current = false;
+        if (process.env.NODE_ENV !== "production") {
+          console.warn(
+            "[WeatherEffectsCanvas] Too many WebGL canvases on the page; rendering this widget without effects."
+          );
+        }
+        return false;
+      }
+      hasWebglBudgetSlotRef.current = true;
+    }
+
+    // Re-init safely.
+    disposeGL();
+    isContextLostRef.current = false;
+
     const gl = canvas.getContext("webgl2");
     if (!gl) {
-      console.error("WebGL2 not supported");
+      initFailedRef.current = true;
+      if (process.env.NODE_ENV !== "production") {
+        console.warn("[WeatherEffectsCanvas] WebGL2 not supported; rendering without effects.");
+      }
       return false;
     }
     glRef.current = gl;
+    if (gl.isContextLost()) {
+      isContextLostRef.current = true;
+      disposeGL();
+      return false;
+    }
 
     // Create programs
     programsRef.current.celestial = createProgram(gl, FULLSCREEN_VERTEX, CELESTIAL_FRAGMENT);
@@ -1403,11 +1584,36 @@ export function WeatherEffectsCanvas({
     programsRef.current.snow = createProgram(gl, FULLSCREEN_VERTEX, SNOW_FRAGMENT);
     programsRef.current.composite = createProgram(gl, FULLSCREEN_VERTEX, COMPOSITE_FRAGMENT);
 
+    // Require at least a sky + final composite so we can render something.
+    if (!programsRef.current.celestial || !programsRef.current.composite) {
+      if (gl.isContextLost()) {
+        isContextLostRef.current = true;
+      } else {
+        initFailedRef.current = true;
+        console.error("Failed to create required WebGL programs");
+      }
+      disposeGL();
+      return false;
+    }
+
     // Create framebuffers
-    const width = canvas.clientWidth * window.devicePixelRatio;
-    const height = canvas.clientHeight * window.devicePixelRatio;
-    fbRef.current.a = createFramebuffer(gl, width, height);
-    fbRef.current.b = createFramebuffer(gl, width, height);
+    const dpr = propsRef.current.dpr ?? window.devicePixelRatio;
+    const width = Math.max(1, Math.floor(canvas.clientWidth * dpr));
+    const height = Math.max(1, Math.floor(canvas.clientHeight * dpr));
+    const fbA = createFramebuffer(gl, width, height);
+    const fbB = createFramebuffer(gl, width, height);
+    if (!fbA || !fbB) {
+      if (gl.isContextLost()) {
+        isContextLostRef.current = true;
+      } else {
+        initFailedRef.current = true;
+        console.error("Failed to create WebGL framebuffers");
+      }
+      disposeGL();
+      return false;
+    }
+    fbRef.current.a = fbA;
+    fbRef.current.b = fbB;
 
     // Load moon texture
     const moonTexture = gl.createTexture();
@@ -1419,13 +1625,16 @@ export function WeatherEffectsCanvas({
       const image = new Image();
       image.crossOrigin = "anonymous";
       image.onload = () => {
-        gl.bindTexture(gl.TEXTURE_2D, moonTexture);
-        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
-        gl.generateMipmap(gl.TEXTURE_2D);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+        const glCurrent = glRef.current;
+        if (!glCurrent || moonTextureRef.current !== moonTexture) return;
+
+        glCurrent.bindTexture(gl.TEXTURE_2D, moonTexture);
+        glCurrent.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
+        glCurrent.generateMipmap(gl.TEXTURE_2D);
+        glCurrent.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
+        glCurrent.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+        glCurrent.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
+        glCurrent.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
         moonTextureLoadedRef.current = true;
       };
       image.src = "/assets/moon-texture.jpg";
@@ -1434,6 +1643,17 @@ export function WeatherEffectsCanvas({
     // Setup fullscreen quad
     const positions = new Float32Array([-1, -1, 1, -1, -1, 1, -1, 1, 1, -1, 1, 1]);
     const positionBuffer = gl.createBuffer();
+    if (!positionBuffer) {
+      if (gl.isContextLost()) {
+        isContextLostRef.current = true;
+      } else {
+        initFailedRef.current = true;
+        console.error("Failed to create WebGL buffer");
+      }
+      disposeGL();
+      return false;
+    }
+    positionBufferRef.current = positionBuffer;
     gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, positions, gl.STATIC_DRAW);
 
@@ -1441,14 +1661,16 @@ export function WeatherEffectsCanvas({
     for (const program of Object.values(programsRef.current)) {
       if (program) {
         const positionLoc = gl.getAttribLocation(program, "a_position");
-        gl.enableVertexAttribArray(positionLoc);
-        gl.vertexAttribPointer(positionLoc, 2, gl.FLOAT, false, 0, 0);
+        if (positionLoc >= 0) {
+          gl.enableVertexAttribArray(positionLoc);
+          gl.vertexAttribPointer(positionLoc, 2, gl.FLOAT, false, 0, 0);
+        }
       }
     }
 
     startTimeRef.current = performance.now();
     return true;
-  }, []);
+  }, [disposeGL]);
 
   const render = useCallback(() => {
     const gl = glRef.current;
@@ -1457,14 +1679,21 @@ export function WeatherEffectsCanvas({
     const fb = fbRef.current;
     const props = propsRef.current;
 
+    if (isContextLostRef.current || !isVisibleRef.current) {
+      isRunningRef.current = false;
+      animationFrameRef.current = 0;
+      return;
+    }
+
     if (!gl || !canvas || !fb.a || !fb.b) {
-      animationFrameRef.current = requestAnimationFrame(render);
+      isRunningRef.current = false;
       return;
     }
 
     // Resize handling
-    const displayWidth = Math.floor(canvas.clientWidth * window.devicePixelRatio);
-    const displayHeight = Math.floor(canvas.clientHeight * window.devicePixelRatio);
+    const dpr = props.dpr ?? window.devicePixelRatio;
+    const displayWidth = Math.max(1, Math.floor(canvas.clientWidth * dpr));
+    const displayHeight = Math.max(1, Math.floor(canvas.clientHeight * dpr));
 
     if (canvas.width !== displayWidth || canvas.height !== displayHeight) {
       canvas.width = displayWidth;
@@ -1474,6 +1703,9 @@ export function WeatherEffectsCanvas({
     }
 
     const time = (performance.now() - startTimeRef.current) / 1000;
+
+    const u = (program: WebGLProgram, name: string) =>
+      getUniformLocationCached(gl, program, name);
 
     // Lightning auto-trigger
     if (props.layers.lightning && props.lightning.enabled && props.lightning.autoMode) {
@@ -1501,29 +1733,29 @@ export function WeatherEffectsCanvas({
       gl.useProgram(programs.celestial);
 
       const p = props.celestial;
-      gl.uniform1f(gl.getUniformLocation(programs.celestial, "u_time"), time);
-      gl.uniform2f(gl.getUniformLocation(programs.celestial, "u_resolution"), displayWidth, displayHeight);
-      gl.uniform1f(gl.getUniformLocation(programs.celestial, "u_timeOfDay"), p.timeOfDay);
-      gl.uniform1f(gl.getUniformLocation(programs.celestial, "u_moonPhase"), p.moonPhase);
-      gl.uniform1f(gl.getUniformLocation(programs.celestial, "u_starDensity"), p.starDensity);
-      gl.uniform2f(gl.getUniformLocation(programs.celestial, "u_celestialPos"), p.celestialX, p.celestialY);
-      gl.uniform1f(gl.getUniformLocation(programs.celestial, "u_sunSize"), p.sunSize);
-      gl.uniform1f(gl.getUniformLocation(programs.celestial, "u_moonSize"), p.moonSize);
-      gl.uniform1f(gl.getUniformLocation(programs.celestial, "u_sunGlowIntensity"), p.sunGlowIntensity);
-      gl.uniform1f(gl.getUniformLocation(programs.celestial, "u_sunGlowSize"), p.sunGlowSize);
-      gl.uniform1f(gl.getUniformLocation(programs.celestial, "u_sunRayCount"), p.sunRayCount);
-      gl.uniform1f(gl.getUniformLocation(programs.celestial, "u_sunRayLength"), p.sunRayLength);
-      gl.uniform1f(gl.getUniformLocation(programs.celestial, "u_sunRayIntensity"), p.sunRayIntensity);
-      gl.uniform1f(gl.getUniformLocation(programs.celestial, "u_moonGlowIntensity"), p.moonGlowIntensity);
-      gl.uniform1f(gl.getUniformLocation(programs.celestial, "u_moonGlowSize"), p.moonGlowSize);
-      gl.uniform1f(gl.getUniformLocation(programs.celestial, "u_skyBrightness"), p.skyBrightness);
-      gl.uniform1f(gl.getUniformLocation(programs.celestial, "u_skySaturation"), p.skySaturation);
-      gl.uniform1f(gl.getUniformLocation(programs.celestial, "u_skyContrast"), p.skyContrast);
+      gl.uniform1f(u(programs.celestial, "u_time"), time);
+      gl.uniform2f(u(programs.celestial, "u_resolution"), displayWidth, displayHeight);
+      gl.uniform1f(u(programs.celestial, "u_timeOfDay"), p.timeOfDay);
+      gl.uniform1f(u(programs.celestial, "u_moonPhase"), p.moonPhase);
+      gl.uniform1f(u(programs.celestial, "u_starDensity"), p.starDensity);
+      gl.uniform2f(u(programs.celestial, "u_celestialPos"), p.celestialX, p.celestialY);
+      gl.uniform1f(u(programs.celestial, "u_sunSize"), p.sunSize);
+      gl.uniform1f(u(programs.celestial, "u_moonSize"), p.moonSize);
+      gl.uniform1f(u(programs.celestial, "u_sunGlowIntensity"), p.sunGlowIntensity);
+      gl.uniform1f(u(programs.celestial, "u_sunGlowSize"), p.sunGlowSize);
+      gl.uniform1f(u(programs.celestial, "u_sunRayCount"), p.sunRayCount);
+      gl.uniform1f(u(programs.celestial, "u_sunRayLength"), p.sunRayLength);
+      gl.uniform1f(u(programs.celestial, "u_sunRayIntensity"), p.sunRayIntensity);
+      gl.uniform1f(u(programs.celestial, "u_moonGlowIntensity"), p.moonGlowIntensity);
+      gl.uniform1f(u(programs.celestial, "u_moonGlowSize"), p.moonGlowSize);
+      gl.uniform1f(u(programs.celestial, "u_skyBrightness"), p.skyBrightness);
+      gl.uniform1f(u(programs.celestial, "u_skySaturation"), p.skySaturation);
+      gl.uniform1f(u(programs.celestial, "u_skyContrast"), p.skyContrast);
 
       gl.activeTexture(gl.TEXTURE0);
       gl.bindTexture(gl.TEXTURE_2D, moonTextureRef.current);
-      gl.uniform1i(gl.getUniformLocation(programs.celestial, "u_moonTexture"), 0);
-      gl.uniform1i(gl.getUniformLocation(programs.celestial, "u_hasMoonTexture"), moonTextureLoadedRef.current ? 1 : 0);
+      gl.uniform1i(u(programs.celestial, "u_moonTexture"), 0);
+      gl.uniform1i(u(programs.celestial, "u_hasMoonTexture"), moonTextureLoadedRef.current ? 1 : 0);
 
       gl.drawArrays(gl.TRIANGLES, 0, 6);
       swapBuffers();
@@ -1544,22 +1776,22 @@ export function WeatherEffectsCanvas({
 
       gl.activeTexture(gl.TEXTURE0);
       gl.bindTexture(gl.TEXTURE_2D, readFB.texture);
-      gl.uniform1i(gl.getUniformLocation(programs.cloud, "u_sceneTexture"), 0);
+      gl.uniform1i(u(programs.cloud, "u_sceneTexture"), 0);
 
       const p = props.cloud;
-      gl.uniform1f(gl.getUniformLocation(programs.cloud, "u_time"), time);
-      gl.uniform2f(gl.getUniformLocation(programs.cloud, "u_resolution"), displayWidth, displayHeight);
-      gl.uniform1f(gl.getUniformLocation(programs.cloud, "u_timeOfDay"), props.celestial.timeOfDay);
-      gl.uniform1f(gl.getUniformLocation(programs.cloud, "u_coverage"), p.coverage);
-      gl.uniform1f(gl.getUniformLocation(programs.cloud, "u_density"), p.density);
-      gl.uniform1f(gl.getUniformLocation(programs.cloud, "u_softness"), p.softness);
-      gl.uniform1f(gl.getUniformLocation(programs.cloud, "u_windSpeed"), p.windSpeed);
-      gl.uniform1f(gl.getUniformLocation(programs.cloud, "u_windAngle"), p.windAngle);
-      gl.uniform1f(gl.getUniformLocation(programs.cloud, "u_turbulence"), p.turbulence);
-      gl.uniform1f(gl.getUniformLocation(programs.cloud, "u_lightIntensity"), p.lightIntensity);
-      gl.uniform1f(gl.getUniformLocation(programs.cloud, "u_ambientDarkness"), p.ambientDarkness);
-      gl.uniform1i(gl.getUniformLocation(programs.cloud, "u_numLayers"), p.numLayers);
-      gl.uniform1f(gl.getUniformLocation(programs.cloud, "u_cloudScale"), p.cloudScale);
+      gl.uniform1f(u(programs.cloud, "u_time"), time);
+      gl.uniform2f(u(programs.cloud, "u_resolution"), displayWidth, displayHeight);
+      gl.uniform1f(u(programs.cloud, "u_timeOfDay"), props.celestial.timeOfDay);
+      gl.uniform1f(u(programs.cloud, "u_coverage"), p.coverage);
+      gl.uniform1f(u(programs.cloud, "u_density"), p.density);
+      gl.uniform1f(u(programs.cloud, "u_softness"), p.softness);
+      gl.uniform1f(u(programs.cloud, "u_windSpeed"), p.windSpeed);
+      gl.uniform1f(u(programs.cloud, "u_windAngle"), p.windAngle);
+      gl.uniform1f(u(programs.cloud, "u_turbulence"), p.turbulence);
+      gl.uniform1f(u(programs.cloud, "u_lightIntensity"), p.lightIntensity);
+      gl.uniform1f(u(programs.cloud, "u_ambientDarkness"), p.ambientDarkness);
+      gl.uniform1i(u(programs.cloud, "u_numLayers"), p.numLayers);
+      gl.uniform1f(u(programs.cloud, "u_cloudScale"), p.cloudScale);
 
       // Pass celestial position for cloud illumination
       // Calculate actual sun/moon Y positions (must match shader logic)
@@ -1587,10 +1819,10 @@ export function WeatherEffectsCanvas({
       const celestialBrightness = useSun
         ? Math.min(1.0, celestialP.sunGlowIntensity * 0.3) * sunVisible
         : Math.min(0.5, celestialP.moonGlowIntensity * 0.15) * moonVisible;
-      gl.uniform2f(gl.getUniformLocation(programs.cloud, "u_celestialPos"), celestialP.celestialX, celestialY);
-      gl.uniform1f(gl.getUniformLocation(programs.cloud, "u_celestialSize"), celestialSize);
-      gl.uniform1f(gl.getUniformLocation(programs.cloud, "u_celestialBrightness"), celestialBrightness);
-      gl.uniform1f(gl.getUniformLocation(programs.cloud, "u_backlightIntensity"), p.backlightIntensity);
+      gl.uniform2f(u(programs.cloud, "u_celestialPos"), celestialP.celestialX, celestialY);
+      gl.uniform1f(u(programs.cloud, "u_celestialSize"), celestialSize);
+      gl.uniform1f(u(programs.cloud, "u_celestialBrightness"), celestialBrightness);
+      gl.uniform1f(u(programs.cloud, "u_backlightIntensity"), p.backlightIntensity);
 
       gl.drawArrays(gl.TRIANGLES, 0, 6);
       swapBuffers();
@@ -1604,19 +1836,19 @@ export function WeatherEffectsCanvas({
 
       gl.activeTexture(gl.TEXTURE0);
       gl.bindTexture(gl.TEXTURE_2D, readFB.texture);
-      gl.uniform1i(gl.getUniformLocation(programs.rain, "u_sceneTexture"), 0);
+      gl.uniform1i(u(programs.rain, "u_sceneTexture"), 0);
 
       const p = props.rain;
-      gl.uniform1f(gl.getUniformLocation(programs.rain, "u_time"), time);
-      gl.uniform2f(gl.getUniformLocation(programs.rain, "u_resolution"), displayWidth, displayHeight);
-      gl.uniform1f(gl.getUniformLocation(programs.rain, "u_glassIntensity"), p.glassIntensity);
-      gl.uniform1f(gl.getUniformLocation(programs.rain, "u_glassZoom"), p.glassZoom);
-      gl.uniform1f(gl.getUniformLocation(programs.rain, "u_fallingIntensity"), p.fallingIntensity);
-      gl.uniform1f(gl.getUniformLocation(programs.rain, "u_fallingSpeed"), p.fallingSpeed);
-      gl.uniform1f(gl.getUniformLocation(programs.rain, "u_fallingAngle"), p.fallingAngle);
-      gl.uniform1f(gl.getUniformLocation(programs.rain, "u_fallingStreakLength"), p.fallingStreakLength);
-      gl.uniform1i(gl.getUniformLocation(programs.rain, "u_fallingLayers"), p.fallingLayers);
-      gl.uniform1f(gl.getUniformLocation(programs.rain, "u_refractionStrength"), props.interactions.rainRefractionStrength);
+      gl.uniform1f(u(programs.rain, "u_time"), time);
+      gl.uniform2f(u(programs.rain, "u_resolution"), displayWidth, displayHeight);
+      gl.uniform1f(u(programs.rain, "u_glassIntensity"), p.glassIntensity);
+      gl.uniform1f(u(programs.rain, "u_glassZoom"), p.glassZoom);
+      gl.uniform1f(u(programs.rain, "u_fallingIntensity"), p.fallingIntensity);
+      gl.uniform1f(u(programs.rain, "u_fallingSpeed"), p.fallingSpeed);
+      gl.uniform1f(u(programs.rain, "u_fallingAngle"), p.fallingAngle);
+      gl.uniform1f(u(programs.rain, "u_fallingStreakLength"), p.fallingStreakLength);
+      gl.uniform1i(u(programs.rain, "u_fallingLayers"), p.fallingLayers);
+      gl.uniform1f(u(programs.rain, "u_refractionStrength"), props.interactions.rainRefractionStrength);
 
       gl.drawArrays(gl.TRIANGLES, 0, 6);
       swapBuffers();
@@ -1630,17 +1862,17 @@ export function WeatherEffectsCanvas({
 
       gl.activeTexture(gl.TEXTURE0);
       gl.bindTexture(gl.TEXTURE_2D, readFB.texture);
-      gl.uniform1i(gl.getUniformLocation(programs.lightning, "u_sceneTexture"), 0);
+      gl.uniform1i(u(programs.lightning, "u_sceneTexture"), 0);
 
       const p = props.lightning;
-      gl.uniform1f(gl.getUniformLocation(programs.lightning, "u_time"), time);
-      gl.uniform2f(gl.getUniformLocation(programs.lightning, "u_resolution"), displayWidth, displayHeight);
-      gl.uniform1i(gl.getUniformLocation(programs.lightning, "u_enabled"), p.enabled ? 1 : 0);
-      gl.uniform1f(gl.getUniformLocation(programs.lightning, "u_flashIntensity"), p.flashIntensity);
-      gl.uniform1f(gl.getUniformLocation(programs.lightning, "u_branchDensity"), p.branchDensity);
-      gl.uniform1f(gl.getUniformLocation(programs.lightning, "u_sceneIllumination"), props.interactions.lightningSceneIllumination);
-      gl.uniform1f(gl.getUniformLocation(programs.lightning, "u_lastFlashTime"), lastFlashTimeRef.current);
-      gl.uniform1f(gl.getUniformLocation(programs.lightning, "u_strikeSeed"), strikeSeedRef.current);
+      gl.uniform1f(u(programs.lightning, "u_time"), time);
+      gl.uniform2f(u(programs.lightning, "u_resolution"), displayWidth, displayHeight);
+      gl.uniform1i(u(programs.lightning, "u_enabled"), p.enabled ? 1 : 0);
+      gl.uniform1f(u(programs.lightning, "u_flashIntensity"), p.flashIntensity);
+      gl.uniform1f(u(programs.lightning, "u_branchDensity"), p.branchDensity);
+      gl.uniform1f(u(programs.lightning, "u_sceneIllumination"), props.interactions.lightningSceneIllumination);
+      gl.uniform1f(u(programs.lightning, "u_lastFlashTime"), lastFlashTimeRef.current);
+      gl.uniform1f(u(programs.lightning, "u_strikeSeed"), strikeSeedRef.current);
 
       gl.drawArrays(gl.TRIANGLES, 0, 6);
       swapBuffers();
@@ -1654,17 +1886,17 @@ export function WeatherEffectsCanvas({
 
       gl.activeTexture(gl.TEXTURE0);
       gl.bindTexture(gl.TEXTURE_2D, readFB.texture);
-      gl.uniform1i(gl.getUniformLocation(programs.snow, "u_sceneTexture"), 0);
+      gl.uniform1i(u(programs.snow, "u_sceneTexture"), 0);
 
       const p = props.snow;
-      gl.uniform1f(gl.getUniformLocation(programs.snow, "u_time"), time);
-      gl.uniform2f(gl.getUniformLocation(programs.snow, "u_resolution"), displayWidth, displayHeight);
-      gl.uniform1f(gl.getUniformLocation(programs.snow, "u_intensity"), p.intensity);
-      gl.uniform1i(gl.getUniformLocation(programs.snow, "u_layers"), p.layers);
-      gl.uniform1f(gl.getUniformLocation(programs.snow, "u_fallSpeed"), p.fallSpeed);
-      gl.uniform1f(gl.getUniformLocation(programs.snow, "u_windSpeed"), p.windSpeed);
-      gl.uniform1f(gl.getUniformLocation(programs.snow, "u_drift"), p.drift);
-      gl.uniform1f(gl.getUniformLocation(programs.snow, "u_flakeSize"), p.flakeSize);
+      gl.uniform1f(u(programs.snow, "u_time"), time);
+      gl.uniform2f(u(programs.snow, "u_resolution"), displayWidth, displayHeight);
+      gl.uniform1f(u(programs.snow, "u_intensity"), p.intensity);
+      gl.uniform1i(u(programs.snow, "u_layers"), p.layers);
+      gl.uniform1f(u(programs.snow, "u_fallSpeed"), p.fallSpeed);
+      gl.uniform1f(u(programs.snow, "u_windSpeed"), p.windSpeed);
+      gl.uniform1f(u(programs.snow, "u_drift"), p.drift);
+      gl.uniform1f(u(programs.snow, "u_flakeSize"), p.flakeSize);
 
       gl.drawArrays(gl.TRIANGLES, 0, 6);
       swapBuffers();
@@ -1678,24 +1910,93 @@ export function WeatherEffectsCanvas({
       gl.useProgram(programs.composite);
       gl.activeTexture(gl.TEXTURE0);
       gl.bindTexture(gl.TEXTURE_2D, readFB.texture);
-      gl.uniform1i(gl.getUniformLocation(programs.composite, "u_sceneTexture"), 0);
+      gl.uniform1i(u(programs.composite, "u_sceneTexture"), 0);
       gl.drawArrays(gl.TRIANGLES, 0, 6);
     }
 
-    animationFrameRef.current = requestAnimationFrame(render);
-  }, []);
+    if (isVisibleRef.current && !isContextLostRef.current) {
+      isRunningRef.current = true;
+      animationFrameRef.current = requestAnimationFrame(render);
+    } else {
+      isRunningRef.current = false;
+      animationFrameRef.current = 0;
+    }
+  }, [getUniformLocationCached]);
 
   useEffect(() => {
-    if (initGL()) {
-      render();
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const onContextLost = (e: Event) => {
+      e.preventDefault();
+      isContextLostRef.current = true;
+      disposeGL();
+    };
+
+    const onContextRestored = () => {
+      isContextLostRef.current = false;
+      initFailedRef.current = false;
+      if (initGL() && isVisibleRef.current) {
+        isRunningRef.current = true;
+        render();
+      }
+    };
+
+    canvas.addEventListener("webglcontextlost", onContextLost, { passive: false } as AddEventListenerOptions);
+    canvas.addEventListener("webglcontextrestored", onContextRestored);
+
+    const observer =
+      typeof IntersectionObserver !== "undefined"
+        ? new IntersectionObserver(
+          (entries) => {
+            const entry = entries[0];
+            const visible = Boolean(entry?.isIntersecting);
+            isVisibleRef.current = visible;
+
+            if (!visible) {
+              stopRenderLoop();
+              return;
+            }
+
+            if (!isRunningRef.current && !isContextLostRef.current) {
+              // If we have a valid context, resume. Otherwise re-init.
+              if (glRef.current && fbRef.current.a && fbRef.current.b) {
+                isRunningRef.current = true;
+                render();
+              } else if (initGL()) {
+                isRunningRef.current = true;
+                render();
+              }
+            }
+          },
+          { threshold: 0 }
+        )
+        : null;
+
+    // If IntersectionObserver isn't available, fall back to always-on rendering.
+    if (!observer) {
+      isVisibleRef.current = true;
+    } else {
+      observer.observe(canvas);
+    }
+
+    if (!observer) {
+      if (initGL() && isVisibleRef.current) {
+        isRunningRef.current = true;
+        render();
+      }
     }
 
     return () => {
-      if (animationFrameRef.current) {
-        cancelAnimationFrame(animationFrameRef.current);
+      observer?.disconnect();
+      canvas.removeEventListener("webglcontextlost", onContextLost as EventListener);
+      canvas.removeEventListener("webglcontextrestored", onContextRestored as EventListener);
+      disposeGL();
+      if (hasWebglBudgetSlotRef.current) {
+        releaseWeatherWebglCanvas(canvas);
       }
     };
-  }, [initGL, render]);
+  }, [disposeGL, initGL, render, stopRenderLoop]);
 
   return (
     <canvas

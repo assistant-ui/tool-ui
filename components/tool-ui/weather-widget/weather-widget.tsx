@@ -1,75 +1,14 @@
 "use client";
 
+import { cn, Card } from "./_adapter";
 import {
-  Sun,
-  Cloud,
-  CloudSun,
-  CloudFog,
-  CloudDrizzle,
-  CloudRain,
-  CloudLightning,
-  Snowflake,
-  CloudHail,
-  Wind,
-  type LucideIcon,
-} from "lucide-react";
-import { cn, Card, CardHeader, CardTitle, CardContent } from "./_adapter";
-import { EffectCompositor, useWeatherTheme } from "./effects";
-import type {
-  WeatherWidgetProps,
-  WeatherCondition,
-  ForecastDay,
-} from "./schema";
-
-const conditionIcons: Record<WeatherCondition, LucideIcon> = {
-  clear: Sun,
-  "partly-cloudy": CloudSun,
-  cloudy: Cloud,
-  overcast: Cloud,
-  fog: CloudFog,
-  drizzle: CloudDrizzle,
-  rain: CloudRain,
-  "heavy-rain": CloudRain,
-  thunderstorm: CloudLightning,
-  snow: Snowflake,
-  sleet: CloudHail,
-  hail: CloudHail,
-  windy: Wind,
-};
-
-const conditionLabels: Record<WeatherCondition, string> = {
-  clear: "Clear",
-  "partly-cloudy": "Partly Cloudy",
-  cloudy: "Cloudy",
-  overcast: "Overcast",
-  fog: "Fog",
-  drizzle: "Drizzle",
-  rain: "Rain",
-  "heavy-rain": "Heavy Rain",
-  thunderstorm: "Thunderstorm",
-  snow: "Snow",
-  sleet: "Sleet",
-  hail: "Hail",
-  windy: "Windy",
-};
-
-interface ConditionIconProps {
-  condition: WeatherCondition;
-  className?: string;
-}
-
-function ConditionIcon({ condition, className }: ConditionIconProps) {
-  const Icon = conditionIcons[condition];
-  return <Icon className={className} aria-hidden="true" />;
-}
-
-function formatTemperature(
-  temp: number,
-  unit: "celsius" | "fahrenheit",
-): string {
-  const rounded = Math.round(temp);
-  return unit === "celsius" ? `${rounded}°` : `${rounded}°`;
-}
+  EffectCompositor,
+  getSceneBrightnessFromTimeOfDay,
+  getTimeOfDay,
+  getWeatherTheme,
+} from "./effects";
+import type { WeatherWidgetProps } from "./schema";
+import { WeatherDataOverlay } from "./weather-data-overlay";
 
 function formatRelativeTime(isoString: string, locale?: string): string {
   const date = new Date(isoString);
@@ -103,53 +42,6 @@ function formatRelativeTime(isoString: string, locale?: string): string {
   );
 }
 
-interface ForecastDayCardProps {
-  day: ForecastDay;
-  unit: "celsius" | "fahrenheit";
-  index: number;
-  primaryTextClass?: string;
-  secondaryTextClass?: string;
-}
-
-function ForecastDayCard({ day, unit, index, primaryTextClass, secondaryTextClass }: ForecastDayCardProps) {
-  const baseDelay = 100 + index * 50;
-  const secondary = secondaryTextClass ?? "text-muted-foreground";
-
-  return (
-    <div
-      className="flex flex-col items-center gap-1 py-2 animate-in fade-in slide-in-from-bottom-2 duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] fill-mode-both"
-      style={{ animationDelay: `${baseDelay}ms` }}
-    >
-      <span className={cn("text-xs font-medium", secondary)}>
-        {day.day}
-      </span>
-      <ConditionIcon
-        condition={day.condition}
-        className={cn("size-5", secondary)}
-      />
-      <div className="flex flex-col items-center tabular-nums">
-        <span className={cn("text-sm font-medium", primaryTextClass)}>{formatTemperature(day.tempMax, unit)}</span>
-        <span className={cn("text-xs", secondary)}>
-          {formatTemperature(day.tempMin, unit)}
-        </span>
-      </div>
-    </div>
-  );
-}
-
-function ForecastDayCardSkeleton() {
-  return (
-    <div className="flex flex-col items-center gap-1 py-2">
-      <div className="bg-muted h-3 w-6 animate-pulse rounded" />
-      <div className="bg-muted size-5 animate-pulse rounded" />
-      <div className="flex flex-col items-center gap-0.5">
-        <div className="bg-muted h-3 w-6 animate-pulse rounded" />
-        <div className="bg-muted h-3 w-6 animate-pulse rounded" />
-      </div>
-    </div>
-  );
-}
-
 export function WeatherWidget({
   id,
   location,
@@ -167,24 +59,28 @@ export function WeatherWidget({
     localeProp ??
     (typeof navigator !== "undefined" ? navigator.language : undefined);
 
-  const unitLabel = unit === "celsius" ? "C" : "F";
-  const conditionLabel = conditionLabels[current.condition];
-  const effectsEnabled = effects?.enabled !== false && !isLoading;
+  const prefersReducedMotion =
+    typeof window !== "undefined" &&
+    window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches;
+  const reducedMotion = effects?.reducedMotion ?? Boolean(prefersReducedMotion);
+  const effectsEnabled = effects?.enabled !== false && !isLoading && !reducedMotion;
 
-  const { theme } = useWeatherTheme({
-    timestamp: updatedAt,
-    condition: current.condition,
-    enabled: effectsEnabled,
-  });
+  // Match the overlay’s expected background even when effects are disabled
+  // (e.g. prefers-reduced-motion), so text contrast stays correct.
+  const overlayTimeOfDay = customEffectProps?.celestial?.timeOfDay;
+  const timeOfDay =
+    typeof overlayTimeOfDay === "number" ? overlayTimeOfDay : getTimeOfDay(updatedAt);
+  const brightness = getSceneBrightnessFromTimeOfDay(timeOfDay, current.condition);
+  const weatherTheme = getWeatherTheme(brightness);
+  const isWeatherDark = weatherTheme === "dark";
+  const backgroundClass = isWeatherDark
+    ? "bg-gradient-to-b from-zinc-950 via-zinc-900/70 to-zinc-950"
+    : "bg-gradient-to-b from-sky-50 via-sky-100/70 to-white";
 
-  const isDark = theme === "dark";
-
-  const textShadow = isDark
-    ? "drop-shadow-[0_1px_3px_rgba(0,0,0,0.8)]"
-    : "drop-shadow-[0_1px_2px_rgba(0,0,0,0.3)]";
-
-  const primaryText = isDark ? "text-white" : "text-foreground";
-  const secondaryText = isDark ? "text-white/70" : "text-muted-foreground";
+  const updatedAtLabel =
+    updatedAt && !isLoading
+      ? `Updated ${formatRelativeTime(updatedAt, locale)}`
+      : undefined;
 
   return (
     <article
@@ -193,111 +89,78 @@ export function WeatherWidget({
       aria-busy={isLoading}
       className={cn("w-full max-w-sm", className)}
     >
-      <Card className="relative overflow-clip">
+      <Card className={cn("relative overflow-clip aspect-[4/3]", backgroundClass)}>
         {effectsEnabled && (
           <EffectCompositor
             condition={current.condition}
+            windSpeed={current.windSpeed}
+            windDirection={current.windDirection}
+            precipitation={current.precipitation}
+            humidity={current.humidity}
+            visibility={current.visibility}
             timestamp={updatedAt}
             settings={effects}
             customProps={customEffectProps}
           />
         )}
-        <CardHeader
-          className={cn(
-            "relative z-10 pb-2",
-            effectsEnabled && textShadow,
-          )}
-        >
-          <CardTitle className={cn("text-lg font-semibold tracking-tight", effectsEnabled && primaryText)}>
-            {location}
-          </CardTitle>
-        </CardHeader>
-        <CardContent
-          className={cn(
-            "relative z-10 space-y-4",
-            effectsEnabled && textShadow,
-          )}
-        >
-          {isLoading ? (
-            <div className="flex items-center gap-4">
-              <div className="bg-muted size-12 animate-pulse rounded-full" />
-              <div className="space-y-2">
-                <div className="bg-muted h-10 w-20 animate-pulse rounded" />
-                <div className="bg-muted h-4 w-24 animate-pulse rounded" />
-              </div>
-            </div>
-          ) : (
+
+        {isLoading ? (
+          <div className="absolute inset-0 z-10 flex flex-col p-4">
             <div
-              className="flex items-center gap-4 animate-in fade-in slide-in-from-bottom-4 duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] fill-mode-both"
-              style={{ animationDelay: "0ms" }}
-            >
-              <ConditionIcon
-                condition={current.condition}
-                className={cn("size-12", effectsEnabled ? secondaryText : "text-muted-foreground")}
-              />
-              <div className="flex flex-col">
-                <div className="flex items-baseline gap-0.5">
-                  <span
-                    className={cn("text-4xl font-normal tabular-nums tracking-tight", effectsEnabled && primaryText)}
-                    aria-label={`${Math.round(current.temp)} degrees ${unit === "celsius" ? "Celsius" : "Fahrenheit"}`}
-                  >
-                    {Math.round(current.temp)}
-                  </span>
-                  <span className={cn("text-xl font-light", effectsEnabled ? secondaryText : "text-muted-foreground")}>
-                    °{unitLabel}
-                  </span>
-                </div>
-                <div className={cn("flex items-center gap-2 text-sm", effectsEnabled ? secondaryText : "text-muted-foreground")}>
-                  <span className="font-medium">{conditionLabel}</span>
-                  <span aria-hidden="true">·</span>
-                  <span className="tabular-nums">
-                    H: {formatTemperature(current.tempMax, unit)}{"  "}L: {formatTemperature(current.tempMin, unit)}
-                  </span>
-                </div>
-              </div>
-            </div>
-          )}
-
-          <div className="border-border border-t pt-3">
-            {isLoading ? (
-              <div className="flex justify-between">
-                {Array.from({ length: 5 }).map((_, index) => (
-                  <ForecastDayCardSkeleton key={index} />
-                ))}
-              </div>
-            ) : (
-              <div
-                className="flex justify-between"
-                role="list"
-                aria-label="Weather forecast"
-              >
-                {forecast.map((day, index) => (
-                  <div key={day.day} role="listitem">
-                    <ForecastDayCard
-                      day={day}
-                      unit={unit}
-                      index={index}
-                      primaryTextClass={effectsEnabled ? primaryText : undefined}
-                      secondaryTextClass={effectsEnabled ? secondaryText : undefined}
-                    />
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-
-          {updatedAt && !isLoading && (
-            <p
               className={cn(
-                "text-[13px] animate-in fade-in duration-500 fill-mode-both",
-                effectsEnabled ? secondaryText : "text-muted-foreground"
+                "h-4 w-40 rounded animate-pulse",
+                isWeatherDark ? "bg-white/10" : "bg-black/10",
               )}
-              style={{ animationDelay: "300ms" }}
-            >
-              Updated {formatRelativeTime(updatedAt, locale)}
-            </p>
-          )}
-        </CardContent>
+            />
+            <div
+              className={cn(
+                "mt-1 h-3 w-24 rounded animate-pulse",
+                isWeatherDark ? "bg-white/5" : "bg-black/5",
+              )}
+            />
+            <div className="flex-1" />
+            <div className="space-y-4">
+              <div className="flex items-end gap-3">
+                <div
+                  className={cn(
+                    "h-16 w-24 rounded animate-pulse",
+                    isWeatherDark ? "bg-white/10" : "bg-black/10",
+                  )}
+                />
+                <div
+                  className={cn(
+                    "h-6 w-10 rounded animate-pulse",
+                    isWeatherDark ? "bg-white/5" : "bg-black/5",
+                  )}
+                />
+              </div>
+              <div
+                className={cn(
+                  "h-16 rounded-xl border animate-pulse",
+                  isWeatherDark
+                    ? "border-white/10 bg-white/5"
+                    : "border-black/10 bg-black/5",
+                )}
+              />
+            </div>
+          </div>
+        ) : (
+          <WeatherDataOverlay
+            location={location}
+            condition={current.condition}
+            temperature={current.temp}
+            tempHigh={current.tempMax}
+            tempLow={current.tempMin}
+            humidity={current.humidity}
+            windSpeed={current.windSpeed}
+            visibility={current.visibility}
+            forecast={forecast}
+            unit={unit}
+            updatedAtLabel={updatedAtLabel}
+            timeOfDay={overlayTimeOfDay}
+            timestamp={updatedAt}
+          />
+        )}
       </Card>
     </article>
   );
@@ -310,26 +173,19 @@ export function WeatherWidgetProgress({ className }: { className?: string }) {
       aria-busy="true"
       className={cn("w-full max-w-sm", className)}
     >
-      <Card>
-        <CardHeader className="pb-2">
-          <div className="bg-muted h-5 w-32 animate-pulse rounded" />
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex items-center gap-4">
-            <div className="bg-muted size-12 animate-pulse rounded-full" />
-            <div className="space-y-2">
-              <div className="bg-muted h-10 w-20 animate-pulse rounded" />
-              <div className="bg-muted h-4 w-24 animate-pulse rounded" />
+      <Card className="relative overflow-clip aspect-[4/3] bg-gradient-to-b from-zinc-950 via-zinc-900/70 to-zinc-950">
+        <div className="absolute inset-0 flex flex-col p-4">
+          <div className="h-4 w-40 rounded bg-white/10 animate-pulse" />
+          <div className="mt-1 h-3 w-24 rounded bg-white/5 animate-pulse" />
+          <div className="flex-1" />
+          <div className="space-y-4">
+            <div className="flex items-end gap-3">
+              <div className="h-16 w-24 rounded bg-white/10 animate-pulse" />
+              <div className="h-6 w-10 rounded bg-white/5 animate-pulse" />
             </div>
+            <div className="h-16 rounded-xl border border-white/10 bg-white/5 animate-pulse" />
           </div>
-          <div className="border-border border-t pt-3">
-            <div className="flex justify-between">
-              {Array.from({ length: 5 }).map((_, index) => (
-                <ForecastDayCardSkeleton key={index} />
-              ))}
-            </div>
-          </div>
-        </CardContent>
+        </div>
       </Card>
     </div>
   );

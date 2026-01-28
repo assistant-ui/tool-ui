@@ -539,7 +539,7 @@ export function LightningCanvas({
   const animationFrameRef = useRef<number>(0);
   const startTimeRef = useRef<number>(0);
   const strikeTimeRef = useRef<number>(-10);
-  const strikeSeedRef = useRef<number>(Math.random());
+  const strikeSeedRef = useRef<number>(0);
   const lastAutoStrikeRef = useRef<number>(0);
   const prevTriggerCountRef = useRef<number>(0);
 

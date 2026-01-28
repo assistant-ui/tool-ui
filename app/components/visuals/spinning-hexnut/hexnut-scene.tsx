@@ -71,6 +71,43 @@ const DRAG_SENSITIVITY = 0.01;
 const MOMENTUM_FRICTION = 0.96;
 const MAX_VELOCITY = 10;
 
+type ThemeConfig = {
+  lightX: number;
+  lightY: number;
+  lightZ: number;
+  intensity: number;
+  rotX: number;
+  rotY: number;
+  scale: number;
+  speed: number;
+  cameraZ: number;
+};
+
+const THEME_CONFIGS: Record<"dark" | "light", ThemeConfig> = {
+  dark: {
+    lightX: -50,
+    lightY: -50,
+    lightZ: -31,
+    intensity: 4,
+    rotX: -0.7,
+    rotY: 0.72,
+    scale: 2.1,
+    speed: 0.15,
+    cameraZ: 6.8,
+  },
+  light: {
+    lightX: 50,
+    lightY: 50,
+    lightZ: 50,
+    intensity: 50,
+    rotX: -0.7,
+    rotY: 0.72,
+    scale: 2.1,
+    speed: 0.15,
+    cameraZ: 6.8,
+  },
+};
+
 function RotatingHexnut({
   color = "#ffffff",
   scale = 2.1,
@@ -188,34 +225,8 @@ export function HexnutScene({
     lastMoveTime.current = now;
   };
 
-  // Theme-specific configurations
-  const themeConfigs = {
-    dark: {
-      lightX: -50,
-      lightY: -50,
-      lightZ: -31,
-      intensity: 4,
-      rotX: -0.7,
-      rotY: 0.72,
-      scale: 2.1,
-      speed: 0.15,
-      cameraZ: 6.8,
-    },
-    light: {
-      lightX: 50,
-      lightY: 50,
-      lightZ: 50,
-      intensity: 50,
-      rotX: -0.7,
-      rotY: 0.72,
-      scale: 2.1,
-      speed: 0.15,
-      cameraZ: 6.8,
-    },
-  };
-
   const isDark = resolvedTheme === "dark";
-  const currentConfig = isDark ? themeConfigs.dark : themeConfigs.light;
+  const currentConfig = isDark ? THEME_CONFIGS.dark : THEME_CONFIGS.light;
 
   // Debug state - initialized from theme config
   const [panelOpen, setPanelOpen] = useState(true);
@@ -231,7 +242,7 @@ export function HexnutScene({
 
   // Sync state with theme when theme changes
   useEffect(() => {
-    const config = isDark ? themeConfigs.dark : themeConfigs.light;
+    const config = isDark ? THEME_CONFIGS.dark : THEME_CONFIGS.light;
     setLightX(config.lightX);
     setLightY(config.lightY);
     setLightZ(config.lightZ);

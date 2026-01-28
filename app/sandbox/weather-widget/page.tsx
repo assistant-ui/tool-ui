@@ -3,10 +3,7 @@
 import { useState, useMemo } from "react";
 import { useControls, Leva } from "leva";
 import { WeatherWidget } from "@/components/tool-ui/weather-widget";
-import type {
-  WeatherCondition,
-  SerializableWeatherWidget,
-} from "@/components/tool-ui/weather-widget/schema";
+import type { SerializableWeatherWidget } from "@/components/tool-ui/weather-widget/schema";
 
 interface LocationPreset extends Omit<SerializableWeatherWidget, "id"> {
   name: string;
@@ -256,14 +253,14 @@ export default function WeatherWidgetSandbox() {
 
   const timestamp = useMemo(() => timeToISOString(timeOfDay), [timeOfDay]);
 
-  const widgetData: SerializableWeatherWidget = useMemo(() => ({
+  const widgetData: SerializableWeatherWidget = {
     id: `weather-widget-${activePreset.name}`,
     location: activePreset.location,
     current: activePreset.current,
     forecast: activePreset.forecast,
     unit: activePreset.unit,
     updatedAt: timestamp,
-  }), [activePreset, timestamp]);
+  };
 
   return (
     <div className="relative min-h-screen bg-gradient-to-b from-slate-900 to-slate-950">

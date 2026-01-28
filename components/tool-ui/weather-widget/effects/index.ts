@@ -32,3 +32,6 @@ export type {
   InteractionParams,
   LayerToggles,
 } from "./weather-effects-canvas";
+
+export * from "./tuning";
+export { TUNED_WEATHER_EFFECTS_CHECKPOINT_OVERRIDES } from "./tuned-presets";

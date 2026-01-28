@@ -72,7 +72,8 @@ export const SerializableWeatherWidgetSchema = z.object({
   id: ToolUIIdSchema,
   role: ToolUIRoleSchema.optional(),
   location: z.string().min(1),
-  current: CurrentWeatherSchema,
+  // Accept an extended payload (backwards-compatible with CurrentWeatherSchema).
+  current: ExtendedCurrentWeatherSchema,
   forecast: z.array(ForecastDaySchema).min(1).max(7),
   unit: TemperatureUnitSchema.optional(),
   updatedAt: z.string().datetime().optional(),

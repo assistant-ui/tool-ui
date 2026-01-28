@@ -387,7 +387,7 @@ export function mapWeatherToEffects(params: WeatherEffectParams): EffectLayerCon
   // Build atmosphere config
   const atmosphere: AtmosphereConfig = {
     sunAltitude,
-    haze: Math.max(hazeAmount, preset.cloud?.darkness ?? 0 * 0.3),
+    haze: Math.max(hazeAmount, (preset.cloud?.darkness ?? 0) * 0.3),
     starVisibility: isNight && !preset.cloud ? 1.0 : isNight ? 1.0 - (preset.cloud?.coverage ?? 0) : 0,
   };
 
