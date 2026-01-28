@@ -6,14 +6,14 @@ import { usePathname } from "next/navigation";
 import { useQueryState } from "nuqs";
 import { LayoutDashboardIcon } from "lucide-react";
 import {
-  componentsRegistry,
+  componentsByCategory,
   CATEGORY_META,
   type ComponentCategory,
 } from "@/lib/docs/component-registry";
 import { cn } from "@/lib/ui/cn";
 import { BASE_DOCS_PAGES } from "./docs-pages";
 
-const STORAGE_KEY = "tool-ui-components-nav-collapsed";
+const STORAGE_KEY = "tool-ui-components-nav-collapsed:v1";
 
 export function DocsNav() {
   const pathname = usePathname();
@@ -70,7 +70,7 @@ export function DocsNav() {
     .map(([category, meta]) => ({
       category,
       label: meta.label,
-      components: componentsRegistry.filter((c) => c.category === category),
+      components: componentsByCategory.get(category) || [],
     }));
 
   return (

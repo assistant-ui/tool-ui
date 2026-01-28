@@ -15,6 +15,12 @@ const smoothSpring = {
   restDelta: 0.0001,
 };
 
+const preloadGallery = () => {
+  if (typeof window !== "undefined") {
+    void import("@/app/docs/gallery/page");
+  }
+};
+
 export function HomeHero() {
   return (
     <div className="flex flex-col gap-7">
@@ -76,7 +82,11 @@ export function HomeHero() {
         transition={{ ...smoothSpring, delay: 0.5 }}
       >
         <Button asChild className="group font-medium tracking-wide" size="homeCTA">
-          <Link href="/docs/gallery">
+          <Link
+            href="/docs/gallery"
+            onMouseEnter={preloadGallery}
+            onFocus={preloadGallery}
+          >
             See the Components
             <ArrowRight className="size-5 shrink-0 transition-transform group-hover:translate-x-1" />
           </Link>

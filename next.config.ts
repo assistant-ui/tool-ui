@@ -22,6 +22,9 @@ const config: NextConfig = {
       "@radix-ui/react-tabs",
       "lucide-react",
       "recharts",
+      "react-icons",
+      "react-icons/fa",
+      "react-icons/fa6",
     ],
   },
   async redirects() {

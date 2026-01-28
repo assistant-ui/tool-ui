@@ -1,9 +1,8 @@
-"use client";
-
 import ContentLayout from "@/app/components/layout/page-shell";
 import { HeaderFrame } from "@/app/components/layout/app-shell";
 import { ThemeToggle } from "@/app/components/builder/theme-toggle";
 import { HomeHero } from "@/app/components/home/home-hero";
+import { HomeBackground } from "@/app/components/home/home-background";
 import { FauxChatShellMobileAnimated } from "@/app/components/home/faux-chat-shell-mobile-animated";
 import { FauxChatShellAnimated } from "@/app/components/home/faux-chat-shell-animated";
 
@@ -12,25 +11,7 @@ export default function HomePage() {
     <HeaderFrame
       rightContent={<ThemeToggle />}
       animateNavbar={true}
-      background={
-        <>
-          <div
-            className="bg-background pointer-events-none fixed inset-0 opacity-60 dark:opacity-40"
-            style={{ animation: "fade-in 0.6s ease-out forwards" }}
-            aria-hidden="true"
-          />
-          <style jsx>{`
-            @keyframes fade-in {
-              from {
-                opacity: 0;
-              }
-              to {
-                opacity: 1;
-              }
-            }
-          `}</style>
-        </>
-      }
+      background={<HomeBackground />}
     >
       <ContentLayout>
         <main className="relative flex h-full max-h-[800px] min-h-0 w-full max-w-[1440px] flex-col justify-end gap-10 overflow-x-clip md:p-6 lg:flex-row">
