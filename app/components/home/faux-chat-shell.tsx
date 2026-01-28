@@ -113,7 +113,7 @@ export function FauxChatShell({ className, disableLightOverlay }: FauxChatShellP
     <div
       ref={containerRef}
       className={cn(
-        "border-gradient-glow relative flex h-full w-full flex-col overflow-hidden rounded-2xl",
+        "border-gradient-glow relative flex h-full w-full flex-col overflow-hidden rounded-2xl backdrop-blur-lg",
         className,
       )}
       style={{

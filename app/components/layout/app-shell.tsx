@@ -1,7 +1,9 @@
 "use client";
 
 import type { ReactNode } from "react";
+import { useEffect, useState } from "react";
 import { ResponsiveHeader } from "@/app/components/layout/app-header.server";
+import { cn } from "@/lib/ui/cn";
 
 type HeaderFrameProps = {
   children: ReactNode;
@@ -10,12 +12,26 @@ type HeaderFrameProps = {
   animateNavbar?: boolean;
 };
 
+// Module-level flag that persists across client-side navigations
+// but resets on hard refresh (when the JS bundle reloads)
+let hasPlayedIntroAnimation = false;
+
 export function HeaderFrame({
   children,
   rightContent,
   background,
   animateNavbar = false,
 }: HeaderFrameProps) {
+  // Start with false to match server render, then update after hydration
+  const [shouldAnimate, setShouldAnimate] = useState(false);
+
+  useEffect(() => {
+    if (animateNavbar && !hasPlayedIntroAnimation) {
+      hasPlayedIntroAnimation = true;
+      setShouldAnimate(true);
+    }
+  }, [animateNavbar]);
+
   return (
     <div className="relative flex h-dvh flex-col items-center overflow-hidden">
       {background ? (
@@ -24,32 +40,16 @@ export function HeaderFrame({
         </div>
       ) : null}
       <div
-        className="relative z-10 w-full max-w-[1440px] shrink-0 px-4 md:px-8"
-        style={
-          animateNavbar
-            ? {
-                animation: "navbar-fade-in 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards",
-              }
-            : undefined
-        }
+        className={cn(
+          "relative z-10 w-full max-w-[1440px] shrink-0 px-4 md:px-8",
+          shouldAnimate && "animate-navbar-fade-in"
+        )}
       >
         <ResponsiveHeader rightContent={rightContent} />
       </div>
-      <div className="relative z-10 flex min-h-0 w-full flex-1 justify-center overflow-hidden">
+      <div className="relative z-10 flex min-h-0 w-full flex-1 justify-center">
         {children}
       </div>
-      <style jsx>{`
-        @keyframes navbar-fade-in {
-          from {
-            opacity: 0;
-            transform: translateY(-20px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-      `}</style>
     </div>
   );
 }

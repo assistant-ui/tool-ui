@@ -63,7 +63,7 @@ export function FauxChatShellMobile({ className, disableLightOverlay: _disableLi
   return (
     <div
       className={cn(
-        "border-gradient-glow relative flex h-full w-full max-w-[430px] flex-col overflow-hidden rounded-[2.5rem]",
+        "border-gradient-glow relative flex h-full w-full max-w-[430px] flex-col overflow-hidden rounded-[2.5rem] backdrop-blur-lg",
         className,
       )}
       style={{
