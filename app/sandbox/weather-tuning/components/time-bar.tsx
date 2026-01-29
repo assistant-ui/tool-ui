@@ -43,8 +43,7 @@ export function TimeBar({ value, onChange }: TimeBarProps) {
 
       <div className="flex gap-1">
         {TIME_CHECKPOINT_ORDER.map((checkpoint) => {
-          const { value: checkpointValue, emoji, label } =
-            TIME_CHECKPOINTS[checkpoint];
+          const { value: checkpointValue, label } = TIME_CHECKPOINTS[checkpoint];
           const isActive = Math.abs(value - checkpointValue) < 0.02;
 
           return (
@@ -53,10 +52,9 @@ export function TimeBar({ value, onChange }: TimeBarProps) {
               variant={isActive ? "secondary" : "ghost"}
               size="sm"
               onClick={() => onChange(checkpointValue)}
-              className="px-2"
-              title={label}
+              className="px-3 text-[11px] font-medium uppercase tracking-wide"
             >
-              <span className="text-base">{emoji}</span>
+              {label}
             </Button>
           );
         })}

@@ -168,6 +168,36 @@ export interface FullCompositorParams {
   snow: SnowParams;
 }
 
+type TimeCheckpoint = "dawn" | "noon" | "dusk" | "midnight";
+
+const TIME_CHECKPOINT_VALUES: Record<TimeCheckpoint, number> = {
+  midnight: 0.0,
+  dawn: 0.25,
+  noon: 0.5,
+  dusk: 0.75,
+};
+
+function getNearestCheckpointForTime(timeOfDay: number): TimeCheckpoint {
+  const checkpoints: TimeCheckpoint[] = ["midnight", "dawn", "noon", "dusk"];
+  let nearest: TimeCheckpoint = "noon";
+  let minDist = Infinity;
+
+  for (const cp of checkpoints) {
+    const value = TIME_CHECKPOINT_VALUES[cp];
+    // Handle circular distance (midnight wraps)
+    const dist = Math.min(
+      Math.abs(timeOfDay - value),
+      Math.abs(timeOfDay - value - 1),
+      Math.abs(timeOfDay - value + 1)
+    );
+    if (dist < minDist) {
+      minDist = dist;
+      nearest = cp;
+    }
+  }
+  return nearest;
+}
+
 export function getBaseParamsForCondition(
   condition: WeatherCondition,
   timestamp?: string
@@ -178,6 +208,8 @@ export function getBaseParamsForCondition(
   });
 
   const timeOfDay = timestamp ? getTimeOfDay(timestamp) : 0.5;
+  const nearestCheckpoint = getNearestCheckpointForTime(timeOfDay);
+  const checkpointDefaults = DEFAULT_CHECKPOINT_OVERRIDES[condition]?.[nearestCheckpoint];
 
   const hasCloud = effectConfig.cloud !== undefined;
   const hasRain = effectConfig.rain !== undefined;
@@ -187,7 +219,7 @@ export function getBaseParamsForCondition(
   const lightningIntervalMin = effectConfig.lightning?.intervalMin ?? 4;
   const lightningIntervalMax = effectConfig.lightning?.intervalMax ?? 12;
 
-  return {
+  const base: FullCompositorParams = {
     layers: {
       celestial: true,
       clouds: hasCloud,
@@ -273,6 +305,12 @@ export function getBaseParamsForCondition(
       visibility: 1.0,
     },
   };
+
+  // Apply tuned defaults for this condition/checkpoint as part of the base
+  if (checkpointDefaults) {
+    return mergeWithOverrides(base, checkpointDefaults);
+  }
+  return base;
 }
 
 export function mergeWithOverrides(
@@ -335,6 +373,477 @@ function diffObjects<T extends object>(
 }
 
 const STORAGE_KEY = "weather-compositor-state";
+
+// Tuned default overrides for each condition and checkpoint
+export const DEFAULT_CHECKPOINT_OVERRIDES: Partial<Record<WeatherCondition, CheckpointOverrides>> = {
+  clear: {
+    dawn: {
+      celestial: {
+        celestialY: 0.74,
+        sunGlowIntensity: 3.7,
+        sunGlowSize: 0.36,
+        moonGlowIntensity: 2.45,
+        moonGlowSize: 0.96,
+        skyBrightness: 1.04,
+        skySaturation: 1.31,
+        skyContrast: 0.61,
+      },
+    },
+    noon: {
+      celestial: {
+        celestialY: 0.74,
+        sunGlowIntensity: 2.68,
+        sunGlowSize: 0.37,
+        sunRayIntensity: 0.11,
+        moonGlowIntensity: 2.45,
+        moonGlowSize: 0.96,
+        skyBrightness: 0.91,
+        skySaturation: 1.53,
+      },
+    },
+    dusk: {
+      celestial: {
+        celestialY: 0.74,
+        sunGlowSize: 0.47,
+        sunRayIntensity: 0.04,
+        moonGlowIntensity: 2.45,
+        moonGlowSize: 0.96,
+        skyBrightness: 1.04,
+        skySaturation: 1.31,
+        skyContrast: 0.61,
+      },
+    },
+    midnight: {
+      celestial: {
+        celestialY: 0.74,
+        moonGlowIntensity: 2.45,
+        moonGlowSize: 0.96,
+        skyBrightness: 1.04,
+        skySaturation: 1.31,
+        skyContrast: 0.61,
+      },
+    },
+  },
+  "partly-cloudy": {
+    dawn: {
+      cloud: {
+        coverage: 0.43,
+        density: 0.32,
+        softness: 0.34,
+        lightIntensity: 1.2,
+        backlightIntensity: 0.45,
+      },
+    },
+    noon: {
+      cloud: {
+        coverage: 0.43,
+        density: 0.32,
+        softness: 0.34,
+        lightIntensity: 1.2,
+        backlightIntensity: 0.45,
+      },
+    },
+    dusk: {
+      cloud: {
+        coverage: 0.43,
+        density: 0.32,
+        softness: 0.34,
+        lightIntensity: 1.2,
+        backlightIntensity: 0.45,
+      },
+    },
+    midnight: {
+      cloud: {
+        coverage: 0.38,
+        density: 1.36,
+        softness: 0.34,
+        lightIntensity: 0.47,
+        backlightIntensity: 0.61,
+      },
+    },
+  },
+  cloudy: {
+    dawn: {
+      celestial: { skyBrightness: 0.91, skySaturation: 1.16 },
+      cloud: { softness: 0.45, windSpeed: 0.09, lightIntensity: 0.81, backlightIntensity: 0.39 },
+    },
+    noon: {
+      celestial: { skyBrightness: 0.91, skySaturation: 1.16 },
+      cloud: { softness: 0.45, windSpeed: 0.09, lightIntensity: 0.81, backlightIntensity: 0.39 },
+    },
+    dusk: {
+      celestial: { skyBrightness: 0.91, skySaturation: 1.16 },
+      cloud: {
+        coverage: 0.58,
+        softness: 0.29,
+        windSpeed: 0.09,
+        lightIntensity: 1.26,
+        backlightIntensity: 0.55,
+      },
+    },
+    midnight: {
+      cloud: {
+        coverage: 0.76,
+        density: 1.25,
+        softness: 0.4,
+        lightIntensity: 0.92,
+        ambientDarkness: 1,
+        backlightIntensity: 0.43,
+        numLayers: 1,
+      },
+    },
+  },
+  overcast: {
+    dawn: {
+      celestial: {
+        sunGlowIntensity: 2.08,
+        sunGlowSize: 0.22,
+        sunRayCount: 0,
+        sunRayLength: 0,
+        sunRayIntensity: 0,
+        skyBrightness: 1.05,
+      },
+      cloud: {
+        cloudScale: 0.98,
+        coverage: 1,
+        density: 0.87,
+        softness: 1,
+        windSpeed: 0.04,
+        lightIntensity: 1.1,
+        backlightIntensity: 0.53,
+        numLayers: 1,
+      },
+    },
+    noon: {
+      celestial: {
+        sunGlowIntensity: 1.73,
+        sunGlowSize: 0.48,
+        sunRayCount: 0,
+        sunRayLength: 0,
+        sunRayIntensity: 0,
+        skyBrightness: 0.68,
+        skySaturation: 0.84,
+      },
+      cloud: {
+        cloudScale: 0.98,
+        coverage: 1,
+        density: 0.87,
+        softness: 1,
+        windSpeed: 0.04,
+        lightIntensity: 1.1,
+        backlightIntensity: 0,
+        numLayers: 1,
+      },
+    },
+    dusk: {
+      celestial: {
+        sunGlowIntensity: 1.73,
+        sunGlowSize: 0.22,
+        sunRayCount: 0,
+        sunRayLength: 0,
+        sunRayIntensity: 0,
+        skyBrightness: 0.81,
+        skySaturation: 0.79,
+      },
+      cloud: {
+        cloudScale: 0.98,
+        coverage: 1,
+        density: 0.87,
+        softness: 1,
+        windSpeed: 0.04,
+        lightIntensity: 1.1,
+        backlightIntensity: 0,
+        numLayers: 1,
+      },
+    },
+    midnight: {
+      celestial: {
+        sunGlowIntensity: 1.73,
+        sunGlowSize: 0.22,
+        sunRayCount: 0,
+        sunRayLength: 0,
+        sunRayIntensity: 0,
+        skyBrightness: 0.64,
+        skySaturation: 1.46,
+      },
+      cloud: {
+        cloudScale: 0.98,
+        coverage: 1,
+        density: 0.97,
+        softness: 0.95,
+        windSpeed: 0.04,
+        lightIntensity: 1.1,
+        backlightIntensity: 0.22,
+        numLayers: 1,
+      },
+    },
+  },
+  fog: {
+    dawn: {},
+    noon: {},
+    dusk: {},
+    midnight: { celestial: { celestialY: 0.74 } },
+  },
+  rain: {
+    dawn: {},
+    noon: {},
+    dusk: {},
+    midnight: { cloud: { windSpeed: 0.19 } },
+  },
+  "heavy-rain": {
+    dawn: {
+      cloud: { coverage: 0.64, density: 1.2, windSpeed: 0.1, numLayers: 1 },
+    },
+    noon: {
+      celestial: { sunGlowIntensity: 3.38, skyBrightness: 0.88, skySaturation: 0.97 },
+      cloud: {
+        coverage: 0.64,
+        density: 1.27,
+        windSpeed: 0.1,
+        lightIntensity: 0.19,
+        ambientDarkness: 1,
+        backlightIntensity: 0.47,
+        numLayers: 2,
+      },
+      rain: {
+        glassIntensity: 0.88,
+        zoom: 1.18,
+        fallingSpeed: 3,
+        fallingStreakLength: 2,
+        fallingLayers: 6,
+      },
+    },
+    dusk: {
+      cloud: { coverage: 0.64, density: 1.2, windSpeed: 0.1, numLayers: 1 },
+    },
+    midnight: {
+      cloud: { coverage: 0.64, density: 1.2, windSpeed: 0.1, numLayers: 1 },
+    },
+  },
+  thunderstorm: {
+    dawn: {
+      lightning: {
+        branchDensity: 0.83,
+        glowIntensity: 0.85,
+        flashDuration: 0.44,
+        sceneIllumination: 0.77,
+      },
+    },
+    noon: {
+      lightning: {
+        branchDensity: 0.83,
+        glowIntensity: 0.85,
+        flashDuration: 0.44,
+        sceneIllumination: 0.77,
+      },
+    },
+    dusk: {
+      lightning: {
+        branchDensity: 0.83,
+        glowIntensity: 0.85,
+        flashDuration: 0.44,
+        sceneIllumination: 0.77,
+      },
+    },
+    midnight: {
+      cloud: {
+        windSpeed: 0.12,
+        turbulence: 0.63,
+        lightIntensity: 0.73,
+        ambientDarkness: 1,
+        backlightIntensity: 0.62,
+      },
+      lightning: {
+        branchDensity: 0.72,
+        glowIntensity: 1.72,
+        flashDuration: 0.5,
+        sceneIllumination: 0.19,
+        autoInterval: 7.5,
+      },
+    },
+  },
+  snow: {
+    dawn: {
+      cloud: { lightIntensity: 0.64 },
+      snow: { intensity: 0.12 },
+    },
+    noon: {
+      cloud: { lightIntensity: 0.64 },
+      snow: { intensity: 0.23 },
+    },
+    dusk: {
+      cloud: { lightIntensity: 0.64 },
+      snow: { intensity: 0.15 },
+    },
+    midnight: {
+      cloud: { lightIntensity: 0.64 },
+    },
+  },
+  sleet: {
+    dawn: {
+      celestial: { skyBrightness: 0.78, skySaturation: 1.09 },
+      cloud: {
+        cloudScale: 1.98,
+        coverage: 0.82,
+        density: 0.91,
+        softness: 0.39,
+        windSpeed: 0.13,
+        turbulence: 0.41,
+        lightIntensity: 0.26,
+        ambientDarkness: 1,
+        backlightIntensity: 0.63,
+        numLayers: 1,
+      },
+      rain: {
+        glassIntensity: 0.71,
+        zoom: 0.8,
+        fallingIntensity: 1,
+        fallingStreakLength: 2,
+        fallingLayers: 6,
+      },
+      snow: {
+        intensity: 0.1,
+        layers: 8,
+        fallSpeed: 1.03,
+        windSpeed: 1.54,
+        drift: 0.5,
+        flakeSize: 2.08,
+      },
+    },
+    noon: {
+      celestial: { skyBrightness: 0.76 },
+      cloud: {
+        softness: 0.39,
+        windSpeed: 0.13,
+        turbulence: 0.41,
+        lightIntensity: 0.45,
+        backlightIntensity: 0.55,
+        numLayers: 2,
+      },
+      rain: {
+        glassIntensity: 0.48,
+        zoom: 0.76,
+        fallingIntensity: 1,
+        fallingAngle: -0.15,
+        fallingStreakLength: 2,
+        fallingLayers: 6,
+      },
+      snow: {
+        intensity: 0.1,
+        layers: 8,
+        fallSpeed: 1.03,
+        windSpeed: 1.54,
+        drift: 0.26,
+        flakeSize: 2.44,
+      },
+    },
+    dusk: {
+      celestial: { skyBrightness: 0.63, skySaturation: 0.93 },
+      cloud: {
+        softness: 0.66,
+        windSpeed: 0.13,
+        turbulence: 0.41,
+        lightIntensity: 0.43,
+        backlightIntensity: 0.55,
+        numLayers: 1,
+      },
+      rain: { fallingIntensity: 1, fallingStreakLength: 2, fallingLayers: 6 },
+      snow: {
+        intensity: 0.06,
+        layers: 8,
+        fallSpeed: 1.03,
+        windSpeed: 1.54,
+        drift: 0.26,
+        flakeSize: 2.44,
+      },
+    },
+    midnight: {
+      celestial: { skyBrightness: 0.76 },
+      cloud: {
+        softness: 0.39,
+        windSpeed: 0.13,
+        turbulence: 0.41,
+        lightIntensity: 0.45,
+        backlightIntensity: 0.55,
+        numLayers: 2,
+      },
+      rain: {
+        glassIntensity: 0.45,
+        fallingIntensity: 1,
+        fallingStreakLength: 1.79,
+        fallingLayers: 6,
+      },
+      snow: {
+        intensity: 0.09,
+        layers: 8,
+        fallSpeed: 0.95,
+        windSpeed: 1.54,
+        drift: 0.26,
+        flakeSize: 1.69,
+      },
+    },
+  },
+  hail: {
+    dawn: { cloud: { windSpeed: 0.16 } },
+    noon: { cloud: { windSpeed: 0.16 } },
+    dusk: { cloud: { windSpeed: 0.16 } },
+    midnight: { celestial: { celestialY: 0.74 }, cloud: { windSpeed: 0.16 } },
+  },
+  windy: {
+    dawn: {
+      celestial: { celestialY: 0.74 },
+      cloud: {
+        cloudScale: 1.84,
+        coverage: 0.49,
+        density: 0.67,
+        windSpeed: 0.26,
+        turbulence: 0.77,
+        lightIntensity: 0.63,
+        ambientDarkness: 0.37,
+        backlightIntensity: 0.39,
+      },
+    },
+    noon: {
+      celestial: { celestialY: 0.74 },
+      cloud: {
+        cloudScale: 1.84,
+        coverage: 0.49,
+        density: 0.67,
+        windSpeed: 0.26,
+        turbulence: 0.77,
+        lightIntensity: 0.63,
+        ambientDarkness: 0.37,
+        backlightIntensity: 0.39,
+      },
+    },
+    dusk: {
+      celestial: { celestialY: 0.74 },
+      cloud: {
+        cloudScale: 1.84,
+        coverage: 0.49,
+        density: 0.67,
+        windSpeed: 0.26,
+        turbulence: 0.77,
+        lightIntensity: 0.63,
+        ambientDarkness: 0.37,
+        backlightIntensity: 0.39,
+      },
+    },
+    midnight: {
+      celestial: { celestialY: 0.74 },
+      cloud: {
+        cloudScale: 1.84,
+        coverage: 0.49,
+        density: 0.67,
+        windSpeed: 0.26,
+        turbulence: 0.77,
+        lightIntensity: 0.63,
+        ambientDarkness: 0.37,
+        backlightIntensity: 0.39,
+      },
+    },
+  },
+};
 
 function createEmptyCheckpointOverrides(): CheckpointOverrides {
   return {
@@ -416,6 +925,7 @@ export function getCheckpointOverridesForCondition(
   state: CompositorState,
   condition: WeatherCondition
 ): CheckpointOverrides {
+  // User overrides only - defaults are now baked into getBaseParamsForCondition
   return state.checkpointOverrides[condition] ?? createEmptyCheckpointOverrides();
 }
 

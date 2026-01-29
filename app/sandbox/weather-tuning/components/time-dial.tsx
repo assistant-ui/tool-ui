@@ -2,7 +2,6 @@
 
 import { useRef, useCallback } from "react";
 import { cn } from "@/lib/ui/cn";
-import { Pencil, Eye } from "lucide-react";
 import { TIME_CHECKPOINTS, TIME_CHECKPOINT_ORDER } from "../lib/constants";
 import type { TimeCheckpoint } from "../types";
 
@@ -82,44 +81,23 @@ export function TimeDial({
   };
 
   const angle = getAngleFromValue(value);
-  const isNight = value < 0.25 || value > 0.75;
-  const isDawn = value >= 0.2 && value <= 0.35;
-  const isDusk = value >= 0.7 && value <= 0.85;
-
-  const skyGradient = isNight
-    ? "from-indigo-950 via-slate-900 to-slate-950"
-    : isDawn
-      ? "from-orange-400 via-rose-300 to-indigo-400"
-      : isDusk
-        ? "from-orange-500 via-purple-500 to-indigo-600"
-        : "from-sky-400 via-blue-400 to-blue-500";
-
   const editCheckpointInfo = TIME_CHECKPOINTS[activeEditCheckpoint];
 
   return (
-    <div className="flex items-center gap-5">
+    <div className="flex items-center gap-6">
       <div className="relative">
         <div
           ref={dialRef}
           onMouseDown={handleMouseDown}
-          className="relative flex size-16 cursor-pointer items-center justify-center"
+          className="relative flex size-14 cursor-pointer items-center justify-center"
         >
-          <div
-            className={cn(
-              "absolute inset-0 rounded-full bg-gradient-to-br opacity-15 blur-lg transition-all duration-700",
-              skyGradient
-            )}
-          />
-
-          <div className="absolute inset-0 rounded-full border border-border/50 bg-card/50" />
-
-          <div className="absolute inset-1.5 rounded-full border border-border/30 bg-muted/30" />
+          <div className="absolute inset-0 rounded-full border border-border/40" />
 
           {TIME_CHECKPOINT_ORDER.map((checkpoint) => {
-            const { value: cpValue, emoji } = TIME_CHECKPOINTS[checkpoint];
+            const { value: cpValue, label } = TIME_CHECKPOINTS[checkpoint];
             const cpAngle = getAngleFromValue(cpValue);
             const radians = (cpAngle * Math.PI) / 180;
-            const radius = 24;
+            const radius = 22;
             const x = Math.cos(radians) * radius;
             const y = Math.sin(radians) * radius;
             const isViewingHere = Math.abs(value - cpValue) < 0.04;
@@ -133,74 +111,50 @@ export function TimeDial({
                   onCheckpointClick(checkpoint);
                 }}
                 className={cn(
-                  "absolute flex size-5 items-center justify-center rounded-full text-[10px] transition-all",
+                  "absolute flex size-2 items-center justify-center rounded-full transition-all",
                   isEditingHere
-                    ? "scale-110 bg-blue-500/30 ring-2 ring-blue-500/50"
+                    ? "scale-150 bg-foreground"
                     : isViewingHere
-                      ? "scale-110 bg-foreground/10"
-                      : "bg-muted/50 hover:bg-accent/50"
+                      ? "scale-125 bg-foreground/60"
+                      : "bg-foreground/20 hover:bg-foreground/40"
                 )}
                 style={{
                   transform: `translate(${x}px, ${y}px)`,
                 }}
-                title={`${TIME_CHECKPOINTS[checkpoint].label}${isEditingHere ? " (editing)" : ""}`}
-              >
-                {emoji}
-              </button>
+                title={`${label}${isEditingHere ? " (editing)" : ""}`}
+              />
             );
           })}
 
           <div
-            className="absolute left-1/2 top-1/2 h-px w-5 origin-left rounded-full bg-gradient-to-r from-foreground/50 to-foreground/0"
+            className="absolute left-1/2 top-1/2 h-px w-4 origin-left bg-foreground/50"
             style={{
               transform: `translate(0, -50%) rotate(${angle}deg)`,
             }}
           />
-          <div className="absolute left-1/2 top-1/2 size-1.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-foreground/60" />
+          <div className="absolute left-1/2 top-1/2 size-1 -translate-x-1/2 -translate-y-1/2 rounded-full bg-foreground" />
         </div>
       </div>
 
-      <div className="flex flex-col items-start">
-        <span className="font-mono text-lg tabular-nums tracking-tight text-foreground/80">
+      <div className="flex flex-col items-start gap-0.5">
+        <span className="font-mono text-sm tabular-nums text-foreground">
           {formatTime(value)}
         </span>
-        <div className="flex items-center gap-1">
-          <div
-            className={cn(
-              "size-1 rounded-full transition-colors",
-              isNight ? "bg-indigo-400/60" : "bg-amber-400/60"
-            )}
-          />
-          <span className="text-[10px] text-muted-foreground/60">
-            {isNight
-              ? "Night"
-              : isDawn
-                ? "Dawn"
-                : isDusk
-                  ? "Dusk"
-                  : "Day"}
-          </span>
-        </div>
+        {isPreviewing && (
+          <button
+            onClick={onExitPreview}
+            className="text-[10px] uppercase tracking-wide text-muted-foreground/60 hover:text-foreground"
+          >
+            Preview / Click to edit {editCheckpointInfo.label}
+          </button>
+        )}
       </div>
 
-      <div className="h-8 w-px bg-border/30" />
+      <div className="h-6 w-px bg-border/20" />
 
-      {isPreviewing && (
-        <button
-          onClick={onExitPreview}
-          className="flex items-center gap-1.5 rounded-md bg-amber-500/10 px-2.5 py-1.5 text-xs text-amber-600 transition-colors hover:bg-amber-500/20 dark:text-amber-400"
-        >
-          <Eye className="size-3" />
-          <span>Preview</span>
-          <span className="text-[10px] text-amber-600/60 dark:text-amber-400/60">
-            (click to edit {editCheckpointInfo.label})
-          </span>
-        </button>
-      )}
-
-      <div className="flex gap-0.5">
+      <div className="flex gap-1">
         {TIME_CHECKPOINT_ORDER.map((checkpoint) => {
-          const { value: cpValue, emoji, label } = TIME_CHECKPOINTS[checkpoint];
+          const { value: cpValue, label } = TIME_CHECKPOINTS[checkpoint];
           const isViewingHere = Math.abs(value - cpValue) < 0.04;
           const isEditingHere = checkpoint === activeEditCheckpoint;
 
@@ -209,26 +163,16 @@ export function TimeDial({
               key={checkpoint}
               onClick={() => onCheckpointClick(checkpoint)}
               className={cn(
-                "relative flex flex-col items-center gap-0.5 rounded-md px-2 py-1 transition-all",
+                "px-2 py-1 text-[11px] font-medium uppercase tracking-wide transition-colors",
                 isEditingHere
-                  ? "bg-blue-500/15 text-blue-600 ring-1 ring-blue-500/30 dark:text-blue-400"
-                  : isViewingHere && isPreviewing
-                    ? "bg-amber-500/10 text-amber-600/80 dark:text-amber-400/80"
-                    : isViewingHere
-                      ? "bg-accent/60 text-foreground/80"
-                      : "text-muted-foreground/50 hover:bg-accent/30 hover:text-muted-foreground"
+                  ? "bg-muted-foreground/20 text-foreground"
+                  : isViewingHere
+                    ? "text-foreground"
+                    : "text-muted-foreground/40 hover:text-muted-foreground"
               )}
               title={`${label}${isEditingHere ? " (editing)" : ""}`}
             >
-              <span className="text-sm">{emoji}</span>
-              <span className="text-[8px] font-medium uppercase tracking-wider">
-                {checkpoint}
-              </span>
-              {isEditingHere && (
-                <div className="absolute -right-0.5 -top-0.5">
-                  <Pencil className="size-2.5 text-blue-500" />
-                </div>
-              )}
+              {label}
             </button>
           );
         })}

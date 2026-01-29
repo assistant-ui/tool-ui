@@ -234,6 +234,19 @@ export default function WeatherCompositorSandbox() {
     lightningSceneIllumination: { value: 0.6, min: 0, max: 2, step: 0.05, label: "Lightning Illumination" },
   }), []);
 
+  const [glassPanel] = useControls("Glass Panel (Unified)", () => ({
+    enabled: { value: true, label: "Enabled" },
+    regionX: { value: 0.05, min: 0, max: 1, step: 0.01, label: "Region X" },
+    regionY: { value: 0.65, min: 0, max: 1, step: 0.01, label: "Region Y" },
+    regionW: { value: 0.9, min: 0, max: 1, step: 0.01, label: "Region Width" },
+    regionH: { value: 0.25, min: 0, max: 1, step: 0.01, label: "Region Height" },
+    refractionScale: { value: 30, min: 10, max: 80, step: 1, label: "Refraction Scale" },
+    edgeWidth: { value: 0.15, min: 0.05, max: 0.5, step: 0.01, label: "Edge Width" },
+    chromaticAberration: { value: 1.2, min: 1.0, max: 2.0, step: 0.05, label: "Chromatic Aberration" },
+    specularIntensity: { value: 1.5, min: 0, max: 3, step: 0.1, label: "Specular Intensity" },
+    lightAngle: { value: 225, min: 0, max: 360, step: 5, label: "Light Angle (°)" },
+  }), []);
+
   // Combine Leva values with global timeOfDay for full params
   const currentParams: FullCompositorParams = {
     layers,
@@ -245,20 +258,29 @@ export default function WeatherCompositorSandbox() {
   };
 
   const debouncedParams = useDebounce(currentParams, 300);
+  const debouncedCondition = useDebounce(activeCondition, 300);
 
   useEffect(() => {
     if (isInitializing.current || !isMounted) return;
 
-    const newOverrides = extractOverrides(debouncedParams, baseParams);
-    const hasChanges = Object.keys(newOverrides).length > 0;
+    // Guard against race condition: only save if the debounced condition
+    // matches the current active condition. This prevents params from
+    // condition A being saved to condition B when switching quickly.
+    if (debouncedCondition !== activeCondition) return;
+
+    // Use checkpoint-specific base for extracting overrides to ensure
+    // we compute deltas against the correct defaults
     const activeCheckpoint = getNearestCheckpoint(globalSettings.timeOfDay);
+    const checkpointBase = getBaseForCheckpoint(activeCheckpoint);
+    const newOverrides = extractOverrides(debouncedParams, checkpointBase);
+    const hasChanges = Object.keys(newOverrides).length > 0;
 
     setCheckpointOverrides(prev => {
-      const existing = prev[activeCondition] ?? createEmptyCheckpointOverrides();
+      const existing = prev[debouncedCondition] ?? createEmptyCheckpointOverrides();
       if (hasChanges) {
         return {
           ...prev,
-          [activeCondition]: {
+          [debouncedCondition]: {
             ...existing,
             [activeCheckpoint]: newOverrides,
           },
@@ -273,13 +295,13 @@ export default function WeatherCompositorSandbox() {
         );
         if (allEmpty) {
           const next = { ...prev };
-          delete next[activeCondition];
+          delete next[debouncedCondition];
           return next;
         }
-        return { ...prev, [activeCondition]: updated };
+        return { ...prev, [debouncedCondition]: updated };
       }
     });
-  }, [debouncedParams, activeCondition, baseParams, isMounted, globalSettings.timeOfDay]);
+  }, [debouncedParams, debouncedCondition, activeCondition, getBaseForCheckpoint, isMounted, globalSettings.timeOfDay]);
 
   const stateToSave = useDebounce({ activeCondition, globalSettings, checkpointOverrides }, 500);
 
@@ -544,6 +566,15 @@ export default function WeatherCompositorSandbox() {
                 interactions={{
                   rainRefractionStrength: interactions.rainRefractionStrength,
                   lightningSceneIllumination: interactions.lightningSceneIllumination,
+                }}
+                glassPanel={{
+                  enabled: glassPanel.enabled,
+                  region: [glassPanel.regionX, glassPanel.regionY, glassPanel.regionW, glassPanel.regionH],
+                  refractionScale: glassPanel.refractionScale,
+                  edgeWidth: glassPanel.edgeWidth,
+                  chromaticAberration: glassPanel.chromaticAberration,
+                  specularIntensity: glassPanel.specularIntensity,
+                  lightAngle: glassPanel.lightAngle * (Math.PI / 180),
                 }}
               />
               <div className="relative z-10 h-full w-full [&_[data-slot=weather-widget]]:h-full [&_[data-slot=weather-widget]]:max-w-none [&_article]:h-full [&_[data-slot=card]]:h-full [&_[data-slot=card]]:border-0 [&_[data-slot=card]]:bg-transparent [&_[data-slot=card]]:shadow-none">

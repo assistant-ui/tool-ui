@@ -1,26 +1,26 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { ArrowLeft, Download } from "lucide-react";
 import { useTuningState } from "./hooks/use-tuning-state";
 import { TimeDial } from "./components/time-dial";
 import { ConditionSidebar } from "./components/condition-sidebar";
 import { DetailEditor } from "./components/detail-editor";
-import { ComparisonView } from "./components/comparison-view";
 import { ExportPanel } from "./components/export-panel";
+import { ViewModeToggle, type ViewMode } from "./components/view-mode-toggle";
+import { ParameterMatrixView } from "./components/parameter-matrix-view";
 import { TIME_CHECKPOINT_ORDER } from "./lib/constants";
 import { WEATHER_CONDITIONS } from "../weather-compositor/presets";
 import type { TimeCheckpoint } from "./types";
 
 export default function WeatherTuningPage() {
   const state = useTuningState();
+  const [viewMode, setViewMode] = useState<ViewMode>("condition");
   const {
     selectedCondition,
     setSelectedCondition,
     goToCheckpoint,
-    compareMode,
-    setCompareMode,
   } = state;
 
   useEffect(() => {
@@ -32,11 +32,6 @@ export default function WeatherTuningPage() {
         return;
 
       const key = e.key;
-
-      if (key === "Escape" && compareMode !== "off") {
-        setCompareMode("off");
-        return;
-      }
 
       if (key === "ArrowUp" || key === "ArrowDown") {
         e.preventDefault();
@@ -79,8 +74,6 @@ export default function WeatherTuningPage() {
     selectedCondition,
     setSelectedCondition,
     goToCheckpoint,
-    compareMode,
-    setCompareMode,
   ]);
 
   const selectedParams = state.selectedCondition
@@ -90,22 +83,6 @@ export default function WeatherTuningPage() {
   const selectedBaseParams = state.selectedCondition
     ? state.getBaseParams(state.selectedCondition)
     : null;
-
-  const compareTargetParams = state.compareTarget
-    ? state.getParamsForCondition(state.compareTarget)
-    : null;
-
-  const handleCompare = () => {
-    if (state.compareMode === "off") {
-      state.setCompareMode("ab");
-    } else {
-      state.setCompareMode("off");
-    }
-  };
-
-  const handleToggleCompareMode = () => {
-    state.setCompareMode(state.compareMode === "ab" ? "side-by-side" : "ab");
-  };
 
   const progressPercent = Math.round((state.signedOffCount / 13) * 100);
 
@@ -141,52 +118,48 @@ export default function WeatherTuningPage() {
           </div>
         </div>
 
-        <ExportPanel checkpointOverrides={state.checkpointOverrides} signedOff={state.signedOff} />
+        <div className="flex items-center gap-4">
+          <ViewModeToggle value={viewMode} onChange={setViewMode} />
+          <ExportPanel checkpointOverrides={state.checkpointOverrides} signedOff={state.signedOff} />
+        </div>
       </header>
 
       <div className="relative z-10 flex min-h-0 flex-1">
-        <ConditionSidebar
-          selectedCondition={state.selectedCondition}
-          signedOff={state.signedOff}
-          checkpoints={state.checkpoints}
-          getOverrideCount={state.getOverrideCount}
-          onSelectCondition={state.setSelectedCondition}
-        />
+        {viewMode === "condition" && (
+          <ConditionSidebar
+            selectedCondition={state.selectedCondition}
+            signedOff={state.signedOff}
+            checkpoints={state.checkpoints}
+            getOverrideCount={state.getOverrideCount}
+            onSelectCondition={state.setSelectedCondition}
+          />
+        )}
 
         <main className="flex min-h-0 min-w-0 flex-1 flex-col">
-          <div className="flex items-center justify-center border-b border-border/40 px-6 py-3">
-            <TimeDial
-              value={state.globalTimeOfDay}
-              isPreviewing={state.isPreviewing}
-              activeEditCheckpoint={state.activeEditCheckpoint}
-              onScrub={state.scrubTime}
-              onCheckpointClick={(checkpoint: TimeCheckpoint) => {
-                if (state.selectedCondition) {
-                  state.goToCheckpoint(state.selectedCondition, checkpoint);
-                }
-              }}
-              onExitPreview={state.exitPreview}
-            />
-          </div>
+          {viewMode === "condition" && (
+            <div className="flex items-center justify-center border-b border-border/40 px-6 py-3">
+              <TimeDial
+                value={state.globalTimeOfDay}
+                isPreviewing={state.isPreviewing}
+                activeEditCheckpoint={state.activeEditCheckpoint}
+                onScrub={state.scrubTime}
+                onCheckpointClick={(checkpoint: TimeCheckpoint) => {
+                  if (state.selectedCondition) {
+                    state.goToCheckpoint(state.selectedCondition, checkpoint);
+                  }
+                }}
+                onExitPreview={state.exitPreview}
+              />
+            </div>
+          )}
 
-          <div className="min-h-0 flex-1 overflow-hidden p-6">
-            {state.selectedCondition && selectedParams && selectedBaseParams ? (
-              state.compareMode !== "off" ? (
-                <ComparisonView
-                  condition={state.selectedCondition}
-                  params={selectedParams}
-                  baseParams={selectedBaseParams}
-                  compareMode={state.compareMode}
-                  compareTarget={state.compareTarget}
-                  compareTargetParams={compareTargetParams}
-                  onClose={() => {
-                    state.setCompareMode("off");
-                    state.setCompareTarget(null);
-                  }}
-                  onToggleMode={handleToggleCompareMode}
-                  onSelectCompareTarget={state.setCompareTarget}
-                />
-              ) : (
+          {viewMode === "parameter" ? (
+            <div className="min-h-0 flex-1 overflow-hidden">
+              <ParameterMatrixView tuningState={state} />
+            </div>
+          ) : (
+            <div className="min-h-0 flex-1 overflow-hidden p-6">
+              {state.selectedCondition && selectedParams && selectedBaseParams ? (
                 <DetailEditor
                   condition={state.selectedCondition}
                   params={selectedParams}
@@ -200,6 +173,7 @@ export default function WeatherTuningPage() {
                   expandedGroups={state.expandedGroups}
                   currentTime={state.globalTimeOfDay}
                   showWidgetOverlay={state.showWidgetOverlay}
+                  glassParams={state.glassParams}
                   onParamsChange={(params) =>
                     state.updateParams(state.selectedCondition!, params)
                   }
@@ -209,10 +183,10 @@ export default function WeatherTuningPage() {
                   onCheckpointClick={(checkpoint) =>
                     state.goToCheckpoint(state.selectedCondition!, checkpoint)
                   }
-                  onCompare={handleCompare}
                   onToggleWidgetOverlay={() =>
                     state.setShowWidgetOverlay(!state.showWidgetOverlay)
                   }
+                  onGlassParamsChange={state.setGlassParams}
                   onCopyLayer={(sourceCondition, layerKey) =>
                     state.copyLayerFromCondition(
                       sourceCondition,
@@ -220,21 +194,28 @@ export default function WeatherTuningPage() {
                       layerKey
                     )
                   }
+                  onCopyCheckpoint={(targetCheckpoints) =>
+                    state.copyCheckpointToCheckpoints(
+                      state.selectedCondition!,
+                      state.activeEditCheckpoint,
+                      targetCheckpoints
+                    )
+                  }
                 />
-              )
-            ) : (
-              <div className="flex h-full items-center justify-center">
-                <div className="text-center">
-                  <div className="mx-auto mb-4 flex size-16 items-center justify-center rounded-2xl border border-border bg-muted">
-                    <Download className="size-7 text-muted-foreground" />
+              ) : (
+                <div className="flex h-full items-center justify-center">
+                  <div className="text-center">
+                    <div className="mx-auto mb-4 flex size-16 items-center justify-center rounded-2xl border border-border bg-muted">
+                      <Download className="size-7 text-muted-foreground" />
+                    </div>
+                    <p className="text-sm text-muted-foreground">
+                      Select a condition from the sidebar to begin tuning
+                    </p>
                   </div>
-                  <p className="text-sm text-muted-foreground">
-                    Select a condition from the sidebar to begin tuning
-                  </p>
                 </div>
-              </div>
-            )}
-          </div>
+              )}
+            </div>
+          )}
         </main>
       </div>
     </div>

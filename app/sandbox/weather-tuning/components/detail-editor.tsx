@@ -1,16 +1,25 @@
 "use client";
 
 import { useMemo } from "react";
-import { RotateCcw, Columns2, Eye, EyeOff, CheckCircle2, Pencil } from "lucide-react";
+import { RotateCcw, Eye, EyeOff, CheckCircle2, Copy } from "lucide-react";
 import { cn } from "@/lib/ui/cn";
 import type { WeatherCondition } from "@/components/tool-ui/weather-widget/schema";
 import { WeatherEffectsCanvas } from "@/components/tool-ui/weather-widget/effects";
 import { WeatherDataOverlay } from "./weather-data-overlay";
+import { GlassControls } from "./glass-controls";
+import type { GlassEffectParams } from "../hooks/use-tuning-state";
 import { CONDITION_LABELS } from "../../weather-compositor/presets";
 import type { FullCompositorParams } from "../../weather-compositor/presets";
 import { ParameterPanel } from "./parameter-panel";
 import { TIME_CHECKPOINT_ORDER, TIME_CHECKPOINTS } from "../lib/constants";
 import type { ConditionCheckpoints, TimeCheckpoint } from "../types";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 type LayerKey = "layers" | "celestial" | "cloud" | "rain" | "lightning" | "snow";
 
@@ -25,14 +34,16 @@ interface DetailEditorProps {
   expandedGroups: Set<string>;
   currentTime: number;
   showWidgetOverlay: boolean;
+  glassParams: GlassEffectParams;
   onParamsChange: (params: FullCompositorParams) => void;
   onToggleGroup: (group: string) => void;
   onReset: () => void;
   onSignOff: () => void;
   onCheckpointClick: (checkpoint: TimeCheckpoint) => void;
-  onCompare: () => void;
   onToggleWidgetOverlay: () => void;
+  onGlassParamsChange: (params: GlassEffectParams) => void;
   onCopyLayer?: (sourceCondition: WeatherCondition, layerKey: LayerKey) => void;
+  onCopyCheckpoint?: (targetCheckpoints: TimeCheckpoint[]) => void;
 }
 
 function mapParamsToCanvasProps(params: FullCompositorParams) {
@@ -108,14 +119,16 @@ export function DetailEditor({
   expandedGroups,
   currentTime,
   showWidgetOverlay,
+  glassParams,
   onParamsChange,
   onToggleGroup,
   onReset,
   onSignOff,
   onCheckpointClick,
-  onCompare,
   onToggleWidgetOverlay,
+  onGlassParamsChange,
   onCopyLayer,
+  onCopyCheckpoint,
 }: DetailEditorProps) {
   const canvasProps = useMemo(() => mapParamsToCanvasProps(params), [params]);
   const label = CONDITION_LABELS[condition];
@@ -131,34 +144,37 @@ export function DetailEditor({
   return (
     <div className="flex h-full gap-5">
       <div className="flex w-[420px] shrink-0 flex-col gap-3">
-        <div className="relative aspect-[4/3] overflow-hidden rounded-xl border border-border shadow-xl">
+        <div className="group/widget relative aspect-[4/3] overflow-hidden rounded-xl border border-border shadow-xl">
           <div className="absolute inset-0 bg-black">
             <WeatherEffectsCanvas className="absolute inset-0" {...canvasProps} />
           </div>
 
           {showWidgetOverlay && (
-            <WeatherDataOverlay
-              location="San Francisco, CA"
-              condition={condition}
-              temperature={72}
-              tempHigh={78}
-              tempLow={65}
-              humidity={45}
-              windSpeed={8}
-              visibility={10}
-              forecast={[
-                { day: "Today", tempMin: 65, tempMax: 78, condition: condition },
-                { day: "Tue", tempMin: 64, tempMax: 77, condition: "partly-cloudy" },
-                { day: "Wed", tempMin: 62, tempMax: 75, condition: "cloudy" },
-                { day: "Thu", tempMin: 60, tempMax: 73, condition: "rain" },
-                { day: "Fri", tempMin: 63, tempMax: 76, condition: "clear" },
-              ]}
-              unit="fahrenheit"
-              timeOfDay={params.celestial.timeOfDay}
-            />
+            <div className="absolute inset-0 z-20">
+              <WeatherDataOverlay
+                glassParams={glassParams}
+                location="San Francisco, CA"
+                condition={condition}
+                temperature={72}
+                tempHigh={78}
+                tempLow={65}
+                humidity={45}
+                windSpeed={8}
+                visibility={10}
+                forecast={[
+                  { day: "Today", tempMin: 65, tempMax: 78, condition: condition },
+                  { day: "Tue", tempMin: 64, tempMax: 77, condition: "partly-cloudy" },
+                  { day: "Wed", tempMin: 62, tempMax: 75, condition: "cloudy" },
+                  { day: "Thu", tempMin: 60, tempMax: 73, condition: "rain" },
+                  { day: "Fri", tempMin: 63, tempMax: 76, condition: "clear" },
+                ]}
+                unit="fahrenheit"
+                timeOfDay={params.celestial.timeOfDay}
+              />
+            </div>
           )}
 
-          <div className="absolute bottom-2.5 left-2.5 right-2.5 z-20 flex items-center justify-between">
+          <div className="absolute bottom-2.5 left-2.5 z-20 opacity-0 transition-opacity group-hover/widget:opacity-100">
             <button
               onClick={onToggleWidgetOverlay}
               className="flex items-center gap-1 rounded bg-black/50 px-2 py-1 text-[10px] text-white/70 backdrop-blur-sm transition-all hover:bg-black/70 hover:text-white"
@@ -170,14 +186,6 @@ export function DetailEditor({
               )}
               {showWidgetOverlay ? "Hide" : "Show"}
             </button>
-
-            <button
-              onClick={onCompare}
-              className="flex items-center gap-1 rounded bg-black/50 px-2 py-1 text-[10px] text-white/70 backdrop-blur-sm transition-all hover:bg-black/70 hover:text-white"
-            >
-              <Columns2 className="size-3" />
-              Compare
-            </button>
           </div>
 
           {!showWidgetOverlay && (
@@ -187,93 +195,91 @@ export function DetailEditor({
               </div>
             </div>
           )}
-
-          <div className="absolute right-2.5 top-2.5 z-20">
-            {isPreviewing ? (
-              <div className="flex items-center gap-1.5 rounded-md bg-amber-500/90 px-2.5 py-1.5 shadow-lg backdrop-blur-sm">
-                <Eye className="size-3 text-white/90" />
-                <span className="text-xs font-medium text-white">
-                  Preview Mode
-                </span>
-              </div>
-            ) : (
-              <div className="flex items-center gap-1.5 rounded-md bg-blue-600/90 px-2.5 py-1.5 shadow-lg backdrop-blur-sm">
-                <Pencil className="size-3 text-white/90" />
-                <span className="text-xs font-medium text-white">
-                  Editing {TIME_CHECKPOINTS[activeEditCheckpoint].label}
-                </span>
-                <span className="text-sm">{TIME_CHECKPOINTS[activeEditCheckpoint].emoji}</span>
-              </div>
-            )}
-          </div>
         </div>
 
         <div className="rounded-lg border border-border/40 bg-card/50 p-3">
-          <div className="mb-2 flex items-center justify-between">
-            <span className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground/50">
-              Checkpoints
-            </span>
-            <span className="font-mono text-[10px] text-muted-foreground/40">
-              {reviewedCount}/4
-            </span>
-          </div>
+            <div className="mb-2 flex items-center justify-between">
+              <span className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground/50">
+                Checkpoints
+              </span>
+              <div className="flex items-center gap-2">
+                {onCopyCheckpoint && !isPreviewing && (
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <button
+                        className="flex items-center gap-1 rounded px-1.5 py-0.5 text-[10px] text-muted-foreground/50 transition-colors hover:bg-accent/50 hover:text-muted-foreground"
+                        title={`Copy ${TIME_CHECKPOINTS[activeEditCheckpoint].label} to other checkpoints`}
+                      >
+                        <Copy className="size-2.5" />
+                        Copy to...
+                      </button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="min-w-[140px]">
+                      <DropdownMenuItem
+                        onClick={() => {
+                          const targets = TIME_CHECKPOINT_ORDER.filter(
+                            (cp) => cp !== activeEditCheckpoint
+                          ) as TimeCheckpoint[];
+                          onCopyCheckpoint(targets);
+                        }}
+                        className="text-xs font-medium"
+                      >
+                        All checkpoints
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      {TIME_CHECKPOINT_ORDER.filter(
+                        (cp) => cp !== activeEditCheckpoint
+                      ).map((checkpoint) => (
+                        <DropdownMenuItem
+                          key={checkpoint}
+                          onClick={() => onCopyCheckpoint([checkpoint as TimeCheckpoint])}
+                          className="text-xs"
+                        >
+                          {TIME_CHECKPOINTS[checkpoint].label}
+                        </DropdownMenuItem>
+                      ))}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                )}
+                <span className="font-mono text-[10px] text-muted-foreground/40">
+                  {reviewedCount}/4
+                </span>
+              </div>
+            </div>
 
-          <div className="grid grid-cols-4 gap-1.5">
-            {TIME_CHECKPOINT_ORDER.map((checkpoint) => {
-              const { value, emoji, label } = TIME_CHECKPOINTS[checkpoint];
-              const status = checkpoints?.[checkpoint] ?? "pending";
-              const isActive = Math.abs(currentTime - value) < 0.02;
-              const isReviewed = status === "reviewed";
-              const isEditing = checkpoint === activeEditCheckpoint;
+            <div className="grid grid-cols-4 gap-1">
+              {TIME_CHECKPOINT_ORDER.map((checkpoint) => {
+                const { value, label } = TIME_CHECKPOINTS[checkpoint];
+                const status = checkpoints?.[checkpoint] ?? "pending";
+                const isActive = Math.abs(currentTime - value) < 0.02;
+                const isReviewed = status === "reviewed";
+                const isEditing = checkpoint === activeEditCheckpoint;
 
-              return (
-                <button
-                  key={checkpoint}
-                  onClick={() => onCheckpointClick(checkpoint)}
-                  className={cn(
-                    "group relative flex flex-col items-center gap-1 rounded-md border py-2 transition-all",
-                    isEditing
-                      ? "border-blue-500/50 bg-blue-500/15 ring-2 ring-blue-500/30"
-                      : isActive
-                        ? "border-foreground/20 bg-accent/80"
-                        : isReviewed
-                          ? "border-green-500/20 bg-green-500/5 hover:bg-green-500/10"
-                          : "border-border/30 bg-muted/20 hover:bg-accent/40"
-                  )}
-                  title={`${label} (${status})${isEditing ? " - editing" : ""}`}
-                >
-                  <span className="text-base">{emoji}</span>
-                  <span
+                return (
+                  <button
+                    key={checkpoint}
+                    onClick={() => onCheckpointClick(checkpoint)}
                     className={cn(
-                      "text-[8px] font-medium uppercase tracking-wider",
+                      "relative py-2 text-[11px] font-medium uppercase tracking-wide transition-colors",
                       isEditing
-                        ? "text-blue-600 dark:text-blue-400"
+                        ? "bg-muted-foreground/20 text-foreground"
                         : isActive
-                          ? "text-foreground/70"
+                          ? "text-foreground"
                           : isReviewed
-                            ? "text-green-600/60 dark:text-green-400/60"
-                            : "text-muted-foreground/40"
+                            ? "text-foreground/60"
+                            : "text-muted-foreground/40 hover:text-muted-foreground"
                     )}
+                    title={`${label} (${status})${isEditing ? " - editing" : ""}`}
                   >
-                    {checkpoint}
-                  </span>
-                  {isEditing && (
-                    <div className="absolute -top-1.5 left-1/2 -translate-x-1/2">
-                      <span className="whitespace-nowrap rounded-full bg-blue-500 px-1.5 py-0.5 text-[8px] font-semibold text-white shadow-sm">
-                        EDITING
-                      </span>
-                    </div>
-                  )}
-                  {isReviewed && !isEditing && (
-                    <div className="absolute right-1 top-1">
-                      <CheckCircle2 className="size-2.5 text-green-600/50 dark:text-green-400/50" />
-                    </div>
-                  )}
-                </button>
-              );
-            })}
+                    {label}
+                    {isReviewed && !isEditing && (
+                      <span className="absolute right-1 top-1 text-[8px]">*</span>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
           </div>
-        </div>
 
         <div className="flex gap-1.5">
           <button
@@ -312,19 +318,23 @@ export function DetailEditor({
         </div>
       </div>
 
-      <div className="min-h-0 min-w-0 flex-1 overflow-hidden rounded-lg border border-border/40 bg-card/30">
-        <div className="scrollbar-subtle h-full overflow-y-auto">
-          <ParameterPanel
-            params={params}
-            baseParams={baseParams}
-            onParamsChange={onParamsChange}
-            expandedGroups={expandedGroups}
-            onToggleGroup={onToggleGroup}
-            activeEditCheckpoint={activeEditCheckpoint}
-            isPreviewing={isPreviewing}
-            currentCondition={condition}
-            onCopyLayer={onCopyLayer}
-          />
+      <div className="flex min-h-0 min-w-0 flex-1 flex-col gap-3">
+        <GlassControls params={glassParams} onChange={onGlassParamsChange} />
+
+        <div className="min-h-0 flex-1 overflow-hidden rounded-lg border border-border/40 bg-card/30">
+          <div className="scrollbar-subtle h-full overflow-y-auto">
+            <ParameterPanel
+              params={params}
+              baseParams={baseParams}
+              onParamsChange={onParamsChange}
+              expandedGroups={expandedGroups}
+              onToggleGroup={onToggleGroup}
+              activeEditCheckpoint={activeEditCheckpoint}
+              isPreviewing={isPreviewing}
+              currentCondition={condition}
+              onCopyLayer={onCopyLayer}
+            />
+          </div>
         </div>
       </div>
     </div>

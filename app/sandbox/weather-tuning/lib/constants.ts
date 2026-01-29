@@ -1,10 +1,10 @@
 import type { TimeCheckpoint } from "../types";
 
-export const TIME_CHECKPOINTS: Record<TimeCheckpoint, { value: number; label: string; emoji: string }> = {
-  dawn: { value: 0.25, label: "Dawn", emoji: "🌅" },
-  noon: { value: 0.5, label: "Noon", emoji: "🌞" },
-  dusk: { value: 0.75, label: "Dusk", emoji: "🌆" },
-  midnight: { value: 0.0, label: "Midnight", emoji: "🌙" },
+export const TIME_CHECKPOINTS: Record<TimeCheckpoint, { value: number; label: string }> = {
+  dawn: { value: 0.25, label: "Dawn" },
+  noon: { value: 0.5, label: "Noon" },
+  dusk: { value: 0.75, label: "Dusk" },
+  midnight: { value: 0.0, label: "Night" },
 };
 
 export const TIME_CHECKPOINT_ORDER: TimeCheckpoint[] = ["dawn", "noon", "dusk", "midnight"];
