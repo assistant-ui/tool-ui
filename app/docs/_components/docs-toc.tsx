@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { motion } from "motion/react";
 import { cn } from "@/lib/ui/cn";
 import { useDocsToc } from "./docs-toc-context";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
@@ -58,6 +57,7 @@ export function DocsToc() {
     linkRefs.current = linkRefs.current.slice(0, headings.length);
   }, [headings]);
 
+  // Update indicator position when activeId changes
   useEffect(() => {
     const activeIndex = headings.findIndex((h) => h.id === activeId);
     if (activeIndex >= 0 && linkRefs.current[activeIndex]) {
@@ -66,7 +66,7 @@ export function DocsToc() {
         const linkRect = activeLink.getBoundingClientRect();
         const navRect = activeLink.parentElement?.getBoundingClientRect();
         if (navRect) {
-          const relativeTop = linkRect.top - navRect.top + linkRect.height / 2 - 6;
+          const relativeTop = linkRect.top - navRect.top + 8;
           setIndicatorTop(relativeTop);
         }
       }
@@ -94,19 +94,13 @@ export function DocsToc() {
         On This Page
       </p>
       {activeIndex >= 0 && (
-        <motion.span
+        <span
           aria-hidden="true"
           className="bg-foreground pointer-events-none absolute -left-3 h-3 w-0.5 rounded-full"
-          initial={false}
-          animate={{
+          style={{
             top: indicatorTop,
             opacity: 1,
-          }}
-          transition={{
-            type: reducedMotion ? "tween" : "spring",
-            stiffness: 300,
-            damping: 30,
-            duration: reducedMotion ? 0 : undefined,
+            transition: reducedMotion ? "none" : "top 150ms ease-out",
           }}
         />
       )}
