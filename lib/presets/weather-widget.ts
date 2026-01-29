@@ -6,9 +6,8 @@ export type WeatherWidgetPresetName =
   | "rainy-week"
   | "mixed-conditions"
   | "cold-snap"
-  | "tropical"
   | "thunderstorm"
-  | "night-clear";
+  | "night-cloudy";
 
 function generateWeatherWidgetCode(data: SerializableWeatherWidget): string {
   const props: string[] = [];
@@ -127,28 +126,6 @@ export const weatherWidgetPresets: Record<
     } satisfies SerializableWeatherWidget,
     generateExampleCode: generateWeatherWidgetCode,
   },
-  tropical: {
-    description: "Hot and humid with afternoon storms",
-    data: {
-      id: "weather-widget-tropical",
-      location: "Bangkok, Thailand",
-      current: {
-        temp: 34,
-        tempMin: 28,
-        tempMax: 36,
-        condition: "partly-cloudy",
-      },
-      forecast: [
-        { day: "Mon", tempMin: 27, tempMax: 35, condition: "thunderstorm" },
-        { day: "Tue", tempMin: 28, tempMax: 36, condition: "partly-cloudy" },
-        { day: "Wed", tempMin: 27, tempMax: 34, condition: "thunderstorm" },
-        { day: "Thu", tempMin: 26, tempMax: 33, condition: "heavy-rain" },
-        { day: "Fri", tempMin: 28, tempMax: 35, condition: "partly-cloudy" },
-      ],
-      unit: "celsius",
-    } satisfies SerializableWeatherWidget,
-    generateExampleCode: generateWeatherWidgetCode,
-  },
   thunderstorm: {
     description: "Dramatic thunderstorm with lightning",
     data: {
@@ -172,22 +149,22 @@ export const weatherWidgetPresets: Record<
     } satisfies SerializableWeatherWidget,
     generateExampleCode: generateWeatherWidgetCode,
   },
-  "night-clear": {
-    description: "Clear night sky with full moon",
+  "night-cloudy": {
+    description: "Cloudy night with moon peeking through",
     data: {
-      id: "weather-widget-night-clear",
+      id: "weather-widget-night-cloudy",
       location: "Sedona, AZ",
       current: {
         temp: 45,
         tempMin: 38,
         tempMax: 62,
-        condition: "clear",
+        condition: "cloudy",
       },
       forecast: [
-        { day: "Tue", tempMin: 36, tempMax: 64, condition: "clear" },
-        { day: "Wed", tempMin: 38, tempMax: 66, condition: "clear" },
-        { day: "Thu", tempMin: 40, tempMax: 68, condition: "partly-cloudy" },
-        { day: "Fri", tempMin: 42, tempMax: 70, condition: "clear" },
+        { day: "Tue", tempMin: 36, tempMax: 64, condition: "partly-cloudy" },
+        { day: "Wed", tempMin: 38, tempMax: 66, condition: "cloudy" },
+        { day: "Thu", tempMin: 40, tempMax: 68, condition: "rain" },
+        { day: "Fri", tempMin: 42, tempMax: 70, condition: "partly-cloudy" },
         { day: "Sat", tempMin: 39, tempMax: 65, condition: "clear" },
       ],
       unit: "fahrenheit",

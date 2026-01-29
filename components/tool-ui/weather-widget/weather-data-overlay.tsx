@@ -355,9 +355,9 @@ export function WeatherDataOverlay({
           </div>
         </div>
 
-        {/* Forecast strip */}
+        {/* Forecast strip - hidden at small container sizes */}
         {forecast.length > 0 && (
-          <div ref={cardRef} className="relative">
+          <div ref={cardRef} className="relative hidden @[280px]/weather:block">
             {/* Edge shine - outside overflow-hidden so it aligns with border */}
             <div
               className="pointer-events-none absolute inset-0 z-10 rounded-xl transition-opacity duration-300 ease-out"
@@ -378,9 +378,7 @@ export function WeatherDataOverlay({
             <div
               className="relative overflow-hidden rounded-xl border p-3"
               style={{
-                backgroundColor: isDark
-                  ? `rgba(255, 255, 255, ${bgOpacity})`
-                  : `rgba(0, 0, 0, ${bgOpacity})`,
+                backgroundColor: `rgba(255, 255, 255, ${bgOpacity})`,
                 borderColor: `rgba(255, 255, 255, ${borderOpacity})`,
                 backdropFilter: `blur(${blurAmount}px)`,
                 WebkitBackdropFilter: `blur(${blurAmount}px)`,

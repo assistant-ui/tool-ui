@@ -15,8 +15,8 @@ export function getTimeOfDay(timestamp?: string): number {
   }
 
   const date = new Date(timestamp);
-  const hours = date.getHours();
-  const minutes = date.getMinutes();
+  const hours = date.getUTCHours();
+  const minutes = date.getUTCMinutes();
 
   return (hours + minutes / 60) / 24;
 }
@@ -52,7 +52,7 @@ export function getSunAltitude(timestamp?: string): number {
   }
 
   const date = new Date(timestamp);
-  const hours = date.getHours() + date.getMinutes() / 60;
+  const hours = date.getUTCHours() + date.getUTCMinutes() / 60;
 
   // Generic sun cycle: rises at 6am, peaks at noon, sets at 6pm
   if (hours < 6) {

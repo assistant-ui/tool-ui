@@ -9,7 +9,7 @@ import { WeatherWidget } from "@/components/tool-ui/weather-widget";
 
 <Tabs items={["Preview", "Code"]}>
   <Tab>
-    <div className="not-prose mx-auto max-w-sm">
+    <div className="not-prose mx-auto max-w-md">
       <WeatherWidget
         id="weather-widget-example"
         location="Kansas City, MO"
@@ -27,6 +27,7 @@ import { WeatherWidget } from "@/components/tool-ui/weather-widget";
           { day: "Sat", tempMin: 58, tempMax: 76, condition: "clear" },
         ]}
         unit="fahrenheit"
+        updatedAt="2025-01-18T22:00:00Z"
       />
     </div>
   </Tab>
@@ -53,6 +54,7 @@ import { WeatherWidget } from "@/components/tool-ui/weather-widget";
             { day: "Sat", tempMin: 58, tempMax: 76, condition: "clear" },
           ]}
           unit="fahrenheit"
+          updatedAt="2025-01-18T22:00:00Z"
         />
       );
     }
