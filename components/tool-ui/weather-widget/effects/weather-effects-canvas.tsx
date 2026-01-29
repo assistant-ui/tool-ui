@@ -154,7 +154,7 @@ const DEFAULT_RAIN: RainParams = {
   glassIntensity: 0.5,
   glassZoom: 1.0,
   fallingIntensity: 0.6,
-  fallingSpeed: 1.0,
+  fallingSpeed: 2.0,
   fallingAngle: 0.1,
   fallingStreakLength: 1.0,
   fallingLayers: 4,
@@ -180,9 +180,9 @@ const DEFAULT_SNOW: SnowParams = {
   windShear: 0.5,
   flakeSize: 1.0,
   sizeVariation: 0.5,
-  opacity: 0.8,
-  glowAmount: 0.5,
-  sparkle: 0.5,
+  opacity: 0.5,
+  glowAmount: 0.25,
+  sparkle: 0.25,
 };
 
 const DEFAULT_INTERACTIONS: InteractionParams = {
@@ -1337,10 +1337,10 @@ void main() {
   snow = clamp(snow, 0.0, 1.0);
   totalSparkle = clamp(totalSparkle, 0.0, 1.0);
 
-  vec3 snowColor = vec3(0.95, 0.97, 1.0);
-  vec3 sparkleColor = vec3(1.0, 1.0, 1.0);
+  vec3 snowColor = vec3(0.75, 0.78, 0.85);
+  vec3 sparkleColor = vec3(0.9, 0.92, 1.0);
 
-  vec3 color = scene.rgb + snowColor * snow + sparkleColor * totalSparkle * 2.0;
+  vec3 color = scene.rgb + snowColor * snow + sparkleColor * totalSparkle;
 
   fragColor = vec4(color, 1.0);
 }
