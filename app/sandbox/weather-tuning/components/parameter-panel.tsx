@@ -18,6 +18,7 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
@@ -32,7 +33,8 @@ interface ParameterPanelProps {
   activeEditCheckpoint: TimeCheckpoint;
   isPreviewing: boolean;
   currentCondition?: WeatherCondition;
-  onCopyLayer?: (sourceCondition: WeatherCondition, layerKey: LayerKey) => void;
+  onCopyLayer?: (targetCondition: WeatherCondition, layerKey: LayerKey) => void;
+  onCopyLayerToAll?: (layerKey: LayerKey) => void;
 }
 
 function countChanges<T extends object>(current: T, base: T): number {
@@ -66,13 +68,17 @@ const LAYER_CONFIG = {
   snow: { icon: Snowflake, label: "Snow", color: "from-slate-200 to-blue-300" },
 } as const;
 
-function CopyFromDropdown({
+function CopyToDropdown({
   currentCondition,
+  layerLabel,
   onCopy,
+  onCopyToAll,
 }: {
   layerKey: LayerKey;
+  layerLabel: string;
   currentCondition: WeatherCondition;
-  onCopy: (sourceCondition: WeatherCondition) => void;
+  onCopy: (targetCondition: WeatherCondition) => void;
+  onCopyToAll?: () => void;
 }) {
   const otherConditions = WEATHER_CONDITIONS.filter((c) => c !== currentCondition);
 
@@ -83,7 +89,7 @@ function CopyFromDropdown({
           role="button"
           tabIndex={0}
           className="cursor-pointer rounded p-1 text-muted-foreground/40 transition-colors hover:bg-accent/50 hover:text-muted-foreground"
-          title="Copy settings from another condition"
+          title={`Copy ${layerLabel} settings to another condition`}
           onClick={(e) => e.stopPropagation()}
           onKeyDown={(e) => {
             if (e.key === "Enter" || e.key === " ") {
@@ -94,7 +100,21 @@ function CopyFromDropdown({
           <Copy className="size-3" />
         </div>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="min-w-[140px]">
+      <DropdownMenuContent align="end" className="min-w-[160px]">
+        <div className="px-2 py-1.5 text-[10px] font-medium uppercase tracking-wider text-muted-foreground/60">
+          Copy {layerLabel} to…
+        </div>
+        {onCopyToAll && (
+          <>
+            <DropdownMenuItem
+              onClick={onCopyToAll}
+              className="text-xs font-medium"
+            >
+              All Conditions
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+          </>
+        )}
         {otherConditions.map((condition) => (
           <DropdownMenuItem
             key={condition}
@@ -119,6 +139,7 @@ export function ParameterPanel({
   isPreviewing,
   currentCondition,
   onCopyLayer,
+  onCopyLayerToAll,
 }: ParameterPanelProps) {
   const checkpointInfo = TIME_CHECKPOINTS[activeEditCheckpoint];
   const updateLayer = (key: keyof typeof params.layers, value: boolean) => {
@@ -264,10 +285,12 @@ export function ParameterPanel({
               />
             </div>
             {currentCondition && onCopyLayer && (
-              <CopyFromDropdown
+              <CopyToDropdown
                 layerKey="celestial"
+                layerLabel="Celestial"
                 currentCondition={currentCondition}
-                onCopy={(source) => onCopyLayer(source, "celestial")}
+                onCopy={(target) => onCopyLayer(target, "celestial")}
+                onCopyToAll={onCopyLayerToAll ? () => onCopyLayerToAll("celestial") : undefined}
               />
             )}
           </div>
@@ -488,10 +511,12 @@ export function ParameterPanel({
               <DeltaBadge count={countChanges(params.cloud, baseParams.cloud)} />
             </div>
             {currentCondition && onCopyLayer && (
-              <CopyFromDropdown
+              <CopyToDropdown
                 layerKey="cloud"
+                layerLabel="Cloud"
                 currentCondition={currentCondition}
-                onCopy={(source) => onCopyLayer(source, "cloud")}
+                onCopy={(target) => onCopyLayer(target, "cloud")}
+                onCopyToAll={onCopyLayerToAll ? () => onCopyLayerToAll("cloud") : undefined}
               />
             )}
           </div>
@@ -629,10 +654,12 @@ export function ParameterPanel({
               <DeltaBadge count={countChanges(params.rain, baseParams.rain)} />
             </div>
             {currentCondition && onCopyLayer && (
-              <CopyFromDropdown
+              <CopyToDropdown
                 layerKey="rain"
+                layerLabel="Rain"
                 currentCondition={currentCondition}
-                onCopy={(source) => onCopyLayer(source, "rain")}
+                onCopy={(target) => onCopyLayer(target, "rain")}
+                onCopyToAll={onCopyLayerToAll ? () => onCopyLayerToAll("rain") : undefined}
               />
             )}
           </div>
@@ -737,10 +764,12 @@ export function ParameterPanel({
               />
             </div>
             {currentCondition && onCopyLayer && (
-              <CopyFromDropdown
+              <CopyToDropdown
                 layerKey="lightning"
+                layerLabel="Lightning"
                 currentCondition={currentCondition}
-                onCopy={(source) => onCopyLayer(source, "lightning")}
+                onCopy={(target) => onCopyLayer(target, "lightning")}
+                onCopyToAll={onCopyLayerToAll ? () => onCopyLayerToAll("lightning") : undefined}
               />
             )}
           </div>
@@ -835,10 +864,12 @@ export function ParameterPanel({
               <DeltaBadge count={countChanges(params.snow, baseParams.snow)} />
             </div>
             {currentCondition && onCopyLayer && (
-              <CopyFromDropdown
+              <CopyToDropdown
                 layerKey="snow"
+                layerLabel="Snow"
                 currentCondition={currentCondition}
-                onCopy={(source) => onCopyLayer(source, "snow")}
+                onCopy={(target) => onCopyLayer(target, "snow")}
+                onCopyToAll={onCopyLayerToAll ? () => onCopyLayerToAll("snow") : undefined}
               />
             )}
           </div>

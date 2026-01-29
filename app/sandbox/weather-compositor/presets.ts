@@ -4,21 +4,35 @@ import {
   getTimeOfDay,
 } from "@/components/tool-ui/weather-widget/effects";
 
-export const WEATHER_CONDITIONS: WeatherCondition[] = [
-  "clear",
-  "partly-cloudy",
-  "cloudy",
-  "overcast",
-  "fog",
-  "drizzle",
-  "rain",
-  "heavy-rain",
-  "thunderstorm",
-  "snow",
-  "sleet",
-  "hail",
-  "windy",
+// Weather conditions grouped by category for intuitive navigation
+export interface ConditionGroup {
+  name: string;
+  conditions: WeatherCondition[];
+}
+
+export const CONDITION_GROUPS: ConditionGroup[] = [
+  {
+    name: "Sky",
+    conditions: ["clear", "partly-cloudy", "cloudy", "overcast", "fog"],
+  },
+  {
+    name: "Rain",
+    conditions: ["drizzle", "rain", "heavy-rain", "thunderstorm"],
+  },
+  {
+    name: "Winter",
+    conditions: ["snow", "sleet", "hail"],
+  },
+  {
+    name: "Wind",
+    conditions: ["windy"],
+  },
 ];
+
+// Flat list for iteration (derived from groups)
+export const WEATHER_CONDITIONS: WeatherCondition[] = CONDITION_GROUPS.flatMap(
+  (group) => group.conditions
+);
 
 export const CONDITION_LABELS: Record<WeatherCondition, string> = {
   clear: "Clear",

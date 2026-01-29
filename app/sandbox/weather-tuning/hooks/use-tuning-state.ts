@@ -14,6 +14,7 @@ import {
   loadFromStorage,
   saveToStorage,
   DEFAULT_CHECKPOINT_OVERRIDES,
+  WEATHER_CONDITIONS,
 } from "../../weather-compositor/presets";
 import {
   getInterpolatedOverrides,
@@ -85,6 +86,19 @@ function createEmptyCheckpointOverrides(): CheckpointOverrides {
   };
 }
 
+function mergeConditionOverrides(
+  base: ConditionOverrides,
+  overrides: ConditionOverrides
+): ConditionOverrides {
+  return {
+    layers: { ...base.layers, ...overrides.layers },
+    celestial: { ...base.celestial, ...overrides.celestial },
+    cloud: { ...base.cloud, ...overrides.cloud },
+    rain: { ...base.rain, ...overrides.rain },
+    lightning: { ...base.lightning, ...overrides.lightning },
+    snow: { ...base.snow, ...overrides.snow },
+  };
+}
 
 export function useTuningState() {
   const [checkpointOverrides, setCheckpointOverrides] = useState<
@@ -190,6 +204,19 @@ export function useTuningState() {
     [getTimestamp]
   );
 
+  // Get full params including user overrides for a specific checkpoint
+  const getFullParamsForCheckpoint = useCallback(
+    (condition: WeatherCondition, checkpoint: TimeCheckpoint): FullCompositorParams => {
+      const base = getBaseParamsForCheckpoint(condition, checkpoint);
+      const userOverrides = checkpointOverrides[condition]?.[checkpoint];
+      if (userOverrides) {
+        return mergeWithOverrides(base, userOverrides);
+      }
+      return base;
+    },
+    [getBaseParamsForCheckpoint, checkpointOverrides]
+  );
+
   const getParamsForCondition = useCallback(
     (condition: WeatherCondition): FullCompositorParams => {
       const timestamp = getTimestamp(globalTimeOfDay);
@@ -287,22 +314,29 @@ export function useTuningState() {
       targetCondition: WeatherCondition,
       layerKey: LayerKey
     ) => {
-      const sourceCheckpoints = checkpointOverrides[sourceCondition];
-
       setCheckpointOverrides((prev) => {
         const existing = prev[targetCondition] ?? createEmptyCheckpointOverrides();
         const updated = { ...existing };
 
         for (const checkpoint of TIME_CHECKPOINT_ORDER) {
-          const sourceOverrides = sourceCheckpoints?.[checkpoint];
-          const sourceLayerData = sourceOverrides?.[layerKey];
+          // Get the FULL merged params for the source (base + defaults + user overrides)
+          const sourceBase = getBaseParamsForCheckpoint(sourceCondition, checkpoint);
+          const sourceUserOverrides = prev[sourceCondition]?.[checkpoint];
+          const sourceFull = sourceUserOverrides
+            ? mergeWithOverrides(sourceBase, sourceUserOverrides)
+            : sourceBase;
 
-          if (sourceLayerData && Object.keys(sourceLayerData).length > 0) {
+          // Get just the layer data from the full params
+          const sourceLayerData = sourceFull[layerKey];
+
+          if (sourceLayerData && typeof sourceLayerData === "object" && Object.keys(sourceLayerData).length > 0) {
+            // Apply the full layer data as overrides to the target
             updated[checkpoint] = {
               ...updated[checkpoint],
-              [layerKey]: { ...sourceLayerData },
+              [layerKey]: JSON.parse(JSON.stringify(sourceLayerData)),
             };
           } else {
+            // Clear target's layer if source has no data
             const currentCheckpoint = updated[checkpoint];
             if (currentCheckpoint && layerKey in currentCheckpoint) {
               const { [layerKey]: _, ...rest } = currentCheckpoint;
@@ -317,7 +351,17 @@ export function useTuningState() {
         };
       });
     },
-    [checkpointOverrides]
+    [getBaseParamsForCheckpoint]
+  );
+
+  const copyLayerToAllConditions = useCallback(
+    (sourceCondition: WeatherCondition, layerKey: LayerKey) => {
+      const otherConditions = WEATHER_CONDITIONS.filter((c) => c !== sourceCondition);
+      for (const target of otherConditions) {
+        copyLayerFromCondition(sourceCondition, target, layerKey);
+      }
+    },
+    [copyLayerFromCondition]
   );
 
   const toggleGroup = useCallback((group: string) => {
@@ -383,12 +427,27 @@ export function useTuningState() {
     ) => {
       setCheckpointOverrides((prev) => {
         const existing = prev[condition] ?? createEmptyCheckpointOverrides();
-        const sourceData = existing[sourceCheckpoint] ?? {};
         const updated = { ...existing };
+
+        // Get the FULL merged params for the source (base + defaults + user overrides)
+        const sourceBase = getBaseParamsForCheckpoint(condition, sourceCheckpoint);
+        const sourceUserOverrides = existing[sourceCheckpoint];
+        const sourceFull = sourceUserOverrides
+          ? mergeWithOverrides(sourceBase, sourceUserOverrides)
+          : sourceBase;
+
+        // Extract overrides relative to the source base (so we capture defaults + user changes)
+        const sourceEffectiveOverrides = extractOverrides(sourceFull, sourceBase);
+
+        // Also include the defaults in case there are no user overrides but there are defaults
+        const sourceDefaults = DEFAULT_CHECKPOINT_OVERRIDES[condition]?.[sourceCheckpoint];
+        const combinedOverrides = sourceDefaults
+          ? mergeConditionOverrides(sourceDefaults, sourceEffectiveOverrides)
+          : sourceEffectiveOverrides;
 
         for (const target of targetCheckpoints) {
           if (target !== sourceCheckpoint) {
-            updated[target] = JSON.parse(JSON.stringify(sourceData));
+            updated[target] = JSON.parse(JSON.stringify(combinedOverrides));
           }
         }
 
@@ -404,7 +463,7 @@ export function useTuningState() {
         }
       }
     },
-    [markCheckpointReviewed]
+    [getBaseParamsForCheckpoint, markCheckpointReviewed]
   );
 
   const updateParameterAtCheckpoint = useCallback(
@@ -561,12 +620,14 @@ export function useTuningState() {
     getParamsForCondition,
     getBaseParams,
     getBaseParamsForCheckpoint,
+    getFullParamsForCheckpoint,
     updateCheckpointOverrides,
     updateParams,
     updateParameterAtCheckpoint,
     bulkUpdateParameter,
     resetCondition,
     copyLayerFromCondition,
+    copyLayerToAllConditions,
     copyCheckpointToCheckpoints,
     getOverrideCount,
     markCheckpointReviewed,

@@ -3,7 +3,7 @@
 import { cn } from "@/lib/ui/cn";
 import { Check, Cloud, CloudRain, CloudSnow, Sun, Wind, Zap, CloudFog, CloudHail, Cloudy, CloudDrizzle, Snowflake } from "lucide-react";
 import type { WeatherCondition } from "@/components/tool-ui/weather-widget/schema";
-import { WEATHER_CONDITIONS, CONDITION_LABELS } from "../../weather-compositor/presets";
+import { CONDITION_GROUPS, CONDITION_LABELS } from "../../weather-compositor/presets";
 import { CheckpointDots } from "./checkpoint-dots";
 import type { ConditionCheckpoints } from "../types";
 
@@ -62,73 +62,84 @@ export function ConditionSidebar({
         </h2>
       </div>
 
-      <div className="scrollbar-subtle flex-1 overflow-y-auto py-1">
-        <nav className="flex flex-col gap-px px-1.5">
-          {WEATHER_CONDITIONS.map((condition) => {
-            const Icon = CONDITION_ICONS[condition];
-            const label = CONDITION_LABELS[condition];
-            const isSelected = selectedCondition === condition;
-            const isSignedOff = signedOff.has(condition);
-            const overrideCount = getOverrideCount(condition);
-            const colorGradient = CONDITION_COLORS[condition];
+      <div className="scrollbar-subtle flex-1 overflow-y-auto">
+        <nav className="flex flex-col">
+          {CONDITION_GROUPS.map((group) => (
+            <div key={group.name}>
+              <div className="sticky top-0 z-[5] border-b border-border/30 bg-background/95 px-3 py-1.5 backdrop-blur-sm">
+                <span className="text-[9px] font-medium uppercase tracking-wider text-muted-foreground/40">
+                  {group.name}
+                </span>
+              </div>
+              <div className="flex flex-col gap-px px-1.5 py-1">
+                {group.conditions.map((condition) => {
+                  const Icon = CONDITION_ICONS[condition];
+                  const label = CONDITION_LABELS[condition];
+                  const isSelected = selectedCondition === condition;
+                  const isSignedOff = signedOff.has(condition);
+                  const overrideCount = getOverrideCount(condition);
+                  const colorGradient = CONDITION_COLORS[condition];
 
-            return (
-              <button
-                key={condition}
-                onClick={() => onSelectCondition(condition)}
-                className={cn(
-                  "group relative flex items-center gap-2.5 rounded-md px-2 py-1.5 text-left transition-all",
-                  isSelected
-                    ? "bg-accent/80"
-                    : "hover:bg-accent/40"
-                )}
-              >
-                {isSelected && (
-                  <div className="absolute inset-y-1 left-0 w-0.5 rounded-full bg-foreground/40" />
-                )}
-
-                <div
-                  className={cn(
-                    "flex size-6 shrink-0 items-center justify-center rounded transition-all",
-                    isSelected
-                      ? `bg-gradient-to-br ${colorGradient}`
-                      : "bg-muted/50"
-                  )}
-                >
-                  <Icon
-                    className={cn(
-                      "size-3.5 transition-colors",
-                      isSelected ? "text-white" : "text-muted-foreground/60"
-                    )}
-                  />
-                </div>
-
-                <div className="min-w-0 flex-1">
-                  <div className="flex items-center gap-1">
-                    <span
+                  return (
+                    <button
+                      key={condition}
+                      onClick={() => onSelectCondition(condition)}
                       className={cn(
-                        "truncate text-xs transition-colors",
-                        isSelected ? "text-foreground" : "text-muted-foreground"
+                        "group relative flex items-center gap-2.5 rounded-md px-2 py-1.5 text-left transition-all",
+                        isSelected
+                          ? "bg-accent/80"
+                          : "hover:bg-accent/40"
                       )}
                     >
-                      {label}
-                    </span>
-                    {isSignedOff && (
-                      <Check className="size-3 text-green-600/70 dark:text-green-400/70" />
-                    )}
-                    {overrideCount > 0 && (
-                      <span className="rounded bg-amber-500/10 px-1 py-0.5 font-mono text-[9px] text-amber-600/70 dark:text-amber-400/70">
-                        {overrideCount}
-                      </span>
-                    )}
-                  </div>
-                  <div className="mt-0.5">
-                    <CheckpointDots checkpoints={checkpoints[condition]} size="sm" />
-                  </div>
-                </div>
-              </button>
-            );
-          })}
+                      {isSelected && (
+                        <div className="absolute inset-y-1 left-0 w-0.5 rounded-full bg-foreground/40" />
+                      )}
+
+                      <div
+                        className={cn(
+                          "flex size-6 shrink-0 items-center justify-center rounded transition-all",
+                          isSelected
+                            ? `bg-gradient-to-br ${colorGradient}`
+                            : "bg-muted/50"
+                        )}
+                      >
+                        <Icon
+                          className={cn(
+                            "size-3.5 transition-colors",
+                            isSelected ? "text-white" : "text-muted-foreground/60"
+                          )}
+                        />
+                      </div>
+
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-center gap-1">
+                          <span
+                            className={cn(
+                              "truncate text-xs transition-colors",
+                              isSelected ? "text-foreground" : "text-muted-foreground"
+                            )}
+                          >
+                            {label}
+                          </span>
+                          {isSignedOff && (
+                            <Check className="size-3 text-green-600/70 dark:text-green-400/70" />
+                          )}
+                          {overrideCount > 0 && (
+                            <span className="rounded bg-amber-500/10 px-1 py-0.5 font-mono text-[9px] text-amber-600/70 dark:text-amber-400/70">
+                              {overrideCount}
+                            </span>
+                          )}
+                        </div>
+                        <div className="mt-0.5">
+                          <CheckpointDots checkpoints={checkpoints[condition]} size="sm" />
+                        </div>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
         </nav>
       </div>
 

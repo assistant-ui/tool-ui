@@ -42,7 +42,8 @@ interface DetailEditorProps {
   onCheckpointClick: (checkpoint: TimeCheckpoint) => void;
   onToggleWidgetOverlay: () => void;
   onGlassParamsChange: (params: GlassEffectParams) => void;
-  onCopyLayer?: (sourceCondition: WeatherCondition, layerKey: LayerKey) => void;
+  onCopyLayer?: (targetCondition: WeatherCondition, layerKey: LayerKey) => void;
+  onCopyLayerToAll?: (layerKey: LayerKey) => void;
   onCopyCheckpoint?: (targetCheckpoints: TimeCheckpoint[]) => void;
 }
 
@@ -128,6 +129,7 @@ export function DetailEditor({
   onToggleWidgetOverlay,
   onGlassParamsChange,
   onCopyLayer,
+  onCopyLayerToAll,
   onCopyCheckpoint,
 }: DetailEditorProps) {
   const canvasProps = useMemo(() => mapParamsToCanvasProps(params), [params]);
@@ -333,6 +335,7 @@ export function DetailEditor({
               isPreviewing={isPreviewing}
               currentCondition={condition}
               onCopyLayer={onCopyLayer}
+              onCopyLayerToAll={onCopyLayerToAll}
             />
           </div>
         </div>
