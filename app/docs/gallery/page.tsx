@@ -58,6 +58,9 @@ const QuestionFlow = dynamic(() =>
 const MessageDraft = dynamic(() =>
   import("@/components/tool-ui/message-draft").then((m) => m.MessageDraft)
 );
+const WeatherWidget = dynamic(() =>
+  import("@/components/tool-ui/weather-widget").then((m) => m.WeatherWidget)
+);
 import { approvalCardPresets } from "@/lib/presets/approval-card";
 import { citationPresets } from "@/lib/presets/citation";
 import { dataTablePresets } from "@/lib/presets/data-table";
@@ -79,6 +82,7 @@ import { preferencesPanelPresets } from "@/lib/presets/preferences-panel";
 import { progressTrackerPresets } from "@/lib/presets/progress-tracker";
 import { questionFlowPresets } from "@/lib/presets/question-flow";
 import { messageDraftPresets } from "@/lib/presets/message-draft";
+import { weatherWidgetPresets } from "@/lib/presets/weather-widget";
 
 export const metadata: Metadata = {
   title: "Gallery",
@@ -98,6 +102,10 @@ export default function ComponentsGalleryPage() {
 
           <div className="mb-5 flex justify-center [column-span:all] 2xl:mb-5">
             <ItemCarousel {...itemCarouselPresets.recommendations.data} />
+          </div>
+
+          <div className="mb-5 flex break-inside-avoid justify-center 2xl:mb-5">
+            <WeatherWidget {...weatherWidgetPresets.thunderstorm.data} updatedAt="2026-01-28T23:00:00Z" />
           </div>
 
           <div className="mb-5 flex break-inside-avoid justify-center 2xl:mb-5">

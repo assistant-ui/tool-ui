@@ -297,9 +297,9 @@ vec4 drawMoon(vec2 uv, vec2 moonPos, float size, float phase) {
   float NdotL = dot(normal, sunDir);
   float terminator = smoothstep(-0.02, 0.08, NdotL);
 
-  vec3 baseColor = getMoonSurfaceColor(normal, discUV);
-  vec3 ambient = baseColor * 0.03;
-  vec3 lit = baseColor * terminator;
+  vec3 baseColor = getMoonSurfaceColor(normal, discUV) * 0.7;
+  vec3 ambient = baseColor * 0.02;
+  vec3 lit = baseColor * terminator * 0.85;
   vec3 moonSurface = ambient + lit;
 
   float limbDarkening = 1.0 - pow(discDist, 3.0) * 0.15;
@@ -471,7 +471,7 @@ export function CelestialCanvas({
   sunRayCount = 12,
   sunRayLength = 0.5,
   sunRayIntensity = 0.4,
-  moonGlowIntensity = 1.0,
+  moonGlowIntensity = 0.6,
   moonGlowSize = 0.2,
 }: CelestialCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
