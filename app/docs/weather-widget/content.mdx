@@ -12,20 +12,21 @@ import { WeatherWidget } from "@/components/tool-ui/weather-widget";
     <div className="not-prose mx-auto max-w-sm">
       <WeatherWidget
         id="weather-widget-example"
-        location="San Francisco, CA"
+        location="Kansas City, MO"
         current={{
-          temp: 18,
-          tempMin: 14,
-          tempMax: 21,
-          condition: "partly-cloudy",
+          temp: 72,
+          tempMin: 65,
+          tempMax: 78,
+          condition: "thunderstorm",
         }}
         forecast={[
-          { day: "Mon", tempMin: 13, tempMax: 20, condition: "partly-cloudy" },
-          { day: "Tue", tempMin: 15, tempMax: 22, condition: "clear" },
-          { day: "Wed", tempMin: 14, tempMax: 21, condition: "cloudy" },
-          { day: "Thu", tempMin: 12, tempMax: 19, condition: "rain" },
-          { day: "Fri", tempMin: 14, tempMax: 20, condition: "partly-cloudy" },
+          { day: "Tue", tempMin: 62, tempMax: 75, condition: "heavy-rain" },
+          { day: "Wed", tempMin: 58, tempMax: 70, condition: "rain" },
+          { day: "Thu", tempMin: 55, tempMax: 68, condition: "cloudy" },
+          { day: "Fri", tempMin: 52, tempMax: 72, condition: "partly-cloudy" },
+          { day: "Sat", tempMin: 58, tempMax: 76, condition: "clear" },
         ]}
+        unit="fahrenheit"
       />
     </div>
   </Tab>
@@ -37,20 +38,21 @@ import { WeatherWidget } from "@/components/tool-ui/weather-widget";
       return (
         <WeatherWidget
           id="weather-widget-example"
-          location="San Francisco, CA"
+          location="Kansas City, MO"
           current={{
-            temp: 18,
-            tempMin: 14,
-            tempMax: 21,
-            condition: "partly-cloudy",
+            temp: 72,
+            tempMin: 65,
+            tempMax: 78,
+            condition: "thunderstorm",
           }}
           forecast={[
-            { day: "Mon", tempMin: 13, tempMax: 20, condition: "partly-cloudy" },
-            { day: "Tue", tempMin: 15, tempMax: 22, condition: "clear" },
-            { day: "Wed", tempMin: 14, tempMax: 21, condition: "cloudy" },
-            { day: "Thu", tempMin: 12, tempMax: 19, condition: "rain" },
-            { day: "Fri", tempMin: 14, tempMax: 20, condition: "partly-cloudy" },
+            { day: "Tue", tempMin: 62, tempMax: 75, condition: "heavy-rain" },
+            { day: "Wed", tempMin: 58, tempMax: 70, condition: "rain" },
+            { day: "Thu", tempMin: 55, tempMax: 68, condition: "cloudy" },
+            { day: "Fri", tempMin: 52, tempMax: 72, condition: "partly-cloudy" },
+            { day: "Sat", tempMin: 58, tempMax: 76, condition: "clear" },
           ]}
+          unit="fahrenheit"
         />
       );
     }
@@ -157,11 +159,6 @@ export const WeatherWidgetTool = makeAssistantTool<SerializableWeatherWidget>({
     updatedAt: {
       description: "Last update timestamp (ISO 8601)",
       type: "string",
-    },
-    isLoading: {
-      description: "Show loading skeleton",
-      type: "boolean",
-      default: "false",
     },
     locale: {
       description: "Locale for relative time formatting",

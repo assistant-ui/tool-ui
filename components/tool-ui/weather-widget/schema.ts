@@ -95,7 +95,6 @@ export function parseSerializableWeatherWidget(
 
 export interface WeatherWidgetProps extends SerializableWeatherWidget {
   className?: string;
-  isLoading?: boolean;
   locale?: string;
   effects?: EffectSettings;
   /**
