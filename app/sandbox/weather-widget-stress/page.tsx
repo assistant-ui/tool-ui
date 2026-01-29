@@ -274,7 +274,6 @@ export default function WeatherWidgetStressPage() {
           forecast={forecast}
           unit={unit}
           updatedAt={includeUpdatedAt ? timestamp : undefined}
-          isLoading={false}
           effects={globalEffects}
           className={stress.fillCells ? "max-w-none w-full" : undefined}
         />

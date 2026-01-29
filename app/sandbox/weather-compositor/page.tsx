@@ -567,15 +567,6 @@ export default function WeatherCompositorSandbox() {
                   rainRefractionStrength: interactions.rainRefractionStrength,
                   lightningSceneIllumination: interactions.lightningSceneIllumination,
                 }}
-                glassPanel={{
-                  enabled: glassPanel.enabled,
-                  region: [glassPanel.regionX, glassPanel.regionY, glassPanel.regionW, glassPanel.regionH],
-                  refractionScale: glassPanel.refractionScale,
-                  edgeWidth: glassPanel.edgeWidth,
-                  chromaticAberration: glassPanel.chromaticAberration,
-                  specularIntensity: glassPanel.specularIntensity,
-                  lightAngle: glassPanel.lightAngle * (Math.PI / 180),
-                }}
               />
               <div className="relative z-10 h-full w-full [&_[data-slot=weather-widget]]:h-full [&_[data-slot=weather-widget]]:max-w-none [&_article]:h-full [&_[data-slot=card]]:h-full [&_[data-slot=card]]:border-0 [&_[data-slot=card]]:bg-transparent [&_[data-slot=card]]:shadow-none">
                 <WeatherWidget
