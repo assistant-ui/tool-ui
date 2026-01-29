@@ -35,3 +35,12 @@ export type {
 
 export * from "./tuning";
 export { TUNED_WEATHER_EFFECTS_CHECKPOINT_OVERRIDES } from "./tuned-presets";
+
+export { GlassPanel, GlassPanelCSS, GlassPanelUnderlay, useGlassStyles } from "./glass-panel-svg";
+
+export {
+  useGlassRegion,
+  useContainerQuery,
+  useAdaptiveGlassParams,
+} from "./use-glass-region";
+export type { GlassRegion } from "./use-glass-region";
