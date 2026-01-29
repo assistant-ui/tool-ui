@@ -26,6 +26,7 @@ import type { ProgressTracker } from "@/components/tool-ui/progress-tracker";
 import type { StatsDisplay } from "@/components/tool-ui/stats-display";
 import type { Terminal } from "@/components/tool-ui/terminal";
 import type { QuestionFlow } from "@/components/tool-ui/question-flow";
+import type { WeatherWidget } from "@/components/tool-ui/weather-widget";
 
 import {
   approvalCardPresets,
@@ -97,6 +98,10 @@ import {
   questionFlowPresets,
   type QuestionFlowPresetName,
 } from "@/lib/presets/question-flow";
+import {
+  weatherWidgetPresets,
+  type WeatherWidgetPresetName,
+} from "@/lib/presets/weather-widget";
 import type { SerializableUpfrontMode } from "@/components/tool-ui/question-flow";
 
 const DynamicApprovalCard = dynamic(() =>
@@ -164,6 +169,9 @@ const DynamicTerminal = dynamic(() =>
 );
 const DynamicQuestionFlow = dynamic(() =>
   import("@/components/tool-ui/question-flow").then((m) => m.QuestionFlow)
+);
+const DynamicWeatherWidget = dynamic(() =>
+  import("@/components/tool-ui/weather-widget").then((m) => m.WeatherWidget)
 );
 
 function QuestionFlowUpfrontWithReceipt({
@@ -235,7 +243,8 @@ export type ComponentId =
   | "progress-tracker"
   | "stats-display"
   | "terminal"
-  | "question-flow";
+  | "question-flow"
+  | "weather-widget";
 
 export interface ChatContext {
   userMessage: string;
@@ -772,6 +781,18 @@ export const previewConfigs: Record<
         />
       );
     },
+  },
+  "weather-widget": {
+    presets: weatherWidgetPresets as Record<string, PresetWithCodeGen<unknown>>,
+    defaultPreset: "sunny-forecast" satisfies WeatherWidgetPresetName,
+    wrapper: MaxWidthSmStartWrapper,
+    chatContext: {
+      userMessage: "What's the weather like in San Diego?",
+      preamble: "Here's the current weather:",
+    },
+    renderComponent: ({ data }) => (
+      <DynamicWeatherWidget {...(data as Parameters<typeof WeatherWidget>[0])} />
+    ),
   },
 };
 
