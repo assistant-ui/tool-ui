@@ -1,0 +1,252 @@
+import { DocsHeader } from "../_components/docs-header";
+import { WeatherWidget } from "@/components/tool-ui/weather-widget";
+
+<DocsHeader
+  title="Weather Widget"
+  description="Display weather conditions and forecasts."
+  mdxPath="app/docs/weather-widget/content.mdx"
+/>
+
+<Tabs items={["Preview", "Code"]}>
+  <Tab>
+    <div className="not-prose mx-auto max-w-sm">
+      <WeatherWidget
+        id="weather-widget-example"
+        location="San Francisco, CA"
+        current={{
+          temp: 18,
+          tempMin: 14,
+          tempMax: 21,
+          condition: "partly-cloudy",
+        }}
+        forecast={[
+          { day: "Mon", tempMin: 13, tempMax: 20, condition: "partly-cloudy" },
+          { day: "Tue", tempMin: 15, tempMax: 22, condition: "clear" },
+          { day: "Wed", tempMin: 14, tempMax: 21, condition: "cloudy" },
+          { day: "Thu", tempMin: 12, tempMax: 19, condition: "rain" },
+          { day: "Fri", tempMin: 14, tempMax: 20, condition: "partly-cloudy" },
+        ]}
+      />
+    </div>
+  </Tab>
+  <Tab>
+    ```tsx
+    import { WeatherWidget } from "@/components/tool-ui/weather-widget";
+
+    export function Example() {
+      return (
+        <WeatherWidget
+          id="weather-widget-example"
+          location="San Francisco, CA"
+          current={{
+            temp: 18,
+            tempMin: 14,
+            tempMax: 21,
+            condition: "partly-cloudy",
+          }}
+          forecast={[
+            { day: "Mon", tempMin: 13, tempMax: 20, condition: "partly-cloudy" },
+            { day: "Tue", tempMin: 15, tempMax: 22, condition: "clear" },
+            { day: "Wed", tempMin: 14, tempMax: 21, condition: "cloudy" },
+            { day: "Thu", tempMin: 12, tempMax: 19, condition: "rain" },
+            { day: "Fri", tempMin: 14, tempMax: 20, condition: "partly-cloudy" },
+          ]}
+        />
+      );
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Key Features
+
+<FeatureGrid>
+  <Feature icon="CloudSun" title="Weather conditions">
+    13 condition types with matching icons: clear, cloudy, rain, snow, and more
+  </Feature>
+  <Feature icon="MapPin" title="Location display">
+    Show city and region with the current temperature
+  </Feature>
+  <Feature icon="Thermometer" title="Temperature units">
+    Support for both Celsius and Fahrenheit display
+  </Feature>
+  <Feature icon="Calendar" title="Multi-day forecast">
+    Display 1-7 day forecasts with high/low temperatures
+  </Feature>
+</FeatureGrid>
+
+## Source and Install
+
+Copy [`components/tool-ui/weather-widget`](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/weather-widget) and the [`shared`](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/shared) directory into your project.
+
+### Prerequisites
+
+```bash
+pnpm dlx shadcn@latest add card
+```
+
+### Download
+
+- [**Shared Dependencies (GitHub)**](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/shared)
+- [**Weather Widget (GitHub)**](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/weather-widget)
+
+## Usage
+
+```tsx
+"use client";
+
+import { makeAssistantTool } from "@assistant-ui/react";
+import {
+  WeatherWidget,
+  WeatherWidgetErrorBoundary,
+  parseSerializableWeatherWidget,
+  SerializableWeatherWidgetSchema,
+  type SerializableWeatherWidget,
+} from "@/components/tool-ui/weather-widget";
+
+export const WeatherWidgetTool = makeAssistantTool<SerializableWeatherWidget>({
+  toolName: "get_weather",
+  description: "Display current weather and forecast for a location",
+  parameters: SerializableWeatherWidgetSchema,
+  render: ({ args, toolCallId }) => {
+    if (!args.location || !args.current || !args.forecast) return null;
+
+    const data = parseSerializableWeatherWidget({
+      ...args,
+      id: (args as any)?.id ?? `weather-${toolCallId}`,
+    });
+
+    return (
+      <WeatherWidgetErrorBoundary>
+        <WeatherWidget {...data} />
+      </WeatherWidgetErrorBoundary>
+    );
+  },
+});
+```
+
+## Props
+
+<TypeTable
+  type={{
+    id: {
+      description: "Unique identifier for this tool UI instance",
+      type: "string",
+      required: true,
+    },
+    location: {
+      description: "Location name (e.g., 'San Francisco, CA')",
+      type: "string",
+      required: true,
+    },
+    current: {
+      description: "Current weather conditions",
+      type: "CurrentWeather",
+      required: true,
+    },
+    forecast: {
+      description: "Daily forecast array (1-7 days)",
+      type: "ForecastDay[]",
+      required: true,
+    },
+    unit: {
+      description: "Temperature unit",
+      type: '"celsius" | "fahrenheit"',
+      default: '"celsius"',
+    },
+    updatedAt: {
+      description: "Last update timestamp (ISO 8601)",
+      type: "string",
+    },
+    isLoading: {
+      description: "Show loading skeleton",
+      type: "boolean",
+      default: "false",
+    },
+    locale: {
+      description: "Locale for relative time formatting",
+      type: "string",
+    },
+  }}
+/>
+
+### CurrentWeather
+
+<TypeTable
+  type={{
+    temp: {
+      description: "Current temperature",
+      type: "number",
+      required: true,
+    },
+    tempMin: {
+      description: "Today's low temperature",
+      type: "number",
+      required: true,
+    },
+    tempMax: {
+      description: "Today's high temperature",
+      type: "number",
+      required: true,
+    },
+    condition: {
+      description: "Weather condition",
+      type: "WeatherCondition",
+      required: true,
+    },
+  }}
+/>
+
+### ForecastDay
+
+<TypeTable
+  type={{
+    day: {
+      description: "Day label (e.g., 'Mon', 'Tuesday')",
+      type: "string",
+      required: true,
+    },
+    tempMin: {
+      description: "Daily low temperature",
+      type: "number",
+      required: true,
+    },
+    tempMax: {
+      description: "Daily high temperature",
+      type: "number",
+      required: true,
+    },
+    condition: {
+      description: "Weather condition",
+      type: "WeatherCondition",
+      required: true,
+    },
+  }}
+/>
+
+### WeatherCondition
+
+Available condition values with their corresponding icons:
+
+| Condition | Icon | Description |
+|-----------|------|-------------|
+| `clear` | Sun | Clear skies |
+| `partly-cloudy` | CloudSun | Partly cloudy |
+| `cloudy` | Cloud | Cloudy |
+| `overcast` | Cloud | Overcast skies |
+| `fog` | CloudFog | Fog |
+| `drizzle` | CloudDrizzle | Light rain |
+| `rain` | CloudRain | Rain |
+| `heavy-rain` | CloudRain | Heavy rain |
+| `thunderstorm` | CloudLightning | Thunderstorm |
+| `snow` | Snowflake | Snow |
+| `sleet` | CloudHail | Sleet |
+| `hail` | CloudHail | Hail |
+| `windy` | Wind | Windy |
+
+## Accessibility
+
+- Uses semantic `article` element with `aria-busy` during loading
+- Forecast list uses proper `role="list"` and `role="listitem"` structure
+- Temperature values include screen reader labels with unit names
+- Condition icons are decorative (`aria-hidden`) with text labels provided

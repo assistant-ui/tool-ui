@@ -183,6 +183,13 @@ export const componentsRegistry: ComponentMeta[] = [
     path: "/docs/question-flow",
     category: "input",
   },
+  {
+    id: "weather-widget",
+    label: "Weather Widget",
+    description: "Display weather conditions and forecasts",
+    path: "/docs/weather-widget",
+    category: "display",
+  },
 ];
 
 export function getComponentById(id: string): ComponentMeta | undefined {
