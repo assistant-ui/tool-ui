@@ -140,15 +140,38 @@ function mapConditionOverridesToToolUi(
   }
 
   if (input.snow) {
-    const { intensity, layers, fallSpeed, windSpeed, drift, flakeSize } = input.snow;
+    const {
+      intensity,
+      layers,
+      fallSpeed,
+      windSpeed,
+      windAngle,
+      turbulence,
+      drift,
+      flutter,
+      windShear,
+      flakeSize,
+      sizeVariation,
+      opacity,
+      glowAmount,
+      sparkle,
+    } = input.snow;
 
     const snow: Record<string, unknown> = {
       ...(intensity !== undefined ? { intensity } : {}),
       ...(layers !== undefined ? { layers } : {}),
       ...(fallSpeed !== undefined ? { fallSpeed } : {}),
       ...(windSpeed !== undefined ? { windSpeed } : {}),
+      ...(windAngle !== undefined ? { windAngle } : {}),
+      ...(turbulence !== undefined ? { turbulence } : {}),
       ...(drift !== undefined ? { drift } : {}),
+      ...(flutter !== undefined ? { flutter } : {}),
+      ...(windShear !== undefined ? { windShear } : {}),
       ...(flakeSize !== undefined ? { flakeSize } : {}),
+      ...(sizeVariation !== undefined ? { sizeVariation } : {}),
+      ...(opacity !== undefined ? { opacity } : {}),
+      ...(glowAmount !== undefined ? { glowAmount } : {}),
+      ...(sparkle !== undefined ? { sparkle } : {}),
     };
 
     if (!isObjectEmpty(snow)) {
