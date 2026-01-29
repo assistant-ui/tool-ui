@@ -63,8 +63,16 @@ export interface SnowParams {
   layers: number;
   fallSpeed: number;
   windSpeed: number;
+  windAngle: number;
+  turbulence: number;
   drift: number;
+  flutter: number;
+  windShear: number;
   flakeSize: number;
+  sizeVariation: number;
+  opacity: number;
+  glowAmount: number;
+  sparkle: number;
 }
 
 export interface InteractionParams {
@@ -163,10 +171,18 @@ const DEFAULT_LIGHTNING: LightningParams = {
 const DEFAULT_SNOW: SnowParams = {
   intensity: 0.5,
   layers: 4,
-  fallSpeed: 1.0,
+  fallSpeed: 0.6,
   windSpeed: 0.3,
-  drift: 0.3,
+  windAngle: 0.2,
+  turbulence: 0.3,
+  drift: 0.5,
+  flutter: 0.5,
+  windShear: 0.5,
   flakeSize: 1.0,
+  sizeVariation: 0.5,
+  opacity: 0.8,
+  glowAmount: 0.5,
+  sparkle: 0.5,
 };
 
 const DEFAULT_INTERACTIONS: InteractionParams = {
@@ -1143,7 +1159,7 @@ void main() {
 }
 `;
 
-// Pass 5: Snow
+// Pass 5: Snow (sophisticated version with flutter, turbulence, sparkle)
 const SNOW_FRAGMENT = /* glsl */ `#version 300 es
 precision highp float;
 
@@ -1157,65 +1173,174 @@ uniform float u_intensity;
 uniform int u_layers;
 uniform float u_fallSpeed;
 uniform float u_windSpeed;
+uniform float u_windAngle;
+uniform float u_turbulence;
 uniform float u_drift;
+uniform float u_flutter;
+uniform float u_windShear;
 uniform float u_flakeSize;
+uniform float u_sizeVariation;
+uniform float u_opacity;
+uniform float u_glowAmount;
+uniform float u_sparkle;
 
-float hash(vec2 p) {
-  return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453123);
+#define PI 3.14159265359
+#define MAX_LAYERS 6
+
+float hash12(vec2 p) {
+  vec3 p3 = fract(vec3(p.xyx) * 0.1031);
+  p3 += dot(p3, p3.yzx + 33.33);
+  return fract((p3.x + p3.y) * p3.z);
 }
 
-float snowLayer(vec2 uv, float layerIdx, float time) {
-  float depth = layerIdx / float(max(u_layers - 1, 1));
+vec2 hash22(vec2 p) {
+  vec3 p3 = fract(vec3(p.xyx) * vec3(0.1031, 0.1030, 0.0973));
+  p3 += dot(p3, p3.yzx + 33.33);
+  return fract((p3.xx + p3.yz) * p3.zy);
+}
 
-  // Layer parameters
-  float scale = mix(30.0, 80.0, depth);
-  float speed = u_fallSpeed * mix(1.0, 0.4, depth);
-  float wind = u_windSpeed * mix(1.0, 0.5, depth);
-  float size = u_flakeSize * mix(1.0, 0.3, depth);
-  float opacity = mix(1.0, 0.3, depth);
+float noise(vec2 p) {
+  vec2 i = floor(p);
+  vec2 f = fract(p);
+  f = f * f * (3.0 - 2.0 * f);
+  float a = hash12(i);
+  float b = hash12(i + vec2(1.0, 0.0));
+  float c = hash12(i + vec2(0.0, 1.0));
+  float d = hash12(i + vec2(1.0, 1.0));
+  return mix(mix(a, b, f.x), mix(c, d, f.x), f.y);
+}
 
-  // Animate
-  vec2 p = uv * scale;
-  p.y += time * speed * 50.0;
-  p.x += sin(time * 0.5 + layerIdx) * wind * 10.0;
-  p.x += sin(p.y * 0.1 + time) * u_drift * 5.0;
+vec2 rotate2D(vec2 p, float angle) {
+  float c = cos(angle);
+  float s = sin(angle);
+  return vec2(p.x * c - p.y * s, p.x * s + p.y * c);
+}
 
-  // Grid
+float snowflakeShape(vec2 uv, float size, float seed, float rotation) {
+  vec2 rotatedUV = rotate2D(uv, rotation);
+  float dist = length(rotatedUV);
+  float circle = smoothstep(size, size * 0.3, dist);
+  float angle = atan(rotatedUV.y, rotatedUV.x);
+  float hexPattern = 0.5 + 0.5 * cos(angle * 6.0);
+  hexPattern = pow(hexPattern, 2.0);
+  float crystalAmount = smoothstep(0.02, 0.05, size) * 0.3;
+  float shape = mix(circle, circle * (0.7 + hexPattern * 0.3), crystalAmount);
+  float glow = exp(-dist * dist / (size * size * 3.0)) * u_glowAmount;
+  return shape + glow * 0.4;
+}
+
+vec2 getWind(vec2 uv, float time, float layerDepth) {
+  vec2 baseWind = vec2(cos(u_windAngle), 0.0) * u_windSpeed;
+  float gustFreq = 0.5 + u_turbulence;
+  float gust = noise(uv * gustFreq + time * 0.2) * 2.0 - 1.0;
+  vec2 eddy = vec2(
+    noise(uv * 2.0 + time * 0.3 + vec2(0.0, 100.0)) - 0.5,
+    noise(uv * 2.0 + time * 0.3 + vec2(100.0, 0.0)) - 0.5
+  ) * u_turbulence * 0.5;
+  float heightFactor = 1.0 + uv.y * u_windShear;
+  float windResponse = mix(0.3, 1.0, 1.0 - layerDepth);
+  return (baseWind * (0.7 + gust * 0.3) + eddy) * heightFactor * windResponse;
+}
+
+float sparkle(vec2 cellId, float time, float seed) {
+  float sparklePhase = hash12(cellId + vec2(seed * 100.0, 0.0)) * 100.0;
+  float sparkleFreq = 2.0 + hash12(cellId + vec2(0.0, seed * 100.0)) * 3.0;
+  float sparkleWave = sin(time * sparkleFreq + sparklePhase);
+  float sparkleIntensity = pow(max(0.0, sparkleWave), 16.0);
+  float sparkleProbability = hash12(cellId + vec2(floor(time * 0.5), 0.0));
+  sparkleIntensity *= step(0.85, sparkleProbability);
+  return sparkleIntensity * u_sparkle;
+}
+
+vec3 snowLayer(vec2 uv, float time, float layerIndex, float totalLayers) {
+  float depth = layerIndex / max(1.0, totalLayers - 1.0);
+  float layerScale = mix(8.0, 40.0, depth);
+  float layerSpeed = u_fallSpeed * mix(1.2, 0.4, depth);
+  float layerDensity = u_intensity * mix(1.0, 0.5, depth);
+  float layerFlakeSize = u_flakeSize * mix(1.5, 0.3, depth);
+  float layerOpacity = u_opacity * mix(1.0, 0.4, depth);
+
+  vec2 layerOffset = vec2(
+    sin(layerIndex * 73.156) * 10.0,
+    cos(layerIndex * 37.842) * 10.0
+  );
+
+  vec2 p = (uv + layerOffset) * layerScale;
+  p.y += time * layerSpeed * 2.0;
+
+  vec2 baseWind = getWind(uv, time, depth);
+  p.x += time * baseWind.x * 0.3;
+
+  float driftPhase = layerIndex * 1.7;
+  p.x += sin(time * 0.5 + p.y * 0.1 + driftPhase) * u_drift * 2.0;
+
   vec2 id = floor(p);
   vec2 gv = fract(p) - 0.5;
 
   float snow = 0.0;
+  float sparkleAccum = 0.0;
+
   for (int y = -1; y <= 1; y++) {
     for (int x = -1; x <= 1; x++) {
       vec2 offs = vec2(float(x), float(y));
       vec2 cellId = id + offs;
 
-      float n = hash(cellId + layerIdx * 100.0);
-      if (n > u_intensity) continue;
+      float h1 = hash12(cellId);
+      vec2 h2 = hash22(cellId);
+      float h3 = hash12(cellId + vec2(127.0, 311.0));
+      float h4 = hash12(cellId + vec2(271.0, 183.0));
 
-      vec2 pos = offs + vec2(hash(cellId * 1.23), hash(cellId * 4.56)) - 0.5;
-      float d = length(gv - pos);
+      if (h1 > layerDensity) continue;
 
-      float flake = smoothstep(size * 0.05, 0.0, d);
-      snow += flake * opacity;
+      float sizeVar = 1.0 + (h3 - 0.5) * u_sizeVariation;
+      float size = layerFlakeSize * sizeVar * 0.04;
+
+      vec2 flakePos = h2 * 0.8 - 0.4;
+
+      float flutterPhase = h3 * PI * 2.0;
+      float flutterAmp = u_flutter * 0.15 * (1.0 - depth);
+      flakePos.x += sin(time * 3.0 + flutterPhase) * flutterAmp;
+      flakePos.y += cos(time * 2.5 + flutterPhase * 1.3) * flutterAmp * 0.5;
+
+      vec2 localUV = gv - offs - flakePos;
+
+      float rotationSpeed = (1.5 - sizeVar * 0.5) * (0.5 + h4 * 1.0);
+      float rotationPhase = h4 * PI * 2.0;
+      float rotation = time * rotationSpeed + rotationPhase;
+
+      float flake = snowflakeShape(localUV, size, h1, rotation);
+      float flakeSparkle = sparkle(cellId, time, h1) * flake;
+      sparkleAccum += flakeSparkle;
+
+      snow += flake * layerOpacity;
     }
   }
 
-  return snow;
+  return vec3(snow, sparkleAccum, depth);
 }
 
 void main() {
   vec4 scene = texture(u_sceneTexture, v_uv);
+  vec2 uv = v_uv;
+  float aspect = u_resolution.x / u_resolution.y;
+  uv.x *= aspect;
 
   float snow = 0.0;
-  for (int i = 0; i < 8; i++) {
-    if (i >= u_layers) break;
-    snow += snowLayer(v_uv, float(i), u_time);
+  float totalSparkle = 0.0;
+
+  for (int i = u_layers - 1; i >= 0; i--) {
+    vec3 layerResult = snowLayer(uv, u_time, float(i), float(u_layers));
+    snow += layerResult.x;
+    totalSparkle += layerResult.y;
   }
 
   snow = clamp(snow, 0.0, 1.0);
+  totalSparkle = clamp(totalSparkle, 0.0, 1.0);
 
-  vec3 color = scene.rgb + vec3(snow);
+  vec3 snowColor = vec3(0.95, 0.97, 1.0);
+  vec3 sparkleColor = vec3(1.0, 1.0, 1.0);
+
+  vec3 color = scene.rgb + snowColor * snow + sparkleColor * totalSparkle * 2.0;
 
   fragColor = vec4(color, 1.0);
 }
@@ -1895,8 +2020,16 @@ export function WeatherEffectsCanvas({
       gl.uniform1i(u(programs.snow, "u_layers"), p.layers);
       gl.uniform1f(u(programs.snow, "u_fallSpeed"), p.fallSpeed);
       gl.uniform1f(u(programs.snow, "u_windSpeed"), p.windSpeed);
+      gl.uniform1f(u(programs.snow, "u_windAngle"), p.windAngle);
+      gl.uniform1f(u(programs.snow, "u_turbulence"), p.turbulence);
       gl.uniform1f(u(programs.snow, "u_drift"), p.drift);
+      gl.uniform1f(u(programs.snow, "u_flutter"), p.flutter);
+      gl.uniform1f(u(programs.snow, "u_windShear"), p.windShear);
       gl.uniform1f(u(programs.snow, "u_flakeSize"), p.flakeSize);
+      gl.uniform1f(u(programs.snow, "u_sizeVariation"), p.sizeVariation);
+      gl.uniform1f(u(programs.snow, "u_opacity"), p.opacity);
+      gl.uniform1f(u(programs.snow, "u_glowAmount"), p.glowAmount);
+      gl.uniform1f(u(programs.snow, "u_sparkle"), p.sparkle);
 
       gl.drawArrays(gl.TRIANGLES, 0, 6);
       swapBuffers();
