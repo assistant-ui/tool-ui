@@ -1,7 +1,7 @@
 # Agent Changelog
 
 > This file helps coding agents understand project evolution, key decisions, and deprecated patterns.
-> Updated: 2026-01-26
+> Updated: 2026-01-29
 
 ## Current State Summary
 
@@ -15,6 +15,38 @@ Tool UI is a copy/paste component library (shadcn/ui model) with 25+ components 
 | README.md | Missing MessageDraft, QuestionFlow, StatsDisplay, etc. | These components exist | 2026-01 |
 
 ## Timeline
+
+### 2026-01-29 — SVG Glass Panel Effect Added
+
+**What changed:** Added `GlassPanel` component and `useGlassStyles` hook for frosted glass refraction effects using SVG displacement maps via CSS `backdrop-filter`.
+
+**Why:** Provide realistic glass distortion effects for weather widget overlays without WebGL complexity. SVG approach composes naturally with DOM, handles transparency correctly, and doesn't require canvas management.
+
+**Technical approach:**
+- SVG `feDisplacementMap` filter encodes X/Y displacement via R/G color channels
+- Chromatic aberration displaces RGB channels by different amounts (R most, G middle, B least)
+- Filter embedded as data URI in `backdrop-filter` CSS property
+- Graceful degradation on unsupported browsers (no effect, content still visible)
+
+**Agent impact:** Use `useGlassStyles` hook or `GlassPanel` component for glass effects. Don't implement WebGL-based glass effects—the SVG approach is simpler and sufficient.
+
+```tsx
+// Hook for applying to existing elements
+const glassStyles = useGlassStyles({
+  width: 300,
+  height: 200,
+  depth: 12,
+  strength: 40,
+  chromaticAberration: 8,
+});
+
+// Component wrapper
+<GlassPanel depth={10} strength={40}>content</GlassPanel>
+```
+
+**Files:** `components/tool-ui/weather-widget/effects/glass-panel-svg.tsx`
+
+---
 
 ### 2026-01-26 — AI SDK v5 → v6 Upgrade
 
@@ -113,6 +145,7 @@ Tool UI is a copy/paste component library (shadcn/ui model) with 25+ components 
 | Use nested config objects | Use flat props | Project inception |
 | Add Framer Motion to ImageGallery | Use View Transitions API | 2026-01-06 |
 | Use AI SDK v5 patterns | Use AI SDK v6 patterns | 2026-01-26 |
+| Implement WebGL glass effects | Use `useGlassStyles` or `GlassPanel` from glass-panel-svg | 2026-01-29 |
 
 ## Trajectory
 
@@ -122,3 +155,4 @@ Based on recent changes, the project is:
 - **Keeping dependencies current** — AI SDK v6, assistant-ui v0.12
 - **Reducing bundle** — View Transitions over Framer Motion where possible
 - **Adding specialized components** — MessageDraft, QuestionFlow, StatsDisplay for specific use cases
+- **Adding visual effects** — SVG-based glass refraction for weather widget, preferring CSS/SVG over WebGL
