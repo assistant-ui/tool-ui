@@ -3,7 +3,7 @@ import type { PresetWithCodeGen } from "./types";
 
 export type WeatherWidgetPresetName =
   | "thunderstorm"
-  | "night-cloudy"
+  | "cloudy-sunset"
   | "cold-snap"
   | "rainy-week"
   | "sunny-forecast";
@@ -58,26 +58,26 @@ export const weatherWidgetPresets: Record<
     } satisfies SerializableWeatherWidget,
     generateExampleCode: generateWeatherWidgetCode,
   },
-  "night-cloudy": {
-    description: "Cloudy night with moon peeking through",
+  "cloudy-sunset": {
+    description: "Dramatic overcast sunset",
     data: {
-      id: "weather-widget-night-cloudy",
-      location: "Sedona, AZ",
+      id: "weather-widget-cloudy-sunset",
+      location: "Santa Fe, NM",
       current: {
-        temp: 45,
-        tempMin: 38,
-        tempMax: 62,
-        condition: "cloudy",
+        temp: 48,
+        tempMin: 32,
+        tempMax: 52,
+        condition: "overcast",
       },
       forecast: [
-        { day: "Tue", tempMin: 36, tempMax: 64, condition: "partly-cloudy" },
-        { day: "Wed", tempMin: 38, tempMax: 66, condition: "cloudy" },
-        { day: "Thu", tempMin: 40, tempMax: 68, condition: "rain" },
-        { day: "Fri", tempMin: 42, tempMax: 70, condition: "partly-cloudy" },
-        { day: "Sat", tempMin: 39, tempMax: 65, condition: "clear" },
+        { day: "Tue", tempMin: 28, tempMax: 49, condition: "cloudy" },
+        { day: "Wed", tempMin: 30, tempMax: 54, condition: "partly-cloudy" },
+        { day: "Thu", tempMin: 33, tempMax: 58, condition: "clear" },
+        { day: "Fri", tempMin: 35, tempMax: 56, condition: "partly-cloudy" },
+        { day: "Sat", tempMin: 31, tempMax: 51, condition: "cloudy" },
       ],
       unit: "fahrenheit",
-      updatedAt: "2026-01-28T23:00:00Z",
+      updatedAt: "2026-01-29T00:30:00Z",
     } satisfies SerializableWeatherWidget,
     generateExampleCode: generateWeatherWidgetCode,
   },
