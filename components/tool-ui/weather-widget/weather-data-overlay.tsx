@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import {
   Sun,
   Cloud,
@@ -21,6 +21,7 @@ import {
   getSceneBrightnessFromTimeOfDay,
   getTimeOfDay,
   getWeatherTheme,
+  useGlassStyles,
   type WeatherTheme,
 } from "./effects";
 
@@ -67,6 +68,16 @@ const conditionIcons: Record<WeatherCondition, LucideIcon> = {
   windy: Wind,
 };
 
+export interface GlassEffectParams {
+  enabled?: boolean;
+  depth?: number;
+  strength?: number;
+  chromaticAberration?: number;
+  blur?: number;
+  brightness?: number;
+  saturation?: number;
+}
+
 export interface WeatherDataOverlayProps {
   location: string;
   condition: WeatherCondition;
@@ -90,6 +101,11 @@ export interface WeatherDataOverlayProps {
   timeOfDay?: number;
   timestamp?: string;
   className?: string;
+  /**
+   * Glass refraction effect parameters for the forecast card.
+   * When enabled, applies SVG displacement filter for realistic glass distortion.
+   */
+  glassParams?: GlassEffectParams;
 }
 
 export function WeatherDataOverlay({
@@ -107,6 +123,7 @@ export function WeatherDataOverlay({
   timeOfDay: timeOfDayProp,
   timestamp,
   className,
+  glassParams,
 }: WeatherDataOverlayProps) {
   const timeOfDay =
     typeof timeOfDayProp === "number"
@@ -121,8 +138,48 @@ export function WeatherDataOverlay({
     y: number;
     intensity: number;
   }>({ x: 0, y: 0, intensity: 0 });
+  const [cardDimensions, setCardDimensions] = useState({ width: 0, height: 0 });
   const cardRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+
+  // Glass effect styles applied directly to forecast container.
+  // Enabled by default - falls back to simple blur if SVG filter unsupported.
+  const glassEnabled = glassParams?.enabled !== false;
+  const glassStyles = useGlassStyles({
+    width: cardDimensions.width,
+    height: cardDimensions.height,
+    depth: glassParams?.depth ?? 3,
+    radius: 12,
+    strength: glassParams?.strength ?? 75,
+    chromaticAberration: glassParams?.chromaticAberration ?? 6,
+    blur: glassParams?.blur ?? 1.5,
+    brightness: glassParams?.brightness ?? 0.8,
+    saturation: glassParams?.saturation ?? 1.3,
+    enabled: glassEnabled,
+  });
+
+  // Check if SVG glass is active (has backdrop-filter set)
+  const svgGlassActive = Boolean(glassStyles.backdropFilter);
+
+  // Track forecast card dimensions for glass effect
+  const updateCardDimensions = useCallback(() => {
+    if (cardRef.current) {
+      const rect = cardRef.current.getBoundingClientRect();
+      setCardDimensions({
+        width: Math.round(rect.width),
+        height: Math.round(rect.height),
+      });
+    }
+  }, []);
+
+  useEffect(() => {
+    updateCardDimensions();
+    const observer = new ResizeObserver(updateCardDimensions);
+    if (cardRef.current) {
+      observer.observe(cardRef.current);
+    }
+    return () => observer.disconnect();
+  }, [updateCardDimensions]);
 
   useEffect(() => {
     const brightness = getSceneBrightnessFromTimeOfDay(timeOfDay, condition);
@@ -380,8 +437,13 @@ export function WeatherDataOverlay({
               style={{
                 backgroundColor: `rgba(255, 255, 255, ${bgOpacity})`,
                 borderColor: `rgba(255, 255, 255, ${borderOpacity})`,
-                backdropFilter: `blur(${blurAmount}px)`,
-                WebkitBackdropFilter: `blur(${blurAmount}px)`,
+                // Apply SVG glass effect when supported, fall back to simple blur
+                ...(svgGlassActive
+                  ? glassStyles
+                  : {
+                      backdropFilter: `blur(${blurAmount}px)`,
+                      WebkitBackdropFilter: `blur(${blurAmount}px)`,
+                    }),
               }}
             >
               {/* Inner glow */}

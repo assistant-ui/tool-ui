@@ -256,6 +256,15 @@ export interface CustomEffectProps {
     sparkle?: number;
     visibility?: number;
   };
+  glass?: {
+    enabled?: boolean;
+    depth?: number;
+    strength?: number;
+    chromaticAberration?: number;
+    blur?: number;
+    brightness?: number;
+    saturation?: number;
+  };
 }
 
 interface EffectCompositorProps {

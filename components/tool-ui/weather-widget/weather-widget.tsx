@@ -113,6 +113,7 @@ export function WeatherWidget({
           updatedAtLabel={updatedAtLabel}
           timeOfDay={overlayTimeOfDay}
           timestamp={updatedAt}
+          glassParams={customEffectProps?.glass}
         />
       </Card>
     </article>

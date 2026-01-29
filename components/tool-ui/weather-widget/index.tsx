@@ -1,7 +1,7 @@
 export { WeatherWidget } from "./weather-widget";
 export { WeatherWidgetErrorBoundary } from "./error-boundary";
 export { WeatherDataOverlay } from "./weather-data-overlay";
-export type { WeatherDataOverlayProps } from "./weather-data-overlay";
+export type { WeatherDataOverlayProps, GlassEffectParams } from "./weather-data-overlay";
 export {
   SerializableWeatherWidgetSchema,
   parseSerializableWeatherWidget,
