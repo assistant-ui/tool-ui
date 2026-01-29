@@ -77,7 +77,7 @@ export const weatherWidgetPresets: Record<
         { day: "Sat", tempMin: 31, tempMax: 51, condition: "cloudy" },
       ],
       unit: "fahrenheit",
-      updatedAt: "2026-01-29T00:30:00Z",
+      updatedAt: "2026-01-28T17:45:00Z",
     } satisfies SerializableWeatherWidget,
     generateExampleCode: generateWeatherWidgetCode,
   },

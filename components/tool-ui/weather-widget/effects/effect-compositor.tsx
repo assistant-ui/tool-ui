@@ -38,6 +38,7 @@ function mapEffectConfigToCanvasProps(config: EffectLayerConfig): WeatherEffects
   const cloud: WeatherEffectsCanvasProps["cloud"] = cloudBase
     ? {
       coverage: cloudBase.coverage,
+      density: 0.5 + cloudBase.coverage * 0.5,
       windSpeed: cloudBase.windSpeed,
       turbulence: cloudBase.turbulence,
       ambientDarkness: cloudBase.ambientDarkness,
