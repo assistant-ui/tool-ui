@@ -10,33 +10,29 @@ import { StatsDisplay } from "@/components/tool-ui/stats-display";
 import { cn } from "@/lib/ui/cn";
 
 /**
- * Gallery slot with fixed height for masonry layout.
- * Component is absolutely positioned inside so it can expand/animate
- * without triggering masonry reflow.
+ * Gallery slot with layout containment.
+ * Uses `contain: layout paint` to isolate layout calculations -
+ * when a component inside changes size, it won't trigger reflow
+ * of other masonry items.
  */
 function GallerySlot({
   children,
-  height,
   className,
   fullWidth,
 }: {
   children: ReactNode;
-  height: number;
   className?: string;
   fullWidth?: boolean;
 }) {
   return (
     <div
       className={cn(
-        "relative mb-5 break-inside-avoid",
+        "mb-5 flex justify-center break-inside-avoid [contain:layout_paint]",
         fullWidth && "[column-span:all]",
         className,
       )}
-      style={{ height }}
     >
-      <div className="absolute inset-x-0 top-0 flex justify-center">
-        {children}
-      </div>
+      {children}
     </div>
   );
 }
@@ -137,20 +133,20 @@ export default function ComponentsGalleryPage() {
       <div className="scrollbar-subtle z-10 min-h-0 flex-1 overflow-y-auto overscroll-contain p-6 sm:p-10 lg:p-12">
         <div className="mx-auto columns-1 gap-5 pb-20 md:columns-2 2xl:columns-3">
           {/* Full-width items */}
-          <GallerySlot height={420} fullWidth>
+          <GallerySlot fullWidth>
             <DataTable {...dataTablePresets.stocks.data} />
           </GallerySlot>
 
-          <GallerySlot height={200} fullWidth>
+          <GallerySlot fullWidth>
             <ItemCarousel {...itemCarouselPresets.recommendations.data} />
           </GallerySlot>
 
-          {/* Masonry items - heights accommodate typical component size */}
-          <GallerySlot height={280}>
+          {/* Masonry items with layout containment */}
+          <GallerySlot>
             <StatsDisplay {...statsDisplayPresets["business-metrics"].data} />
           </GallerySlot>
 
-          <GallerySlot height={420}>
+          <GallerySlot>
             <WeatherWidget
               {...weatherWidgetPresets["sunny-forecast"].data}
               current={{
@@ -164,17 +160,17 @@ export default function ComponentsGalleryPage() {
             />
           </GallerySlot>
 
-          <GallerySlot height={340}>
+          <GallerySlot>
             <ImageGallery {...imageGalleryPresets["search-results"].data} />
           </GallerySlot>
 
-          <GallerySlot height={160}>
+          <GallerySlot>
             <LinkPreview
               {...linkPreviewPresets["with-image"].data.linkPreview}
             />
           </GallerySlot>
 
-          <GallerySlot height={260}>
+          <GallerySlot>
             <CitationList
               id="gallery-citations"
               citations={citationPresets.stacked.data.citations}
@@ -182,70 +178,70 @@ export default function ComponentsGalleryPage() {
             />
           </GallerySlot>
 
-          <GallerySlot height={120}>
+          <GallerySlot>
             <Audio {...audioPresets["full"].data.audio} />
           </GallerySlot>
 
-          <GallerySlot height={340}>
+          <GallerySlot>
             <OptionList {...optionListPresets["max-selections"].data} />
           </GallerySlot>
 
-          <GallerySlot height={220}>
+          <GallerySlot>
             <ApprovalCard {...approvalCardPresets["with-metadata"].data} />
           </GallerySlot>
 
-          <GallerySlot height={320}>
+          <GallerySlot>
             <MessageDraft {...messageDraftPresets.email.data} />
           </GallerySlot>
 
-          <GallerySlot height={380}>
+          <GallerySlot>
             <OrderSummary
               {...orderSummaryPresets.default.data}
               className="max-w-none"
             />
           </GallerySlot>
 
-          <GallerySlot height={460}>
+          <GallerySlot>
             <Plan {...planPresets.comprehensive.data} />
           </GallerySlot>
 
-          <GallerySlot height={240}>
+          <GallerySlot>
             <ProgressTracker {...progressTrackerPresets["in-progress"].data} />
           </GallerySlot>
 
-          <GallerySlot height={380}>
+          <GallerySlot>
             <QuestionFlow {...questionFlowPresets.upfront.data} />
           </GallerySlot>
 
-          <GallerySlot height={320}>
+          <GallerySlot>
             <OptionList {...optionListPresets.travel.data} />
           </GallerySlot>
 
-          <GallerySlot height={340}>
+          <GallerySlot>
             <PreferencesPanel {...preferencesPanelPresets.privacy.data} />
           </GallerySlot>
 
-          <GallerySlot height={200}>
+          <GallerySlot>
             <Terminal {...terminalPresets.success.data} />
           </GallerySlot>
 
-          <GallerySlot height={260}>
+          <GallerySlot>
             <CodeBlock {...codeBlockPresets.typescript.data} />
           </GallerySlot>
 
-          <GallerySlot height={360}>
+          <GallerySlot>
             <Chart id="gallery-chart" {...chartPresets.revenue.data} />
           </GallerySlot>
 
-          <GallerySlot height={280}>
+          <GallerySlot>
             <Video {...videoPresets["with-poster"].data.video} />
           </GallerySlot>
 
-          <GallerySlot height={260}>
+          <GallerySlot>
             <Image {...galleryImage} alt={galleryImage.alt} />
           </GallerySlot>
 
-          <GallerySlot height={520}>
+          <GallerySlot>
             <LinkedInPost post={linkedInPostPresets.basic.data.post} />
           </GallerySlot>
         </div>
