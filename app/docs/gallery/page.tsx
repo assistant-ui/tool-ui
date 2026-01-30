@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import type { ReactNode } from "react";
 import dynamic from "next/dynamic";
 
 import { DocsBorderedShell } from "@/app/docs/_components/docs-bordered-shell";
@@ -6,60 +7,97 @@ import { DataTable } from "@/components/tool-ui/data-table";
 import { Image } from "@/components/tool-ui/image";
 import { ItemCarousel } from "@/components/tool-ui/item-carousel";
 import { StatsDisplay } from "@/components/tool-ui/stats-display";
+import { cn } from "@/lib/ui/cn";
+
+/**
+ * Gallery slot with fixed height for masonry layout.
+ * Component is absolutely positioned inside so it can expand/animate
+ * without triggering masonry reflow.
+ */
+function GallerySlot({
+  children,
+  height,
+  className,
+  fullWidth,
+}: {
+  children: ReactNode;
+  height: number;
+  className?: string;
+  fullWidth?: boolean;
+}) {
+  return (
+    <div
+      className={cn(
+        "relative mb-5 break-inside-avoid",
+        fullWidth && "[column-span:all]",
+        className,
+      )}
+      style={{ height }}
+    >
+      <div className="absolute inset-x-0 top-0 flex justify-center">
+        {children}
+      </div>
+    </div>
+  );
+}
 
 const ApprovalCard = dynamic(() =>
-  import("@/components/tool-ui/approval-card").then((m) => m.ApprovalCard)
+  import("@/components/tool-ui/approval-card").then((m) => m.ApprovalCard),
 );
 const CitationList = dynamic(() =>
-  import("@/components/tool-ui/citation").then((m) => m.CitationList)
+  import("@/components/tool-ui/citation").then((m) => m.CitationList),
 );
 const ImageGallery = dynamic(() =>
-  import("@/components/tool-ui/image-gallery").then((m) => m.ImageGallery)
+  import("@/components/tool-ui/image-gallery").then((m) => m.ImageGallery),
 );
 const Video = dynamic(() =>
-  import("@/components/tool-ui/video").then((m) => m.Video)
+  import("@/components/tool-ui/video").then((m) => m.Video),
 );
 const Audio = dynamic(() =>
-  import("@/components/tool-ui/audio").then((m) => m.Audio)
+  import("@/components/tool-ui/audio").then((m) => m.Audio),
 );
 const LinkPreview = dynamic(() =>
-  import("@/components/tool-ui/link-preview").then((m) => m.LinkPreview)
+  import("@/components/tool-ui/link-preview").then((m) => m.LinkPreview),
 );
 const LinkedInPost = dynamic(() =>
-  import("@/components/tool-ui/linkedin-post").then((m) => m.LinkedInPost)
+  import("@/components/tool-ui/linkedin-post").then((m) => m.LinkedInPost),
 );
 const OptionList = dynamic(() =>
-  import("@/components/tool-ui/option-list").then((m) => m.OptionList)
+  import("@/components/tool-ui/option-list").then((m) => m.OptionList),
 );
 const OrderSummary = dynamic(() =>
-  import("@/components/tool-ui/order-summary").then((m) => m.OrderSummary)
+  import("@/components/tool-ui/order-summary").then((m) => m.OrderSummary),
 );
 const Plan = dynamic(() =>
-  import("@/components/tool-ui/plan").then((m) => m.Plan)
+  import("@/components/tool-ui/plan").then((m) => m.Plan),
 );
 const Terminal = dynamic(() =>
-  import("@/components/tool-ui/terminal").then((m) => m.Terminal)
+  import("@/components/tool-ui/terminal").then((m) => m.Terminal),
 );
 const CodeBlock = dynamic(() =>
-  import("@/components/tool-ui/code-block").then((m) => m.CodeBlock)
+  import("@/components/tool-ui/code-block").then((m) => m.CodeBlock),
 );
 const Chart = dynamic(() =>
-  import("@/components/tool-ui/chart").then((m) => m.Chart)
+  import("@/components/tool-ui/chart").then((m) => m.Chart),
 );
 const PreferencesPanel = dynamic(() =>
-  import("@/components/tool-ui/preferences-panel").then((m) => m.PreferencesPanel)
+  import("@/components/tool-ui/preferences-panel").then(
+    (m) => m.PreferencesPanel,
+  ),
 );
 const ProgressTracker = dynamic(() =>
-  import("@/components/tool-ui/progress-tracker").then((m) => m.ProgressTracker)
+  import("@/components/tool-ui/progress-tracker").then(
+    (m) => m.ProgressTracker,
+  ),
 );
 const QuestionFlow = dynamic(() =>
-  import("@/components/tool-ui/question-flow").then((m) => m.QuestionFlow)
+  import("@/components/tool-ui/question-flow").then((m) => m.QuestionFlow),
 );
 const MessageDraft = dynamic(() =>
-  import("@/components/tool-ui/message-draft").then((m) => m.MessageDraft)
+  import("@/components/tool-ui/message-draft").then((m) => m.MessageDraft),
 );
 const WeatherWidget = dynamic(() =>
-  import("@/components/tool-ui/weather-widget").then((m) => m.WeatherWidget)
+  import("@/components/tool-ui/weather-widget").then((m) => m.WeatherWidget),
 );
 import { approvalCardPresets } from "@/lib/presets/approval-card";
 import { citationPresets } from "@/lib/presets/citation";
@@ -97,22 +135,22 @@ export default function ComponentsGalleryPage() {
   return (
     <DocsBorderedShell>
       <div className="scrollbar-subtle z-10 min-h-0 flex-1 overflow-y-auto overscroll-contain p-6 sm:p-10 lg:p-12">
-        <div className="mx-auto grid auto-rows-max grid-cols-1 gap-5 pb-20 md:grid-cols-2 2xl:grid-cols-3">
+        <div className="mx-auto columns-1 gap-5 pb-20 md:columns-2 2xl:columns-3">
           {/* Full-width items */}
-          <div className="flex justify-center md:col-span-2 2xl:col-span-3">
+          <GallerySlot height={420} fullWidth>
             <DataTable {...dataTablePresets.stocks.data} />
-          </div>
+          </GallerySlot>
 
-          <div className="flex justify-center md:col-span-2 2xl:col-span-3">
+          <GallerySlot height={200} fullWidth>
             <ItemCarousel {...itemCarouselPresets.recommendations.data} />
-          </div>
+          </GallerySlot>
 
-          {/* Grid items with layout containment */}
-          <div className="flex justify-center [contain:layout_paint]">
+          {/* Masonry items - heights accommodate typical component size */}
+          <GallerySlot height={280}>
             <StatsDisplay {...statsDisplayPresets["business-metrics"].data} />
-          </div>
+          </GallerySlot>
 
-          <div className="flex justify-center [contain:layout_paint]">
+          <GallerySlot height={420}>
             <WeatherWidget
               {...weatherWidgetPresets["sunny-forecast"].data}
               current={{
@@ -124,92 +162,92 @@ export default function ComponentsGalleryPage() {
               updatedAt="2026-01-29T02:30:00Z"
               effects={{ enabled: true, quality: "low" }}
             />
-          </div>
+          </GallerySlot>
 
-          <div className="flex justify-center [contain:layout_paint]">
+          <GallerySlot height={340}>
             <ImageGallery {...imageGalleryPresets["search-results"].data} />
-          </div>
+          </GallerySlot>
 
-          <div className="flex justify-center [contain:layout_paint]">
+          <GallerySlot height={160}>
             <LinkPreview
               {...linkPreviewPresets["with-image"].data.linkPreview}
             />
-          </div>
+          </GallerySlot>
 
-          <div className="flex justify-center [contain:layout_paint]">
+          <GallerySlot height={260}>
             <CitationList
               id="gallery-citations"
               citations={citationPresets.stacked.data.citations}
               variant="stacked"
             />
-          </div>
+          </GallerySlot>
 
-          <div className="flex justify-center [contain:layout_paint]">
+          <GallerySlot height={120}>
             <Audio {...audioPresets["full"].data.audio} />
-          </div>
+          </GallerySlot>
 
-          <div className="flex justify-center [contain:layout_paint]">
+          <GallerySlot height={340}>
             <OptionList {...optionListPresets["max-selections"].data} />
-          </div>
+          </GallerySlot>
 
-          <div className="flex justify-center [contain:layout_paint]">
+          <GallerySlot height={220}>
             <ApprovalCard {...approvalCardPresets["with-metadata"].data} />
-          </div>
+          </GallerySlot>
 
-          <div className="flex justify-center [contain:layout_paint]">
+          <GallerySlot height={320}>
             <MessageDraft {...messageDraftPresets.email.data} />
-          </div>
+          </GallerySlot>
 
-          <div className="[contain:layout_paint]">
+          <GallerySlot height={380}>
             <OrderSummary
               {...orderSummaryPresets.default.data}
               className="max-w-none"
             />
-          </div>
+          </GallerySlot>
 
-          <div className="flex justify-center [contain:layout_paint]">
+          <GallerySlot height={460}>
             <Plan {...planPresets.comprehensive.data} />
-          </div>
+          </GallerySlot>
 
-          <div className="flex justify-center [contain:layout_paint]">
+          <GallerySlot height={240}>
             <ProgressTracker {...progressTrackerPresets["in-progress"].data} />
-          </div>
+          </GallerySlot>
 
-          <div className="flex justify-center [contain:layout_paint]">
+          <GallerySlot height={380}>
             <QuestionFlow {...questionFlowPresets.upfront.data} />
-          </div>
+          </GallerySlot>
 
-          <div className="flex justify-center [contain:layout_paint]">
+          <GallerySlot height={320}>
             <OptionList {...optionListPresets.travel.data} />
-          </div>
+          </GallerySlot>
 
-          <div className="flex justify-center [contain:layout_paint]">
+          <GallerySlot height={340}>
             <PreferencesPanel {...preferencesPanelPresets.privacy.data} />
-          </div>
+          </GallerySlot>
 
-          <div className="flex justify-center [contain:layout_paint]">
+          <GallerySlot height={200}>
             <Terminal {...terminalPresets.success.data} />
-          </div>
+          </GallerySlot>
 
-          <div className="flex justify-center [contain:layout_paint]">
+          <GallerySlot height={260}>
             <CodeBlock {...codeBlockPresets.typescript.data} />
-          </div>
+          </GallerySlot>
 
-          <div className="flex justify-center [contain:layout_paint]">
+          <GallerySlot height={360}>
             <Chart id="gallery-chart" {...chartPresets.revenue.data} />
-          </div>
+          </GallerySlot>
 
-          <div className="flex justify-center [contain:layout_paint]">
+          <GallerySlot height={280}>
             <Video {...videoPresets["with-poster"].data.video} />
-          </div>
+          </GallerySlot>
 
-          <div className="flex justify-center [contain:layout_paint]">
+          <GallerySlot height={260}>
             <Image {...galleryImage} alt={galleryImage.alt} />
-          </div>
+          </GallerySlot>
 
-          <div className="flex justify-center [contain:layout_paint]">
+          <GallerySlot height={520}>
             <LinkedInPost post={linkedInPostPresets.basic.data.post} />
-          </div>
+          </GallerySlot>
         </div>
       </div>
     </DocsBorderedShell>
