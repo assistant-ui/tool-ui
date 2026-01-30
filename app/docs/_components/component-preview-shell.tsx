@@ -1,6 +1,6 @@
 "use client";
 
-import { memo, useCallback, useState, type ReactNode } from "react";
+import { memo, useCallback, type ReactNode } from "react";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import type { ImperativePanelGroupHandle } from "react-resizable-panels";
 import { Check, Code, Copy, Eye, MessageCircle } from "lucide-react";
@@ -8,12 +8,14 @@ import { Button } from "@/components/ui/button";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { cn } from "@/lib/ui/cn";
 import { useResponsivePreview } from "@/hooks/use-responsive-preview";
+import { useTabSearchParam } from "@/hooks/use-tab-search-param";
 import { useCopyToClipboard } from "@/components/tool-ui/shared";
 
 const PREVIEW_MIN_WIDTH = 40;
 const PREVIEW_MAX_WIDTH = 100;
 
-type ViewMode = "canvas" | "chat" | "code";
+const VALID_VIEW_MODES = ["canvas", "chat", "code"] as const;
+type ViewMode = (typeof VALID_VIEW_MODES)[number];
 
 function ViewModeToggle({
   value,
@@ -33,21 +35,21 @@ function ViewModeToggle({
       <ToggleGroupItem
         value="canvas"
         aria-label="View canvas"
-        className="text-muted-foreground hover:bg-transparent hover:text-primary data-[state=on]:bg-background data-[state=on]:text-foreground data-[state=on]:rounded-md data-[state=on]:shadow-sm"
+        className="text-muted-foreground hover:text-primary data-[state=on]:bg-background data-[state=on]:text-foreground hover:bg-transparent data-[state=on]:rounded-md data-[state=on]:shadow-sm"
       >
         <Eye className="size-4" />
       </ToggleGroupItem>
       <ToggleGroupItem
         value="chat"
         aria-label="View in chat context"
-        className="text-muted-foreground hover:bg-transparent hover:text-primary data-[state=on]:bg-background data-[state=on]:text-foreground data-[state=on]:rounded-md data-[state=on]:shadow-sm"
+        className="text-muted-foreground hover:text-primary data-[state=on]:bg-background data-[state=on]:text-foreground hover:bg-transparent data-[state=on]:rounded-md data-[state=on]:shadow-sm"
       >
         <MessageCircle className="size-4" />
       </ToggleGroupItem>
       <ToggleGroupItem
         value="code"
         aria-label="View code"
-        className="text-muted-foreground hover:bg-transparent hover:text-primary data-[state=on]:bg-background data-[state=on]:text-foreground data-[state=on]:rounded-md data-[state=on]:shadow-sm"
+        className="text-muted-foreground hover:text-primary data-[state=on]:bg-background data-[state=on]:text-foreground hover:bg-transparent data-[state=on]:rounded-md data-[state=on]:shadow-sm"
       >
         <Code className="size-4" />
       </ToggleGroupItem>
@@ -119,7 +121,12 @@ export function ComponentPreviewShell({
   codePanel,
   code,
 }: ComponentPreviewShellProps) {
-  const [viewMode, setViewMode] = useState<ViewMode>("canvas");
+  const { activeTab: viewMode, setActiveTab: setViewMode } =
+    useTabSearchParam<ViewMode>({
+      paramName: "view",
+      defaultTab: "canvas",
+      validTabs: VALID_VIEW_MODES,
+    });
   const { copiedId, copy } = useCopyToClipboard();
   const copied = copiedId === COPY_ID;
   const { panelGroupRef, handleLayout } = useResponsivePreview({
@@ -211,7 +218,9 @@ export function ComponentPreviewShell({
             className={cn(
               "scrollbar-subtle relative z-10",
               "flex min-h-0 min-w-0 flex-1",
-              viewMode === "code" ? "flex-col" : "items-start justify-center overflow-y-auto",
+              viewMode === "code"
+                ? "flex-col"
+                : "items-start justify-center overflow-y-auto",
             )}
           >
             {viewMode === "canvas" && (

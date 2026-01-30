@@ -18,6 +18,7 @@ const STORAGE_KEY = "tool-ui-components-nav-collapsed:v1";
 export function DocsNav() {
   const pathname = usePathname();
   const [currentTab] = useQueryState("tab");
+  const [currentView] = useQueryState("view");
   const [collapsed, setCollapsed] = useState(false);
   const [isPressing, setIsPressing] = useState(false);
 
@@ -64,7 +65,10 @@ export function DocsNav() {
   const isGalleryActive = pathname === galleryPath;
 
   const categorizedComponents = (
-    Object.entries(CATEGORY_META) as [ComponentCategory, (typeof CATEGORY_META)[ComponentCategory]][]
+    Object.entries(CATEGORY_META) as [
+      ComponentCategory,
+      (typeof CATEGORY_META)[ComponentCategory],
+    ][]
   )
     .sort(([, a], [, b]) => a.order - b.order)
     .map(([category, meta]) => ({
@@ -136,10 +140,19 @@ export function DocsNav() {
             )}
             {components.map((component) => {
               const isActive = pathname === component.path;
-              const href =
-                currentTab === "examples"
-                  ? `${component.path}?tab=examples`
-                  : component.path;
+              const href = (() => {
+                if (currentTab !== "examples") return component.path;
+
+                const params = new URLSearchParams();
+                params.set("tab", "examples");
+
+                // Preserve view mode across component navigation when browsing examples.
+                if (currentView === "chat" || currentView === "code") {
+                  params.set("view", currentView);
+                }
+
+                return `${component.path}?${params.toString()}`;
+              })();
               return (
                 <Link
                   key={component.id}
