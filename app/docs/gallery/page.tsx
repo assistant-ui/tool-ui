@@ -113,6 +113,13 @@ export default function ComponentsGalleryPage() {
           <div className="mb-5 flex break-inside-avoid justify-center 2xl:mb-5">
             <WeatherWidget
               {...weatherWidgetPresets["sunny-forecast"].data}
+              current={{
+                temp: 64,
+                tempMin: 58,
+                tempMax: 72,
+                condition: "thunderstorm",
+              }}
+              updatedAt="2026-01-29T02:30:00Z"
               effects={{ enabled: true, quality: "low" }}
             />
           </div>
