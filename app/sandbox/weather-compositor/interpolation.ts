@@ -182,15 +182,6 @@ export function interpolateOverrides(
   );
   if (snow) result.snow = snow;
 
-  const post = interpolatePartialObject(
-    a?.post,
-    b?.post,
-    baseA?.post,
-    baseB?.post,
-    t,
-  );
-  if (post) result.post = post;
-
   return Object.keys(result).length > 0 ? result : undefined;
 }
 

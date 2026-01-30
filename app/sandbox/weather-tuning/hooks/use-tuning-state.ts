@@ -38,8 +38,7 @@ export type LayerKey =
   | "cloud"
   | "rain"
   | "lightning"
-  | "snow"
-  | "post";
+  | "snow";
 
 export interface GlassEffectParams {
   enabled: boolean;
@@ -113,7 +112,6 @@ function mergeConditionOverrides(
     rain: { ...base.rain, ...overrides.rain },
     lightning: { ...base.lightning, ...overrides.lightning },
     snow: { ...base.snow, ...overrides.snow },
-    post: { ...base.post, ...overrides.post },
   };
 }
 
@@ -192,7 +190,6 @@ export function useTuningState() {
     if (params.layers.rain) groups.add("rain");
     if (params.layers.lightning) groups.add("lightning");
     if (params.layers.snow) groups.add("snow");
-    if (params.post.enabled) groups.add("post");
 
     setExpandedGroups(groups);
     // Only re-run when condition changes, not on every override change

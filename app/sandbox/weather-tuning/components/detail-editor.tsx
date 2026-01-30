@@ -28,8 +28,7 @@ type LayerKey =
   | "cloud"
   | "rain"
   | "lightning"
-  | "snow"
-  | "post";
+  | "snow";
 
 interface DetailEditorProps {
   condition: WeatherCondition;
