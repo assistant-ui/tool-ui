@@ -115,8 +115,12 @@ function calculateGap(
   // Asymmetric padding/margin: outer-facing side has less padding, more margin
   const paddingLeft = isLeftAligned ? TEXT_PADDING_X_OUTER : TEXT_PADDING_X;
   const paddingRight = isLeftAligned ? TEXT_PADDING_X : TEXT_PADDING_X_OUTER;
-  const marginLeft = isLeftAligned ? DETECTION_MARGIN_X_OUTER : DETECTION_MARGIN_X;
-  const marginRight = isLeftAligned ? DETECTION_MARGIN_X : DETECTION_MARGIN_X_OUTER;
+  const marginLeft = isLeftAligned
+    ? DETECTION_MARGIN_X_OUTER
+    : DETECTION_MARGIN_X;
+  const marginRight = isLeftAligned
+    ? DETECTION_MARGIN_X
+    : DETECTION_MARGIN_X_OUTER;
   const paddingY = TEXT_PADDING_Y;
   const marginY = DETECTION_MARGIN_Y;
   const thumbCenterY = centerY;
@@ -129,8 +133,12 @@ function calculateGap(
   const innerHeight = height + paddingY * 2;
   const innerRadius = innerHeight / 2;
   // Smaller radius on outer-facing side (left for label, right for value)
-  const innerRadiusLeft = isLeftAligned ? innerRadius * OUTER_EDGE_RADIUS_FACTOR : innerRadius;
-  const innerRadiusRight = isLeftAligned ? innerRadius : innerRadius * OUTER_EDGE_RADIUS_FACTOR;
+  const innerRadiusLeft = isLeftAligned
+    ? innerRadius * OUTER_EDGE_RADIUS_FACTOR
+    : innerRadius;
+  const innerRadiusRight = isLeftAligned
+    ? innerRadius
+    : innerRadius * OUTER_EDGE_RADIUS_FACTOR;
 
   // Outer boundary (where effect starts) - proportionally larger
   const outerLeft = left - paddingLeft - marginLeft;
@@ -139,8 +147,12 @@ function calculateGap(
   const outerBottom = centerY + height / 2 + paddingY + marginY;
   const outerHeight = height + paddingY * 2 + marginY * 2;
   const outerRadius = outerHeight / 2;
-  const outerRadiusLeft = isLeftAligned ? outerRadius * OUTER_EDGE_RADIUS_FACTOR : outerRadius;
-  const outerRadiusRight = isLeftAligned ? outerRadius : outerRadius * OUTER_EDGE_RADIUS_FACTOR;
+  const outerRadiusLeft = isLeftAligned
+    ? outerRadius * OUTER_EDGE_RADIUS_FACTOR
+    : outerRadius;
+  const outerRadiusRight = isLeftAligned
+    ? outerRadius
+    : outerRadius * OUTER_EDGE_RADIUS_FACTOR;
 
   const outerDist = signedDistanceToRoundedRect(
     thumbCenterX,
@@ -189,7 +201,15 @@ interface SliderRowProps {
   handleClassName?: string;
 }
 
-function SliderRow({ config, value, onChange, disabled, trackClassName, fillClassName, handleClassName }: SliderRowProps) {
+function SliderRow({
+  config,
+  value,
+  onChange,
+  disabled,
+  trackClassName,
+  fillClassName,
+  handleClassName,
+}: SliderRowProps) {
   const { id, label, min, max, step = 1, unit, precision } = config;
   // Per-slider theming overrides component-level theming
   const resolvedTrackClassName = config.trackClassName ?? trackClassName;
@@ -228,25 +248,35 @@ function SliderRow({ config, value, onChange, disabled, trackClassName, fillClas
     const trackWidth = trackRect.width;
     const valuePercent = ((value - min) / (max - min)) * 100;
     // Use same inset coordinate system as visual elements
-    const thumbCenterPx = TRACK_EDGE_INSET + ((trackWidth - TRACK_EDGE_INSET * 2) * valuePercent / 100);
+    const thumbCenterPx =
+      TRACK_EDGE_INSET +
+      ((trackWidth - TRACK_EDGE_INSET * 2) * valuePercent) / 100;
     const thumbHalfWidth = 6;
 
     // Text is raised by TEXT_VERTICAL_OFFSET from center
     const trackCenterY = TRACK_HEIGHT / 2 - TEXT_VERTICAL_OFFSET;
 
-    const labelGap = calculateGap(thumbCenterPx, {
-      left: labelRect.left - trackRect.left,
-      right: labelRect.right - trackRect.left,
-      height: labelRect.height,
-      centerY: trackCenterY,
-    }, true); // label is left-aligned
+    const labelGap = calculateGap(
+      thumbCenterPx,
+      {
+        left: labelRect.left - trackRect.left,
+        right: labelRect.right - trackRect.left,
+        height: labelRect.height,
+        centerY: trackCenterY,
+      },
+      true,
+    ); // label is left-aligned
 
-    const valueGap = calculateGap(thumbCenterPx, {
-      left: valueRect.left - trackRect.left,
-      right: valueRect.right - trackRect.left,
-      height: valueRect.height,
-      centerY: trackCenterY,
-    }, false); // value is right-aligned
+    const valueGap = calculateGap(
+      thumbCenterPx,
+      {
+        left: valueRect.left - trackRect.left,
+        right: valueRect.right - trackRect.left,
+        height: valueRect.height,
+        centerY: trackCenterY,
+      },
+      false,
+    ); // value is right-aligned
 
     setDragGap(Math.max(labelGap, valueGap));
 
@@ -303,7 +333,11 @@ function SliderRow({ config, value, onChange, disabled, trackClassName, fillClas
         // Don't add subtick if it would be at 50% for crossesZero
         const midPercent = (prevPercent + percent) / 2;
         if (!(crossesZero && midPercent === 50)) {
-          result.push({ percent: midPercent, isCenter: false, isSubtick: true });
+          result.push({
+            percent: midPercent,
+            isCenter: false,
+            isSubtick: true,
+          });
         }
       }
 
@@ -347,7 +381,8 @@ function SliderRow({ config, value, onChange, disabled, trackClassName, fillClas
     const atLeftEdge = valuePercent <= 0;
     const atRightEdge = valuePercent >= 100;
     const edgeThreshold = 3;
-    const nearEdge = valuePercent <= edgeThreshold || valuePercent >= 100 - edgeThreshold;
+    const nearEdge =
+      valuePercent <= edgeThreshold || valuePercent >= 100 - edgeThreshold;
 
     // Narrower spread when stationary at edges (~35% narrower)
     const spread = nearEdge && !isDragging ? 6.5 : 10;
@@ -374,17 +409,19 @@ function SliderRow({ config, value, onChange, disabled, trackClassName, fillClas
 
     return {
       background: gradient,
-      WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
-      WebkitMaskComposite: 'xor',
-      maskComposite: 'exclude',
-      padding: '1px',
+      WebkitMask:
+        "linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)",
+      WebkitMaskComposite: "xor",
+      maskComposite: "exclude",
+      padding: "1px",
     };
   }, [valuePercent, isDragging]);
 
   // Opacity scales with handle size: rest → hover → drag
   const reflectionOpacity = useMemo(() => {
     const edgeThreshold = 3;
-    const atEdge = valuePercent <= edgeThreshold || valuePercent >= 100 - edgeThreshold;
+    const atEdge =
+      valuePercent <= edgeThreshold || valuePercent >= 100 - edgeThreshold;
 
     if (isDragging || atEdge) {
       return 1;
@@ -435,7 +472,10 @@ function SliderRow({ config, value, onChange, disabled, trackClassName, fillClas
           )}
         >
           <div
-            className={cn("absolute inset-0", resolvedFillClassName ?? "bg-primary/30 dark:bg-primary/40")}
+            className={cn(
+              "absolute inset-0",
+              resolvedFillClassName ?? "bg-primary/30 dark:bg-primary/40",
+            )}
             style={{
               maskImage: fillMaskImage,
               WebkitMaskImage: fillMaskImage,
@@ -471,12 +511,12 @@ function SliderRow({ config, value, onChange, disabled, trackClassName, fillClas
 
         {/* Metallic reflection overlay - follows handle, brightness scales with interaction */}
         <div
-          className="pointer-events-none absolute inset-0 rounded-sm squircle transition-[opacity] duration-200 ease-[var(--cubic-ease-in-out)]"
+          className="squircle pointer-events-none absolute inset-0 rounded-sm transition-[opacity] duration-200 ease-[var(--cubic-ease-in-out)]"
           style={{
             ...reflectionStyle,
             opacity: reflectionOpacity,
-            filter: 'blur(1px)',
-            mixBlendMode: 'overlay',
+            filter: "blur(1px)",
+            mixBlendMode: "overlay",
           }}
         />
 
@@ -506,17 +546,21 @@ function SliderRow({ config, value, onChange, disabled, trackClassName, fillClas
 
             // Hide rest-state indicator at edges (0% or 100%) - the reflection gradient handles this
             const edgeThreshold = 3;
-            const atEdge = valuePercent <= edgeThreshold || valuePercent >= 100 - edgeThreshold;
+            const atEdge =
+              valuePercent <= edgeThreshold ||
+              valuePercent >= 100 - edgeThreshold;
             const restOpacity = atEdge ? 0 : 0.25;
 
             // Asymmetric segment heights: gap is shifted up to match raised text position
             // Top segment is shorter, bottom segment is taller
-            const topHeight = isActive && gap > 0
-              ? `calc(50% - ${gap / 2 + TEXT_VERTICAL_OFFSET}px)`
-              : "50%";
-            const bottomHeight = isActive && gap > 0
-              ? `calc(50% - ${gap / 2 - TEXT_VERTICAL_OFFSET}px)`
-              : "50%";
+            const topHeight =
+              isActive && gap > 0
+                ? `calc(50% - ${gap / 2 + TEXT_VERTICAL_OFFSET}px)`
+                : "50%";
+            const bottomHeight =
+              isActive && gap > 0
+                ? `calc(50% - ${gap / 2 - TEXT_VERTICAL_OFFSET}px)`
+                : "50%";
 
             return (
               <>
@@ -525,7 +569,9 @@ function SliderRow({ config, value, onChange, disabled, trackClassName, fillClas
                     "absolute top-0 left-1/2",
                     "transition-all duration-100 ease-[var(--cubic-ease-in-out)]",
                     isActive
-                      ? gap > 0 ? "rounded-full" : "rounded-t-full"
+                      ? gap > 0
+                        ? "rounded-full"
+                        : "rounded-t-full"
                       : "rounded-t-sm",
                     isDragging ? "w-2" : isActive ? "w-1.5" : "w-px",
                     resolvedHandleClassName ?? "bg-primary",
@@ -541,7 +587,9 @@ function SliderRow({ config, value, onChange, disabled, trackClassName, fillClas
                     "absolute bottom-0 left-1/2",
                     "transition-all duration-100 ease-[var(--cubic-ease-in-out)]",
                     isActive
-                      ? gap > 0 ? "rounded-full" : "rounded-b-full"
+                      ? gap > 0
+                        ? "rounded-full"
+                        : "rounded-b-full"
                       : "rounded-b-sm",
                     isDragging ? "w-2" : isActive ? "w-1.5" : "w-px",
                     resolvedHandleClassName ?? "bg-primary",
@@ -559,7 +607,9 @@ function SliderRow({ config, value, onChange, disabled, trackClassName, fillClas
 
         <div
           className="pointer-events-none absolute inset-x-3 top-1/2 z-10 flex items-center justify-between"
-          style={{ transform: `translateY(calc(-50% - ${TEXT_VERTICAL_OFFSET}px))` }}
+          style={{
+            transform: `translateY(calc(-50% - ${TEXT_VERTICAL_OFFSET}px))`,
+          }}
         >
           <span
             ref={labelRef}
