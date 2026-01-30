@@ -151,6 +151,56 @@ export interface SnowParams {
   visibility: number;
 }
 
+export interface PostParams {
+  enabled: boolean;
+
+  haze: number;
+  hazeHorizon: number;
+  hazeDesaturation: number;
+  hazeContrast: number;
+
+  bloomIntensity: number;
+  bloomThreshold: number;
+  bloomKnee: number;
+  bloomRadius: number;
+  bloomTapScale: number;
+
+  exposureIntensity: number;
+  exposureDesaturation: number;
+  exposureRecovery: number;
+
+  godRayIntensity: number;
+  godRayDecay: number;
+  godRayDensity: number;
+  godRayWeight: number;
+  godRaySamples: number;
+}
+
+const DEFAULT_POST_PARAMS: PostParams = {
+  enabled: true,
+
+  haze: 0.0,
+  hazeHorizon: 0.8,
+  hazeDesaturation: 0.35,
+  hazeContrast: 0.6,
+
+  bloomIntensity: 0.0,
+  bloomThreshold: 0.82,
+  bloomKnee: 0.35,
+  bloomRadius: 1.2,
+  bloomTapScale: 1.0,
+
+  exposureIntensity: 0.0,
+  exposureDesaturation: 0.25,
+  exposureRecovery: 1.0,
+
+  godRayIntensity: 0.0,
+  godRayDecay: 0.965,
+  godRayDensity: 0.9,
+  godRayWeight: 0.35,
+  godRaySamples: 16,
+};
+
 export interface ConditionOverrides {
   layers?: Partial<LayerToggles>;
   celestial?: Partial<CelestialParams>;
@@ -158,6 +208,7 @@ export interface ConditionOverrides {
   rain?: Partial<RainParams>;
   lightning?: Partial<LightningParams>;
   snow?: Partial<SnowParams>;
+  post?: Partial<PostParams>;
 }
 
 export interface GlobalSettings {
@@ -191,6 +242,7 @@ export interface FullCompositorParams {
   rain: RainParams;
   lightning: LightningParams;
   snow: SnowParams;
+  post: PostParams;
 }
 
 export function getBaseParamsForCondition(
@@ -306,6 +358,67 @@ export function getBaseParamsForCondition(
       sparkle: 0.2,
       visibility: 1.0,
     },
+
+    post: {
+      ...DEFAULT_POST_PARAMS,
+      ...(effectConfig.post?.enabled !== undefined
+        ? { enabled: Boolean(effectConfig.post.enabled) }
+        : {}),
+      ...(effectConfig.post?.haze !== undefined
+        ? { haze: effectConfig.post.haze }
+        : {}),
+      ...(effectConfig.post?.hazeHorizon !== undefined
+        ? { hazeHorizon: effectConfig.post.hazeHorizon }
+        : {}),
+      ...(effectConfig.post?.hazeDesaturation !== undefined
+        ? { hazeDesaturation: effectConfig.post.hazeDesaturation }
+        : {}),
+      ...(effectConfig.post?.hazeContrast !== undefined
+        ? { hazeContrast: effectConfig.post.hazeContrast }
+        : {}),
+
+      ...(effectConfig.post?.bloomIntensity !== undefined
+        ? { bloomIntensity: effectConfig.post.bloomIntensity }
+        : {}),
+      ...(effectConfig.post?.bloomThreshold !== undefined
+        ? { bloomThreshold: effectConfig.post.bloomThreshold }
+        : {}),
+      ...(effectConfig.post?.bloomKnee !== undefined
+        ? { bloomKnee: effectConfig.post.bloomKnee }
+        : {}),
+      ...(effectConfig.post?.bloomRadius !== undefined
+        ? { bloomRadius: effectConfig.post.bloomRadius }
+        : {}),
+      ...(effectConfig.post?.bloomTapScale !== undefined
+        ? { bloomTapScale: effectConfig.post.bloomTapScale }
+        : {}),
+
+      ...(effectConfig.post?.exposureIntensity !== undefined
+        ? { exposureIntensity: effectConfig.post.exposureIntensity }
+        : {}),
+      ...(effectConfig.post?.exposureDesaturation !== undefined
+        ? { exposureDesaturation: effectConfig.post.exposureDesaturation }
+        : {}),
+      ...(effectConfig.post?.exposureRecovery !== undefined
+        ? { exposureRecovery: effectConfig.post.exposureRecovery }
+        : {}),
+
+      ...(effectConfig.post?.godRayIntensity !== undefined
+        ? { godRayIntensity: effectConfig.post.godRayIntensity }
+        : {}),
+      ...(effectConfig.post?.godRayDecay !== undefined
+        ? { godRayDecay: effectConfig.post.godRayDecay }
+        : {}),
+      ...(effectConfig.post?.godRayDensity !== undefined
+        ? { godRayDensity: effectConfig.post.godRayDensity }
+        : {}),
+      ...(effectConfig.post?.godRayWeight !== undefined
+        ? { godRayWeight: effectConfig.post.godRayWeight }
+        : {}),
+      ...(effectConfig.post?.godRaySamples !== undefined
+        ? { godRaySamples: effectConfig.post.godRaySamples }
+        : {}),
+    },
   };
 
   // Apply tuned defaults for this condition/checkpoint as part of the base
@@ -328,6 +441,7 @@ export function mergeWithOverrides(
     rain: { ...base.rain, ...overrides.rain },
     lightning: { ...base.lightning, ...overrides.lightning },
     snow: { ...base.snow, ...overrides.snow },
+    post: { ...base.post, ...overrides.post },
   };
 }
 
@@ -359,6 +473,9 @@ export function extractOverrides(
 
   const snowDiff = diffObjects(current.snow, base.snow);
   if (Object.keys(snowDiff).length > 0) overrides.snow = snowDiff;
+
+  const postDiff = diffObjects(current.post, base.post);
+  if (Object.keys(postDiff).length > 0) overrides.post = postDiff;
 
   return overrides;
 }

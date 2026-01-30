@@ -3,6 +3,7 @@ import type {
   EffectLayerConfig,
   WeatherEffectParams,
   AtmosphereConfig,
+  PostProcessConfig,
 } from "./types";
 
 /**
@@ -36,7 +37,8 @@ export function getMoonPhase(timestamp?: string): number {
   date.setUTCHours(0, 0, 0, 0);
   // Known new moon reference: January 6, 2000
   const knownNewMoon = new Date("2000-01-06T00:00:00Z");
-  const daysSinceNewMoon = (date.getTime() - knownNewMoon.getTime()) / (1000 * 60 * 60 * 24);
+  const daysSinceNewMoon =
+    (date.getTime() - knownNewMoon.getTime()) / (1000 * 60 * 60 * 24);
   const synodicMonth = 29.530588853;
 
   return (daysSinceNewMoon % synodicMonth) / synodicMonth;
@@ -107,7 +109,7 @@ const CONDITION_BRIGHTNESS: Record<WeatherCondition, number> = {
  */
 export function getSceneBrightness(
   timestamp?: string,
-  condition: WeatherCondition = "clear"
+  condition: WeatherCondition = "clear",
 ): number {
   const sunAltitude = getSunAltitude(timestamp);
 
@@ -141,7 +143,7 @@ export type WeatherTheme = "light" | "dark";
 
 export function getWeatherTheme(
   brightness: number,
-  currentTheme?: WeatherTheme
+  currentTheme?: WeatherTheme,
 ): WeatherTheme {
   // Hysteresis thresholds
   const DARK_THRESHOLD = 0.35;
@@ -187,7 +189,7 @@ export function timeOfDayToSunAltitude(timeOfDay: number): number {
  */
 export function getSceneBrightnessFromTimeOfDay(
   timeOfDay: number,
-  condition: WeatherCondition = "clear"
+  condition: WeatherCondition = "clear",
 ): number {
   const sunAltitude = timeOfDayToSunAltitude(timeOfDay);
 
@@ -209,7 +211,7 @@ export function getSceneBrightnessFromTimeOfDay(
  * 0-10 mph: subtle, 10-25 mph: moderate, 25+ mph: dramatic
  */
 function mapWindSpeed(mph: number = 0): number {
-  if (mph <= 10) return mph / 10 * 0.3;
+  if (mph <= 10) return (mph / 10) * 0.3;
   if (mph <= 25) return 0.3 + ((mph - 10) / 15) * 0.4;
   return 0.7 + Math.min((mph - 25) / 25, 0.3);
 }
@@ -217,12 +219,18 @@ function mapWindSpeed(mph: number = 0): number {
 /**
  * Map precipitation level to intensity (0-1).
  */
-function mapPrecipitation(level?: "none" | "light" | "moderate" | "heavy"): number {
+function mapPrecipitation(
+  level?: "none" | "light" | "moderate" | "heavy",
+): number {
   switch (level) {
-    case "light": return 0.3;
-    case "moderate": return 0.6;
-    case "heavy": return 1.0;
-    default: return 0;
+    case "light":
+      return 0.3;
+    case "moderate":
+      return 0.6;
+    case "heavy":
+      return 1.0;
+    default:
+      return 0;
   }
 }
 
@@ -232,8 +240,17 @@ function mapPrecipitation(level?: "none" | "light" | "moderate" | "heavy"): numb
  */
 function mapVisibility(miles: number = 10): number {
   if (miles >= 10) return 0;
-  if (miles >= 5) return (10 - miles) / 5 * 0.3;
-  return 0.3 + (5 - miles) / 5 * 0.7;
+  if (miles >= 5) return ((10 - miles) / 5) * 0.3;
+  return 0.3 + ((5 - miles) / 5) * 0.7;
+}
+
+function clamp01(value: number): number {
+  return Math.max(0, Math.min(1, value));
+}
+
+function smoothstep(edge0: number, edge1: number, x: number): number {
+  const t = clamp01((x - edge0) / (edge1 - edge0));
+  return t * t * (3 - 2 * t);
 }
 
 /**
@@ -276,12 +293,18 @@ interface CelestialPreset {
 
 // Unified celestial settings across all conditions
 const UNIFIED_CELESTIAL: CelestialPreset = {
-  x: 0.74, y: 0.78,
-  sunSize: 0.14, moonSize: 0.17,
+  x: 0.74,
+  y: 0.78,
+  sunSize: 0.14,
+  moonSize: 0.17,
   starDensity: 2.0,
-  sunGlowIntensity: 3.05, sunGlowSize: 0.30,
-  sunRayCount: 6, sunRayLength: 3.0, sunRayIntensity: 0.10,
-  moonGlowIntensity: 3.45, moonGlowSize: 0.94,
+  sunGlowIntensity: 3.05,
+  sunGlowSize: 0.3,
+  sunRayCount: 6,
+  sunRayLength: 3.0,
+  sunRayIntensity: 0.1,
+  moonGlowIntensity: 3.45,
+  moonGlowSize: 0.94,
 };
 
 const CELESTIAL_PRESETS: Record<WeatherCondition, CelestialPreset> = {
@@ -304,7 +327,10 @@ const CELESTIAL_PRESETS: Record<WeatherCondition, CelestialPreset> = {
  * Base condition presets. These define the default effect configuration
  * for each weather condition before parameter modifiers are applied.
  */
-const CONDITION_PRESETS: Record<WeatherCondition, Omit<EffectLayerConfig, "atmosphere" | "celestial">> = {
+const CONDITION_PRESETS: Record<
+  WeatherCondition,
+  Omit<EffectLayerConfig, "atmosphere" | "celestial">
+> = {
   clear: {
     cloud: { coverage: 0.1, speed: 0.3, darkness: 0, turbulence: 0.2 },
   },
@@ -343,7 +369,12 @@ const CONDITION_PRESETS: Record<WeatherCondition, Omit<EffectLayerConfig, "atmos
   thunderstorm: {
     cloud: { coverage: 1.0, speed: 0.7, darkness: 0.7, turbulence: 0.6 },
     rain: { intensity: 1.0, glassDrops: true, fallingRain: true, angle: 15 },
-    lightning: { enabled: true, autoTrigger: true, intervalMin: 4, intervalMax: 12 },
+    lightning: {
+      enabled: true,
+      autoTrigger: true,
+      intervalMin: 4,
+      intervalMax: 12,
+    },
   },
 
   snow: {
@@ -371,7 +402,9 @@ const CONDITION_PRESETS: Record<WeatherCondition, Omit<EffectLayerConfig, "atmos
  * Maps weather parameters to effect layer configuration.
  * This is the core translation layer between schema and shaders.
  */
-export function mapWeatherToEffects(params: WeatherEffectParams): EffectLayerConfig {
+export function mapWeatherToEffects(
+  params: WeatherEffectParams,
+): EffectLayerConfig {
   const { condition, windSpeed, precipitation, visibility, timestamp } = params;
 
   // Get base preset for this condition
@@ -388,7 +421,12 @@ export function mapWeatherToEffects(params: WeatherEffectParams): EffectLayerCon
   const atmosphere: AtmosphereConfig = {
     sunAltitude,
     haze: Math.max(hazeAmount, (preset.cloud?.darkness ?? 0) * 0.3),
-    starVisibility: isNight && !preset.cloud ? 1.0 : isNight ? 1.0 - (preset.cloud?.coverage ?? 0) : 0,
+    starVisibility:
+      isNight && !preset.cloud
+        ? 1.0
+        : isNight
+          ? 1.0 - (preset.cloud?.coverage ?? 0)
+          : 0,
   };
 
   // Build effect config, applying modifiers to preset values
@@ -405,7 +443,8 @@ export function mapWeatherToEffects(params: WeatherEffectParams): EffectLayerCon
 
   // Rain layer with precipitation and wind modifiers
   if (preset.rain) {
-    const rainIntensity = precipIntensity > 0 ? precipIntensity : preset.rain.intensity;
+    const rainIntensity =
+      precipIntensity > 0 ? precipIntensity : preset.rain.intensity;
     config.rain = {
       ...preset.rain,
       intensity: rainIntensity,
@@ -447,6 +486,63 @@ export function mapWeatherToEffects(params: WeatherEffectParams): EffectLayerCon
     moonGlowSize: celestialPreset.moonGlowSize,
   };
 
+  // ---------------------------------------------------------------------------
+  // Post-processing (air + camera response)
+  // ---------------------------------------------------------------------------
+  const haze = clamp01(atmosphere.haze);
+  const cloudCoverage = config.cloud?.coverage ?? 0;
+  const hasClouds = cloudCoverage > 0.001;
+
+  // Bloom should read as forward scatter: stronger in hazier air and for
+  // dramatic conditions, but still subtle by default.
+  const bloomConditionBoost =
+    condition === "fog"
+      ? 0.18
+      : condition === "thunderstorm"
+        ? 0.12
+        : condition === "heavy-rain"
+          ? 0.1
+          : condition === "overcast"
+            ? 0.08
+            : condition === "cloudy" || condition === "partly-cloudy"
+              ? 0.06
+              : 0.04;
+
+  const bloomIntensity = clamp01(0.04 + bloomConditionBoost + haze * 0.22);
+  const bloomRadius = 1.1 + haze * 1.2;
+
+  // Exposure response only matters when lightning can trigger.
+  const exposureIntensity = config.lightning?.enabled ? 0.85 : 0.0;
+
+  // Crepuscular rays need: sun above horizon, haze (particles), and cloud
+  // structure (occlusion + gaps).
+  const dayFactor = smoothstep(-0.05, 0.08, sunAltitude);
+  const sunLowFactor = 1.0 - smoothstep(0.18, 0.7, Math.max(0, sunAltitude));
+  const coverageFactor = smoothstep(0.25, 0.85, cloudCoverage);
+  const notFullyOvercast = 1.0 - smoothstep(0.97, 1.0, cloudCoverage);
+  const particleFactor = 0.35 + haze * 0.65;
+
+  const godRayIntensity = hasClouds
+    ? clamp01(
+        dayFactor *
+          sunLowFactor *
+          coverageFactor *
+          notFullyOvercast *
+          particleFactor *
+          0.6,
+      )
+    : 0.0;
+
+  const post: PostProcessConfig = {
+    enabled: true,
+    haze,
+    bloomIntensity,
+    bloomRadius,
+    exposureIntensity,
+    godRayIntensity,
+  };
+  config.post = post;
+
   return config;
 }
 
@@ -482,7 +578,8 @@ export function configToLightningProps(config: EffectLayerConfig) {
 
   return {
     autoMode: config.lightning.autoTrigger,
-    autoInterval: (config.lightning.intervalMin + config.lightning.intervalMax) / 2,
+    autoInterval:
+      (config.lightning.intervalMin + config.lightning.intervalMax) / 2,
   };
 }
 
@@ -515,4 +612,8 @@ export function configToCelestialProps(config: EffectLayerConfig) {
     moonGlowIntensity: config.celestial.moonGlowIntensity,
     moonGlowSize: config.celestial.moonGlowSize,
   };
+}
+
+export function configToPostProps(config: EffectLayerConfig) {
+  return config.post ?? null;
 }

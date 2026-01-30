@@ -3,7 +3,10 @@
 import { useCallback } from "react";
 import type { WeatherCondition } from "@/components/tool-ui/weather-widget/schema";
 import type { WeatherEffectsOverrides } from "@/components/tool-ui/weather-widget/effects/tuning";
-import type { CheckpointOverrides, ConditionOverrides } from "../../weather-compositor/presets";
+import type {
+  CheckpointOverrides,
+  ConditionOverrides,
+} from "../../weather-compositor/presets";
 import { WEATHER_CONDITIONS } from "../../weather-compositor/presets";
 import type { TimeCheckpoint } from "../types";
 
@@ -30,7 +33,7 @@ function isObjectEmpty(value: unknown): boolean {
 }
 
 function mapConditionOverridesToToolUi(
-  input: ConditionOverrides
+  input: ConditionOverrides,
 ): WeatherEffectsOverrides {
   const out: WeatherEffectsOverrides = {};
 
@@ -183,17 +186,66 @@ function mapConditionOverridesToToolUi(
     out.interactions = interactions as WeatherEffectsOverrides["interactions"];
   }
 
+  if (input.post) {
+    const {
+      enabled,
+      haze,
+      hazeHorizon,
+      hazeDesaturation,
+      hazeContrast,
+      bloomIntensity,
+      bloomThreshold,
+      bloomKnee,
+      bloomRadius,
+      bloomTapScale,
+      exposureIntensity,
+      exposureDesaturation,
+      exposureRecovery,
+      godRayIntensity,
+      godRayDecay,
+      godRayDensity,
+      godRayWeight,
+      godRaySamples,
+    } = input.post;
+
+    const post: Record<string, unknown> = {
+      ...(enabled !== undefined ? { enabled } : {}),
+      ...(haze !== undefined ? { haze } : {}),
+      ...(hazeHorizon !== undefined ? { hazeHorizon } : {}),
+      ...(hazeDesaturation !== undefined ? { hazeDesaturation } : {}),
+      ...(hazeContrast !== undefined ? { hazeContrast } : {}),
+      ...(bloomIntensity !== undefined ? { bloomIntensity } : {}),
+      ...(bloomThreshold !== undefined ? { bloomThreshold } : {}),
+      ...(bloomKnee !== undefined ? { bloomKnee } : {}),
+      ...(bloomRadius !== undefined ? { bloomRadius } : {}),
+      ...(bloomTapScale !== undefined ? { bloomTapScale } : {}),
+      ...(exposureIntensity !== undefined ? { exposureIntensity } : {}),
+      ...(exposureDesaturation !== undefined ? { exposureDesaturation } : {}),
+      ...(exposureRecovery !== undefined ? { exposureRecovery } : {}),
+      ...(godRayIntensity !== undefined ? { godRayIntensity } : {}),
+      ...(godRayDecay !== undefined ? { godRayDecay } : {}),
+      ...(godRayDensity !== undefined ? { godRayDensity } : {}),
+      ...(godRayWeight !== undefined ? { godRayWeight } : {}),
+      ...(godRaySamples !== undefined ? { godRaySamples } : {}),
+    };
+
+    if (!isObjectEmpty(post)) {
+      out.post = post as WeatherEffectsOverrides["post"];
+    }
+  }
+
   return out;
 }
 
 export function useCodeGen(
   checkpointOverrides: Partial<Record<WeatherCondition, CheckpointOverrides>>,
-  signedOff: Set<WeatherCondition>
+  signedOff: Set<WeatherCondition>,
 ) {
   const generateJson = useCallback(
     (options: ExportOptions): string => {
       const conditionsToExport =
-        options.conditions ?? WEATHER_CONDITIONS.filter((c) => checkpointOverrides[c]);
+        options.conditions ??
+        WEATHER_CONDITIONS.filter((c) => checkpointOverrides[c]);
 
       const data: Record<string, unknown> = {};
 
@@ -206,17 +258,21 @@ export function useCodeGen(
       data.checkpointOverrides = {};
       for (const condition of conditionsToExport) {
         if (checkpointOverrides[condition]) {
-          (data.checkpointOverrides as Record<string, CheckpointOverrides>)[condition] =
-            checkpointOverrides[condition]!;
+          (data.checkpointOverrides as Record<string, CheckpointOverrides>)[
+            condition
+          ] = checkpointOverrides[condition]!;
         }
       }
 
       return JSON.stringify(data, null, 2);
     },
-    [checkpointOverrides, signedOff]
+    [checkpointOverrides, signedOff],
   );
 
-  const generateConditionOverrideCode = (conditionOverride: ConditionOverrides, indent: string): string[] => {
+  const generateConditionOverrideCode = (
+    conditionOverride: ConditionOverrides,
+    indent: string,
+  ): string[] => {
     const lines: string[] = [];
 
     if (conditionOverride.layers) {
@@ -230,7 +286,9 @@ export function useCodeGen(
     if (conditionOverride.celestial) {
       lines.push(`${indent}celestial: {`);
       for (const [key, value] of Object.entries(conditionOverride.celestial)) {
-        lines.push(`${indent}  ${key}: ${typeof value === "number" ? value.toFixed(4) : JSON.stringify(value)},`);
+        lines.push(
+          `${indent}  ${key}: ${typeof value === "number" ? value.toFixed(4) : JSON.stringify(value)},`,
+        );
       }
       lines.push(`${indent}},`);
     }
@@ -238,7 +296,9 @@ export function useCodeGen(
     if (conditionOverride.cloud) {
       lines.push(`${indent}cloud: {`);
       for (const [key, value] of Object.entries(conditionOverride.cloud)) {
-        lines.push(`${indent}  ${key}: ${typeof value === "number" ? value.toFixed(4) : JSON.stringify(value)},`);
+        lines.push(
+          `${indent}  ${key}: ${typeof value === "number" ? value.toFixed(4) : JSON.stringify(value)},`,
+        );
       }
       lines.push(`${indent}},`);
     }
@@ -246,7 +306,9 @@ export function useCodeGen(
     if (conditionOverride.rain) {
       lines.push(`${indent}rain: {`);
       for (const [key, value] of Object.entries(conditionOverride.rain)) {
-        lines.push(`${indent}  ${key}: ${typeof value === "number" ? value.toFixed(4) : JSON.stringify(value)},`);
+        lines.push(
+          `${indent}  ${key}: ${typeof value === "number" ? value.toFixed(4) : JSON.stringify(value)},`,
+        );
       }
       lines.push(`${indent}},`);
     }
@@ -254,7 +316,9 @@ export function useCodeGen(
     if (conditionOverride.lightning) {
       lines.push(`${indent}lightning: {`);
       for (const [key, value] of Object.entries(conditionOverride.lightning)) {
-        lines.push(`${indent}  ${key}: ${typeof value === "number" ? value.toFixed(4) : JSON.stringify(value)},`);
+        lines.push(
+          `${indent}  ${key}: ${typeof value === "number" ? value.toFixed(4) : JSON.stringify(value)},`,
+        );
       }
       lines.push(`${indent}},`);
     }
@@ -262,7 +326,19 @@ export function useCodeGen(
     if (conditionOverride.snow) {
       lines.push(`${indent}snow: {`);
       for (const [key, value] of Object.entries(conditionOverride.snow)) {
-        lines.push(`${indent}  ${key}: ${typeof value === "number" ? value.toFixed(4) : JSON.stringify(value)},`);
+        lines.push(
+          `${indent}  ${key}: ${typeof value === "number" ? value.toFixed(4) : JSON.stringify(value)},`,
+        );
+      }
+      lines.push(`${indent}},`);
+    }
+
+    if (conditionOverride.post) {
+      lines.push(`${indent}post: {`);
+      for (const [key, value] of Object.entries(conditionOverride.post)) {
+        lines.push(
+          `${indent}  ${key}: ${typeof value === "number" ? value.toFixed(4) : JSON.stringify(value)},`,
+        );
       }
       lines.push(`${indent}},`);
     }
@@ -297,7 +373,10 @@ export function useCodeGen(
         }
 
         lines.push(`    ${checkpoint}: {`);
-        const overrideLines = generateConditionOverrideCode(checkpointData, "      ");
+        const overrideLines = generateConditionOverrideCode(
+          checkpointData,
+          "      ",
+        );
         lines.push(...overrideLines);
         lines.push("    },");
       }
@@ -316,8 +395,8 @@ export function useCodeGen(
       "// Generated by Weather Tuning Studio",
       `// Exported at: ${new Date().toISOString()}`,
       "",
-      "import type { WeatherCondition } from \"../schema\";",
-      "import type { WeatherEffectsCheckpointOverrides } from \"./tuning\";",
+      'import type { WeatherCondition } from "../schema";',
+      'import type { WeatherEffectsCheckpointOverrides } from "./tuning";',
       "",
       "export const TUNED_WEATHER_EFFECTS_CHECKPOINT_OVERRIDES: Partial<Record<WeatherCondition, WeatherEffectsCheckpointOverrides>> = {",
     ];
@@ -352,7 +431,7 @@ export function useCodeGen(
           lines.push(`      ${key}: {`);
           for (const [k, v] of Object.entries(value)) {
             lines.push(
-              `        ${k}: ${typeof v === "number" ? v.toFixed(4) : JSON.stringify(v)},`
+              `        ${k}: ${typeof v === "number" ? v.toFixed(4) : JSON.stringify(v)},`,
             );
           }
           lines.push("      },");
@@ -365,6 +444,7 @@ export function useCodeGen(
         writeGroup("lightning");
         writeGroup("snow");
         writeGroup("interactions");
+        writeGroup("post");
 
         lines.push("    },");
       }
@@ -422,7 +502,7 @@ export function useCodeGen(
         return false;
       }
     },
-    [generateJson, generateTypeScript, generateToolUiTypeScript]
+    [generateJson, generateTypeScript, generateToolUiTypeScript],
   );
 
   const downloadFile = useCallback(
@@ -453,7 +533,7 @@ export function useCodeGen(
       a.click();
       URL.revokeObjectURL(url);
     },
-    [generateJson, generateTypeScript, generateToolUiTypeScript]
+    [generateJson, generateTypeScript, generateToolUiTypeScript],
   );
 
   return {

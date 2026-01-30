@@ -10,6 +10,7 @@ import {
   type SnowParams,
   type InteractionParams,
   type LayerToggles,
+  type PostProcessParams,
 } from "@/components/tool-ui/weather-widget/effects/weather-effects-canvas";
 
 export default function WeatherEffectsSandbox() {
@@ -98,6 +99,31 @@ export default function WeatherEffectsSandbox() {
     lightningSceneIllumination: { value: 0.6, min: 0, max: 2, step: 0.01 },
   }) as InteractionParams;
 
+  const post = useControls("Post", {
+    enabled: true,
+
+    haze: { value: 0.12, min: 0, max: 1, step: 0.01 },
+    hazeHorizon: { value: 0.85, min: 0, max: 1, step: 0.01 },
+    hazeDesaturation: { value: 0.35, min: 0, max: 1, step: 0.01 },
+    hazeContrast: { value: 0.6, min: 0, max: 1, step: 0.01 },
+
+    bloomIntensity: { value: 0.15, min: 0, max: 1, step: 0.01 },
+    bloomThreshold: { value: 0.82, min: 0, max: 1, step: 0.01 },
+    bloomKnee: { value: 0.35, min: 0, max: 1, step: 0.01 },
+    bloomRadius: { value: 1.2, min: 0, max: 6, step: 0.05 },
+    bloomTapScale: { value: 1.0, min: 0.25, max: 3, step: 0.05 },
+
+    exposureIntensity: { value: 1.0, min: 0, max: 2, step: 0.01 },
+    exposureDesaturation: { value: 0.25, min: 0, max: 1, step: 0.01 },
+    exposureRecovery: { value: 1.0, min: 0.1, max: 3, step: 0.05 },
+
+    godRayIntensity: { value: 0.25, min: 0, max: 2, step: 0.01 },
+    godRayDecay: { value: 0.965, min: 0.9, max: 0.999, step: 0.001 },
+    godRayDensity: { value: 0.9, min: 0.2, max: 1.4, step: 0.01 },
+    godRayWeight: { value: 0.35, min: 0, max: 1, step: 0.01 },
+    godRaySamples: { value: 16, min: 0, max: 32, step: 1 },
+  }) as PostProcessParams;
+
   useControls("Presets", {
     "Clear Day": button(() => {
       // Would need setters for this - just a placeholder
@@ -125,6 +151,7 @@ export default function WeatherEffectsSandbox() {
         lightning={lightning}
         snow={snow}
         interactions={interactions}
+        post={post}
       />
     </div>
   );

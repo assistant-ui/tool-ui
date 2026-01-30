@@ -86,5 +86,6 @@ export function mapCompositorParamsToCanvasProps(
       rainRefractionStrength: params.rain.fallingRefraction,
       lightningSceneIllumination: params.lightning.sceneIllumination,
     },
+    post: params.post,
   };
 }

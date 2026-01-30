@@ -190,6 +190,89 @@ const PARAMETER_GROUPS: ParameterGroup[] = [
       },
     ],
   },
+  {
+    name: "Atmosphere",
+    layer: "post",
+    params: [
+      { key: "haze", label: "Haze", min: 0, max: 1, step: 0.01 },
+      { key: "hazeHorizon", label: "Horizon Bias", min: 0, max: 1, step: 0.01 },
+      {
+        key: "hazeDesaturation",
+        label: "Desaturation",
+        min: 0,
+        max: 1,
+        step: 0.01,
+      },
+      { key: "hazeContrast", label: "Contrast", min: 0, max: 1, step: 0.01 },
+    ],
+  },
+  {
+    name: "Bloom",
+    layer: "post",
+    params: [
+      { key: "bloomIntensity", label: "Intensity", min: 0, max: 1, step: 0.01 },
+      { key: "bloomThreshold", label: "Threshold", min: 0, max: 1, step: 0.01 },
+      { key: "bloomKnee", label: "Knee", min: 0, max: 1, step: 0.01 },
+      { key: "bloomRadius", label: "Radius", min: 0, max: 6, step: 0.05 },
+      {
+        key: "bloomTapScale",
+        label: "Tap Scale",
+        min: 0.25,
+        max: 3,
+        step: 0.05,
+      },
+    ],
+  },
+  {
+    name: "Exposure",
+    layer: "post",
+    params: [
+      {
+        key: "exposureIntensity",
+        label: "Intensity",
+        min: 0,
+        max: 2,
+        step: 0.01,
+      },
+      {
+        key: "exposureDesaturation",
+        label: "Desaturation",
+        min: 0,
+        max: 1,
+        step: 0.01,
+      },
+      {
+        key: "exposureRecovery",
+        label: "Recovery",
+        min: 0.1,
+        max: 3,
+        step: 0.05,
+      },
+    ],
+  },
+  {
+    name: "God Rays",
+    layer: "post",
+    params: [
+      {
+        key: "godRayIntensity",
+        label: "Intensity",
+        min: 0,
+        max: 2,
+        step: 0.01,
+      },
+      { key: "godRayDecay", label: "Decay", min: 0.9, max: 0.999, step: 0.001 },
+      {
+        key: "godRayDensity",
+        label: "Density",
+        min: 0.2,
+        max: 1.4,
+        step: 0.01,
+      },
+      { key: "godRayWeight", label: "Weight", min: 0, max: 1, step: 0.01 },
+      { key: "godRaySamples", label: "Samples", min: 0, max: 32, step: 1 },
+    ],
+  },
 ];
 
 // -----------------------------------------------------------------------------
