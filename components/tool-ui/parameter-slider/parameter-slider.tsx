@@ -316,29 +316,23 @@ function SliderRow({ config, value, onChange, disabled, trackClassName, fillClas
   const zeroPercent = crossesZero ? ((0 - min) / (max - min)) * 100 : 0;
   const valuePercent = ((value - min) / (max - min)) * 100;
 
-  // Fill clip-path - uses same inset coordinate system as thumb and ticks
-  // At terminal values (0% or 100%), extend fill all the way to the edge
+  // Fill clip-path - uses percentage-based inset for Safari compatibility
+  // Safari has issues with complex calc() inside clip-path inset()
   const fillClipPath = useMemo(() => {
-    // Convert percentage to inset position for clip-path
-    // Clip from right = 100% - insetPosition(valuePercent)
-    const toClipFromRight = (percent: number) => {
-      if (percent >= 100) return '0'; // Extend to right edge at 100%
-      return `calc(100% - ${TRACK_EDGE_INSET}px - (100% - ${TRACK_EDGE_INSET * 2}px) * ${percent / 100})`;
-    };
-    const toClipFromLeft = (percent: number) => {
-      if (percent <= 0) return '0'; // Extend to left edge at 0%
-      return `calc(${TRACK_EDGE_INSET}px + (100% - ${TRACK_EDGE_INSET * 2}px) * ${percent / 100})`;
-    };
+    // Use simple percentages - Safari doesn't handle calc() well in clip-path
+    const toClipFromRight = (percent: number) => `${100 - percent}%`;
+    const toClipFromLeft = (percent: number) => `${percent}%`;
 
     if (crossesZero) {
-      const zeroClipLeft = toClipFromLeft(zeroPercent);
       if (valuePercent >= zeroPercent) {
-        return `inset(0 ${toClipFromRight(valuePercent)} 0 ${zeroClipLeft})`;
+        // Positive: clip from zero on left, value on right
+        return `inset(0 ${toClipFromRight(valuePercent)} 0 ${toClipFromLeft(zeroPercent)})`;
       } else {
-        const zeroClipRight = toClipFromRight(zeroPercent);
-        return `inset(0 ${zeroClipRight} 0 ${toClipFromLeft(valuePercent)})`;
+        // Negative: clip from value on left, zero on right
+        return `inset(0 ${toClipFromRight(zeroPercent)} 0 ${toClipFromLeft(valuePercent)})`;
       }
     }
+    // Non-crossing: fill from left edge to value
     return `inset(0 ${toClipFromRight(valuePercent)} 0 0)`;
   }, [crossesZero, zeroPercent, valuePercent]);
 
