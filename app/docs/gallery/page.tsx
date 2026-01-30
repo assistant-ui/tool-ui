@@ -97,20 +97,22 @@ export default function ComponentsGalleryPage() {
   return (
     <DocsBorderedShell>
       <div className="scrollbar-subtle z-10 min-h-0 flex-1 overflow-y-auto overscroll-contain p-6 sm:p-10 lg:p-12">
-        <div className="mx-auto columns-1 gap-5 pb-20 [column-fill:balance] md:columns-2 2xl:columns-3 2xl:gap-5">
-          <div className="mb-5 flex justify-center [column-span:all] 2xl:mb-5">
+        <div className="mx-auto grid auto-rows-max grid-cols-1 gap-5 pb-20 md:grid-cols-2 2xl:grid-cols-3">
+          {/* Full-width items */}
+          <div className="flex justify-center md:col-span-2 2xl:col-span-3">
             <DataTable {...dataTablePresets.stocks.data} />
           </div>
 
-          <div className="mb-5 flex justify-center [column-span:all] 2xl:mb-5">
+          <div className="flex justify-center md:col-span-2 2xl:col-span-3">
             <ItemCarousel {...itemCarouselPresets.recommendations.data} />
           </div>
 
-          <div className="mb-5 flex break-inside-avoid justify-center 2xl:mb-5">
+          {/* Grid items with layout containment */}
+          <div className="flex justify-center [contain:layout_paint]">
             <StatsDisplay {...statsDisplayPresets["business-metrics"].data} />
           </div>
 
-          <div className="mb-5 flex break-inside-avoid justify-center 2xl:mb-5">
+          <div className="flex justify-center [contain:layout_paint]">
             <WeatherWidget
               {...weatherWidgetPresets["sunny-forecast"].data}
               current={{
@@ -124,17 +126,17 @@ export default function ComponentsGalleryPage() {
             />
           </div>
 
-          <div className="mb-5 flex break-inside-avoid justify-center 2xl:mb-5">
+          <div className="flex justify-center [contain:layout_paint]">
             <ImageGallery {...imageGalleryPresets["search-results"].data} />
           </div>
 
-          <div className="mb-5 flex break-inside-avoid justify-center 2xl:mb-5">
+          <div className="flex justify-center [contain:layout_paint]">
             <LinkPreview
               {...linkPreviewPresets["with-image"].data.linkPreview}
             />
           </div>
 
-          <div className="mb-5 flex break-inside-avoid justify-center 2xl:mb-5">
+          <div className="flex justify-center [contain:layout_paint]">
             <CitationList
               id="gallery-citations"
               citations={citationPresets.stacked.data.citations}
@@ -142,84 +144,72 @@ export default function ComponentsGalleryPage() {
             />
           </div>
 
-          <div className="mb-5 flex break-inside-avoid justify-center 2xl:mb-5">
+          <div className="flex justify-center [contain:layout_paint]">
             <Audio {...audioPresets["full"].data.audio} />
           </div>
 
-          <div className="mb-5 flex break-inside-avoid justify-center 2xl:mb-5">
+          <div className="flex justify-center [contain:layout_paint]">
             <OptionList {...optionListPresets["max-selections"].data} />
           </div>
 
-          <div className="mb-5 flex break-inside-avoid justify-center 2xl:mb-5">
+          <div className="flex justify-center [contain:layout_paint]">
             <ApprovalCard {...approvalCardPresets["with-metadata"].data} />
           </div>
 
-          <div className="mb-5 flex break-inside-avoid justify-center 2xl:mb-5">
+          <div className="flex justify-center [contain:layout_paint]">
             <MessageDraft {...messageDraftPresets.email.data} />
           </div>
 
-          <div className="mb-5 break-inside-avoid 2xl:mb-5">
+          <div className="[contain:layout_paint]">
             <OrderSummary
               {...orderSummaryPresets.default.data}
               className="max-w-none"
             />
           </div>
 
-          <div className="mb-5 flex break-inside-avoid justify-center 2xl:mb-5">
+          <div className="flex justify-center [contain:layout_paint]">
             <Plan {...planPresets.comprehensive.data} />
           </div>
 
-          <div className="mb-5 flex break-inside-avoid justify-center 2xl:mb-5">
+          <div className="flex justify-center [contain:layout_paint]">
             <ProgressTracker {...progressTrackerPresets["in-progress"].data} />
           </div>
 
-          <div className="mb-5 flex break-inside-avoid justify-center 2xl:mb-5">
+          <div className="flex justify-center [contain:layout_paint]">
             <QuestionFlow {...questionFlowPresets.upfront.data} />
           </div>
 
-          <div className="mb-5 flex break-inside-avoid justify-center 2xl:mb-5">
+          <div className="flex justify-center [contain:layout_paint]">
             <OptionList {...optionListPresets.travel.data} />
           </div>
 
-          <div className="mb-5 flex break-inside-avoid justify-center 2xl:mb-5">
+          <div className="flex justify-center [contain:layout_paint]">
             <PreferencesPanel {...preferencesPanelPresets.privacy.data} />
           </div>
 
-          <div className="mb-5 flex break-inside-avoid justify-center 2xl:mb-5">
+          <div className="flex justify-center [contain:layout_paint]">
             <Terminal {...terminalPresets.success.data} />
           </div>
 
-          <div className="mb-5 flex break-inside-avoid justify-center 2xl:mb-5">
+          <div className="flex justify-center [contain:layout_paint]">
             <CodeBlock {...codeBlockPresets.typescript.data} />
           </div>
 
-          <div className="mb-5 flex break-inside-avoid justify-center 2xl:mb-5">
+          <div className="flex justify-center [contain:layout_paint]">
             <Chart id="gallery-chart" {...chartPresets.revenue.data} />
           </div>
 
-          <div className="mb-5 flex break-inside-avoid justify-center 2xl:mb-5">
+          <div className="flex justify-center [contain:layout_paint]">
             <Video {...videoPresets["with-poster"].data.video} />
           </div>
 
-          <div className="mb-5 flex break-inside-avoid justify-center 2xl:mb-5">
+          <div className="flex justify-center [contain:layout_paint]">
             <Image {...galleryImage} alt={galleryImage.alt} />
           </div>
 
-          <div className="mb-5 flex break-inside-avoid justify-center 2xl:mb-5">
+          <div className="flex justify-center [contain:layout_paint]">
             <LinkedInPost post={linkedInPostPresets.basic.data.post} />
           </div>
-
-          {/* <div className="mb-5 flex justify-center break-inside-avoid 2xl:mb-5">
-            <Link
-              href="/builder"
-              className="bg-foreground/5 text-muted-foreground bg-dot-grid hover:text-foreground hover:bg-primary/7 group flex min-h-[180px] w-full flex-row items-center justify-center gap-2 rounded-2xl p-6 text-center shadow-[inset_0_6px_20px_rgba(0,0,0,0.09)] transition-colors duration-300"
-            >
-              <span className="text-primary text-2xl font-light tracking-wide transition-transform duration-600 will-change-transform group-hover:scale-105">
-                Build your own tool UI
-              </span>
-              <ArrowRightIcon className="size-6 shrink-0 transition-transform duration-600 will-change-transform group-hover:translate-x-3 group-hover:scale-105" />
-            </Link>
-          </div> */}
         </div>
       </div>
     </DocsBorderedShell>
