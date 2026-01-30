@@ -107,10 +107,6 @@ export default function ComponentsGalleryPage() {
           </div>
 
           <div className="mb-5 flex break-inside-avoid justify-center 2xl:mb-5">
-            <WeatherWidget {...weatherWidgetPresets.thunderstorm.data} updatedAt="2026-01-28T23:00:00Z" />
-          </div>
-
-          <div className="mb-5 flex break-inside-avoid justify-center 2xl:mb-5">
             <StatsDisplay {...statsDisplayPresets["business-metrics"].data} />
           </div>
 
