@@ -1,0 +1,439 @@
+{
+  "activeCondition": "clear",
+  "globalSettings": {
+    "timeOfDay": 0.5
+  },
+  "overrides": {
+    "clear": {
+      "layers": {
+        "clouds": true
+      },
+      "cloud": {
+        "cloudScale": 2.2,
+        "coverage": 0.08,
+        "density": 0.35,
+        "softness": 0.85,
+        "windSpeed": 0.15,
+        "windAngle": 0.1,
+        "turbulence": 0.15,
+        "ambientDarkness": 0.0,
+        "lightIntensity": 1.15,
+        "numLayers": 2,
+        "layerSpread": 0.6,
+        "starTwinkleAmount": 0.75,
+        "starTwinkleSpeed": 0.8,
+        "horizonLine": 0.30
+      },
+      "celestial": {
+        "celestialX": 0.70,
+        "celestialY": 0.80,
+        "sunSize": 0.052,
+        "moonSize": 0.044,
+        "starDensity": 0.85
+      }
+    },
+
+    "partly-cloudy": {
+      "cloud": {
+        "cloudScale": 1.6,
+        "coverage": 0.38,
+        "density": 0.62,
+        "softness": 0.48,
+        "windSpeed": 0.32,
+        "windAngle": 0.15,
+        "turbulence": 0.35,
+        "ambientDarkness": 0.12,
+        "lightIntensity": 1.0,
+        "numLayers": 4,
+        "layerSpread": 0.42,
+        "horizonLine": 0.42
+      },
+      "celestial": {
+        "celestialX": 0.65,
+        "celestialY": 0.74,
+        "sunSize": 0.058,
+        "moonSize": 0.048,
+        "starDensity": 0.45
+      }
+    },
+
+    "cloudy": {
+      "cloud": {
+        "cloudScale": 1.35,
+        "coverage": 0.68,
+        "density": 0.72,
+        "softness": 0.42,
+        "windSpeed": 0.28,
+        "windAngle": 0.08,
+        "turbulence": 0.30,
+        "ambientDarkness": 0.22,
+        "lightIntensity": 0.88,
+        "numLayers": 4,
+        "layerSpread": 0.35,
+        "horizonLine": 0.48
+      },
+      "celestial": {
+        "celestialX": 0.62,
+        "celestialY": 0.68,
+        "sunSize": 0.072,
+        "moonSize": 0.060,
+        "starDensity": 0.15
+      }
+    },
+
+    "overcast": {
+      "cloud": {
+        "cloudScale": 1.15,
+        "coverage": 0.96,
+        "density": 0.92,
+        "softness": 0.28,
+        "windSpeed": 0.18,
+        "windAngle": 0.05,
+        "turbulence": 0.18,
+        "ambientDarkness": 0.48,
+        "lightIntensity": 0.62,
+        "numLayers": 5,
+        "layerSpread": 0.22,
+        "horizonLine": 0.58
+      },
+      "celestial": {
+        "celestialX": 0.58,
+        "celestialY": 0.65,
+        "sunSize": 0.085,
+        "moonSize": 0.070,
+        "starDensity": 0.0
+      }
+    },
+
+    "fog": {
+      "cloud": {
+        "cloudScale": 0.75,
+        "coverage": 0.88,
+        "density": 0.98,
+        "softness": 0.95,
+        "windSpeed": 0.08,
+        "windAngle": 0.02,
+        "turbulence": 0.05,
+        "ambientDarkness": 0.18,
+        "lightIntensity": 0.72,
+        "numLayers": 5,
+        "layerSpread": 0.12,
+        "horizonLine": 0.25
+      },
+      "celestial": {
+        "celestialX": 0.65,
+        "celestialY": 0.85,
+        "sunSize": 0.12,
+        "moonSize": 0.095,
+        "starDensity": 0.0
+      }
+    },
+
+    "drizzle": {
+      "cloud": {
+        "cloudScale": 1.25,
+        "coverage": 0.72,
+        "density": 0.68,
+        "softness": 0.55,
+        "windSpeed": 0.25,
+        "windAngle": 0.12,
+        "turbulence": 0.28,
+        "ambientDarkness": 0.32,
+        "lightIntensity": 0.78,
+        "numLayers": 4,
+        "layerSpread": 0.32,
+        "horizonLine": 0.46
+      },
+      "rain": {
+        "glassIntensity": 0.28,
+        "zoom": 1.15,
+        "fallingIntensity": 0.22,
+        "fallingSpeed": 0.65,
+        "fallingAngle": 0.05,
+        "fallingStreakLength": 0.45,
+        "fallingLayers": 2,
+        "fallingRefraction": 0.22,
+        "fallingWaviness": 0.12,
+        "fallingThicknessVar": 0.35
+      },
+      "celestial": {
+        "celestialX": 0.62,
+        "celestialY": 0.70,
+        "sunSize": 0.068,
+        "moonSize": 0.055,
+        "starDensity": 0.08
+      }
+    },
+
+    "rain": {
+      "cloud": {
+        "cloudScale": 1.18,
+        "coverage": 0.82,
+        "density": 0.78,
+        "softness": 0.38,
+        "windSpeed": 0.45,
+        "windAngle": 0.18,
+        "turbulence": 0.42,
+        "ambientDarkness": 0.42,
+        "lightIntensity": 0.72,
+        "numLayers": 4,
+        "layerSpread": 0.28,
+        "horizonLine": 0.52
+      },
+      "rain": {
+        "glassIntensity": 0.52,
+        "zoom": 1.0,
+        "fallingIntensity": 0.58,
+        "fallingSpeed": 1.15,
+        "fallingAngle": 0.10,
+        "fallingStreakLength": 0.72,
+        "fallingLayers": 3,
+        "fallingRefraction": 0.38,
+        "fallingWaviness": 0.10,
+        "fallingThicknessVar": 0.48
+      },
+      "celestial": {
+        "celestialX": 0.60,
+        "celestialY": 0.66,
+        "sunSize": 0.065,
+        "moonSize": 0.052,
+        "starDensity": 0.0
+      }
+    },
+
+    "heavy-rain": {
+      "cloud": {
+        "cloudScale": 0.95,
+        "coverage": 0.98,
+        "density": 0.95,
+        "softness": 0.22,
+        "windSpeed": 0.68,
+        "windAngle": 0.25,
+        "turbulence": 0.58,
+        "ambientDarkness": 0.62,
+        "lightIntensity": 0.48,
+        "numLayers": 5,
+        "layerSpread": 0.18,
+        "horizonLine": 0.58
+      },
+      "rain": {
+        "glassIntensity": 0.88,
+        "zoom": 0.88,
+        "fallingIntensity": 0.92,
+        "fallingSpeed": 1.65,
+        "fallingAngle": 0.18,
+        "fallingStreakLength": 1.05,
+        "fallingLayers": 4,
+        "fallingRefraction": 0.55,
+        "fallingWaviness": 0.18,
+        "fallingThicknessVar": 0.62
+      },
+      "celestial": {
+        "celestialX": 0.55,
+        "celestialY": 0.62,
+        "sunSize": 0.060,
+        "moonSize": 0.048,
+        "starDensity": 0.0
+      }
+    },
+
+    "thunderstorm": {
+      "cloud": {
+        "cloudScale": 0.85,
+        "coverage": 1.0,
+        "density": 1.0,
+        "softness": 0.15,
+        "windSpeed": 0.85,
+        "windAngle": 0.32,
+        "turbulence": 0.82,
+        "ambientDarkness": 0.78,
+        "lightIntensity": 0.32,
+        "numLayers": 5,
+        "layerSpread": 0.12,
+        "horizonLine": 0.62
+      },
+      "rain": {
+        "glassIntensity": 0.92,
+        "zoom": 0.82,
+        "fallingIntensity": 1.0,
+        "fallingSpeed": 1.85,
+        "fallingAngle": 0.28,
+        "fallingStreakLength": 1.15,
+        "fallingLayers": 5,
+        "fallingRefraction": 0.65,
+        "fallingWaviness": 0.22,
+        "fallingThicknessVar": 0.72
+      },
+      "lightning": {
+        "branchDensity": 0.72,
+        "displacement": 0.095,
+        "glowIntensity": 1.2,
+        "flashDuration": 0.16,
+        "sceneIllumination": 0.78,
+        "afterglowPersistence": 0.42,
+        "autoInterval": 5.5
+      },
+      "celestial": {
+        "celestialX": 0.52,
+        "celestialY": 0.58,
+        "sunSize": 0.055,
+        "moonSize": 0.045,
+        "starDensity": 0.0
+      }
+    },
+
+    "snow": {
+      "cloud": {
+        "cloudScale": 1.55,
+        "coverage": 0.58,
+        "density": 0.62,
+        "softness": 0.62,
+        "windSpeed": 0.18,
+        "windAngle": 0.12,
+        "turbulence": 0.12,
+        "ambientDarkness": 0.12,
+        "lightIntensity": 1.08,
+        "numLayers": 3,
+        "layerSpread": 0.45,
+        "horizonLine": 0.42
+      },
+      "snow": {
+        "intensity": 0.58,
+        "layers": 5,
+        "fallSpeed": 0.38,
+        "windSpeed": 0.22,
+        "windAngle": 0.18,
+        "turbulence": 0.32,
+        "drift": 0.42,
+        "flutter": 0.65,
+        "windShear": 0.12,
+        "flakeSize": 1.08,
+        "sizeVariation": 0.58,
+        "opacity": 0.88,
+        "glowAmount": 0.45,
+        "sparkle": 0.38,
+        "visibility": 0.92
+      },
+      "celestial": {
+        "celestialX": 0.68,
+        "celestialY": 0.76,
+        "sunSize": 0.062,
+        "moonSize": 0.052,
+        "starDensity": 0.35
+      }
+    },
+
+    "sleet": {
+      "cloud": {
+        "cloudScale": 1.22,
+        "coverage": 0.78,
+        "density": 0.75,
+        "softness": 0.38,
+        "windSpeed": 0.48,
+        "windAngle": 0.22,
+        "turbulence": 0.42,
+        "ambientDarkness": 0.38,
+        "lightIntensity": 0.72,
+        "numLayers": 4,
+        "layerSpread": 0.28,
+        "horizonLine": 0.50
+      },
+      "rain": {
+        "glassIntensity": 0.42,
+        "zoom": 0.95,
+        "fallingIntensity": 0.48,
+        "fallingSpeed": 1.35,
+        "fallingAngle": 0.20,
+        "fallingStreakLength": 0.55,
+        "fallingLayers": 3,
+        "fallingRefraction": 0.32,
+        "fallingWaviness": 0.06,
+        "fallingThicknessVar": 0.42
+      },
+      "snow": {
+        "intensity": 0.32,
+        "layers": 3,
+        "fallSpeed": 0.55,
+        "windSpeed": 0.42,
+        "windAngle": 0.28,
+        "turbulence": 0.22,
+        "drift": 0.48,
+        "flutter": 0.32,
+        "windShear": 0.22,
+        "flakeSize": 0.82,
+        "sizeVariation": 0.48,
+        "opacity": 0.72,
+        "glowAmount": 0.18,
+        "sparkle": 0.12,
+        "visibility": 0.88
+      },
+      "celestial": {
+        "celestialX": 0.58,
+        "celestialY": 0.65,
+        "sunSize": 0.058,
+        "moonSize": 0.048,
+        "starDensity": 0.0
+      }
+    },
+
+    "hail": {
+      "cloud": {
+        "cloudScale": 1.05,
+        "coverage": 0.92,
+        "density": 0.88,
+        "softness": 0.22,
+        "windSpeed": 0.62,
+        "windAngle": 0.18,
+        "turbulence": 0.52,
+        "ambientDarkness": 0.55,
+        "lightIntensity": 0.55,
+        "numLayers": 5,
+        "layerSpread": 0.18,
+        "horizonLine": 0.55
+      },
+      "rain": {
+        "glassIntensity": 0.78,
+        "zoom": 0.92,
+        "fallingIntensity": 0.82,
+        "fallingSpeed": 2.2,
+        "fallingAngle": 0.12,
+        "fallingStreakLength": 0.35,
+        "fallingLayers": 4,
+        "fallingRefraction": 0.48,
+        "fallingWaviness": 0.04,
+        "fallingThicknessVar": 0.85
+      },
+      "celestial": {
+        "celestialX": 0.55,
+        "celestialY": 0.62,
+        "sunSize": 0.058,
+        "moonSize": 0.048,
+        "starDensity": 0.0
+      }
+    },
+
+    "windy": {
+      "cloud": {
+        "cloudScale": 1.35,
+        "coverage": 0.42,
+        "density": 0.52,
+        "softness": 0.42,
+        "windSpeed": 1.65,
+        "windAngle": 0.35,
+        "turbulence": 0.95,
+        "ambientDarkness": 0.12,
+        "lightIntensity": 1.0,
+        "numLayers": 4,
+        "layerSpread": 0.55,
+        "horizonLine": 0.38
+      },
+      "celestial": {
+        "celestialX": 0.78,
+        "celestialY": 0.74,
+        "sunSize": 0.055,
+        "moonSize": 0.046,
+        "starDensity": 0.42
+      }
+    }
+  }
+}
