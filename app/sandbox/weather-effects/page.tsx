@@ -30,10 +30,24 @@ export default function WeatherEffectsSandbox() {
     sunSize: { value: 0.14, min: 0.01, max: 0.5, step: 0.01 },
     moonSize: { value: 0.17, min: 0.01, max: 0.5, step: 0.01 },
     sunGlowIntensity: { value: 3.05, min: 0, max: 10, step: 0.05 },
-    sunGlowSize: { value: 0.30, min: 0, max: 2, step: 0.01 },
+    sunGlowSize: { value: 0.3, min: 0, max: 2, step: 0.01 },
     sunRayCount: { value: 6, min: 0, max: 24, step: 1 },
     sunRayLength: { value: 3.0, min: 0, max: 10, step: 0.1 },
-    sunRayIntensity: { value: 0.10, min: 0, max: 1, step: 0.01 },
+    sunRayIntensity: { value: 0.1, min: 0, max: 1, step: 0.01 },
+    sunRayShimmer: {
+      value: 1.0,
+      min: 0,
+      max: 5,
+      step: 0.05,
+      label: "Ray Shimmer",
+    },
+    sunRayShimmerSpeed: {
+      value: 1.0,
+      min: 0,
+      max: 5,
+      step: 0.05,
+      label: "Ray Shimmer Speed",
+    },
     moonGlowIntensity: { value: 3.45, min: 0, max: 10, step: 0.05 },
     moonGlowSize: { value: 0.94, min: 0, max: 2, step: 0.01 },
   }) as CelestialParams;
@@ -92,10 +106,10 @@ export default function WeatherEffectsSandbox() {
     "Rainy Night": button(() => {
       console.log("Preset: Rainy Night");
     }),
-    "Thunderstorm": button(() => {
+    Thunderstorm: button(() => {
       console.log("Preset: Thunderstorm");
     }),
-    "Snowy": button(() => {
+    Snowy: button(() => {
       console.log("Preset: Snowy");
     }),
   });

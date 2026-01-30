@@ -502,6 +502,36 @@ export function ParameterPanel({
                   }
                 />
                 <ParameterRow
+                  label="Sun Ray Shimmer"
+                  value={params.celestial.sunRayShimmer}
+                  baseValue={baseParams.celestial.sunRayShimmer}
+                  min={0}
+                  max={5}
+                  step={0.05}
+                  onChange={(v) => updateCelestial("sunRayShimmer", v)}
+                  onReset={() =>
+                    updateCelestial(
+                      "sunRayShimmer",
+                      baseParams.celestial.sunRayShimmer,
+                    )
+                  }
+                />
+                <ParameterRow
+                  label="Sun Ray Shimmer Speed"
+                  value={params.celestial.sunRayShimmerSpeed}
+                  baseValue={baseParams.celestial.sunRayShimmerSpeed}
+                  min={0}
+                  max={5}
+                  step={0.05}
+                  onChange={(v) => updateCelestial("sunRayShimmerSpeed", v)}
+                  onReset={() =>
+                    updateCelestial(
+                      "sunRayShimmerSpeed",
+                      baseParams.celestial.sunRayShimmerSpeed,
+                    )
+                  }
+                />
+                <ParameterRow
                   label="Moon Glow Intensity"
                   value={params.celestial.moonGlowIntensity}
                   baseValue={baseParams.celestial.moonGlowIntensity}

@@ -84,6 +84,33 @@ const PARAMETER_GROUPS: ParameterGroup[] = [
     ],
   },
   {
+    name: "Sun Rays",
+    layer: "celestial",
+    params: [
+      {
+        key: "sunRayIntensity",
+        label: "Ray Intensity",
+        min: 0,
+        max: 3,
+        step: 0.01,
+      },
+      {
+        key: "sunRayShimmer",
+        label: "Ray Shimmer",
+        min: 0,
+        max: 5,
+        step: 0.05,
+      },
+      {
+        key: "sunRayShimmerSpeed",
+        label: "Ray Shimmer Speed",
+        min: 0,
+        max: 5,
+        step: 0.05,
+      },
+    ],
+  },
+  {
     name: "Clouds",
     layer: "cloud",
     params: [

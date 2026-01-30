@@ -16,6 +16,16 @@ interface CelestialCanvasProps {
   sunRayCount?: number;
   sunRayLength?: number;
   sunRayIntensity?: number;
+  /**
+   * Scales subtle, noise-driven ray motion (shimmer + slow "breathing").
+   * 0 disables motion; 1 is the default subtlety; >1 increases visibility.
+   */
+  sunRayShimmer?: number;
+  /**
+   * Global speed multiplier for the ray shimmer/breath noise inputs.
+   * 1 is the default speed; >1 speeds up motion.
+   */
+  sunRayShimmerSpeed?: number;
   moonGlowIntensity?: number;
   moonGlowSize?: number;
 }
@@ -36,6 +46,8 @@ interface UniformLocations {
   u_sunRayCount: WebGLUniformLocation | null;
   u_sunRayLength: WebGLUniformLocation | null;
   u_sunRayIntensity: WebGLUniformLocation | null;
+  u_sunRayShimmer: WebGLUniformLocation | null;
+  u_sunRayShimmerSpeed: WebGLUniformLocation | null;
   u_moonGlowIntensity: WebGLUniformLocation | null;
   u_moonGlowSize: WebGLUniformLocation | null;
 }
@@ -74,6 +86,8 @@ uniform float u_sunGlowSize;
 uniform float u_sunRayCount;
 uniform float u_sunRayLength;
 uniform float u_sunRayIntensity;
+uniform float u_sunRayShimmer;
+uniform float u_sunRayShimmerSpeed;
 uniform float u_moonGlowIntensity;
 uniform float u_moonGlowSize;
 
@@ -206,40 +220,119 @@ vec3 drawSun(vec2 uv, vec2 sunPos, float size) {
   vec3 glowColor = vec3(1.0, 0.8, 0.4);
   float glowTotal = (glow1 + glow2 + glow3) * u_sunGlowIntensity;
 
-  float rays = 0.0;
-  if (u_sunRayCount > 0.0 && u_sunRayIntensity > 0.0) {
-    float rayAngle = angle * u_sunRayCount;
-
-    // Softer ray shape with variation
-    float rayBase = pow(abs(cos(rayAngle)), 8.0);
-    float rayNoise = noise(vec2(angle * 3.0, u_time * 0.1)) * 0.4 + 0.6;
-    float rayPattern = rayBase * rayNoise;
-
-    // Much steeper falloff - rays stay close to sun
-    float maxRayDist = u_sunRayLength * 0.15;
-    float rayFalloff = exp(-dist * dist / (maxRayDist * maxRayDist));
-
-    // Soft transition from sun disc
-    float rayStart = smoothstep(size * 0.7, size * 1.2, dist);
-    float rayEnd = smoothstep(size * 3.0, size * 1.5, dist);
-
-    // Per-ray length variation
-    float rayIndex = floor(rayAngle / PI + 0.5);
-    float rayLengthVar = 0.7 + hash(vec2(rayIndex, 0.0)) * 0.6;
-    rayFalloff = exp(-dist * dist / (maxRayDist * maxRayDist * rayLengthVar));
-
-    rays = rayPattern * rayFalloff * rayStart * rayEnd * u_sunRayIntensity;
-
-    // Subtle shimmer
-    float rayFlicker = sin(u_time * 0.3 + angle * 4.0) * 0.08 + 0.92;
-    rays *= rayFlicker;
-  }
-
-  vec3 rayColor = vec3(1.0, 0.92, 0.7);
-
   vec3 result = sunColor * disc * 2.0;
   result += glowColor * glowTotal;
-  result += rayColor * rays;
+
+  // ---------------------------------------------------------------------------
+  // Prismatic flare + rays
+  // ---------------------------------------------------------------------------
+  // Keep these effects subtle and mostly white — we want "eye optics" more than
+  // sci-fi neon. The rainbow shows up as a gentle chromatic fringe on very
+  // bright highlights.
+
+  // A thin, slightly prismatic halo ring around the sun.
+  float ringCenter = size * 1.15;
+  float ringWidth = max(size * 0.35, 0.001);
+  float ringMask = smoothstep(size * 0.85, size * 1.05, dist);
+  ringMask *= 1.0 - smoothstep(size * 5.0, size * 9.0, dist);
+
+  // Chromatic dispersion grows slightly with distance from the disc.
+  float chromaShift = size * (0.012 + u_sunRayIntensity * 0.06);
+  chromaShift *= smoothstep(size * 0.9, size * 2.4, dist);
+
+  float ringR = exp(-pow((dist - chromaShift - ringCenter) / ringWidth, 2.0));
+  float ringG = exp(-pow((dist - ringCenter) / ringWidth, 2.0));
+  float ringB = exp(-pow((dist + chromaShift - ringCenter) / ringWidth, 2.0));
+
+  // Desaturated spectrum-ish tint (mostly white).
+  float ringT = clamp((dist - size) / (size * 2.2), 0.0, 1.0);
+  vec3 ringSpectral = 0.55 + 0.45 * cos(TAU * (ringT + vec3(0.0, 0.33, 0.67)));
+  ringSpectral = clamp(ringSpectral, 0.0, 1.0);
+  vec3 ringColor = mix(vec3(1.0), ringSpectral, 0.45);
+
+  float ringIntensity = (ringR + ringG + ringB) / 3.0;
+  ringIntensity *= ringMask * u_sunGlowIntensity * 0.025;
+  result += ringColor * ringIntensity;
+
+  // Sun rays (diffraction spikes) with gentle shimmer/breath.
+  if (u_sunRayCount > 0.0 && u_sunRayIntensity > 0.0) {
+    // Rays are only visible close to the disc; bail early for perf.
+    if (dist < size * 3.6) {
+      float motion = clamp(u_sunRayShimmer, 0.0, 5.0);
+      float t = u_time * max(0.0, u_sunRayShimmerSpeed);
+
+      float rayPhase = angle * u_sunRayCount;
+      float rayIndex = floor(rayPhase / PI + 0.5);
+      float raySeed = hash(vec2(rayIndex, 19.17));
+
+      // Major rays + faint minor spikes (iris/eyelash diffraction).
+      float major = pow(abs(cos(rayPhase)), 10.0);
+      float minor = pow(abs(cos(rayPhase * 2.0 + raySeed * 2.3)), 22.0) * 0.18;
+      float rayShape = max(major, minor);
+
+      // Per-ray breathing (very slow) + along-ray shimmer (slightly faster).
+      float breathe =
+        1.0 +
+        (noise(vec2(t * 0.05, raySeed * 7.0)) - 0.5) * (0.08 * motion);
+      float shimmer =
+        1.0 +
+        (noise(vec2(dist * 12.0 - t * 0.25, raySeed * 23.0)) - 0.5) *
+          (0.12 * motion);
+      float micro =
+        1.0 +
+        (noise(vec2(t * 0.6, rayPhase * 0.8)) - 0.5) * (0.06 * motion);
+
+      float rayNoise =
+        0.72 +
+        0.28 * noise(vec2(rayPhase * 0.35, t * 0.12 + raySeed * 10.0));
+      float rayPattern = rayShape * rayNoise;
+
+      float rayStart = smoothstep(size * 0.75, size * 1.25, dist);
+      float rayEnd = smoothstep(size * (3.0 * breathe), size * 1.5, dist);
+
+      float rayLengthVar = 0.75 + raySeed * 0.55;
+      float maxRayDist = max(0.001, u_sunRayLength * 0.15);
+      float rayFalloff = exp(
+        -dist * dist / (maxRayDist * maxRayDist * rayLengthVar * breathe)
+      );
+
+      float rays = rayPattern * rayFalloff * rayStart * rayEnd * u_sunRayIntensity;
+      rays *= shimmer * micro;
+
+      // Chromatic fringe: compute a slightly different falloff per channel.
+      float prismMask = smoothstep(size * 1.05, size * 2.6, dist);
+      float rayChroma = size * (0.01 + u_sunRayIntensity * 0.05) * prismMask;
+
+      float distR = max(0.0, dist - rayChroma);
+      float distB = dist + rayChroma;
+
+      float falloffR = exp(
+        -distR * distR / (maxRayDist * maxRayDist * rayLengthVar * breathe)
+      );
+      float falloffG = rayFalloff;
+      float falloffB = exp(
+        -distB * distB / (maxRayDist * maxRayDist * rayLengthVar * breathe)
+      );
+
+      vec3 rayRGB = vec3(falloffR, falloffG, falloffB) * rayPattern * rayStart * rayEnd;
+      float rayAvg = (rayRGB.r + rayRGB.g + rayRGB.b) / 3.0;
+      vec3 rayChromaColor = rayRGB / max(rayAvg, 1e-4);
+
+      // Add a very subtle spectrum tint so the fringe reads as "rainbow-like",
+      // without turning into a colorful fantasy effect.
+      float rayT = clamp((dist - size) / (size * 2.6), 0.0, 1.0);
+      vec3 raySpectral = 0.55 + 0.45 * cos(TAU * (rayT + vec3(0.0, 0.33, 0.67)));
+      raySpectral = clamp(raySpectral, 0.0, 1.0);
+      raySpectral = mix(vec3(1.0), raySpectral, 0.28);
+
+      vec3 rayWarm = vec3(1.0, 0.92, 0.7);
+      float prismMix = clamp(0.08 + u_sunRayIntensity * 0.6, 0.0, 0.45) * prismMask;
+      vec3 rayColor = mix(rayWarm, rayChromaColor, prismMix);
+      rayColor = mix(rayColor, raySpectral, prismMix * 0.65);
+
+      result += rayColor * rays;
+    }
+  }
 
   return result;
 }
@@ -357,7 +450,7 @@ void main() {
 function createShader(
   gl: WebGL2RenderingContext,
   type: GLenum,
-  source: string
+  source: string,
 ): WebGLShader | null {
   const shader = gl.createShader(type);
   if (!shader) return null;
@@ -377,7 +470,7 @@ function createShader(
 function createProgram(
   gl: WebGL2RenderingContext,
   vertexShader: WebGLShader,
-  fragmentShader: WebGLShader
+  fragmentShader: WebGLShader,
 ): WebGLProgram | null {
   const program = gl.createProgram();
   if (!program) return null;
@@ -397,7 +490,7 @@ function createProgram(
 
 function getUniformLocations(
   gl: WebGL2RenderingContext,
-  program: WebGLProgram
+  program: WebGLProgram,
 ): UniformLocations {
   return {
     u_time: gl.getUniformLocation(program, "u_time"),
@@ -415,6 +508,11 @@ function getUniformLocations(
     u_sunRayCount: gl.getUniformLocation(program, "u_sunRayCount"),
     u_sunRayLength: gl.getUniformLocation(program, "u_sunRayLength"),
     u_sunRayIntensity: gl.getUniformLocation(program, "u_sunRayIntensity"),
+    u_sunRayShimmer: gl.getUniformLocation(program, "u_sunRayShimmer"),
+    u_sunRayShimmerSpeed: gl.getUniformLocation(
+      program,
+      "u_sunRayShimmerSpeed",
+    ),
     u_moonGlowIntensity: gl.getUniformLocation(program, "u_moonGlowIntensity"),
     u_moonGlowSize: gl.getUniformLocation(program, "u_moonGlowSize"),
   };
@@ -422,7 +520,7 @@ function getUniformLocations(
 
 function loadMoonTexture(
   gl: WebGL2RenderingContext,
-  onLoad: () => void
+  onLoad: () => void,
 ): WebGLTexture | null {
   const texture = gl.createTexture();
   if (!texture) return null;
@@ -437,7 +535,7 @@ function loadMoonTexture(
     0,
     gl.RGBA,
     gl.UNSIGNED_BYTE,
-    new Uint8Array([128, 128, 128, 255])
+    new Uint8Array([128, 128, 128, 255]),
   );
 
   const image = new Image();
@@ -446,7 +544,11 @@ function loadMoonTexture(
     gl.bindTexture(gl.TEXTURE_2D, texture);
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
     gl.generateMipmap(gl.TEXTURE_2D);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
+    gl.texParameteri(
+      gl.TEXTURE_2D,
+      gl.TEXTURE_MIN_FILTER,
+      gl.LINEAR_MIPMAP_LINEAR,
+    );
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
@@ -471,6 +573,8 @@ export function CelestialCanvas({
   sunRayCount = 12,
   sunRayLength = 0.5,
   sunRayIntensity = 0.4,
+  sunRayShimmer = 1.0,
+  sunRayShimmerSpeed = 1.0,
   moonGlowIntensity = 0.6,
   moonGlowSize = 0.2,
 }: CelestialCanvasProps) {
@@ -484,14 +588,40 @@ export function CelestialCanvas({
   const moonTextureLoadedRef = useRef<boolean>(false);
 
   const propsRef = useRef({
-    timeOfDay, moonPhase, starDensity, celestialX, celestialY, sunSize, moonSize,
-    sunGlowIntensity, sunGlowSize, sunRayCount, sunRayLength, sunRayIntensity,
-    moonGlowIntensity, moonGlowSize,
+    timeOfDay,
+    moonPhase,
+    starDensity,
+    celestialX,
+    celestialY,
+    sunSize,
+    moonSize,
+    sunGlowIntensity,
+    sunGlowSize,
+    sunRayCount,
+    sunRayLength,
+    sunRayIntensity,
+    sunRayShimmer,
+    sunRayShimmerSpeed,
+    moonGlowIntensity,
+    moonGlowSize,
   });
   propsRef.current = {
-    timeOfDay, moonPhase, starDensity, celestialX, celestialY, sunSize, moonSize,
-    sunGlowIntensity, sunGlowSize, sunRayCount, sunRayLength, sunRayIntensity,
-    moonGlowIntensity, moonGlowSize,
+    timeOfDay,
+    moonPhase,
+    starDensity,
+    celestialX,
+    celestialY,
+    sunSize,
+    moonSize,
+    sunGlowIntensity,
+    sunGlowSize,
+    sunRayCount,
+    sunRayLength,
+    sunRayIntensity,
+    sunRayShimmer,
+    sunRayShimmerSpeed,
+    moonGlowIntensity,
+    moonGlowSize,
   };
 
   const initGL = useCallback(() => {
@@ -506,7 +636,11 @@ export function CelestialCanvas({
     glRef.current = gl;
 
     const vertexShader = createShader(gl, gl.VERTEX_SHADER, VERTEX_SHADER);
-    const fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, FRAGMENT_SHADER);
+    const fragmentShader = createShader(
+      gl,
+      gl.FRAGMENT_SHADER,
+      FRAGMENT_SHADER,
+    );
     if (!vertexShader || !fragmentShader) return false;
 
     const program = createProgram(gl, vertexShader, fragmentShader);
@@ -569,13 +703,18 @@ export function CelestialCanvas({
     gl.uniform1f(uniforms.u_sunRayCount, props.sunRayCount);
     gl.uniform1f(uniforms.u_sunRayLength, props.sunRayLength);
     gl.uniform1f(uniforms.u_sunRayIntensity, props.sunRayIntensity);
+    gl.uniform1f(uniforms.u_sunRayShimmer, props.sunRayShimmer);
+    gl.uniform1f(uniforms.u_sunRayShimmerSpeed, props.sunRayShimmerSpeed);
     gl.uniform1f(uniforms.u_moonGlowIntensity, props.moonGlowIntensity);
     gl.uniform1f(uniforms.u_moonGlowSize, props.moonGlowSize);
 
     gl.activeTexture(gl.TEXTURE0);
     gl.bindTexture(gl.TEXTURE_2D, moonTextureRef.current);
     gl.uniform1i(uniforms.u_moonTexture, 0);
-    gl.uniform1i(uniforms.u_hasMoonTexture, moonTextureLoadedRef.current ? 1 : 0);
+    gl.uniform1i(
+      uniforms.u_hasMoonTexture,
+      moonTextureLoadedRef.current ? 1 : 0,
+    );
 
     gl.drawArrays(gl.TRIANGLES, 0, 6);
 

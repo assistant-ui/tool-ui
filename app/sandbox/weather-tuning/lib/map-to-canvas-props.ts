@@ -27,6 +27,8 @@ export function mapCompositorParamsToCanvasProps(
       sunRayCount: params.celestial.sunRayCount,
       sunRayLength: params.celestial.sunRayLength,
       sunRayIntensity: params.celestial.sunRayIntensity,
+      sunRayShimmer: params.celestial.sunRayShimmer,
+      sunRayShimmerSpeed: params.celestial.sunRayShimmerSpeed,
       moonGlowIntensity: params.celestial.moonGlowIntensity,
       moonGlowSize: params.celestial.moonGlowSize,
       skyBrightness: params.celestial.skyBrightness,

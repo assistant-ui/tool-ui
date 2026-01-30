@@ -72,6 +72,16 @@ export interface CelestialParams {
   sunRayCount: number;
   sunRayLength: number;
   sunRayIntensity: number;
+  /**
+   * Scales subtle, noise-driven ray motion (shimmer + slow "breathing").
+   * 0 disables motion; 1 is the default subtlety; >1 increases visibility.
+   */
+  sunRayShimmer: number;
+  /**
+   * Global speed multiplier for the ray shimmer/breath noise inputs.
+   * 1 is the default speed; >1 speeds up motion.
+   */
+  sunRayShimmerSpeed: number;
   moonGlowIntensity: number;
   moonGlowSize: number;
   skyBrightness: number;
@@ -226,6 +236,8 @@ export function getBaseParamsForCondition(
       sunRayCount: effectConfig.celestial?.sunRayCount ?? 12,
       sunRayLength: effectConfig.celestial?.sunRayLength ?? 0.5,
       sunRayIntensity: effectConfig.celestial?.sunRayIntensity ?? 0.4,
+      sunRayShimmer: 1.0,
+      sunRayShimmerSpeed: 1.0,
       moonGlowIntensity: effectConfig.celestial?.moonGlowIntensity ?? 1.0,
       moonGlowSize: effectConfig.celestial?.moonGlowSize ?? 0.2,
       skyBrightness: 1.0,

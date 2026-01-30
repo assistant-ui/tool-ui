@@ -278,6 +278,20 @@ export default function WeatherCompositorSandbox() {
         step: 0.05,
         label: "Sun Ray Intensity",
       },
+      sunRayShimmer: {
+        value: mergedParams.celestial.sunRayShimmer,
+        min: 0,
+        max: 5,
+        step: 0.05,
+        label: "Sun Ray Shimmer",
+      },
+      sunRayShimmerSpeed: {
+        value: mergedParams.celestial.sunRayShimmerSpeed,
+        min: 0,
+        max: 5,
+        step: 0.05,
+        label: "Sun Ray Shimmer Speed",
+      },
       moonGlowIntensity: {
         value: mergedParams.celestial.moonGlowIntensity,
         min: 0,
@@ -884,6 +898,8 @@ export default function WeatherCompositorSandbox() {
         sunRayCount: merged.celestial.sunRayCount,
         sunRayLength: merged.celestial.sunRayLength,
         sunRayIntensity: merged.celestial.sunRayIntensity,
+        sunRayShimmer: merged.celestial.sunRayShimmer,
+        sunRayShimmerSpeed: merged.celestial.sunRayShimmerSpeed,
         moonGlowIntensity: merged.celestial.moonGlowIntensity,
         moonGlowSize: merged.celestial.moonGlowSize,
       });
@@ -956,6 +972,8 @@ export default function WeatherCompositorSandbox() {
       sunRayCount: base.celestial.sunRayCount,
       sunRayLength: base.celestial.sunRayLength,
       sunRayIntensity: base.celestial.sunRayIntensity,
+      sunRayShimmer: base.celestial.sunRayShimmer,
+      sunRayShimmerSpeed: base.celestial.sunRayShimmerSpeed,
       moonGlowIntensity: base.celestial.moonGlowIntensity,
       moonGlowSize: base.celestial.moonGlowSize,
     });
@@ -1100,6 +1118,8 @@ export default function WeatherCompositorSandbox() {
                   sunRayCount: celestial.sunRayCount,
                   sunRayLength: celestial.sunRayLength,
                   sunRayIntensity: celestial.sunRayIntensity,
+                  sunRayShimmer: celestial.sunRayShimmer,
+                  sunRayShimmerSpeed: celestial.sunRayShimmerSpeed,
                   moonGlowIntensity: celestial.moonGlowIntensity,
                   moonGlowSize: celestial.moonGlowSize,
                 }}
@@ -1268,6 +1288,8 @@ export default function WeatherCompositorSandbox() {
                       sunRayCount: celestial.sunRayCount,
                       sunRayLength: celestial.sunRayLength,
                       sunRayIntensity: celestial.sunRayIntensity,
+                      sunRayShimmer: celestial.sunRayShimmer,
+                      sunRayShimmerSpeed: celestial.sunRayShimmerSpeed,
                       moonGlowIntensity: celestial.moonGlowIntensity,
                       moonGlowSize: celestial.moonGlowSize,
                     }
