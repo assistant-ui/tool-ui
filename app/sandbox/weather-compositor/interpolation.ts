@@ -1,6 +1,10 @@
 import type { ConditionOverrides, FullCompositorParams } from "./presets";
-import type { TimeCheckpoint } from "../weather-tuning/types";
-import { TIME_CHECKPOINTS, TIME_CHECKPOINT_ORDER } from "../weather-tuning/lib/constants";
+import {
+  TIME_CHECKPOINTS,
+  TIME_CHECKPOINT_ORDER,
+  getNearestCheckpoint as getNearestCheckpointCore,
+  type TimeCheckpoint,
+} from "@/components/tool-ui/weather-widget/effects/tuning";
 
 export interface CheckpointOverrides {
   dawn: ConditionOverrides;
@@ -17,10 +21,12 @@ interface SurroundingCheckpoints {
   t: number;
 }
 
-export function getSurroundingCheckpoints(timeOfDay: number): SurroundingCheckpoints {
+export function getSurroundingCheckpoints(
+  timeOfDay: number,
+): SurroundingCheckpoints {
   const checkpointTimes = TIME_CHECKPOINT_ORDER.map((cp) => ({
     checkpoint: cp,
-    value: TIME_CHECKPOINTS[cp].value,
+    value: TIME_CHECKPOINTS[cp],
   })).sort((a, b) => a.value - b.value);
 
   const normalized = ((timeOfDay % 1) + 1) % 1;
@@ -69,7 +75,7 @@ function interpolatePartialObject<T extends object>(
   b: Partial<T> | undefined,
   baseA: T | undefined,
   baseB: T | undefined,
-  t: number
+  t: number,
 ): Partial<T> | undefined {
   if (!a && !b) return undefined;
 
@@ -116,28 +122,64 @@ export function interpolateOverrides(
   b: ConditionOverrides | undefined,
   baseA: FullCompositorParams | undefined,
   baseB: FullCompositorParams | undefined,
-  t: number
+  t: number,
 ): ConditionOverrides | undefined {
   if (!a && !b) return undefined;
 
   const result: ConditionOverrides = {};
 
-  const layers = interpolatePartialObject(a?.layers, b?.layers, baseA?.layers, baseB?.layers, t);
+  const layers = interpolatePartialObject(
+    a?.layers,
+    b?.layers,
+    baseA?.layers,
+    baseB?.layers,
+    t,
+  );
   if (layers) result.layers = layers;
 
-  const celestial = interpolatePartialObject(a?.celestial, b?.celestial, baseA?.celestial, baseB?.celestial, t);
+  const celestial = interpolatePartialObject(
+    a?.celestial,
+    b?.celestial,
+    baseA?.celestial,
+    baseB?.celestial,
+    t,
+  );
   if (celestial) result.celestial = celestial;
 
-  const cloud = interpolatePartialObject(a?.cloud, b?.cloud, baseA?.cloud, baseB?.cloud, t);
+  const cloud = interpolatePartialObject(
+    a?.cloud,
+    b?.cloud,
+    baseA?.cloud,
+    baseB?.cloud,
+    t,
+  );
   if (cloud) result.cloud = cloud;
 
-  const rain = interpolatePartialObject(a?.rain, b?.rain, baseA?.rain, baseB?.rain, t);
+  const rain = interpolatePartialObject(
+    a?.rain,
+    b?.rain,
+    baseA?.rain,
+    baseB?.rain,
+    t,
+  );
   if (rain) result.rain = rain;
 
-  const lightning = interpolatePartialObject(a?.lightning, b?.lightning, baseA?.lightning, baseB?.lightning, t);
+  const lightning = interpolatePartialObject(
+    a?.lightning,
+    b?.lightning,
+    baseA?.lightning,
+    baseB?.lightning,
+    t,
+  );
   if (lightning) result.lightning = lightning;
 
-  const snow = interpolatePartialObject(a?.snow, b?.snow, baseA?.snow, baseB?.snow, t);
+  const snow = interpolatePartialObject(
+    a?.snow,
+    b?.snow,
+    baseA?.snow,
+    baseB?.snow,
+    t,
+  );
   if (snow) result.snow = snow;
 
   return Object.keys(result).length > 0 ? result : undefined;
@@ -146,7 +188,7 @@ export function interpolateOverrides(
 export function getInterpolatedOverrides(
   checkpointOverrides: CheckpointOverrides | undefined,
   timeOfDay: number,
-  getBaseForCheckpoint?: BaseParamsGetter
+  getBaseForCheckpoint?: BaseParamsGetter,
 ): ConditionOverrides | undefined {
   if (!checkpointOverrides) return undefined;
 
@@ -171,7 +213,7 @@ export function createEmptyCheckpointOverrides(): CheckpointOverrides {
 }
 
 export function isCheckpointOverridesEmpty(
-  checkpointOverrides: CheckpointOverrides
+  checkpointOverrides: CheckpointOverrides,
 ): boolean {
   return (
     Object.keys(checkpointOverrides.dawn).length === 0 &&
@@ -189,25 +231,10 @@ export function getCheckpointForTime(timeOfDay: number): TimeCheckpoint {
 export function isNearCheckpoint(
   timeOfDay: number,
   checkpoint: TimeCheckpoint,
-  threshold = 0.02
+  threshold = 0.02,
 ): boolean {
-  const checkpointValue = TIME_CHECKPOINTS[checkpoint].value;
+  const checkpointValue = TIME_CHECKPOINTS[checkpoint];
   return Math.abs(timeOfDay - checkpointValue) < threshold;
 }
 
-export function getNearestCheckpoint(timeOfDay: number): TimeCheckpoint {
-  let nearest: TimeCheckpoint = "noon";
-  let minDist = Infinity;
-
-  for (const checkpoint of TIME_CHECKPOINT_ORDER) {
-    const value = TIME_CHECKPOINTS[checkpoint].value;
-    let dist = Math.abs(timeOfDay - value);
-    if (dist > 0.5) dist = 1 - dist;
-    if (dist < minDist) {
-      minDist = dist;
-      nearest = checkpoint;
-    }
-  }
-
-  return nearest;
-}
+export const getNearestCheckpoint = getNearestCheckpointCore;

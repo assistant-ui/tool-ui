@@ -8,6 +8,7 @@ import { WeatherEffectsCanvas } from "@/components/tool-ui/weather-widget/effect
 import { WeatherDataOverlay } from "./weather-data-overlay";
 import { GlassControls } from "./glass-controls";
 import type { GlassEffectParams } from "../hooks/use-tuning-state";
+import { mapCompositorParamsToCanvasProps } from "../lib/map-to-canvas-props";
 import { CONDITION_LABELS } from "../../weather-compositor/presets";
 import type { FullCompositorParams } from "../../weather-compositor/presets";
 import { ParameterPanel } from "./parameter-panel";
@@ -21,7 +22,13 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-type LayerKey = "layers" | "celestial" | "cloud" | "rain" | "lightning" | "snow";
+type LayerKey =
+  | "layers"
+  | "celestial"
+  | "cloud"
+  | "rain"
+  | "lightning"
+  | "snow";
 
 interface DetailEditorProps {
   condition: WeatherCondition;
@@ -47,68 +54,6 @@ interface DetailEditorProps {
   onCopyCheckpoint?: (targetCheckpoints: TimeCheckpoint[]) => void;
 }
 
-function mapParamsToCanvasProps(params: FullCompositorParams) {
-  return {
-    layers: params.layers,
-    celestial: {
-      timeOfDay: params.celestial.timeOfDay,
-      moonPhase: params.celestial.moonPhase,
-      starDensity: params.celestial.starDensity,
-      celestialX: params.celestial.celestialX,
-      celestialY: params.celestial.celestialY,
-      sunSize: params.celestial.sunSize,
-      moonSize: params.celestial.moonSize,
-      sunGlowIntensity: params.celestial.sunGlowIntensity,
-      sunGlowSize: params.celestial.sunGlowSize,
-      sunRayCount: params.celestial.sunRayCount,
-      sunRayLength: params.celestial.sunRayLength,
-      sunRayIntensity: params.celestial.sunRayIntensity,
-      moonGlowIntensity: params.celestial.moonGlowIntensity,
-      moonGlowSize: params.celestial.moonGlowSize,
-      skyBrightness: params.celestial.skyBrightness,
-      skySaturation: params.celestial.skySaturation,
-      skyContrast: params.celestial.skyContrast,
-    },
-    cloud: {
-      coverage: params.cloud.coverage,
-      density: params.cloud.density,
-      softness: params.cloud.softness,
-      cloudScale: params.cloud.cloudScale,
-      windSpeed: params.cloud.windSpeed,
-      windAngle: params.cloud.windAngle,
-      turbulence: params.cloud.turbulence,
-      lightIntensity: params.cloud.lightIntensity,
-      ambientDarkness: params.cloud.ambientDarkness,
-      backlightIntensity: params.cloud.backlightIntensity,
-      numLayers: params.cloud.numLayers,
-    },
-    rain: {
-      glassIntensity: params.rain.glassIntensity,
-      glassZoom: params.rain.zoom,
-      fallingIntensity: params.rain.fallingIntensity,
-      fallingSpeed: params.rain.fallingSpeed,
-      fallingAngle: params.rain.fallingAngle,
-      fallingStreakLength: params.rain.fallingStreakLength,
-      fallingLayers: params.rain.fallingLayers,
-    },
-    lightning: {
-      enabled: params.layers.lightning,
-      autoMode: params.lightning.autoMode,
-      autoInterval: params.lightning.autoInterval,
-      flashIntensity: params.lightning.glowIntensity,
-      branchDensity: params.lightning.branchDensity,
-    },
-    snow: {
-      intensity: params.snow.intensity,
-      layers: params.snow.layers,
-      fallSpeed: params.snow.fallSpeed,
-      windSpeed: params.snow.windSpeed,
-      drift: params.snow.drift,
-      flakeSize: params.snow.flakeSize,
-    },
-  };
-}
-
 export function DetailEditor({
   condition,
   params,
@@ -132,7 +77,10 @@ export function DetailEditor({
   onCopyLayerToAll,
   onCopyCheckpoint,
 }: DetailEditorProps) {
-  const canvasProps = useMemo(() => mapParamsToCanvasProps(params), [params]);
+  const canvasProps = useMemo(
+    () => mapCompositorParamsToCanvasProps(params),
+    [params],
+  );
   const label = CONDITION_LABELS[condition];
 
   const allCheckpointsReviewed = checkpoints
@@ -140,15 +88,19 @@ export function DetailEditor({
     : false;
 
   const reviewedCount = checkpoints
-    ? TIME_CHECKPOINT_ORDER.filter((cp) => checkpoints[cp] === "reviewed").length
+    ? TIME_CHECKPOINT_ORDER.filter((cp) => checkpoints[cp] === "reviewed")
+        .length
     : 0;
 
   return (
     <div className="flex h-full gap-5">
       <div className="flex w-[420px] shrink-0 flex-col gap-3">
-        <div className="group/widget relative aspect-[4/3] overflow-hidden rounded-xl border border-border shadow-xl">
+        <div className="group/widget border-border relative aspect-4/3 overflow-hidden rounded-xl border shadow-xl">
           <div className="absolute inset-0 bg-black">
-            <WeatherEffectsCanvas className="absolute inset-0" {...canvasProps} />
+            <WeatherEffectsCanvas
+              className="absolute inset-0"
+              {...canvasProps}
+            />
           </div>
 
           {showWidgetOverlay && (
@@ -164,8 +116,18 @@ export function DetailEditor({
                 windSpeed={8}
                 visibility={10}
                 forecast={[
-                  { day: "Today", tempMin: 65, tempMax: 78, condition: condition },
-                  { day: "Tue", tempMin: 64, tempMax: 77, condition: "partly-cloudy" },
+                  {
+                    day: "Today",
+                    tempMin: 65,
+                    tempMax: 78,
+                    condition: condition,
+                  },
+                  {
+                    day: "Tue",
+                    tempMin: 64,
+                    tempMax: 77,
+                    condition: "partly-cloudy",
+                  },
                   { day: "Wed", tempMin: 62, tempMax: 75, condition: "cloudy" },
                   { day: "Thu", tempMin: 60, tempMax: 73, condition: "rain" },
                   { day: "Fri", tempMin: 63, tempMax: 76, condition: "clear" },
@@ -191,7 +153,7 @@ export function DetailEditor({
           </div>
 
           {!showWidgetOverlay && (
-            <div className="absolute left-2.5 top-2.5 z-20">
+            <div className="absolute top-2.5 left-2.5 z-20">
               <div className="rounded bg-black/50 px-2 py-1 backdrop-blur-sm">
                 <h2 className="text-xs font-medium text-white">{label}</h2>
               </div>
@@ -199,94 +161,96 @@ export function DetailEditor({
           )}
         </div>
 
-        <div className="rounded-lg border border-border/40 bg-card/50 p-3">
-            <div className="mb-2 flex items-center justify-between">
-              <span className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground/50">
-                Checkpoints
-              </span>
-              <div className="flex items-center gap-2">
-                {onCopyCheckpoint && !isPreviewing && (
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <button
-                        className="flex items-center gap-1 rounded px-1.5 py-0.5 text-[10px] text-muted-foreground/50 transition-colors hover:bg-accent/50 hover:text-muted-foreground"
-                        title={`Copy ${TIME_CHECKPOINTS[activeEditCheckpoint].label} to other checkpoints`}
-                      >
-                        <Copy className="size-2.5" />
-                        Copy to...
-                      </button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="min-w-[140px]">
+        <div className="border-border/40 bg-card/50 rounded-lg border p-3">
+          <div className="mb-2 flex items-center justify-between">
+            <span className="text-muted-foreground/50 text-[10px] font-medium tracking-wider uppercase">
+              Checkpoints
+            </span>
+            <div className="flex items-center gap-2">
+              {onCopyCheckpoint && !isPreviewing && (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <button
+                      className="text-muted-foreground/50 hover:bg-accent/50 hover:text-muted-foreground flex items-center gap-1 rounded px-1.5 py-0.5 text-[10px] transition-colors"
+                      title={`Copy ${TIME_CHECKPOINTS[activeEditCheckpoint].label} to other checkpoints`}
+                    >
+                      <Copy className="size-2.5" />
+                      Copy to...
+                    </button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="min-w-[140px]">
+                    <DropdownMenuItem
+                      onClick={() => {
+                        const targets = TIME_CHECKPOINT_ORDER.filter(
+                          (cp) => cp !== activeEditCheckpoint,
+                        ) as TimeCheckpoint[];
+                        onCopyCheckpoint(targets);
+                      }}
+                      className="text-xs font-medium"
+                    >
+                      All checkpoints
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    {TIME_CHECKPOINT_ORDER.filter(
+                      (cp) => cp !== activeEditCheckpoint,
+                    ).map((checkpoint) => (
                       <DropdownMenuItem
-                        onClick={() => {
-                          const targets = TIME_CHECKPOINT_ORDER.filter(
-                            (cp) => cp !== activeEditCheckpoint
-                          ) as TimeCheckpoint[];
-                          onCopyCheckpoint(targets);
-                        }}
-                        className="text-xs font-medium"
+                        key={checkpoint}
+                        onClick={() =>
+                          onCopyCheckpoint([checkpoint as TimeCheckpoint])
+                        }
+                        className="text-xs"
                       >
-                        All checkpoints
+                        {TIME_CHECKPOINTS[checkpoint].label}
                       </DropdownMenuItem>
-                      <DropdownMenuSeparator />
-                      {TIME_CHECKPOINT_ORDER.filter(
-                        (cp) => cp !== activeEditCheckpoint
-                      ).map((checkpoint) => (
-                        <DropdownMenuItem
-                          key={checkpoint}
-                          onClick={() => onCopyCheckpoint([checkpoint as TimeCheckpoint])}
-                          className="text-xs"
-                        >
-                          {TIME_CHECKPOINTS[checkpoint].label}
-                        </DropdownMenuItem>
-                      ))}
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                )}
-                <span className="font-mono text-[10px] text-muted-foreground/40">
-                  {reviewedCount}/4
-                </span>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-4 gap-1">
-              {TIME_CHECKPOINT_ORDER.map((checkpoint) => {
-                const { value, label } = TIME_CHECKPOINTS[checkpoint];
-                const status = checkpoints?.[checkpoint] ?? "pending";
-                const isActive = Math.abs(currentTime - value) < 0.02;
-                const isReviewed = status === "reviewed";
-                const isEditing = checkpoint === activeEditCheckpoint;
-
-                return (
-                  <button
-                    key={checkpoint}
-                    onClick={() => onCheckpointClick(checkpoint)}
-                    className={cn(
-                      "relative py-2 text-[11px] font-medium uppercase tracking-wide transition-colors",
-                      isEditing
-                        ? "bg-muted-foreground/20 text-foreground"
-                        : isActive
-                          ? "text-foreground"
-                          : isReviewed
-                            ? "text-foreground/60"
-                            : "text-muted-foreground/40 hover:text-muted-foreground"
-                    )}
-                    title={`${label} (${status})${isEditing ? " - editing" : ""}`}
-                  >
-                    {label}
-                    {isReviewed && !isEditing && (
-                      <span className="absolute right-1 top-1 text-[8px]">*</span>
-                    )}
-                  </button>
-                );
-              })}
+                    ))}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              )}
+              <span className="text-muted-foreground/40 font-mono text-[10px]">
+                {reviewedCount}/4
+              </span>
             </div>
           </div>
+
+          <div className="grid grid-cols-4 gap-1">
+            {TIME_CHECKPOINT_ORDER.map((checkpoint) => {
+              const { value, label } = TIME_CHECKPOINTS[checkpoint];
+              const status = checkpoints?.[checkpoint] ?? "pending";
+              const isActive = Math.abs(currentTime - value) < 0.02;
+              const isReviewed = status === "reviewed";
+              const isEditing = checkpoint === activeEditCheckpoint;
+
+              return (
+                <button
+                  key={checkpoint}
+                  onClick={() => onCheckpointClick(checkpoint)}
+                  className={cn(
+                    "relative py-2 text-[11px] font-medium tracking-wide uppercase transition-colors",
+                    isEditing
+                      ? "bg-muted-foreground/20 text-foreground"
+                      : isActive
+                        ? "text-foreground"
+                        : isReviewed
+                          ? "text-foreground/60"
+                          : "text-muted-foreground/40 hover:text-muted-foreground",
+                  )}
+                  title={`${label} (${status})${isEditing ? " - editing" : ""}`}
+                >
+                  {label}
+                  {isReviewed && !isEditing && (
+                    <span className="absolute top-1 right-1 text-[8px]">*</span>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+        </div>
 
         <div className="flex gap-1.5">
           <button
             onClick={onReset}
-            className="flex flex-1 items-center justify-center gap-1.5 rounded-md border border-border/40 bg-card/30 px-3 py-1.5 text-xs text-muted-foreground/60 transition-all hover:bg-accent/50 hover:text-muted-foreground"
+            className="border-border/40 bg-card/30 text-muted-foreground/60 hover:bg-accent/50 hover:text-muted-foreground flex flex-1 items-center justify-center gap-1.5 rounded-md border px-3 py-1.5 text-xs transition-all"
           >
             <RotateCcw className="size-3" />
             Reset
@@ -300,7 +264,7 @@ export function DetailEditor({
                 ? "border border-green-500/20 bg-green-500/10 text-green-600/70 dark:text-green-400/70"
                 : allCheckpointsReviewed
                   ? "bg-foreground/10 text-foreground/70 hover:bg-foreground/15"
-                  : "cursor-not-allowed bg-muted/20 text-muted-foreground/30"
+                  : "bg-muted/20 text-muted-foreground/30 cursor-not-allowed",
             )}
             title={
               !allCheckpointsReviewed && !isSignedOff
@@ -323,7 +287,7 @@ export function DetailEditor({
       <div className="flex min-h-0 min-w-0 flex-1 flex-col gap-3">
         <GlassControls params={glassParams} onChange={onGlassParamsChange} />
 
-        <div className="min-h-0 flex-1 overflow-hidden rounded-lg border border-border/40 bg-card/30">
+        <div className="border-border/40 bg-card/30 min-h-0 flex-1 overflow-hidden rounded-lg border">
           <div className="scrollbar-subtle h-full overflow-y-auto">
             <ParameterPanel
               params={params}

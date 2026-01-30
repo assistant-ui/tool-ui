@@ -2,6 +2,7 @@ import type { WeatherCondition } from "@/components/tool-ui/weather-widget/schem
 import {
   mapWeatherToEffects,
   getTimeOfDay,
+  getNearestCheckpoint,
 } from "@/components/tool-ui/weather-widget/effects";
 
 // Weather conditions grouped by category for intuitive navigation
@@ -31,7 +32,7 @@ export const CONDITION_GROUPS: ConditionGroup[] = [
 
 // Flat list for iteration (derived from groups)
 export const WEATHER_CONDITIONS: WeatherCondition[] = CONDITION_GROUPS.flatMap(
-  (group) => group.conditions
+  (group) => group.conditions,
 );
 
 export const CONDITION_LABELS: Record<WeatherCondition, string> = {
@@ -182,39 +183,9 @@ export interface FullCompositorParams {
   snow: SnowParams;
 }
 
-type TimeCheckpoint = "dawn" | "noon" | "dusk" | "midnight";
-
-const TIME_CHECKPOINT_VALUES: Record<TimeCheckpoint, number> = {
-  midnight: 0.0,
-  dawn: 0.25,
-  noon: 0.5,
-  dusk: 0.75,
-};
-
-function getNearestCheckpointForTime(timeOfDay: number): TimeCheckpoint {
-  const checkpoints: TimeCheckpoint[] = ["midnight", "dawn", "noon", "dusk"];
-  let nearest: TimeCheckpoint = "noon";
-  let minDist = Infinity;
-
-  for (const cp of checkpoints) {
-    const value = TIME_CHECKPOINT_VALUES[cp];
-    // Handle circular distance (midnight wraps)
-    const dist = Math.min(
-      Math.abs(timeOfDay - value),
-      Math.abs(timeOfDay - value - 1),
-      Math.abs(timeOfDay - value + 1)
-    );
-    if (dist < minDist) {
-      minDist = dist;
-      nearest = cp;
-    }
-  }
-  return nearest;
-}
-
 export function getBaseParamsForCondition(
   condition: WeatherCondition,
-  timestamp?: string
+  timestamp?: string,
 ): FullCompositorParams {
   const effectConfig = mapWeatherToEffects({
     condition,
@@ -222,8 +193,9 @@ export function getBaseParamsForCondition(
   });
 
   const timeOfDay = timestamp ? getTimeOfDay(timestamp) : 0.5;
-  const nearestCheckpoint = getNearestCheckpointForTime(timeOfDay);
-  const checkpointDefaults = DEFAULT_CHECKPOINT_OVERRIDES[condition]?.[nearestCheckpoint];
+  const nearestCheckpoint = getNearestCheckpoint(timeOfDay);
+  const checkpointDefaults =
+    DEFAULT_CHECKPOINT_OVERRIDES[condition]?.[nearestCheckpoint];
 
   const hasCloud = effectConfig.cloud !== undefined;
   const hasRain = effectConfig.rain !== undefined;
@@ -282,7 +254,7 @@ export function getBaseParamsForCondition(
     rain: {
       glassIntensity: hasRain ? (effectConfig.rain?.intensity ?? 0.5) * 0.7 : 0,
       zoom: 1.0,
-      fallingIntensity: hasRain ? effectConfig.rain?.intensity ?? 0.6 : 0,
+      fallingIntensity: hasRain ? (effectConfig.rain?.intensity ?? 0.6) : 0,
       fallingSpeed: 1.0,
       fallingAngle: hasRain ? (effectConfig.rain?.angle ?? 5) * 0.02 : 0.1,
       fallingStreakLength: 0.8,
@@ -298,17 +270,21 @@ export function getBaseParamsForCondition(
       flashDuration: 0.15,
       sceneIllumination: 0.6,
       afterglowPersistence: 0.3,
-      autoMode: hasLightning ? effectConfig.lightning?.autoTrigger ?? true : false,
-      autoInterval: hasLightning ? (lightningIntervalMin + lightningIntervalMax) / 2 : 8,
+      autoMode: hasLightning
+        ? (effectConfig.lightning?.autoTrigger ?? true)
+        : false,
+      autoInterval: hasLightning
+        ? (lightningIntervalMin + lightningIntervalMax) / 2
+        : 8,
     },
     snow: {
-      intensity: hasSnow ? effectConfig.snow?.intensity ?? 0.7 : 0,
+      intensity: hasSnow ? (effectConfig.snow?.intensity ?? 0.7) : 0,
       layers: 4,
       fallSpeed: 0.5,
-      windSpeed: hasSnow ? effectConfig.snow?.windDrift ?? 0.3 : 0.3,
+      windSpeed: hasSnow ? (effectConfig.snow?.windDrift ?? 0.3) : 0.3,
       windAngle: 0,
       turbulence: 0.3,
-      drift: hasSnow ? effectConfig.snow?.windDrift ?? 0.3 : 0.3,
+      drift: hasSnow ? (effectConfig.snow?.windDrift ?? 0.3) : 0.3,
       flutter: 0.5,
       windShear: 0.2,
       flakeSize: 1.0,
@@ -329,7 +305,7 @@ export function getBaseParamsForCondition(
 
 export function mergeWithOverrides(
   base: FullCompositorParams,
-  overrides?: ConditionOverrides
+  overrides?: ConditionOverrides,
 ): FullCompositorParams {
   if (!overrides) return base;
 
@@ -345,7 +321,7 @@ export function mergeWithOverrides(
 
 export function extractOverrides(
   current: FullCompositorParams,
-  base: FullCompositorParams
+  base: FullCompositorParams,
 ): ConditionOverrides {
   const overrides: ConditionOverrides = {};
 
@@ -353,8 +329,11 @@ export function extractOverrides(
   if (Object.keys(layerDiff).length > 0) overrides.layers = layerDiff;
 
   // Exclude timeOfDay from celestial comparison (it's a global setting)
-  const celestialDiff = diffObjects(current.celestial, base.celestial, ["timeOfDay"]);
-  if (Object.keys(celestialDiff).length > 0) overrides.celestial = celestialDiff;
+  const celestialDiff = diffObjects(current.celestial, base.celestial, [
+    "timeOfDay",
+  ]);
+  if (Object.keys(celestialDiff).length > 0)
+    overrides.celestial = celestialDiff;
 
   const cloudDiff = diffObjects(current.cloud, base.cloud);
   if (Object.keys(cloudDiff).length > 0) overrides.cloud = cloudDiff;
@@ -363,7 +342,8 @@ export function extractOverrides(
   if (Object.keys(rainDiff).length > 0) overrides.rain = rainDiff;
 
   const lightningDiff = diffObjects(current.lightning, base.lightning);
-  if (Object.keys(lightningDiff).length > 0) overrides.lightning = lightningDiff;
+  if (Object.keys(lightningDiff).length > 0)
+    overrides.lightning = lightningDiff;
 
   const snowDiff = diffObjects(current.snow, base.snow);
   if (Object.keys(snowDiff).length > 0) overrides.snow = snowDiff;
@@ -374,7 +354,7 @@ export function extractOverrides(
 function diffObjects<T extends object>(
   current: T,
   base: T,
-  exclude: string[] = []
+  exclude: string[] = [],
 ): Partial<T> {
   const diff: Partial<T> = {};
   for (const key of Object.keys(current) as (keyof T)[]) {
@@ -389,7 +369,9 @@ function diffObjects<T extends object>(
 const STORAGE_KEY = "weather-compositor-state";
 
 // Tuned default overrides for each condition and checkpoint
-export const DEFAULT_CHECKPOINT_OVERRIDES: Partial<Record<WeatherCondition, CheckpointOverrides>> = {
+export const DEFAULT_CHECKPOINT_OVERRIDES: Partial<
+  Record<WeatherCondition, CheckpointOverrides>
+> = {
   clear: {
     dawn: {
       celestial: {
@@ -479,11 +461,21 @@ export const DEFAULT_CHECKPOINT_OVERRIDES: Partial<Record<WeatherCondition, Chec
   cloudy: {
     dawn: {
       celestial: { skyBrightness: 0.91, skySaturation: 1.16 },
-      cloud: { softness: 0.45, windSpeed: 0.09, lightIntensity: 0.81, backlightIntensity: 0.39 },
+      cloud: {
+        softness: 0.45,
+        windSpeed: 0.09,
+        lightIntensity: 0.81,
+        backlightIntensity: 0.39,
+      },
     },
     noon: {
       celestial: { skyBrightness: 0.91, skySaturation: 1.16 },
-      cloud: { softness: 0.45, windSpeed: 0.09, lightIntensity: 0.81, backlightIntensity: 0.39 },
+      cloud: {
+        softness: 0.45,
+        windSpeed: 0.09,
+        lightIntensity: 0.81,
+        backlightIntensity: 0.39,
+      },
     },
     dusk: {
       celestial: { skyBrightness: 0.91, skySaturation: 1.16 },
@@ -609,7 +601,11 @@ export const DEFAULT_CHECKPOINT_OVERRIDES: Partial<Record<WeatherCondition, Chec
       cloud: { coverage: 0.64, density: 1.2, windSpeed: 0.1, numLayers: 1 },
     },
     noon: {
-      celestial: { sunGlowIntensity: 3.38, skyBrightness: 0.88, skySaturation: 0.97 },
+      celestial: {
+        sunGlowIntensity: 3.38,
+        skyBrightness: 0.88,
+        skySaturation: 0.97,
+      },
       cloud: {
         coverage: 0.64,
         density: 1.27,
@@ -828,7 +824,9 @@ function createEmptyCheckpointOverrides(): CheckpointOverrides {
 }
 
 function migrateV1ToV2(v1: CompositorStateV1): CompositorState {
-  const checkpointOverrides: Partial<Record<WeatherCondition, CheckpointOverrides>> = {};
+  const checkpointOverrides: Partial<
+    Record<WeatherCondition, CheckpointOverrides>
+  > = {};
 
   for (const [condition, override] of Object.entries(v1.overrides)) {
     if (override && Object.keys(override).length > 0) {
@@ -896,10 +894,12 @@ export function saveToStorage(state: CompositorState): void {
 
 export function getCheckpointOverridesForCondition(
   state: CompositorState,
-  condition: WeatherCondition
+  condition: WeatherCondition,
 ): CheckpointOverrides {
   // User overrides only - defaults are now baked into getBaseParamsForCondition
-  return state.checkpointOverrides[condition] ?? createEmptyCheckpointOverrides();
+  return (
+    state.checkpointOverrides[condition] ?? createEmptyCheckpointOverrides()
+  );
 }
 
 export function exportToFile(state: CompositorState): void {

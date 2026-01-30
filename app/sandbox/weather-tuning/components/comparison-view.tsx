@@ -5,7 +5,11 @@ import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
 import type { WeatherCondition } from "@/components/tool-ui/weather-widget/schema";
 import { WeatherEffectsCanvas } from "@/components/tool-ui/weather-widget/effects";
-import { CONDITION_LABELS, WEATHER_CONDITIONS } from "../../weather-compositor/presets";
+import { mapCompositorParamsToCanvasProps } from "../lib/map-to-canvas-props";
+import {
+  CONDITION_LABELS,
+  WEATHER_CONDITIONS,
+} from "../../weather-compositor/presets";
 import type { FullCompositorParams } from "../../weather-compositor/presets";
 import type { CompareMode } from "../types";
 
@@ -21,65 +25,6 @@ interface ComparisonViewProps {
   onSelectCompareTarget: (target: WeatherCondition) => void;
 }
 
-function mapParamsToCanvasProps(params: FullCompositorParams) {
-  return {
-    layers: params.layers,
-    celestial: {
-      timeOfDay: params.celestial.timeOfDay,
-      moonPhase: params.celestial.moonPhase,
-      starDensity: params.celestial.starDensity,
-      celestialX: params.celestial.celestialX,
-      celestialY: params.celestial.celestialY,
-      sunSize: params.celestial.sunSize,
-      moonSize: params.celestial.moonSize,
-      sunGlowIntensity: params.celestial.sunGlowIntensity,
-      sunGlowSize: params.celestial.sunGlowSize,
-      sunRayCount: params.celestial.sunRayCount,
-      sunRayLength: params.celestial.sunRayLength,
-      sunRayIntensity: params.celestial.sunRayIntensity,
-      moonGlowIntensity: params.celestial.moonGlowIntensity,
-      moonGlowSize: params.celestial.moonGlowSize,
-    },
-    cloud: {
-      coverage: params.cloud.coverage,
-      density: params.cloud.density,
-      softness: params.cloud.softness,
-      cloudScale: params.cloud.cloudScale,
-      windSpeed: params.cloud.windSpeed,
-      windAngle: params.cloud.windAngle,
-      turbulence: params.cloud.turbulence,
-      lightIntensity: params.cloud.lightIntensity,
-      ambientDarkness: params.cloud.ambientDarkness,
-      backlightIntensity: params.cloud.backlightIntensity,
-      numLayers: params.cloud.numLayers,
-    },
-    rain: {
-      glassIntensity: params.rain.glassIntensity,
-      glassZoom: params.rain.zoom,
-      fallingIntensity: params.rain.fallingIntensity,
-      fallingSpeed: params.rain.fallingSpeed,
-      fallingAngle: params.rain.fallingAngle,
-      fallingStreakLength: params.rain.fallingStreakLength,
-      fallingLayers: params.rain.fallingLayers,
-    },
-    lightning: {
-      enabled: params.layers.lightning,
-      autoMode: params.lightning.autoMode,
-      autoInterval: params.lightning.autoInterval,
-      flashIntensity: params.lightning.glowIntensity,
-      branchDensity: params.lightning.branchDensity,
-    },
-    snow: {
-      intensity: params.snow.intensity,
-      layers: params.snow.layers,
-      fallSpeed: params.snow.fallSpeed,
-      windSpeed: params.snow.windSpeed,
-      drift: params.snow.drift,
-      flakeSize: params.snow.flakeSize,
-    },
-  };
-}
-
 export function ComparisonView({
   condition,
   params,
@@ -91,11 +36,20 @@ export function ComparisonView({
   onToggleMode,
   onSelectCompareTarget,
 }: ComparisonViewProps) {
-  const tunedCanvasProps = useMemo(() => mapParamsToCanvasProps(params), [params]);
-  const baseCanvasProps = useMemo(() => mapParamsToCanvasProps(baseParams), [baseParams]);
+  const tunedCanvasProps = useMemo(
+    () => mapCompositorParamsToCanvasProps(params),
+    [params],
+  );
+  const baseCanvasProps = useMemo(
+    () => mapCompositorParamsToCanvasProps(baseParams),
+    [baseParams],
+  );
   const targetCanvasProps = useMemo(
-    () => (compareTargetParams ? mapParamsToCanvasProps(compareTargetParams) : null),
-    [compareTargetParams]
+    () =>
+      compareTargetParams
+        ? mapCompositorParamsToCanvasProps(compareTargetParams)
+        : null,
+    [compareTargetParams],
   );
 
   const label = CONDITION_LABELS[condition];
@@ -127,7 +81,10 @@ export function ComparisonView({
               Base
             </div>
             <div className="relative h-[300px] bg-black">
-              <WeatherEffectsCanvas className="size-full" {...baseCanvasProps} />
+              <WeatherEffectsCanvas
+                className="size-full"
+                {...baseCanvasProps}
+              />
             </div>
           </div>
           <div className="flex-1">
@@ -135,7 +92,10 @@ export function ComparisonView({
               Tuned
             </div>
             <div className="relative h-[300px] bg-black">
-              <WeatherEffectsCanvas className="size-full" {...tunedCanvasProps} />
+              <WeatherEffectsCanvas
+                className="size-full"
+                {...tunedCanvasProps}
+              />
             </div>
           </div>
         </div>
@@ -172,7 +132,10 @@ export function ComparisonView({
                 {label}
               </div>
               <div className="relative h-[300px] bg-black">
-                <WeatherEffectsCanvas className="size-full" {...tunedCanvasProps} />
+                <WeatherEffectsCanvas
+                  className="size-full"
+                  {...tunedCanvasProps}
+                />
               </div>
             </div>
             <div className="flex-1">
@@ -227,7 +190,10 @@ export function ComparisonView({
               {label}
             </div>
             <div className="relative h-[300px] bg-black">
-              <WeatherEffectsCanvas className="size-full" {...tunedCanvasProps} />
+              <WeatherEffectsCanvas
+                className="size-full"
+                {...tunedCanvasProps}
+              />
             </div>
           </div>
           <div className="flex-1">
@@ -235,7 +201,10 @@ export function ComparisonView({
               {targetLabel}
             </div>
             <div className="relative h-[300px] bg-black">
-              <WeatherEffectsCanvas className="size-full" {...targetCanvasProps} />
+              <WeatherEffectsCanvas
+                className="size-full"
+                {...targetCanvasProps}
+              />
             </div>
           </div>
         </div>

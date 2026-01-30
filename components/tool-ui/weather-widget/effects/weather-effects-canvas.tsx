@@ -125,10 +125,10 @@ const DEFAULT_CELESTIAL: CelestialParams = {
   sunSize: 0.14,
   moonSize: 0.17,
   sunGlowIntensity: 3.05,
-  sunGlowSize: 0.30,
+  sunGlowSize: 0.3,
   sunRayCount: 6,
   sunRayLength: 3.0,
-  sunRayIntensity: 0.10,
+  sunRayIntensity: 0.1,
   moonGlowIntensity: 3.45,
   moonGlowSize: 0.94,
   skyBrightness: 1.0,
@@ -1229,17 +1229,18 @@ float snowflakeShape(vec2 uv, float size, float seed, float rotation) {
   return shape + glow * 0.4;
 }
 
-vec2 getWind(vec2 uv, float time, float layerDepth) {
+vec2 getWind(float layerDepth) {
+  // Important: keep wind independent of uv to avoid warping the entire field.
+  // Per-flake turbulence/drift is applied later (to flakePos) so the result
+  // reads like particles, not like a screen-space displacement/refraction map.
   vec2 baseWind = vec2(cos(u_windAngle), 0.0) * u_windSpeed;
-  float gustFreq = 0.5 + u_turbulence;
-  float gust = noise(uv * gustFreq + time * 0.2) * 2.0 - 1.0;
-  vec2 eddy = vec2(
-    noise(uv * 2.0 + time * 0.3 + vec2(0.0, 100.0)) - 0.5,
-    noise(uv * 2.0 + time * 0.3 + vec2(100.0, 0.0)) - 0.5
-  ) * u_turbulence * 0.5;
-  float heightFactor = 1.0 + uv.y * u_windShear;
   float windResponse = mix(0.3, 1.0, 1.0 - layerDepth);
-  return (baseWind * (0.7 + gust * 0.3) + eddy) * heightFactor * windResponse;
+
+  // Model "wind shear" as stronger motion in foreground layers rather than a
+  // screen-space gradient (which can make the whole effect look bent).
+  float shearResponse = 1.0 + u_windShear * (1.0 - layerDepth) * 0.35;
+
+  return baseWind * windResponse * shearResponse;
 }
 
 float sparkle(vec2 cellId, float time, float seed) {
@@ -1268,11 +1269,8 @@ vec3 snowLayer(vec2 uv, float time, float layerIndex, float totalLayers) {
   vec2 p = (uv + layerOffset) * layerScale;
   p.y += time * layerSpeed * 2.0;
 
-  vec2 baseWind = getWind(uv, time, depth);
+  vec2 baseWind = getWind(depth);
   p.x += time * baseWind.x * 0.3;
-
-  float driftPhase = layerIndex * 1.7;
-  p.x += sin(time * 0.5 + p.y * 0.1 + driftPhase) * u_drift * 2.0;
 
   vec2 id = floor(p);
   vec2 gv = fract(p) - 0.5;
@@ -1301,6 +1299,19 @@ vec3 snowLayer(vec2 uv, float time, float layerIndex, float totalLayers) {
       float flutterAmp = u_flutter * 0.15 * (1.0 - depth);
       flakePos.x += sin(time * 3.0 + flutterPhase) * flutterAmp;
       flakePos.y += cos(time * 2.5 + flutterPhase * 1.3) * flutterAmp * 0.5;
+
+      // Per-flake drift (bounded) — avoid bending the whole field by not applying
+      // sinusoidal offsets to p (the grid coordinate system).
+      float driftPhase = h4 * PI * 2.0 + layerIndex * 1.7;
+      flakePos.x += sin(time * 0.55 + driftPhase) * u_drift * 0.18;
+
+      // Per-flake turbulence (bounded) — adds gusty motion without warping UVs.
+      float turbFreq = 0.6 + u_turbulence * 1.4;
+      vec2 turb = vec2(
+        noise(cellId * 0.17 + time * turbFreq),
+        noise(cellId.yx * 0.17 + time * turbFreq + 17.0)
+      ) - 0.5;
+      flakePos += turb * (u_turbulence * 0.22) * (1.0 - depth);
 
       vec2 localUV = gv - offs - flakePos;
 
@@ -1378,7 +1389,10 @@ const allocatedWeatherWebglCanvases = new Set<HTMLCanvasElement>();
 
 function tryAcquireWeatherWebglCanvas(canvas: HTMLCanvasElement): boolean {
   if (allocatedWeatherWebglCanvases.has(canvas)) return true;
-  if (allocatedWeatherWebglCanvases.size >= MAX_CONCURRENT_WEATHER_WEBGL_CANVASES) return false;
+  if (
+    allocatedWeatherWebglCanvases.size >= MAX_CONCURRENT_WEATHER_WEBGL_CANVASES
+  )
+    return false;
   allocatedWeatherWebglCanvases.add(canvas);
   return true;
 }
@@ -1387,7 +1401,11 @@ function releaseWeatherWebglCanvas(canvas: HTMLCanvasElement): void {
   allocatedWeatherWebglCanvases.delete(canvas);
 }
 
-function createShader(gl: WebGL2RenderingContext, type: GLenum, source: string): WebGLShader | null {
+function createShader(
+  gl: WebGL2RenderingContext,
+  type: GLenum,
+  source: string,
+): WebGLShader | null {
   if (gl.isContextLost()) return null;
   const shader = gl.createShader(type);
   if (!shader) return null;
@@ -1410,7 +1428,11 @@ function createShader(gl: WebGL2RenderingContext, type: GLenum, source: string):
   return shader;
 }
 
-function createProgram(gl: WebGL2RenderingContext, vertexSource: string, fragmentSource: string): WebGLProgram | null {
+function createProgram(
+  gl: WebGL2RenderingContext,
+  vertexSource: string,
+  fragmentSource: string,
+): WebGLProgram | null {
   if (gl.isContextLost()) return null;
   const vertexShader = createShader(gl, gl.VERTEX_SHADER, vertexSource);
   const fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, fragmentSource);
@@ -1457,12 +1479,26 @@ interface Framebuffer {
   height: number;
 }
 
-function createFramebuffer(gl: WebGL2RenderingContext, width: number, height: number): Framebuffer | null {
+function createFramebuffer(
+  gl: WebGL2RenderingContext,
+  width: number,
+  height: number,
+): Framebuffer | null {
   const texture = gl.createTexture();
   if (!texture) return null;
 
   gl.bindTexture(gl.TEXTURE_2D, texture);
-  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, width, height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+  gl.texImage2D(
+    gl.TEXTURE_2D,
+    0,
+    gl.RGBA,
+    width,
+    height,
+    0,
+    gl.RGBA,
+    gl.UNSIGNED_BYTE,
+    null,
+  );
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
@@ -1475,7 +1511,13 @@ function createFramebuffer(gl: WebGL2RenderingContext, width: number, height: nu
   }
 
   gl.bindFramebuffer(gl.FRAMEBUFFER, fbo);
-  gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, texture, 0);
+  gl.framebufferTexture2D(
+    gl.FRAMEBUFFER,
+    gl.COLOR_ATTACHMENT0,
+    gl.TEXTURE_2D,
+    texture,
+    0,
+  );
 
   const status = gl.checkFramebufferStatus(gl.FRAMEBUFFER);
   if (status !== gl.FRAMEBUFFER_COMPLETE) {
@@ -1495,11 +1537,26 @@ function createFramebuffer(gl: WebGL2RenderingContext, width: number, height: nu
   return { fbo, texture, width, height };
 }
 
-function resizeFramebuffer(gl: WebGL2RenderingContext, fb: Framebuffer, width: number, height: number): void {
+function resizeFramebuffer(
+  gl: WebGL2RenderingContext,
+  fb: Framebuffer,
+  width: number,
+  height: number,
+): void {
   if (fb.width === width && fb.height === height) return;
 
   gl.bindTexture(gl.TEXTURE_2D, fb.texture);
-  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, width, height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+  gl.texImage2D(
+    gl.TEXTURE_2D,
+    0,
+    gl.RGBA,
+    width,
+    height,
+    0,
+    gl.RGBA,
+    gl.UNSIGNED_BYTE,
+    null,
+  );
   gl.bindTexture(gl.TEXTURE_2D, null);
 
   fb.width = width;
@@ -1603,7 +1660,7 @@ export function WeatherEffectsCanvas({
       programCache.set(name, location);
       return location;
     },
-    []
+    [],
   );
 
   const stopRenderLoop = useCallback(() => {
@@ -1674,7 +1731,7 @@ export function WeatherEffectsCanvas({
         hasWebglBudgetSlotRef.current = false;
         if (process.env.NODE_ENV !== "production") {
           console.warn(
-            "[WeatherEffectsCanvas] Too many WebGL canvases on the page; rendering this widget without effects."
+            "[WeatherEffectsCanvas] Too many WebGL canvases on the page; rendering this widget without effects.",
           );
         }
         return false;
@@ -1690,7 +1747,9 @@ export function WeatherEffectsCanvas({
     if (!gl) {
       initFailedRef.current = true;
       if (process.env.NODE_ENV !== "production") {
-        console.warn("[WeatherEffectsCanvas] WebGL2 not supported; rendering without effects.");
+        console.warn(
+          "[WeatherEffectsCanvas] WebGL2 not supported; rendering without effects.",
+        );
       }
       return false;
     }
@@ -1702,12 +1761,36 @@ export function WeatherEffectsCanvas({
     }
 
     // Create programs
-    programsRef.current.celestial = createProgram(gl, FULLSCREEN_VERTEX, CELESTIAL_FRAGMENT);
-    programsRef.current.cloud = createProgram(gl, FULLSCREEN_VERTEX, CLOUD_FRAGMENT);
-    programsRef.current.rain = createProgram(gl, FULLSCREEN_VERTEX, RAIN_FRAGMENT);
-    programsRef.current.lightning = createProgram(gl, FULLSCREEN_VERTEX, LIGHTNING_FRAGMENT);
-    programsRef.current.snow = createProgram(gl, FULLSCREEN_VERTEX, SNOW_FRAGMENT);
-    programsRef.current.composite = createProgram(gl, FULLSCREEN_VERTEX, COMPOSITE_FRAGMENT);
+    programsRef.current.celestial = createProgram(
+      gl,
+      FULLSCREEN_VERTEX,
+      CELESTIAL_FRAGMENT,
+    );
+    programsRef.current.cloud = createProgram(
+      gl,
+      FULLSCREEN_VERTEX,
+      CLOUD_FRAGMENT,
+    );
+    programsRef.current.rain = createProgram(
+      gl,
+      FULLSCREEN_VERTEX,
+      RAIN_FRAGMENT,
+    );
+    programsRef.current.lightning = createProgram(
+      gl,
+      FULLSCREEN_VERTEX,
+      LIGHTNING_FRAGMENT,
+    );
+    programsRef.current.snow = createProgram(
+      gl,
+      FULLSCREEN_VERTEX,
+      SNOW_FRAGMENT,
+    );
+    programsRef.current.composite = createProgram(
+      gl,
+      FULLSCREEN_VERTEX,
+      COMPOSITE_FRAGMENT,
+    );
 
     // Require at least a sky + final composite so we can render something.
     if (!programsRef.current.celestial || !programsRef.current.composite) {
@@ -1744,7 +1827,17 @@ export function WeatherEffectsCanvas({
     const moonTexture = gl.createTexture();
     if (moonTexture) {
       gl.bindTexture(gl.TEXTURE_2D, moonTexture);
-      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([128, 128, 128, 255]));
+      gl.texImage2D(
+        gl.TEXTURE_2D,
+        0,
+        gl.RGBA,
+        1,
+        1,
+        0,
+        gl.RGBA,
+        gl.UNSIGNED_BYTE,
+        new Uint8Array([128, 128, 128, 255]),
+      );
       moonTextureRef.current = moonTexture;
 
       const image = new Image();
@@ -1754,19 +1847,40 @@ export function WeatherEffectsCanvas({
         if (!glCurrent || moonTextureRef.current !== moonTexture) return;
 
         glCurrent.bindTexture(gl.TEXTURE_2D, moonTexture);
-        glCurrent.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
+        glCurrent.texImage2D(
+          gl.TEXTURE_2D,
+          0,
+          gl.RGBA,
+          gl.RGBA,
+          gl.UNSIGNED_BYTE,
+          image,
+        );
         glCurrent.generateMipmap(gl.TEXTURE_2D);
-        glCurrent.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
-        glCurrent.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+        glCurrent.texParameteri(
+          gl.TEXTURE_2D,
+          gl.TEXTURE_MIN_FILTER,
+          gl.LINEAR_MIPMAP_LINEAR,
+        );
+        glCurrent.texParameteri(
+          gl.TEXTURE_2D,
+          gl.TEXTURE_MAG_FILTER,
+          gl.LINEAR,
+        );
         glCurrent.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
-        glCurrent.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+        glCurrent.texParameteri(
+          gl.TEXTURE_2D,
+          gl.TEXTURE_WRAP_T,
+          gl.CLAMP_TO_EDGE,
+        );
         moonTextureLoadedRef.current = true;
       };
       image.src = "/assets/moon-texture.jpg";
     }
 
     // Setup fullscreen quad
-    const positions = new Float32Array([-1, -1, 1, -1, -1, 1, -1, 1, 1, -1, 1, 1]);
+    const positions = new Float32Array([
+      -1, -1, 1, -1, -1, 1, -1, 1, 1, -1, 1, 1,
+    ]);
     const positionBuffer = gl.createBuffer();
     if (!positionBuffer) {
       if (gl.isContextLost()) {
@@ -1833,11 +1947,16 @@ export function WeatherEffectsCanvas({
       getUniformLocationCached(gl, program, name);
 
     // Lightning auto-trigger
-    if (props.layers.lightning && props.lightning.enabled && props.lightning.autoMode) {
+    if (
+      props.layers.lightning &&
+      props.lightning.enabled &&
+      props.lightning.autoMode
+    ) {
       if (time >= nextFlashTimeRef.current) {
         lastFlashTimeRef.current = time;
         strikeSeedRef.current = Math.random();
-        nextFlashTimeRef.current = time + props.lightning.autoInterval * (0.5 + Math.random());
+        nextFlashTimeRef.current =
+          time + props.lightning.autoInterval * (0.5 + Math.random());
       }
     }
 
@@ -1859,19 +1978,36 @@ export function WeatherEffectsCanvas({
 
       const p = props.celestial;
       gl.uniform1f(u(programs.celestial, "u_time"), time);
-      gl.uniform2f(u(programs.celestial, "u_resolution"), displayWidth, displayHeight);
+      gl.uniform2f(
+        u(programs.celestial, "u_resolution"),
+        displayWidth,
+        displayHeight,
+      );
       gl.uniform1f(u(programs.celestial, "u_timeOfDay"), p.timeOfDay);
       gl.uniform1f(u(programs.celestial, "u_moonPhase"), p.moonPhase);
       gl.uniform1f(u(programs.celestial, "u_starDensity"), p.starDensity);
-      gl.uniform2f(u(programs.celestial, "u_celestialPos"), p.celestialX, p.celestialY);
+      gl.uniform2f(
+        u(programs.celestial, "u_celestialPos"),
+        p.celestialX,
+        p.celestialY,
+      );
       gl.uniform1f(u(programs.celestial, "u_sunSize"), p.sunSize);
       gl.uniform1f(u(programs.celestial, "u_moonSize"), p.moonSize);
-      gl.uniform1f(u(programs.celestial, "u_sunGlowIntensity"), p.sunGlowIntensity);
+      gl.uniform1f(
+        u(programs.celestial, "u_sunGlowIntensity"),
+        p.sunGlowIntensity,
+      );
       gl.uniform1f(u(programs.celestial, "u_sunGlowSize"), p.sunGlowSize);
       gl.uniform1f(u(programs.celestial, "u_sunRayCount"), p.sunRayCount);
       gl.uniform1f(u(programs.celestial, "u_sunRayLength"), p.sunRayLength);
-      gl.uniform1f(u(programs.celestial, "u_sunRayIntensity"), p.sunRayIntensity);
-      gl.uniform1f(u(programs.celestial, "u_moonGlowIntensity"), p.moonGlowIntensity);
+      gl.uniform1f(
+        u(programs.celestial, "u_sunRayIntensity"),
+        p.sunRayIntensity,
+      );
+      gl.uniform1f(
+        u(programs.celestial, "u_moonGlowIntensity"),
+        p.moonGlowIntensity,
+      );
       gl.uniform1f(u(programs.celestial, "u_moonGlowSize"), p.moonGlowSize);
       gl.uniform1f(u(programs.celestial, "u_skyBrightness"), p.skyBrightness);
       gl.uniform1f(u(programs.celestial, "u_skySaturation"), p.skySaturation);
@@ -1880,7 +2016,10 @@ export function WeatherEffectsCanvas({
       gl.activeTexture(gl.TEXTURE0);
       gl.bindTexture(gl.TEXTURE_2D, moonTextureRef.current);
       gl.uniform1i(u(programs.celestial, "u_moonTexture"), 0);
-      gl.uniform1i(u(programs.celestial, "u_hasMoonTexture"), moonTextureLoadedRef.current ? 1 : 0);
+      gl.uniform1i(
+        u(programs.celestial, "u_hasMoonTexture"),
+        moonTextureLoadedRef.current ? 1 : 0,
+      );
 
       gl.drawArrays(gl.TRIANGLES, 0, 6);
       swapBuffers();
@@ -1905,7 +2044,11 @@ export function WeatherEffectsCanvas({
 
       const p = props.cloud;
       gl.uniform1f(u(programs.cloud, "u_time"), time);
-      gl.uniform2f(u(programs.cloud, "u_resolution"), displayWidth, displayHeight);
+      gl.uniform2f(
+        u(programs.cloud, "u_resolution"),
+        displayWidth,
+        displayHeight,
+      );
       gl.uniform1f(u(programs.cloud, "u_timeOfDay"), props.celestial.timeOfDay);
       gl.uniform1f(u(programs.cloud, "u_coverage"), p.coverage);
       gl.uniform1f(u(programs.cloud, "u_density"), p.density);
@@ -1944,10 +2087,20 @@ export function WeatherEffectsCanvas({
       const celestialBrightness = useSun
         ? Math.min(1.0, celestialP.sunGlowIntensity * 0.3) * sunVisible
         : Math.min(0.5, celestialP.moonGlowIntensity * 0.15) * moonVisible;
-      gl.uniform2f(u(programs.cloud, "u_celestialPos"), celestialP.celestialX, celestialY);
+      gl.uniform2f(
+        u(programs.cloud, "u_celestialPos"),
+        celestialP.celestialX,
+        celestialY,
+      );
       gl.uniform1f(u(programs.cloud, "u_celestialSize"), celestialSize);
-      gl.uniform1f(u(programs.cloud, "u_celestialBrightness"), celestialBrightness);
-      gl.uniform1f(u(programs.cloud, "u_backlightIntensity"), p.backlightIntensity);
+      gl.uniform1f(
+        u(programs.cloud, "u_celestialBrightness"),
+        celestialBrightness,
+      );
+      gl.uniform1f(
+        u(programs.cloud, "u_backlightIntensity"),
+        p.backlightIntensity,
+      );
 
       gl.drawArrays(gl.TRIANGLES, 0, 6);
       swapBuffers();
@@ -1965,15 +2118,25 @@ export function WeatherEffectsCanvas({
 
       const p = props.rain;
       gl.uniform1f(u(programs.rain, "u_time"), time);
-      gl.uniform2f(u(programs.rain, "u_resolution"), displayWidth, displayHeight);
+      gl.uniform2f(
+        u(programs.rain, "u_resolution"),
+        displayWidth,
+        displayHeight,
+      );
       gl.uniform1f(u(programs.rain, "u_glassIntensity"), p.glassIntensity);
       gl.uniform1f(u(programs.rain, "u_glassZoom"), p.glassZoom);
       gl.uniform1f(u(programs.rain, "u_fallingIntensity"), p.fallingIntensity);
       gl.uniform1f(u(programs.rain, "u_fallingSpeed"), p.fallingSpeed);
       gl.uniform1f(u(programs.rain, "u_fallingAngle"), p.fallingAngle);
-      gl.uniform1f(u(programs.rain, "u_fallingStreakLength"), p.fallingStreakLength);
+      gl.uniform1f(
+        u(programs.rain, "u_fallingStreakLength"),
+        p.fallingStreakLength,
+      );
       gl.uniform1i(u(programs.rain, "u_fallingLayers"), p.fallingLayers);
-      gl.uniform1f(u(programs.rain, "u_refractionStrength"), props.interactions.rainRefractionStrength);
+      gl.uniform1f(
+        u(programs.rain, "u_refractionStrength"),
+        props.interactions.rainRefractionStrength,
+      );
 
       gl.drawArrays(gl.TRIANGLES, 0, 6);
       swapBuffers();
@@ -1991,13 +2154,26 @@ export function WeatherEffectsCanvas({
 
       const p = props.lightning;
       gl.uniform1f(u(programs.lightning, "u_time"), time);
-      gl.uniform2f(u(programs.lightning, "u_resolution"), displayWidth, displayHeight);
+      gl.uniform2f(
+        u(programs.lightning, "u_resolution"),
+        displayWidth,
+        displayHeight,
+      );
       gl.uniform1i(u(programs.lightning, "u_enabled"), p.enabled ? 1 : 0);
       gl.uniform1f(u(programs.lightning, "u_flashIntensity"), p.flashIntensity);
       gl.uniform1f(u(programs.lightning, "u_branchDensity"), p.branchDensity);
-      gl.uniform1f(u(programs.lightning, "u_sceneIllumination"), props.interactions.lightningSceneIllumination);
-      gl.uniform1f(u(programs.lightning, "u_lastFlashTime"), lastFlashTimeRef.current);
-      gl.uniform1f(u(programs.lightning, "u_strikeSeed"), strikeSeedRef.current);
+      gl.uniform1f(
+        u(programs.lightning, "u_sceneIllumination"),
+        props.interactions.lightningSceneIllumination,
+      );
+      gl.uniform1f(
+        u(programs.lightning, "u_lastFlashTime"),
+        lastFlashTimeRef.current,
+      );
+      gl.uniform1f(
+        u(programs.lightning, "u_strikeSeed"),
+        strikeSeedRef.current,
+      );
 
       gl.drawArrays(gl.TRIANGLES, 0, 6);
       swapBuffers();
@@ -2015,7 +2191,11 @@ export function WeatherEffectsCanvas({
 
       const p = props.snow;
       gl.uniform1f(u(programs.snow, "u_time"), time);
-      gl.uniform2f(u(programs.snow, "u_resolution"), displayWidth, displayHeight);
+      gl.uniform2f(
+        u(programs.snow, "u_resolution"),
+        displayWidth,
+        displayHeight,
+      );
       gl.uniform1f(u(programs.snow, "u_intensity"), p.intensity);
       gl.uniform1i(u(programs.snow, "u_layers"), p.layers);
       gl.uniform1f(u(programs.snow, "u_fallSpeed"), p.fallSpeed);
@@ -2075,35 +2255,37 @@ export function WeatherEffectsCanvas({
       }
     };
 
-    canvas.addEventListener("webglcontextlost", onContextLost, { passive: false } as AddEventListenerOptions);
+    canvas.addEventListener("webglcontextlost", onContextLost, {
+      passive: false,
+    } as AddEventListenerOptions);
     canvas.addEventListener("webglcontextrestored", onContextRestored);
 
     const observer =
       typeof IntersectionObserver !== "undefined"
         ? new IntersectionObserver(
-          (entries) => {
-            const entry = entries[0];
-            const visible = Boolean(entry?.isIntersecting);
-            isVisibleRef.current = visible;
+            (entries) => {
+              const entry = entries[0];
+              const visible = Boolean(entry?.isIntersecting);
+              isVisibleRef.current = visible;
 
-            if (!visible) {
-              stopRenderLoop();
-              return;
-            }
-
-            if (!isRunningRef.current && !isContextLostRef.current) {
-              // If we have a valid context, resume. Otherwise re-init.
-              if (glRef.current && fbRef.current.a && fbRef.current.b) {
-                isRunningRef.current = true;
-                render();
-              } else if (initGL()) {
-                isRunningRef.current = true;
-                render();
+              if (!visible) {
+                stopRenderLoop();
+                return;
               }
-            }
-          },
-          { threshold: 0 }
-        )
+
+              if (!isRunningRef.current && !isContextLostRef.current) {
+                // If we have a valid context, resume. Otherwise re-init.
+                if (glRef.current && fbRef.current.a && fbRef.current.b) {
+                  isRunningRef.current = true;
+                  render();
+                } else if (initGL()) {
+                  isRunningRef.current = true;
+                  render();
+                }
+              }
+            },
+            { threshold: 0 },
+          )
         : null;
 
     // If IntersectionObserver isn't available, fall back to always-on rendering.
@@ -2122,8 +2304,14 @@ export function WeatherEffectsCanvas({
 
     return () => {
       observer?.disconnect();
-      canvas.removeEventListener("webglcontextlost", onContextLost as EventListener);
-      canvas.removeEventListener("webglcontextrestored", onContextRestored as EventListener);
+      canvas.removeEventListener(
+        "webglcontextlost",
+        onContextLost as EventListener,
+      );
+      canvas.removeEventListener(
+        "webglcontextrestored",
+        onContextRestored as EventListener,
+      );
       disposeGL();
       if (hasWebglBudgetSlotRef.current) {
         releaseWeatherWebglCanvas(canvas);

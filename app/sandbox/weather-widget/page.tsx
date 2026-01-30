@@ -209,7 +209,8 @@ function timeToISOString(timeOfDay: number): string {
   const hours = Math.floor(totalMinutes / 60);
   const minutes = Math.round(totalMinutes % 60);
   const now = new Date();
-  now.setHours(hours, minutes, 0, 0);
+  // Keep this aligned with `getTimeOfDay`, which interprets timestamps in UTC.
+  now.setUTCHours(hours, minutes, 0, 0);
   return now.toISOString();
 }
 
@@ -223,13 +224,11 @@ function LocationPill({ preset, isActive, onClick }: LocationPillProps) {
   return (
     <button
       onClick={onClick}
-      className={`
-        relative whitespace-nowrap rounded-full px-3 py-1.5 text-xs font-medium transition-all
-        ${isActive
+      className={`relative rounded-full px-3 py-1.5 text-xs font-medium whitespace-nowrap transition-all ${
+        isActive
           ? "bg-white/20 text-white ring-1 ring-white/30"
           : "bg-white/10 text-white/60 hover:bg-white/15 hover:text-white/80"
-        }
-      `}
+      } `}
     >
       <span className="block">{preset.location.split(",")[0]}</span>
       <span className="block text-[10px] opacity-60">{preset.description}</span>
@@ -241,15 +240,24 @@ export default function WeatherWidgetSandbox() {
   const [activePresetIndex, setActivePresetIndex] = useState(0);
   const activePreset = LOCATION_PRESETS[activePresetIndex];
 
-  const [{ timeOfDay, effectsEnabled, quality }] = useControls("Settings", () => ({
-    timeOfDay: { value: 0.5, min: 0, max: 1, step: 0.01, label: "Time of Day" },
-    effectsEnabled: { value: true, label: "Effects" },
-    quality: {
-      value: "high" as const,
-      options: ["low", "medium", "high", "auto"] as const,
-      label: "Quality",
-    },
-  }));
+  const [{ timeOfDay, effectsEnabled, quality }] = useControls(
+    "Settings",
+    () => ({
+      timeOfDay: {
+        value: 0.5,
+        min: 0,
+        max: 1,
+        step: 0.01,
+        label: "Time of Day",
+      },
+      effectsEnabled: { value: true, label: "Effects" },
+      quality: {
+        value: "high" as const,
+        options: ["low", "medium", "high", "auto"] as const,
+        label: "Quality",
+      },
+    }),
+  );
 
   const timestamp = useMemo(() => timeToISOString(timeOfDay), [timeOfDay]);
 
@@ -263,7 +271,7 @@ export default function WeatherWidgetSandbox() {
   };
 
   return (
-    <div className="relative min-h-screen bg-gradient-to-b from-slate-900 to-slate-950">
+    <div className="relative min-h-screen bg-linear-to-b from-slate-900 to-slate-950">
       <Leva
         collapsed={false}
         flat={false}

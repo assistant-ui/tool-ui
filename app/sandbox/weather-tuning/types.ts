@@ -26,4 +26,4 @@ export interface TuningState {
   signedOff: Set<WeatherCondition>;
 }
 
-export type TimeCheckpoint = "dawn" | "noon" | "dusk" | "midnight";
+export type { TimeCheckpoint } from "@/components/tool-ui/weather-widget/effects/tuning";

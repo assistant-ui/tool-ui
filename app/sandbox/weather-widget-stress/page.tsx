@@ -81,11 +81,15 @@ function timeToISOString(timeOfDay: number): string {
   const hours = Math.floor(totalMinutes / 60);
   const minutes = Math.round(totalMinutes % 60);
   const now = new Date();
-  now.setHours(hours, minutes, 0, 0);
+  // Keep this aligned with `getTimeOfDay`, which interprets timestamps in UTC.
+  now.setUTCHours(hours, minutes, 0, 0);
   return now.toISOString();
 }
 
-function baseTempForCondition(condition: WeatherCondition, unit: TemperatureUnit): number {
+function baseTempForCondition(
+  condition: WeatherCondition,
+  unit: TemperatureUnit,
+): number {
   const f: Record<WeatherCondition, number> = {
     clear: 78,
     "partly-cloudy": 70,
@@ -106,7 +110,9 @@ function baseTempForCondition(condition: WeatherCondition, unit: TemperatureUnit
   return Math.round(((tempF - 32) * 5) / 9);
 }
 
-function precipitationForCondition(condition: WeatherCondition): PrecipitationLevel | undefined {
+function precipitationForCondition(
+  condition: WeatherCondition,
+): PrecipitationLevel | undefined {
   switch (condition) {
     case "drizzle":
       return "light";
@@ -132,19 +138,20 @@ function buildForecast(
   const base = baseTempForCondition(condition, unit);
   const start = Math.floor(rand() * WEEKDAYS.length);
 
-  return Array.from({ length: 7 }).slice(0, 7).map((_, i) => {
-    const day = WEEKDAYS[(start + i) % WEEKDAYS.length]!;
-    const hi = base + Math.round((rand() - 0.4) * 10);
-    const lo = hi - (3 + Math.round(rand() * 8));
-    const maybeCondition =
-      i === 0 ? condition : pick(rand, CONDITIONS);
-    return {
-      day,
-      tempMin: lo,
-      tempMax: hi,
-      condition: maybeCondition,
-    };
-  });
+  return Array.from({ length: 7 })
+    .slice(0, 7)
+    .map((_, i) => {
+      const day = WEEKDAYS[(start + i) % WEEKDAYS.length]!;
+      const hi = base + Math.round((rand() - 0.4) * 10);
+      const lo = hi - (3 + Math.round(rand() * 8));
+      const maybeCondition = i === 0 ? condition : pick(rand, CONDITIONS);
+      return {
+        day,
+        tempMin: lo,
+        tempMax: hi,
+        condition: maybeCondition,
+      };
+    });
 }
 
 export default function WeatherWidgetStressPage() {
@@ -162,13 +169,25 @@ export default function WeatherWidgetStressPage() {
     fillCells: { value: true, label: "Fill grid cells" },
     remountAll: button(() => setRemountSeed((s) => s + 1)),
     autoRemount: { value: false, label: "Auto-remount" },
-    autoRemountSeconds: { value: 5, min: 1, max: 30, step: 1, label: "Auto-remount (s)" },
+    autoRemountSeconds: {
+      value: 5,
+      min: 1,
+      max: 30,
+      step: 1,
+      label: "Auto-remount (s)",
+    },
   }));
 
   const [timeControls, setTimeControls] = useControls("Time", () => ({
     timeOfDay: { value: 0.5, min: 0, max: 1, step: 0.001 },
     animate: { value: false, label: "Animate time" },
-    speed: { value: 0.03, min: 0.001, max: 0.2, step: 0.001, label: "Speed (Δ/second)" },
+    speed: {
+      value: 0.03,
+      min: 0.001,
+      max: 0.2,
+      step: 0.001,
+      label: "Speed (Δ/second)",
+    },
   }));
 
   const [effectsControls] = useControls("Effects", () => ({
@@ -183,7 +202,10 @@ export default function WeatherWidgetStressPage() {
   const [dataControls] = useControls("Data", () => ({
     includeUpdatedAt: { value: true },
     includeExtras: { value: true },
-    unit: { value: "fahrenheit" as const, options: ["fahrenheit", "celsius"] as const },
+    unit: {
+      value: "fahrenheit" as const,
+      options: ["fahrenheit", "celsius"] as const,
+    },
   }));
 
   const timeOfDayRef = useRef(timeControls.timeOfDay);
@@ -196,7 +218,8 @@ export default function WeatherWidgetStressPage() {
 
     const intervalMs = 120;
     const id = window.setInterval(() => {
-      const next = (timeOfDayRef.current + timeControls.speed * (intervalMs / 1000)) % 1;
+      const next =
+        (timeOfDayRef.current + timeControls.speed * (intervalMs / 1000)) % 1;
       timeOfDayRef.current = next;
       setTimeControls({ timeOfDay: next });
     }, intervalMs);
@@ -206,11 +229,17 @@ export default function WeatherWidgetStressPage() {
 
   useEffect(() => {
     if (!stress.autoRemount) return;
-    const id = window.setInterval(() => setRemountSeed((s) => s + 1), stress.autoRemountSeconds * 1000);
+    const id = window.setInterval(
+      () => setRemountSeed((s) => s + 1),
+      stress.autoRemountSeconds * 1000,
+    );
     return () => window.clearInterval(id);
   }, [stress.autoRemount, stress.autoRemountSeconds]);
 
-  const timestamp = useMemo(() => timeToISOString(timeControls.timeOfDay), [timeControls.timeOfDay]);
+  const timestamp = useMemo(
+    () => timeToISOString(timeControls.timeOfDay),
+    [timeControls.timeOfDay],
+  );
 
   const globalEffects = useMemo(() => {
     return {
@@ -218,7 +247,11 @@ export default function WeatherWidgetStressPage() {
       reducedMotion: effectsControls.reducedMotion,
       quality: effectsControls.quality,
     } as const;
-  }, [effectsControls.enabled, effectsControls.quality, effectsControls.reducedMotion]);
+  }, [
+    effectsControls.enabled,
+    effectsControls.quality,
+    effectsControls.reducedMotion,
+  ]);
 
   const gridItems = useMemo(() => {
     const items: Array<{
@@ -252,15 +285,21 @@ export default function WeatherWidgetStressPage() {
         condition,
         ...(includeExtras
           ? {
-            humidity:
-              condition === "fog" ? 95 : Math.round(clamp(30 + rand() * 70, 0, 100)),
-            windSpeed:
-              condition === "windy" ? Math.round(15 + rand() * 25) : Math.round(rand() * 20),
-            windDirection: Math.round(rand() * 360),
-            precipitation,
-            visibility:
-              condition === "fog" ? clamp(0.5 + rand() * 2.5, 0.1, 10) : clamp(3 + rand() * 10, 0.1, 15),
-          }
+              humidity:
+                condition === "fog"
+                  ? 95
+                  : Math.round(clamp(30 + rand() * 70, 0, 100)),
+              windSpeed:
+                condition === "windy"
+                  ? Math.round(15 + rand() * 25)
+                  : Math.round(rand() * 20),
+              windDirection: Math.round(rand() * 360),
+              precipitation,
+              visibility:
+                condition === "fog"
+                  ? clamp(0.5 + rand() * 2.5, 0.1, 10)
+                  : clamp(3 + rand() * 10, 0.1, 15),
+            }
           : {}),
       };
 
@@ -275,7 +314,7 @@ export default function WeatherWidgetStressPage() {
           unit={unit}
           updatedAt={includeUpdatedAt ? timestamp : undefined}
           effects={globalEffects}
-          className={stress.fillCells ? "max-w-none w-full" : undefined}
+          className={stress.fillCells ? "w-full max-w-none" : undefined}
         />
       );
 
@@ -318,15 +357,15 @@ export default function WeatherWidgetStressPage() {
             Weather Widget Stress Lab
           </h1>
           <p className="max-w-3xl text-sm text-zinc-400">
-            WebGL-safe sampler for the shipping weather effects. It renders a small
-            set of representative conditions so you can scrub time of day globally
-            and spot visual/correctness issues quickly.
+            WebGL-safe sampler for the shipping weather effects. It renders a
+            small set of representative conditions so you can scrub time of day
+            globally and spot visual/correctness issues quickly.
           </p>
           <div className="max-w-3xl rounded-lg border border-zinc-800 bg-zinc-950/40 p-3 text-xs text-zinc-400">
             <span className="font-medium text-zinc-200">Note:</span> Effects use{" "}
-            <span className="font-medium text-zinc-200">WebGL2</span>, and browsers
-            cap how many WebGL contexts can be active. This page intentionally caps
-            the sampler grid to{" "}
+            <span className="font-medium text-zinc-200">WebGL2</span>, and
+            browsers cap how many WebGL contexts can be active. This page
+            intentionally caps the sampler grid to{" "}
             <span className="font-mono text-zinc-200">
               {WEBGL_SAFE_WIDGET_COUNT}
             </span>{" "}
@@ -334,10 +373,12 @@ export default function WeatherWidgetStressPage() {
           </div>
           <div className="flex flex-wrap items-center gap-2 text-xs text-zinc-400">
             <span className="rounded border border-zinc-800 bg-zinc-900/40 px-2 py-1">
-              Widgets: <span className="font-mono text-zinc-200">{stress.count}</span>
+              Widgets:{" "}
+              <span className="font-mono text-zinc-200">{stress.count}</span>
             </span>
             <span className="rounded border border-zinc-800 bg-zinc-900/40 px-2 py-1">
-              Columns: <span className="font-mono text-zinc-200">{stress.columns}</span>
+              Columns:{" "}
+              <span className="font-mono text-zinc-200">{stress.columns}</span>
             </span>
             <span className="rounded border border-zinc-800 bg-zinc-900/40 px-2 py-1">
               Time:{" "}
@@ -359,14 +400,16 @@ export default function WeatherWidgetStressPage() {
             </span>
             <span className="rounded border border-zinc-800 bg-zinc-900/40 px-2 py-1">
               Quality:{" "}
-              <span className="font-mono text-zinc-200">{effectsControls.quality}</span>
+              <span className="font-mono text-zinc-200">
+                {effectsControls.quality}
+              </span>
             </span>
           </div>
         </header>
 
         <section className="space-y-3">
           <div className="flex items-center justify-between gap-3">
-            <h2 className="text-sm font-medium uppercase tracking-wider text-zinc-500">
+            <h2 className="text-sm font-medium tracking-wider text-zinc-500 uppercase">
               WebGL-safe condition sampler
             </h2>
             <div className="flex items-center gap-2 text-xs text-zinc-500">
@@ -385,7 +428,7 @@ export default function WeatherWidgetStressPage() {
           >
             {gridItems.map((item) => (
               <div key={item.key} className="space-y-1">
-                <div className="text-[10px] uppercase tracking-wider text-zinc-600">
+                <div className="text-[10px] tracking-wider text-zinc-600 uppercase">
                   {item.label}
                 </div>
                 {item.widget}
@@ -397,4 +440,3 @@ export default function WeatherWidgetStressPage() {
     </div>
   );
 }
-

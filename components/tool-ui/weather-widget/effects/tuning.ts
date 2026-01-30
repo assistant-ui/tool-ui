@@ -19,7 +19,12 @@ export const TIME_CHECKPOINTS: Record<TimeCheckpoint, number> = {
   midnight: 0.0,
 };
 
-const TIME_CHECKPOINT_ORDER: TimeCheckpoint[] = ["dawn", "noon", "dusk", "midnight"];
+export const TIME_CHECKPOINT_ORDER: TimeCheckpoint[] = [
+  "dawn",
+  "noon",
+  "dusk",
+  "midnight",
+];
 
 export interface WeatherEffectsOverrides {
   layers?: Partial<LayerToggles>;
@@ -63,7 +68,7 @@ export function getNearestCheckpoint(timeOfDay: number): TimeCheckpoint {
 
 function mergeGroup<T extends object>(
   base: Partial<T> | undefined,
-  override: Partial<T> | undefined
+  override: Partial<T> | undefined,
 ): Partial<T> | undefined {
   if (!base && !override) return undefined;
   return { ...(base ?? {}), ...(override ?? {}) };
@@ -77,7 +82,7 @@ function mergeGroup<T extends object>(
  */
 export function applyWeatherEffectsOverrides(
   base: WeatherEffectsCanvasProps,
-  overrides: WeatherEffectsOverrides
+  overrides: WeatherEffectsOverrides,
 ): WeatherEffectsCanvasProps {
   return {
     layers: mergeGroup(base.layers, overrides.layers),
@@ -89,4 +94,3 @@ export function applyWeatherEffectsOverrides(
     interactions: mergeGroup(base.interactions, overrides.interactions),
   };
 }
-
