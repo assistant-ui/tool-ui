@@ -90,6 +90,66 @@ export interface InteractionParams {
   lightningSceneIllumination: number;
 }
 
+export interface PostProcessParams {
+  enabled: boolean;
+
+  // ---------------------------------------------------------------------------
+  // Aerial perspective / haze
+  // ---------------------------------------------------------------------------
+  /**
+   * 0 = clear air, 1 = heavy haze/fog.
+   * This is intended to be driven by visibility (and optionally condition).
+   */
+  haze: number;
+  /**
+   * Controls how much haze concentrates near the horizon (bottom of the scene).
+   * 0 = uniform, 1 = strongly horizon-weighted.
+   */
+  hazeHorizon: number;
+  /**
+   * Additional desaturation applied by haze (scaled by `haze`).
+   * 0 = none, 1 = strong.
+   */
+  hazeDesaturation: number;
+  /**
+   * Contrast compression applied by haze (scaled by `haze`).
+   * 0 = none, 1 = strong.
+   */
+  hazeContrast: number;
+
+  // ---------------------------------------------------------------------------
+  // Forward-scatter bloom / glare
+  // ---------------------------------------------------------------------------
+  bloomIntensity: number;
+  bloomThreshold: number;
+  bloomKnee: number;
+  /**
+   * Blur radius in pixels at 1x DPR. Higher values = softer bloom.
+   */
+  bloomRadius: number;
+  /**
+   * Scales sampling offsets so we can reduce bloom cost on large canvases.
+   * 1 = normal, >1 = fewer effective taps, <1 = higher quality.
+   */
+  bloomTapScale: number;
+
+  // ---------------------------------------------------------------------------
+  // Exposure response (lightning overexposure + recovery)
+  // ---------------------------------------------------------------------------
+  exposureIntensity: number;
+  exposureDesaturation: number;
+  exposureRecovery: number;
+
+  // ---------------------------------------------------------------------------
+  // Crepuscular rays (screen-space shafts)
+  // ---------------------------------------------------------------------------
+  godRayIntensity: number;
+  godRayDecay: number;
+  godRayDensity: number;
+  godRayWeight: number;
+  godRaySamples: number;
+}
+
 export interface LayerToggles {
   celestial: boolean;
   clouds: boolean;
@@ -112,6 +172,7 @@ export interface WeatherEffectsCanvasProps {
   lightning?: Partial<LightningParams>;
   snow?: Partial<SnowParams>;
   interactions?: Partial<InteractionParams>;
+  post?: Partial<PostProcessParams>;
 }
 
 // =============================================================================
@@ -202,6 +263,31 @@ const DEFAULT_INTERACTIONS: InteractionParams = {
   lightningSceneIllumination: 0.6,
 };
 
+const DEFAULT_POST: PostProcessParams = {
+  enabled: true,
+
+  haze: 0.0,
+  hazeHorizon: 0.8,
+  hazeDesaturation: 0.35,
+  hazeContrast: 0.6,
+
+  bloomIntensity: 0.0,
+  bloomThreshold: 0.82,
+  bloomKnee: 0.35,
+  bloomRadius: 1.2,
+  bloomTapScale: 1.0,
+
+  exposureIntensity: 0.0,
+  exposureDesaturation: 0.25,
+  exposureRecovery: 1.0,
+
+  godRayIntensity: 0.0,
+  godRayDecay: 0.965,
+  godRayDensity: 0.9,
+  godRayWeight: 0.35,
+  godRaySamples: 16,
+};
+
 // =============================================================================
 // SHADERS
 // =============================================================================
@@ -247,6 +333,7 @@ uniform sampler2D u_moonTexture;
 uniform bool u_hasMoonTexture;
 
 #define PI 3.14159265359
+#define GODRAY_MAX_SAMPLES 32
 #define TAU 6.28318530718
 
 float hash(vec2 p) {
@@ -617,7 +704,10 @@ void main() {
     color = mix(color, moon.rgb, alpha) + moon.rgb * (1.0 - moon.a) * moonFade;
   }
 
-  fragColor = vec4(color, 1.0);
+  // Alpha is reserved for a cloud-occlusion mask (used by post-processing like
+  // crepuscular rays). The celestial pass contains no cloud coverage, so it
+  // writes 0.
+  fragColor = vec4(color, 0.0);
 }
 `;
 
@@ -811,7 +901,9 @@ void main() {
     accumulatedAlpha = accumulatedAlpha + alpha * (1.0 - accumulatedAlpha);
   }
 
-  fragColor = vec4(color, 1.0);
+  // Preserve cloud opacity as alpha so later passes can keep the mask intact
+  // (for god rays / atmospheric post-processing).
+  fragColor = vec4(color, accumulatedAlpha);
 }
 `;
 
@@ -997,20 +1089,20 @@ void main() {
   vec2 refractedUV = UV + totalRefraction;
   refractedUV = clamp(refractedUV, 0.0, 1.0);
 
-  vec3 color = texture(u_sceneTexture, refractedUV).rgb;
+  vec4 scene = texture(u_sceneTexture, refractedUV);
+  vec3 color = scene.rgb;
 
   // Subtle specular on rain
   float rainMagnitude = length(fallingRainOffset);
   if (rainMagnitude > 0.001) {
-    vec3 refractedLight = texture(u_sceneTexture, refractedUV).rgb;
-    float brightness = dot(refractedLight, vec3(0.299, 0.587, 0.114));
+    float brightness = dot(scene.rgb, vec3(0.299, 0.587, 0.114));
     float specular = rainMagnitude * 15.0 * (0.1 + brightness * 0.9);
     color += vec3(0.8, 0.85, 0.95) * specular * 0.3;
   }
 
   color += vec3(0.1, 0.12, 0.15) * c.x * 0.5;
 
-  fragColor = vec4(color, 1.0);
+  fragColor = vec4(color, scene.a);
 }
 `;
 
@@ -1223,14 +1315,31 @@ void main() {
   float afterimageT = clamp(timeSinceStrike / afterimageDuration, 0.0, 1.0);
   float afterimage = timeSinceStrike < 0.0 ? 0.0 : (1.0 - easeInSine(afterimageT));
 
-  float sceneFlash = flash * u_sceneIllumination;
   vec3 color = scene.rgb;
-  color += vec3(0.3, 0.32, 0.4) * sceneFlash;
 
   if (flash > 0.01 || afterimage > 0.01) {
     vec2 strikeHash = hash22(vec2(u_strikeSeed * 123.456, u_strikeSeed * 789.012));
     vec2 boltStart = vec2((0.3 + strikeHash.x * 0.4) * aspect, 1.05);
     vec2 boltEnd = vec2(boltStart.x + (strikeHash.x - 0.5) * 0.4, -0.05);
+
+    float straightDist = distToSegment(uv, boltStart, boltEnd);
+
+    // Always apply the broad source glow (cheap). If this is inside the early-out
+    // region it will get hard-clipped and look like a visible “container” around
+    // the bolt.
+    float sourceGlow = exp(-length(uv - boltStart) * 3.0);
+    color += vec3(0.4, 0.45, 0.6) * sourceGlow * afterimage * 0.3;
+
+    // Cheap early-out: most pixels are far from the bolt path.
+    // This avoids running the expensive segment/branch distance loops when the
+    // contribution would be effectively zero.
+    float distLimit = 0.18 + u_branchDensity * 0.25 + u_flashIntensity * 0.05;
+    float feather = 0.08;
+    float region = 1.0 - smoothstep(distLimit - feather, distLimit, straightDist);
+    if (region <= 0.0005) {
+      fragColor = vec4(color, scene.a);
+      return;
+    }
 
     float displacementAmt = 0.15;
     float mainDist = mainBoltDistance(uv, boltStart, boltEnd, u_strikeSeed, displacementAmt);
@@ -1252,14 +1361,11 @@ void main() {
     float branchAfterglowStrength = exp(-branchAfterglowDist * 80.0) * branchBrightness * afterimage * 0.4;
     vec3 branchAfterglow = afterglowColor * branchAfterglowStrength;
 
-    color += (mainCore + branchCore) * max(flash, 0.0);
-    color += (mainAfterglow + branchAfterglow) * afterimage;
-
-    float sourceGlow = exp(-length(uv - boltStart) * 3.0);
-    color += vec3(0.4, 0.45, 0.6) * sourceGlow * afterimage * 0.3;
+    color += (mainCore + branchCore) * max(flash, 0.0) * region;
+    color += (mainAfterglow + branchAfterglow) * afterimage * region;
   }
 
-  fragColor = vec4(color, 1.0);
+  fragColor = vec4(color, scene.a);
 }
 `;
 
@@ -1457,11 +1563,11 @@ void main() {
 
   vec3 color = scene.rgb + snowColor * snow + sparkleColor * totalSparkle;
 
-  fragColor = vec4(color, 1.0);
+  fragColor = vec4(color, scene.a);
 }
 `;
 
-// Final composite (just passes through, but could add post-processing)
+// Final composite: post-processing (atmosphere + camera response)
 const COMPOSITE_FRAGMENT = /* glsl */ `#version 300 es
 precision highp float;
 
@@ -1469,9 +1575,280 @@ in vec2 v_uv;
 out vec4 fragColor;
 
 uniform sampler2D u_sceneTexture;
+uniform float u_time;
+uniform vec2 u_resolution;
+uniform float u_timeOfDay;
+uniform vec2 u_sunPos;
+uniform float u_sunVisible;
+uniform float u_lastFlashTime;
+uniform float u_strikeSeed;
+uniform float u_lightningSceneIllumination;
+
+uniform bool u_postEnabled;
+
+// Aerial perspective / haze
+uniform float u_haze;
+uniform float u_hazeHorizon;
+uniform float u_hazeDesaturation;
+uniform float u_hazeContrast;
+
+// Bloom / glare
+uniform float u_bloomIntensity;
+uniform float u_bloomThreshold;
+uniform float u_bloomKnee;
+uniform float u_bloomRadius;
+uniform float u_bloomTapScale;
+
+// Exposure response (lightning)
+uniform float u_exposureIntensity;
+uniform float u_exposureDesaturation;
+uniform float u_exposureRecovery;
+
+// Crepuscular rays
+uniform float u_godRayIntensity;
+uniform float u_godRayDecay;
+uniform float u_godRayDensity;
+uniform float u_godRayWeight;
+uniform int u_godRaySamples;
+
+#define PI 3.14159265359
+#define GODRAY_MAX_SAMPLES 32
+
+float saturate(float x) {
+  return clamp(x, 0.0, 1.0);
+}
+
+float luminance(vec3 c) {
+  return dot(c, vec3(0.299, 0.587, 0.114));
+}
+
+// -----------------------------------------------------------------------------
+// Lightning flash envelope (mirrors lightning pass timing)
+// -----------------------------------------------------------------------------
+float easeOutSine(float t) { return sin(t * PI * 0.5); }
+float easeInSine(float t) { return 1.0 - cos(t * PI * 0.5); }
+float easeInOutSine(float t) { return -(cos(PI * t) - 1.0) * 0.5; }
+float easeOutQuad(float t) { return 1.0 - (1.0 - t) * (1.0 - t); }
+float easeOutCubic(float t) { float inv = 1.0 - t; return 1.0 - inv * inv * inv; }
+
+float hash11(float p) {
+  p = fract(p * 0.1031);
+  p *= p + 33.33;
+  p *= p + p;
+  return fract(p);
+}
+
+float flashEnvelope(float timeSinceStrike, float duration) {
+  if (timeSinceStrike < 0.0 || timeSinceStrike > duration) return 0.0;
+  float t = timeSinceStrike / duration;
+  float attackT = clamp(t / 0.03, 0.0, 1.0);
+  float attack = easeOutCubic(attackT);
+  float sustainT = clamp((t - 0.05) / 0.65, 0.0, 1.0);
+  float sustain = 1.0 - easeInOutSine(sustainT);
+  float decay = exp(-t * 2.0);
+  decay = mix(decay, easeOutSine(1.0 - t), 0.3);
+  float endT = clamp((t - 0.75) / 0.25, 0.0, 1.0);
+  float endFade = 1.0 - easeInSine(endT);
+  return attack * max(sustain, decay * 0.4) * endFade;
+}
+
+float restrikeEnvelope(float timeSinceStrike, float duration, float seed) {
+  float env = flashEnvelope(timeSinceStrike, duration * 0.7);
+  if (hash11(seed * 7.7) > 0.7) {
+    float restrike1 = flashEnvelope(timeSinceStrike - duration * 0.5, duration * 0.3);
+    env = max(env, restrike1 * 0.6);
+  }
+  if (hash11(seed * 11.3) > 0.85) {
+    float restrike2 = flashEnvelope(timeSinceStrike - duration * 0.75, duration * 0.2);
+    env = max(env, restrike2 * 0.4);
+  }
+  return env;
+}
+
+// -----------------------------------------------------------------------------
+// Post-process building blocks
+// -----------------------------------------------------------------------------
+float getSunAltitudeFromTimeOfDay(float timeOfDay) {
+  // 0..1 timeOfDay -> -1..1 altitude (mirrors cloud/celestial assumptions)
+  float sunAlt = timeOfDay < 0.5 ? timeOfDay * 2.0 : 2.0 - timeOfDay * 2.0;
+  return sunAlt * 2.0 - 1.0;
+}
+
+vec3 applyHaze(vec3 color, vec2 uv) {
+  float haze = saturate(u_haze);
+  if (haze <= 0.0001) return color;
+
+  float horizon = pow(1.0 - uv.y, 1.8);
+  float hazeWeight = haze * mix(1.0, horizon, saturate(u_hazeHorizon));
+
+  // Slight horizon lift (mix towards a sky-tinted haze color).
+  float sunAlt = getSunAltitudeFromTimeOfDay(u_timeOfDay);
+  float daylight = smoothstep(-0.12, 0.1, sunAlt);
+  vec3 hazeDay = vec3(0.60, 0.70, 0.85);
+  vec3 hazeNight = vec3(0.06, 0.07, 0.10);
+  vec3 hazeColor = mix(hazeNight, hazeDay, daylight);
+  color = mix(color, hazeColor, hazeWeight * 0.55);
+
+  // Contrast compression (towards mid gray).
+  float contrast = saturate(1.0 - hazeWeight * saturate(u_hazeContrast));
+  color = mix(vec3(0.5), color, contrast);
+
+  // Slight desaturation.
+  float gray = luminance(color);
+  float sat = saturate(1.0 - hazeWeight * saturate(u_hazeDesaturation));
+  color = mix(vec3(gray), color, sat);
+
+  return color;
+}
+
+vec3 bloomTap(vec2 uv) {
+  vec3 c = texture(u_sceneTexture, clamp(uv, 0.0, 1.0)).rgb;
+  float l = luminance(c);
+  float knee = max(0.0001, u_bloomKnee);
+  float m = smoothstep(u_bloomThreshold, u_bloomThreshold + knee, l);
+  return c * m;
+}
+
+vec3 computeBloom(vec2 uv) {
+  float intensity = u_bloomIntensity;
+  if (intensity <= 0.0001) return vec3(0.0);
+
+  vec2 texel = 1.0 / max(u_resolution, vec2(1.0));
+  // Interpret bloomRadius as a scene-relative scalar, not literal pixels.
+  // This keeps the control meaningful across widget sizes and DPR.
+  float radiusPx = max(0.0, u_bloomRadius) * (u_resolution.y * 0.02);
+  radiusPx *= max(0.25, u_bloomTapScale);
+  vec2 d = texel * radiusPx;
+
+  // 9-tap blur (center + 4 cardinal + 4 diagonal). Weights sum to 1.
+  vec3 sum = vec3(0.0);
+  sum += bloomTap(uv) * 0.20;
+  sum += bloomTap(uv + vec2( d.x, 0.0)) * 0.12;
+  sum += bloomTap(uv + vec2(-d.x, 0.0)) * 0.12;
+  sum += bloomTap(uv + vec2(0.0,  d.y)) * 0.12;
+  sum += bloomTap(uv + vec2(0.0, -d.y)) * 0.12;
+  sum += bloomTap(uv + vec2( d.x,  d.y)) * 0.08;
+  sum += bloomTap(uv + vec2(-d.x,  d.y)) * 0.08;
+  sum += bloomTap(uv + vec2( d.x, -d.y)) * 0.08;
+  sum += bloomTap(uv + vec2(-d.x, -d.y)) * 0.08;
+
+  return sum * intensity;
+}
+
+vec3 applyExposureResponse(vec3 color, float flashStrength) {
+  if (flashStrength <= 0.0001) return color;
+
+  // Treat flashStrength as already “intensity-scaled” (so the UI sliders are
+  // predictable). Use a smooth, LDR-friendly curve that still brightens values
+  // below 1.0 (Reinhard can cancel out gains for sub-1 values).
+  float t = saturate(flashStrength);
+  float gain = 1.0 + flashStrength * 2.2;
+  vec3 lifted = color * gain;
+  vec3 tonemapped = 1.0 - exp(-lifted);
+
+  vec3 outColor = mix(color, tonemapped, t);
+
+  // Subtle desaturation at peak flash.
+  float gray = luminance(outColor);
+  float desat = saturate(u_exposureDesaturation) * t;
+  outColor = mix(outColor, vec3(gray), desat);
+
+  // A tiny “white crush” at peak helps it read as sensor saturation.
+  outColor = mix(outColor, vec3(1.0), t * 0.06);
+
+  return outColor;
+}
+
+vec3 computeGodRays(vec2 uv) {
+  if (u_godRayIntensity <= 0.0001) return vec3(0.0);
+  if (u_godRaySamples <= 0) return vec3(0.0);
+  if (u_sunVisible <= 0.001) return vec3(0.0);
+
+  float sunAlt = getSunAltitudeFromTimeOfDay(u_timeOfDay);
+  float daylight = smoothstep(-0.12, 0.1, sunAlt);
+  // Crepuscular rays are most believable when the sun is low. This gating also
+  // prevents noon blowout even if the user cranks u_godRayIntensity.
+  float lowSun = 1.0 - smoothstep(0.25, 0.75, max(0.0, sunAlt));
+
+  // Clamp sun position to sampling domain; if it's far off-screen, rays look odd.
+  vec2 sunUV = clamp(u_sunPos, vec2(-0.25), vec2(1.25));
+  vec2 delta = (uv - sunUV) * (u_godRayDensity / float(u_godRaySamples));
+
+  vec2 coord = uv;
+  float illuminationDecay = 1.0;
+  float accum = 0.0;
+
+  // Hard cap for WebGL loop constraints.
+  for (int i = 0; i < GODRAY_MAX_SAMPLES; i++) {
+    if (i >= u_godRaySamples) break;
+    coord -= delta;
+    vec4 s = texture(u_sceneTexture, clamp(coord, 0.0, 1.0));
+
+    // Alpha encodes cloud opacity (0 = clear, 1 = fully occluded).
+    float transmittance = 1.0 - saturate(s.a);
+    float sampleLum = luminance(s.rgb);
+
+    // Require some brightness along the path so rays read like “sunlight leaking”.
+    // Use a high threshold so we don’t integrate the entire bright sky, which
+    // can quickly wash the scene to white at midday.
+    float brightMask = saturate((sampleLum - 0.85) / 0.15);
+    brightMask *= brightMask;
+    float raySample = transmittance * brightMask;
+
+    accum += raySample * illuminationDecay * u_godRayWeight;
+    illuminationDecay *= u_godRayDecay;
+  }
+
+  // Color: warm daylight shafts.
+  vec3 rayColor = mix(vec3(0.7, 0.72, 0.8), vec3(1.0, 0.92, 0.75), daylight);
+
+  float intensity = u_godRayIntensity * saturate(u_sunVisible) * daylight * lowSun;
+  return rayColor * accum * intensity;
+}
 
 void main() {
-  fragColor = texture(u_sceneTexture, v_uv);
+  vec4 scene = texture(u_sceneTexture, v_uv);
+  vec3 color = scene.rgb;
+
+  if (!u_postEnabled) {
+    fragColor = vec4(color, 1.0);
+    return;
+  }
+
+  // Rays first so they can be bloomed/overexposed later.
+  color += computeGodRays(v_uv);
+
+  // Bloom/glare (forward scatter).
+  color += computeBloom(v_uv);
+
+  // Lightning-driven exposure response (global camera feel).
+  float flashStrength = 0.0;
+  if (u_exposureIntensity > 0.0001) {
+    float timeSinceStrike = u_time - u_lastFlashTime;
+    float durationSec = 0.8;
+
+    float f = restrikeEnvelope(timeSinceStrike, durationSec, u_strikeSeed);
+    float afterimageDuration = durationSec * 1.5;
+    // Guard against 0 recovery which would “stick” the afterimage.
+    float afterT = clamp((timeSinceStrike * max(0.05, u_exposureRecovery)) / afterimageDuration, 0.0, 1.0);
+    float afterimage = timeSinceStrike < 0.0 ? 0.0 : (1.0 - easeInSine(afterT));
+
+    // Legacy “scene illumination” (kept separate from exposure so tuning the
+    // camera response doesn’t get unintentionally suppressed).
+    float sceneFlash = f * max(0.0, u_lightningSceneIllumination);
+    color += vec3(0.3, 0.32, 0.4) * sceneFlash;
+
+    // Exposure response: controlled directly by u_exposureIntensity.
+    // Keep the tail subtle; flash does the heavy lifting.
+    flashStrength = f * u_exposureIntensity;
+    flashStrength = max(flashStrength, afterimage * u_exposureIntensity * 0.12);
+    color = applyExposureResponse(color, flashStrength);
+  }
+
+  // Aerial perspective / haze as the final “air” grade.
+  color = applyHaze(color, v_uv);
+
+  fragColor = vec4(clamp(color, 0.0, 1.0), 1.0);
 }
 `;
 
@@ -1681,6 +2058,7 @@ export function WeatherEffectsCanvas({
   lightning: lightningProp,
   snow: snowProp,
   interactions: interactionsProp,
+  post: postProp,
 }: WeatherEffectsCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const glRef = useRef<WebGL2RenderingContext | null>(null);
@@ -1733,6 +2111,7 @@ export function WeatherEffectsCanvas({
     lightning: { ...DEFAULT_LIGHTNING, ...lightningProp },
     snow: { ...DEFAULT_SNOW, ...snowProp },
     interactions: { ...DEFAULT_INTERACTIONS, ...interactionsProp },
+    post: { ...DEFAULT_POST, ...postProp },
     dpr: dprProp,
   });
 
@@ -1744,6 +2123,7 @@ export function WeatherEffectsCanvas({
     lightning: { ...DEFAULT_LIGHTNING, ...lightningProp },
     snow: { ...DEFAULT_SNOW, ...snowProp },
     interactions: { ...DEFAULT_INTERACTIONS, ...interactionsProp },
+    post: { ...DEFAULT_POST, ...postProp },
     dpr: dprProp,
   };
 
@@ -2136,7 +2516,7 @@ export function WeatherEffectsCanvas({
       // Clear to black if no celestial
       gl.bindFramebuffer(gl.FRAMEBUFFER, writeFB.fbo);
       gl.viewport(0, 0, displayWidth, displayHeight);
-      gl.clearColor(0, 0, 0, 1);
+      gl.clearColor(0, 0, 0, 0);
       gl.clear(gl.COLOR_BUFFER_BIT);
       swapBuffers();
     }
@@ -2252,7 +2632,19 @@ export function WeatherEffectsCanvas({
     }
 
     // === PASS 4: Lightning ===
-    if (props.layers.lightning && programs.lightning) {
+    // Skip the lightning pass when it's inactive. Even with an early-return
+    // shader, a full-screen pass + texture read is measurable at 60fps.
+    const lightningDurationSec = 0.8;
+    const lightningAfterimageDuration = lightningDurationSec * 1.5;
+    const lightningTimeSinceStrike = time - lastFlashTimeRef.current;
+    const lightningActive =
+      props.layers.lightning &&
+      Boolean(programs.lightning) &&
+      props.lightning.enabled &&
+      lightningTimeSinceStrike >= 0 &&
+      lightningTimeSinceStrike <= lightningAfterimageDuration;
+
+    if (lightningActive && programs.lightning) {
       gl.bindFramebuffer(gl.FRAMEBUFFER, writeFB.fbo);
       gl.viewport(0, 0, displayWidth, displayHeight);
       gl.useProgram(programs.lightning);
@@ -2333,6 +2725,106 @@ export function WeatherEffectsCanvas({
       gl.activeTexture(gl.TEXTURE0);
       gl.bindTexture(gl.TEXTURE_2D, readFB.texture);
       gl.uniform1i(u(programs.composite, "u_sceneTexture"), 0);
+
+      // Common uniforms
+      gl.uniform1f(u(programs.composite, "u_time"), time);
+      gl.uniform2f(
+        u(programs.composite, "u_resolution"),
+        displayWidth,
+        displayHeight,
+      );
+      gl.uniform1f(
+        u(programs.composite, "u_timeOfDay"),
+        props.celestial.timeOfDay,
+      );
+
+      // Sun position (must match celestial shader logic for believable rays).
+      const t = props.celestial.timeOfDay;
+      const baseY = props.celestial.celestialY;
+      const belowHorizon = -0.25;
+      const sunRise = smoothstep(0.18, 0.32, t);
+      const sunSet = smoothstep(0.68, 0.82, t);
+      const sunVisible = sunRise * (1 - sunSet);
+      const sunY = belowHorizon + (baseY - belowHorizon) * sunVisible;
+      gl.uniform2f(
+        u(programs.composite, "u_sunPos"),
+        props.celestial.celestialX,
+        sunY,
+      );
+      gl.uniform1f(u(programs.composite, "u_sunVisible"), sunVisible);
+
+      // Lightning timing for exposure response.
+      gl.uniform1f(
+        u(programs.composite, "u_lastFlashTime"),
+        lastFlashTimeRef.current,
+      );
+      gl.uniform1f(
+        u(programs.composite, "u_strikeSeed"),
+        strikeSeedRef.current,
+      );
+      gl.uniform1f(
+        u(programs.composite, "u_lightningSceneIllumination"),
+        props.interactions.lightningSceneIllumination,
+      );
+
+      // Post-process controls
+      const post = props.post;
+      gl.uniform1i(
+        u(programs.composite, "u_postEnabled"),
+        post.enabled ? 1 : 0,
+      );
+
+      gl.uniform1f(u(programs.composite, "u_haze"), post.haze);
+      gl.uniform1f(u(programs.composite, "u_hazeHorizon"), post.hazeHorizon);
+      gl.uniform1f(
+        u(programs.composite, "u_hazeDesaturation"),
+        post.hazeDesaturation,
+      );
+      gl.uniform1f(u(programs.composite, "u_hazeContrast"), post.hazeContrast);
+
+      gl.uniform1f(
+        u(programs.composite, "u_bloomIntensity"),
+        post.bloomIntensity,
+      );
+      gl.uniform1f(
+        u(programs.composite, "u_bloomThreshold"),
+        post.bloomThreshold,
+      );
+      gl.uniform1f(u(programs.composite, "u_bloomKnee"), post.bloomKnee);
+      gl.uniform1f(u(programs.composite, "u_bloomRadius"), post.bloomRadius);
+      gl.uniform1f(
+        u(programs.composite, "u_bloomTapScale"),
+        post.bloomTapScale,
+      );
+
+      gl.uniform1f(
+        u(programs.composite, "u_exposureIntensity"),
+        post.exposureIntensity,
+      );
+      gl.uniform1f(
+        u(programs.composite, "u_exposureDesaturation"),
+        post.exposureDesaturation,
+      );
+      gl.uniform1f(
+        u(programs.composite, "u_exposureRecovery"),
+        post.exposureRecovery,
+      );
+
+      gl.uniform1f(
+        u(programs.composite, "u_godRayIntensity"),
+        post.godRayIntensity,
+      );
+      gl.uniform1f(u(programs.composite, "u_godRayDecay"), post.godRayDecay);
+      gl.uniform1f(
+        u(programs.composite, "u_godRayDensity"),
+        post.godRayDensity,
+      );
+      gl.uniform1f(u(programs.composite, "u_godRayWeight"), post.godRayWeight);
+      gl.uniform1i(
+        u(programs.composite, "u_godRaySamples"),
+        Math.max(0, Math.min(32, Math.floor(post.godRaySamples))),
+      );
+
       gl.drawArrays(gl.TRIANGLES, 0, 6);
     }
 

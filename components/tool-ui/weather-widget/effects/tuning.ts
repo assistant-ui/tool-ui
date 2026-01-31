@@ -8,6 +8,7 @@ import type {
   LightningParams,
   SnowParams,
   InteractionParams,
+  PostProcessParams,
 } from "./weather-effects-canvas";
 
 export type TimeCheckpoint = "dawn" | "noon" | "dusk" | "midnight";
@@ -34,6 +35,7 @@ export interface WeatherEffectsOverrides {
   lightning?: Partial<LightningParams>;
   snow?: Partial<SnowParams>;
   interactions?: Partial<InteractionParams>;
+  post?: Partial<PostProcessParams>;
 }
 
 export interface WeatherEffectsCheckpointOverrides {
@@ -92,5 +94,6 @@ export function applyWeatherEffectsOverrides(
     lightning: mergeGroup(base.lightning, overrides.lightning),
     snow: mergeGroup(base.snow, overrides.snow),
     interactions: mergeGroup(base.interactions, overrides.interactions),
+    post: mergeGroup(base.post, overrides.post),
   };
 }

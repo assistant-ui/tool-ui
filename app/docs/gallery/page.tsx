@@ -8,58 +8,62 @@ import { ItemCarousel } from "@/components/tool-ui/item-carousel";
 import { StatsDisplay } from "@/components/tool-ui/stats-display";
 
 const ApprovalCard = dynamic(() =>
-  import("@/components/tool-ui/approval-card").then((m) => m.ApprovalCard)
+  import("@/components/tool-ui/approval-card").then((m) => m.ApprovalCard),
 );
 const CitationList = dynamic(() =>
-  import("@/components/tool-ui/citation").then((m) => m.CitationList)
+  import("@/components/tool-ui/citation").then((m) => m.CitationList),
 );
 const ImageGallery = dynamic(() =>
-  import("@/components/tool-ui/image-gallery").then((m) => m.ImageGallery)
+  import("@/components/tool-ui/image-gallery").then((m) => m.ImageGallery),
 );
 const Video = dynamic(() =>
-  import("@/components/tool-ui/video").then((m) => m.Video)
+  import("@/components/tool-ui/video").then((m) => m.Video),
 );
 const Audio = dynamic(() =>
-  import("@/components/tool-ui/audio").then((m) => m.Audio)
+  import("@/components/tool-ui/audio").then((m) => m.Audio),
 );
 const LinkPreview = dynamic(() =>
-  import("@/components/tool-ui/link-preview").then((m) => m.LinkPreview)
+  import("@/components/tool-ui/link-preview").then((m) => m.LinkPreview),
 );
 const LinkedInPost = dynamic(() =>
-  import("@/components/tool-ui/linkedin-post").then((m) => m.LinkedInPost)
+  import("@/components/tool-ui/linkedin-post").then((m) => m.LinkedInPost),
 );
 const OptionList = dynamic(() =>
-  import("@/components/tool-ui/option-list").then((m) => m.OptionList)
+  import("@/components/tool-ui/option-list").then((m) => m.OptionList),
 );
 const OrderSummary = dynamic(() =>
-  import("@/components/tool-ui/order-summary").then((m) => m.OrderSummary)
+  import("@/components/tool-ui/order-summary").then((m) => m.OrderSummary),
 );
 const Plan = dynamic(() =>
-  import("@/components/tool-ui/plan").then((m) => m.Plan)
+  import("@/components/tool-ui/plan").then((m) => m.Plan),
 );
 const Terminal = dynamic(() =>
-  import("@/components/tool-ui/terminal").then((m) => m.Terminal)
+  import("@/components/tool-ui/terminal").then((m) => m.Terminal),
 );
 const CodeBlock = dynamic(() =>
-  import("@/components/tool-ui/code-block").then((m) => m.CodeBlock)
+  import("@/components/tool-ui/code-block").then((m) => m.CodeBlock),
 );
 const Chart = dynamic(() =>
-  import("@/components/tool-ui/chart").then((m) => m.Chart)
+  import("@/components/tool-ui/chart").then((m) => m.Chart),
 );
 const PreferencesPanel = dynamic(() =>
-  import("@/components/tool-ui/preferences-panel").then((m) => m.PreferencesPanel)
+  import("@/components/tool-ui/preferences-panel").then(
+    (m) => m.PreferencesPanel,
+  ),
 );
 const ProgressTracker = dynamic(() =>
-  import("@/components/tool-ui/progress-tracker").then((m) => m.ProgressTracker)
+  import("@/components/tool-ui/progress-tracker").then(
+    (m) => m.ProgressTracker,
+  ),
 );
 const QuestionFlow = dynamic(() =>
-  import("@/components/tool-ui/question-flow").then((m) => m.QuestionFlow)
+  import("@/components/tool-ui/question-flow").then((m) => m.QuestionFlow),
 );
 const MessageDraft = dynamic(() =>
-  import("@/components/tool-ui/message-draft").then((m) => m.MessageDraft)
+  import("@/components/tool-ui/message-draft").then((m) => m.MessageDraft),
 );
 const WeatherWidget = dynamic(() =>
-  import("@/components/tool-ui/weather-widget").then((m) => m.WeatherWidget)
+  import("@/components/tool-ui/weather-widget").then((m) => m.WeatherWidget),
 );
 import { approvalCardPresets } from "@/lib/presets/approval-card";
 import { citationPresets } from "@/lib/presets/citation";

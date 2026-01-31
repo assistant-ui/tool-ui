@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useRef, useState, useCallback, useMemo } from "react";
 import {
   Sun,
   Cloud,
@@ -25,34 +25,11 @@ import {
   type WeatherTheme,
 } from "./effects";
 
-function getPeakIntensity(timeOfDay: number): number {
-  const noonDistance = Math.abs(timeOfDay - 0.5);
-  const midnightDistance = Math.min(timeOfDay, 1 - timeOfDay);
-  const minDistance = Math.min(noonDistance, midnightDistance);
-  return Math.max(0, 1 - minDistance * 4);
-}
+// =============================================================================
+// Constants
+// =============================================================================
 
-function sineEasedGradient(
-  x: number,
-  y: number,
-  radius: number,
-  peakOpacity: number,
-  steps = 8,
-): string {
-  const stops: string[] = [];
-  for (let i = 0; i <= steps; i++) {
-    const t = i / steps;
-    const eased = Math.sin((t * Math.PI) / 2);
-    const opacity = peakOpacity * (1 - eased);
-    const position = t * 100;
-    stops.push(
-      `rgba(255,255,255,${opacity.toFixed(4)}) ${position.toFixed(1)}%`,
-    );
-  }
-  return `radial-gradient(circle ${radius}px at ${x}px ${y}px, ${stops.join(", ")})`;
-}
-
-const conditionIcons: Record<WeatherCondition, LucideIcon> = {
+const CONDITION_ICONS: Record<WeatherCondition, LucideIcon> = {
   clear: Sun,
   "partly-cloudy": CloudSun,
   cloudy: Cloud,
@@ -67,6 +44,231 @@ const conditionIcons: Record<WeatherCondition, LucideIcon> = {
   hail: CloudHail,
   windy: Wind,
 };
+
+const GLOW_MAX_DISTANCE = 150;
+
+// =============================================================================
+// Utilities
+// =============================================================================
+
+/** Returns intensity (0-1) based on proximity to noon or midnight. */
+function getPeakIntensity(timeOfDay: number): number {
+  const noonDistance = Math.abs(timeOfDay - 0.5);
+  const midnightDistance = Math.min(timeOfDay, 1 - timeOfDay);
+  return Math.max(0, 1 - Math.min(noonDistance, midnightDistance) * 4);
+}
+
+/** Generates a radial gradient with sine-eased opacity falloff. */
+function createRadialGlow(
+  x: number,
+  y: number,
+  radius: number,
+  peakOpacity: number,
+  steps = 8,
+): string {
+  const stops = Array.from({ length: steps + 1 }, (_, i) => {
+    const t = i / steps;
+    const eased = Math.sin((t * Math.PI) / 2);
+    const opacity = peakOpacity * (1 - eased);
+    return `rgba(255,255,255,${opacity.toFixed(4)}) ${(t * 100).toFixed(1)}%`;
+  });
+  return `radial-gradient(circle ${radius}px at ${x}px ${y}px, ${stops.join(", ")})`;
+}
+
+// =============================================================================
+// Hooks
+// =============================================================================
+
+interface GlowState {
+  x: number;
+  y: number;
+  intensity: number;
+}
+
+/**
+ * Tracks mouse position relative to a target element with distance-based intensity falloff.
+ * Uses passive listeners (Rule 4.2) and RAF throttling (Rule 5.12) to minimize performance impact.
+ */
+function useGlowTracking(
+  containerRef: React.RefObject<HTMLElement | null>,
+  targetRef: React.RefObject<HTMLElement | null>,
+): GlowState {
+  const [glowState, setGlowState] = useState<GlowState>({ x: 0, y: 0, intensity: 0 });
+  const rafRef = useRef<number | null>(null);
+  const pendingUpdateRef = useRef<GlowState | null>(null);
+
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    const flushUpdate = () => {
+      if (pendingUpdateRef.current) {
+        setGlowState(pendingUpdateRef.current);
+        pendingUpdateRef.current = null;
+      }
+      rafRef.current = null;
+    };
+
+    const handleMouseMove = (e: MouseEvent) => {
+      const target = targetRef.current;
+      if (!target) return;
+
+      const rect = target.getBoundingClientRect();
+
+      // Clamp cursor position to card bounds for glow position
+      const clampedX = Math.max(rect.left, Math.min(e.clientX, rect.right));
+      const clampedY = Math.max(rect.top, Math.min(e.clientY, rect.bottom));
+
+      // Calculate distance from card edges
+      const distanceX =
+        e.clientX < rect.left
+          ? rect.left - e.clientX
+          : e.clientX > rect.right
+            ? e.clientX - rect.right
+            : 0;
+      const distanceY =
+        e.clientY < rect.top
+          ? rect.top - e.clientY
+          : e.clientY > rect.bottom
+            ? e.clientY - rect.bottom
+            : 0;
+
+      const distance = Math.hypot(distanceX, distanceY);
+      const intensity = Math.max(0, 1 - distance / GLOW_MAX_DISTANCE);
+
+      // Batch updates to next animation frame (Rule 5.12)
+      pendingUpdateRef.current = {
+        x: clampedX - rect.left,
+        y: clampedY - rect.top,
+        intensity,
+      };
+
+      if (rafRef.current === null) {
+        rafRef.current = requestAnimationFrame(flushUpdate);
+      }
+    };
+
+    const handleMouseLeave = () => {
+      // Cancel pending RAF and update immediately for responsiveness
+      if (rafRef.current !== null) {
+        cancelAnimationFrame(rafRef.current);
+        rafRef.current = null;
+      }
+      pendingUpdateRef.current = null;
+      setGlowState((prev) => ({ ...prev, intensity: 0 }));
+    };
+
+    // Use passive listeners since we don't call preventDefault() (Rule 4.2)
+    container.addEventListener("mousemove", handleMouseMove, { passive: true });
+    container.addEventListener("mouseleave", handleMouseLeave, { passive: true });
+
+    return () => {
+      if (rafRef.current !== null) {
+        cancelAnimationFrame(rafRef.current);
+      }
+      container.removeEventListener("mousemove", handleMouseMove);
+      container.removeEventListener("mouseleave", handleMouseLeave);
+    };
+  }, [containerRef, targetRef]);
+
+  return glowState;
+}
+
+interface Dimensions {
+  width: number;
+  height: number;
+}
+
+/** Tracks element dimensions via ResizeObserver. */
+function useElementDimensions(ref: React.RefObject<HTMLElement | null>): Dimensions {
+  const [dimensions, setDimensions] = useState<Dimensions>({ width: 0, height: 0 });
+
+  const updateDimensions = useCallback(() => {
+    if (ref.current) {
+      const rect = ref.current.getBoundingClientRect();
+      setDimensions({
+        width: Math.round(rect.width),
+        height: Math.round(rect.height),
+      });
+    }
+  }, [ref]);
+
+  useEffect(() => {
+    updateDimensions();
+    const observer = new ResizeObserver(updateDimensions);
+    if (ref.current) {
+      observer.observe(ref.current);
+    }
+    return () => observer.disconnect();
+  }, [updateDimensions, ref]);
+
+  return dimensions;
+}
+
+/** Derives theme from time of day and weather condition. */
+function useWeatherTheme(timeOfDay: number, condition: WeatherCondition): WeatherTheme {
+  const [theme, setTheme] = useState<WeatherTheme>("dark");
+
+  useEffect(() => {
+    const brightness = getSceneBrightnessFromTimeOfDay(timeOfDay, condition);
+    const newTheme = getWeatherTheme(brightness, theme);
+    if (newTheme !== theme) {
+      setTheme(newTheme);
+    }
+  }, [timeOfDay, condition, theme]);
+
+  return theme;
+}
+
+/** Consolidates all theme-derived style values. */
+function useThemeStyles(theme: WeatherTheme, timeOfDay: number) {
+  return useMemo(() => {
+    const isDark = theme === "dark";
+    const peakIntensity = getPeakIntensity(timeOfDay);
+    const midnightDistance = Math.min(timeOfDay, 1 - timeOfDay);
+
+    // Text classes
+    const text = {
+      primary: isDark ? "text-white" : "text-black",
+      secondary: isDark ? "text-white/80" : "text-black/80",
+      muted: isDark ? "text-white/50" : "text-black/50",
+      subtle: isDark ? "text-white/40" : "text-black/40",
+    };
+
+    // Glass card background
+    const baseBgOpacity = 0.04;
+    const baseBorderOpacity = isDark ? 0.03 : 0.15;
+    const bgOpacity = baseBgOpacity * (1 - peakIntensity * 0.7);
+    const borderOpacity = baseBorderOpacity + peakIntensity * 0.02;
+
+    // Blur amount
+    const baseBlur = isDark ? 2 + midnightDistance * 38 : 24;
+    const blurAmount = isDark ? baseBlur : baseBlur - peakIntensity * (baseBlur - 8);
+
+    // Text shadow for depth
+    const shadowStyle = isDark
+      ? "0 1px 8px rgba(0,0,0,0.3)"
+      : "0 1px 8px rgba(255,255,255,0.3)";
+
+    // Dawn text shadow for forecast readability
+    const isDawn = timeOfDay > 0.1 && timeOfDay < 0.4;
+    const dawnIntensity = isDawn ? 1 - Math.abs(timeOfDay - 0.25) * 4 : 0;
+    const forecastTextShadow =
+      dawnIntensity > 0
+        ? `0 0.5px 1px rgba(0,0,0,${(dawnIntensity * 0.4).toFixed(2)})`
+        : undefined;
+
+    return {
+      isDark,
+      text,
+      bgOpacity,
+      borderOpacity,
+      blurAmount,
+      shadowStyle,
+      forecastTextShadow,
+    };
+  }, [theme, timeOfDay]);
+}
 
 export interface GlassEffectParams {
   enabled?: boolean;
@@ -125,25 +327,24 @@ export function WeatherDataOverlay({
   className,
   glassParams,
 }: WeatherDataOverlayProps) {
-  const timeOfDay =
-    typeof timeOfDayProp === "number"
-      ? timeOfDayProp
-      : typeof timestamp === "string"
-        ? getTimeOfDay(timestamp)
-        : 0.5;
+  // Resolve time of day from prop, timestamp, or default to noon
+  const timeOfDay = useMemo(() => {
+    if (typeof timeOfDayProp === "number") return timeOfDayProp;
+    if (typeof timestamp === "string") return getTimeOfDay(timestamp);
+    return 0.5;
+  }, [timeOfDayProp, timestamp]);
 
-  const [theme, setTheme] = useState<WeatherTheme>("dark");
-  const [glowState, setGlowState] = useState<{
-    x: number;
-    y: number;
-    intensity: number;
-  }>({ x: 0, y: 0, intensity: 0 });
-  const [cardDimensions, setCardDimensions] = useState({ width: 0, height: 0 });
-  const cardRef = useRef<HTMLDivElement>(null);
+  // Refs for DOM elements
   const containerRef = useRef<HTMLDivElement>(null);
+  const cardRef = useRef<HTMLDivElement>(null);
 
-  // Glass effect styles applied directly to forecast container.
-  // Enabled by default - falls back to simple blur if SVG filter unsupported.
+  // Custom hooks for state management
+  const theme = useWeatherTheme(timeOfDay, condition);
+  const cardDimensions = useElementDimensions(cardRef);
+  const glowState = useGlowTracking(containerRef, cardRef);
+  const styles = useThemeStyles(theme, timeOfDay);
+
+  // Glass effect configuration
   const glassEnabled = glassParams?.enabled !== false;
   const glassStyles = useGlassStyles({
     width: cardDimensions.width,
@@ -158,120 +359,8 @@ export function WeatherDataOverlay({
     enabled: glassEnabled,
   });
 
-  // Check if SVG glass is active (has backdrop-filter set)
   const svgGlassActive = Boolean(glassStyles.backdropFilter);
-
-  // Track forecast card dimensions for glass effect
-  const updateCardDimensions = useCallback(() => {
-    if (cardRef.current) {
-      const rect = cardRef.current.getBoundingClientRect();
-      setCardDimensions({
-        width: Math.round(rect.width),
-        height: Math.round(rect.height),
-      });
-    }
-  }, []);
-
-  useEffect(() => {
-    updateCardDimensions();
-    const observer = new ResizeObserver(updateCardDimensions);
-    if (cardRef.current) {
-      observer.observe(cardRef.current);
-    }
-    return () => observer.disconnect();
-  }, [updateCardDimensions]);
-
-  useEffect(() => {
-    const brightness = getSceneBrightnessFromTimeOfDay(timeOfDay, condition);
-    const newTheme = getWeatherTheme(brightness, theme);
-    if (newTheme !== theme) {
-      setTheme(newTheme);
-    }
-  }, [timeOfDay, condition, theme]);
-
-  useEffect(() => {
-    const container = containerRef.current;
-    if (!container) return;
-
-    const handleMouseMove = (e: MouseEvent) => {
-      if (!cardRef.current) return;
-      const cardRect = cardRef.current.getBoundingClientRect();
-
-      const clampedX = Math.max(
-        cardRect.left,
-        Math.min(e.clientX, cardRect.right),
-      );
-      const clampedY = Math.max(
-        cardRect.top,
-        Math.min(e.clientY, cardRect.bottom),
-      );
-
-      const distanceX =
-        e.clientX < cardRect.left
-          ? cardRect.left - e.clientX
-          : e.clientX > cardRect.right
-            ? e.clientX - cardRect.right
-            : 0;
-      const distanceY =
-        e.clientY < cardRect.top
-          ? cardRect.top - e.clientY
-          : e.clientY > cardRect.bottom
-            ? e.clientY - cardRect.bottom
-            : 0;
-      const distance = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
-
-      const maxDistance = 150;
-      const intensity = Math.max(0, 1 - distance / maxDistance);
-
-      setGlowState({
-        x: clampedX - cardRect.left,
-        y: clampedY - cardRect.top,
-        intensity,
-      });
-    };
-
-    const handleMouseLeave = () => {
-      setGlowState((prev) => ({ ...prev, intensity: 0 }));
-    };
-
-    container.addEventListener("mousemove", handleMouseMove);
-    container.addEventListener("mouseleave", handleMouseLeave);
-
-    return () => {
-      container.removeEventListener("mousemove", handleMouseMove);
-      container.removeEventListener("mouseleave", handleMouseLeave);
-    };
-  }, []);
-
   const unitSymbol = unit === "celsius" ? "C" : "F";
-  const peakIntensity = getPeakIntensity(timeOfDay);
-
-  const isDark = theme === "dark";
-  const textPrimary = isDark ? "text-white" : "text-black";
-  const textSecondary = isDark ? "text-white/80" : "text-black/80";
-  const textMuted = isDark ? "text-white/50" : "text-black/50";
-  const textSubtle = isDark ? "text-white/40" : "text-black/40";
-
-  const baseBgOpacity = isDark ? 0.04 : 0.04;
-  const baseBorderOpacity = isDark ? 0.03 : 0.15;
-  const bgOpacity = baseBgOpacity * (1 - peakIntensity * 0.7);
-  const borderOpacity = baseBorderOpacity + peakIntensity * 0.02;
-  const midnightDistance = Math.min(timeOfDay, 1 - timeOfDay);
-  const baseBlur = isDark ? 2 + midnightDistance * 38 : 24;
-  const blurAmount = isDark ? baseBlur : baseBlur - peakIntensity * (baseBlur - 8);
-
-  // Dawn intensity peaks around timeOfDay 0.2-0.3 (morning transition)
-  const isDawn = timeOfDay > 0.1 && timeOfDay < 0.4;
-  const dawnIntensity = isDawn ? 1 - Math.abs(timeOfDay - 0.25) * 4 : 0;
-  const forecastTextShadow =
-    dawnIntensity > 0
-      ? `0 0.5px 1px rgba(0,0,0,${(dawnIntensity * 0.4).toFixed(2)})`
-      : undefined;
-
-  const shadowStyle = isDark
-    ? "0 1px 8px rgba(0,0,0,0.3)"
-    : "0 1px 8px rgba(255,255,255,0.3)";
-
   const hasStats = humidity !== undefined || windSpeed !== undefined;
 
   return (
@@ -285,20 +374,20 @@ export function WeatherDataOverlay({
       {/* Top-left: Location */}
       <div className="flex flex-col items-start gap-0.5">
         <h2
-          className={cn("text-[15px] font-light tracking-tight", textSecondary)}
+          className={cn("text-[15px] font-light tracking-tight", styles.text.secondary)}
           style={{
             fontFamily: '"SF Pro Display", system-ui, sans-serif',
-            textShadow: shadowStyle,
+            textShadow: styles.shadowStyle,
           }}
         >
           {location}
         </h2>
         {updatedAtLabel && (
           <p
-            className={cn("text-[11px] font-light tracking-tight", textMuted)}
+            className={cn("text-[11px] font-light tracking-tight", styles.text.muted)}
             style={{
               fontFamily: '"SF Pro Display", system-ui, sans-serif',
-              textShadow: shadowStyle,
+              textShadow: styles.shadowStyle,
             }}
           >
             {updatedAtLabel}
@@ -317,13 +406,13 @@ export function WeatherDataOverlay({
             <span
               className={cn(
                 "text-[72px] font-[200] leading-none tracking-[-0.04em]",
-                textPrimary,
+                styles.text.primary,
               )}
               style={{
                 fontFamily:
                   '"SF Pro Display", "Helvetica Neue", system-ui, sans-serif',
                 fontFeatureSettings: '"tnum"',
-                textShadow: isDark
+                textShadow: styles.isDark
                   ? "0 2px 20px rgba(0,0,0,0.25)"
                   : "0 2px 20px rgba(255,255,255,0.3)",
               }}
@@ -334,7 +423,7 @@ export function WeatherDataOverlay({
               {Math.round(temperature)}
             </span>
             <span
-              className={cn("mt-2 text-[28px] font-[200]", textMuted)}
+              className={cn("mt-2 text-[28px] font-[200]", styles.text.muted)}
               style={{
                 fontFamily: '"SF Pro Display", system-ui, sans-serif',
               }}
@@ -352,20 +441,20 @@ export function WeatherDataOverlay({
             {/* Temperature range with gradient bar */}
             <div className="flex items-center gap-2">
               <span
-                className={cn("text-[15px] font-light tabular-nums", textSecondary)}
+                className={cn("text-[15px] font-light tabular-nums", styles.text.secondary)}
               >
                 {Math.round(tempLow)}°
               </span>
               <div
                 className="h-[1.5px] w-12 rounded-full"
                 style={{
-                  background: isDark
+                  background: styles.isDark
                     ? "linear-gradient(90deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0.5) 100%)"
                     : "linear-gradient(90deg, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.4) 100%)",
                 }}
               />
               <span
-                className={cn("text-[15px] font-normal tabular-nums", textPrimary)}
+                className={cn("text-[15px] font-normal tabular-nums", styles.text.primary)}
               >
                 {Math.round(tempHigh)}°
               </span>
@@ -374,19 +463,19 @@ export function WeatherDataOverlay({
             {hasStats && (
               <>
                 <div
-                  className={cn("h-3 w-px", isDark ? "bg-white/10" : "bg-black/10")}
+                  className={cn("h-3 w-px", styles.isDark ? "bg-white/10" : "bg-black/10")}
                 />
 
                 <div className="flex items-center gap-4">
                   {humidity !== undefined && (
                     <div className="flex items-center gap-1">
                       <Droplets
-                        className={cn("size-3", textSubtle)}
+                        className={cn("size-3", styles.text.subtle)}
                         strokeWidth={1.5}
                         aria-hidden="true"
                       />
                       <span
-                        className={cn("text-[12px] font-light tabular-nums", textMuted)}
+                        className={cn("text-[12px] font-light tabular-nums", styles.text.muted)}
                       >
                         {Math.round(humidity)}%
                       </span>
@@ -395,12 +484,12 @@ export function WeatherDataOverlay({
                   {windSpeed !== undefined && (
                     <div className="flex items-center gap-1">
                       <Wind
-                        className={cn("size-3", textSubtle)}
+                        className={cn("size-3", styles.text.subtle)}
                         strokeWidth={1.5}
                         aria-hidden="true"
                       />
                       <span
-                        className={cn("text-[12px] font-light tabular-nums", textMuted)}
+                        className={cn("text-[12px] font-light tabular-nums", styles.text.muted)}
                       >
                         {Math.round(windSpeed)} mph
                       </span>
@@ -420,11 +509,11 @@ export function WeatherDataOverlay({
               className="pointer-events-none absolute inset-0 z-10 rounded-xl transition-opacity duration-300 ease-out"
               style={{
                 opacity: glowState.intensity,
-                background: sineEasedGradient(
+                background: createRadialGlow(
                   glowState.x,
                   glowState.y,
                   100,
-                  isDark ? 0.6 : 1,
+                  styles.isDark ? 0.6 : 1,
                 ),
                 mask: "linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)",
                 maskComposite: "exclude",
@@ -435,14 +524,14 @@ export function WeatherDataOverlay({
             <div
               className="relative overflow-hidden rounded-xl border p-3"
               style={{
-                backgroundColor: `rgba(255, 255, 255, ${bgOpacity})`,
-                borderColor: `rgba(255, 255, 255, ${borderOpacity})`,
+                backgroundColor: `rgba(255, 255, 255, ${styles.bgOpacity})`,
+                borderColor: `rgba(255, 255, 255, ${styles.borderOpacity})`,
                 // Apply SVG glass effect when supported, fall back to simple blur
                 ...(svgGlassActive
                   ? glassStyles
                   : {
-                      backdropFilter: `blur(${blurAmount}px)`,
-                      WebkitBackdropFilter: `blur(${blurAmount}px)`,
+                      backdropFilter: `blur(${styles.blurAmount}px)`,
+                      WebkitBackdropFilter: `blur(${styles.blurAmount}px)`,
                     }),
               }}
             >
@@ -451,17 +540,17 @@ export function WeatherDataOverlay({
                 className="pointer-events-none absolute inset-0 transition-opacity duration-300 ease-out mix-blend-color-dodge"
                 style={{
                   opacity: glowState.intensity,
-                  background: sineEasedGradient(
+                  background: createRadialGlow(
                     glowState.x,
                     glowState.y,
                     120,
-                    isDark ? 0.06 : 0.15,
+                    styles.isDark ? 0.06 : 0.15,
                   ),
                 }}
               />
               <div className="relative flex items-center justify-between">
                 {forecast.slice(0, 5).map((day, index) => {
-                  const DayIcon = conditionIcons[day.condition];
+                  const DayIcon = CONDITION_ICONS[day.condition];
                   return (
                     <div
                       key={day.day}
@@ -471,19 +560,19 @@ export function WeatherDataOverlay({
                       )}
                       style={{
                         fontFamily: "system-ui, sans-serif",
-                        textShadow: forecastTextShadow,
+                        textShadow: styles.forecastTextShadow,
                       }}
                     >
                       <span
                         className={cn(
                           "text-[10px] font-medium uppercase tracking-[0.1em]",
-                          textMuted,
+                          styles.text.muted,
                         )}
                       >
                         {index === 0 ? "Now" : day.day}
                       </span>
                       <DayIcon
-                        className={cn("my-0.5 size-5", textSecondary)}
+                        className={cn("my-0.5 size-5", styles.text.secondary)}
                         strokeWidth={1.5}
                         aria-hidden="true"
                       />
@@ -491,7 +580,7 @@ export function WeatherDataOverlay({
                         <span
                           className={cn(
                             "text-[14px] font-normal tabular-nums",
-                            textPrimary,
+                            styles.text.primary,
                           )}
                         >
                           {Math.round(day.tempMax)}°
@@ -499,7 +588,7 @@ export function WeatherDataOverlay({
                         <span
                           className={cn(
                             "text-[12px] font-light tabular-nums",
-                            textSubtle,
+                            styles.text.subtle,
                           )}
                         >
                           {Math.round(day.tempMin)}°
