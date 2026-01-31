@@ -9,6 +9,7 @@ if (apiKey) {
     ui_host: "https://us.posthog.com",
     defaults: "2025-11-30",
     capture_exceptions: true,
+    advanced_disable_flags: true, // Skip feature flags API call
     loaded: (posthog) => {
       // Tag all events with environment for filtering
       posthog.register({
