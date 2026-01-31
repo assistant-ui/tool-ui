@@ -73,6 +73,7 @@ export function ComponentPreview({ componentId }: ComponentPreviewProps) {
 
   return (
     <ComponentPreviewShell
+      componentId={componentId}
       sidebar={
         <PresetSelector
           componentId={componentId}

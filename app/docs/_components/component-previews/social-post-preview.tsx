@@ -275,6 +275,7 @@ export function SocialPostPreview() {
 
   return (
     <ComponentPreviewShell
+      componentId={`social-post-${currentPlatform}`}
       sidebar={
         <>
           <PlatformSelector

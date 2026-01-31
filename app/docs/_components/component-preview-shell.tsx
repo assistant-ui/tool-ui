@@ -10,6 +10,7 @@ import { cn } from "@/lib/ui/cn";
 import { useResponsivePreview } from "@/hooks/use-responsive-preview";
 import { useTabSearchParam } from "@/hooks/use-tab-search-param";
 import { useCopyToClipboard } from "@/components/tool-ui/shared";
+import { analytics } from "@/lib/analytics";
 
 const PREVIEW_MIN_WIDTH = 40;
 const PREVIEW_MAX_WIDTH = 100;
@@ -105,6 +106,7 @@ const ResizablePreviewArea = memo(function ResizablePreviewArea({
 });
 
 interface ComponentPreviewShellProps {
+  componentId: string;
   sidebar: ReactNode;
   preview: ReactNode;
   chatPanel: ReactNode;
@@ -115,6 +117,7 @@ interface ComponentPreviewShellProps {
 const COPY_ID = "code-panel";
 
 export function ComponentPreviewShell({
+  componentId,
   sidebar,
   preview,
   chatPanel,
@@ -135,8 +138,9 @@ export function ComponentPreviewShell({
   });
 
   const handleCopy = useCallback(() => {
+    analytics.component.codeCopied(componentId, "full");
     copy(code, COPY_ID);
-  }, [code, copy]);
+  }, [componentId, code, copy]);
 
   return (
     <div className="flex h-full min-h-0 w-full flex-1 flex-col overflow-clip lg:flex-row">

@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Item,
   ItemContent,
@@ -5,6 +7,7 @@ import {
   ItemGroup,
   ItemTitle,
 } from "@/components/ui/item";
+import { analytics } from "@/lib/analytics";
 import { approvalCardPresets } from "@/lib/presets/approval-card";
 import { chartPresets } from "@/lib/presets/chart";
 import { citationPresets } from "@/lib/presets/citation";
@@ -81,6 +84,11 @@ export function PresetSelector({
   const presets = getPresets(componentId);
   const presetNames = Object.keys(presets);
 
+  const handleSelect = (preset: string) => {
+    analytics.component.presetSelected(componentId, preset);
+    onSelectPreset(preset);
+  };
+
   return (
     <ItemGroup className="gap-1">
       {presetNames.map((name) => (
@@ -89,7 +97,7 @@ export function PresetSelector({
           preset={name}
           description={presets[name].description}
           isSelected={currentPreset === name}
-          onSelect={onSelectPreset}
+          onSelect={handleSelect}
         />
       ))}
     </ItemGroup>

@@ -1,20 +1,56 @@
 # Agent Changelog
 
 > This file helps coding agents understand project evolution, key decisions, and deprecated patterns.
-> Updated: 2026-01-29
+> Updated: 2026-01-30
 
 ## Current State Summary
 
-Tool UI is a copy/paste component library (shadcn/ui model) with 25+ components for AI assistant interfaces. Components use a unified `choice` prop for receipt state, follow flat prop APIs, and rely on Tailwind for layout customization. The project uses pnpm, Next.js with Turbopack, and assistant-ui v0.12.
+Tool UI is a copy/paste component library (shadcn/ui model) with 25 components for AI assistant interfaces. Components use a unified `choice` prop for receipt state, follow flat prop APIs, and rely on Tailwind for layout customization. The project uses pnpm, Next.js with Turbopack, assistant-ui v0.12, and now includes PostHog + Vercel Analytics.
 
 ## Stale Information Detected
 
 | Location | States | Reality | Since |
 |----------|--------|---------|-------|
-| README.md | Lists 16 components | Actually 25+ components exist | 2026-01 |
-| README.md | Missing MessageDraft, QuestionFlow, StatsDisplay, etc. | These components exist | 2026-01 |
+| README.md | Lists 17 components | Actually 25 components exist | 2026-01 |
+| README.md | Missing MessageDraft, QuestionFlow, StatsDisplay, WeatherWidget, etc. | These components exist | 2026-01 |
 
 ## Timeline
+
+### 2026-01-30 — PostHog Analytics Added
+
+**What changed:** Added PostHog instrumentation with Vercel Analytics dual-tracking.
+
+**Why:** Track component usage, preset selection, and code copying to understand what components and presets are most valuable.
+
+**Files added:**
+- `instrumentation-client.ts` — Client-side PostHog initialization
+- `lib/posthog-server.ts` — Server-side PostHog SDK
+- `lib/analytics.ts` — Typed event tracking SDK
+
+**Files modified:**
+- `next.config.ts` — Added `/ph/*` proxy rewrites for PostHog
+- `preset-selector.tsx` — Tracks `component_preset_selected`
+- `component-preview-shell.tsx` — Tracks `component_code_copied`, now requires `componentId` prop
+
+**Agent impact:** When adding new trackable interactions, use `analytics.*` methods from `lib/analytics.ts`. The `ComponentPreviewShell` now requires a `componentId` prop.
+
+**Events tracked:**
+- `component_preset_selected` — User selects a preset
+- `component_code_copied` — User copies component code
+- `component_viewed` — User views a component (ready to instrument)
+- `search_no_results` — Search with no matches (ready to instrument)
+
+---
+
+### 2026-01-29 — Sandbox Middleware Added
+
+**What changed:** Added middleware to gate `/sandbox/*` routes behind a `?sandbox=true` query param in production. Development mode always allows access.
+
+**Why:** Keep experimental sandboxes (weather effects testing, etc.) accessible for development without exposing them in production.
+
+**Agent impact:** Sandbox pages work normally in dev. In production, add `?sandbox=true` to URL to access.
+
+---
 
 ### 2026-01-29 — SVG Glass Panel Effect Added
 
@@ -146,6 +182,7 @@ const glassStyles = useGlassStyles({
 | Add Framer Motion to ImageGallery | Use View Transitions API | 2026-01-06 |
 | Use AI SDK v5 patterns | Use AI SDK v6 patterns | 2026-01-26 |
 | Implement WebGL glass effects | Use `useGlassStyles` or `GlassPanel` from glass-panel-svg | 2026-01-29 |
+| Use `ComponentPreviewShell` without `componentId` | Always pass `componentId` prop for analytics | 2026-01-30 |
 
 ## Trajectory
 
@@ -156,3 +193,4 @@ Based on recent changes, the project is:
 - **Reducing bundle** — View Transitions over Framer Motion where possible
 - **Adding specialized components** — MessageDraft, QuestionFlow, StatsDisplay for specific use cases
 - **Adding visual effects** — SVG-based glass refraction for weather widget, preferring CSS/SVG over WebGL
+- **Adding analytics** — PostHog + Vercel Analytics for usage tracking
