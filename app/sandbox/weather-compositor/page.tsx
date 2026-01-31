@@ -728,7 +728,7 @@ export default function WeatherCompositorSandbox() {
     [],
   );
 
-  const [glassPanel] = useControls(
+  const [_glassPanel] = useControls(
     "Glass Panel (Unified)",
     () => ({
       enabled: { value: true, label: "Enabled" },
