@@ -77,6 +77,7 @@ type SceneConfig = {
   preamble?: string;
   toolUI: React.ReactNode;
   toolFallbackHeight?: number;
+  holdDuration?: number;
 };
 
 type SceneTimelineState = {
@@ -107,11 +108,13 @@ function useSceneTimeline({
   onComplete,
   hasUserMessage = true,
   initialDelay = 0,
+  holdDuration,
 }: {
   reducedMotion: boolean;
   onComplete: () => void;
   hasUserMessage?: boolean;
   initialDelay?: number;
+  holdDuration?: number;
 }): SceneTimelineState {
   const [preambleReady, setPreambleReady] = useState(reducedMotion);
   const [showTool, setShowTool] = useState(reducedMotion);
@@ -148,9 +151,9 @@ function useSceneTimeline({
     if (!shouldScheduleCompletion) return;
 
     hasScheduledCompletion.current = true;
-    const timeoutId = window.setTimeout(onComplete, TIMING.sceneHold);
+    const timeoutId = window.setTimeout(onComplete, holdDuration ?? TIMING.sceneHold);
     return () => window.clearTimeout(timeoutId);
-  }, [preambleReady, showTool, onComplete, reducedMotion]);
+  }, [preambleReady, showTool, onComplete, reducedMotion, holdDuration]);
 
   return useMemo(
     () => ({ preambleReady, showTool, setShowTool }),
@@ -447,25 +450,26 @@ function createSceneConfigs(reducedMotion: boolean): SceneConfig[] {
     },
     {
       userMessage: "What's the weather like this week?",
-      preamble: "Looking mild with some rain midweek.",
+      preamble: "Stormy night ahead. Clears up by Thursday.",
       toolUI: (
         <WeatherWidget
           id="chat-showcase-weather"
           location="San Francisco, CA"
           current={{
-            temp: 62,
-            tempMin: 54,
-            tempMax: 66,
-            condition: "partly-cloudy",
+            temp: 54,
+            tempMin: 51,
+            tempMax: 58,
+            condition: "thunderstorm",
           }}
           forecast={[
-            { day: "Tue", tempMin: 52, tempMax: 64, condition: "cloudy" },
-            { day: "Wed", tempMin: 50, tempMax: 58, condition: "rain" },
-            { day: "Thu", tempMin: 51, tempMax: 61, condition: "drizzle" },
-            { day: "Fri", tempMin: 53, tempMax: 65, condition: "partly-cloudy" },
+            { day: "Tue", tempMin: 50, tempMax: 56, condition: "heavy-rain" },
+            { day: "Wed", tempMin: 49, tempMax: 55, condition: "rain" },
+            { day: "Thu", tempMin: 51, tempMax: 60, condition: "cloudy" },
+            { day: "Fri", tempMin: 53, tempMax: 64, condition: "partly-cloudy" },
             { day: "Sat", tempMin: 55, tempMax: 68, condition: "clear" },
           ]}
           unit="fahrenheit"
+          updatedAt="2024-01-15T23:00:00Z"
           className="w-full max-w-[400px]"
           effects={{
             enabled: !reducedMotion,
@@ -475,6 +479,7 @@ function createSceneConfigs(reducedMotion: boolean): SceneConfig[] {
         />
       ),
       toolFallbackHeight: 280,
+      holdDuration: 6000,
     },
     {
       userMessage: "Boost the bass a bit on this track",
@@ -491,8 +496,8 @@ function createSceneConfigs(reducedMotion: boolean): SceneConfig[] {
               step: 1,
               value: 4,
               unit: "dB",
-              fillClassName: "bg-rose-500/25 dark:bg-rose-400/30",
-              handleClassName: "bg-rose-500 dark:bg-rose-400"
+              fillClassName: "bg-fuchsia-500/30 dark:bg-fuchsia-400/35",
+              handleClassName: "bg-fuchsia-500 dark:bg-fuchsia-400"
             },
             {
               id: "mid",
@@ -502,8 +507,8 @@ function createSceneConfigs(reducedMotion: boolean): SceneConfig[] {
               step: 1,
               value: -1,
               unit: "dB",
-              fillClassName: "bg-amber-500/25 dark:bg-amber-400/30",
-              handleClassName: "bg-amber-500 dark:bg-amber-400"
+              fillClassName: "bg-cyan-500/30 dark:bg-cyan-400/35",
+              handleClassName: "bg-cyan-500 dark:bg-cyan-400"
             },
             {
               id: "treble",
@@ -513,8 +518,8 @@ function createSceneConfigs(reducedMotion: boolean): SceneConfig[] {
               step: 1,
               value: 3,
               unit: "dB",
-              fillClassName: "bg-sky-500/25 dark:bg-sky-400/30",
-              handleClassName: "bg-sky-500 dark:bg-sky-400"
+              fillClassName: "bg-violet-500/30 dark:bg-violet-400/35",
+              handleClassName: "bg-violet-500 dark:bg-violet-400"
             },
           ]}
           responseActions={PARAMETER_SLIDER_DATA.responseActions}
@@ -569,27 +574,31 @@ function createSceneConfigs(reducedMotion: boolean): SceneConfig[] {
       toolFallbackHeight: 320,
     },
     {
-      userMessage: "Need a localStorage hook",
-      preamble: "Got you. Handles JSON parsing and updates.",
+      userMessage: "Create a skill that learns from mistakes",
+      preamble: "Here's a self-improving metaskill.",
       toolUI: (
         <CodeBlock
           id="chat-showcase-code-block"
-          language="typescript"
-          filename="use-local-storage.ts"
-          code={`import { useState, useEffect } from "react";
+          language="markdown"
+          filename="learn-from-errors.md"
+          code={`name: learn-from-errors
+triggers: [error, failed, mistake, wrong]
 
-export function useLocalStorage<T>(key: string, initial: T) {
-  const [value, setValue] = useState<T>(() => {
-    const stored = localStorage.getItem(key);
-    return stored ? JSON.parse(stored) : initial;
-  });
+## Behavior
 
-  useEffect(() => {
-    localStorage.setItem(key, JSON.stringify(value));
-  }, [key, value]);
+When an error occurs:
+1. Capture the context and attempted solution
+2. Analyze what went wrong
+3. Update \`~/.claude/learnings.md\` with the pattern
+4. Apply the learning to retry
 
-  return [value, setValue] as const;
-}`}
+## Self-Improvement Loop
+
+\`\`\`
+error → analyze → document → retry → verify
+          ↑                            ↓
+          └──────── if failed ─────────┘
+\`\`\``}
           showLineNumbers={true}
           className="w-full"
         />
@@ -665,6 +674,7 @@ function AnimatedScene({
     onComplete,
     hasUserMessage: !!config.userMessage,
     initialDelay,
+    holdDuration: config.holdDuration,
   });
 
   const handlePreambleComplete = useCallback(() => {

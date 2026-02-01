@@ -99,11 +99,11 @@ export default function ComponentsGalleryPage() {
       <div className="scrollbar-subtle z-10 min-h-0 flex-1 overflow-y-auto overscroll-contain p-6 sm:p-10 lg:p-12">
         <div className="mx-auto columns-1 gap-5 pb-20 [column-fill:balance] md:columns-2 2xl:columns-3 2xl:gap-5">
           <div className="mb-5 flex justify-center [column-span:all] 2xl:mb-5">
-            <DataTable {...dataTablePresets.stocks.data} />
+            <ItemCarousel {...itemCarouselPresets.recommendations.data} />
           </div>
 
           <div className="mb-5 flex justify-center [column-span:all] 2xl:mb-5">
-            <ItemCarousel {...itemCarouselPresets.recommendations.data} />
+            <DataTable {...dataTablePresets.stocks.data} />
           </div>
 
           <div className="mb-5 flex break-inside-avoid justify-center 2xl:mb-5">
