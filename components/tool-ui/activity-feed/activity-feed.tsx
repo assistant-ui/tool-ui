@@ -27,6 +27,8 @@ import {
   Activity,
 } from "lucide-react";
 
+type ActivityFeedVariant = "compact" | "standard" | "detailed";
+
 /**
  * Icons for each event type.
  */
@@ -131,30 +133,30 @@ function EventIndicator({ type }: { type: ActivityEventType }) {
 interface ActivityItemCompactProps {
   item: ActivityItem;
   onClick?: (item: ActivityItem) => void;
+  isNew?: boolean;
 }
 
-function ActivityItemCompact({ item, onClick }: ActivityItemCompactProps) {
+function ActivityItemCompact({ item, onClick, isNew }: ActivityItemCompactProps) {
   return (
-    <li>
-      <button
-        type="button"
-        onClick={() => onClick?.(item)}
-        className={cn(
-          "relative z-10 flex w-full items-center gap-2.5 rounded-lg px-2 py-1.5 text-left",
-          "motion-safe:transition-all motion-safe:duration-200",
-          "hover:bg-primary/5",
-          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
-        )}
-      >
-        <EventIndicator type={item.type} />
-        <span className="min-w-0 flex-1 truncate text-sm font-medium leading-6">
-          {item.title}
-        </span>
-        <span className="text-muted-foreground shrink-0 text-xs tabular-nums">
-          {formatRelativeTime(item.timestamp)}
-        </span>
-      </button>
-    </li>
+    <button
+      type="button"
+      onClick={() => onClick?.(item)}
+      className={cn(
+        "relative z-10 flex w-full items-center gap-2.5 rounded-lg px-2 py-1.5 text-left",
+        "motion-safe:transition-all motion-safe:duration-200",
+        "hover:bg-primary/5",
+        isNew && "bg-primary/5 ring-1 ring-primary/10",
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+      )}
+    >
+      <EventIndicator type={item.type} />
+      <span className="min-w-0 flex-1 truncate text-sm font-medium leading-6">
+        {item.title}
+      </span>
+      <span className="text-muted-foreground shrink-0 text-xs tabular-nums">
+        {formatRelativeTime(item.timestamp)}
+      </span>
+    </button>
   );
 }
 
@@ -164,39 +166,39 @@ function ActivityItemCompact({ item, onClick }: ActivityItemCompactProps) {
 interface ActivityItemStandardProps {
   item: ActivityItem;
   onClick?: (item: ActivityItem) => void;
+  isNew?: boolean;
 }
 
-function ActivityItemStandard({ item, onClick }: ActivityItemStandardProps) {
+function ActivityItemStandard({ item, onClick, isNew }: ActivityItemStandardProps) {
   return (
-    <li>
-      <button
-        type="button"
-        onClick={() => onClick?.(item)}
-        className={cn(
-          "relative z-10 flex w-full items-start gap-3 rounded-lg px-2 py-2 text-left",
-          "motion-safe:transition-all motion-safe:duration-200",
-          "hover:bg-primary/5",
-          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
-        )}
-      >
-        <EventIndicator type={item.type} />
-        <div className="min-w-0 flex-1">
-          <div className="flex items-baseline gap-2">
-            <span className="truncate text-sm font-medium leading-6">
-              {item.title}
-            </span>
-            <span className="text-muted-foreground shrink-0 text-xs tabular-nums">
-              {formatRelativeTime(item.timestamp)}
-            </span>
-          </div>
-          {item.description && (
-            <p className="text-muted-foreground mt-0.5 truncate text-sm">
-              {item.description}
-            </p>
-          )}
+    <button
+      type="button"
+      onClick={() => onClick?.(item)}
+      className={cn(
+        "relative z-10 flex w-full items-start gap-3 rounded-lg px-2 py-2 text-left",
+        "motion-safe:transition-all motion-safe:duration-200",
+        "hover:bg-primary/5",
+        isNew && "bg-primary/5 ring-1 ring-primary/10",
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+      )}
+    >
+      <EventIndicator type={item.type} />
+      <div className="min-w-0 flex-1">
+        <div className="flex items-baseline gap-2">
+          <span className="truncate text-sm font-medium leading-6">
+            {item.title}
+          </span>
+          <span className="text-muted-foreground shrink-0 text-xs tabular-nums">
+            {formatRelativeTime(item.timestamp)}
+          </span>
         </div>
-      </button>
-    </li>
+        {item.description && (
+          <p className="text-muted-foreground mt-0.5 truncate text-sm">
+            {item.description}
+          </p>
+        )}
+      </div>
+    </button>
   );
 }
 
@@ -206,66 +208,66 @@ function ActivityItemStandard({ item, onClick }: ActivityItemStandardProps) {
 interface ActivityItemDetailedProps {
   item: ActivityItem;
   onClick?: (item: ActivityItem) => void;
+  isNew?: boolean;
 }
 
-function ActivityItemDetailed({ item, onClick }: ActivityItemDetailedProps) {
+function ActivityItemDetailed({ item, onClick, isNew }: ActivityItemDetailedProps) {
   const colors = EVENT_COLORS[item.type];
 
   return (
-    <li>
-      <button
-        type="button"
-        onClick={() => onClick?.(item)}
-        className={cn(
-          "relative z-10 flex w-full items-start gap-3 rounded-xl px-3 py-2.5 text-left",
-          "motion-safe:transition-all motion-safe:duration-200",
-          "hover:bg-primary/5",
-          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+    <button
+      type="button"
+      onClick={() => onClick?.(item)}
+      className={cn(
+        "relative z-10 flex w-full items-start gap-3 rounded-xl px-3 py-2.5 text-left",
+        "motion-safe:transition-all motion-safe:duration-200",
+        "hover:bg-primary/5",
+        isNew && "bg-primary/5 ring-1 ring-primary/10",
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+      )}
+      style={{
+        backdropFilter: "blur(2px)",
+      }}
+    >
+      <Avatar className="size-8 shrink-0 border border-border/50">
+        {item.actor.avatar && (
+          <AvatarImage src={item.actor.avatar} alt={item.actor.name} />
         )}
-        style={{
-          backdropFilter: "blur(2px)",
-        }}
-      >
-        <Avatar className="size-8 shrink-0 border border-border/50">
-          {item.actor.avatar && (
-            <AvatarImage src={item.actor.avatar} alt={item.actor.name} />
-          )}
-          <AvatarFallback className="text-xs font-medium">
-            {getInitials(item.actor.name)}
-          </AvatarFallback>
-        </Avatar>
-        <div className="min-w-0 flex-1">
-          <div className="flex items-center gap-2 flex-wrap">
-            <span className="text-sm font-medium">{item.actor.name}</span>
-            <span
-              className={cn(
-                "inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium",
-                colors.bg,
-                colors.icon,
-              )}
-            >
-              {EVENT_ICONS[item.type] && (
-                <span className="size-3">
-                  {React.createElement(EVENT_ICONS[item.type], {
-                    className: "size-3",
-                  })}
-                </span>
-              )}
-              <span className="capitalize">{item.type.replace(/_/g, " ")}</span>
-            </span>
-            <span className="text-muted-foreground ml-auto shrink-0 text-xs tabular-nums">
-              {formatRelativeTime(item.timestamp)}
-            </span>
-          </div>
-          <p className="mt-1 text-sm font-medium leading-snug">{item.title}</p>
-          {item.description && (
-            <p className="text-muted-foreground mt-1 line-clamp-2 text-sm">
-              {item.description}
-            </p>
-          )}
+        <AvatarFallback className="text-xs font-medium">
+          {getInitials(item.actor.name)}
+        </AvatarFallback>
+      </Avatar>
+      <div className="min-w-0 flex-1">
+        <div className="flex items-center gap-2 flex-wrap">
+          <span className="text-sm font-medium">{item.actor.name}</span>
+          <span
+            className={cn(
+              "inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium",
+              colors.bg,
+              colors.icon,
+            )}
+          >
+            {EVENT_ICONS[item.type] && (
+              <span className="size-3">
+                {React.createElement(EVENT_ICONS[item.type], {
+                  className: "size-3",
+                })}
+              </span>
+            )}
+            <span className="capitalize">{item.type.replace(/_/g, " ")}</span>
+          </span>
+          <span className="text-muted-foreground ml-auto shrink-0 text-xs tabular-nums">
+            {formatRelativeTime(item.timestamp)}
+          </span>
         </div>
-      </button>
-    </li>
+        <p className="mt-1 text-sm font-medium leading-snug">{item.title}</p>
+        {item.description && (
+          <p className="text-muted-foreground mt-1 line-clamp-2 text-sm">
+            {item.description}
+          </p>
+        )}
+      </div>
+    </button>
   );
 }
 
@@ -352,18 +354,18 @@ function ActivityFeedEmpty({ message }: { message?: string }) {
 /**
  * Main ActivityFeed component.
  *
- * Uses container queries to adapt layout based on available space:
- * - XS (<280px): Compact icons + title
- * - SM (280-400px): + timestamp
- * - MD (400-560px): + description
- * - LG (>560px): + avatar + metadata badges
+ * Uses container queries + measured height to adapt layout density:
+ * - Compact: width < 400px or height < 240px
+ * - Standard: width >= 400px and height >= 240px
+ * - Detailed: width >= 560px and height >= 360px
  */
 export function ActivityFeed({
   id,
   groups,
   title,
   refreshInterval,
-  updateBehavior: _updateBehavior = "silent",
+  updateBehavior = "silent",
+  staleAfter,
   maxItems,
   emptyMessage,
   className,
@@ -371,6 +373,87 @@ export function ActivityFeed({
   onRefresh,
   onItemClick,
 }: ActivityFeedProps) {
+  const containerRef = React.useRef<HTMLDivElement | null>(null);
+  const [variant, setVariant] = React.useState<ActivityFeedVariant>("standard");
+  const [newBadgeCount, setNewBadgeCount] = React.useState(0);
+  const [showNewBadge, setShowNewBadge] = React.useState(false);
+  const [highlightedIds, setHighlightedIds] = React.useState<Set<string>>(
+    () => new Set(),
+  );
+  const [isStale, setIsStale] = React.useState(false);
+  const prevItemIdsRef = React.useRef<Set<string>>(new Set());
+  const hasMountedRef = React.useRef(false);
+  const highlightTimeoutRef = React.useRef<ReturnType<typeof setTimeout> | null>(
+    null,
+  );
+  const staleTimeoutRef = React.useRef<ReturnType<typeof setTimeout> | null>(
+    null,
+  );
+  const effectiveStaleAfter = React.useMemo(() => {
+    if (staleAfter) return staleAfter;
+    if (refreshInterval) return refreshInterval * 2;
+    return undefined;
+  }, [refreshInterval, staleAfter]);
+
+  const resolveVariant = React.useCallback(
+    (width: number, height: number): ActivityFeedVariant => {
+      if (width >= 560 && height >= 360) return "detailed";
+      if (width < 400 || height < 240) return "compact";
+      return "standard";
+    },
+    [],
+  );
+
+  React.useEffect(() => {
+    if (isLoading) return;
+    const node = containerRef.current;
+    if (!node) return;
+
+    const updateVariant = (width: number, height: number) => {
+      setVariant(resolveVariant(width, height));
+    };
+
+    if (typeof ResizeObserver !== "undefined") {
+      const observer = new ResizeObserver((entries) => {
+        const entry = entries[0];
+        if (!entry) return;
+        updateVariant(entry.contentRect.width, entry.contentRect.height);
+      });
+      observer.observe(node);
+      return () => observer.disconnect();
+    }
+
+    const updateFromClient = () => {
+      updateVariant(node.clientWidth, node.clientHeight);
+    };
+
+    updateFromClient();
+    window.addEventListener("resize", updateFromClient);
+    return () => window.removeEventListener("resize", updateFromClient);
+  }, [isLoading, resolveVariant]);
+
+  const clearHighlightTimeout = React.useCallback(() => {
+    if (highlightTimeoutRef.current) {
+      clearTimeout(highlightTimeoutRef.current);
+      highlightTimeoutRef.current = null;
+    }
+  }, []);
+
+  const clearStaleTimeout = React.useCallback(() => {
+    if (staleTimeoutRef.current) {
+      clearTimeout(staleTimeoutRef.current);
+      staleTimeoutRef.current = null;
+    }
+  }, []);
+
+  const scheduleStaleTimeout = React.useCallback(() => {
+    clearStaleTimeout();
+    if (!effectiveStaleAfter) return;
+    staleTimeoutRef.current = setTimeout(() => {
+      setIsStale(true);
+    }, effectiveStaleAfter);
+  }, [clearStaleTimeout, effectiveStaleAfter]);
+
   // Auto-refresh effect
   React.useEffect(() => {
     if (!refreshInterval || !onRefresh) return;
@@ -382,14 +465,105 @@ export function ActivityFeed({
     return () => clearInterval(interval);
   }, [refreshInterval, onRefresh]);
 
-  // Flatten and limit items if needed
-  const allItems = React.useMemo(() => {
-    const items = groups.flatMap((g) => g.items);
-    return maxItems ? items.slice(0, maxItems) : items;
+  React.useEffect(() => {
+    if (updateBehavior !== "badge") {
+      setShowNewBadge(false);
+      setNewBadgeCount(0);
+    }
+
+    if (updateBehavior !== "highlight") {
+      setHighlightedIds(new Set());
+      clearHighlightTimeout();
+    }
+  }, [updateBehavior, clearHighlightTimeout]);
+
+  React.useEffect(() => {
+    if (!effectiveStaleAfter) {
+      setIsStale(false);
+      clearStaleTimeout();
+      return;
+    }
+
+    scheduleStaleTimeout();
+
+    return () => clearStaleTimeout();
+  }, [clearStaleTimeout, effectiveStaleAfter, scheduleStaleTimeout]);
+
+  // Flatten and limit items across groups if needed
+  const displayedGroups = React.useMemo(() => {
+    if (!maxItems) return groups;
+    let remaining = maxItems;
+
+    return groups.reduce<typeof groups>((acc, group) => {
+      if (remaining <= 0) return acc;
+      const items = group.items.slice(0, remaining);
+      if (items.length > 0) {
+        acc.push({ ...group, items });
+        remaining -= items.length;
+      }
+      return acc;
+    }, []);
   }, [groups, maxItems]);
 
+  const displayedItems = React.useMemo(
+    () => displayedGroups.flatMap((group) => group.items),
+    [displayedGroups],
+  );
+
+  React.useEffect(() => {
+    const currentIds = new Set(displayedItems.map((item) => item.id));
+
+    if (!hasMountedRef.current) {
+      prevItemIdsRef.current = currentIds;
+      hasMountedRef.current = true;
+      return;
+    }
+
+    const previousIds = prevItemIdsRef.current;
+    const newIds: string[] = [];
+    currentIds.forEach((id) => {
+      if (!previousIds.has(id)) {
+        newIds.push(id);
+      }
+    });
+    prevItemIdsRef.current = currentIds;
+
+    if (newIds.length > 0) {
+      if (updateBehavior === "badge") {
+        setNewBadgeCount((count) => count + newIds.length);
+        setShowNewBadge(true);
+      }
+
+      if (updateBehavior === "highlight") {
+        setHighlightedIds((prev) => {
+          const next = new Set(prev);
+          newIds.forEach((id) => next.add(id));
+          return next;
+        });
+        clearHighlightTimeout();
+        highlightTimeoutRef.current = setTimeout(() => {
+          setHighlightedIds(new Set());
+        }, 6000);
+      }
+    }
+
+    setIsStale(false);
+    if (effectiveStaleAfter) {
+      scheduleStaleTimeout();
+    }
+  }, [
+    clearHighlightTimeout,
+    displayedItems,
+    scheduleStaleTimeout,
+    effectiveStaleAfter,
+    updateBehavior,
+  ]);
+
   // Count total items
-  const totalItems = allItems.length;
+  const totalItems = displayedItems.length;
+  const shouldShowNewBadge =
+    updateBehavior === "badge" && showNewBadge && newBadgeCount > 0;
+  const shouldShowStale = Boolean(effectiveStaleAfter) && isStale;
 
   if (isLoading) {
     return <ActivityFeedSkeleton className={className} />;
@@ -403,8 +577,10 @@ export function ActivityFeed({
           "text-foreground",
           className,
         )}
+        ref={containerRef}
         data-slot="activity-feed"
         data-tool-ui-id={id}
+        data-variant={variant}
       >
         <div className="bg-card flex w-full flex-col rounded-2xl border shadow-xs">
           {title && (
@@ -427,8 +603,10 @@ export function ActivityFeed({
         "text-foreground",
         className,
       )}
+      ref={containerRef}
       data-slot="activity-feed"
       data-tool-ui-id={id}
+      data-variant={variant}
       lang="en"
     >
       <div className="bg-card flex w-full flex-col overflow-hidden rounded-2xl border shadow-xs">
@@ -438,31 +616,90 @@ export function ActivityFeed({
           </div>
         )}
 
+        {(shouldShowNewBadge || shouldShowStale) && (
+          <div className="flex items-center justify-between gap-2 border-b px-5 py-2 text-xs">
+            <div className="flex items-center gap-2">
+              {shouldShowNewBadge && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowNewBadge(false);
+                    setNewBadgeCount(0);
+                  }}
+                  data-slot="activity-feed-new-badge"
+                  className={cn(
+                    "inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-medium",
+                    "bg-primary/10 text-primary hover:bg-primary/20",
+                  )}
+                >
+                  {newBadgeCount} new
+                </button>
+              )}
+            </div>
+            {shouldShowStale && (
+              <span
+                data-slot="activity-feed-stale"
+                className={cn(
+                  "inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-medium",
+                  "bg-amber-500/10 text-amber-600",
+                )}
+              >
+                Stale
+              </span>
+            )}
+          </div>
+        )}
+
         <div className="@[560px]:max-h-[480px] @[400px]:max-h-[360px] max-h-[280px] overflow-y-auto">
-          {groups.map((group) => (
+          {displayedGroups.map((group) => (
             <div key={group.label}>
               {/* Group header - hidden at XS size, sticky at larger sizes */}
               <GroupHeader label={group.label} count={group.items.length} />
 
               {/* Items */}
-              <ul className="@[560px]:px-3 @[400px]:px-2 px-1 py-1">
+              <ul className="@[560px]:px-3 @[400px]:px-2 px-1 py-1 list-none">
                 {group.items.map((item) => (
-                  <div key={item.id}>
-                    {/* XS/SM: Compact */}
-                    <div className="@[400px]:hidden">
-                      <ActivityItemCompact item={item} onClick={onItemClick} />
-                    </div>
-
-                    {/* MD: Standard */}
-                    <div className="@[560px]:hidden @[400px]:block hidden">
-                      <ActivityItemStandard item={item} onClick={onItemClick} />
-                    </div>
-
-                    {/* LG/XL: Detailed */}
-                    <div className="@[560px]:block hidden">
-                      <ActivityItemDetailed item={item} onClick={onItemClick} />
-                    </div>
-                  </div>
+                  <li
+                    key={item.id}
+                    data-slot="activity-feed-item"
+                    data-new={
+                      updateBehavior === "highlight" &&
+                      highlightedIds.has(item.id)
+                        ? "true"
+                        : undefined
+                    }
+                  >
+                    {variant === "compact" && (
+                      <ActivityItemCompact
+                        item={item}
+                        onClick={onItemClick}
+                        isNew={
+                          updateBehavior === "highlight" &&
+                          highlightedIds.has(item.id)
+                        }
+                      />
+                    )}
+                    {variant === "standard" && (
+                      <ActivityItemStandard
+                        item={item}
+                        onClick={onItemClick}
+                        isNew={
+                          updateBehavior === "highlight" &&
+                          highlightedIds.has(item.id)
+                        }
+                      />
+                    )}
+                    {variant === "detailed" && (
+                      <ActivityItemDetailed
+                        item={item}
+                        onClick={onItemClick}
+                        isNew={
+                          updateBehavior === "highlight" &&
+                          highlightedIds.has(item.id)
+                        }
+                      />
+                    )}
+                  </li>
                 ))}
               </ul>
             </div>

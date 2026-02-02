@@ -94,6 +94,9 @@ export const SerializableActivityFeedSchema = z.object({
   /** How to show new items when they arrive */
   updateBehavior: LiveUpdateBehaviorSchema.optional(),
 
+  /** Time in milliseconds before the feed is considered stale */
+  staleAfter: z.number().positive().optional(),
+
   /** Maximum items to display (for virtualization/performance) */
   maxItems: z.number().positive().optional(),
 

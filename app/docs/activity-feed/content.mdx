@@ -153,8 +153,8 @@ This component demonstrates three canvas-native properties:
 
 | Property | Implementation |
 |----------|----------------|
-| **Size-aware** | Container queries at 280px, 400px, 560px breakpoints |
-| **Live updating** | `refreshInterval` prop triggers `onRefresh` callback |
+| **Size-aware** | Combines container queries with measured height (compact/standard/detailed) |
+| **Live updating** | `refreshInterval` prop triggers `onRefresh` callback (stale indicator after 2x interval by default) |
 | **Pre-grouped** | Data source provides `{ label: "Today", items: [...] }` |
 
 ## Event Types
@@ -178,6 +178,8 @@ import { ActivityFeed } from "@/components/tool-ui/activity-feed";
   id="repo-activity"
   title="Repository Activity"
   refreshInterval={30000}
+  updateBehavior="badge"
+  staleAfter={60000}
   groups={[
     {
       label: "Today",
@@ -206,6 +208,7 @@ import { ActivityFeed } from "@/components/tool-ui/activity-feed";
 | `title` | `string` | Optional header title |
 | `refreshInterval` | `number \| null` | Auto-refresh interval in ms |
 | `updateBehavior` | `"silent" \| "badge" \| "highlight"` | How new items appear |
+| `staleAfter` | `number` | Time in ms before showing stale indicator (defaults to 2x `refreshInterval`) |
 | `maxItems` | `number` | Limit displayed items |
 | `emptyMessage` | `string` | Message when no items |
 | `isLoading` | `boolean` | Show skeleton state |
@@ -217,4 +220,4 @@ import { ActivityFeed } from "@/components/tool-ui/activity-feed";
 - [ ] Expandable items with detail view
 - [ ] Action buttons (navigate, AI actions, triage)
 - [ ] Checkbox selection with bulk operations
-- [ ] Badge/highlight animations for new items
+- [ ] Expand/collapse items with keyboard shortcuts
