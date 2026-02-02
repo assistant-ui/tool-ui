@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Content from "./content.mdx";
-import { DocsArticle } from "../_components/docs-article";
+import { ComponentDocsTabs } from "../_components/component-docs-tabs";
+import { ComponentPreview } from "../_components/component-preview";
 
 export const metadata: Metadata = {
   title: "Activity Feed",
@@ -12,8 +13,9 @@ export const revalidate = 3600;
 
 export default function ActivityFeedDocsPage() {
   return (
-    <DocsArticle>
-      <Content />
-    </DocsArticle>
+    <ComponentDocsTabs
+      docs={<Content />}
+      examples={<ComponentPreview componentId="activity-feed" />}
+    />
   );
 }

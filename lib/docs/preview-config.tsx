@@ -6,6 +6,7 @@ import type { ComponentProps, ComponentType, ReactNode } from "react";
 import type { PresetWithCodeGen } from "@/lib/presets/types";
 
 import type { ApprovalCard } from "@/components/tool-ui/approval-card";
+import type { ActivityFeed } from "@/components/tool-ui/activity-feed";
 import type { Chart } from "@/components/tool-ui/chart";
 import type { Citation } from "@/components/tool-ui/citation";
 import type { CodeBlock } from "@/components/tool-ui/code-block";
@@ -32,6 +33,10 @@ import {
   approvalCardPresets,
   type ApprovalCardPresetName,
 } from "@/lib/presets/approval-card";
+import {
+  activityFeedPresets,
+  type ActivityFeedPresetName,
+} from "@/lib/presets/activity-feed";
 import { chartPresets, type ChartPresetName } from "@/lib/presets/chart";
 import {
   citationPresets,
@@ -106,6 +111,9 @@ import type { SerializableUpfrontMode } from "@/components/tool-ui/question-flow
 
 const DynamicApprovalCard = dynamic(() =>
   import("@/components/tool-ui/approval-card").then((m) => m.ApprovalCard)
+);
+const DynamicActivityFeed = dynamic(() =>
+  import("@/components/tool-ui/activity-feed").then((m) => m.ActivityFeed)
 );
 const DynamicChart = dynamic(() =>
   import("@/components/tool-ui/chart").then((m) => m.Chart)
@@ -223,6 +231,7 @@ function QuestionFlowUpfrontWithReceipt({
 }
 
 export type ComponentId =
+  | "activity-feed"
   | "approval-card"
   | "chart"
   | "citation"
@@ -289,6 +298,19 @@ export const previewConfigs: Record<
   ComponentId,
   PreviewConfig<unknown, string>
 > = {
+  "activity-feed": {
+    presets: activityFeedPresets as Record<string, PresetWithCodeGen<unknown>>,
+    defaultPreset: "github-today" satisfies ActivityFeedPresetName,
+    wrapper: MaxWidthWrapper,
+    chatContext: {
+      userMessage: "Show me what changed since yesterday",
+      preamble: "Here's a live activity stream:",
+    },
+    renderComponent: ({ data }) => {
+      const feedData = data as ComponentProps<typeof ActivityFeed>;
+      return <DynamicActivityFeed {...feedData} />;
+    },
+  },
   "approval-card": {
     presets: approvalCardPresets as Record<string, PresetWithCodeGen<unknown>>,
     defaultPreset: "deploy" satisfies ApprovalCardPresetName,

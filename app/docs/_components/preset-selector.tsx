@@ -17,6 +17,7 @@ import { imagePresets } from "@/lib/presets/image";
 import { imageGalleryPresets } from "@/lib/presets/image-gallery";
 import { videoPresets } from "@/lib/presets/video";
 import { audioPresets } from "@/lib/presets/audio";
+import { activityFeedPresets } from "@/lib/presets/activity-feed";
 import { linkPreviewPresets } from "@/lib/presets/link-preview";
 import { messageDraftPresets } from "@/lib/presets/message-draft";
 import { itemCarouselPresets } from "@/lib/presets/item-carousel";
@@ -36,6 +37,7 @@ import { cn } from "@/lib/ui/cn";
 type PresetMap = Record<string, Preset<unknown>>;
 
 const PRESET_REGISTRY: Record<string, PresetMap> = {
+  "activity-feed": activityFeedPresets,
   "approval-card": approvalCardPresets,
   chart: chartPresets,
   citation: citationPresets,
