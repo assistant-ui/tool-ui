@@ -283,16 +283,17 @@ function GroupHeader({ label, count }: GroupHeaderProps) {
   return (
     <div
       className={cn(
-        "sticky top-0 z-10",
+        "sticky top-0 z-20 isolate w-full",
         "@[280px]:flex hidden items-center gap-1.5",
         "@[560px]:px-5 @[400px]:px-4 px-3 py-2",
-        "bg-card/95 backdrop-blur-sm",
+        "bg-muted border-b border-border/60 shadow-[0_1px_0_rgba(0,0,0,0.04)]",
       )}
     >
-      <span className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+      <div className="absolute inset-0 bg-muted pointer-events-none" aria-hidden="true" />
+      <span className="relative z-10 text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
         {label}
       </span>
-      <span className="text-[11px] text-muted-foreground/50 tabular-nums">
+      <span className="relative z-10 text-[11px] text-muted-foreground/50 tabular-nums">
         ({count})
       </span>
     </div>
