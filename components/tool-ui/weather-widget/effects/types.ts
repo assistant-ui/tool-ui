@@ -40,6 +40,31 @@ export interface AtmosphereConfig {
   starVisibility: number;
 }
 
+export interface PostProcessConfig {
+  enabled?: boolean;
+
+  haze?: number;
+  hazeHorizon?: number;
+  hazeDesaturation?: number;
+  hazeContrast?: number;
+
+  bloomIntensity?: number;
+  bloomThreshold?: number;
+  bloomKnee?: number;
+  bloomRadius?: number;
+  bloomTapScale?: number;
+
+  exposureIntensity?: number;
+  exposureDesaturation?: number;
+  exposureRecovery?: number;
+
+  godRayIntensity?: number;
+  godRayDecay?: number;
+  godRayDensity?: number;
+  godRayWeight?: number;
+  godRaySamples?: number;
+}
+
 export interface CelestialConfig {
   timeOfDay: number;
   moonPhase: number;
@@ -64,6 +89,7 @@ export interface EffectLayerConfig {
   snow?: SnowLayerConfig;
   celestial?: CelestialConfig;
   atmosphere: AtmosphereConfig;
+  post?: PostProcessConfig;
 }
 
 export interface WeatherEffectParams {

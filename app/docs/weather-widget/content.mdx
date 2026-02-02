@@ -59,6 +59,7 @@ import { WeatherWidget } from "@/components/tool-ui/weather-widget";
       );
     }
     ```
+
   </Tab>
 </Tabs>
 
@@ -166,6 +167,34 @@ export const WeatherWidgetTool = makeAssistantTool<SerializableWeatherWidget>({
       description: "Locale for relative time formatting",
       type: "string",
     },
+    effects: {
+      description:
+        "Optional visual effects settings (quality, reduced motion, master toggle)",
+      type: "EffectSettings",
+    },
+  }}
+/>
+
+### EffectSettings
+
+<TypeTable
+  type={{
+    enabled: {
+      description: "Master toggle for WebGL effects",
+      type: "boolean",
+      default: "true",
+    },
+    quality: {
+      description:
+        "Rendering quality tier. `auto` picks a tier based on the current device.",
+      type: '"low" | "medium" | "high" | "auto"',
+      default: '"auto"',
+    },
+    reducedMotion: {
+      description:
+        "Disable animated effects (also respects `prefers-reduced-motion` by default)",
+      type: "boolean",
+    },
   }}
 />
 
@@ -227,21 +256,21 @@ export const WeatherWidgetTool = makeAssistantTool<SerializableWeatherWidget>({
 
 Available condition values with their corresponding icons:
 
-| Condition | Icon | Description |
-|-----------|------|-------------|
-| `clear` | Sun | Clear skies |
-| `partly-cloudy` | CloudSun | Partly cloudy |
-| `cloudy` | Cloud | Cloudy |
-| `overcast` | Cloud | Overcast skies |
-| `fog` | CloudFog | Fog |
-| `drizzle` | CloudDrizzle | Light rain |
-| `rain` | CloudRain | Rain |
-| `heavy-rain` | CloudRain | Heavy rain |
-| `thunderstorm` | CloudLightning | Thunderstorm |
-| `snow` | Snowflake | Snow |
-| `sleet` | CloudHail | Sleet |
-| `hail` | CloudHail | Hail |
-| `windy` | Wind | Windy |
+| Condition       | Icon           | Description    |
+| --------------- | -------------- | -------------- |
+| `clear`         | Sun            | Clear skies    |
+| `partly-cloudy` | CloudSun       | Partly cloudy  |
+| `cloudy`        | Cloud          | Cloudy         |
+| `overcast`      | Cloud          | Overcast skies |
+| `fog`           | CloudFog       | Fog            |
+| `drizzle`       | CloudDrizzle   | Light rain     |
+| `rain`          | CloudRain      | Rain           |
+| `heavy-rain`    | CloudRain      | Heavy rain     |
+| `thunderstorm`  | CloudLightning | Thunderstorm   |
+| `snow`          | Snowflake      | Snow           |
+| `sleet`         | CloudHail      | Sleet          |
+| `hail`          | CloudHail      | Hail           |
+| `windy`         | Wind           | Windy          |
 
 ## Accessibility
 
