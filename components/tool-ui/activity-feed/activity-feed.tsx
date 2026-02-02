@@ -10,7 +10,8 @@ import {
 import type {
   ActivityFeedProps,
   ActivityItem,
-  ActivityEventType,
+  ActivityIconId,
+  ActivityPaletteId,
 } from "./schema";
 import {
   GitCommit,
@@ -25,51 +26,116 @@ import {
   Check,
   X,
   Activity,
+  AlertTriangle,
+  Bell,
+  BookOpen,
+  Bug,
+  Calendar,
+  Cloud,
+  Database,
+  DollarSign,
+  Flag,
+  Globe,
+  Package,
+  Rocket,
+  Shield,
+  Sparkles,
+  User,
+  Zap,
 } from "lucide-react";
 
 type ActivityFeedVariant = "compact" | "standard" | "detailed";
 
 /**
- * Icons for each event type.
+ * Icon map for lucide ids.
  */
-const EVENT_ICONS: Record<ActivityEventType, React.ComponentType<{ className?: string }>> = {
-  commit: GitCommit,
-  pr_opened: GitPullRequest,
-  pr_merged: GitMerge,
-  pr_closed: X,
-  pr_review_requested: GitPullRequest,
-  pr_review_submitted: Check,
-  pr_comment: MessageSquare,
-  issue_opened: CircleDot,
-  issue_closed: CircleDot,
-  issue_comment: MessageSquare,
-  branch_created: GitBranch,
-  branch_deleted: GitBranch,
-  release: Tag,
-  fork: GitFork,
+const ICONS: Record<ActivityIconId, React.ComponentType<{ className?: string }>> = {
+  activity: Activity,
+  "alert-triangle": AlertTriangle,
+  bell: Bell,
+  "book-open": BookOpen,
+  bug: Bug,
+  calendar: Calendar,
+  check: Check,
+  "circle-dot": CircleDot,
+  cloud: Cloud,
+  database: Database,
+  "dollar-sign": DollarSign,
+  flag: Flag,
+  "git-branch": GitBranch,
+  "git-commit": GitCommit,
+  "git-fork": GitFork,
+  "git-merge": GitMerge,
+  "git-pull-request": GitPullRequest,
+  globe: Globe,
+  "message-square": MessageSquare,
+  package: Package,
+  rocket: Rocket,
+  shield: Shield,
+  sparkles: Sparkles,
   star: Star,
+  tag: Tag,
+  user: User,
+  x: X,
+  zap: Zap,
 };
 
 /**
- * Colors for each event type - using semantic colors with low opacity backgrounds.
+ * Fixed palette styles for the activity feed.
  */
-const EVENT_COLORS: Record<ActivityEventType, { icon: string; bg: string }> = {
-  commit: { icon: "text-blue-600 dark:text-blue-400", bg: "bg-blue-500/10" },
-  pr_opened: { icon: "text-emerald-600 dark:text-emerald-400", bg: "bg-emerald-500/10" },
-  pr_merged: { icon: "text-purple-600 dark:text-purple-400", bg: "bg-purple-500/10" },
-  pr_closed: { icon: "text-red-600 dark:text-red-400", bg: "bg-red-500/10" },
-  pr_review_requested: { icon: "text-amber-600 dark:text-amber-400", bg: "bg-amber-500/10" },
-  pr_review_submitted: { icon: "text-emerald-600 dark:text-emerald-400", bg: "bg-emerald-500/10" },
-  pr_comment: { icon: "text-muted-foreground", bg: "bg-muted" },
-  issue_opened: { icon: "text-emerald-600 dark:text-emerald-400", bg: "bg-emerald-500/10" },
-  issue_closed: { icon: "text-purple-600 dark:text-purple-400", bg: "bg-purple-500/10" },
-  issue_comment: { icon: "text-muted-foreground", bg: "bg-muted" },
-  branch_created: { icon: "text-blue-600 dark:text-blue-400", bg: "bg-blue-500/10" },
-  branch_deleted: { icon: "text-red-600 dark:text-red-400", bg: "bg-red-500/10" },
-  release: { icon: "text-amber-600 dark:text-amber-400", bg: "bg-amber-500/10" },
-  fork: { icon: "text-muted-foreground", bg: "bg-muted" },
-  star: { icon: "text-amber-600 dark:text-amber-400", bg: "bg-amber-500/10" },
+const PALETTES: Record<ActivityPaletteId, { icon: string; bg: string; badge: string }> = {
+  slate: {
+    icon: "text-slate-600 dark:text-slate-400",
+    bg: "bg-slate-500/10",
+    badge: "text-slate-700 dark:text-slate-300",
+  },
+  blue: {
+    icon: "text-blue-600 dark:text-blue-400",
+    bg: "bg-blue-500/10",
+    badge: "text-blue-700 dark:text-blue-300",
+  },
+  cyan: {
+    icon: "text-cyan-600 dark:text-cyan-400",
+    bg: "bg-cyan-500/10",
+    badge: "text-cyan-700 dark:text-cyan-300",
+  },
+  emerald: {
+    icon: "text-emerald-600 dark:text-emerald-400",
+    bg: "bg-emerald-500/10",
+    badge: "text-emerald-700 dark:text-emerald-300",
+  },
+  amber: {
+    icon: "text-amber-600 dark:text-amber-400",
+    bg: "bg-amber-500/10",
+    badge: "text-amber-700 dark:text-amber-300",
+  },
+  orange: {
+    icon: "text-orange-600 dark:text-orange-400",
+    bg: "bg-orange-500/10",
+    badge: "text-orange-700 dark:text-orange-300",
+  },
+  rose: {
+    icon: "text-rose-600 dark:text-rose-400",
+    bg: "bg-rose-500/10",
+    badge: "text-rose-700 dark:text-rose-300",
+  },
+  violet: {
+    icon: "text-violet-600 dark:text-violet-400",
+    bg: "bg-violet-500/10",
+    badge: "text-violet-700 dark:text-violet-300",
+  },
 };
+
+const DEFAULT_ICON: ActivityIconId = "activity";
+const DEFAULT_PALETTE: ActivityPaletteId = "slate";
+
+function resolveAppearance(item: ActivityItem) {
+  return {
+    icon: item.appearance?.icon ?? DEFAULT_ICON,
+    palette: item.appearance?.palette ?? DEFAULT_PALETTE,
+    badge: item.appearance?.badge ?? item.type,
+  };
+}
 
 /**
  * Format relative time (e.g., "2h ago").
@@ -109,9 +175,15 @@ function getInitials(name: string): string {
 /**
  * Event type indicator - styled like step indicators in other components.
  */
-function EventIndicator({ type }: { type: ActivityEventType }) {
-  const Icon = EVENT_ICONS[type];
-  const colors = EVENT_COLORS[type];
+function EventIndicator({
+  iconId,
+  paletteId,
+}: {
+  iconId: ActivityIconId;
+  paletteId: ActivityPaletteId;
+}) {
+  const Icon = ICONS[iconId] ?? ICONS[DEFAULT_ICON];
+  const colors = PALETTES[paletteId] ?? PALETTES[DEFAULT_PALETTE];
 
   return (
     <span
@@ -132,24 +204,29 @@ function EventIndicator({ type }: { type: ActivityEventType }) {
  */
 interface ActivityItemCompactProps {
   item: ActivityItem;
+  appearance: ReturnType<typeof resolveAppearance>;
   onClick?: (item: ActivityItem) => void;
   isNew?: boolean;
 }
 
-function ActivityItemCompact({ item, onClick, isNew }: ActivityItemCompactProps) {
+function ActivityItemCompact({
+  item,
+  appearance,
+  onClick,
+  isNew,
+}: ActivityItemCompactProps) {
   return (
     <button
       type="button"
       onClick={() => onClick?.(item)}
-      className={cn(
-        "relative z-10 flex w-full items-center gap-2.5 rounded-lg px-2 py-1.5 text-left",
-        "motion-safe:transition-all motion-safe:duration-200",
-        "hover:bg-primary/5",
-        isNew && "bg-primary/5 ring-1 ring-primary/10",
-        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
-      )}
-    >
-      <EventIndicator type={item.type} />
+        className={cn(
+          "relative z-10 flex w-full items-center gap-2.5 rounded-lg px-2 py-1.5 text-left",
+          "hover:bg-primary/5",
+          isNew && "bg-primary/5 ring-1 ring-primary/10",
+          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+        )}
+      >
+      <EventIndicator iconId={appearance.icon} paletteId={appearance.palette} />
       <span className="min-w-0 flex-1 truncate text-sm font-medium leading-6">
         {item.title}
       </span>
@@ -165,24 +242,29 @@ function ActivityItemCompact({ item, onClick, isNew }: ActivityItemCompactProps)
  */
 interface ActivityItemStandardProps {
   item: ActivityItem;
+  appearance: ReturnType<typeof resolveAppearance>;
   onClick?: (item: ActivityItem) => void;
   isNew?: boolean;
 }
 
-function ActivityItemStandard({ item, onClick, isNew }: ActivityItemStandardProps) {
+function ActivityItemStandard({
+  item,
+  appearance,
+  onClick,
+  isNew,
+}: ActivityItemStandardProps) {
   return (
     <button
       type="button"
       onClick={() => onClick?.(item)}
-      className={cn(
-        "relative z-10 flex w-full items-start gap-3 rounded-lg px-2 py-2 text-left",
-        "motion-safe:transition-all motion-safe:duration-200",
-        "hover:bg-primary/5",
-        isNew && "bg-primary/5 ring-1 ring-primary/10",
-        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
-      )}
-    >
-      <EventIndicator type={item.type} />
+        className={cn(
+          "relative z-10 flex w-full items-start gap-3 rounded-lg px-2 py-2 text-left",
+          "hover:bg-primary/5",
+          isNew && "bg-primary/5 ring-1 ring-primary/10",
+          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+        )}
+      >
+      <EventIndicator iconId={appearance.icon} paletteId={appearance.palette} />
       <div className="min-w-0 flex-1">
         <div className="flex items-baseline gap-2">
           <span className="truncate text-sm font-medium leading-6">
@@ -207,24 +289,30 @@ function ActivityItemStandard({ item, onClick, isNew }: ActivityItemStandardProp
  */
 interface ActivityItemDetailedProps {
   item: ActivityItem;
+  appearance: ReturnType<typeof resolveAppearance>;
   onClick?: (item: ActivityItem) => void;
   isNew?: boolean;
 }
 
-function ActivityItemDetailed({ item, onClick, isNew }: ActivityItemDetailedProps) {
-  const colors = EVENT_COLORS[item.type];
+function ActivityItemDetailed({
+  item,
+  appearance,
+  onClick,
+  isNew,
+}: ActivityItemDetailedProps) {
+  const colors = PALETTES[appearance.palette] ?? PALETTES[DEFAULT_PALETTE];
+  const Icon = ICONS[appearance.icon] ?? ICONS[DEFAULT_ICON];
 
   return (
     <button
       type="button"
       onClick={() => onClick?.(item)}
-      className={cn(
-        "relative z-10 flex w-full items-start gap-3 rounded-xl px-3 py-2.5 text-left",
-        "motion-safe:transition-all motion-safe:duration-200",
-        "hover:bg-primary/5",
-        isNew && "bg-primary/5 ring-1 ring-primary/10",
-        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
-      )}
+        className={cn(
+          "relative z-10 flex w-full items-start gap-3 rounded-xl px-3 py-2.5 text-left",
+          "hover:bg-primary/5",
+          isNew && "bg-primary/5 ring-1 ring-primary/10",
+          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+        )}
       style={{
         backdropFilter: "blur(2px)",
       }}
@@ -240,22 +328,22 @@ function ActivityItemDetailed({ item, onClick, isNew }: ActivityItemDetailedProp
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-2 flex-wrap">
           <span className="text-sm font-medium">{item.actor.name}</span>
-          <span
-            className={cn(
-              "inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium",
-              colors.bg,
-              colors.icon,
-            )}
-          >
-            {EVENT_ICONS[item.type] && (
-              <span className="size-3">
-                {React.createElement(EVENT_ICONS[item.type], {
-                  className: "size-3",
-                })}
+            {appearance.badge && (
+              <span
+                className={cn(
+                  "inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium",
+                  colors.bg,
+                  colors.badge,
+                )}
+              >
+                <span className="size-3">
+                  {React.createElement(Icon, {
+                    className: "size-3",
+                  })}
+                </span>
+                <span>{appearance.badge}</span>
               </span>
             )}
-            <span className="capitalize">{item.type.replace(/_/g, " ")}</span>
-          </span>
           <span className="text-muted-foreground ml-auto shrink-0 text-xs tabular-nums">
             {formatRelativeTime(item.timestamp)}
           </span>
@@ -651,7 +739,7 @@ export function ActivityFeed({
           </div>
         )}
 
-        <div className="@[560px]:max-h-[480px] @[400px]:max-h-[360px] max-h-[280px] overflow-y-auto">
+        <div className="@[560px]:max-h-[480px] @[400px]:max-h-[360px] max-h-[280px] overflow-y-auto pb-2">
           {displayedGroups.map((group) => (
             <div key={group.label}>
               {/* Group header - hidden at XS size, sticky at larger sizes */}
@@ -659,49 +747,44 @@ export function ActivityFeed({
 
               {/* Items */}
               <ul className="@[560px]:px-3 @[400px]:px-2 px-1 py-1 list-none">
-                {group.items.map((item) => (
-                  <li
-                    key={item.id}
-                    data-slot="activity-feed-item"
-                    data-new={
-                      updateBehavior === "highlight" &&
-                      highlightedIds.has(item.id)
-                        ? "true"
-                        : undefined
-                    }
-                  >
-                    {variant === "compact" && (
-                      <ActivityItemCompact
-                        item={item}
-                        onClick={onItemClick}
-                        isNew={
-                          updateBehavior === "highlight" &&
-                          highlightedIds.has(item.id)
-                        }
-                      />
-                    )}
-                    {variant === "standard" && (
-                      <ActivityItemStandard
-                        item={item}
-                        onClick={onItemClick}
-                        isNew={
-                          updateBehavior === "highlight" &&
-                          highlightedIds.has(item.id)
-                        }
-                      />
-                    )}
-                    {variant === "detailed" && (
-                      <ActivityItemDetailed
-                        item={item}
-                        onClick={onItemClick}
-                        isNew={
-                          updateBehavior === "highlight" &&
-                          highlightedIds.has(item.id)
-                        }
-                      />
-                    )}
-                  </li>
-                ))}
+                {group.items.map((item) => {
+                  const appearance = resolveAppearance(item);
+                  const isHighlighted =
+                    updateBehavior === "highlight" &&
+                    highlightedIds.has(item.id);
+                  return (
+                    <li
+                      key={item.id}
+                      data-slot="activity-feed-item"
+                      data-new={isHighlighted ? "true" : undefined}
+                    >
+                      {variant === "compact" && (
+                        <ActivityItemCompact
+                          item={item}
+                          appearance={appearance}
+                          onClick={onItemClick}
+                          isNew={isHighlighted}
+                        />
+                      )}
+                      {variant === "standard" && (
+                        <ActivityItemStandard
+                          item={item}
+                          appearance={appearance}
+                          onClick={onItemClick}
+                          isNew={isHighlighted}
+                        />
+                      )}
+                      {variant === "detailed" && (
+                        <ActivityItemDetailed
+                          item={item}
+                          appearance={appearance}
+                          onClick={onItemClick}
+                          isNew={isHighlighted}
+                        />
+                      )}
+                    </li>
+                  );
+                })}
               </ul>
             </div>
           ))}

@@ -3,7 +3,9 @@ export { ActivityFeedErrorBoundary } from "./error-boundary";
 export {
   SerializableActivityFeedSchema,
   parseSerializableActivityFeed,
-  ActivityEventTypeSchema,
+  ActivityIconSchema,
+  ActivityPaletteSchema,
+  ActivityAppearanceSchema,
   ActivityItemSchema,
   ActivityGroupSchema,
   ActivityActorSchema,
@@ -12,6 +14,8 @@ export {
   type ActivityItem,
   type ActivityGroup,
   type ActivityActor,
-  type ActivityEventType,
+  type ActivityIconId,
+  type ActivityPaletteId,
+  type ActivityAppearance,
   type LiveUpdateBehavior,
 } from "./schema";

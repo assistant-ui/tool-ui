@@ -3,28 +3,67 @@ import { ToolUIIdSchema, ToolUIRoleSchema } from "../shared/schema";
 import { parseWithSchema } from "../shared/parse";
 
 /**
- * Event types for GitHub activity.
- * Extensible for other sources in the future.
+ * Restricted lucide icon ids supported by ActivityFeed.
  */
-export const ActivityEventTypeSchema = z.enum([
-  "commit",
-  "pr_opened",
-  "pr_merged",
-  "pr_closed",
-  "pr_review_requested",
-  "pr_review_submitted",
-  "pr_comment",
-  "issue_opened",
-  "issue_closed",
-  "issue_comment",
-  "branch_created",
-  "branch_deleted",
-  "release",
-  "fork",
+export const ActivityIconSchema = z.enum([
+  "activity",
+  "alert-triangle",
+  "bell",
+  "book-open",
+  "bug",
+  "calendar",
+  "check",
+  "circle-dot",
+  "cloud",
+  "database",
+  "dollar-sign",
+  "flag",
+  "git-branch",
+  "git-commit",
+  "git-fork",
+  "git-merge",
+  "git-pull-request",
+  "globe",
+  "message-square",
+  "package",
+  "rocket",
+  "shield",
+  "sparkles",
   "star",
+  "tag",
+  "user",
+  "x",
+  "zap",
 ]);
 
-export type ActivityEventType = z.infer<typeof ActivityEventTypeSchema>;
+export type ActivityIconId = z.infer<typeof ActivityIconSchema>;
+
+/**
+ * Fixed palette options for ActivityFeed.
+ */
+export const ActivityPaletteSchema = z.enum([
+  "slate",
+  "blue",
+  "cyan",
+  "emerald",
+  "amber",
+  "orange",
+  "rose",
+  "violet",
+]);
+
+export type ActivityPaletteId = z.infer<typeof ActivityPaletteSchema>;
+
+/**
+ * Appearance hints used by the renderer.
+ */
+export const ActivityAppearanceSchema = z.object({
+  icon: ActivityIconSchema.optional(),
+  palette: ActivityPaletteSchema.optional(),
+  badge: z.string().min(1).optional(),
+});
+
+export type ActivityAppearance = z.infer<typeof ActivityAppearanceSchema>;
 
 /**
  * Actor who performed the activity.
@@ -42,11 +81,12 @@ export type ActivityActor = z.infer<typeof ActivityActorSchema>;
  */
 export const ActivityItemSchema = z.object({
   id: z.string().min(1),
-  type: ActivityEventTypeSchema,
   title: z.string().min(1),
   description: z.string().optional(),
   timestamp: z.string().datetime(),
   actor: ActivityActorSchema,
+  type: z.string().min(1).optional(),
+  appearance: ActivityAppearanceSchema.optional(),
   url: z.string().url().optional(),
   metadata: z.record(z.string(), z.unknown()).optional(),
 });

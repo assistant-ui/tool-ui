@@ -37,6 +37,20 @@ const yesterday = new Date(now.getTime() - 24 * 60 * 60 * 1000);
 const twoDaysAgo = new Date(now.getTime() - 48 * 60 * 60 * 1000);
 const threeDaysAgo = new Date(now.getTime() - 72 * 60 * 60 * 1000);
 
+const githubAppearance = {
+  prMerged: { icon: "git-merge", palette: "violet", badge: "Merged" },
+  prReview: { icon: "check", palette: "emerald", badge: "Review" },
+  prOpened: { icon: "git-pull-request", palette: "emerald", badge: "PR" },
+  commit: { icon: "git-commit", palette: "blue", badge: "Commit" },
+  issue: { icon: "circle-dot", palette: "amber", badge: "Issue" },
+  issueClosed: { icon: "check", palette: "emerald", badge: "Resolved" },
+  release: { icon: "tag", palette: "amber", badge: "Release" },
+  branch: { icon: "git-branch", palette: "blue", badge: "Branch" },
+  star: { icon: "star", palette: "amber", badge: "Star" },
+  fork: { icon: "git-fork", palette: "violet", badge: "Fork" },
+  comment: { icon: "message-square", palette: "slate", badge: "Comment" },
+} as const;
+
 export const activityFeedPresets: Record<ActivityFeedPresetName, ActivityFeedPreset> = {
   "github-today": {
     description: "Active GitHub repository with today's activity",
@@ -50,7 +64,7 @@ export const activityFeedPresets: Record<ActivityFeedPresetName, ActivityFeedPre
           items: [
             {
               id: "evt-1",
-              type: "pr_merged",
+              appearance: githubAppearance.prMerged,
               title: "feat: Add activity feed component",
               description: "Implements size-aware activity feed with container queries",
               timestamp: hourAgo.toISOString(),
@@ -59,7 +73,7 @@ export const activityFeedPresets: Record<ActivityFeedPresetName, ActivityFeedPre
             },
             {
               id: "evt-2",
-              type: "pr_review_submitted",
+              appearance: githubAppearance.prReview,
               title: "Approved: Update authentication flow",
               description: "LGTM! Nice cleanup of the OAuth logic.",
               timestamp: twoHoursAgo.toISOString(),
@@ -67,14 +81,14 @@ export const activityFeedPresets: Record<ActivityFeedPresetName, ActivityFeedPre
             },
             {
               id: "evt-3",
-              type: "commit",
+              appearance: githubAppearance.commit,
               title: "fix: Resolve race condition in data fetching",
               timestamp: twoHoursAgo.toISOString(),
               actor: { name: "Sarah Chen", avatar: "https://i.pravatar.cc/150?u=sarah" },
             },
             {
               id: "evt-4",
-              type: "issue_opened",
+              appearance: githubAppearance.issue,
               title: "Performance regression in dashboard load",
               description: "Page load time increased from 1.2s to 3.8s after latest deploy",
               timestamp: fourHoursAgo.toISOString(),
@@ -83,7 +97,7 @@ export const activityFeedPresets: Record<ActivityFeedPresetName, ActivityFeedPre
             },
             {
               id: "evt-5",
-              type: "pr_opened",
+              appearance: githubAppearance.prOpened,
               title: "feat: Add dark mode support",
               description: "Implements system-aware theme switching with CSS variables",
               timestamp: fourHoursAgo.toISOString(),
@@ -107,14 +121,14 @@ export const activityFeedPresets: Record<ActivityFeedPresetName, ActivityFeedPre
           items: [
             {
               id: "evt-1",
-              type: "pr_merged",
+              appearance: githubAppearance.prMerged,
               title: "feat: Add activity feed component",
               timestamp: hourAgo.toISOString(),
               actor: { name: "Sarah Chen", avatar: "https://i.pravatar.cc/150?u=sarah" },
             },
             {
               id: "evt-2",
-              type: "commit",
+              appearance: githubAppearance.commit,
               title: "fix: Resolve race condition in data fetching",
               timestamp: twoHoursAgo.toISOString(),
               actor: { name: "Sarah Chen", avatar: "https://i.pravatar.cc/150?u=sarah" },
@@ -126,7 +140,7 @@ export const activityFeedPresets: Record<ActivityFeedPresetName, ActivityFeedPre
           items: [
             {
               id: "evt-3",
-              type: "release",
+              appearance: githubAppearance.release,
               title: "v2.4.0 released",
               description: "New features: Activity feed, improved charts, bug fixes",
               timestamp: yesterday.toISOString(),
@@ -134,14 +148,14 @@ export const activityFeedPresets: Record<ActivityFeedPresetName, ActivityFeedPre
             },
             {
               id: "evt-4",
-              type: "pr_review_submitted",
+              appearance: githubAppearance.prReview,
               title: "Requested changes: Refactor API client",
               timestamp: yesterday.toISOString(),
               actor: { name: "Alex Rivera", avatar: "https://i.pravatar.cc/150?u=alex" },
             },
             {
               id: "evt-5",
-              type: "issue_closed",
+              appearance: githubAppearance.issueClosed,
               title: "Memory leak in chart component",
               timestamp: yesterday.toISOString(),
               actor: { name: "Jordan Lee", avatar: "https://i.pravatar.cc/150?u=jordan" },
@@ -153,28 +167,28 @@ export const activityFeedPresets: Record<ActivityFeedPresetName, ActivityFeedPre
           items: [
             {
               id: "evt-6",
-              type: "branch_created",
+              appearance: githubAppearance.branch,
               title: "Created branch feature/notifications",
               timestamp: twoDaysAgo.toISOString(),
               actor: { name: "Sarah Chen", avatar: "https://i.pravatar.cc/150?u=sarah" },
             },
             {
               id: "evt-7",
-              type: "star",
+              appearance: githubAppearance.star,
               title: "Repository starred",
               timestamp: twoDaysAgo.toISOString(),
               actor: { name: "External User" },
             },
             {
               id: "evt-8",
-              type: "fork",
+              appearance: githubAppearance.fork,
               title: "Repository forked",
               timestamp: threeDaysAgo.toISOString(),
               actor: { name: "Community Contributor" },
             },
             {
               id: "evt-9",
-              type: "issue_comment",
+              appearance: githubAppearance.comment,
               title: "Comment on: API rate limiting discussion",
               description: "We should consider implementing exponential backoff...",
               timestamp: threeDaysAgo.toISOString(),
@@ -196,14 +210,14 @@ export const activityFeedPresets: Record<ActivityFeedPresetName, ActivityFeedPre
           items: [
             {
               id: "evt-1",
-              type: "commit",
+              appearance: githubAppearance.commit,
               title: "Initial commit",
               timestamp: hourAgo.toISOString(),
               actor: { name: "Developer" },
             },
             {
               id: "evt-2",
-              type: "branch_created",
+              appearance: githubAppearance.branch,
               title: "Created branch main",
               timestamp: twoHoursAgo.toISOString(),
               actor: { name: "Developer" },

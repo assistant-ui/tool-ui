@@ -25,7 +25,7 @@ The activity feed adapts to its container width. Resize your browser to see the 
         items: [
           {
             id: "evt-1",
-            type: "pr_merged",
+            appearance: { icon: "git-merge", palette: "violet", badge: "Merged" },
             title: "feat: Add activity feed component",
             description: "Implements size-aware activity feed with container queries",
             timestamp: new Date(Date.now() - 3600000).toISOString(),
@@ -33,7 +33,7 @@ The activity feed adapts to its container width. Resize your browser to see the 
           },
           {
             id: "evt-2",
-            type: "pr_review_submitted",
+            appearance: { icon: "check", palette: "emerald", badge: "Review" },
             title: "Approved: Update authentication flow",
             description: "LGTM! Nice cleanup of the OAuth logic.",
             timestamp: new Date(Date.now() - 7200000).toISOString(),
@@ -41,7 +41,7 @@ The activity feed adapts to its container width. Resize your browser to see the 
           },
           {
             id: "evt-3",
-            type: "issue_opened",
+            appearance: { icon: "alert-triangle", palette: "rose", badge: "Alert" },
             title: "Performance regression in dashboard load",
             description: "Page load time increased from 1.2s to 3.8s after latest deploy",
             timestamp: new Date(Date.now() - 14400000).toISOString(),
@@ -54,7 +54,7 @@ The activity feed adapts to its container width. Resize your browser to see the 
         items: [
           {
             id: "evt-4",
-            type: "release",
+            appearance: { icon: "tag", palette: "amber", badge: "Release" },
             title: "v2.4.0 released",
             description: "New features: Activity feed, improved charts, bug fixes",
             timestamp: new Date(Date.now() - 86400000).toISOString(),
@@ -62,7 +62,7 @@ The activity feed adapts to its container width. Resize your browser to see the 
           },
           {
             id: "evt-5",
-            type: "commit",
+            appearance: { icon: "git-commit", palette: "blue", badge: "Commit" },
             title: "fix: Resolve memory leak in chart component",
             timestamp: new Date(Date.now() - 90000000).toISOString(),
             actor: { name: "Jordan Lee", avatar: "https://i.pravatar.cc/150?u=jordan" },
@@ -85,7 +85,7 @@ The activity feed adapts to its container width. Resize your browser to see the 
         items: [
           {
             id: "evt-1",
-            type: "pr_merged",
+            appearance: { icon: "git-merge", palette: "violet", badge: "Merged" },
             title: "feat: Add activity feed component",
             description: "Implements size-aware activity feed with container queries",
             timestamp: new Date(Date.now() - 3600000).toISOString(),
@@ -93,14 +93,14 @@ The activity feed adapts to its container width. Resize your browser to see the 
           },
           {
             id: "evt-2",
-            type: "pr_review_submitted",
+            appearance: { icon: "message-square", palette: "cyan", badge: "Comment" },
             title: "Approved: Update authentication flow",
             timestamp: new Date(Date.now() - 7200000).toISOString(),
             actor: { name: "Marcus Johnson" },
           },
           {
             id: "evt-3",
-            type: "issue_opened",
+            appearance: { icon: "alert-triangle", palette: "orange", badge: "Alert" },
             title: "Performance regression in dashboard load",
             timestamp: new Date(Date.now() - 14400000).toISOString(),
             actor: { name: "Alex Rivera" },
@@ -122,21 +122,21 @@ The activity feed adapts to its container width. Resize your browser to see the 
         items: [
           {
             id: "evt-1",
-            type: "pr_merged",
+            appearance: { icon: "rocket", palette: "emerald", badge: "Deploy" },
             title: "feat: Add activity feed component",
             timestamp: new Date(Date.now() - 3600000).toISOString(),
             actor: { name: "Sarah Chen" },
           },
           {
             id: "evt-2",
-            type: "commit",
+            appearance: { icon: "zap", palette: "violet", badge: "Fix" },
             title: "fix: Resolve race condition",
             timestamp: new Date(Date.now() - 7200000).toISOString(),
             actor: { name: "Marcus Johnson" },
           },
           {
             id: "evt-3",
-            type: "issue_opened",
+            appearance: { icon: "bug", palette: "rose", badge: "Bug" },
             title: "Bug: Dashboard slow",
             timestamp: new Date(Date.now() - 14400000).toISOString(),
             actor: { name: "Alex Rivera" },
@@ -157,17 +157,22 @@ This component demonstrates three canvas-native properties:
 | **Live updating** | `refreshInterval` prop triggers `onRefresh` callback (stale indicator after 2x interval by default) |
 | **Pre-grouped** | Data source provides `{ label: "Today", items: [...] }` |
 
-## Event Types
+## Appearance (Platform-Agnostic)
 
-The feed supports these GitHub event types:
+Instead of platform-specific event enums, the feed accepts **appearance hints**:
 
-- `commit` — Code commits
-- `pr_opened`, `pr_merged`, `pr_closed` — Pull request lifecycle
-- `pr_review_requested`, `pr_review_submitted`, `pr_comment` — Review activity
-- `issue_opened`, `issue_closed`, `issue_comment` — Issue activity
-- `branch_created`, `branch_deleted` — Branch operations
-- `release` — Version releases
-- `fork`, `star` — Repository engagement
+- `appearance.icon` — restricted to supported Lucide ids
+- `appearance.palette` — fixed palette that covers the spectrum
+- `appearance.badge` — short label shown in the detailed view
+
+**Palette options**: `slate`, `blue`, `cyan`, `emerald`, `amber`, `orange`, `rose`, `violet`
+
+**Supported icons**:
+`activity`, `alert-triangle`, `bell`, `book-open`, `bug`, `calendar`, `check`,
+`circle-dot`, `cloud`, `database`, `dollar-sign`, `flag`, `git-branch`,
+`git-commit`, `git-fork`, `git-merge`, `git-pull-request`, `globe`,
+`message-square`, `package`, `rocket`, `shield`, `sparkles`, `star`, `tag`,
+`user`, `x`, `zap`
 
 ## Usage
 
@@ -186,7 +191,11 @@ import { ActivityFeed } from "@/components/tool-ui/activity-feed";
       items: [
         {
           id: "evt-1",
-          type: "pr_merged",
+          appearance: {
+            icon: "git-merge",
+            palette: "violet",
+            badge: "Merged",
+          },
           title: "feat: Add new feature",
           timestamp: new Date().toISOString(),
           actor: { name: "Developer", avatar: "https://..." },
@@ -209,6 +218,8 @@ import { ActivityFeed } from "@/components/tool-ui/activity-feed";
 | `refreshInterval` | `number \| null` | Auto-refresh interval in ms |
 | `updateBehavior` | `"silent" \| "badge" \| "highlight"` | How new items appear |
 | `staleAfter` | `number` | Time in ms before showing stale indicator (defaults to 2x `refreshInterval`) |
+| `appearance` | `{ icon?, palette?, badge? }` | Optional rendering hints per item |
+| `type` | `string` | Optional legacy badge label fallback |
 | `maxItems` | `number` | Limit displayed items |
 | `emptyMessage` | `string` | Message when no items |
 | `isLoading` | `boolean` | Show skeleton state |
