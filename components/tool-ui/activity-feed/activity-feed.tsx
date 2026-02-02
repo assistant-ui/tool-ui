@@ -285,8 +285,8 @@ function GroupHeader({ label, count }: GroupHeaderProps) {
       className={cn(
         "sticky top-0 z-20 isolate w-full",
         "@[280px]:flex hidden items-center gap-1.5",
-        "@[560px]:px-5 @[400px]:px-4 px-3 py-2",
-        "bg-muted border-b border-border/60 shadow-[0_1px_0_rgba(0,0,0,0.04)]",
+        "@[560px]:px-5 @[400px]:px-4 px-3 py-0.5",
+        "bg-muted border-b border-border/60",
       )}
     >
       <div className="absolute inset-0 bg-muted pointer-events-none" aria-hidden="true" />
@@ -585,7 +585,7 @@ export function ActivityFeed({
       >
         <div className="bg-card flex w-full flex-col rounded-2xl border shadow-xs">
           {title && (
-            <div className="@[560px]:px-5 @[400px]:px-4 px-3 py-2">
+            <div className="@[560px]:px-5 @[400px]:px-4 px-3 py-1.5">
               <h2 className="leading-none font-semibold">{title}</h2>
             </div>
           )}
@@ -612,7 +612,7 @@ export function ActivityFeed({
     >
       <div className="bg-card flex w-full flex-col overflow-hidden rounded-2xl border shadow-xs">
         {title && (
-          <div className="border-b px-5 py-4">
+          <div className="border-b px-5 py-3">
             <h2 className="text-sm font-semibold">{title}</h2>
           </div>
         )}
