@@ -29,6 +29,7 @@ export interface ComponentMeta {
 }
 
 export const componentsRegistry: ComponentMeta[] = [
+  // NOTE: activity-feed is unlisted for now - access via /docs/activity-feed directly
   {
     id: "approval-card",
     label: "Approval Card",

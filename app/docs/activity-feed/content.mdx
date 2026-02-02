@@ -1,0 +1,220 @@
+import { DocsHeader } from "../_components/docs-header";
+import { ActivityFeed } from "@/components/tool-ui/activity-feed";
+
+<DocsHeader
+  title="Activity Feed"
+  description="Live chronological stream of events with size-aware layout. Canvas-native component."
+  mdxPath="app/docs/activity-feed/content.mdx"
+/>
+
+> **Canvas Component** — This is a canvas-native component designed for spatial workspaces. It adapts its layout based on container size using CSS container queries.
+
+## Size-Aware Demo
+
+The activity feed adapts to its container width. Resize your browser to see the different modes:
+
+### Large (Over 560px) — Detailed View
+
+<div className="not-prose mx-auto" style={{ maxWidth: "720px" }}>
+  <ActivityFeed
+    id="demo-large"
+    title="Repository Activity"
+    groups={[
+      {
+        label: "Today",
+        items: [
+          {
+            id: "evt-1",
+            type: "pr_merged",
+            title: "feat: Add activity feed component",
+            description: "Implements size-aware activity feed with container queries",
+            timestamp: new Date(Date.now() - 3600000).toISOString(),
+            actor: { name: "Sarah Chen", avatar: "https://i.pravatar.cc/150?u=sarah" },
+          },
+          {
+            id: "evt-2",
+            type: "pr_review_submitted",
+            title: "Approved: Update authentication flow",
+            description: "LGTM! Nice cleanup of the OAuth logic.",
+            timestamp: new Date(Date.now() - 7200000).toISOString(),
+            actor: { name: "Marcus Johnson", avatar: "https://i.pravatar.cc/150?u=marcus" },
+          },
+          {
+            id: "evt-3",
+            type: "issue_opened",
+            title: "Performance regression in dashboard load",
+            description: "Page load time increased from 1.2s to 3.8s after latest deploy",
+            timestamp: new Date(Date.now() - 14400000).toISOString(),
+            actor: { name: "Alex Rivera", avatar: "https://i.pravatar.cc/150?u=alex" },
+          },
+        ],
+      },
+      {
+        label: "Yesterday",
+        items: [
+          {
+            id: "evt-4",
+            type: "release",
+            title: "v2.4.0 released",
+            description: "New features: Activity feed, improved charts, bug fixes",
+            timestamp: new Date(Date.now() - 86400000).toISOString(),
+            actor: { name: "Marcus Johnson", avatar: "https://i.pravatar.cc/150?u=marcus" },
+          },
+          {
+            id: "evt-5",
+            type: "commit",
+            title: "fix: Resolve memory leak in chart component",
+            timestamp: new Date(Date.now() - 90000000).toISOString(),
+            actor: { name: "Jordan Lee", avatar: "https://i.pravatar.cc/150?u=jordan" },
+          },
+        ],
+      },
+    ]}
+  />
+</div>
+
+### Medium (400-560px) — Standard View
+
+<div className="not-prose mx-auto" style={{ maxWidth: "480px" }}>
+  <ActivityFeed
+    id="demo-medium"
+    title="Repository Activity"
+    groups={[
+      {
+        label: "Today",
+        items: [
+          {
+            id: "evt-1",
+            type: "pr_merged",
+            title: "feat: Add activity feed component",
+            description: "Implements size-aware activity feed with container queries",
+            timestamp: new Date(Date.now() - 3600000).toISOString(),
+            actor: { name: "Sarah Chen" },
+          },
+          {
+            id: "evt-2",
+            type: "pr_review_submitted",
+            title: "Approved: Update authentication flow",
+            timestamp: new Date(Date.now() - 7200000).toISOString(),
+            actor: { name: "Marcus Johnson" },
+          },
+          {
+            id: "evt-3",
+            type: "issue_opened",
+            title: "Performance regression in dashboard load",
+            timestamp: new Date(Date.now() - 14400000).toISOString(),
+            actor: { name: "Alex Rivera" },
+          },
+        ],
+      },
+    ]}
+  />
+</div>
+
+### Small (Under 400px) — Compact View
+
+<div className="not-prose mx-auto" style={{ maxWidth: "320px" }}>
+  <ActivityFeed
+    id="demo-small"
+    groups={[
+      {
+        label: "Today",
+        items: [
+          {
+            id: "evt-1",
+            type: "pr_merged",
+            title: "feat: Add activity feed component",
+            timestamp: new Date(Date.now() - 3600000).toISOString(),
+            actor: { name: "Sarah Chen" },
+          },
+          {
+            id: "evt-2",
+            type: "commit",
+            title: "fix: Resolve race condition",
+            timestamp: new Date(Date.now() - 7200000).toISOString(),
+            actor: { name: "Marcus Johnson" },
+          },
+          {
+            id: "evt-3",
+            type: "issue_opened",
+            title: "Bug: Dashboard slow",
+            timestamp: new Date(Date.now() - 14400000).toISOString(),
+            actor: { name: "Alex Rivera" },
+          },
+        ],
+      },
+    ]}
+  />
+</div>
+
+## Canvas-Native Properties
+
+This component demonstrates three canvas-native properties:
+
+| Property | Implementation |
+|----------|----------------|
+| **Size-aware** | Container queries at 280px, 400px, 560px breakpoints |
+| **Live updating** | `refreshInterval` prop triggers `onRefresh` callback |
+| **Pre-grouped** | Data source provides `{ label: "Today", items: [...] }` |
+
+## Event Types
+
+The feed supports these GitHub event types:
+
+- `commit` — Code commits
+- `pr_opened`, `pr_merged`, `pr_closed` — Pull request lifecycle
+- `pr_review_requested`, `pr_review_submitted`, `pr_comment` — Review activity
+- `issue_opened`, `issue_closed`, `issue_comment` — Issue activity
+- `branch_created`, `branch_deleted` — Branch operations
+- `release` — Version releases
+- `fork`, `star` — Repository engagement
+
+## Usage
+
+```tsx
+import { ActivityFeed } from "@/components/tool-ui/activity-feed";
+
+<ActivityFeed
+  id="repo-activity"
+  title="Repository Activity"
+  refreshInterval={30000}
+  groups={[
+    {
+      label: "Today",
+      items: [
+        {
+          id: "evt-1",
+          type: "pr_merged",
+          title: "feat: Add new feature",
+          timestamp: new Date().toISOString(),
+          actor: { name: "Developer", avatar: "https://..." },
+        },
+      ],
+    },
+  ]}
+  onRefresh={() => fetchLatestActivity()}
+  onItemClick={(item) => window.open(item.url)}
+/>
+```
+
+## Props
+
+| Prop | Type | Description |
+|------|------|-------------|
+| `id` | `string` | Unique identifier (required) |
+| `groups` | `ActivityGroup[]` | Pre-grouped activity data (required) |
+| `title` | `string` | Optional header title |
+| `refreshInterval` | `number \| null` | Auto-refresh interval in ms |
+| `updateBehavior` | `"silent" \| "badge" \| "highlight"` | How new items appear |
+| `maxItems` | `number` | Limit displayed items |
+| `emptyMessage` | `string` | Message when no items |
+| `isLoading` | `boolean` | Show skeleton state |
+| `onRefresh` | `() => void` | Called on refresh interval |
+| `onItemClick` | `(item: ActivityItem) => void` | Called when item clicked |
+
+## Roadmap (Post-MVP)
+
+- [ ] Expandable items with detail view
+- [ ] Action buttons (navigate, AI actions, triage)
+- [ ] Checkbox selection with bulk operations
+- [ ] Badge/highlight animations for new items
