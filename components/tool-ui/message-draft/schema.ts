@@ -21,11 +21,10 @@ const SlackTargetSchema = z.discriminatedUnion("type", [
 
 export type SlackTarget = z.infer<typeof SlackTargetSchema>;
 
-export const SerializableEmailDraftSchema = z.object({
+const EmailDraftBaseSchema = z.object({
   id: ToolUIIdSchema,
   role: ToolUIRoleSchema.optional(),
   body: z.string().min(1),
-  outcome: MessageDraftOutcomeSchema.optional(),
   channel: z.literal("email"),
   subject: z.string().min(1),
   from: z.string().optional(),
@@ -34,22 +33,44 @@ export const SerializableEmailDraftSchema = z.object({
   bcc: z.array(z.string()).optional(),
 });
 
-export const SerializableSlackDraftSchema = z.object({
+const SlackDraftBaseSchema = z.object({
   id: ToolUIIdSchema,
   role: ToolUIRoleSchema.optional(),
   body: z.string().min(1),
-  outcome: MessageDraftOutcomeSchema.optional(),
   channel: z.literal("slack"),
   target: SlackTargetSchema,
 });
+
+export const SerializableEmailDraftSchema = EmailDraftBaseSchema;
+
+export const SerializableSlackDraftSchema = SlackDraftBaseSchema;
+
+export const SerializableEmailDraftReceiptSchema =
+  EmailDraftBaseSchema.extend({
+    outcome: MessageDraftOutcomeSchema,
+  });
+
+export const SerializableSlackDraftReceiptSchema =
+  SlackDraftBaseSchema.extend({
+    outcome: MessageDraftOutcomeSchema,
+  });
 
 export const SerializableMessageDraftSchema = z.discriminatedUnion("channel", [
   SerializableEmailDraftSchema,
   SerializableSlackDraftSchema,
 ]);
 
+export const SerializableMessageDraftReceiptSchema = z.discriminatedUnion(
+  "channel",
+  [SerializableEmailDraftReceiptSchema, SerializableSlackDraftReceiptSchema],
+);
+
 export type SerializableMessageDraft = z.infer<
   typeof SerializableMessageDraftSchema
+>;
+
+export type SerializableMessageDraftReceipt = z.infer<
+  typeof SerializableMessageDraftReceiptSchema
 >;
 
 export type SerializableEmailDraft = z.infer<
@@ -58,6 +79,14 @@ export type SerializableEmailDraft = z.infer<
 
 export type SerializableSlackDraft = z.infer<
   typeof SerializableSlackDraftSchema
+>;
+
+export type SerializableEmailDraftReceipt = z.infer<
+  typeof SerializableEmailDraftReceiptSchema
+>;
+
+export type SerializableSlackDraftReceipt = z.infer<
+  typeof SerializableSlackDraftReceiptSchema
 >;
 
 export function parseSerializableMessageDraft(
@@ -70,10 +99,24 @@ export function parseSerializableMessageDraft(
   );
 }
 
+export function parseSerializableMessageDraftReceipt(
+  input: unknown,
+): SerializableMessageDraftReceipt {
+  return parseWithSchema(
+    SerializableMessageDraftReceiptSchema,
+    input,
+    "MessageDraftReceipt",
+  );
+}
+
 export type MessageDraftProps = SerializableMessageDraft & {
   className?: string;
   undoGracePeriod?: number;
   onSend?: () => void | Promise<void>;
   onUndo?: () => void;
   onCancel?: () => void;
+};
+
+export type MessageDraftReceiptProps = SerializableMessageDraftReceipt & {
+  className?: string;
 };

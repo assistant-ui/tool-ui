@@ -15,13 +15,19 @@ import type { ImageGallery } from "@/components/tool-ui/image-gallery";
 import type { Video } from "@/components/tool-ui/video";
 import type { Audio } from "@/components/tool-ui/audio";
 import type { LinkPreview } from "@/components/tool-ui/link-preview";
-import type { MessageDraft } from "@/components/tool-ui/message-draft";
+import type {
+  MessageDraftProps,
+  MessageDraftReceiptProps,
+} from "@/components/tool-ui/message-draft";
 import type { ItemCarousel } from "@/components/tool-ui/item-carousel";
 import type { OptionList } from "@/components/tool-ui/option-list";
 import type { OrderSummary } from "@/components/tool-ui/order-summary";
 import type { ParameterSlider } from "@/components/tool-ui/parameter-slider";
 import type { Plan } from "@/components/tool-ui/plan";
-import type { PreferencesPanel } from "@/components/tool-ui/preferences-panel";
+import type {
+  PreferencesPanelProps,
+  PreferencesPanelReceiptProps,
+} from "@/components/tool-ui/preferences-panel";
 import type { ProgressTracker } from "@/components/tool-ui/progress-tracker";
 import type { StatsDisplay } from "@/components/tool-ui/stats-display";
 import type { Terminal } from "@/components/tool-ui/terminal";
@@ -140,6 +146,11 @@ const DynamicLinkPreview = dynamic(() =>
 const DynamicMessageDraft = dynamic(() =>
   import("@/components/tool-ui/message-draft").then((m) => m.MessageDraft)
 );
+const DynamicMessageDraftReceipt = dynamic(() =>
+  import("@/components/tool-ui/message-draft").then(
+    (m) => m.MessageDraftReceipt,
+  )
+);
 const DynamicItemCarousel = dynamic(() =>
   import("@/components/tool-ui/item-carousel").then((m) => m.ItemCarousel)
 );
@@ -157,6 +168,11 @@ const DynamicPlan = dynamic(() =>
 );
 const DynamicPreferencesPanel = dynamic(() =>
   import("@/components/tool-ui/preferences-panel").then((m) => m.PreferencesPanel)
+);
+const DynamicPreferencesPanelReceipt = dynamic(() =>
+  import("@/components/tool-ui/preferences-panel").then(
+    (m) => m.PreferencesPanelReceipt,
+  )
 );
 const DynamicProgressTracker = dynamic(() =>
   import("@/components/tool-ui/progress-tracker").then((m) => m.ProgressTracker)
@@ -539,10 +555,13 @@ export const previewConfigs: Record<
       preamble: "I've drafted this message for your review:",
     },
     renderComponent: ({ data }) => {
-      const draftData = data as Parameters<typeof MessageDraft>[0];
+      const draftData = data as MessageDraftProps | MessageDraftReceiptProps;
+      if ("outcome" in draftData) {
+        return <DynamicMessageDraftReceipt {...draftData} />;
+      }
       return (
         <DynamicMessageDraft
-          {...draftData}
+          {...(draftData as MessageDraftProps)}
           onSend={() => console.log("Message sent")}
           onUndo={() => console.log("Send undone")}
           onCancel={() => console.log("Message cancelled")}
@@ -659,10 +678,14 @@ export const previewConfigs: Record<
       preamble: "Here are your current preferences:",
     },
     renderComponent: ({ data, state, setState }) => {
-      const panelData = data as Parameters<typeof PreferencesPanel>[0];
+      const panelData =
+        data as PreferencesPanelProps | PreferencesPanelReceiptProps;
+      if ("choice" in panelData) {
+        return <DynamicPreferencesPanelReceipt {...panelData} />;
+      }
       return (
         <DynamicPreferencesPanel
-          {...panelData}
+          {...(panelData as PreferencesPanelProps)}
           value={
             state.selection as Record<string, string | boolean> | undefined
           }

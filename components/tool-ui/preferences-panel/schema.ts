@@ -42,14 +42,15 @@ const PreferenceSectionSchema = z.object({
   items: z.array(PreferenceItemSchema).min(1),
 });
 
-export const SerializablePreferencesPanelSchema = z.object({
+const PreferencesPanelBaseSchema = z.object({
   id: ToolUIIdSchema,
   role: ToolUIRoleSchema.optional(),
   receipt: ToolUIReceiptSchema.optional(),
   title: z.string().min(1).optional(),
   sections: z.array(PreferenceSectionSchema).min(1),
-  choice: z.record(z.string(), z.union([z.string(), z.boolean()])).optional(),
-  error: z.record(z.string(), z.string()).optional(),
+});
+
+export const SerializablePreferencesPanelSchema = PreferencesPanelBaseSchema.extend({
   responseActions: z
     .union([
       z.array(SerializableActionSchema),
@@ -62,6 +63,16 @@ export type SerializablePreferencesPanel = z.infer<
   typeof SerializablePreferencesPanelSchema
 >;
 
+export const SerializablePreferencesPanelReceiptSchema =
+  PreferencesPanelBaseSchema.extend({
+    choice: z.record(z.string(), z.union([z.string(), z.boolean()])),
+    error: z.record(z.string(), z.string()).optional(),
+  });
+
+export type SerializablePreferencesPanelReceipt = z.infer<
+  typeof SerializablePreferencesPanelReceiptSchema
+>;
+
 export function parseSerializablePreferencesPanel(
   input: unknown,
 ): SerializablePreferencesPanel {
@@ -69,6 +80,16 @@ export function parseSerializablePreferencesPanel(
     SerializablePreferencesPanelSchema,
     input,
     "PreferencesPanel",
+  );
+}
+
+export function parseSerializablePreferencesPanelReceipt(
+  input: unknown,
+): SerializablePreferencesPanelReceipt {
+  return parseWithSchema(
+    SerializablePreferencesPanelReceiptSchema,
+    input,
+    "PreferencesPanelReceipt",
   );
 }
 
@@ -90,6 +111,11 @@ export interface PreferencesPanelProps
     value: PreferencesValue,
   ) => void | Promise<void>;
   onBeforeResponseAction?: (actionId: string) => boolean | Promise<boolean>;
+}
+
+export interface PreferencesPanelReceiptProps
+  extends SerializablePreferencesPanelReceipt {
+  className?: string;
 }
 
 export type PreferenceItem = z.infer<typeof PreferenceItemSchema>;

@@ -1,4 +1,7 @@
-import type { SerializableMessageDraft } from "@/components/tool-ui/message-draft";
+import type {
+  SerializableMessageDraft,
+  SerializableMessageDraftReceipt,
+} from "@/components/tool-ui/message-draft";
 import type { PresetWithCodeGen } from "./types";
 
 export type MessageDraftPresetName =
@@ -8,7 +11,11 @@ export type MessageDraftPresetName =
   | "slack-dm"
   | "sent";
 
-function generateMessageDraftCode(data: SerializableMessageDraft): string {
+type MessageDraftPresetData =
+  | SerializableMessageDraft
+  | SerializableMessageDraftReceipt;
+
+function generateMessageDraftCode(data: MessageDraftPresetData): string {
   const props: string[] = [];
 
   props.push(`  id="${data.id}"`);
@@ -44,8 +51,9 @@ function generateMessageDraftCode(data: SerializableMessageDraft): string {
 
   props.push(`  body={\`${data.body.replace(/`/g, "\\`")}\`}`);
 
-  if (data.outcome) {
+  if ("outcome" in data) {
     props.push(`  outcome="${data.outcome}"`);
+    return `<MessageDraftReceipt\n${props.join("\n")}\n/>`;
   }
 
   props.push(`  onSend={() => console.log("Message sent")}`);
@@ -56,7 +64,7 @@ function generateMessageDraftCode(data: SerializableMessageDraft): string {
 
 export const messageDraftPresets: Record<
   MessageDraftPresetName,
-  PresetWithCodeGen<SerializableMessageDraft>
+  PresetWithCodeGen<MessageDraftPresetData>
 > = {
   email: {
     description: "Simple email to a single recipient",
@@ -74,7 +82,7 @@ Let me know if you have any questions.
 
 Best,
 Sarah`,
-    },
+    } satisfies SerializableMessageDraft,
     generateExampleCode: generateMessageDraftCode,
   },
   "email-with-cc": {
@@ -100,7 +108,7 @@ Please review and flag any concerns by Friday. We'll finalize allocations next w
 
 Thanks,
 Dana`,
-    },
+    } satisfies SerializableMessageDraft,
     generateExampleCode: generateMessageDraftCode,
   },
   "slack-channel": {
@@ -115,7 +123,7 @@ Dana`,
 - Added keyboard shortcuts for power users
 
 Monitoring dashboards look good. Rollback plan ready if needed.`,
-    },
+    } satisfies SerializableMessageDraft,
     generateExampleCode: generateMessageDraftCode,
   },
   "slack-dm": {
@@ -125,7 +133,7 @@ Monitoring dashboards look good. Rollback plan ready if needed.`,
       channel: "slack",
       target: { type: "dm", name: "Alex Rivera" },
       body: `Hey Alex, just wanted to check in on the API integration. The client asked if we're still on track for the Thursday demo. No pressure if things shifted - just want to give them an accurate update.`,
-    },
+    } satisfies SerializableMessageDraft,
     generateExampleCode: generateMessageDraftCode,
   },
   sent: {
@@ -143,7 +151,7 @@ I'm excited about the opportunity and look forward to hearing from you.
 Best regards,
 Jordan`,
       outcome: "sent",
-    },
+    } satisfies SerializableMessageDraftReceipt,
     generateExampleCode: generateMessageDraftCode,
   },
 };

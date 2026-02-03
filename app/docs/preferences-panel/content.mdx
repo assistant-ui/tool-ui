@@ -1,5 +1,8 @@
 import { DocsHeader } from "../_components/docs-header";
-import { PreferencesPanel } from "@/components/tool-ui/preferences-panel";
+import {
+  PreferencesPanel,
+  PreferencesPanelReceipt,
+} from "@/components/tool-ui/preferences-panel";
 
 <DocsHeader
   title="Preferences Panel"
@@ -111,6 +114,92 @@ import { PreferencesPanel } from "@/components/tool-ui/preferences-panel";
   </Feature>
 </FeatureGrid>
 
+## Receipt State
+
+Use `<PreferencesPanelReceipt>` to render the confirmed selections after the user saves. This is ideal for conversation history.
+
+<Tabs items={["Saved", "With Errors"]}>
+  <Tab>
+    <div className="not-prose mx-auto max-w-md">
+      <PreferencesPanelReceipt
+        id="preferences-panel-receipt"
+        title="Privacy Settings"
+        sections={[
+          {
+            heading: "Visibility",
+            items: [
+              {
+                id: "profile-visibility",
+                label: "Profile Visibility",
+                description: "Who can see your profile",
+                type: "toggle",
+                options: [
+                  { value: "public", label: "Public" },
+                  { value: "connections", label: "Friends" },
+                  { value: "private", label: "Private" },
+                ],
+                defaultValue: "connections",
+              },
+              {
+                id: "activity-status",
+                label: "Activity Status",
+                description: "Show when you're active",
+                type: "switch",
+                defaultChecked: true,
+              },
+            ],
+          },
+        ]}
+        choice={{
+          "profile-visibility": "private",
+          "activity-status": false,
+        }}
+      />
+    </div>
+  </Tab>
+  <Tab>
+    <div className="not-prose mx-auto max-w-md">
+      <PreferencesPanelReceipt
+        id="preferences-panel-receipt-errors"
+        title="Privacy Settings"
+        sections={[
+          {
+            heading: "Visibility",
+            items: [
+              {
+                id: "profile-visibility",
+                label: "Profile Visibility",
+                description: "Who can see your profile",
+                type: "toggle",
+                options: [
+                  { value: "public", label: "Public" },
+                  { value: "connections", label: "Friends" },
+                  { value: "private", label: "Private" },
+                ],
+                defaultValue: "connections",
+              },
+              {
+                id: "activity-status",
+                label: "Activity Status",
+                description: "Show when you're active",
+                type: "switch",
+                defaultChecked: true,
+              },
+            ],
+          },
+        ]}
+        choice={{
+          "profile-visibility": "private",
+          "activity-status": false,
+        }}
+        error={{
+          "profile-visibility": "Private profiles require a verified account",
+        }}
+      />
+    </div>
+  </Tab>
+</Tabs>
+
 ## Source and Install
 
 Copy [`components/tool-ui/preferences-panel`](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/preferences-panel) and the [`shared`](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/shared) directory into your project. The `shared` folder contains utilities used by all Tool UI components. The `tool-ui` directory should sit alongside your shadcn `ui` directory.
@@ -165,17 +254,26 @@ pnpm dlx shadcn@latest add button label select separator switch toggle-group
 import { makeAssistantTool } from "@assistant-ui/react";
 import {
   PreferencesPanel,
+  PreferencesPanelReceipt,
   PreferencesPanelErrorBoundary,
   parseSerializablePreferencesPanel,
   SerializablePreferencesPanelSchema,
   type SerializablePreferencesPanel,
+  type PreferencesValue,
 } from "@/components/tool-ui/preferences-panel";
 
-export const PreferencesPanelTool = makeAssistantTool<SerializablePreferencesPanel>({
+type PreferencesPanelResult =
+  | { status: "saved"; values: PreferencesValue }
+  | { status: "cancelled" };
+
+export const PreferencesPanelTool = makeAssistantTool<
+  SerializablePreferencesPanel,
+  PreferencesPanelResult
+>({
   toolName: "show_preferences_panel",
   description: "Display user preference settings with staged changes",
   parameters: SerializablePreferencesPanelSchema,
-  render: ({ args, addResult, toolCallId }) => {
+  render: ({ args, addResult, toolCallId, result }) => {
     if (!args.sections) return null;
 
     const data = parseSerializablePreferencesPanel({
@@ -185,15 +283,19 @@ export const PreferencesPanelTool = makeAssistantTool<SerializablePreferencesPan
 
     return (
       <PreferencesPanelErrorBoundary>
-        <PreferencesPanel
-          {...data}
-          onSave={async (values) => {
-            await addResult({ status: "saved", values });
-          }}
-          onCancel={() => {
-            addResult({ status: "cancelled" });
-          }}
-        />
+        {result?.status === "saved" ? (
+          <PreferencesPanelReceipt {...data} choice={result.values} />
+        ) : (
+          <PreferencesPanel
+            {...data}
+            onSave={async (values) => {
+              await addResult({ status: "saved", values });
+            }}
+            onCancel={() => {
+              addResult({ status: "cancelled" });
+            }}
+          />
+        )}
       </PreferencesPanelErrorBoundary>
     );
   },
@@ -226,10 +328,7 @@ export const PreferencesPanelTool = makeAssistantTool<SerializablePreferencesPan
       description: "Called when any preference value changes (before save)",
       type: "(value: PreferencesValue) => void",
     },
-    confirmed: {
-      description: "When provided, renders receipt state showing confirmed preferences with success indicators",
-      type: "PreferencesValue",
-    },
+    // Receipt rendering uses <PreferencesPanelReceipt> with a required `choice`.
     onSave: {
       description: "Handler called when Save button is clicked. Receives current preference values.",
       type: "(value: PreferencesValue) => void | Promise<void>",

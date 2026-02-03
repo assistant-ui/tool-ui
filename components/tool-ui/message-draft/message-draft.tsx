@@ -4,12 +4,13 @@ import * as React from "react";
 import { cn, Button } from "./_adapter";
 import type {
   MessageDraftProps,
+  MessageDraftReceiptProps,
   SerializableEmailDraft,
   SerializableSlackDraft,
 } from "./schema";
 import { ActionButtons } from "../shared";
 import type { Action } from "../shared";
-import { Check, ChevronDown } from "lucide-react";
+import { Check, ChevronDown, X } from "lucide-react";
 
 type DraftState = "review" | "sending" | "sent" | "cancelled";
 
@@ -215,21 +216,40 @@ function formatSentTime(date: Date): string {
 }
 
 interface SentConfirmationProps {
-  sentAt: Date;
+  sentAt?: Date;
+  showTime?: boolean;
 }
 
-function SentConfirmation({ sentAt }: SentConfirmationProps) {
+function SentConfirmation({ sentAt, showTime = true }: SentConfirmationProps) {
+  const label =
+    showTime && sentAt
+      ? `Sent at ${formatSentTime(sentAt)}`
+      : "Sent";
+
   return (
     <div
       className="flex items-center justify-end gap-2 text-sm"
       role="status"
       aria-label="Message sent"
     >
-      <span className="text-muted-foreground">
-        Sent at {formatSentTime(sentAt)}
-      </span>
+      <span className="text-muted-foreground">{label}</span>
       <span className="bg-primary/10 text-primary flex size-6 shrink-0 items-center justify-center rounded-full">
         <Check className="size-3.5" />
+      </span>
+    </div>
+  );
+}
+
+function CancelledConfirmation() {
+  return (
+    <div
+      className="flex items-center justify-end gap-2 text-sm"
+      role="status"
+      aria-label="Message cancelled"
+    >
+      <span className="text-muted-foreground">Cancelled</span>
+      <span className="bg-destructive/10 text-destructive flex size-6 shrink-0 items-center justify-center rounded-full">
+        <X className="size-3.5" />
       </span>
     </div>
   );
@@ -266,24 +286,17 @@ export function MessageDraft(props: MessageDraftProps) {
   const {
     id,
     className,
-    outcome,
     undoGracePeriod = DEFAULT_GRACE_PERIOD,
     onSend,
     onUndo,
     onCancel,
   } = props;
 
-  const [state, setState] = React.useState<DraftState>(() => {
-    if (outcome === "sent") return "sent";
-    if (outcome === "cancelled") return "cancelled";
-    return "review";
-  });
+  const [state, setState] = React.useState<DraftState>("review");
   const [countdown, setCountdown] = React.useState(
     Math.ceil(undoGracePeriod / 1000),
   );
-  const [sentAt, setSentAt] = React.useState<Date | null>(() =>
-    outcome === "sent" ? new Date() : null,
-  );
+  const [sentAt, setSentAt] = React.useState<Date | null>(null);
   const [isExpanded, setIsExpanded] = React.useState(false);
   const [needsExpansion, setNeedsExpansion] = React.useState(false);
   const undoButtonRef = React.useRef<HTMLButtonElement>(null);
@@ -472,6 +485,78 @@ export function MessageDraft(props: MessageDraftProps) {
 
       <div className="@container/actions">
         {renderActions()}
+      </div>
+    </article>
+  );
+}
+
+export function MessageDraftReceipt({
+  className,
+  outcome,
+  ...draft
+}: MessageDraftReceiptProps) {
+  const [isExpanded, setIsExpanded] = React.useState(false);
+  const [needsExpansion, setNeedsExpansion] = React.useState(false);
+
+  const handleNeedsExpansionChange = React.useCallback((needs: boolean) => {
+    setNeedsExpansion(needs);
+  }, []);
+
+  const handleToggleExpand = React.useCallback(() => {
+    setIsExpanded((prev) => !prev);
+  }, []);
+
+  const expandButton = needsExpansion ? (
+    <Button
+      variant="ghost"
+      size="sm"
+      onClick={handleToggleExpand}
+      className="h-7 gap-1 px-2 text-sm"
+    >
+      {isExpanded ? "Show less" : "Read more"}
+      <ChevronDown className={cn("size-3", isExpanded && "rotate-180")} />
+    </Button>
+  ) : null;
+
+  return (
+    <article
+      className={cn(
+        "flex w-full min-w-64 max-w-lg flex-col gap-3",
+        "text-foreground",
+        className,
+      )}
+      data-slot="message-draft"
+      data-tool-ui-id={draft.id}
+      data-state={outcome}
+      data-receipt="true"
+      aria-labelledby={`${draft.id}-title`}
+    >
+      <div className="bg-card flex w-full flex-col gap-3 rounded-2xl border px-5 pt-3 pb-5 shadow-xs transition-none">
+        {draft.channel === "email" ? (
+          <EmailDraftContent
+            draft={draft as SerializableEmailDraft}
+            titleId={`${draft.id}-title`}
+            isExpanded={isExpanded}
+            onNeedsExpansionChange={handleNeedsExpansionChange}
+          />
+        ) : (
+          <SlackDraftContent
+            draft={draft as SerializableSlackDraft}
+            titleId={`${draft.id}-title`}
+            isExpanded={isExpanded}
+            onNeedsExpansionChange={handleNeedsExpansionChange}
+          />
+        )}
+
+        {expandButton}
+      </div>
+
+      <div className="@container/actions">
+        {outcome === "sent" ? (
+          <SentConfirmation showTime={false} />
+        ) : (
+          <CancelledConfirmation />
+        )}
       </div>
     </article>
   );

@@ -104,13 +104,14 @@ The pattern is: **[Past-tense decision] — [Imperative action]**
 
 Several Tool UI components support receipt states:
 
-| Component | Receipt Prop | What It Shows |
+| Component | Receipt API | What It Shows |
 |-----------|--------------|---------------|
 | [Approval Card](/docs/approval-card) | `choice` | The decision and action title |
 | [Option List](/docs/option-list) | `choice` | Only the selected option(s) |
-| [Preferences Panel](/docs/preferences-panel) | `choice` | Summary of saved preferences |
+| [Preferences Panel](/docs/preferences-panel) | `PreferencesPanelReceipt` | Summary of saved preferences |
 | [Progress Tracker](/docs/progress-tracker) | `choice` | Final status of the workflow |
 | [Order Summary](/docs/order-summary) | `choice` | Confirmed order details |
+| [Message Draft](/docs/message-draft) | `MessageDraftReceipt` | Sent/cancelled outcome |
 
 ## When to Use Receipts
 

@@ -1,5 +1,8 @@
 import { DocsHeader } from "../_components/docs-header";
-import { MessageDraft } from "@/components/tool-ui/message-draft";
+import {
+  MessageDraft,
+  MessageDraftReceipt,
+} from "@/components/tool-ui/message-draft";
 
 <DocsHeader
   title="Message Draft"
@@ -156,12 +159,12 @@ The grace period is configurable via `undoGracePeriod` (in milliseconds).
 
 ## Receipt States
 
-When `outcome` is set, the component renders a compact receipt showing the result. This is useful for displaying the outcome in conversation history.
+Use `<MessageDraftReceipt>` to render a compact receipt showing the result. This is useful for displaying the outcome in conversation history.
 
 <Tabs items={["Sent", "Cancelled"]}>
   <Tab>
     <div className="not-prose mx-auto max-w-sm">
-      <MessageDraft
+      <MessageDraftReceipt
         id="sent-receipt"
         channel="email"
         subject="Interview follow-up"
@@ -173,7 +176,7 @@ When `outcome` is set, the component renders a compact receipt showing the resul
   </Tab>
   <Tab>
     <div className="not-prose mx-auto max-w-sm">
-      <MessageDraft
+      <MessageDraftReceipt
         id="cancelled-receipt"
         channel="slack"
         target={{ type: "channel", name: "general" }}
@@ -237,6 +240,7 @@ pnpm dlx shadcn@latest add button separator
 import { makeAssistantTool } from "@assistant-ui/react";
 import {
   MessageDraft,
+  MessageDraftReceipt,
   MessageDraftErrorBoundary,
   parseSerializableMessageDraft,
   SerializableMessageDraftSchema,
@@ -263,7 +267,7 @@ export const MessageDraftTool = makeAssistantTool<
     return (
       <MessageDraftErrorBoundary>
         {result !== undefined ? (
-          <MessageDraft {...draft} outcome={result} />
+          <MessageDraftReceipt {...draft} outcome={result} />
         ) : (
           <MessageDraft
             {...draft}
@@ -302,10 +306,7 @@ Mount `<MessageDraftTool />` under `<AssistantRuntimeProvider>` to register the 
       type: "string",
       required: true,
     },
-    outcome: {
-      description: "Final state (renders receipt when set)",
-      type: "'sent' | 'cancelled'",
-    },
+    // Receipt rendering uses <MessageDraftReceipt> with a required `outcome`.
     undoGracePeriod: {
       description: "Milliseconds before send is finalized",
       type: "number",
