@@ -55,7 +55,6 @@ export interface SliderValue {
 export interface ParameterSliderProps
   extends Omit<SerializableParameterSlider, "responseActions"> {
   className?: string;
-  isLoading?: boolean;
   values?: SliderValue[];
   onChange?: (values: SliderValue[]) => void;
   responseActions?: ActionsProp;

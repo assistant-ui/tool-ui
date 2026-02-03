@@ -1,4 +1,7 @@
-import type { SerializablePreferencesPanel } from "@/components/tool-ui/preferences-panel";
+import type {
+  SerializablePreferencesPanel,
+  SerializablePreferencesPanelReceipt,
+} from "@/components/tool-ui/preferences-panel";
 import type { PresetWithCodeGen } from "./types";
 
 export type PreferencesPanelPresetName =
@@ -9,7 +12,9 @@ export type PreferencesPanelPresetName =
   | "receipt"
   | "error";
 
-function generatePreferencesPanelCode(data: SerializablePreferencesPanel): string {
+function generatePreferencesPanelCode(
+  data: SerializablePreferencesPanel | SerializablePreferencesPanelReceipt,
+): string {
   const props: string[] = [];
 
   if (data.title) {
@@ -20,10 +25,18 @@ function generatePreferencesPanelCode(data: SerializablePreferencesPanel): strin
     `  sections={${JSON.stringify(data.sections, null, 4).replace(/\n/g, "\n  ")}}`,
   );
 
-  if (data.choice) {
+  if ("choice" in data) {
     props.push(
       `  choice={${JSON.stringify(data.choice, null, 4).replace(/\n/g, "\n  ")}}`,
     );
+
+    if (data.error) {
+      props.push(
+        `  error={${JSON.stringify(data.error, null, 4).replace(/\n/g, "\n  ")}}`,
+      );
+    }
+
+    return `<PreferencesPanel.Receipt\n${props.join("\n")}\n/>`;
   }
 
   if (data.responseActions) {
@@ -42,7 +55,10 @@ function generatePreferencesPanelCode(data: SerializablePreferencesPanel): strin
   return `<PreferencesPanel\n${props.join("\n")}\n/>`;
 }
 
-export const preferencesPanelPresets: Record<PreferencesPanelPresetName, PresetWithCodeGen<SerializablePreferencesPanel>> = {
+export const preferencesPanelPresets: Record<
+  PreferencesPanelPresetName,
+  PresetWithCodeGen<SerializablePreferencesPanel | SerializablePreferencesPanelReceipt>
+> = {
   "notifications": {
     description: "Basic notification preferences with switches",
     data: {
@@ -264,7 +280,7 @@ export const preferencesPanelPresets: Record<PreferencesPanelPresetName, PresetW
         "activity-status": false,
         "analytics": false,
       },
-    } satisfies SerializablePreferencesPanel,
+    } satisfies SerializablePreferencesPanelReceipt,
     generateExampleCode: generatePreferencesPanelCode,
   },
   "error": {
@@ -318,7 +334,7 @@ export const preferencesPanelPresets: Record<PreferencesPanelPresetName, PresetW
       error: {
         "analytics": "Analytics requires accepting Terms of Service",
       },
-    } satisfies SerializablePreferencesPanel,
+    } satisfies SerializablePreferencesPanelReceipt,
     generateExampleCode: generatePreferencesPanelCode,
   },
 };

@@ -33,22 +33,6 @@ const TYPE_ICONS: Record<CitationType, LucideIcon> = {
   other: File,
 };
 
-function CitationProgress() {
-  return (
-    <div className="flex w-full motion-safe:animate-pulse flex-col gap-2 p-4">
-      <div className="flex items-center gap-1.5">
-        <div className="bg-muted size-3.5 rounded" />
-        <div className="bg-muted h-3 w-32 rounded" />
-      </div>
-      <div className="bg-muted h-5 w-3/4 rounded" />
-      <div className="space-y-1.5">
-        <div className="bg-muted h-3.5 w-full rounded" />
-        <div className="bg-muted h-3.5 w-5/6 rounded" />
-      </div>
-    </div>
-  );
-}
-
 function extractDomain(url: string): string | undefined {
   try {
     const urlObj = new URL(url);
@@ -96,7 +80,6 @@ function useHoverPopover(delay = 100) {
 export interface CitationProps extends SerializableCitation {
   variant?: CitationVariant;
   className?: string;
-  isLoading?: boolean;
   onNavigate?: (href: string, citation: SerializableCitation) => void;
   responseActions?: ActionsProp;
   onResponseAction?: (actionId: string) => void | Promise<void>;
@@ -107,7 +90,6 @@ export function Citation(props: CitationProps) {
   const {
     variant = "default",
     className,
-    isLoading,
     onNavigate,
     responseActions,
     onResponseAction,
@@ -238,7 +220,6 @@ export function Citation(props: CitationProps) {
     <article
       className={cn("relative w-full min-w-72 max-w-md", className)}
       lang={locale}
-      aria-busy={isLoading}
       data-tool-ui-id={id}
       data-slot="citation"
     >
@@ -258,45 +239,41 @@ export function Citation(props: CitationProps) {
         tabIndex={sanitizedHref ? 0 : undefined}
         onKeyDown={handleKeyDown}
       >
-        {isLoading ? (
-          <CitationProgress />
-        ) : (
-          <div className="flex flex-col gap-2 p-4">
-            <div className="text-muted-foreground flex min-w-0 items-center justify-between gap-1.5 text-xs">
-              <div className="flex min-w-0 items-center gap-1.5">
-                {iconElement}
-                <span className="truncate font-medium">{domain}</span>
-                {(author || publishedAt) && (
-                  <span className="opacity-70">
-                    <span className="opacity-60"> — </span>
-                    {author}
-                    {author && publishedAt && ", "}
-                    {publishedAt && (
-                      <time dateTime={publishedAt} className="tabular-nums">
-                        {formatDate(publishedAt, locale)}
-                      </time>
-                    )}
-                  </span>
-                )}
-              </div>
-              {sanitizedHref && (
-                <ExternalLink className="size-3.5 shrink-0 opacity-0 transition-opacity group-hover:opacity-100" />
+        <div className="flex flex-col gap-2 p-4">
+          <div className="text-muted-foreground flex min-w-0 items-center justify-between gap-1.5 text-xs">
+            <div className="flex min-w-0 items-center gap-1.5">
+              {iconElement}
+              <span className="truncate font-medium">{domain}</span>
+              {(author || publishedAt) && (
+                <span className="opacity-70">
+                  <span className="opacity-60"> — </span>
+                  {author}
+                  {author && publishedAt && ", "}
+                  {publishedAt && (
+                    <time dateTime={publishedAt} className="tabular-nums">
+                      {formatDate(publishedAt, locale)}
+                    </time>
+                  )}
+                </span>
               )}
             </div>
-
-            <h3 className="text-foreground text-pretty text-[15px] font-medium leading-snug">
-              <span className="line-clamp-2 group-hover:underline group-hover:decoration-foreground/30 group-hover:underline-offset-2">
-                {title}
-              </span>
-            </h3>
-
-            {snippet && (
-              <p className="text-muted-foreground text-pretty text-[13px] leading-relaxed">
-                <span className="line-clamp-3">{snippet}</span>
-              </p>
+            {sanitizedHref && (
+              <ExternalLink className="size-3.5 shrink-0 opacity-0 transition-opacity group-hover:opacity-100" />
             )}
           </div>
-        )}
+
+          <h3 className="text-foreground text-pretty text-[15px] font-medium leading-snug">
+            <span className="line-clamp-2 group-hover:underline group-hover:decoration-foreground/30 group-hover:underline-offset-2">
+              {title}
+            </span>
+          </h3>
+
+          {snippet && (
+            <p className="text-muted-foreground text-pretty text-[13px] leading-relaxed">
+              <span className="line-clamp-3">{snippet}</span>
+            </p>
+          )}
+        </div>
       </div>
       {normalizedActions && (
         <div className="@container/actions mt-3">

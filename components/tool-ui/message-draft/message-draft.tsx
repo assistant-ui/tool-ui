@@ -235,33 +235,6 @@ function SentConfirmation({ sentAt }: SentConfirmationProps) {
   );
 }
 
-export function MessageDraftProgress({ className }: { className?: string }) {
-  return (
-    <div
-      className={cn("flex w-full min-w-64 max-w-lg flex-col", className)}
-      data-slot="message-draft-progress"
-      aria-busy="true"
-    >
-      <div className="bg-card flex w-full flex-col gap-4 rounded-2xl border p-5 shadow-xs">
-        <div className="bg-muted h-5 w-3/4 rounded motion-safe:animate-pulse" />
-        <div className="flex flex-col gap-1">
-          <div className="bg-muted h-4 w-1/2 rounded motion-safe:animate-pulse" />
-        </div>
-        <div className="bg-muted h-px w-full" />
-        <div className="flex flex-col gap-2">
-          <div className="bg-muted h-4 w-full rounded motion-safe:animate-pulse" />
-          <div className="bg-muted h-4 w-full rounded motion-safe:animate-pulse" />
-          <div className="bg-muted h-4 w-2/3 rounded motion-safe:animate-pulse" />
-        </div>
-        <div className="flex justify-end gap-2">
-          <div className="bg-muted h-9 w-16 rounded-full motion-safe:animate-pulse" />
-          <div className="bg-muted h-9 w-16 rounded-full motion-safe:animate-pulse" />
-        </div>
-      </div>
-    </div>
-  );
-}
-
 export function MessageDraft(props: MessageDraftProps) {
   const {
     id,

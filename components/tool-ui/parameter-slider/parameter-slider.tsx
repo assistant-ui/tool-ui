@@ -11,7 +11,6 @@ import {
 import * as SliderPrimitive from "@radix-ui/react-slider";
 import type { ParameterSliderProps, SliderConfig, SliderValue } from "./schema";
 import { ActionButtons, normalizeActionsConfig } from "../shared";
-import type { Action } from "../shared";
 import { cn } from "./_adapter";
 
 function formatSignedValue(
@@ -638,7 +637,6 @@ export function ParameterSlider({
   onResponseAction,
   onBeforeResponseAction,
   className,
-  isLoading,
   trackClassName,
   fillClassName,
   handleClassName,
@@ -705,14 +703,6 @@ export function ParameterSlider({
     };
   }, [responseActions]);
 
-  const actionsWithState = useMemo((): Action[] => {
-    return normalizedActions.items.map((action) => ({
-      ...action,
-      loading: action.id === "apply" && isLoading,
-      disabled: action.disabled || isLoading,
-    }));
-  }, [normalizedActions.items, isLoading]);
-
   return (
     <article
       className={cn(
@@ -722,7 +712,6 @@ export function ParameterSlider({
       )}
       data-slot="parameter-slider"
       data-tool-ui-id={id}
-      aria-busy={isLoading}
     >
       <div
         className={cn(
@@ -735,7 +724,6 @@ export function ParameterSlider({
             config={slider}
             value={valueMap.get(slider.id) ?? slider.value}
             onChange={(v) => updateValue(slider.id, v)}
-            disabled={isLoading}
             trackClassName={trackClassName}
             fillClassName={fillClassName}
             handleClassName={handleClassName}
@@ -745,7 +733,7 @@ export function ParameterSlider({
 
       <div className="@container/actions">
         <ActionButtons
-          actions={actionsWithState}
+          actions={normalizedActions.items}
           align={normalizedActions.align}
           confirmTimeout={normalizedActions.confirmTimeout}
           onAction={handleAction}
@@ -753,32 +741,5 @@ export function ParameterSlider({
         />
       </div>
     </article>
-  );
-}
-
-export function ParameterSliderProgress({ className }: { className?: string }) {
-  return (
-    <div
-      data-slot="parameter-slider-progress"
-      aria-busy={true}
-      className={cn("flex w-full max-w-md min-w-80 flex-col gap-3", className)}
-    >
-      <div className="bg-card flex w-full flex-col overflow-hidden rounded-2xl border px-5 py-3 shadow-xs">
-        {[1, 2, 3].map((i) => (
-          <div key={i} className="py-2">
-            <div className="bg-muted/60 ring-border/50 relative h-12 w-full rounded-md ring-1 ring-inset motion-safe:animate-pulse">
-              <div className="absolute inset-x-3 top-1/2 flex -translate-y-1/2 items-center justify-between">
-                <div className="bg-muted-foreground/20 h-3.5 w-16 rounded" />
-                <div className="bg-muted-foreground/20 h-3.5 w-10 rounded" />
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
-      <div className="flex justify-end gap-2">
-        <div className="bg-muted h-9 w-16 rounded-full motion-safe:animate-pulse" />
-        <div className="bg-muted h-9 w-16 rounded-full motion-safe:animate-pulse" />
-      </div>
-    </div>
   );
 }

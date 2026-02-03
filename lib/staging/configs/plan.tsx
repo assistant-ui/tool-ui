@@ -126,7 +126,6 @@ function PlanTuningPanel() {
         title="Animation Testing"
         description="Interactive controls for testing all animation states"
         todos={todos}
-        showProgress={true}
       />
 
       <div className="space-y-6 border-t pt-6">

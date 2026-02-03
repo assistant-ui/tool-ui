@@ -167,45 +167,6 @@ function OptionItem({
   );
 }
 
-function QuestionFlowSkeleton({ className }: { className?: string }) {
-  return (
-    <div
-      className={cn(
-        "@container/question-flow flex w-full min-w-80 max-w-md flex-col",
-        className,
-      )}
-      data-slot="question-flow-skeleton"
-      aria-busy="true"
-    >
-      <div className="bg-card flex w-full flex-col gap-4 rounded-2xl border p-5 shadow-xs">
-        <div className="flex flex-col gap-2">
-          <div className="bg-muted h-4 w-16 rounded motion-safe:animate-pulse" />
-          <div className="bg-muted h-6 w-3/4 rounded motion-safe:animate-pulse" />
-          <div className="bg-muted h-4 w-full rounded motion-safe:animate-pulse" />
-        </div>
-        <div className="flex flex-col gap-3 pt-2">
-          <div className="flex items-center gap-3">
-            <div className="bg-muted size-4 rounded-full motion-safe:animate-pulse" />
-            <div className="bg-muted h-5 flex-1 rounded motion-safe:animate-pulse" />
-          </div>
-          <div className="flex items-center gap-3">
-            <div className="bg-muted size-4 rounded-full motion-safe:animate-pulse" />
-            <div className="bg-muted h-5 flex-1 rounded motion-safe:animate-pulse" />
-          </div>
-          <div className="flex items-center gap-3">
-            <div className="bg-muted size-4 rounded-full motion-safe:animate-pulse" />
-            <div className="bg-muted h-5 flex-1 rounded motion-safe:animate-pulse" />
-          </div>
-        </div>
-        <div className="flex justify-end gap-2 pt-2">
-          <div className="bg-muted h-9 w-16 rounded-full motion-safe:animate-pulse" />
-          <div className="bg-muted h-9 w-20 rounded-full motion-safe:animate-pulse" />
-        </div>
-      </div>
-    </div>
-  );
-}
-
 function QuestionFlowReceipt({
   id,
   choice,
@@ -600,7 +561,6 @@ function QuestionFlowProgressive({
   onSelect,
   onBack,
   className,
-  isLoading,
 }: QuestionFlowProgressiveProps) {
   const [selectedIds, setSelectedIds] = useState<Set<string>>(
     () => new Set(defaultValue ?? []),
@@ -636,10 +596,6 @@ function QuestionFlowProgressive({
     onSelect?.(selection);
   }, [onSelect, selectedIds]);
 
-  if (isLoading) {
-    return <QuestionFlowSkeleton className={className} />;
-  }
-
   return (
     <StepContent
       id={id}
@@ -665,7 +621,6 @@ function QuestionFlowUpfront({
   onStepChange,
   onComplete,
   className,
-  isLoading,
 }: QuestionFlowUpfrontProps) {
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, string[]>>({});
@@ -759,10 +714,6 @@ function QuestionFlowUpfront({
     }
   }, [answers, currentSelection.size, currentStepIndex, isLastStep, onComplete, onStepChange, steps]);
 
-  if (isLoading) {
-    return <QuestionFlowSkeleton className={className} />;
-  }
-
   const stepOptions: QuestionFlowOption[] = currentStep.options.map((opt) => ({
     ...opt,
     icon: undefined,
@@ -802,5 +753,3 @@ export function QuestionFlow(props: QuestionFlowProps) {
 
   return <QuestionFlowProgressive {...(props as QuestionFlowProgressiveProps)} />;
 }
-
-export { QuestionFlowSkeleton as QuestionFlowProgress };

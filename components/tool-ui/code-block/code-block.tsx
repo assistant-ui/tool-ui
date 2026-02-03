@@ -10,8 +10,6 @@ import {
   useCopyToClipboard,
 } from "../shared";
 import { Button, cn, Collapsible, CollapsibleTrigger } from "./_adapter";
-import { CodeBlockProgress } from "./progress";
-
 const COPY_ID = "codeblock-code";
 
 let highlighterPromise: Promise<Highlighter> | null = null;
@@ -117,7 +115,6 @@ export function CodeBlock({
   responseActions,
   onResponseAction,
   onBeforeResponseAction,
-  isLoading,
   className,
 }: CodeBlockProps) {
   const resolvedTheme = useResolvedTheme();
@@ -234,23 +231,6 @@ export function CodeBlock({
   const handleCopy = useCallback(() => {
     copy(code, COPY_ID);
   }, [code, copy]);
-
-  if (isLoading) {
-    return (
-      <div
-        className={cn(
-          "@container flex w-full min-w-80 flex-col gap-3",
-          className,
-        )}
-        data-tool-ui-id={id}
-        aria-busy="true"
-      >
-        <div className="border-border bg-card overflow-hidden rounded-lg border shadow-xs">
-          <CodeBlockProgress />
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div

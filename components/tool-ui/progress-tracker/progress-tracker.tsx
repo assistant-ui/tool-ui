@@ -81,37 +81,6 @@ function StepIndicator({ status }: StepIndicatorProps) {
   return null;
 }
 
-export function ProgressTrackerProgress({ className }: { className?: string }) {
-  return (
-    <div
-      data-slot="progress-tracker-progress"
-      aria-busy="true"
-      className={cn(
-        "flex w-full min-w-80 max-w-md flex-col",
-        "text-foreground",
-        className,
-      )}
-    >
-      <div className="bg-card flex w-full flex-col gap-4 rounded-2xl border p-5 shadow-xs">
-        <div className="flex flex-col gap-3">
-          {[1, 2, 3].map((i) => (
-            <div key={i} className="flex items-start gap-3">
-              <div className="bg-muted size-6 rounded-full motion-safe:animate-pulse" />
-              <div className="flex flex-1 flex-col gap-1">
-                <div className="bg-muted h-5 w-3/4 rounded motion-safe:animate-pulse" />
-                <div className="bg-muted h-4 w-full rounded motion-safe:animate-pulse" />
-              </div>
-            </div>
-          ))}
-        </div>
-        <div className="flex justify-end">
-          <div className="bg-muted h-9 w-20 rounded-full motion-safe:animate-pulse" />
-        </div>
-      </div>
-    </div>
-  );
-}
-
 export function ProgressTracker({
   id,
   steps,

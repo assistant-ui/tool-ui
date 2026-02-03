@@ -25,7 +25,6 @@ export const CodeBlockPropsSchema = z.object({
 });
 
 export type CodeBlockProps = z.infer<typeof CodeBlockPropsSchema> & {
-  isLoading?: boolean;
   onResponseAction?: (actionId: string) => void | Promise<void>;
   onBeforeResponseAction?: (actionId: string) => boolean | Promise<boolean>;
 };

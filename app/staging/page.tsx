@@ -8,7 +8,7 @@ import { useStagingState } from "./_components/use-staging-state";
 import { useKeyboardShortcuts } from "./_components/use-keyboard-shortcuts";
 
 function StagingContent() {
-  const { componentId, presetName, debugLevel, isLoading, viewMode } = useStagingState();
+  const { componentId, presetName, debugLevel, viewMode } = useStagingState();
   useKeyboardShortcuts();
 
   return (
@@ -20,14 +20,12 @@ function StagingContent() {
             componentId={componentId}
             presetName={presetName}
             debugLevel={debugLevel}
-            isLoading={isLoading}
           />
         ) : (
           <StagingShowcase
             componentId={componentId}
             presetName={presetName}
             debugLevel={debugLevel}
-            isLoading={isLoading}
           />
         )}
       </main>

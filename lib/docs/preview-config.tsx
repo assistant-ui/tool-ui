@@ -20,8 +20,11 @@ import type { ItemCarousel } from "@/components/tool-ui/item-carousel";
 import type { OptionList } from "@/components/tool-ui/option-list";
 import type { OrderSummary } from "@/components/tool-ui/order-summary";
 import type { ParameterSlider } from "@/components/tool-ui/parameter-slider";
-import type { Plan } from "@/components/tool-ui/plan";
-import type { PreferencesPanel } from "@/components/tool-ui/preferences-panel";
+import type { SerializablePlan } from "@/components/tool-ui/plan";
+import type {
+  SerializablePreferencesPanel,
+  SerializablePreferencesPanelReceipt,
+} from "@/components/tool-ui/preferences-panel";
 import type { ProgressTracker } from "@/components/tool-ui/progress-tracker";
 import type { StatsDisplay } from "@/components/tool-ui/stats-display";
 import type { Terminal } from "@/components/tool-ui/terminal";
@@ -155,8 +158,16 @@ const DynamicParameterSlider = dynamic(() =>
 const DynamicPlan = dynamic(() =>
   import("@/components/tool-ui/plan").then((m) => m.Plan)
 );
+const DynamicPlanCompact = dynamic(() =>
+  import("@/components/tool-ui/plan").then((m) => m.PlanCompact)
+);
 const DynamicPreferencesPanel = dynamic(() =>
   import("@/components/tool-ui/preferences-panel").then((m) => m.PreferencesPanel)
+);
+const DynamicPreferencesPanelReceipt = dynamic(() =>
+  import("@/components/tool-ui/preferences-panel").then(
+    (m) => m.PreferencesPanelReceipt,
+  )
 );
 const DynamicProgressTracker = dynamic(() =>
   import("@/components/tool-ui/progress-tracker").then((m) => m.ProgressTracker)
@@ -330,12 +341,21 @@ export const previewConfigs: Record<
       preamble: "According to the source:",
     },
     renderComponent: ({ data, presetName }) => {
-      const { citations, variant, maxVisible, responseActions } = data as {
-        citations: Parameters<typeof Citation>[0][];
-        variant?: Parameters<typeof Citation>[0]["variant"];
-        maxVisible?: number;
-        responseActions?: unknown[];
-      };
+      const {
+        citations,
+        variant,
+        maxVisible,
+        responseActions,
+      } =
+        data as {
+          citations: Parameters<typeof Citation>[0][];
+          variant?: Parameters<typeof Citation>[0]["variant"];
+          maxVisible?: number;
+          responseActions?: unknown[];
+        };
+
+      const wrapperClass =
+        variant === "inline" ? "mx-auto max-w-xl" : "mx-auto max-w-lg";
 
       // Single citation without list
       if (citations.length === 1 && !maxVisible) {
@@ -358,9 +378,6 @@ export const previewConfigs: Record<
       }
 
       // Multiple citations or truncated list
-      const wrapperClass =
-        variant === "inline" ? "mx-auto max-w-xl" : "mx-auto max-w-lg";
-
       return (
         <div className={wrapperClass}>
           <DynamicCitationList
@@ -380,9 +397,10 @@ export const previewConfigs: Record<
       userMessage: "Write me a utility function for this",
       preamble: "Here's the code:",
     },
-    renderComponent: ({ data }) => (
-      <DynamicCodeBlock {...(data as Parameters<typeof CodeBlock>[0])} />
-    ),
+    renderComponent: ({ data }) => {
+      const codeBlock = data as Parameters<typeof CodeBlock>[0];
+      return <DynamicCodeBlock {...codeBlock} />;
+    },
   },
   "data-table": {
     presets: dataTablePresets as Record<string, PresetWithCodeGen<unknown>>,
@@ -643,9 +661,13 @@ export const previewConfigs: Record<
       userMessage: "Help me plan out this project",
       preamble: "Here's what I'm working on:",
     },
-    renderComponent: ({ data }) => (
-      <DynamicPlan {...(data as Parameters<typeof Plan>[0])} />
-    ),
+    renderComponent: ({ data, presetName }) => {
+      const planData = data as SerializablePlan;
+      if (presetName === "simple") {
+        return <DynamicPlanCompact {...planData} />;
+      }
+      return <DynamicPlan {...planData} />;
+    },
   },
   "preferences-panel": {
     presets: preferencesPanelPresets as Record<
@@ -659,7 +681,14 @@ export const previewConfigs: Record<
       preamble: "Here are your current preferences:",
     },
     renderComponent: ({ data, state, setState }) => {
-      const panelData = data as Parameters<typeof PreferencesPanel>[0];
+      const panelData = data as
+        | SerializablePreferencesPanel
+        | SerializablePreferencesPanelReceipt;
+
+      if ("choice" in panelData) {
+        return <DynamicPreferencesPanelReceipt {...panelData} />;
+      }
+
       return (
         <DynamicPreferencesPanel
           {...panelData}

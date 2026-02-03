@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { useStagingStore, usePresetNames } from "./use-staging-state";
 
 export function useKeyboardShortcuts() {
-  const { setPreset, cycleDebugLevel, toggleLoading } = useStagingStore();
+  const { setPreset, cycleDebugLevel } = useStagingStore();
   const presetNames = usePresetNames();
 
   useEffect(() => {
@@ -32,14 +32,9 @@ export function useKeyboardShortcuts() {
         return;
       }
 
-      // L to toggle loading state
-      if (event.key.toLowerCase() === "l") {
-        toggleLoading();
-        return;
-      }
     }
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [presetNames, setPreset, cycleDebugLevel, toggleLoading]);
+  }, [presetNames, setPreset, cycleDebugLevel]);
 }

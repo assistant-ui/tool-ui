@@ -448,7 +448,6 @@ function TunableStatsDisplay({
   description,
   stats,
   className,
-  isLoading = false,
   locale: localeProp,
   sparklineAnimation,
   cardAnimation,
@@ -472,7 +471,6 @@ function TunableStatsDisplay({
     <article
       data-slot="stats-display"
       data-tool-ui-id={id}
-      aria-busy={isLoading}
       className={cn(
         "w-full max-w-xl min-w-80",
         isSingle && "max-w-sm",

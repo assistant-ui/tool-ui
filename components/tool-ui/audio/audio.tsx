@@ -20,7 +20,6 @@ function formatTime(seconds: number): string {
 export interface AudioProps extends SerializableAudio {
   variant?: AudioVariant;
   className?: string;
-  isLoading?: boolean;
   onMediaEvent?: (type: "play" | "pause" | "mute" | "unmute") => void;
   responseActions?: ActionsProp;
   onResponseAction?: (actionId: string) => void | Promise<void>;
@@ -43,48 +42,6 @@ interface PlayerControls {
   onSeek: (value: number[]) => void;
   onSeekStart: () => void;
   onSeekEnd: () => void;
-}
-
-function FullProgress() {
-  return (
-    <div className="flex w-full flex-col motion-safe:animate-pulse">
-      <div className="bg-muted aspect-[4/3] w-full" />
-      <div className="flex flex-col gap-5 p-4">
-        <div className="space-y-0.5">
-          <div className="bg-muted h-5 w-3/4 rounded" />
-          <div className="bg-muted h-4 w-1/2 rounded" />
-        </div>
-        <div className="flex items-start gap-3">
-          <div className="flex flex-1 flex-col gap-2">
-            <div className="bg-muted h-1.5 w-full rounded-full" />
-            <div className="flex justify-between">
-              <div className="bg-muted h-3 w-8 rounded" />
-              <div className="bg-muted h-3 w-8 rounded" />
-            </div>
-          </div>
-          <div className="bg-muted -mt-4 size-10 shrink-0 rounded-full" />
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function CompactProgress() {
-  return (
-    <div className="relative flex w-full items-center gap-3 overflow-hidden p-3 motion-safe:animate-pulse">
-      <div className="bg-muted/30 absolute inset-0" />
-      <div className="bg-muted/60 relative size-12 shrink-0 rounded-lg" />
-      <div className="relative flex min-w-0 flex-1 flex-col justify-center gap-1">
-        <div className="bg-muted/70 h-4 w-3/4 rounded" />
-        <div className="bg-muted/50 h-3 w-1/2 rounded" />
-        <div className="mt-0.5 flex items-center gap-2">
-          <div className="bg-muted/40 h-1 flex-1 rounded-full" />
-          <div className="bg-muted/50 h-2.5 w-6 rounded" />
-        </div>
-      </div>
-      <div className="bg-muted/60 relative size-10 shrink-0 rounded-full" />
-    </div>
-  );
 }
 
 interface FullPlayerProps {
@@ -243,7 +200,6 @@ function AudioInner(props: AudioProps) {
   const {
     variant = "full",
     className,
-    isLoading,
     onMediaEvent,
     responseActions,
     onResponseAction,
@@ -334,7 +290,6 @@ function AudioInner(props: AudioProps) {
         className,
       )}
       lang={locale}
-      aria-busy={isLoading}
       data-tool-ui-id={id}
       data-slot="audio"
     >
@@ -345,9 +300,7 @@ function AudioInner(props: AudioProps) {
           "rounded-xl",
         )}
       >
-        {isLoading ? (
-          isCompact ? <CompactProgress /> : <FullProgress />
-        ) : isCompact ? (
+        {isCompact ? (
           <CompactPlayer
             artwork={artwork}
             title={title}

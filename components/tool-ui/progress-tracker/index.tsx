@@ -1,4 +1,4 @@
-export { ProgressTracker, ProgressTrackerProgress } from "./progress-tracker";
+export { ProgressTracker } from "./progress-tracker";
 export { ProgressTrackerErrorBoundary } from "./error-boundary";
 export {
   SerializableProgressTrackerSchema,

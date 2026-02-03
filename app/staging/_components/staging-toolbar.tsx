@@ -1,6 +1,6 @@
 "use client";
 
-import { Settings, Loader2, Sun, Moon, Monitor, Play, Eye } from "lucide-react";
+import { Settings, Sun, Moon, Monitor, Play, Eye } from "lucide-react";
 import { useTheme } from "next-themes";
 import { cn } from "@/lib/ui/cn";
 import {
@@ -27,7 +27,6 @@ import {
 } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 const COMPONENT_IDS = Object.keys(previewConfigs) as ComponentId[];
@@ -100,8 +99,7 @@ function formatPresetName(name: string): string {
 }
 
 function SettingsPopover() {
-  const { componentId, debugLevel, setDebugLevel, isLoading, toggleLoading } =
-    useStagingStore();
+  const { componentId, debugLevel, setDebugLevel } = useStagingStore();
   const { theme, setTheme } = useTheme();
 
   const stagingConfig = getStagingConfig(componentId);
@@ -146,27 +144,6 @@ function SettingsPopover() {
               </RadioGroup>
             </div>
           )}
-
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <Label className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                State
-              </Label>
-              <kbd className="rounded bg-muted px-1.5 py-0.5 font-mono text-[10px] text-muted-foreground">
-                L
-              </kbd>
-            </div>
-            <div className="flex items-center justify-between">
-              <Label htmlFor="loading-toggle" className="text-sm cursor-pointer">
-                Loading
-              </Label>
-              <Switch
-                id="loading-toggle"
-                checked={isLoading}
-                onCheckedChange={toggleLoading}
-              />
-            </div>
-          </div>
 
           <div className="space-y-2">
             <Label className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
@@ -272,19 +249,6 @@ function DebugLevelIndicator() {
   );
 }
 
-function LoadingIndicator() {
-  const { isLoading } = useStagingStore();
-
-  if (!isLoading) return null;
-
-  return (
-    <div className="flex items-center gap-1.5 rounded-full bg-muted px-2 py-0.5 text-xs text-muted-foreground">
-      <Loader2 className="h-3 w-3 animate-spin" />
-      <span>Loading</span>
-    </div>
-  );
-}
-
 export function StagingToolbar() {
   return (
     <header className="border-b bg-background/80 backdrop-blur-sm">
@@ -299,7 +263,6 @@ export function StagingToolbar() {
           <ViewModeToggle />
           <div className="bg-border h-4 w-px" />
           <DebugLevelIndicator />
-          <LoadingIndicator />
           <SettingsPopover />
         </div>
       </div>

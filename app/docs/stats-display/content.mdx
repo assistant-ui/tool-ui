@@ -226,17 +226,13 @@ export const StatsDisplayTool = makeAssistantTool<SerializableStatsDisplay>({
       description: "Additional CSS classes",
       type: "string",
     },
-    isLoading: {
-      description: "Show skeleton loading state",
-      type: "boolean",
-      default: "false",
-    },
     locale: {
       description: "Locale for number formatting",
       type: "string",
     },
   }}
 />
+
 
 ## StatItem Schema
 
@@ -339,6 +335,5 @@ export const StatsDisplayTool = makeAssistantTool<SerializableStatsDisplay>({
 
 ## Accessibility
 
-- Uses semantic `<article>` with `aria-busy` for loading state
 - All values are rendered as text, accessible to screen readers
 - Sparklines are decorative SVG with appropriate hiding from assistive tech

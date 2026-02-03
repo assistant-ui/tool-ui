@@ -1,4 +1,4 @@
-export { OrderSummary, OrderSummaryProgress } from "./order-summary";
+export { OrderSummary } from "./order-summary";
 export { OrderSummaryErrorBoundary } from "./error-boundary";
 export {
   SerializableOrderSummarySchema,

@@ -1,5 +1,4 @@
 "use client";
-
 import {
   cn,
   Card,
@@ -179,25 +178,12 @@ function StatCard({ stat, locale, isSingle = false, index = 0 }: StatCardProps) 
   );
 }
 
-function StatCardSkeleton() {
-  return (
-    <div className="flex min-h-28 flex-col justify-end gap-1 overflow-clip px-6">
-      <div className="bg-muted h-3 w-16 rounded motion-safe:animate-pulse" />
-      <div className="flex items-baseline gap-2">
-        <div className="bg-muted h-8 w-20 rounded motion-safe:animate-pulse" />
-        <div className="bg-muted h-4 w-10 rounded motion-safe:animate-pulse" />
-      </div>
-    </div>
-  );
-}
-
 export function StatsDisplay({
   id,
   title,
   description,
   stats,
   className,
-  isLoading = false,
   locale: localeProp,
 }: StatsDisplayProps) {
   const locale = localeProp ?? (typeof navigator !== "undefined" ? navigator.language : undefined);
@@ -208,7 +194,6 @@ export function StatsDisplay({
     <article
       data-slot="stats-display"
       data-tool-ui-id={id}
-      aria-busy={isLoading}
       className={cn(
         "w-full min-w-80 max-w-xl",
         isSingle && "max-w-sm",
@@ -233,53 +218,20 @@ export function StatsDisplay({
               gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
             }}
           >
-            {isLoading
-              ? Array.from({ length: stats.length }).map((_, index) => (
-                  <StatCardSkeleton key={index} />
-                ))
-              : stats.map((stat, index) => (
-                  <div
-                    key={stat.key}
-                    className={cn(
-                      "overflow-clip py-3 first:pt-0 @[440px]:py-3 @[440px]:first:pt-3 @[440px]:border-l @[440px]:border-t @[440px]:border-border",
-                      index > 0 && "border-border border-t"
-                    )}
-                  >
-                    <StatCard stat={stat} locale={locale} isSingle={isSingle} index={index} />
-                  </div>
-                ))}
-          </div>
-        </CardContent>
-      </Card>
-    </article>
-  );
-}
-
-export function StatsDisplayProgress({ className }: { className?: string }) {
-  return (
-    <div
-      data-slot="stats-display-progress"
-      aria-busy="true"
-      className={cn("w-full min-w-80", className)}
-    >
-      <Card>
-        <CardHeader>
-          <div className="bg-muted h-6 w-48 rounded motion-safe:animate-pulse" />
-          <div className="bg-muted h-4 w-64 rounded motion-safe:animate-pulse" />
-        </CardHeader>
-        <CardContent className="p-0">
-          <div
-            className="grid"
-            style={{
-              gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
-            }}
-          >
-            {Array.from({ length: 3 }).map((_, index) => (
-              <StatCardSkeleton key={index} />
+            {stats.map((stat, index) => (
+              <div
+                key={stat.key}
+                className={cn(
+                  "overflow-clip py-3 first:pt-0 @[440px]:py-3 @[440px]:first:pt-3 @[440px]:border-l @[440px]:border-t @[440px]:border-border",
+                  index > 0 && "border-border border-t"
+                )}
+              >
+                <StatCard stat={stat} locale={locale} isSingle={isSingle} index={index} />
+              </div>
             ))}
           </div>
         </CardContent>
       </Card>
-    </div>
+    </article>
   );
 }

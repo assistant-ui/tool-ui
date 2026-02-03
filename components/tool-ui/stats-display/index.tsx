@@ -1,4 +1,4 @@
-export { StatsDisplay, StatsDisplayProgress } from "./stats-display";
+export { StatsDisplay } from "./stats-display";
 export { StatsDisplayErrorBoundary } from "./error-boundary";
 export { Sparkline, type SparklineProps } from "./sparkline";
 export {

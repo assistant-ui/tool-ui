@@ -181,10 +181,6 @@ export const ParameterSliderTool = makeAssistantTool<SerializableParameterSlider
       description: "Called before action, return false to cancel",
       type: "(actionId: string) => boolean | Promise<boolean>",
     },
-    isLoading: {
-      description: "Shows loading state on Apply button",
-      type: "boolean",
-    },
     className: {
       description: "Additional CSS classes",
       type: "string",
@@ -258,4 +254,4 @@ export const ParameterSliderTool = makeAssistantTool<SerializableParameterSlider
 - Full keyboard support: Tab to focus, Arrow keys to adjust values
 - `aria-valuetext` includes unit for screen readers (e.g., "plus 0.3 EV")
 - Tick marks provide visual reference for the range
-- Disabled state properly communicated with `aria-busy` and reduced opacity
+- Disabled state reduces opacity and disables pointer interactions

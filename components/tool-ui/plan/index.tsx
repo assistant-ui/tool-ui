@@ -1,4 +1,4 @@
-export { Plan } from "./plan";
+export { Plan, PlanCompact } from "./plan";
 export { PlanErrorBoundary } from "./error-boundary";
 export type {
   PlanProps,

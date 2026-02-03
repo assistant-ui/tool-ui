@@ -13,22 +13,8 @@ import type { SerializableImage, Source } from "./schema";
 
 const FALLBACK_LOCALE = "en-US";
 
-function ImageProgress() {
-  return (
-    <div className="flex w-full motion-safe:animate-pulse flex-col gap-3 p-5">
-      <div className="flex items-center gap-3 text-xs">
-        <div className="bg-muted h-6 w-6 rounded-full" />
-        <div className="bg-muted h-3 w-28 rounded" />
-      </div>
-      <div className="bg-muted h-40 w-full rounded-lg" />
-      <div className="bg-muted h-4 w-3/4 rounded" />
-    </div>
-  );
-}
-
 export interface ImageProps extends SerializableImage {
   className?: string;
-  isLoading?: boolean;
   onNavigate?: (href: string, image: SerializableImage) => void;
   responseActions?: ActionsProp;
   onResponseAction?: (actionId: string) => void | Promise<void>;
@@ -38,7 +24,6 @@ export interface ImageProps extends SerializableImage {
 export function Image(props: ImageProps) {
   const {
     className,
-    isLoading,
     onNavigate,
     responseActions,
     onResponseAction,
@@ -108,7 +93,6 @@ export function Image(props: ImageProps) {
     <article
       className={cn("relative w-full min-w-80 max-w-md", className)}
       lang={locale}
-      aria-busy={isLoading}
       data-tool-ui-id={id}
       data-slot="image"
     >
@@ -118,55 +102,51 @@ export function Image(props: ImageProps) {
           "border border-border bg-card text-sm shadow-xs",
         )}
       >
-        {isLoading ? (
-          <ImageProgress />
-        ) : (
-          <>
-            <div
-              className={cn(
-                "bg-muted group relative w-full overflow-hidden",
-                ratio !== "auto" ? RATIO_CLASS_MAP[ratio] : "min-h-[160px]",
-                sanitizedHref && "cursor-pointer",
-              )}
-              onClick={sanitizedHref ? handleImageClick : undefined}
-              role={sanitizedHref ? "link" : undefined}
-              tabIndex={sanitizedHref ? 0 : undefined}
-              onKeyDown={
-                sanitizedHref
-                  ? (e) => {
-                      if (e.key === "Enter" || e.key === " ") {
-                        e.preventDefault();
-                        handleImageClick();
-                      }
+        <>
+          <div
+            className={cn(
+              "bg-muted group relative w-full overflow-hidden",
+              ratio !== "auto" ? RATIO_CLASS_MAP[ratio] : "min-h-[160px]",
+              sanitizedHref && "cursor-pointer",
+            )}
+            onClick={sanitizedHref ? handleImageClick : undefined}
+            role={sanitizedHref ? "link" : undefined}
+            tabIndex={sanitizedHref ? 0 : undefined}
+            onKeyDown={
+              sanitizedHref
+                ? (e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      handleImageClick();
                     }
-                  : undefined
-              }
-            >
-              <img
-                src={src}
-                alt={alt}
-                loading="lazy"
-                decoding="async"
-                className={cn(
-                  "absolute inset-0 h-full w-full",
-                  getFitClass(fit),
-                )}
+                  }
+                : undefined
+            }
+          >
+            <img
+              src={src}
+              alt={alt}
+              loading="lazy"
+              decoding="async"
+              className={cn(
+                "absolute inset-0 h-full w-full",
+                getFitClass(fit),
+              )}
+            />
+          </div>
+          {hasMetadata && (
+            <div className="flex items-center gap-3 px-4 py-3">
+              <SourceAttribution
+                source={source}
+                sourceLabel={sourceLabel}
+                fallbackInitial={fallbackInitial}
+                hasClickableUrl={Boolean(resolvedSourceUrl)}
+                onSourceClick={handleSourceClick}
+                title={title}
               />
             </div>
-            {hasMetadata && (
-              <div className="flex items-center gap-3 px-4 py-3">
-                <SourceAttribution
-                  source={source}
-                  sourceLabel={sourceLabel}
-                  fallbackInitial={fallbackInitial}
-                  hasClickableUrl={Boolean(resolvedSourceUrl)}
-                  onSourceClick={handleSourceClick}
-                  title={title}
-                />
-              </div>
-            )}
-          </>
-        )}
+          )}
+        </>
       </div>
       {normalizedActions && (
         <div className="@container/actions mt-3">

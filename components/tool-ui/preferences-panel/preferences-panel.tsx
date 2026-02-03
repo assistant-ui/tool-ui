@@ -3,6 +3,7 @@
 import { useCallback, useMemo, useState } from "react";
 import type {
   PreferencesPanelProps,
+  PreferencesPanelReceiptProps,
   PreferencesValue,
   PreferenceItem,
   PreferenceSection,
@@ -434,23 +435,14 @@ function ReceiptHeader({ title, hasErrors }: ReceiptHeaderProps) {
   );
 }
 
-interface PreferencesReceiptProps {
-  id: string;
-  title?: string;
-  sections: PreferenceSection[];
-  choice: PreferencesValue;
-  error?: Record<string, string>;
-  className?: string;
-}
-
-function PreferencesReceipt({
+export function PreferencesPanelReceipt({
   id,
   title,
   sections,
   choice,
   error,
   className,
-}: PreferencesReceiptProps) {
+}: PreferencesPanelReceiptProps) {
   const hasErrors = error && Object.keys(error).length > 0;
 
   return (
@@ -482,21 +474,18 @@ function PreferencesReceipt({
   );
 }
 
-export function PreferencesPanel({
+function PreferencesPanelRoot({
   id,
   title,
   sections,
   value: controlledValue,
   onChange,
-  choice,
-  error,
   onSave,
   onCancel,
   responseActions,
   onResponseAction,
   onBeforeResponseAction,
   className,
-  isLoading,
 }: PreferencesPanelProps) {
   const initialValues = useMemo(() => computeInitialValues(sections), [sections]);
 
@@ -569,35 +558,20 @@ export function PreferencesPanel({
     return normalizedActions.items.map((action) => {
       const isSaveAction = action.id === "save";
       const baseDisabled = "disabled" in action ? action.disabled : false;
-      const shouldDisable = baseDisabled || isLoading || (isSaveAction && !isDirty);
+      const shouldDisable = baseDisabled || (isSaveAction && !isDirty);
 
       return {
         ...action,
         disabled: shouldDisable,
-        loading: isSaveAction && isLoading,
       };
     });
-  }, [normalizedActions.items, isLoading, isDirty]);
-
-  if (choice !== undefined) {
-    return (
-      <PreferencesReceipt
-        id={id}
-        title={title}
-        sections={sections}
-        choice={choice}
-        error={error}
-        className={className}
-      />
-    );
-  }
+  }, [normalizedActions.items, isDirty]);
 
   return (
     <article
       data-slot="preferences-panel"
       data-tool-ui-id={id}
       role="form"
-      aria-busy={isLoading}
       className={cn("@container/preferences-panel flex w-full max-w-md min-w-80 flex-col gap-3 text-foreground", className)}
     >
       <div className="bg-card flex w-full flex-col rounded-2xl border shadow-xs overflow-hidden">
@@ -616,7 +590,6 @@ export function PreferencesPanel({
                 section={section}
                 values={currentValue}
                 onChangeValue={updateValue}
-                disabled={isLoading}
                 isReceipt={false}
                 hasTitle={!!title}
               />
@@ -638,25 +611,10 @@ export function PreferencesPanel({
   );
 }
 
-export function PreferencesPanelProgress({ className }: { className?: string }) {
-  return (
-    <div
-      data-slot="preferences-panel-progress"
-      aria-busy={true}
-      className={cn("flex w-full max-w-md min-w-80 flex-col gap-3", className)}
-    >
-      <div className="bg-card flex w-full flex-col rounded-2xl border px-5 py-3 shadow-xs">
-        {[1, 2, 3].map((i) => (
-          <div key={i} className="flex items-center justify-between gap-4 py-3">
-            <div className="bg-muted-foreground/20 h-4 w-32 rounded motion-safe:animate-pulse" />
-            <div className="bg-muted-foreground/20 h-8 w-24 rounded-full motion-safe:animate-pulse" />
-          </div>
-        ))}
-      </div>
-      <div className="flex justify-end gap-2">
-        <div className="bg-muted h-9 w-16 rounded-full motion-safe:animate-pulse" />
-        <div className="bg-muted h-9 w-24 rounded-full motion-safe:animate-pulse" />
-      </div>
-    </div>
-  );
-}
+type PreferencesPanelComponent = typeof PreferencesPanelRoot & {
+  Receipt: typeof PreferencesPanelReceipt;
+};
+
+export const PreferencesPanel = Object.assign(PreferencesPanelRoot, {
+  Receipt: PreferencesPanelReceipt,
+}) as PreferencesPanelComponent;
