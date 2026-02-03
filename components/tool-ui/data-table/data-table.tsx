@@ -29,7 +29,7 @@ import type {
   ColumnKey,
   Column,
 } from "./types";
-import { ActionButtons, normalizeActionsConfig } from "../shared";
+import { ActionButtons, normalizeActionsConfig, type ActionsProp } from "../shared";
 import type { FormatConfig } from "./formatters";
 import { DataTableErrorBoundary } from "./error-boundary";
 
@@ -63,28 +63,23 @@ export function useDataTable<T extends object = RowData>() {
     | DataTableContextValue<T>
     | undefined;
   if (!context) {
-    throw new Error("useDataTable must be used within a DataTable");
+    throw new Error("useDataTable must be used within a DataTable.Provider");
   }
   return context;
 }
 
-export function DataTable<T extends object = RowData>({
+export function DataTableProvider<T extends object = RowData>({
   columns,
   data: rawData,
   rowIdKey,
-  layout = "auto",
   defaultSort,
   sort: controlledSort,
-  emptyMessage = "No data available",
   isLoading = false,
-  maxHeight,
   id,
   onSortChange,
   className,
   locale,
-  responseActions,
-  onResponseAction,
-  onBeforeResponseAction,
+  children,
 }: DataTableProps<T>) {
   // Default locale avoids SSR/client formatting mismatches.
   const resolvedLocale = locale ?? DEFAULT_LOCALE;
@@ -147,6 +142,54 @@ export function DataTable<T extends object = RowData>({
     locale: resolvedLocale,
   };
 
+  return (
+    <DataTableContext.Provider value={contextValue}>
+      <div
+        className={cn("@container w-full min-w-80", className)}
+        data-tool-ui-id={id}
+        data-slot="data-table"
+      >
+        {children}
+      </div>
+    </DataTableContext.Provider>
+  );
+}
+
+export interface DataTableActionsProps {
+  responseActions?: ActionsProp;
+  onResponseAction?: (actionId: string) => void | Promise<void>;
+  onBeforeResponseAction?: (actionId: string) => boolean | Promise<boolean>;
+  className?: string;
+}
+
+export function DataTableActions({
+  responseActions,
+  onResponseAction,
+  onBeforeResponseAction,
+  className,
+}: DataTableActionsProps) {
+  const normalizedFooterActions = React.useMemo(
+    () => normalizeActionsConfig(responseActions),
+    [responseActions],
+  );
+
+  if (!normalizedFooterActions) return null;
+
+  return (
+    <div className={cn("@container/actions mt-4", className)}>
+      <ActionButtons
+        actions={normalizedFooterActions.items}
+        align={normalizedFooterActions.align}
+        confirmTimeout={normalizedFooterActions.confirmTimeout}
+        onAction={(id) => onResponseAction?.(id)}
+        onBeforeAction={onBeforeResponseAction}
+      />
+    </div>
+  );
+}
+
+export function DataTableSortAnnouncement() {
+  const { columns, sortBy, sortDirection } = useDataTable();
   const sortAnnouncement = React.useMemo(() => {
     const col = columns.find((c) => c.key === sortBy);
     const label = col?.label ?? sortBy;
@@ -155,129 +198,133 @@ export function DataTable<T extends object = RowData>({
       : "";
   }, [columns, sortBy, sortDirection]);
 
-  const normalizedFooterActions = React.useMemo(
-    () => normalizeActionsConfig(responseActions),
-    [responseActions],
-  );
+  if (!sortAnnouncement) return null;
 
   return (
-    <DataTableContext.Provider value={contextValue}>
-      <div
-        className={cn("@container w-full min-w-80", className)}
-        data-tool-ui-id={id}
-        data-slot="data-table"
-        data-layout={layout}
-      >
+    <div className="sr-only" aria-live="polite">
+      {sortAnnouncement}
+    </div>
+  );
+}
+
+export function DataTableResponsive({
+  emptyMessage = "No data available",
+  maxHeight,
+}: {
+  emptyMessage?: string;
+  maxHeight?: string;
+}) {
+  return (
+    <>
+      <DataTableTable
+        emptyMessage={emptyMessage}
+        maxHeight={maxHeight}
+        className="hidden @md:block"
+      />
+      <DataTableCards emptyMessage={emptyMessage} className="@md:hidden" />
+    </>
+  );
+}
+
+export function DataTableTable({
+  emptyMessage = "No data available",
+  maxHeight,
+  className,
+}: {
+  emptyMessage?: string;
+  maxHeight?: string;
+  className?: string;
+}) {
+  const { columns, data, isLoading } = useDataTable<DataTableRowData>();
+
+  return (
+    <div className={cn("block", className)}>
+      <div className="relative">
         <div
           className={cn(
-            layout === "table"
-              ? "block"
-              : layout === "cards"
-                ? "hidden"
-                : "hidden @md:block",
+            "bg-card relative w-full overflow-clip overflow-y-auto rounded-lg border",
+            "touch-pan-x",
+            maxHeight && "max-h-[--max-height]",
           )}
+          style={
+            maxHeight
+              ? ({ "--max-height": maxHeight } as React.CSSProperties)
+              : undefined
+          }
         >
-          <div className="relative">
-            <div
-              className={cn(
-                "bg-card relative w-full overflow-clip overflow-y-auto rounded-lg border",
-                "touch-pan-x",
-                maxHeight && "max-h-[--max-height]",
-              )}
-              style={
-                maxHeight
-                  ? ({ "--max-height": maxHeight } as React.CSSProperties)
-                  : undefined
-              }
-            >
-              <DataTableErrorBoundary>
-                <Table aria-busy={isLoading || undefined}>
-                  {columns.length > 0 && (
-                    <colgroup>
-                      {columns.map((col) => (
-                        <col
-                          key={String(col.key)}
-                          style={col.width ? { width: col.width } : undefined}
-                        />
-                      ))}
-                    </colgroup>
-                  )}
-                  {isLoading ? (
-                    <DataTableSkeleton />
-                  ) : data.length === 0 ? (
-                    <DataTableEmpty message={emptyMessage} />
-                  ) : (
-                    <DataTableContent />
-                  )}
-                </Table>
-              </DataTableErrorBoundary>
-            </div>
-          </div>
-        </div>
-
-        <div
-          className={cn(
-            layout === "cards"
-              ? ""
-              : layout === "table"
-                ? "hidden"
-                : "@md:hidden",
-          )}
-          role="list"
-          aria-label="Data table (mobile card view)"
-          aria-describedby="mobile-table-description"
-        >
-          <div id="mobile-table-description" className="sr-only">
-            Table data shown as expandable cards. Each card represents one row.
-            {columns.length > 0 &&
-              ` Columns: ${columns.map((c) => c.label).join(", ")}.`}
-          </div>
-
           <DataTableErrorBoundary>
-            {isLoading ? (
-              <DataTableSkeletonCards />
-            ) : data.length === 0 ? (
-              <div className="text-muted-foreground py-8 text-center">
-                {emptyMessage}
-              </div>
-            ) : (
-              <div className="bg-card flex flex-col overflow-hidden rounded-2xl border shadow-xs">
-                {data.map((row, i) => {
-                  const keyVal = rowIdKey ? row[rowIdKey] : undefined;
-                  const rowKey = keyVal != null ? String(keyVal) : String(i);
-                  return (
-                    <DataTableAccordionCard
-                      key={rowKey}
-                      row={row as unknown as DataTableRowData}
-                      index={i}
-                      isFirst={i === 0}
+            <Table aria-busy={isLoading || undefined}>
+              {columns.length > 0 && (
+                <colgroup>
+                  {columns.map((col) => (
+                    <col
+                      key={String(col.key)}
+                      style={col.width ? { width: col.width } : undefined}
                     />
-                  );
-                })}
-              </div>
-            )}
+                  ))}
+                </colgroup>
+              )}
+              {isLoading ? (
+                <DataTableSkeleton />
+              ) : data.length === 0 ? (
+                <DataTableEmpty message={emptyMessage} />
+              ) : (
+                <DataTableContent />
+              )}
+            </Table>
           </DataTableErrorBoundary>
         </div>
+      </div>
+    </div>
+  );
+}
 
-        {sortAnnouncement && (
-          <div className="sr-only" aria-live="polite">
-            {sortAnnouncement}
+export function DataTableCards({
+  emptyMessage = "No data available",
+  className,
+}: {
+  emptyMessage?: string;
+  className?: string;
+}) {
+  const { columns, data, rowIdKey, isLoading } = useDataTable<DataTableRowData>();
+
+  return (
+    <div
+      className={cn("block", className)}
+      role="list"
+      aria-label="Data table (mobile card view)"
+      aria-describedby="mobile-table-description"
+    >
+      <div id="mobile-table-description" className="sr-only">
+        Table data shown as expandable cards. Each card represents one row.
+        {columns.length > 0 && ` Columns: ${columns.map((c) => c.label).join(", ")}.`}
+      </div>
+
+      <DataTableErrorBoundary>
+        {isLoading ? (
+          <DataTableSkeletonCards />
+        ) : data.length === 0 ? (
+          <div className="text-muted-foreground py-8 text-center">
+            {emptyMessage}
+          </div>
+        ) : (
+          <div className="bg-card flex flex-col overflow-hidden rounded-2xl border shadow-xs">
+            {data.map((row, i) => {
+              const keyVal = rowIdKey ? row[rowIdKey] : undefined;
+              const rowKey = keyVal != null ? String(keyVal) : String(i);
+              return (
+                <DataTableAccordionCard
+                  key={rowKey}
+                  row={row as unknown as DataTableRowData}
+                  index={i}
+                  isFirst={i === 0}
+                />
+              );
+            })}
           </div>
         )}
-
-        {normalizedFooterActions ? (
-          <div className="@container/actions mt-4">
-            <ActionButtons
-              actions={normalizedFooterActions.items}
-              align={normalizedFooterActions.align}
-              confirmTimeout={normalizedFooterActions.confirmTimeout}
-              onAction={(id) => onResponseAction?.(id)}
-              onBeforeAction={onBeforeResponseAction}
-            />
-          </div>
-        ) : null}
-      </div>
-    </DataTableContext.Provider>
+      </DataTableErrorBoundary>
+    </div>
   );
 }
 
@@ -517,7 +564,7 @@ function DataTableBody() {
       console.warn(
         "[DataTable] Missing `rowIdKey` prop. Using array index as React key can cause reconciliation issues when data reorders (focus traps, animation glitches, incorrect state preservation). " +
           "Strongly recommended: Pass a `rowIdKey` prop that points to a unique identifier in your row data (e.g., 'id', 'uuid', 'symbol').\n" +
-          'Example: <DataTable rowIdKey="id" columns={...} data={...} />',
+          'Example: <DataTable.Provider rowIdKey="id" columns={...} data={...}><DataTable.Responsive /></DataTable.Provider>',
       );
     }
   }, [rowIdKey, data.length]);

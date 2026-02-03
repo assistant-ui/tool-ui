@@ -1,9 +1,5 @@
-import type {
-  ActionsProp,
-  ToolUIId,
-  ToolUIReceipt,
-  ToolUIRole,
-} from "../shared";
+import type { ReactNode } from "react";
+import type { ToolUIId, ToolUIReceipt, ToolUIRole } from "../shared";
 import type { FormatConfig } from "./formatters";
 
 /**
@@ -127,13 +123,6 @@ export interface DataTableSerializableProps<T extends object = RowData> {
   /** Row data (primitives only - no functions or class instances) */
   data: T[];
   /**
-   * Layout mode for the component.
-   * - 'auto' (default): Container queries choose table/cards
-   * - 'table': Force table layout
-   * - 'cards': Force stacked card layout
-   */
-  layout?: "auto" | "table" | "cards";
-  /**
    * Key in row data to use as unique identifier for React keys
    *
    * **Strongly recommended:** Always provide this for dynamic data to prevent
@@ -152,7 +141,9 @@ export interface DataTableSerializableProps<T extends object = RowData> {
    * @example
    * ```tsx
    * // Start with descending price sort
-   * <DataTable defaultSort={{ by: "price", direction: "desc" }} />
+   * <DataTable.Provider defaultSort={{ by: "price", direction: "desc" }}>
+   *   <DataTable.Responsive />
+   * </DataTable.Provider>
    * ```
    */
   defaultSort?: { by?: ColumnKey<T>; direction?: "asc" | "desc" };
@@ -165,14 +156,12 @@ export interface DataTableSerializableProps<T extends object = RowData> {
    * @example
    * ```tsx
    * const [sort, setSort] = useState({ by: "price", direction: "desc" })
-   * <DataTable sort={sort} onSortChange={setSort} />
+   * <DataTable.Provider sort={sort} onSortChange={setSort}>
+   *   <DataTable.Responsive />
+   * </DataTable.Provider>
    * ```
    */
   sort?: { by?: ColumnKey<T>; direction?: "asc" | "desc" };
-  /** Empty state message */
-  emptyMessage?: string;
-  /** Max table height with vertical scroll (CSS value) */
-  maxHeight?: string;
   /**
    * BCP47 locale for formatting and sorting (e.g., 'en-US', 'de-DE', 'ja-JP')
    *
@@ -181,9 +170,15 @@ export interface DataTableSerializableProps<T extends object = RowData> {
    *
    * @example
    * ```tsx
-   * <DataTable locale="de-DE" /> // German formatting
-   * <DataTable locale="ja-JP" /> // Japanese formatting
-   * <DataTable />               // Uses 'en-US' default
+   * <DataTable.Provider locale="de-DE"> // German formatting
+   *   <DataTable.Responsive />
+   * </DataTable.Provider>
+   * <DataTable.Provider locale="ja-JP"> // Japanese formatting
+   *   <DataTable.Responsive />
+   * </DataTable.Provider>
+   * <DataTable.Provider>               // Uses 'en-US' default
+   *   <DataTable.Responsive />
+   * </DataTable.Provider>
    * ```
    */
   locale?: string;
@@ -200,9 +195,7 @@ export interface DataTableSerializableProps<T extends object = RowData> {
  * const clientProps: DataTableClientProps = {
  *   isLoading: false,
  *   className: "my-table",
- *   onSortChange: (next) => setSort(next),
- *   responseActions: [{ id: "export", label: "Export" }],
- *   onResponseAction: (id) => console.log(id)
+ *   onSortChange: (next) => setSort(next)
  * }
  * ```
  */
@@ -224,27 +217,25 @@ export interface DataTableClientProps<T extends object = RowData> {
    * ```tsx
    * const [sort, setSort] = useState<{ by?: string; direction?: "asc" | "desc" }>({})
    *
-   * <DataTable
+   * <DataTable.Provider
    *   sort={sort}
    *   onSortChange={(next) => {
    *     console.log("Sort changed:", next)
    *     setSort(next)
    *   }}
-   * />
+   * >
+   *   <DataTable.Responsive />
+   * </DataTable.Provider>
    * ```
    */
   onSortChange?: (next: {
     by?: ColumnKey<T>;
     direction?: "asc" | "desc";
   }) => void;
-  /** Optional response actions rendered below the table */
-  responseActions?: ActionsProp;
-  onResponseAction?: (actionId: string) => void | Promise<void>;
-  onBeforeResponseAction?: (actionId: string) => boolean | Promise<boolean>;
 }
 
 /**
- * Complete props for the DataTable component.
+ * Complete props for the DataTable.Provider component.
  *
  * Combines serializable props (can come from LLM tool calls) with client-side
  * React-only props. This separation makes the boundary explicit and prevents
@@ -259,18 +250,25 @@ export interface DataTableClientProps<T extends object = RowData> {
  * // From LLM tool call
  * const serializableProps = parseSerializableDataTable(llmResult)
  *
- * // Combine with React-specific props
- * <DataTable
+ * // Combine with React-specific props and composed children
+ * <DataTable.Provider
  *   {...serializableProps}
  *   onSortChange={setSort}
- *   responseActions={[{ id: "export", label: "Export" }]}
- *   onResponseAction={(id) => handleAction(id)}
  *   isLoading={loading}
- * />
+ * >
+ *   <DataTable.Responsive />
+ *   <DataTable.SortAnnouncement />
+ *   <DataTable.Actions
+ *     responseActions={[{ id: "export", label: "Export" }]}
+ *     onResponseAction={(id) => handleAction(id)}
+ *   />
+ * </DataTable.Provider>
  * ```
  */
 export interface DataTableProps<T extends object = RowData>
-  extends DataTableSerializableProps<T>, DataTableClientProps<T> {}
+  extends DataTableSerializableProps<T>, DataTableClientProps<T> {
+  children: ReactNode;
+}
 
 export interface DataTableContextValue<T extends object = RowData> {
   columns: Column<T>[];

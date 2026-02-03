@@ -28,7 +28,7 @@ The assistant contextualizes, interprets, and narrates. The tool UI provides str
         recent activity:
       </span>
       <div className="mt-3">
-        <DataTable
+        <DataTable.Provider
           rowIdKey="id"
           columns={[
             {
@@ -108,7 +108,10 @@ The assistant contextualizes, interprets, and narrates. The tool UI provides str
               license: "MIT",
             },
           ]}
-        />
+        >
+          <DataTable.Table />
+          <DataTable.SortAnnouncement />
+        </DataTable.Provider>
       </div>
     </MockMessage>
     <MockMessage role="user">

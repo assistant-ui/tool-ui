@@ -200,6 +200,42 @@ export const PreferencesPanelTool = makeAssistantTool<SerializablePreferencesPan
 });
 ```
 
+### Receipt State
+
+Use `PreferencesPanelReceipt` to render a confirmed, read-only summary once the user has saved.
+
+```tsx
+"use client";
+
+import { makeAssistantTool } from "@assistant-ui/react";
+import {
+  PreferencesPanelReceipt,
+  PreferencesPanelErrorBoundary,
+  parseSerializablePreferencesReceipt,
+  SerializablePreferencesReceiptSchema,
+  type SerializablePreferencesReceipt,
+} from "@/components/tool-ui/preferences-panel";
+
+export const PreferencesPanelReceiptTool =
+  makeAssistantTool<SerializablePreferencesReceipt>({
+    toolName: "show_preferences_receipt",
+    description: "Show confirmed preference selections",
+    parameters: SerializablePreferencesReceiptSchema,
+    render: ({ args, toolCallId }) => {
+      const data = parseSerializablePreferencesReceipt({
+        ...args,
+        id: (args as any)?.id ?? `preferences-panel-${toolCallId}`,
+      });
+
+      return (
+        <PreferencesPanelErrorBoundary>
+          <PreferencesPanelReceipt {...data} />
+        </PreferencesPanelErrorBoundary>
+      );
+    },
+  });
+```
+
 ## Props
 
 <TypeTable

@@ -1,4 +1,24 @@
-export { DataTable, useDataTable } from "./data-table";
+import {
+  DataTableProvider,
+  DataTableTable,
+  DataTableCards,
+  DataTableResponsive,
+  DataTableActions,
+  DataTableSortAnnouncement,
+  useDataTable,
+} from "./data-table";
+
+export const DataTable = {
+  Provider: DataTableProvider,
+  Table: DataTableTable,
+  Cards: DataTableCards,
+  Responsive: DataTableResponsive,
+  Actions: DataTableActions,
+  SortAnnouncement: DataTableSortAnnouncement,
+} as const;
+
+export { useDataTable };
+export type { DataTableActionsProps } from "./data-table";
 export { DataTableErrorBoundary } from "./error-boundary";
 
 export { renderFormattedValue } from "./formatters";

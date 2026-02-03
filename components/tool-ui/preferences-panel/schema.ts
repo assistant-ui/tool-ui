@@ -48,8 +48,6 @@ export const SerializablePreferencesPanelSchema = z.object({
   receipt: ToolUIReceiptSchema.optional(),
   title: z.string().min(1).optional(),
   sections: z.array(PreferenceSectionSchema).min(1),
-  choice: z.record(z.string(), z.union([z.string(), z.boolean()])).optional(),
-  error: z.record(z.string(), z.string()).optional(),
   responseActions: z
     .union([
       z.array(SerializableActionSchema),
@@ -58,8 +56,18 @@ export const SerializablePreferencesPanelSchema = z.object({
     .optional(),
 });
 
+export const SerializablePreferencesReceiptSchema =
+  SerializablePreferencesPanelSchema.extend({
+    choice: z.record(z.string(), z.union([z.string(), z.boolean()])),
+    error: z.record(z.string(), z.string()).optional(),
+  });
+
 export type SerializablePreferencesPanel = z.infer<
   typeof SerializablePreferencesPanelSchema
+>;
+
+export type SerializablePreferencesReceipt = z.infer<
+  typeof SerializablePreferencesReceiptSchema
 >;
 
 export function parseSerializablePreferencesPanel(
@@ -69,6 +77,16 @@ export function parseSerializablePreferencesPanel(
     SerializablePreferencesPanelSchema,
     input,
     "PreferencesPanel",
+  );
+}
+
+export function parseSerializablePreferencesReceipt(
+  input: unknown,
+): SerializablePreferencesReceipt {
+  return parseWithSchema(
+    SerializablePreferencesReceiptSchema,
+    input,
+    "PreferencesPanelReceipt",
   );
 }
 

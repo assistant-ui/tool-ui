@@ -39,28 +39,29 @@ function generateDataTableCode(data: DataTableData): string {
     );
   }
 
-  if (data.emptyMessage && data.emptyMessage !== "No data available") {
-    props.push(`  emptyMessage="${data.emptyMessage}"`);
-  }
-
-  if (data.maxHeight) {
-    props.push(`  maxHeight="${data.maxHeight}"`);
-  }
-
   if (data.locale) {
     props.push(`  locale="${data.locale}"`);
   }
 
-  if (data.responseActions && data.responseActions.length > 0) {
-    props.push(
-      `  responseActions={${JSON.stringify(data.responseActions, null, 4).replace(/\n/g, "\n  ")}}`,
-    );
-    props.push(
-      `  onResponseAction={(actionId) => console.log("Action:", actionId)}`,
-    );
+  const responsiveProps: string[] = [];
+  if (data.emptyMessage && data.emptyMessage !== "No data available") {
+    responsiveProps.push(`emptyMessage="${data.emptyMessage}"`);
+  }
+  if (data.maxHeight) {
+    responsiveProps.push(`maxHeight="${data.maxHeight}"`);
   }
 
-  return `<DataTable\n${props.join("\n")}\n/>`;
+  const responsiveTag =
+    responsiveProps.length > 0
+      ? `  <DataTable.Responsive ${responsiveProps.join(" ")} />`
+      : "  <DataTable.Responsive />";
+
+  const actionsBlock =
+    data.responseActions && data.responseActions.length > 0
+      ? `  <DataTable.Actions\n    responseActions={${JSON.stringify(data.responseActions, null, 4).replace(/\n/g, "\n    ")}}\n    onResponseAction={(actionId) => console.log(\"Action:\", actionId)}\n  />`
+      : "";
+
+  return `<DataTable.Provider\n${props.join("\n")}\n>\n${responsiveTag}\n  <DataTable.SortAnnouncement />${actionsBlock ? `\n${actionsBlock}` : ""}\n</DataTable.Provider>`;
 }
 
 const stockColumns: Column<GenericRow>[] = [

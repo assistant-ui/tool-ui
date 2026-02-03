@@ -9,7 +9,6 @@ import type { Column, DataTableProps, RowData } from "./types";
 
 const AlignEnum = z.enum(["left", "right", "center"]);
 const PriorityEnum = z.enum(["primary", "secondary", "tertiary"]);
-const LayoutEnum = z.enum(["auto", "table", "cards"]);
 
 const formatSchema = z.discriminatedUnion("kind", [
   z.object({ kind: z.literal("text") }),
@@ -133,7 +132,7 @@ export const serializableDataSchema = z.record(
  * - id: Unique identifier for this tool UI in the conversation
  * - columns: Column definitions (keys, labels, formatting, etc.)
  * - data: Data rows (primitives only - no functions or class instances)
- * - layout: Optional layout override ('auto' | 'table' | 'cards')
+ * - data: Data rows (primitives only - no functions or class instances)
  *
  * Non-serializable props like `onSortChange`, `className`, and `isLoading`
  * must be provided separately in your React component.
@@ -152,7 +151,6 @@ export const SerializableDataTableSchema = z.object({
   receipt: ToolUIReceiptSchema.optional(),
   columns: z.array(serializableColumnSchema),
   data: z.array(serializableDataSchema),
-  layout: LayoutEnum.optional(),
 });
 
 /**
@@ -188,10 +186,10 @@ export type SerializableDataTable = z.infer<typeof SerializableDataTableSchema>;
  * This function:
  * 1. Validates the input against the `SerializableDataTableSchema`
  * 2. Throws a descriptive error if validation fails
- * 3. Returns typed serializable props ready to pass to the `<DataTable>` component
+ * 3. Returns typed serializable props ready to pass to the `<DataTable.Provider>` component
  *
  * The returned props are **serializable only** - you must provide client-side props
- * separately (onSortChange, isLoading, className, responseActions, onResponseAction).
+ * separately (onSortChange, isLoading, className).
  *
  * @param input - Unknown data to validate (typically from an LLM tool call)
  * @returns Validated and typed DataTable serializable props (id, columns, data)
@@ -203,11 +201,14 @@ export type SerializableDataTable = z.infer<typeof SerializableDataTableSchema>;
  *   const serializableProps = parseSerializableDataTable(result)
  *
  *   return (
- *     <DataTable
- *       {...serializableProps}
- *       responseActions={[{ id: "export", label: "Export" }]}
- *       onResponseAction={(id) => console.log(id)}
- *     />
+ *     <DataTable.Provider {...serializableProps}>
+ *       <DataTable.Responsive />
+ *       <DataTable.SortAnnouncement />
+ *       <DataTable.Actions
+ *         responseActions={[{ id: "export", label: "Export" }]}
+ *         onResponseAction={(id) => console.log(id)}
+ *       />
+ *     </DataTable.Provider>
  *   )
  * }
  * ```
@@ -216,9 +217,9 @@ export function parseSerializableDataTable(
   input: unknown,
 ): Pick<
   DataTableProps<RowData>,
-  "id" | "role" | "receipt" | "columns" | "data" | "layout"
+  "id" | "role" | "receipt" | "columns" | "data"
 > {
-  const { id, role, receipt, columns, data, layout } = parseWithSchema(
+  const { id, role, receipt, columns, data } = parseWithSchema(
     SerializableDataTableSchema,
     input,
     "DataTable",
@@ -229,6 +230,5 @@ export function parseSerializableDataTable(
     receipt,
     columns: columns as unknown as Column<RowData>[],
     data: data as RowData[],
-    layout,
   };
 }

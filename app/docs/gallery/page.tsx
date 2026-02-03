@@ -103,7 +103,10 @@ export default function ComponentsGalleryPage() {
           </div>
 
           <div className="mb-5 flex justify-center [column-span:all] 2xl:mb-5">
-            <DataTable {...dataTablePresets.stocks.data} />
+            <DataTable.Provider {...dataTablePresets.stocks.data}>
+              <DataTable.Responsive />
+              <DataTable.SortAnnouncement />
+            </DataTable.Provider>
           </div>
 
           <div className="mb-5 flex break-inside-avoid justify-center 2xl:mb-5">

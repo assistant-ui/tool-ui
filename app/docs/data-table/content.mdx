@@ -23,7 +23,7 @@ import {
 <Tabs items={["Preview", "Code"]}>
   <Tab>
     <div className="not-prose">
-      <DataTable
+      <DataTable.Provider
         rowIdKey="id"
         defaultSort={{ by: "createdAt", direction: "desc" }}
         columns={[
@@ -82,7 +82,10 @@ import {
             amount: 527.5,
           },
         ]}
-      />
+      >
+        <DataTable.Table />
+        <DataTable.SortAnnouncement />
+      </DataTable.Provider>
     </div>
   </Tab>
   <Tab>
@@ -148,12 +151,15 @@ import {
 
     export default function Example() {
       return (
-        <DataTable
+        <DataTable.Provider
           rowIdKey="id"
           columns={columns}
           data={data}
           defaultSort={{ by: "createdAt", direction: "desc" }}
-        />
+        >
+          <DataTable.Table />
+          <DataTable.SortAnnouncement />
+        </DataTable.Provider>
       );
     }
     ```
@@ -288,7 +294,10 @@ export const SearchProductsUI = makeAssistantToolUI({
     const props = parseSerializableDataTable(result);
     return (
       <DataTableErrorBoundary>
-        <DataTable rowIdKey="id" {...props} />
+        <DataTable.Provider rowIdKey="id" {...props}>
+          <DataTable.Responsive />
+          <DataTable.SortAnnouncement />
+        </DataTable.Provider>
       </DataTableErrorBoundary>
     );
   },
@@ -317,6 +326,10 @@ export const SearchProductsUI = makeAssistantToolUI({
       required: true,
     },
     locale: { description: "Intl locale", type: "string", default: '"en-US"' },
+    children: {
+      description: "Compose layout, actions, and announcements",
+      type: "ReactNode",
+    },
   }}
 />
 
@@ -360,7 +373,9 @@ export const SearchProductsUI = makeAssistantToolUI({
   }}
 />
 
-### Response Actions
+### Response Actions (DataTable.Actions)
+
+Add a `<DataTable.Actions />` child to render response buttons below the table.
 
 <TypeTable
   type={{

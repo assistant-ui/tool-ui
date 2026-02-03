@@ -6,6 +6,7 @@ import type {
   PreferencesValue,
   PreferenceItem,
   PreferenceSection,
+  SerializablePreferencesReceipt,
 } from "./schema";
 import { ActionButtons, normalizeActionsConfig } from "../shared";
 import type { Action } from "../shared";
@@ -23,6 +24,8 @@ import {
   Label,
 } from "./_adapter";
 import { Check, AlertCircle } from "lucide-react";
+
+type PreferencesPanelVariant = "form" | "receipt";
 
 function getInitialValue(item: PreferenceItem): string | boolean {
   switch (item.type) {
@@ -193,20 +196,20 @@ interface PreferenceItemRowProps {
   value: string | boolean;
   onChange?: (value: string | boolean) => void;
   disabled?: boolean;
-  isReceipt?: boolean;
+  variant?: PreferencesPanelVariant;
   error?: string;
   showSuccessIndicators?: boolean;
   isFirstInSectionWithoutHeading?: boolean;
 }
 
-function ItemLabel({ item, error, isReceipt }: {
+function ItemLabel({ item, error, variant }: {
   item: PreferenceItem;
   error?: string;
-  isReceipt: boolean;
+  variant: PreferencesPanelVariant;
 }) {
   const htmlFor = `preference-${item.id}`;
 
-  if (isReceipt) {
+  if (variant === "receipt") {
     return (
       <>
         <span className="text-sm font-medium leading-6 text-pretty">{item.label}</span>
@@ -264,11 +267,12 @@ function PreferenceItemRow({
   value,
   onChange,
   disabled,
-  isReceipt = false,
+  variant = "form",
   error,
   showSuccessIndicators = false,
   isFirstInSectionWithoutHeading = false,
 }: PreferenceItemRowProps) {
+  const isReceipt = variant === "receipt";
   const shouldStack = item.type !== "switch" && !isReceipt;
 
   return (
@@ -280,7 +284,7 @@ function PreferenceItemRow({
       )}
     >
       <div className="flex flex-col gap-1">
-        <ItemLabel item={item} error={error} isReceipt={isReceipt} />
+        <ItemLabel item={item} error={error} variant={variant} />
       </div>
 
       {isReceipt ? (
@@ -309,7 +313,7 @@ interface ItemListProps {
   values: PreferencesValue;
   onChangeValue?: (itemId: string, value: string | boolean) => void;
   disabled?: boolean;
-  isReceipt?: boolean;
+  variant?: PreferencesPanelVariant;
   errors?: Record<string, string>;
   showSuccessIndicators?: boolean;
   hasHeading?: boolean;
@@ -321,13 +325,14 @@ function ItemList({
   values,
   onChangeValue,
   disabled,
-  isReceipt,
+  variant = "form",
   errors,
   showSuccessIndicators,
   hasHeading = false,
   hasTitle = false,
 }: ItemListProps) {
   const shouldRemoveFirstPadding = !hasHeading && hasTitle;
+  const isReceipt = variant === "receipt";
 
   return (
     <div className="flex flex-col">
@@ -346,9 +351,9 @@ function ItemList({
               value={itemValue}
               onChange={handleChange}
               disabled={disabled}
-              isReceipt={isReceipt}
+              variant={variant}
               error={errors?.[item.id]}
-              showSuccessIndicators={showSuccessIndicators}
+              showSuccessIndicators={isReceipt ? showSuccessIndicators : false}
               isFirstInSectionWithoutHeading={isFirst && shouldRemoveFirstPadding}
             />
           </div>
@@ -363,7 +368,7 @@ interface PreferencesSectionProps {
   values: PreferencesValue;
   onChangeValue?: (itemId: string, value: string | boolean) => void;
   disabled?: boolean;
-  isReceipt?: boolean;
+  variant?: PreferencesPanelVariant;
   errors?: Record<string, string>;
   hasTitle?: boolean;
 }
@@ -373,7 +378,7 @@ function PreferencesSection({
   values,
   onChangeValue,
   disabled,
-  isReceipt = false,
+  variant = "form",
   errors,
   hasTitle = false,
 }: PreferencesSectionProps) {
@@ -385,7 +390,7 @@ function PreferencesSection({
       values={values}
       onChangeValue={onChangeValue}
       disabled={disabled}
-      isReceipt={isReceipt}
+      variant={variant}
       errors={errors}
       showSuccessIndicators={hasErrors}
       hasHeading={!!section.heading}
@@ -434,23 +439,19 @@ function ReceiptHeader({ title, hasErrors }: ReceiptHeaderProps) {
   );
 }
 
-interface PreferencesReceiptProps {
-  id: string;
-  title?: string;
-  sections: PreferenceSection[];
-  choice: PreferencesValue;
-  error?: Record<string, string>;
+export interface PreferencesPanelReceiptProps
+  extends SerializablePreferencesReceipt {
   className?: string;
 }
 
-function PreferencesReceipt({
+export function PreferencesPanelReceipt({
   id,
   title,
   sections,
   choice,
   error,
   className,
-}: PreferencesReceiptProps) {
+}: PreferencesPanelReceiptProps) {
   const hasErrors = error && Object.keys(error).length > 0;
 
   return (
@@ -471,7 +472,7 @@ function PreferencesReceipt({
                 section={section}
                 values={choice}
                 errors={error}
-                isReceipt={true}
+                variant="receipt"
                 hasTitle={!!title}
               />
             </div>
@@ -488,8 +489,6 @@ export function PreferencesPanel({
   sections,
   value: controlledValue,
   onChange,
-  choice,
-  error,
   onSave,
   onCancel,
   responseActions,
@@ -579,19 +578,6 @@ export function PreferencesPanel({
     });
   }, [normalizedActions.items, isLoading, isDirty]);
 
-  if (choice !== undefined) {
-    return (
-      <PreferencesReceipt
-        id={id}
-        title={title}
-        sections={sections}
-        choice={choice}
-        error={error}
-        className={className}
-      />
-    );
-  }
-
   return (
     <article
       data-slot="preferences-panel"
@@ -617,7 +603,7 @@ export function PreferencesPanel({
                 values={currentValue}
                 onChangeValue={updateValue}
                 disabled={isLoading}
-                isReceipt={false}
+                variant="form"
                 hasTitle={!!title}
               />
             </div>

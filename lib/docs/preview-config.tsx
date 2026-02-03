@@ -12,7 +12,12 @@ import type { InsightCard } from "@/components/tool-ui/insight-card";
 import type { TimeSeries } from "@/components/tool-ui/time-series";
 import type { Citation } from "@/components/tool-ui/citation";
 import type { CodeBlock } from "@/components/tool-ui/code-block";
-import type { DataTable } from "@/components/tool-ui/data-table";
+import { DataTable } from "@/components/tool-ui/data-table";
+import type {
+  DataTableActionsProps,
+  DataTableProps,
+  RowData,
+} from "@/components/tool-ui/data-table";
 import type { Image } from "@/components/tool-ui/image";
 import type { ImageGallery } from "@/components/tool-ui/image-gallery";
 import type { Video } from "@/components/tool-ui/video";
@@ -24,7 +29,10 @@ import type { OptionList } from "@/components/tool-ui/option-list";
 import type { OrderSummary } from "@/components/tool-ui/order-summary";
 import type { ParameterSlider } from "@/components/tool-ui/parameter-slider";
 import type { Plan } from "@/components/tool-ui/plan";
-import type { PreferencesPanel } from "@/components/tool-ui/preferences-panel";
+import type {
+  SerializablePreferencesPanel,
+  SerializablePreferencesReceipt,
+} from "@/components/tool-ui/preferences-panel";
 import type { ProgressTracker } from "@/components/tool-ui/progress-tracker";
 import type { StatsDisplay } from "@/components/tool-ui/stats-display";
 import type { Terminal } from "@/components/tool-ui/terminal";
@@ -140,8 +148,8 @@ const DynamicCitationList = dynamic(() =>
 const DynamicCodeBlock = dynamic(() =>
   import("@/components/tool-ui/code-block").then((m) => m.CodeBlock)
 );
-const DynamicDataTable = dynamic(() =>
-  import("@/components/tool-ui/data-table").then((m) => m.DataTable)
+const DynamicDataTableProvider = dynamic<DataTableProps<RowData>>(() =>
+  import("@/components/tool-ui/data-table").then((m) => m.DataTable.Provider),
 );
 const DynamicImage = dynamic(() =>
   import("@/components/tool-ui/image").then((m) => m.Image)
@@ -178,6 +186,9 @@ const DynamicPlan = dynamic(() =>
 );
 const DynamicPreferencesPanel = dynamic(() =>
   import("@/components/tool-ui/preferences-panel").then((m) => m.PreferencesPanel)
+);
+const DynamicPreferencesPanelReceipt = dynamic(() =>
+  import("@/components/tool-ui/preferences-panel").then((m) => m.PreferencesPanelReceipt)
 );
 const DynamicProgressTracker = dynamic(() =>
   import("@/components/tool-ui/progress-tracker").then((m) => m.ProgressTracker)
@@ -459,16 +470,29 @@ export const previewConfigs: Record<
       preamble: "Here's what I found:",
     },
     renderComponent: ({ data, state, setState }) => {
-      const tableData = data as Parameters<typeof DataTable>[0];
+      type DataTablePreviewProps = Omit<DataTableProps<RowData>, "children">;
+      const { responseActions, ...tableData } = data as DataTablePreviewProps & {
+        responseActions?: unknown;
+      };
       return (
-        <DynamicDataTable
+        <DynamicDataTableProvider
           {...tableData}
-          sort={state.sort as Parameters<typeof DataTable>[0]["sort"]}
+          sort={state.sort as DataTablePreviewProps["sort"]}
           onSortChange={(sort) => setState({ sort })}
-          onResponseAction={(actionId) =>
-            console.log("Response action:", actionId)
-          }
-        />
+        >
+          <DataTable.Responsive />
+          <DataTable.SortAnnouncement />
+          {responseActions ? (
+            <DataTable.Actions
+              responseActions={
+                responseActions as DataTableActionsProps["responseActions"]
+              }
+              onResponseAction={(actionId) =>
+                console.log("Response action:", actionId)
+              }
+            />
+          ) : null}
+        </DynamicDataTableProvider>
       );
     },
   },
@@ -726,7 +750,14 @@ export const previewConfigs: Record<
       preamble: "Here are your current preferences:",
     },
     renderComponent: ({ data, state, setState }) => {
-      const panelData = data as Parameters<typeof PreferencesPanel>[0];
+      const panelData = data as
+        | SerializablePreferencesPanel
+        | SerializablePreferencesReceipt;
+
+      if ("choice" in panelData) {
+        return <DynamicPreferencesPanelReceipt {...panelData} />;
+      }
+
       return (
         <DynamicPreferencesPanel
           {...panelData}

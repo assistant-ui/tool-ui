@@ -20,7 +20,7 @@ AI detected anomalies in recent expenses. The user must approve or escalate befo
 <Tabs items={["Preview", "Code"]}>
   <Tab>
     <div className="not-prose">
-      <DataTable
+      <DataTable.Provider
         id="flagged-expenses"
         rowIdKey="id"
         columns={[
@@ -50,14 +50,19 @@ AI detected anomalies in recent expenses. The user must approve or escalate befo
           { id: "2", merchant: "The Capital Grille", amount: 312.50, flag: "policy" },
           { id: "3", merchant: "Uber", amount: 45.20, flag: "missing" },
         ]}
-        responseActions={{
-          items: [
-            { id: "reject", label: "Reject All", variant: "destructive", confirmLabel: "Confirm Reject" },
-            { id: "approve", label: "Approve All", variant: "default", confirmLabel: "Confirm Approval" },
-          ],
-          align: "right",
-        }}
-      />
+      >
+        <DataTable.Table />
+        <DataTable.SortAnnouncement />
+        <DataTable.Actions
+          responseActions={{
+            items: [
+              { id: "reject", label: "Reject All", variant: "destructive", confirmLabel: "Confirm Reject" },
+              { id: "approve", label: "Approve All", variant: "default", confirmLabel: "Confirm Approval" },
+            ],
+            align: "right",
+          }}
+        />
+      </DataTable.Provider>
     </div>
   </Tab>
   <Tab>
@@ -65,7 +70,7 @@ AI detected anomalies in recent expenses. The user must approve or escalate befo
     import { DataTable } from "@/components/tool-ui/data-table";
 
     // AI flagged these expenses as anomalies. User decides before processing.
-    <DataTable
+    <DataTable.Provider
       id="flagged-expenses"
       rowIdKey="id"
       columns={[
@@ -94,18 +99,23 @@ AI detected anomalies in recent expenses. The user must approve or escalate befo
         { id: "2", merchant: "The Capital Grille", amount: 312.50, flag: "policy" },
         { id: "3", merchant: "Uber", amount: 45.20, flag: "missing" },
       ]}
-      responseActions={{
-        items: [
-          { id: "reject", label: "Reject All", variant: "destructive", confirmLabel: "Confirm" },
-          { id: "approve", label: "Approve All", variant: "default", confirmLabel: "Confirm" },
-        ],
-        align: "right",
-      }}
-      onResponseAction={(id) => {
-        if (id === "approve") submitExpenses();
-        if (id === "reject") returnToSubmitter();
-      }}
-    />
+    >
+      <DataTable.Table />
+      <DataTable.SortAnnouncement />
+      <DataTable.Actions
+        responseActions={{
+          items: [
+            { id: "reject", label: "Reject All", variant: "destructive", confirmLabel: "Confirm" },
+            { id: "approve", label: "Approve All", variant: "default", confirmLabel: "Confirm" },
+          ],
+          align: "right",
+        }}
+        onResponseAction={(id) => {
+          if (id === "approve") submitExpenses();
+          if (id === "reject") returnToSubmitter();
+        }}
+      />
+    </DataTable.Provider>
     ```
 
   </Tab>
