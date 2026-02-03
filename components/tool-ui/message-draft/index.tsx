@@ -1,4 +1,4 @@
-export { MessageDraft, MessageDraftProgress } from "./message-draft";
+export { MessageDraft } from "./message-draft";
 export { MessageDraftErrorBoundary } from "./error-boundary";
 export {
   SerializableMessageDraftSchema,
