@@ -1,5 +1,5 @@
 import { DocsHeader } from "../_components/docs-header";
-import { ApprovalCard } from "@/components/tool-ui/approval-card";
+import { ApprovalCard, ApprovalCardReceipt } from "@/components/tool-ui/approval-card";
 
 <DocsHeader
   title="Approval Card"
@@ -61,12 +61,12 @@ import { ApprovalCard } from "@/components/tool-ui/approval-card";
 
 ## Receipt State
 
-When `decision` is set, the component renders in a compact receipt state showing the approval decision. Use this to display the outcome in conversation history.
+Use `<ApprovalCardReceipt>` to render a compact receipt state showing the approval decision. This is ideal for displaying the outcome in conversation history.
 
 <Tabs items={["Approved", "Denied"]}>
   <Tab>
     <div className="not-prose mx-auto max-w-sm">
-      <ApprovalCard
+      <ApprovalCardReceipt
         id="receipt-approved-example"
         title="Deploy to Production"
         choice="approved"
@@ -76,7 +76,7 @@ When `decision` is set, the component renders in a compact receipt state showing
   </Tab>
   <Tab>
     <div className="not-prose mx-auto max-w-sm">
-      <ApprovalCard
+      <ApprovalCardReceipt
         id="receipt-denied-example"
         title="Delete Project"
         choice="denied"
@@ -181,6 +181,7 @@ pnpm dlx shadcn@latest add button
 import { makeAssistantTool } from "@assistant-ui/react";
 import {
   ApprovalCard,
+  ApprovalCardReceipt,
   ApprovalCardErrorBoundary,
   parseSerializableApprovalCard,
   SerializableApprovalCardSchema,
@@ -206,7 +207,7 @@ export const ApprovalTool = makeAssistantTool<
     return (
       <ApprovalCardErrorBoundary>
         {result !== undefined ? (
-          <ApprovalCard {...approvalCard} choice={result} />
+          <ApprovalCardReceipt {...approvalCard} choice={result} />
         ) : (
           <ApprovalCard
             {...approvalCard}
@@ -266,10 +267,6 @@ Mount `<ApprovalTool />` under `<AssistantRuntimeProvider>` to register the tool
     isLoading: {
       description: "Disables both buttons while an external operation is in progress",
       type: "boolean",
-    },
-    decision: {
-      description: "The finalized decision (renders receipt state when set)",
-      type: "'approved' | 'denied'",
     },
     onConfirm: {
       description: "Handler when user approves",

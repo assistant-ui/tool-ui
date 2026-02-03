@@ -27,7 +27,7 @@ import { DocsHeader } from "../_components/docs-header";
 
 ## Receipt State
 
-When `confirmed` is set, the component renders in a read-only receipt state showing only the confirmed selection(s). Use this to display past decisions in conversation history.
+Use `<OptionListReceipt>` to render a read-only receipt state showing only the confirmed selection(s). This is ideal for displaying past decisions in conversation history.
 
 <OptionListPresetExample preset="receipt" />
 
@@ -91,6 +91,7 @@ pnpm dlx shadcn@latest add button separator
 import { makeAssistantTool } from "@assistant-ui/react";
 import {
   OptionList,
+  OptionListReceipt,
   OptionListErrorBoundary,
   parseSerializableOptionList,
   SerializableOptionListSchema,
@@ -118,7 +119,7 @@ export const SelectFormatTool = makeAssistantTool<
     return (
       <OptionListErrorBoundary>
         {result !== undefined ? (
-          <OptionList {...optionList} value={undefined} choice={result} />
+          <OptionListReceipt {...optionList} choice={result} />
         ) : (
           <OptionList
             {...optionList}
@@ -158,10 +159,7 @@ Mount `<SelectFormatTool />` under `<AssistantRuntimeProvider>` to register the 
       description: "Initial selection (uncontrolled)",
       type: "string | string[] | null",
     },
-    confirmed: {
-      description: "Confirmed selection (renders receipt state)",
-      type: "string | string[] | null",
-    },
+    // Receipt rendering uses <OptionListReceipt> with a required `choice`.
     minSelections: {
       description: "Minimum required selections",
       type: "number",

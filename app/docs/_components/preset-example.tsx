@@ -4,7 +4,10 @@ import { Tabs, Tab } from "fumadocs-ui/components/tabs";
 import { DynamicCodeBlock } from "fumadocs-ui/components/dynamic-codeblock";
 import { Chart } from "@/components/tool-ui/chart";
 import { chartPresets, ChartPresetName } from "@/lib/presets/chart";
-import { OptionList } from "@/components/tool-ui/option-list";
+import {
+  OptionList,
+  OptionListReceipt,
+} from "@/components/tool-ui/option-list";
 import { CodeBlock } from "@/components/tool-ui/code-block";
 import { Terminal } from "@/components/tool-ui/terminal";
 import {
@@ -23,12 +26,19 @@ import {
   itemCarouselPresets,
   ItemCarouselPresetName,
 } from "@/lib/presets/item-carousel";
-import { ApprovalCard } from "@/components/tool-ui/approval-card";
+import {
+  ApprovalCard,
+  ApprovalCardReceipt,
+} from "@/components/tool-ui/approval-card";
 import {
   approvalCardPresets,
   ApprovalCardPresetName,
 } from "@/lib/presets/approval-card";
-import { QuestionFlow } from "@/components/tool-ui/question-flow";
+import {
+  QuestionFlowProgressive,
+  QuestionFlowUpfront,
+  QuestionFlowReceipt,
+} from "@/components/tool-ui/question-flow";
 import {
   questionFlowPresets,
   QuestionFlowPresetName,
@@ -54,15 +64,16 @@ function generateOptionListCode(preset: OptionListPresetName): string {
     props.push(`  maxSelections={${list.maxSelections}}`);
   }
 
-  if (list.choice) {
+  if ("choice" in list && list.choice !== undefined) {
     const choiceValue =
       typeof list.choice === "string"
         ? `"${list.choice}"`
         : JSON.stringify(list.choice);
     props.push(`  choice={${choiceValue}}`);
+    return `<OptionListReceipt\n${props.join("\n")}\n/>`;
   }
 
-  if (list.responseActions) {
+  if ("responseActions" in list && list.responseActions) {
     const hasActions = Array.isArray(list.responseActions)
       ? list.responseActions.length > 0
       : list.responseActions.items.length > 0;
@@ -74,9 +85,7 @@ function generateOptionListCode(preset: OptionListPresetName): string {
     }
   }
 
-  if (!list.choice) {
-    props.push(`  onConfirm={(selection) => console.log(selection)}`);
-  }
+  props.push(`  onConfirm={(selection) => console.log(selection)}`);
 
   return `<OptionList\n${props.join("\n")}\n/>`;
 }
@@ -156,7 +165,11 @@ export function OptionListPresetExample({
     <Tabs items={["Preview", "Code"]}>
       <Tab value="Preview">
         <div className="not-prose mx-auto max-w-md">
-          <OptionList {...data} />
+          {"choice" in data ? (
+            <OptionListReceipt {...data} />
+          ) : (
+            <OptionList {...data} />
+          )}
         </div>
       </Tab>
       <Tab value="Code">
@@ -387,8 +400,9 @@ function generateApprovalCardCode(preset: ApprovalCardPresetName): string {
     props.push(`  cancelLabel="${data.cancelLabel}"`);
   }
 
-  if (data.choice) {
+  if ("choice" in data && data.choice !== undefined) {
     props.push(`  choice="${data.choice}"`);
+    return `<ApprovalCardReceipt\n${props.join("\n")}\n/>`;
   }
 
   return `<ApprovalCard\n${props.join("\n")}\n/>`;
@@ -408,7 +422,11 @@ export function ApprovalCardPresetExample({
     <Tabs items={["Preview", "Code"]}>
       <Tab value="Preview">
         <div className="not-prose mx-auto max-w-sm">
-          <ApprovalCard {...data} />
+          {"choice" in data ? (
+            <ApprovalCardReceipt {...data} />
+          ) : (
+            <ApprovalCard {...data} />
+          )}
         </div>
       </Tab>
       <Tab value="Code">
@@ -432,7 +450,13 @@ export function QuestionFlowPresetExample({
     <Tabs items={["Preview", "Code"]}>
       <Tab value="Preview">
         <div className="not-prose mx-auto max-w-md">
-          <QuestionFlow {...presetData.data} />
+          {"choice" in presetData.data ? (
+            <QuestionFlowReceipt {...presetData.data} />
+          ) : "steps" in presetData.data ? (
+            <QuestionFlowUpfront {...presetData.data} />
+          ) : (
+            <QuestionFlowProgressive {...presetData.data} />
+          )}
         </div>
       </Tab>
       <Tab value="Code">

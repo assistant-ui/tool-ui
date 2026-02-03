@@ -10,7 +10,6 @@ import {
 } from "react";
 import type { KeyboardEvent } from "react";
 import type {
-  QuestionFlowProps,
   QuestionFlowProgressiveProps,
   QuestionFlowUpfrontProps,
   QuestionFlowReceiptProps,
@@ -206,7 +205,7 @@ function QuestionFlowSkeleton({ className }: { className?: string }) {
   );
 }
 
-function QuestionFlowReceipt({
+export function QuestionFlowReceipt({
   id,
   choice,
   className,
@@ -589,7 +588,7 @@ function StepContent({
   );
 }
 
-function QuestionFlowProgressive({
+export function QuestionFlowProgressive({
   id,
   step,
   title,
@@ -659,7 +658,7 @@ function QuestionFlowProgressive({
   );
 }
 
-function QuestionFlowUpfront({
+export function QuestionFlowUpfront({
   id,
   steps,
   onStepChange,
@@ -789,18 +788,6 @@ function QuestionFlowUpfront({
       transitionDirection={transitionDirection}
     />
   );
-}
-
-export function QuestionFlow(props: QuestionFlowProps) {
-  if ("choice" in props && props.choice !== undefined) {
-    return <QuestionFlowReceipt {...(props as QuestionFlowReceiptProps)} />;
-  }
-
-  if ("steps" in props && props.steps !== undefined) {
-    return <QuestionFlowUpfront {...(props as QuestionFlowUpfrontProps)} />;
-  }
-
-  return <QuestionFlowProgressive {...(props as QuestionFlowProgressiveProps)} />;
 }
 
 export { QuestionFlowSkeleton as QuestionFlowProgress };

@@ -40,17 +40,35 @@ export const SerializableOrderSummarySchema = z.object({
   title: z.string().optional(),
   items: z.array(OrderItemSchema).min(1),
   pricing: PricingSchema,
-  choice: OrderDecisionSchema.optional(),
 });
 
 export type SerializableOrderSummary = z.infer<
   typeof SerializableOrderSummarySchema
 >;
 
+export const SerializableOrderSummaryReceiptSchema =
+  SerializableOrderSummarySchema.extend({
+    choice: OrderDecisionSchema,
+  });
+
+export type SerializableOrderSummaryReceipt = z.infer<
+  typeof SerializableOrderSummaryReceiptSchema
+>;
+
 export function parseSerializableOrderSummary(
   input: unknown
 ): SerializableOrderSummary {
   return parseWithSchema(SerializableOrderSummarySchema, input, "OrderSummary");
+}
+
+export function parseSerializableOrderSummaryReceipt(
+  input: unknown
+): SerializableOrderSummaryReceipt {
+  return parseWithSchema(
+    SerializableOrderSummaryReceiptSchema,
+    input,
+    "OrderSummaryReceipt"
+  );
 }
 
 export interface OrderSummaryProps extends SerializableOrderSummary {
@@ -63,4 +81,9 @@ export interface OrderSummaryProps extends SerializableOrderSummary {
     disabled?: boolean;
   }>;
   onResponseAction?: (actionId: string) => void;
+}
+
+export interface OrderSummaryReceiptProps
+  extends SerializableOrderSummaryReceipt {
+  className?: string;
 }

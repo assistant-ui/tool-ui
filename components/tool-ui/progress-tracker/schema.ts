@@ -25,10 +25,6 @@ export type ProgressStep = z.infer<typeof ProgressStepSchema>;
 export const SerializableProgressTrackerSchema = ToolUISurfaceSchema.extend({
   steps: z.array(ProgressStepSchema).min(1),
   elapsedTime: z.number().optional(),
-  /**
-   * When set, renders the component in receipt state showing the workflow outcome.
-   */
-  choice: ToolUIReceiptSchema.optional(),
   responseActions: z
     .union([z.array(SerializableActionSchema), SerializableActionsConfigSchema])
     .optional(),
@@ -36,6 +32,17 @@ export const SerializableProgressTrackerSchema = ToolUISurfaceSchema.extend({
 
 export type SerializableProgressTracker = z.infer<
   typeof SerializableProgressTrackerSchema
+>;
+
+export const SerializableProgressTrackerReceiptSchema =
+  ToolUISurfaceSchema.extend({
+    steps: z.array(ProgressStepSchema).min(1),
+    elapsedTime: z.number().optional(),
+    choice: ToolUIReceiptSchema,
+  });
+
+export type SerializableProgressTrackerReceipt = z.infer<
+  typeof SerializableProgressTrackerReceiptSchema
 >;
 
 export function parseSerializableProgressTracker(
@@ -48,9 +55,24 @@ export function parseSerializableProgressTracker(
   );
 }
 
+export function parseSerializableProgressTrackerReceipt(
+  input: unknown,
+): SerializableProgressTrackerReceipt {
+  return parseWithSchema(
+    SerializableProgressTrackerReceiptSchema,
+    input,
+    "ProgressTrackerReceipt",
+  );
+}
+
 export interface ProgressTrackerProps extends SerializableProgressTracker {
   className?: string;
   responseActions?: ActionsProp;
   onResponseAction?: (actionId: string) => void | Promise<void>;
   onBeforeResponseAction?: (actionId: string) => boolean | Promise<boolean>;
+}
+
+export interface ProgressTrackerReceiptProps
+  extends SerializableProgressTrackerReceipt {
+  className?: string;
 }

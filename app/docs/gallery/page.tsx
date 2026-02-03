@@ -10,6 +10,9 @@ import { StatsDisplay } from "@/components/tool-ui/stats-display";
 const ApprovalCard = dynamic(() =>
   import("@/components/tool-ui/approval-card").then((m) => m.ApprovalCard)
 );
+const ApprovalCardReceipt = dynamic(() =>
+  import("@/components/tool-ui/approval-card").then((m) => m.ApprovalCardReceipt)
+);
 const CitationList = dynamic(() =>
   import("@/components/tool-ui/citation").then((m) => m.CitationList)
 );
@@ -31,8 +34,14 @@ const LinkedInPost = dynamic(() =>
 const OptionList = dynamic(() =>
   import("@/components/tool-ui/option-list").then((m) => m.OptionList)
 );
+const OptionListReceipt = dynamic(() =>
+  import("@/components/tool-ui/option-list").then((m) => m.OptionListReceipt)
+);
 const OrderSummary = dynamic(() =>
   import("@/components/tool-ui/order-summary").then((m) => m.OrderSummary)
+);
+const OrderSummaryReceipt = dynamic(() =>
+  import("@/components/tool-ui/order-summary").then((m) => m.OrderSummaryReceipt)
 );
 const Plan = dynamic(() =>
   import("@/components/tool-ui/plan").then((m) => m.Plan)
@@ -52,8 +61,20 @@ const PreferencesPanel = dynamic(() =>
 const ProgressTracker = dynamic(() =>
   import("@/components/tool-ui/progress-tracker").then((m) => m.ProgressTracker)
 );
-const QuestionFlow = dynamic(() =>
-  import("@/components/tool-ui/question-flow").then((m) => m.QuestionFlow)
+const QuestionFlowProgressive = dynamic(() =>
+  import("@/components/tool-ui/question-flow").then(
+    (m) => m.QuestionFlowProgressive,
+  )
+);
+const QuestionFlowUpfront = dynamic(() =>
+  import("@/components/tool-ui/question-flow").then(
+    (m) => m.QuestionFlowUpfront,
+  )
+);
+const QuestionFlowReceipt = dynamic(() =>
+  import("@/components/tool-ui/question-flow").then(
+    (m) => m.QuestionFlowReceipt,
+  )
 );
 const MessageDraft = dynamic(() =>
   import("@/components/tool-ui/message-draft").then((m) => m.MessageDraft)
@@ -147,11 +168,23 @@ export default function ComponentsGalleryPage() {
           </div>
 
           <div className="mb-5 flex break-inside-avoid justify-center 2xl:mb-5">
-            <OptionList {...optionListPresets["max-selections"].data} />
+            {"choice" in optionListPresets["max-selections"].data ? (
+              <OptionListReceipt
+                {...optionListPresets["max-selections"].data}
+              />
+            ) : (
+              <OptionList {...optionListPresets["max-selections"].data} />
+            )}
           </div>
 
           <div className="mb-5 flex break-inside-avoid justify-center 2xl:mb-5">
-            <ApprovalCard {...approvalCardPresets["with-metadata"].data} />
+            {"choice" in approvalCardPresets["with-metadata"].data ? (
+              <ApprovalCardReceipt
+                {...approvalCardPresets["with-metadata"].data}
+              />
+            ) : (
+              <ApprovalCard {...approvalCardPresets["with-metadata"].data} />
+            )}
           </div>
 
           <div className="mb-5 flex break-inside-avoid justify-center 2xl:mb-5">
@@ -159,10 +192,17 @@ export default function ComponentsGalleryPage() {
           </div>
 
           <div className="mb-5 break-inside-avoid 2xl:mb-5">
-            <OrderSummary
-              {...orderSummaryPresets.default.data}
-              className="max-w-none"
-            />
+            {"choice" in orderSummaryPresets.default.data ? (
+              <OrderSummaryReceipt
+                {...orderSummaryPresets.default.data}
+                className="max-w-none"
+              />
+            ) : (
+              <OrderSummary
+                {...orderSummaryPresets.default.data}
+                className="max-w-none"
+              />
+            )}
           </div>
 
           <div className="mb-5 flex break-inside-avoid justify-center 2xl:mb-5">
@@ -174,11 +214,21 @@ export default function ComponentsGalleryPage() {
           </div>
 
           <div className="mb-5 flex break-inside-avoid justify-center 2xl:mb-5">
-            <QuestionFlow {...questionFlowPresets.upfront.data} />
+            {"choice" in questionFlowPresets.upfront.data ? (
+              <QuestionFlowReceipt {...questionFlowPresets.upfront.data} />
+            ) : "steps" in questionFlowPresets.upfront.data ? (
+              <QuestionFlowUpfront {...questionFlowPresets.upfront.data} />
+            ) : (
+              <QuestionFlowProgressive {...questionFlowPresets.upfront.data} />
+            )}
           </div>
 
           <div className="mb-5 flex break-inside-avoid justify-center 2xl:mb-5">
-            <OptionList {...optionListPresets.travel.data} />
+            {"choice" in optionListPresets.travel.data ? (
+              <OptionListReceipt {...optionListPresets.travel.data} />
+            ) : (
+              <OptionList {...optionListPresets.travel.data} />
+            )}
           </div>
 
           <div className="mb-5 flex break-inside-avoid justify-center 2xl:mb-5">

@@ -232,6 +232,7 @@ When the tool is frontend/interactive, you register the tool **on the client** (
 import { makeAssistantTool } from "@assistant-ui/react";
 import {
   OptionList,
+  OptionListReceipt,
   parseSerializableOptionList,
   SerializableOptionListSchema,
   type SerializableOptionList,
@@ -258,7 +259,7 @@ export const SelectFormatTool = makeAssistantTool<
     // Receipt state
     if (result !== undefined) {
       return (
-        <OptionList {...optionList} value={undefined} choice={result} />
+        <OptionListReceipt {...optionList} choice={result} />
       );
     }
 

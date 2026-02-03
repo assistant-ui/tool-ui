@@ -1,5 +1,5 @@
 import { DocsHeader } from "../_components/docs-header";
-import { ProgressTracker } from "@/components/tool-ui/progress-tracker";
+import { ProgressTracker, ProgressTrackerReceipt } from "@/components/tool-ui/progress-tracker";
 
 <DocsHeader
   title="Progress Tracker"
@@ -105,12 +105,12 @@ The component automatically highlights the current step (in-progress or first pe
 
 ## Receipt Pattern
 
-Use the `choice` prop to render a terminal state after an operation completes, fails, or is cancelled. The receipt displays the full step history with an outcome indicator, which works well in conversation history.
+Use `<ProgressTrackerReceipt>` to render a terminal state after an operation completes, fails, or is cancelled. The receipt displays the full step history with an outcome indicator, which works well in conversation history.
 
 <Tabs items={["Success", "Failed", "Cancelled"]}>
   <Tab>
     <div className="not-prose mx-auto max-w-sm">
-      <ProgressTracker
+      <ProgressTrackerReceipt
         id="receipt-success-example"
         steps={[
           { id: "build", label: "Building", status: "completed" },
@@ -128,7 +128,7 @@ Use the `choice` prop to render a terminal state after an operation completes, f
   </Tab>
   <Tab>
     <div className="not-prose mx-auto max-w-sm">
-      <ProgressTracker
+      <ProgressTrackerReceipt
         id="receipt-failed-example"
         steps={[
           { id: "connect", label: "Connect to Database", status: "completed" },
@@ -146,7 +146,7 @@ Use the `choice` prop to render a terminal state after an operation completes, f
   </Tab>
   <Tab>
     <div className="not-prose mx-auto max-w-sm">
-      <ProgressTracker
+      <ProgressTrackerReceipt
         id="receipt-cancelled-example"
         steps={[
           { id: "step1", label: "Analyzing", status: "completed" },
@@ -261,17 +261,22 @@ pnpm dlx shadcn@latest add button
 import { makeAssistantTool } from "@assistant-ui/react";
 import {
   ProgressTracker,
+  ProgressTrackerReceipt,
   ProgressTrackerErrorBoundary,
   parseSerializableProgressTracker,
   SerializableProgressTrackerSchema,
   type SerializableProgressTracker,
+  type ProgressTrackerChoice,
 } from "@/components/tool-ui/progress-tracker";
 
-export const ProgressTrackerTool = makeAssistantTool<SerializableProgressTracker>({
+export const ProgressTrackerTool = makeAssistantTool<
+  SerializableProgressTracker,
+  ProgressTrackerChoice
+>({
   toolName: "trackProgress",
   description: "Display real-time progress for multi-step operations",
   parameters: SerializableProgressTrackerSchema,
-  render: ({ args, toolCallId }) => {
+  render: ({ args, result, toolCallId }) => {
     if (!(args as any)?.steps) return null;
 
     const data = parseSerializableProgressTracker({
@@ -281,14 +286,18 @@ export const ProgressTrackerTool = makeAssistantTool<SerializableProgressTracker
 
     return (
       <ProgressTrackerErrorBoundary>
-        <ProgressTracker
-          {...data}
-          onResponseAction={async (actionId) => {
-            if (actionId === "cancel") {
-              console.log("Cancelled operation");
-            }
-          }}
-        />
+        {result ? (
+          <ProgressTrackerReceipt {...data} choice={result} />
+        ) : (
+          <ProgressTracker
+            {...data}
+            onResponseAction={async (actionId) => {
+              if (actionId === "cancel") {
+                console.log("Cancelled operation");
+              }
+            }}
+          />
+        )}
       </ProgressTrackerErrorBoundary>
     );
   },
@@ -326,10 +335,6 @@ Mount `<ProgressTrackerTool />` under `<AssistantRuntimeProvider>` to register t
     onBeforeResponseAction: {
       description: "Handler called before action execution (can prevent action by returning false)",
       type: "(actionId: string) => boolean | Promise<boolean>",
-    },
-    choice: {
-      description: "When provided, renders terminal state showing full step history with outcome indicator",
-      type: "ProgressTrackerChoice",
     },
   }}
 />

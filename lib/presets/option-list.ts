@@ -1,4 +1,7 @@
-import type { SerializableOptionList } from "@/components/tool-ui/option-list";
+import type {
+  SerializableOptionList,
+  SerializableOptionListReceipt,
+} from "@/components/tool-ui/option-list";
 import type { PresetWithCodeGen } from "./types";
 
 export type OptionListPresetName =
@@ -8,7 +11,11 @@ export type OptionListPresetName =
   | "receipt"
   | "destructive";
 
-function generateOptionListCode(data: SerializableOptionList): string {
+type OptionListPresetData =
+  | SerializableOptionList
+  | SerializableOptionListReceipt;
+
+function generateOptionListCode(data: OptionListPresetData): string {
   const props: string[] = [];
 
   props.push(
@@ -27,8 +34,9 @@ function generateOptionListCode(data: SerializableOptionList): string {
     props.push(`  maxSelections={${data.maxSelections}}`);
   }
 
-  if (data.choice) {
+  if ("choice" in data) {
     props.push(`  choice="${data.choice}"`);
+    return `<OptionListReceipt\n${props.join("\n")}\n/>`;
   }
 
   if (data.responseActions) {
@@ -44,7 +52,10 @@ function generateOptionListCode(data: SerializableOptionList): string {
   return `<OptionList\n${props.join("\n")}\n/>`;
 }
 
-export const optionListPresets: Record<OptionListPresetName, PresetWithCodeGen<SerializableOptionList>> = {
+export const optionListPresets: Record<
+  OptionListPresetName,
+  PresetWithCodeGen<OptionListPresetData>
+> = {
   "max-selections": {
     description: "Pick two (you can't have all three)",
     data: {
@@ -148,7 +159,7 @@ export const optionListPresets: Record<OptionListPresetName, PresetWithCodeGen<S
       ],
       selectionMode: "single",
       choice: "drive",
-    } satisfies SerializableOptionList,
+    } satisfies SerializableOptionListReceipt,
     generateExampleCode: generateOptionListCode,
   },
   destructive: {

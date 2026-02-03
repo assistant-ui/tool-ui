@@ -1,4 +1,7 @@
-import type { SerializableProgressTracker } from "@/components/tool-ui/progress-tracker";
+import type {
+  SerializableProgressTracker,
+  SerializableProgressTrackerReceipt,
+} from "@/components/tool-ui/progress-tracker";
 import type { PresetWithCodeGen } from "./types";
 
 export type ProgressTrackerPresetName =
@@ -9,10 +12,13 @@ export type ProgressTrackerPresetName =
   | "receipt"
   | "receipt-failed";
 
-type ProgressTrackerPreset = PresetWithCodeGen<SerializableProgressTracker>;
+type ProgressTrackerPresetData =
+  | SerializableProgressTracker
+  | SerializableProgressTrackerReceipt;
+type ProgressTrackerPreset = PresetWithCodeGen<ProgressTrackerPresetData>;
 
 function generateProgressTrackerCode(
-  data: SerializableProgressTracker,
+  data: ProgressTrackerPresetData,
 ): string {
   const props: string[] = [];
 
@@ -25,10 +31,11 @@ function generateProgressTrackerCode(
     props.push(`  elapsedTime={${data.elapsedTime}}`);
   }
 
-  if (data.choice) {
+  if ("choice" in data) {
     props.push(
       `  choice={${JSON.stringify(data.choice, null, 4).replace(/\n/g, "\n  ")}}`,
     );
+    return `<ProgressTrackerReceipt\n${props.join("\n")}\n/>`;
   }
 
   if (data.responseActions) {
@@ -203,7 +210,7 @@ export const progressTrackerPresets = {
         summary: "Deployment complete",
         at: new Date().toISOString(),
       },
-    } satisfies SerializableProgressTracker,
+    } satisfies SerializableProgressTrackerReceipt,
     generateExampleCode: generateProgressTrackerCode,
   },
   "receipt-failed": {
@@ -239,7 +246,7 @@ export const progressTrackerPresets = {
         summary: "Migration failed",
         at: new Date().toISOString(),
       },
-    } satisfies SerializableProgressTracker,
+    } satisfies SerializableProgressTrackerReceipt,
     generateExampleCode: generateProgressTrackerCode,
   },
 } satisfies Record<string, ProgressTrackerPreset>;

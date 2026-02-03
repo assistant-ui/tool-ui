@@ -13,6 +13,7 @@ import type {
   OptionListProps,
   OptionListSelection,
   OptionListOption,
+  OptionListReceiptProps,
 } from "./schema";
 import { ActionButtons, normalizeActionsConfig } from "../shared";
 import type { Action } from "../shared";
@@ -227,6 +228,23 @@ function OptionListConfirmation({
   );
 }
 
+export function OptionListReceipt({
+  id,
+  options,
+  choice,
+  className,
+}: OptionListReceiptProps) {
+  const selectionMode = Array.isArray(choice) ? "multi" : "single";
+  return (
+    <OptionListConfirmation
+      id={id}
+      options={options}
+      selectedIds={parseSelectionToIdSet(choice, selectionMode)}
+      className={className}
+    />
+  );
+}
+
 export function OptionList({
   id,
   options,
@@ -235,7 +253,6 @@ export function OptionList({
   maxSelections,
   value,
   defaultValue,
-  choice,
   onChange,
   onConfirm,
   onCancel,
@@ -550,79 +567,65 @@ export function OptionList({
     selectedCount,
   ]);
 
-  const isReceipt = choice !== undefined && choice !== null;
-  const viewKey = isReceipt ? `receipt-${String(choice)}` : "interactive";
-
   return (
-    <div key={viewKey} className="contents">
-      {isReceipt ? (
-        <OptionListConfirmation
-          id={id}
-          options={options}
-          selectedIds={parseSelectionToIdSet(choice, selectionMode)}
-          className={className}
-        />
-      ) : (
-        <div
-          className={cn(
-            "@container/option-list flex w-full max-w-md min-w-80 flex-col gap-3",
-            "text-foreground",
-            className,
-          )}
-          data-slot="option-list"
-          data-tool-ui-id={id}
-          role="group"
-          aria-label="Option list"
-        >
-          <div
-            className={cn(
-              "group/list bg-card flex w-full flex-col overflow-hidden rounded-2xl border px-4 py-1.5 shadow-xs",
-            )}
-            role="listbox"
-            aria-multiselectable={selectionMode === "multi"}
-            onKeyDown={handleListboxKeyDown}
-          >
-            {optionStates.map(({ option, isSelected, isDisabled }, index) => {
-              return (
-                <Fragment key={option.id}>
-                  {index > 0 && (
-                    <Separator
-                      className="transition-opacity [@media(hover:hover)]:[&:has(+_:hover)]:opacity-0 [@media(hover:hover)]:[.peer:hover+&]:opacity-0"
-                      orientation="horizontal"
-                    />
-                  )}
-                  <OptionItem
-                    option={option}
-                    isSelected={isSelected}
-                    isDisabled={isDisabled}
-                    selectionMode={selectionMode}
-                    isFirst={index === 0}
-                    isLast={index === optionStates.length - 1}
-                    tabIndex={index === activeIndex ? 0 : -1}
-                    onFocus={() => setActiveIndex(index)}
-                    buttonRef={(el) => {
-                      optionRefs.current[index] = el;
-                    }}
-                    onToggle={() => toggleSelection(option.id)}
-                  />
-                </Fragment>
-              );
-            })}
-          </div>
-
-          <div className="@container/actions">
-            <ActionButtons
-              actions={actionsWithDisabledState}
-              align={normalizedFooterActions.align}
-              confirmTimeout={normalizedFooterActions.confirmTimeout}
-              onAction={handleFooterAction}
-              onBeforeAction={
-                hasCustomResponseActions ? onBeforeResponseAction : undefined
-              }
-            />
-          </div>
-        </div>
+    <div
+      className={cn(
+        "@container/option-list flex w-full max-w-md min-w-80 flex-col gap-3",
+        "text-foreground",
+        className,
       )}
+      data-slot="option-list"
+      data-tool-ui-id={id}
+      role="group"
+      aria-label="Option list"
+    >
+      <div
+        className={cn(
+          "group/list bg-card flex w-full flex-col overflow-hidden rounded-2xl border px-4 py-1.5 shadow-xs",
+        )}
+        role="listbox"
+        aria-multiselectable={selectionMode === "multi"}
+        onKeyDown={handleListboxKeyDown}
+      >
+        {optionStates.map(({ option, isSelected, isDisabled }, index) => {
+          return (
+            <Fragment key={option.id}>
+              {index > 0 && (
+                <Separator
+                  className="transition-opacity [@media(hover:hover)]:[&:has(+_:hover)]:opacity-0 [@media(hover:hover)]:[.peer:hover+&]:opacity-0"
+                  orientation="horizontal"
+                />
+              )}
+              <OptionItem
+                option={option}
+                isSelected={isSelected}
+                isDisabled={isDisabled}
+                selectionMode={selectionMode}
+                isFirst={index === 0}
+                isLast={index === optionStates.length - 1}
+                tabIndex={index === activeIndex ? 0 : -1}
+                onFocus={() => setActiveIndex(index)}
+                buttonRef={(el) => {
+                  optionRefs.current[index] = el;
+                }}
+                onToggle={() => toggleSelection(option.id)}
+              />
+            </Fragment>
+          );
+        })}
+      </div>
+
+      <div className="@container/actions">
+        <ActionButtons
+          actions={actionsWithDisabledState}
+          align={normalizedFooterActions.align}
+          confirmTimeout={normalizedFooterActions.confirmTimeout}
+          onAction={handleFooterAction}
+          onBeforeAction={
+            hasCustomResponseActions ? onBeforeResponseAction : undefined
+          }
+        />
+      </div>
     </div>
   );
 }

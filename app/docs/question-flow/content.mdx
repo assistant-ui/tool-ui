@@ -27,17 +27,17 @@ import { DocsHeader } from "../_components/docs-header";
 
 ## Modes
 
-QuestionFlow has two modes:
+Question Flow has two modes:
 
 ### Progressive Mode
 
-Pass `step`, `title`, and `options` to render a single step. The AI controls progression by generating new steps based on user selections.
+Use `<QuestionFlowProgressive>` with `step`, `title`, and `options` to render a single step. The AI controls progression by generating new steps based on user selections.
 
 <QuestionFlowPresetExample preset="progressive" />
 
 ### Upfront Mode
 
-Pass `steps` with all step definitions. The component manages internal state and navigation.
+Use `<QuestionFlowUpfront>` with `steps` to define the entire flow. The component manages internal state and navigation.
 
 ### Multi-Select Steps
 
@@ -47,7 +47,7 @@ Set `selectionMode="multi"` to allow multiple selections per step.
 
 ## Receipt State
 
-Pass `choice` with a title and summary to show what was configured.
+Use `<QuestionFlowReceipt>` with `choice` to show what was configured.
 
 <QuestionFlowPresetExample preset="receipt" />
 
@@ -107,7 +107,9 @@ pnpm dlx shadcn@latest add button separator
 
 import { makeAssistantTool } from "@assistant-ui/react";
 import {
-  QuestionFlow,
+  QuestionFlowProgressive,
+  QuestionFlowUpfront,
+  QuestionFlowReceipt,
   QuestionFlowErrorBoundary,
   parseSerializableQuestionFlow,
   SerializableQuestionFlowSchema,
@@ -129,23 +131,29 @@ export const ConfigureProjectTool = makeAssistantTool<
       id: (args as any)?.id ?? `wizard-${toolCallId}`,
     });
 
+    const receiptChoice = result
+      ? {
+          title: "Project configured",
+          summary: Object.entries(result).map(([key, values]) => ({
+            label: key,
+            value: values.join(", "),
+          })),
+        }
+      : null;
+
     return (
       <QuestionFlowErrorBoundary>
-        {result !== undefined ? (
-          <QuestionFlow
-            id={questionFlow.id}
-            choice={{
-              title: "Project configured",
-              summary: Object.entries(result).map(([key, values]) => ({
-                label: key,
-                value: values.join(", "),
-              })),
-            }}
-          />
-        ) : (
-          <QuestionFlow
+        {receiptChoice ? (
+          <QuestionFlowReceipt id={questionFlow.id} choice={receiptChoice} />
+        ) : "steps" in questionFlow ? (
+          <QuestionFlowUpfront
             {...questionFlow}
             onComplete={(answers) => addResult(answers)}
+          />
+        ) : (
+          <QuestionFlowProgressive
+            {...questionFlow}
+            onSelect={(ids) => addResult({ [questionFlow.title]: ids })}
           />
         )}
       </QuestionFlowErrorBoundary>

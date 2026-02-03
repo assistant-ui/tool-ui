@@ -11,6 +11,12 @@ import {
   parseWithSchema,
 } from "../shared";
 
+const OptionListSelectionSchema = z.union([
+  z.array(z.string()),
+  z.string(),
+  z.null(),
+]);
+
 export const OptionListOptionSchema = z.object({
   id: z.string().min(1),
   label: z.string().min(1),
@@ -19,7 +25,7 @@ export const OptionListOptionSchema = z.object({
   disabled: z.boolean().optional(),
 });
 
-export const OptionListPropsSchema = z.object({
+const OptionListBaseSchema = z.object({
   /**
    * Unique identifier for this tool UI instance in the conversation.
    *
@@ -37,40 +43,24 @@ export const OptionListPropsSchema = z.object({
   receipt: ToolUIReceiptSchema.optional(),
   options: z.array(OptionListOptionSchema).min(1),
   selectionMode: z.enum(["multi", "single"]).optional(),
+  minSelections: z.number().min(0).optional(),
+  maxSelections: z.number().min(1).optional(),
+});
+
+export const OptionListPropsSchema = OptionListBaseSchema.extend({
   /**
    * Controlled selection value (advanced / runtime only).
    *
-   * For Tool UI tool payloads, prefer `defaultValue` (initial selection) and
-   * `choice` (receipt state). Controlled `value` is intentionally excluded
-   * from `SerializableOptionListSchema` to avoid accidental "controlled but
-   * non-interactive" states when an LLM includes `value` in args.
+   * For Tool UI tool payloads, prefer `defaultValue` (initial selection).
+   * Controlled `value` is intentionally excluded from `SerializableOptionListSchema`
+   * to avoid accidental "controlled but non-interactive" states when an LLM
+   * includes `value` in args.
    */
-  value: z.union([z.array(z.string()), z.string(), z.null()]).optional(),
-  defaultValue: z.union([z.array(z.string()), z.string(), z.null()]).optional(),
-  /**
-   * When set, renders the component in receipt state showing the user's choice.
-   *
-   * In receipt state:
-   * - Only the chosen option(s) are shown
-   * - Response actions are hidden
-   * - The component is read-only
-   *
-   * Use this with assistant-ui's `addResult` to show the outcome of a decision.
-   *
-   * @example
-   * ```tsx
-   * // In makeAssistantToolUI render:
-   * if (result) {
-   *   return <OptionList {...args} choice={result} />;
-   * }
-   * ```
-   */
-  choice: z.union([z.array(z.string()), z.string(), z.null()]).optional(),
+  value: OptionListSelectionSchema.optional(),
+  defaultValue: OptionListSelectionSchema.optional(),
   responseActions: z
     .union([z.array(ActionSchema), SerializableActionsConfigSchema])
     .optional(),
-  minSelections: z.number().min(0).optional(),
-  maxSelections: z.number().min(1).optional(),
 });
 
 export type OptionListSelection = string[] | string | null;
@@ -79,14 +69,12 @@ export type OptionListOption = z.infer<typeof OptionListOptionSchema>;
 
 export type OptionListProps = Omit<
   z.infer<typeof OptionListPropsSchema>,
-  "value" | "defaultValue" | "choice"
+  "value" | "defaultValue"
 > & {
   /** @see OptionListPropsSchema.id */
   id: string;
   value?: OptionListSelection;
   defaultValue?: OptionListSelection;
-  /** @see OptionListPropsSchema.choice */
-  choice?: OptionListSelection;
   onChange?: (value: OptionListSelection) => void;
   onConfirm?: (value: OptionListSelection) => void | Promise<void>;
   onCancel?: () => void;
@@ -96,22 +84,47 @@ export type OptionListProps = Omit<
   className?: string;
 };
 
-export const SerializableOptionListSchema = OptionListPropsSchema.omit({
-  // Exclude controlled selection from tool/LLM payloads.
-  value: true,
-}).extend({
+export type OptionListReceiptProps = Omit<
+  SerializableOptionListReceipt,
+  "options"
+> & {
+  options: OptionListOption[];
+  className?: string;
+};
+
+export const SerializableOptionListSchema = OptionListBaseSchema.extend({
   options: z.array(OptionListOptionSchema.omit({ icon: true })),
+  defaultValue: OptionListSelectionSchema.optional(),
   responseActions: z
     .union([z.array(SerializableActionSchema), SerializableActionsConfigSchema])
     .optional(),
+});
+
+export const SerializableOptionListReceiptSchema = OptionListBaseSchema.extend({
+  options: z.array(OptionListOptionSchema.omit({ icon: true })),
+  choice: OptionListSelectionSchema,
 });
 
 export type SerializableOptionList = z.infer<
   typeof SerializableOptionListSchema
 >;
 
+export type SerializableOptionListReceipt = z.infer<
+  typeof SerializableOptionListReceiptSchema
+>;
+
 export function parseSerializableOptionList(
   input: unknown,
 ): SerializableOptionList {
   return parseWithSchema(SerializableOptionListSchema, input, "OptionList");
+}
+
+export function parseSerializableOptionListReceipt(
+  input: unknown,
+): SerializableOptionListReceipt {
+  return parseWithSchema(
+    SerializableOptionListReceiptSchema,
+    input,
+    "OptionListReceipt",
+  );
 }

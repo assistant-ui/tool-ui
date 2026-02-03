@@ -4,7 +4,12 @@ import * as React from "react";
 import { useCallback } from "react";
 import { CheckCircle, Package } from "lucide-react";
 import { cn, Separator, Skeleton } from "./_adapter";
-import type { OrderSummaryProps, OrderItem, Pricing } from "./schema";
+import type {
+  OrderSummaryProps,
+  OrderSummaryReceiptProps,
+  OrderItem,
+  Pricing,
+} from "./schema";
 import { ActionButtons } from "../shared";
 
 const defaultActions = [
@@ -173,19 +178,70 @@ function ReceiptBadge({
   );
 }
 
-export function OrderSummary({
+export function OrderSummaryReceipt({
   id,
   title = "Order Summary",
   items,
   pricing,
   choice,
   className,
+}: OrderSummaryReceiptProps) {
+  const titleId = `${id}-title`;
+
+  return (
+    <article
+      data-slot="order-summary"
+      data-tool-ui-id={id}
+      data-receipt="true"
+      aria-labelledby={titleId}
+      className={cn("flex max-w-md min-w-80 flex-col gap-3", className)}
+    >
+      <div className="text-card-foreground rounded-lg border bg-card/60 shadow-sm">
+        <div className="space-y-4 p-4 opacity-95">
+          <div>
+            <h2
+              id={titleId}
+              className="flex items-center gap-2 text-base font-semibold"
+            >
+              <CheckCircle className="h-5 w-5 text-green-600 dark:text-green-500" />
+              {title}
+            </h2>
+            <ReceiptBadge
+              orderId={choice.orderId}
+              confirmedAt={choice.confirmedAt}
+            />
+          </div>
+
+          <div className="space-y-3">
+            {items.map((item) => (
+              <OrderItemRow
+                key={item.id}
+                item={item}
+                currency={pricing.currency ?? "USD"}
+              />
+            ))}
+          </div>
+
+          <Separator />
+
+          <PricingBreakdown pricing={pricing} />
+        </div>
+      </div>
+    </article>
+  );
+}
+
+export function OrderSummary({
+  id,
+  title = "Order Summary",
+  items,
+  pricing,
+  className,
   isLoading = false,
   responseActions,
   onResponseAction,
 }: OrderSummaryProps) {
   const titleId = `${id}-title`;
-  const isReceipt = choice !== undefined;
   const actions = responseActions ?? defaultActions;
 
   const handleAction = useCallback(
@@ -205,25 +261,18 @@ export function OrderSummary({
     >
       <div
         className={cn(
-          "text-card-foreground rounded-lg border shadow-sm",
-          isReceipt ? "bg-card/60" : "bg-card",
+          "text-card-foreground rounded-lg border bg-card shadow-sm",
           isLoading && "pointer-events-none opacity-70",
         )}
       >
-        <div className={cn("space-y-4 p-4", isReceipt && "opacity-95")}>
+        <div className="space-y-4 p-4">
           <div>
-            <h2 id={titleId} className="flex items-center gap-2 text-base font-semibold">
-              {isReceipt && (
-                <CheckCircle className="h-5 w-5 text-green-600 dark:text-green-500" />
-              )}
+            <h2
+              id={titleId}
+              className="flex items-center gap-2 text-base font-semibold"
+            >
               {title}
             </h2>
-            {isReceipt && (
-              <ReceiptBadge
-                orderId={choice.orderId}
-                confirmedAt={choice.confirmedAt}
-              />
-            )}
           </div>
 
           <div className="space-y-3">
@@ -241,12 +290,9 @@ export function OrderSummary({
           <PricingBreakdown pricing={pricing} />
         </div>
       </div>
-
-      {!isReceipt && (
-        <div className="@container/actions">
-          <ActionButtons actions={actions} onAction={handleAction} />
-        </div>
-      )}
+      <div className="@container/actions">
+        <ActionButtons actions={actions} onAction={handleAction} />
+      </div>
     </article>
   );
 }

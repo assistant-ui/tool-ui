@@ -1,7 +1,7 @@
 import { DocsHeader } from "../_components/docs-header";
 import { MockThread, MockMessage } from "../_components/mock-thread";
-import { OptionList } from "@/components/tool-ui/option-list";
-import { ApprovalCard } from "@/components/tool-ui/approval-card";
+import { OptionListReceipt } from "@/components/tool-ui/option-list";
+import { ApprovalCardReceipt } from "@/components/tool-ui/approval-card";
 
 <DocsHeader
   title="Receipts"
@@ -22,7 +22,7 @@ Without receipts, consequential actions vanish into the conversation history. Th
         How would you like to handle the duplicate contacts?
       </span>
       <div className="mt-3">
-        <OptionList
+        <OptionListReceipt
           selectionMode="single"
           choice="merge"
           options={[
@@ -78,7 +78,7 @@ The action description stays in **imperative form** because it describes the req
 <div className="not-prose grid gap-4 sm:grid-cols-2 my-6">
   <div>
     <p className="text-sm text-muted-foreground mb-2">Approved action</p>
-    <ApprovalCard
+    <ApprovalCardReceipt
       id="receipt-approved-example"
       title="Back up database"
       choice="approved"
@@ -86,7 +86,7 @@ The action description stays in **imperative form** because it describes the req
   </div>
   <div>
     <p className="text-sm text-muted-foreground mb-2">Denied action</p>
-    <ApprovalCard
+    <ApprovalCardReceipt
       id="receipt-denied-example"
       title="Delete all project files"
       choice="denied"
@@ -104,13 +104,13 @@ The pattern is: **[Past-tense decision] — [Imperative action]**
 
 Several Tool UI components support receipt states:
 
-| Component | Receipt Prop | What It Shows |
-|-----------|--------------|---------------|
-| [Approval Card](/docs/approval-card) | `choice` | The decision and action title |
-| [Option List](/docs/option-list) | `choice` | Only the selected option(s) |
-| [Preferences Panel](/docs/preferences-panel) | `choice` | Summary of saved preferences |
-| [Progress Tracker](/docs/progress-tracker) | `choice` | Final status of the workflow |
-| [Order Summary](/docs/order-summary) | `choice` | Confirmed order details |
+| Component | Receipt Component | What It Shows |
+|-----------|-------------------|---------------|
+| [Approval Card](/docs/approval-card) | `ApprovalCardReceipt` | The decision and action title |
+| [Option List](/docs/option-list) | `OptionListReceipt` | Only the selected option(s) |
+| [Preferences Panel](/docs/preferences-panel) | `PreferencesPanelReceipt` | Summary of saved preferences |
+| [Progress Tracker](/docs/progress-tracker) | `ProgressTrackerReceipt` | Final status of the workflow |
+| [Order Summary](/docs/order-summary) | `OrderSummaryReceipt` | Confirmed order details |
 
 ## When to Use Receipts
 

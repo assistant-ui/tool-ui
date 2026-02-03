@@ -1,4 +1,7 @@
-import type { SerializableOrderSummary } from "@/components/tool-ui/order-summary";
+import type {
+  SerializableOrderSummary,
+  SerializableOrderSummaryReceipt,
+} from "@/components/tool-ui/order-summary";
 import type { PresetWithCodeGen } from "./types";
 
 export type OrderSummaryPresetName =
@@ -8,7 +11,11 @@ export type OrderSummaryPresetName =
   | "receipt"
   | "international";
 
-function generateOrderSummaryCode(data: SerializableOrderSummary): string {
+type OrderSummaryPresetData =
+  | SerializableOrderSummary
+  | SerializableOrderSummaryReceipt;
+
+function generateOrderSummaryCode(data: OrderSummaryPresetData): string {
   const props: string[] = [];
 
   props.push(`  id="${data.id}"`);
@@ -25,10 +32,11 @@ function generateOrderSummaryCode(data: SerializableOrderSummary): string {
     `  pricing={${JSON.stringify(data.pricing, null, 4).replace(/\n/g, "\n  ")}}`
   );
 
-  if (data.choice) {
+  if ("choice" in data) {
     props.push(
       `  choice={${JSON.stringify(data.choice, null, 4).replace(/\n/g, "\n  ")}}`
     );
+    return `<OrderSummaryReceipt\n${props.join("\n")}\n/>`;
   }
 
   return `<OrderSummary\n${props.join("\n")}\n/>`;
@@ -36,7 +44,7 @@ function generateOrderSummaryCode(data: SerializableOrderSummary): string {
 
 export const orderSummaryPresets: Record<
   OrderSummaryPresetName,
-  PresetWithCodeGen<SerializableOrderSummary>
+  PresetWithCodeGen<OrderSummaryPresetData>
 > = {
   default: {
     description: "Standard order with multiple items and tax",
@@ -181,7 +189,7 @@ export const orderSummaryPresets: Record<
         orderId: "ORD-2024-8847",
         confirmedAt: "2024-12-15T14:32:00Z",
       },
-    } satisfies SerializableOrderSummary,
+    } satisfies SerializableOrderSummaryReceipt,
     generateExampleCode: generateOrderSummaryCode,
   },
 

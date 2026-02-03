@@ -2,7 +2,11 @@
 
 import * as React from "react";
 import { cn, Separator } from "./_adapter";
-import type { ApprovalCardProps, ApprovalDecision } from "./schema";
+import type {
+  ApprovalCardProps,
+  ApprovalCardReceiptProps,
+  ApprovalDecision,
+} from "./schema";
 import { ActionButtons } from "../shared";
 import type { Action } from "../shared";
 import { icons, Check, X } from "lucide-react";
@@ -19,23 +23,18 @@ function getLucideIcon(name: string): LucideIcon | null {
   return Icon ?? null;
 }
 
-interface ApprovalCardReceiptProps {
-  id: string;
-  title: string;
-  choice: ApprovalDecision;
-  actionLabel?: string;
-  className?: string;
-}
-
-function ApprovalCardReceipt({
+export function ApprovalCardReceipt({
   id,
   title,
   choice,
-  actionLabel,
+  confirmLabel,
+  cancelLabel,
   className,
 }: ApprovalCardReceiptProps) {
   const isApproved = choice === "approved";
-  const displayLabel = actionLabel ?? (isApproved ? "Approved" : "Denied");
+  const displayLabel = isApproved
+    ? (confirmLabel ?? "Approved")
+    : (cancelLabel ?? "Denied");
 
   return (
     <div
@@ -119,7 +118,6 @@ export function ApprovalCard({
   cancelLabel,
   className,
   isLoading,
-  choice,
   onConfirm,
   onCancel,
 }: ApprovalCardProps) {
@@ -166,83 +164,70 @@ export function ApprovalCard({
     },
   ];
 
-  const viewKey = choice ? `receipt-${choice}` : "interactive";
-
   return (
-    <div key={viewKey} className="contents">
-      {choice ? (
-        <ApprovalCardReceipt
-          id={id}
-          title={title}
-          choice={choice}
-          className={className}
-        />
-      ) : (
-        <article
-          className={cn(
-            "@container/actions flex w-full min-w-64 max-w-md flex-col",
-            "text-foreground",
-            className,
-          )}
-          data-slot="approval-card"
-          data-tool-ui-id={id}
-          role="dialog"
-          aria-labelledby={`${id}-title`}
-          aria-describedby={description ? `${id}-description` : undefined}
-          onKeyDown={handleKeyDown}
-        >
-          <div className="bg-card flex w-full flex-col gap-4 rounded-2xl border p-5 shadow-xs">
-            <div className="flex items-start gap-3">
-              {Icon && (
-                <span
-                  className={cn(
-                    "flex size-10 shrink-0 items-center justify-center rounded-xl",
-                    isDestructive
-                      ? "bg-destructive/10 text-destructive"
-                      : "bg-primary/10 text-primary",
-                  )}
-                >
-                  <Icon className="size-5" />
-                </span>
-              )}
-              <div className="flex flex-1 flex-col gap-1">
-                <h2
-                  id={`${id}-title`}
-                  className="text-base font-semibold leading-tight"
-                >
-                  {title}
-                </h2>
-                {description && (
-                  <p
-                    id={`${id}-description`}
-                    className="text-muted-foreground text-sm"
-                  >
-                    {description}
-                  </p>
-                )}
-              </div>
-            </div>
-
-            {metadata && metadata.length > 0 && (
-              <>
-                <Separator />
-                <dl className="flex flex-col gap-2 text-sm">
-                  {metadata.map((item, index) => (
-                    <div key={index} className="flex justify-between gap-4">
-                      <dt className="text-muted-foreground shrink-0">
-                        {item.key}
-                      </dt>
-                      <dd className="min-w-0 truncate">{item.value}</dd>
-                    </div>
-                  ))}
-                </dl>
-              </>
-            )}
-
-            <ActionButtons actions={actions} onAction={handleAction} />
-          </div>
-        </article>
+    <article
+      className={cn(
+        "@container/actions flex w-full min-w-64 max-w-md flex-col",
+        "text-foreground",
+        className,
       )}
-    </div>
+      data-slot="approval-card"
+      data-tool-ui-id={id}
+      role="dialog"
+      aria-labelledby={`${id}-title`}
+      aria-describedby={description ? `${id}-description` : undefined}
+      onKeyDown={handleKeyDown}
+    >
+      <div className="bg-card flex w-full flex-col gap-4 rounded-2xl border p-5 shadow-xs">
+        <div className="flex items-start gap-3">
+          {Icon && (
+            <span
+              className={cn(
+                "flex size-10 shrink-0 items-center justify-center rounded-xl",
+                isDestructive
+                  ? "bg-destructive/10 text-destructive"
+                  : "bg-primary/10 text-primary",
+              )}
+            >
+              <Icon className="size-5" />
+            </span>
+          )}
+          <div className="flex flex-1 flex-col gap-1">
+            <h2
+              id={`${id}-title`}
+              className="text-base font-semibold leading-tight"
+            >
+              {title}
+            </h2>
+            {description && (
+              <p
+                id={`${id}-description`}
+                className="text-muted-foreground text-sm"
+              >
+                {description}
+              </p>
+            )}
+          </div>
+        </div>
+
+        {metadata && metadata.length > 0 && (
+          <>
+            <Separator />
+            <dl className="flex flex-col gap-2 text-sm">
+              {metadata.map((item, index) => (
+                <div key={index} className="flex justify-between gap-4">
+                  <dt className="text-muted-foreground shrink-0">
+                    {item.key}
+                  </dt>
+                  <dd className="min-w-0 truncate">{item.value}</dd>
+                </div>
+              ))}
+            </dl>
+          </>
+        )}
+
+        <ActionButtons actions={actions} onAction={handleAction} />
+      </div>
+    </article>
   );
 }

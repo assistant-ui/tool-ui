@@ -34,7 +34,7 @@ function generateProgressiveCode(data: SerializableProgressiveMode): string {
   props.push(`  onSelect={(ids) => console.log("Selected:", ids)}`);
   props.push(`  onBack={() => console.log("Go back")}`);
 
-  return `<QuestionFlow\n${props.join("\n")}\n/>`;
+  return `<QuestionFlowProgressive\n${props.join("\n")}\n/>`;
 }
 
 function generateUpfrontCode(data: SerializableUpfrontMode): string {
@@ -46,7 +46,7 @@ function generateUpfrontCode(data: SerializableUpfrontMode): string {
   );
   props.push(`  onComplete={(answers) => console.log("Complete:", answers)}`);
 
-  return `<QuestionFlow\n${props.join("\n")}\n/>`;
+  return `<QuestionFlowUpfront\n${props.join("\n")}\n/>`;
 }
 
 function generateReceiptCode(data: SerializableReceiptMode): string {
@@ -57,7 +57,7 @@ function generateReceiptCode(data: SerializableReceiptMode): string {
     `  choice={${JSON.stringify(data.choice, null, 4).replace(/\n/g, "\n  ")}}`,
   );
 
-  return `<QuestionFlow\n${props.join("\n")}\n/>`;
+  return `<QuestionFlowReceipt\n${props.join("\n")}\n/>`;
 }
 
 function generateQuestionFlowCode(data: SerializableQuestionFlow): string {

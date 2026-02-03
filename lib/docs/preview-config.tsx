@@ -5,7 +5,10 @@ import { useState } from "react";
 import type { ComponentProps, ComponentType, ReactNode } from "react";
 import type { PresetWithCodeGen } from "@/lib/presets/types";
 
-import type { ApprovalCard } from "@/components/tool-ui/approval-card";
+import type {
+  ApprovalCardProps,
+  ApprovalCardReceiptProps,
+} from "@/components/tool-ui/approval-card";
 import type { Chart } from "@/components/tool-ui/chart";
 import type { Citation } from "@/components/tool-ui/citation";
 import type { CodeBlock } from "@/components/tool-ui/code-block";
@@ -17,15 +20,28 @@ import type { Audio } from "@/components/tool-ui/audio";
 import type { LinkPreview } from "@/components/tool-ui/link-preview";
 import type { MessageDraft } from "@/components/tool-ui/message-draft";
 import type { ItemCarousel } from "@/components/tool-ui/item-carousel";
-import type { OptionList } from "@/components/tool-ui/option-list";
-import type { OrderSummary } from "@/components/tool-ui/order-summary";
+import type {
+  OptionListProps,
+  OptionListReceiptProps,
+} from "@/components/tool-ui/option-list";
+import type {
+  OrderSummaryProps,
+  OrderSummaryReceiptProps,
+} from "@/components/tool-ui/order-summary";
 import type { ParameterSlider } from "@/components/tool-ui/parameter-slider";
 import type { Plan } from "@/components/tool-ui/plan";
 import type { PreferencesPanel } from "@/components/tool-ui/preferences-panel";
-import type { ProgressTracker } from "@/components/tool-ui/progress-tracker";
+import type {
+  ProgressTrackerProps,
+  ProgressTrackerReceiptProps,
+} from "@/components/tool-ui/progress-tracker";
 import type { StatsDisplay } from "@/components/tool-ui/stats-display";
 import type { Terminal } from "@/components/tool-ui/terminal";
-import type { QuestionFlow } from "@/components/tool-ui/question-flow";
+import type {
+  QuestionFlowProgressiveProps,
+  QuestionFlowUpfrontProps,
+  QuestionFlowReceiptProps,
+} from "@/components/tool-ui/question-flow";
 import type { WeatherWidget } from "@/components/tool-ui/weather-widget";
 
 import {
@@ -102,10 +118,19 @@ import {
   weatherWidgetPresets,
   type WeatherWidgetPresetName,
 } from "@/lib/presets/weather-widget";
-import type { SerializableUpfrontMode } from "@/components/tool-ui/question-flow";
+import type {
+  SerializableProgressiveMode,
+  SerializableUpfrontMode,
+  SerializableReceiptMode,
+} from "@/components/tool-ui/question-flow";
 
 const DynamicApprovalCard = dynamic(() =>
-  import("@/components/tool-ui/approval-card").then((m) => m.ApprovalCard)
+  import("@/components/tool-ui/approval-card").then((m) => m.ApprovalCard),
+);
+const DynamicApprovalCardReceipt = dynamic(() =>
+  import("@/components/tool-ui/approval-card").then(
+    (m) => m.ApprovalCardReceipt,
+  ),
 );
 const DynamicChart = dynamic(() =>
   import("@/components/tool-ui/chart").then((m) => m.Chart)
@@ -144,10 +169,18 @@ const DynamicItemCarousel = dynamic(() =>
   import("@/components/tool-ui/item-carousel").then((m) => m.ItemCarousel)
 );
 const DynamicOptionList = dynamic(() =>
-  import("@/components/tool-ui/option-list").then((m) => m.OptionList)
+  import("@/components/tool-ui/option-list").then((m) => m.OptionList),
+);
+const DynamicOptionListReceipt = dynamic(() =>
+  import("@/components/tool-ui/option-list").then((m) => m.OptionListReceipt),
 );
 const DynamicOrderSummary = dynamic(() =>
-  import("@/components/tool-ui/order-summary").then((m) => m.OrderSummary)
+  import("@/components/tool-ui/order-summary").then((m) => m.OrderSummary),
+);
+const DynamicOrderSummaryReceipt = dynamic(() =>
+  import("@/components/tool-ui/order-summary").then(
+    (m) => m.OrderSummaryReceipt,
+  ),
 );
 const DynamicParameterSlider = dynamic(() =>
   import("@/components/tool-ui/parameter-slider").then((m) => m.ParameterSlider)
@@ -159,7 +192,14 @@ const DynamicPreferencesPanel = dynamic(() =>
   import("@/components/tool-ui/preferences-panel").then((m) => m.PreferencesPanel)
 );
 const DynamicProgressTracker = dynamic(() =>
-  import("@/components/tool-ui/progress-tracker").then((m) => m.ProgressTracker)
+  import("@/components/tool-ui/progress-tracker").then(
+    (m) => m.ProgressTracker,
+  ),
+);
+const DynamicProgressTrackerReceipt = dynamic(() =>
+  import("@/components/tool-ui/progress-tracker").then(
+    (m) => m.ProgressTrackerReceipt,
+  ),
 );
 const DynamicStatsDisplay = dynamic(() =>
   import("@/components/tool-ui/stats-display").then((m) => m.StatsDisplay)
@@ -167,8 +207,20 @@ const DynamicStatsDisplay = dynamic(() =>
 const DynamicTerminal = dynamic(() =>
   import("@/components/tool-ui/terminal").then((m) => m.Terminal)
 );
-const DynamicQuestionFlow = dynamic(() =>
-  import("@/components/tool-ui/question-flow").then((m) => m.QuestionFlow)
+const DynamicQuestionFlowProgressive = dynamic(() =>
+  import("@/components/tool-ui/question-flow").then(
+    (m) => m.QuestionFlowProgressive,
+  ),
+);
+const DynamicQuestionFlowUpfront = dynamic(() =>
+  import("@/components/tool-ui/question-flow").then(
+    (m) => m.QuestionFlowUpfront,
+  ),
+);
+const DynamicQuestionFlowReceipt = dynamic(() =>
+  import("@/components/tool-ui/question-flow").then(
+    (m) => m.QuestionFlowReceipt,
+  ),
 );
 const DynamicWeatherWidget = dynamic(() =>
   import("@/components/tool-ui/weather-widget").then((m) => m.WeatherWidget)
@@ -202,7 +254,7 @@ function QuestionFlowUpfrontWithReceipt({
       .replace(/\b\w/g, (c) => c.toUpperCase());
 
     return (
-      <DynamicQuestionFlow
+      <DynamicQuestionFlowReceipt
         id={data.id}
         choice={{
           title,
@@ -213,7 +265,7 @@ function QuestionFlowUpfrontWithReceipt({
   }
 
   return (
-    <DynamicQuestionFlow
+    <DynamicQuestionFlowUpfront
       {...data}
       onComplete={(answers: Record<string, string[]>) =>
         setCompletedAnswers(answers)
@@ -298,12 +350,23 @@ export const previewConfigs: Record<
       preamble: "I'll need your confirmation before proceeding:",
     },
     renderComponent: ({ data, state, setState }) => {
-      const cardData = data as ComponentProps<typeof ApprovalCard>;
-      const choice = state.selection as "approved" | "denied" | undefined;
+      const cardData = data as ApprovalCardProps | ApprovalCardReceiptProps;
+      const resolvedChoice =
+        ("choice" in cardData ? cardData.choice : undefined) ??
+        (state.selection as "approved" | "denied" | undefined);
+
+      if (resolvedChoice) {
+        return (
+          <DynamicApprovalCardReceipt
+            {...(cardData as ApprovalCardProps)}
+            choice={resolvedChoice}
+          />
+        );
+      }
+
       return (
         <DynamicApprovalCard
-          {...cardData}
-          choice={cardData.choice ?? choice}
+          {...(cardData as ApprovalCardProps)}
           onConfirm={() => setState({ selection: "approved" })}
           onCancel={() => setState({ selection: "denied" })}
         />
@@ -559,10 +622,19 @@ export const previewConfigs: Record<
       preamble: "What sounds good?",
     },
     renderComponent: ({ data, state, setState }) => {
-      const listData = data as Parameters<typeof OptionList>[0];
+      const listData = data as OptionListProps | OptionListReceiptProps;
+      if ("choice" in listData) {
+        return (
+          <DynamicOptionListReceipt
+            {...listData}
+            id="option-list-preview"
+          />
+        );
+      }
+
       return (
         <DynamicOptionList
-          {...listData}
+          {...(listData as OptionListProps)}
           id="option-list-preview"
           value={state.selection}
           onChange={(selection) => setState({ selection })}
@@ -583,10 +655,13 @@ export const previewConfigs: Record<
       preamble: "Here's the order summary for your review:",
     },
     renderComponent: ({ data }) => {
-      const orderData = data as Parameters<typeof OrderSummary>[0];
+      const orderData = data as OrderSummaryProps | OrderSummaryReceiptProps;
+      if ("choice" in orderData) {
+        return <DynamicOrderSummaryReceipt {...orderData} />;
+      }
       return (
         <DynamicOrderSummary
-          {...orderData}
+          {...(orderData as OrderSummaryProps)}
           onResponseAction={(actionId) =>
             console.log("Response action:", actionId)
           }
@@ -689,10 +764,14 @@ export const previewConfigs: Record<
       preamble: "Starting deployment process:",
     },
     renderComponent: ({ data }) => {
-      const trackerData = data as Parameters<typeof ProgressTracker>[0];
+      const trackerData =
+        data as ProgressTrackerProps | ProgressTrackerReceiptProps;
+      if ("choice" in trackerData) {
+        return <DynamicProgressTrackerReceipt {...trackerData} />;
+      }
       return (
         <DynamicProgressTracker
-          {...trackerData}
+          {...(trackerData as ProgressTrackerProps)}
           onResponseAction={(actionId) =>
             console.log("Response action:", actionId)
           }
@@ -755,12 +834,20 @@ export const previewConfigs: Record<
       preamble: "Let's configure your project step by step:",
     },
     renderComponent: ({ data, presetName }) => {
-      const flowData = data as Parameters<typeof QuestionFlow>[0];
+      const flowData = data as
+        | SerializableProgressiveMode
+        | SerializableUpfrontMode
+        | SerializableReceiptMode;
       const isUpfront = "steps" in flowData && flowData.steps !== undefined;
       const isReceipt = "choice" in flowData && flowData.choice !== undefined;
 
       if (isReceipt) {
-        return <DynamicQuestionFlow key={presetName} {...flowData} />;
+        return (
+          <DynamicQuestionFlowReceipt
+            key={presetName}
+            {...(flowData as SerializableReceiptMode)}
+          />
+        );
       }
 
       if (isUpfront) {
@@ -773,9 +860,9 @@ export const previewConfigs: Record<
       }
 
       return (
-        <DynamicQuestionFlow
+        <DynamicQuestionFlowProgressive
           key={presetName}
-          {...flowData}
+          {...(flowData as SerializableProgressiveMode)}
           onSelect={(ids: string[]) => console.log("Selected:", ids)}
           onBack={() => console.log("Go back")}
         />

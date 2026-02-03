@@ -29,12 +29,19 @@ export const SerializableApprovalCardSchema = z.object({
 
   confirmLabel: z.string().optional(),
   cancelLabel: z.string().optional(),
-
-  choice: ApprovalDecisionSchema.optional(),
 });
 
 export type SerializableApprovalCard = z.infer<
   typeof SerializableApprovalCardSchema
+>;
+
+export const SerializableApprovalCardReceiptSchema =
+  SerializableApprovalCardSchema.extend({
+    choice: ApprovalDecisionSchema,
+  });
+
+export type SerializableApprovalCardReceipt = z.infer<
+  typeof SerializableApprovalCardReceiptSchema
 >;
 
 export function parseSerializableApprovalCard(
@@ -43,9 +50,24 @@ export function parseSerializableApprovalCard(
   return parseWithSchema(SerializableApprovalCardSchema, input, "ApprovalCard");
 }
 
+export function parseSerializableApprovalCardReceipt(
+  input: unknown,
+): SerializableApprovalCardReceipt {
+  return parseWithSchema(
+    SerializableApprovalCardReceiptSchema,
+    input,
+    "ApprovalCardReceipt",
+  );
+}
+
 export interface ApprovalCardProps extends SerializableApprovalCard {
   className?: string;
   isLoading?: boolean;
   onConfirm?: () => void | Promise<void>;
   onCancel?: () => void | Promise<void>;
+}
+
+export interface ApprovalCardReceiptProps
+  extends SerializableApprovalCardReceipt {
+  className?: string;
 }

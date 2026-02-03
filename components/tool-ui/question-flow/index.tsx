@@ -1,4 +1,9 @@
-export { QuestionFlow, QuestionFlowProgress } from "./question-flow";
+export {
+  QuestionFlowProgressive,
+  QuestionFlowUpfront,
+  QuestionFlowReceipt,
+  QuestionFlowProgress,
+} from "./question-flow";
 export { QuestionFlowErrorBoundary } from "./error-boundary";
 export {
   SerializableQuestionFlowSchema,
@@ -14,7 +19,6 @@ export {
   type SerializableProgressiveMode,
   type SerializableUpfrontMode,
   type SerializableReceiptMode,
-  type QuestionFlowProps,
   type QuestionFlowProgressiveProps,
   type QuestionFlowUpfrontProps,
   type QuestionFlowReceiptProps,

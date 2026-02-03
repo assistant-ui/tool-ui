@@ -1,4 +1,7 @@
-import type { SerializableApprovalCard } from "@/components/tool-ui/approval-card";
+import type {
+  SerializableApprovalCard,
+  SerializableApprovalCardReceipt,
+} from "@/components/tool-ui/approval-card";
 import type { PresetWithCodeGen } from "./types";
 
 export type ApprovalCardPresetName =
@@ -8,7 +11,11 @@ export type ApprovalCardPresetName =
   | "receipt-approved"
   | "receipt-denied";
 
-function generateApprovalCardCode(data: SerializableApprovalCard): string {
+type ApprovalCardPresetData =
+  | SerializableApprovalCard
+  | SerializableApprovalCardReceipt;
+
+function generateApprovalCardCode(data: ApprovalCardPresetData): string {
   const props: string[] = [];
 
   props.push(`  id="${data.id}"`);
@@ -40,19 +47,20 @@ function generateApprovalCardCode(data: SerializableApprovalCard): string {
     props.push(`  cancelLabel="${data.cancelLabel}"`);
   }
 
-  if (data.choice) {
+  if ("choice" in data) {
     props.push(`  choice="${data.choice}"`);
-  } else {
-    props.push(`  onConfirm={() => console.log("Approved")}`);
-    props.push(`  onCancel={() => console.log("Denied")}`);
+    return `<ApprovalCardReceipt\n${props.join("\n")}\n/>`;
   }
+
+  props.push(`  onConfirm={() => console.log("Approved")}`);
+  props.push(`  onCancel={() => console.log("Denied")}`);
 
   return `<ApprovalCard\n${props.join("\n")}\n/>`;
 }
 
 export const approvalCardPresets: Record<
   ApprovalCardPresetName,
-  PresetWithCodeGen<SerializableApprovalCard>
+  PresetWithCodeGen<ApprovalCardPresetData>
 > = {
   deploy: {
     description: "Simple deployment approval",
@@ -102,7 +110,7 @@ export const approvalCardPresets: Record<
       title: "Back up database",
       choice: "approved",
       confirmLabel: "Approved",
-    } satisfies SerializableApprovalCard,
+    } satisfies SerializableApprovalCardReceipt,
     generateExampleCode: generateApprovalCardCode,
   },
   "receipt-denied": {
@@ -112,7 +120,7 @@ export const approvalCardPresets: Record<
       title: "Delete all project files",
       choice: "denied",
       cancelLabel: "Denied",
-    } satisfies SerializableApprovalCard,
+    } satisfies SerializableApprovalCardReceipt,
     generateExampleCode: generateApprovalCardCode,
   },
 };

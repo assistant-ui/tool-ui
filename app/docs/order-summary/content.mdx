@@ -1,5 +1,5 @@
 import { DocsHeader } from "../_components/docs-header";
-import { OrderSummary } from "@/components/tool-ui/order-summary";
+import { OrderSummary, OrderSummaryReceipt } from "@/components/tool-ui/order-summary";
 
 <DocsHeader
   title="Order Summary"
@@ -100,12 +100,12 @@ import { OrderSummary } from "@/components/tool-ui/order-summary";
 
 ## Receipt State
 
-When `decision` is set, the component renders in a dimmed receipt state showing the confirmed order with order ID and timestamp.
+Use `<OrderSummaryReceipt>` to render a dimmed receipt state showing the confirmed order with order ID and timestamp.
 
 <Tabs items={["Preview", "Code"]}>
   <Tab>
     <div className="not-prose mx-auto max-w-md">
-      <OrderSummary
+      <OrderSummaryReceipt
         id="receipt-example"
         title="Order Confirmed"
         items={[
@@ -134,12 +134,12 @@ When `decision` is set, the component renders in a dimmed receipt state showing 
   </Tab>
   <Tab>
     ```tsx
-    <OrderSummary
+    <OrderSummaryReceipt
       id="receipt-example"
       title="Order Confirmed"
       items={[...]}
       pricing={{...}}
-      decision={{
+      choice={{
         action: "confirm",
         orderId: "ORD-2024-8847",
         confirmedAt: "2024-12-15T14:32:00Z",
@@ -254,6 +254,7 @@ pnpm dlx shadcn@latest add button separator skeleton
 import { makeAssistantTool } from "@assistant-ui/react";
 import {
   OrderSummary,
+  OrderSummaryReceipt,
   OrderSummaryErrorBoundary,
   parseSerializableOrderSummary,
   SerializableOrderSummarySchema,
@@ -279,7 +280,7 @@ export const OrderSummaryTool = makeAssistantTool<
     return (
       <OrderSummaryErrorBoundary>
         {result !== undefined ? (
-          <OrderSummary {...data} choice={result} />
+          <OrderSummaryReceipt {...data} choice={result} />
         ) : (
           <OrderSummary
             {...data}
@@ -325,10 +326,6 @@ Mount `<OrderSummaryTool />` under `<AssistantRuntimeProvider>` to register the 
       description: "Pricing breakdown for the order",
       type: "Pricing",
       required: true,
-    },
-    decision: {
-      description: "When set, renders the receipt state",
-      type: "OrderDecision",
     },
     className: {
       description: "Additional CSS classes",
