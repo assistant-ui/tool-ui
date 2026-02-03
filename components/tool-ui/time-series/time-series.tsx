@@ -266,6 +266,7 @@ export function TimeSeries({
         )}
         <CardContent className={cn(variant === "compact" ? "pt-0" : "pt-0.5")}>
           <ChartContainer
+            id={id}
             config={chartConfig}
             className={cn(
               "aspect-auto w-full",
