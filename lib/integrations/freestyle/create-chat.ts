@@ -1,6 +1,6 @@
 "use server";
 
-import { FreestyleSandboxes } from "freestyle-sandboxes";
+import { Freestyle, type Responses } from "freestyle-sandboxes";
 
 if (!process.env.FREESTYLE_API_KEY) {
   console.warn(
@@ -8,12 +8,33 @@ if (!process.env.FREESTYLE_API_KEY) {
   );
 }
 
-const freestyle = new FreestyleSandboxes({
+const freestyle = new Freestyle({
   apiKey: process.env.FREESTYLE_API_KEY!,
 });
 
+async function requestDevServerInternal(
+  repoId: string,
+): Promise<Responses.ResponsePostEphemeralV1DevServers200> {
+  const response = await freestyle.fetch("/ephemeral/v1/dev-servers", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      devServer: { repoId },
+      preset: "nextJs",
+    }),
+  });
+
+  if (!response.ok) {
+    throw new Error(
+      `Failed to request dev server (${response.status} ${response.statusText})`,
+    );
+  }
+
+  return (await response.json()) as Responses.ResponsePostEphemeralV1DevServers200;
+}
+
 export async function createChat() {
-  const { repoId } = await freestyle.createGitRepository({
+  const { repoId } = await freestyle.git.repos.create({
     name: `Tool UI Builder`,
     public: true,
     source: {
@@ -24,9 +45,8 @@ export async function createChat() {
     },
   });
 
-  const { ephemeralUrl, mcpEphemeralUrl } = await freestyle.requestDevServer({
-    repoId,
-  });
+  const { ephemeralUrl, mcpEphemeralUrl } =
+    await requestDevServerInternal(repoId);
 
   return {
     repoId,
@@ -36,13 +56,12 @@ export async function createChat() {
 }
 
 export async function requestDevServer({ repoId }: { repoId: string }) {
-  const devServer = await freestyle.requestDevServer({ repoId });
+  const devServer = await requestDevServerInternal(repoId);
 
   // Only return serializable data needed by the client
   return {
-    ephemeralUrl: devServer.ephemeralUrl,
-    mcpEphemeralUrl: devServer.mcpEphemeralUrl,
-    codeServerUrl: devServer.codeServerUrl,
+    ephemeralUrl: devServer.ephemeralUrl ?? devServer.url,
+    mcpEphemeralUrl: devServer.mcpEphemeralUrl ?? null,
     devCommandRunning: devServer.devCommandRunning,
     installCommandRunning: devServer.installCommandRunning,
   };
