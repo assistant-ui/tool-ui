@@ -8,6 +8,7 @@ import type { PresetWithCodeGen } from "@/lib/presets/types";
 import type { ApprovalCard } from "@/components/tool-ui/approval-card";
 import type { ActivityFeed } from "@/components/tool-ui/activity-feed";
 import type { Chart } from "@/components/tool-ui/chart";
+import type { TimeSeries } from "@/components/tool-ui/time-series";
 import type { Citation } from "@/components/tool-ui/citation";
 import type { CodeBlock } from "@/components/tool-ui/code-block";
 import type { DataTable } from "@/components/tool-ui/data-table";
@@ -38,6 +39,7 @@ import {
   type ActivityFeedPresetName,
 } from "@/lib/presets/activity-feed";
 import { chartPresets, type ChartPresetName } from "@/lib/presets/chart";
+import { timeSeriesPresets, type TimeSeriesPresetName } from "@/lib/presets/time-series";
 import {
   citationPresets,
   type CitationPresetName,
@@ -117,6 +119,9 @@ const DynamicActivityFeed = dynamic(() =>
 );
 const DynamicChart = dynamic(() =>
   import("@/components/tool-ui/chart").then((m) => m.Chart)
+);
+const DynamicTimeSeries = dynamic(() =>
+  import("@/components/tool-ui/time-series").then((m) => m.TimeSeries)
 );
 const DynamicCitation = dynamic(() =>
   import("@/components/tool-ui/citation").then((m) => m.Citation)
@@ -234,6 +239,7 @@ export type ComponentId =
   | "activity-feed"
   | "approval-card"
   | "chart"
+  | "time-series"
   | "citation"
   | "code-block"
   | "data-table"
@@ -342,6 +348,19 @@ export const previewConfigs: Record<
     renderComponent: ({ data, presetName }) => {
       const chartData = data as Omit<Parameters<typeof Chart>[0], "id">;
       return <DynamicChart id={`chart-${presetName}`} {...chartData} />;
+    },
+  },
+  "time-series": {
+    presets: timeSeriesPresets as Record<string, PresetWithCodeGen<unknown>>,
+    defaultPreset: "latency-7d" satisfies TimeSeriesPresetName,
+    wrapper: MaxWidthWrapper,
+    chatContext: {
+      userMessage: "Show me the trend over the last week",
+      preamble: "Here's the time-series view:",
+    },
+    renderComponent: ({ data, presetName }) => {
+      const seriesData = data as Omit<Parameters<typeof TimeSeries>[0], "id">;
+      return <DynamicTimeSeries id={`time-series-${presetName}`} {...seriesData} />;
     },
   },
   citation: {

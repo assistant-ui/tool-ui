@@ -1,0 +1,197 @@
+import { DocsHeader } from "../_components/docs-header";
+import { TimeSeries } from "@/components/tool-ui/time-series";
+
+<DocsHeader
+  title="Time Series"
+  description="Size-aware trend visualization."
+  mdxPath="app/docs/time-series/content.mdx"
+/>
+
+> **Canvas Component** — This time-series is designed for spatial dashboards. It adapts its layout based on container size using CSS container queries.
+
+<Tabs items={["Preview", "Code"]}>
+  <Tab>
+    <div className="not-prose mx-auto max-w-md">
+      <TimeSeries
+        id="ts-latency"
+        title="API Latency"
+        subtitle="p95, last 7 days"
+        unit="ms"
+        status="warning"
+        delta={{ value: -12.5, label: "7d" }}
+        points={[
+          { t: new Date(Date.now() - 6 * 86400000).toISOString(), v: 320 },
+          { t: new Date(Date.now() - 5 * 86400000).toISOString(), v: 310 },
+          { t: new Date(Date.now() - 4 * 86400000).toISOString(), v: 290 },
+          { t: new Date(Date.now() - 3 * 86400000).toISOString(), v: 360 },
+          { t: new Date(Date.now() - 2 * 86400000).toISOString(), v: 410 },
+          { t: new Date(Date.now() - 1 * 86400000).toISOString(), v: 380 },
+          { t: new Date().toISOString(), v: 330 },
+        ]}
+        baseline={[
+          { t: new Date(Date.now() - 6 * 86400000).toISOString(), v: 300 },
+          { t: new Date(Date.now() - 5 * 86400000).toISOString(), v: 295 },
+          { t: new Date(Date.now() - 4 * 86400000).toISOString(), v: 285 },
+          { t: new Date(Date.now() - 3 * 86400000).toISOString(), v: 300 },
+          { t: new Date(Date.now() - 2 * 86400000).toISOString(), v: 305 },
+          { t: new Date(Date.now() - 1 * 86400000).toISOString(), v: 298 },
+          { t: new Date().toISOString(), v: 292 },
+        ]}
+        band={{
+          label: "Expected",
+          upper: [
+            { t: new Date(Date.now() - 6 * 86400000).toISOString(), v: 360 },
+            { t: new Date(Date.now() - 5 * 86400000).toISOString(), v: 350 },
+            { t: new Date(Date.now() - 4 * 86400000).toISOString(), v: 330 },
+            { t: new Date(Date.now() - 3 * 86400000).toISOString(), v: 390 },
+            { t: new Date(Date.now() - 2 * 86400000).toISOString(), v: 420 },
+            { t: new Date(Date.now() - 1 * 86400000).toISOString(), v: 400 },
+            { t: new Date().toISOString(), v: 350 },
+          ],
+          lower: [
+            { t: new Date(Date.now() - 6 * 86400000).toISOString(), v: 280 },
+            { t: new Date(Date.now() - 5 * 86400000).toISOString(), v: 270 },
+            { t: new Date(Date.now() - 4 * 86400000).toISOString(), v: 260 },
+            { t: new Date(Date.now() - 3 * 86400000).toISOString(), v: 300 },
+            { t: new Date(Date.now() - 2 * 86400000).toISOString(), v: 340 },
+            { t: new Date(Date.now() - 1 * 86400000).toISOString(), v: 320 },
+            { t: new Date().toISOString(), v: 300 },
+          ],
+        }}
+        annotations={[{ t: new Date(Date.now() - 2 * 86400000).toISOString(), label: "Deploy" }]}
+      />
+    </div>
+  </Tab>
+  <Tab>
+    ```tsx
+    import { TimeSeries } from "@/components/tool-ui/time-series";
+
+    export function Example() {
+      return (
+        <TimeSeries
+          id="ts-latency"
+          title="API Latency"
+          subtitle="p95, last 7 days"
+          unit="ms"
+          status="warning"
+          delta={{ value: -12.5, label: "7d" }}
+          points={[
+            { t: "2026-01-27T00:00:00Z", v: 320 },
+            { t: "2026-01-28T00:00:00Z", v: 310 },
+            { t: "2026-01-29T00:00:00Z", v: 290 },
+            { t: "2026-01-30T00:00:00Z", v: 360 },
+            { t: "2026-01-31T00:00:00Z", v: 410 },
+            { t: "2026-02-01T00:00:00Z", v: 380 },
+            { t: "2026-02-02T00:00:00Z", v: 330 },
+          ]}
+          baseline={[
+            { t: "2026-01-27T00:00:00Z", v: 300 },
+            { t: "2026-01-28T00:00:00Z", v: 295 },
+            { t: "2026-01-29T00:00:00Z", v: 285 },
+            { t: "2026-01-30T00:00:00Z", v: 300 },
+            { t: "2026-01-31T00:00:00Z", v: 305 },
+            { t: "2026-02-01T00:00:00Z", v: 298 },
+            { t: "2026-02-02T00:00:00Z", v: 292 },
+          ]}
+          band={{
+            label: "Expected",
+            upper: [
+              { t: "2026-01-27T00:00:00Z", v: 360 },
+              { t: "2026-01-28T00:00:00Z", v: 350 },
+              { t: "2026-01-29T00:00:00Z", v: 330 },
+              { t: "2026-01-30T00:00:00Z", v: 390 },
+              { t: "2026-01-31T00:00:00Z", v: 420 },
+              { t: "2026-02-01T00:00:00Z", v: 400 },
+              { t: "2026-02-02T00:00:00Z", v: 350 },
+            ],
+            lower: [
+              { t: "2026-01-27T00:00:00Z", v: 280 },
+              { t: "2026-01-28T00:00:00Z", v: 270 },
+              { t: "2026-01-29T00:00:00Z", v: 260 },
+              { t: "2026-01-30T00:00:00Z", v: 300 },
+              { t: "2026-01-31T00:00:00Z", v: 340 },
+              { t: "2026-02-01T00:00:00Z", v: 320 },
+              { t: "2026-02-02T00:00:00Z", v: 300 },
+            ],
+          }}
+          annotations={[{ t: "2026-01-31T00:00:00Z", label: "Deploy" }]}
+        />
+      );
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Canvas-Native Properties
+
+| Property | Implementation |
+|----------|----------------|
+| **Size-aware** | Three density modes (sparkline → axis → full) based on container width and height |
+| **Glanceable** | Last value + delta badge anchored in header |
+| **LLM-friendly** | Constrained schema with clear defaults |
+
+## Usage
+
+```tsx
+import { TimeSeries } from "@/components/tool-ui/time-series";
+
+<TimeSeries
+  id="revenue-7d"
+  title="Revenue"
+  unit="$"
+  delta={{ value: 8.2, label: "7d" }}
+  status="positive"
+  points={[
+    { t: "2026-01-27T00:00:00Z", v: 12000 },
+    { t: "2026-01-28T00:00:00Z", v: 12800 },
+    { t: "2026-01-29T00:00:00Z", v: 13100 },
+    { t: "2026-01-30T00:00:00Z", v: 14050 },
+    { t: "2026-01-31T00:00:00Z", v: 13800 },
+    { t: "2026-02-01T00:00:00Z", v: 14200 },
+    { t: "2026-02-02T00:00:00Z", v: 15020 },
+  ]}
+/>;
+```
+
+## Source and Install
+
+Copy [`components/tool-ui/time-series`](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/time-series) and the [`shared`](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/shared) directory into your project. The `shared` folder contains utilities used by all Tool UI components. The `tool-ui` directory should sit alongside your shadcn `ui` directory.
+
+### Prerequisites
+
+This component requires the following [shadcn/ui](https://ui.shadcn.com) components:
+
+```bash
+pnpm dlx shadcn@latest add card chart
+```
+
+### Directory Structure
+
+<Files>
+  <Folder name="components" defaultOpen>
+    <Folder name="ui">
+      <File name="chart.tsx" />
+      <File name="card.tsx" />
+      <File name="..." />
+    </Folder>
+    <Folder name="tool-ui" defaultOpen>
+      <Folder name="shared" defaultOpen>
+        <File name="action-buttons.tsx" />
+        <File name="schema.ts" />
+        <File name="index.ts" />
+        <File name="..." />
+      </Folder>
+      <Folder name="time-series" defaultOpen>
+        <File name="time-series.tsx" />
+        <File name="schema.ts" />
+        <File name="index.tsx" />
+        <File name="..." />
+      </Folder>
+    </Folder>
+  </Folder>
+</Files>
+
+### Download
+
+- [**Shared Dependencies (GitHub)**](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/shared) ([ZIP](https://download-directory.github.io/?url=https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/shared))
+- [**Time Series (GitHub)**](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/time-series) ([ZIP](https://download-directory.github.io/?url=https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/time-series))
