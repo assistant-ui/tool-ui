@@ -5,7 +5,6 @@ import { cn } from "./_adapter";
 import type {
   InsightCardProps,
   InsightSeverity,
-  InsightConfidence,
   InsightCitation,
 } from "./schema";
 import { ActionButtons, normalizeActionsConfig } from "../shared";
@@ -21,23 +20,23 @@ type SeverityStyle = {
 
 const SEVERITY_STYLES: Record<InsightSeverity, SeverityStyle> = {
   info: {
-    badge: "bg-sky-500/10 text-sky-700 dark:text-sky-300",
-    accent: "border-sky-500/20",
+    badge: "text-muted-foreground",
+    accent: "bg-sky-500",
     bar: "bg-sky-500",
   },
   success: {
-    badge: "bg-emerald-500/10 text-emerald-700 dark:text-emerald-300",
-    accent: "border-emerald-500/20",
+    badge: "text-emerald-600 dark:text-emerald-500",
+    accent: "bg-emerald-500",
     bar: "bg-emerald-500",
   },
   warning: {
-    badge: "bg-amber-500/10 text-amber-700 dark:text-amber-300",
-    accent: "border-amber-500/20",
+    badge: "text-amber-600 dark:text-amber-500",
+    accent: "bg-amber-500",
     bar: "bg-amber-500",
   },
   critical: {
-    badge: "bg-rose-500/10 text-rose-700 dark:text-rose-300",
-    accent: "border-rose-500/20",
+    badge: "text-rose-600 dark:text-rose-500",
+    accent: "bg-rose-500",
     bar: "bg-rose-500",
   },
 };
@@ -53,16 +52,6 @@ function clampScore(score: number) {
   return Math.min(1, Math.max(0, score));
 }
 
-function getConfidenceLabel(confidence?: InsightConfidence) {
-  if (!confidence) return null;
-  if (confidence.label) return confidence.label;
-  const score = clampScore(confidence.score);
-  if (score >= 0.85) return "High";
-  if (score >= 0.6) return "Medium";
-  if (score >= 0.35) return "Low";
-  return "Very Low";
-}
-
 function formatConfidenceScore(score: number) {
   return `${Math.round(score * 100)}%`;
 }
@@ -70,20 +59,23 @@ function formatConfidenceScore(score: number) {
 function InsightCardSkeleton({ className }: { className?: string }) {
   return (
     <div
-      className={cn("flex w-full min-w-72 max-w-md flex-col", className)}
+      className={cn("w-full min-w-80 max-w-md", className)}
       data-slot="insight-card-progress"
       aria-busy="true"
     >
-      <div className="bg-card flex w-full flex-col gap-3 rounded-2xl border p-4 shadow-xs">
+      <div className="flex w-full flex-col gap-4 rounded-xl border border-border bg-card px-5 py-4 shadow-xs">
         <div className="flex items-start justify-between gap-3">
-          <div className="flex flex-col gap-2">
-            <div className="bg-muted h-4 w-40 rounded" />
-            <div className="bg-muted h-3 w-52 rounded" />
+          <div className="flex flex-1 flex-col gap-2">
+            <div className="h-5 w-40 rounded bg-muted motion-safe:animate-pulse" />
+            <div className="h-4 w-full rounded bg-muted motion-safe:animate-pulse" />
+            <div className="h-4 w-3/4 rounded bg-muted motion-safe:animate-pulse" />
           </div>
-          <div className="bg-muted h-6 w-20 rounded-full" />
+          <div className="h-5 w-16 rounded-full bg-muted motion-safe:animate-pulse" />
         </div>
-        <div className="bg-muted h-2 w-full rounded-full" />
-        <div className="bg-muted h-16 w-full rounded-xl" />
+        <div className="flex flex-col gap-2">
+          <div className="h-12 w-full rounded-lg bg-muted motion-safe:animate-pulse" />
+        </div>
+        <div className="h-9 w-28 rounded-full bg-muted motion-safe:animate-pulse" />
       </div>
     </div>
   );
@@ -96,26 +88,28 @@ function renderCitationItem(
   return (
     <li
       key={citation.id}
-      className="border-border/60 bg-muted/30 flex flex-col gap-1 rounded-xl border px-3 py-2"
+      className="flex flex-col gap-0.5 rounded-lg border border-border/60 bg-muted/30 px-3 py-2.5"
     >
-      <div className="flex items-center justify-between gap-2 text-[11px] text-muted-foreground">
-        <span>{citation.source}</span>
+      <div className="flex items-center justify-between gap-2">
+        <span className="truncate text-sm font-medium leading-snug">
+          {citation.title}
+        </span>
         {citation.url && (
           <a
             href={citation.url}
             target="_blank"
             rel="noreferrer"
-            className="text-foreground/70 hover:text-foreground text-[11px]"
+            className="shrink-0 text-xs font-medium text-muted-foreground hover:text-foreground"
           >
             Open
           </a>
         )}
       </div>
-      <span className="text-xs font-semibold leading-snug line-clamp-1">
-        {citation.title}
+      <span className="text-xs text-muted-foreground">
+        {citation.source}
       </span>
       {variant === "detailed" && citation.excerpt && (
-        <p className="text-muted-foreground text-xs leading-relaxed line-clamp-2">
+        <p className="mt-1 text-sm leading-relaxed text-muted-foreground line-clamp-2">
           {citation.excerpt}
         </p>
       )}
@@ -136,7 +130,6 @@ export function InsightCard({
   citations,
   action,
   responseActions,
-  footer,
   className,
   isLoading,
   onResponseAction,
@@ -182,9 +175,7 @@ export function InsightCard({
   }, [resolveVariant]);
 
   const severityStyles = SEVERITY_STYLES[severity];
-  const showSeverityBadge = Boolean(severity);
 
-  const confidenceLabel = getConfidenceLabel(confidence);
   const confidenceScore = confidence ? clampScore(confidence.score) : null;
   const confidencePercent =
     confidenceScore !== null ? formatConfidenceScore(confidenceScore) : null;
@@ -208,7 +199,8 @@ export function InsightCard({
     [onBeforeResponseAction],
   );
 
-  const citationLimit = variant === "detailed" ? 3 : variant === "standard" ? 2 : 0;
+  const citationLimit =
+    variant === "detailed" ? 3 : variant === "standard" ? 1 : 0;
   const visibleCitations = citations?.slice(0, citationLimit) ?? [];
   const remainingCitations = citations
     ? Math.max(0, citations.length - visibleCitations.length)
@@ -221,8 +213,7 @@ export function InsightCard({
   return (
     <article
       className={cn(
-        "@container/actions flex w-full min-w-72 max-w-md flex-col",
-        "text-foreground",
+        "@container/actions w-full min-w-80 max-w-md text-foreground",
         className,
       )}
       data-slot="insight-card"
@@ -232,91 +223,64 @@ export function InsightCard({
     >
       <div
         className={cn(
-          "bg-card/95 flex w-full flex-col gap-3 rounded-2xl border shadow-xs",
-          severityStyles.accent,
-          variant === "compact" ? "p-4" : "p-5",
+          "flex w-full flex-col rounded-xl border border-border bg-card shadow-xs",
+          variant === "compact" ? "gap-3 px-4 py-3" : "gap-4 px-5 py-4",
         )}
       >
-        <div className="flex items-start justify-between gap-3">
-          <div className="flex flex-1 flex-col gap-2">
-            <div className="flex items-center gap-2">
-              <h3 className="text-sm font-semibold leading-tight">{title}</h3>
-            </div>
-            <p
-              className={cn(
-                "text-muted-foreground text-xs leading-relaxed text-pretty",
-                variant === "compact" ? "line-clamp-2" : "line-clamp-3",
-              )}
-            >
+        {/* Header */}
+        <div className="flex items-start justify-between gap-4">
+          <div className="flex min-w-0 flex-1 flex-col gap-1.5">
+            <h3 className="text-pretty text-base font-semibold leading-snug">
+              {title}
+            </h3>
+            <p className="text-pretty text-sm leading-relaxed text-muted-foreground line-clamp-3">
               {summary}
             </p>
           </div>
-          {showSeverityBadge && (
-            <span
-              className={cn(
-                "rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide",
-                severityStyles.badge,
+          {(severity || confidence) && (
+            <div className="flex shrink-0 flex-col items-end gap-1 text-xs">
+              {severity && (
+                <span className={cn("flex items-center gap-1.5", severityStyles.badge)}>
+                  <span className={cn("size-1.5 rounded-full", severityStyles.accent)} />
+                  {SEVERITY_LABELS[severity]}
+                </span>
               )}
-            >
-              {SEVERITY_LABELS[severity]}
-            </span>
+              {confidence && (
+                <span className="tabular-nums text-muted-foreground">
+                  {confidencePercent} confidence
+                </span>
+              )}
+            </div>
           )}
         </div>
 
-        {confidence && confidenceScore !== null && (
-          <div className="flex flex-col gap-2">
-            <div className="flex items-center justify-between text-[11px] font-medium uppercase tracking-wide text-muted-foreground/80">
-              <span>Confidence</span>
-              <span>
-                {confidenceLabel}
-                {confidencePercent ? ` · ${confidencePercent}` : ""}
-              </span>
-            </div>
-            <div className="bg-muted/70 h-1.5 w-full overflow-hidden rounded-full">
-              <div
-                className={cn("h-full rounded-full", severityStyles.bar)}
-                style={{ width: `${confidenceScore * 100}%` }}
-              />
-            </div>
-          </div>
-        )}
-
+        {/* Citations */}
         {visibleCitations.length > 0 && (
           <div className="flex flex-col gap-2">
-            <div className="flex items-center justify-between text-[11px] font-medium uppercase tracking-wide text-muted-foreground/80">
-              <span>Evidence</span>
-              {citations && citations.length > 0 && (
-                <span>{citations.length} sources</span>
-              )}
-            </div>
             <ul className="flex flex-col gap-2">
               {visibleCitations.map((citation) =>
                 renderCitationItem(citation, variant),
               )}
             </ul>
             {remainingCitations > 0 && (
-              <span className="text-muted-foreground text-[11px]">
-                +{remainingCitations} more sources
+              <span className="text-xs text-muted-foreground">
+                +{remainingCitations} more source{remainingCitations > 1 ? "s" : ""}
               </span>
             )}
           </div>
         )}
 
+        {/* Actions */}
         {actionsConfig && actionsConfig.items.length > 0 && (
-          <div className="@container/actions pt-1">
+          <div className="flex justify-end">
             <ActionButtons
               actions={actionsConfig.items}
-              align={actionsConfig.align ?? "left"}
+              align={actionsConfig.align ?? "right"}
               confirmTimeout={actionsConfig.confirmTimeout}
               onAction={handleAction}
               onBeforeAction={handleBeforeAction}
-              className="gap-2"
             />
           </div>
-        )}
-
-        {footer && (
-          <div className="text-muted-foreground text-[11px]">{footer}</div>
         )}
       </div>
     </article>
