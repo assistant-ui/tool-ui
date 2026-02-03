@@ -3,6 +3,7 @@
 import { useCallback, useMemo, useState } from "react";
 import type {
   PreferencesPanelProps,
+  PreferencesPanelReceiptProps,
   PreferencesValue,
   PreferenceItem,
   PreferenceSection,
@@ -434,23 +435,14 @@ function ReceiptHeader({ title, hasErrors }: ReceiptHeaderProps) {
   );
 }
 
-interface PreferencesReceiptProps {
-  id: string;
-  title?: string;
-  sections: PreferenceSection[];
-  choice: PreferencesValue;
-  error?: Record<string, string>;
-  className?: string;
-}
-
-function PreferencesReceipt({
+export function PreferencesPanelReceipt({
   id,
   title,
   sections,
   choice,
   error,
   className,
-}: PreferencesReceiptProps) {
+}: PreferencesPanelReceiptProps) {
   const hasErrors = error && Object.keys(error).length > 0;
 
   return (
@@ -482,14 +474,12 @@ function PreferencesReceipt({
   );
 }
 
-export function PreferencesPanel({
+function PreferencesPanelRoot({
   id,
   title,
   sections,
   value: controlledValue,
   onChange,
-  choice,
-  error,
   onSave,
   onCancel,
   responseActions,
@@ -577,19 +567,6 @@ export function PreferencesPanel({
     });
   }, [normalizedActions.items, isDirty]);
 
-  if (choice !== undefined) {
-    return (
-      <PreferencesReceipt
-        id={id}
-        title={title}
-        sections={sections}
-        choice={choice}
-        error={error}
-        className={className}
-      />
-    );
-  }
-
   return (
     <article
       data-slot="preferences-panel"
@@ -633,3 +610,11 @@ export function PreferencesPanel({
     </article>
   );
 }
+
+type PreferencesPanelComponent = typeof PreferencesPanelRoot & {
+  Receipt: typeof PreferencesPanelReceipt;
+};
+
+export const PreferencesPanel = Object.assign(PreferencesPanelRoot, {
+  Receipt: PreferencesPanelReceipt,
+}) as PreferencesPanelComponent;

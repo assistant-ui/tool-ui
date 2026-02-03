@@ -104,7 +104,7 @@ import { PreferencesPanel } from "@/components/tool-ui/preferences-panel";
     Explicit Save/Cancel actions prevent accidental changes
   </Feature>
   <Feature icon="CheckCircle2" title="Receipt state">
-    Terminal state showing confirmed selections with success indicators
+    Use `PreferencesPanel.Receipt` for confirmed selections with success indicators
   </Feature>
   <Feature icon="Layers" title="Organized sections">
     Group related settings with optional section headings
@@ -200,6 +200,25 @@ export const PreferencesPanelTool = makeAssistantTool<SerializablePreferencesPan
 });
 ```
 
+## Receipt Example
+
+```tsx
+import { PreferencesPanel } from "@/components/tool-ui/preferences-panel";
+
+<PreferencesPanel.Receipt
+  id="preferences-panel-receipt"
+  title="Privacy Settings"
+  sections={sections}
+  choice={{
+    "profile-visibility": "private",
+    "activity-status": false,
+  }}
+  error={{
+    "activity-status": "Requires premium plan",
+  }}
+/>;
+```
+
 ## Props
 
 <TypeTable
@@ -226,10 +245,6 @@ export const PreferencesPanelTool = makeAssistantTool<SerializablePreferencesPan
       description: "Called when any preference value changes (before save)",
       type: "(value: PreferencesValue) => void",
     },
-    confirmed: {
-      description: "When provided, renders receipt state showing confirmed preferences with success indicators",
-      type: "PreferencesValue",
-    },
     onSave: {
       description: "Handler called when Save button is clicked. Receives current preference values.",
       type: "(value: PreferencesValue) => void | Promise<void>",
@@ -245,6 +260,42 @@ export const PreferencesPanelTool = makeAssistantTool<SerializablePreferencesPan
     onResponseAction: {
       description: "Handler for custom response actions. Receives actionId and current values.",
       type: "(actionId: string, value: PreferencesValue) => void | Promise<void>",
+    },
+    className: {
+      description: "Additional CSS classes for the root element",
+      type: "string",
+    },
+  }}
+/>
+
+### PreferencesPanel.Receipt
+
+Use the receipt variant to display confirmed preferences or validation errors.
+
+<TypeTable
+  type={{
+    id: {
+      description: "Unique identifier for the receipt instance",
+      type: "string",
+      required: true,
+    },
+    title: {
+      description: "Optional header displayed at top of card",
+      type: "string",
+    },
+    sections: {
+      description: "Preference sections describing each setting",
+      type: "PreferenceSection[]",
+      required: true,
+    },
+    choice: {
+      description: "Confirmed values keyed by item ID",
+      type: "PreferencesValue",
+      required: true,
+    },
+    error: {
+      description: "Field-level error messages keyed by item ID",
+      type: "Record<string, string>",
     },
     className: {
       description: "Additional CSS classes for the root element",
@@ -293,7 +344,7 @@ export const PreferencesPanelTool = makeAssistantTool<SerializablePreferencesPan
       required: true,
     },
     defaultChecked: {
-      description: "Initial checked state. Required when type is \"switch\".",
+      description: "Initial checked state (defaults to false).",
       type: "boolean",
     },
     options: {
@@ -301,7 +352,7 @@ export const PreferencesPanelTool = makeAssistantTool<SerializablePreferencesPan
       type: "{ value: string; label: string }[]",
     },
     defaultValue: {
-      description: "Initially selected option value. Required when type is \"toggle\".",
+      description: "Initially selected option value (defaults to first option).",
       type: "string",
     },
     selectOptions: {
@@ -309,7 +360,7 @@ export const PreferencesPanelTool = makeAssistantTool<SerializablePreferencesPan
       type: "{ value: string; label: string }[]",
     },
     defaultSelected: {
-      description: "Initially selected option value. Required when type is \"select\".",
+      description: "Initially selected option value (defaults to first option).",
       type: "string",
     },
   }}
