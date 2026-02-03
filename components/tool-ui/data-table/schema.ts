@@ -9,7 +9,6 @@ import type { Column, DataTableProps, RowData } from "./types";
 
 const AlignEnum = z.enum(["left", "right", "center"]);
 const PriorityEnum = z.enum(["primary", "secondary", "tertiary"]);
-const LayoutEnum = z.enum(["auto", "table", "cards"]);
 
 const formatSchema = z.discriminatedUnion("kind", [
   z.object({ kind: z.literal("text") }),
@@ -152,7 +151,6 @@ export const SerializableDataTableSchema = z.object({
   receipt: ToolUIReceiptSchema.optional(),
   columns: z.array(serializableColumnSchema),
   data: z.array(serializableDataSchema),
-  layout: LayoutEnum.optional(),
 });
 
 /**
@@ -216,9 +214,9 @@ export function parseSerializableDataTable(
   input: unknown,
 ): Pick<
   DataTableProps<RowData>,
-  "id" | "role" | "receipt" | "columns" | "data" | "layout"
+  "id" | "role" | "receipt" | "columns" | "data"
 > {
-  const { id, role, receipt, columns, data, layout } = parseWithSchema(
+  const { id, role, receipt, columns, data } = parseWithSchema(
     SerializableDataTableSchema,
     input,
     "DataTable",
@@ -229,6 +227,5 @@ export function parseSerializableDataTable(
     receipt,
     columns: columns as unknown as Column<RowData>[],
     data: data as RowData[],
-    layout,
   };
 }

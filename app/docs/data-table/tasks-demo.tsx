@@ -1,6 +1,10 @@
 "use client";
 
-import { Column, DataTable, DataTableRowData } from "@/components/tool-ui/data-table";
+import {
+  Column,
+  DataTable,
+  DataTableRowData,
+} from "@/components/tool-ui/data-table";
 import { getMockTasks } from "@/lib/mocks/tasks";
 import { useEffect, useState } from "react";
 
@@ -70,13 +74,12 @@ export function TasksDemo() {
 
   return (
     <div className="not-prose">
-      <DataTable
+      <DataTable.Table
         id="data-table-tasks-demo"
         rowIdKey="id"
         columns={columns}
         data={rows ?? []}
         defaultSort={{ by: "urgencyOrder", direction: "asc" }}
-        layout="table"
       />
     </div>
   );

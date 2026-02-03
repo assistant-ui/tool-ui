@@ -178,6 +178,18 @@ import {
   </Feature>
 </FeatureGrid>
 
+## Layout Variants
+
+Use explicit components when you want to force a layout:
+
+- `<DataTable>` (default): responsive auto layout
+- `<DataTable.Table>`: always render the table view
+- `<DataTable.Cards>`: always render the card view
+
+```tsx
+import { DataTable } from "@/components/tool-ui/data-table";
+```
+
 ## Source and Install
 
 Copy [`components/tool-ui/data-table`](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/data-table) and the [`shared`](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/shared) directory into your project. The `shared` folder contains utilities used by all Tool UI components. The `tool-ui` directory should sit alongside your shadcn `ui` directory.
