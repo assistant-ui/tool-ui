@@ -190,11 +190,7 @@ export const ShowPlanUI = makeAssistantToolUI({
       type: "number",
       default: "4",
     },
-    showProgress: {
-      description: "Show/hide progress bar and summary",
-      type: "boolean",
-      default: "true",
-    },
+    // Use <PlanNoProgress> for the no-progress variant.
     responseActions: {
       description: "Footer action buttons",
       type: "Action[] | ActionsConfig",

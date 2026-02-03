@@ -26,7 +26,7 @@ function generatePlanCode(data: SerializablePlan): string {
   }
 
   if (data.showProgress === false) {
-    props.push(`  showProgress={false}`);
+    return `<PlanNoProgress\n${props.join("\n")}\n/>`;
   }
 
   if (data.responseActions && Array.isArray(data.responseActions) && data.responseActions.length > 0) {

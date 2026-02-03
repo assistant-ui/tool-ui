@@ -9,7 +9,12 @@ import {
   MoreHorizontal,
   ChevronRight,
 } from "lucide-react";
-import type { PlanProps, PlanTodo, PlanTodoStatus } from "./schema";
+import type {
+  PlanProps,
+  PlanTodo,
+  PlanTodoStatus,
+  SerializablePlan,
+} from "./schema";
 import {
   cn,
   Card,
@@ -234,18 +239,25 @@ function ProgressBar({ progress, isCelebrating }: ProgressBarProps) {
   );
 }
 
-export function Plan({
+type PlanBaseProps = SerializablePlan & {
+  className?: string;
+  showProgress: boolean;
+  onResponseAction?: (actionId: string) => void | Promise<void>;
+  onBeforeResponseAction?: (actionId: string) => boolean | Promise<boolean>;
+};
+
+function PlanBase({
   id,
   title,
   description,
   todos,
   maxVisibleTodos = INITIAL_VISIBLE_TODO_COUNT,
-  showProgress = true,
+  showProgress,
   responseActions,
   onResponseAction,
   onBeforeResponseAction,
   className,
-}: PlanProps) {
+}: PlanBaseProps) {
   const seenTodoIds = useRef(new Set<string>());
   const [newTodoIds, setNewTodoIds] = useState<Set<string>>(new Set());
   const isInitialMount = useRef(true);
@@ -373,4 +385,12 @@ export function Plan({
         )}
     </Card>
   );
+}
+
+export function Plan(props: PlanProps) {
+  return <PlanBase {...props} showProgress={true} />;
+}
+
+export function PlanNoProgress(props: PlanProps) {
+  return <PlanBase {...props} showProgress={false} />;
 }

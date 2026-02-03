@@ -20,7 +20,7 @@ import type { ItemCarousel } from "@/components/tool-ui/item-carousel";
 import type { OptionList } from "@/components/tool-ui/option-list";
 import type { OrderSummary } from "@/components/tool-ui/order-summary";
 import type { ParameterSlider } from "@/components/tool-ui/parameter-slider";
-import type { Plan } from "@/components/tool-ui/plan";
+import type { PlanProps } from "@/components/tool-ui/plan";
 import type { PreferencesPanel } from "@/components/tool-ui/preferences-panel";
 import type { ProgressTracker } from "@/components/tool-ui/progress-tracker";
 import type { StatsDisplay } from "@/components/tool-ui/stats-display";
@@ -154,6 +154,9 @@ const DynamicParameterSlider = dynamic(() =>
 );
 const DynamicPlan = dynamic(() =>
   import("@/components/tool-ui/plan").then((m) => m.Plan)
+);
+const DynamicPlanNoProgress = dynamic(() =>
+  import("@/components/tool-ui/plan").then((m) => m.PlanNoProgress)
 );
 const DynamicPreferencesPanel = dynamic(() =>
   import("@/components/tool-ui/preferences-panel").then((m) => m.PreferencesPanel)
@@ -643,9 +646,14 @@ export const previewConfigs: Record<
       userMessage: "Help me plan out this project",
       preamble: "Here's what I'm working on:",
     },
-    renderComponent: ({ data }) => (
-      <DynamicPlan {...(data as Parameters<typeof Plan>[0])} />
-    ),
+    renderComponent: ({ data }) => {
+      const planData = data as PlanProps;
+      return planData.showProgress === false ? (
+        <DynamicPlanNoProgress {...planData} />
+      ) : (
+        <DynamicPlan {...planData} />
+      );
+    },
   },
   "preferences-panel": {
     presets: preferencesPanelPresets as Record<
