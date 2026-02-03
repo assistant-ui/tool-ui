@@ -45,7 +45,6 @@ export function parseSerializableApprovalCard(
 
 export interface ApprovalCardProps extends SerializableApprovalCard {
   className?: string;
-  isLoading?: boolean;
   onConfirm?: () => void | Promise<void>;
   onCancel?: () => void | Promise<void>;
 }

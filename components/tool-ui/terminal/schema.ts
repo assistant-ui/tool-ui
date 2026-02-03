@@ -27,7 +27,6 @@ export const TerminalPropsSchema = z.object({
 });
 
 export type TerminalProps = z.infer<typeof TerminalPropsSchema> & {
-  isLoading?: boolean;
   onResponseAction?: (actionId: string) => void | Promise<void>;
   onBeforeResponseAction?: (actionId: string) => boolean | Promise<boolean>;
 };

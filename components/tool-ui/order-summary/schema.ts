@@ -55,7 +55,6 @@ export function parseSerializableOrderSummary(
 
 export interface OrderSummaryProps extends SerializableOrderSummary {
   className?: string;
-  isLoading?: boolean;
   responseActions?: Array<{
     id: string;
     label: string;

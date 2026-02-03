@@ -17,7 +17,6 @@ import {
 } from "../shared";
 import { Button, Collapsible, CollapsibleTrigger } from "./_adapter";
 import { cn } from "./_adapter";
-import { TerminalProgress } from "./progress";
 
 const COPY_ID = "terminal-output";
 
@@ -34,7 +33,6 @@ export function Terminal({
   responseActions,
   onResponseAction,
   onBeforeResponseAction,
-  isLoading,
   className,
 }: TerminalProps) {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -56,23 +54,6 @@ export function Terminal({
   const handleCopy = useCallback(() => {
     copy(fullOutput, COPY_ID);
   }, [fullOutput, copy]);
-
-  if (isLoading) {
-    return (
-      <div
-        className={cn(
-          "@container flex w-full min-w-80 flex-col gap-3",
-          className,
-        )}
-        data-tool-ui-id={id}
-        aria-busy="true"
-      >
-        <div className="border-border bg-card overflow-hidden rounded-lg border shadow-xs">
-          <TerminalProgress />
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div

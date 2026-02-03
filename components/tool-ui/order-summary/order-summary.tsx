@@ -3,7 +3,7 @@
 import * as React from "react";
 import { useCallback } from "react";
 import { CheckCircle, Package } from "lucide-react";
-import { cn, Separator, Skeleton } from "./_adapter";
+import { cn, Separator } from "./_adapter";
 import type { OrderSummaryProps, OrderItem, Pricing } from "./schema";
 import { ActionButtons } from "../shared";
 
@@ -180,7 +180,6 @@ export function OrderSummary({
   pricing,
   choice,
   className,
-  isLoading = false,
   responseActions,
   onResponseAction,
 }: OrderSummaryProps) {
@@ -200,14 +199,12 @@ export function OrderSummary({
       data-slot="order-summary"
       data-tool-ui-id={id}
       aria-labelledby={titleId}
-      aria-busy={isLoading}
       className={cn("flex max-w-md min-w-80 flex-col gap-3", className)}
     >
       <div
         className={cn(
           "text-card-foreground rounded-lg border shadow-sm",
           isReceipt ? "bg-card/60" : "bg-card",
-          isLoading && "pointer-events-none opacity-70",
         )}
       >
         <div className={cn("space-y-4 p-4", isReceipt && "opacity-95")}>
@@ -248,62 +245,5 @@ export function OrderSummary({
         </div>
       )}
     </article>
-  );
-}
-
-export function OrderSummaryProgress({ className }: { className?: string }) {
-  return (
-    <div
-      data-slot="order-summary-progress"
-      aria-busy="true"
-      className={cn("max-w-md min-w-80", className)}
-    >
-      <div className="bg-card text-card-foreground rounded-lg border shadow-sm">
-        <div className="space-y-4 p-4">
-          <Skeleton className="h-5 w-28" />
-
-          <div className="space-y-3">
-            {[1, 2].map((i) => (
-              <div key={i} className="flex gap-3">
-                <Skeleton className="h-12 w-12 shrink-0 rounded-md" />
-                <div className="flex flex-1 items-center justify-between gap-2">
-                  <div className="space-y-1.5">
-                    <Skeleton className="h-4 w-28" />
-                    <Skeleton className="h-3 w-20" />
-                  </div>
-                  <Skeleton className="h-4 w-14" />
-                </div>
-              </div>
-            ))}
-          </div>
-
-          <Separator />
-
-          <div className="space-y-2 text-sm">
-            <div className="flex justify-between">
-              <Skeleton className="h-4 w-14" />
-              <Skeleton className="h-4 w-16" />
-            </div>
-            <div className="flex justify-between">
-              <Skeleton className="h-4 w-16" />
-              <Skeleton className="h-4 w-10" />
-            </div>
-            <div className="flex justify-between">
-              <Skeleton className="h-4 w-8" />
-              <Skeleton className="h-4 w-14" />
-            </div>
-            <div className="flex justify-between">
-              <Skeleton className="h-4 w-10" />
-              <Skeleton className="h-4 w-18" />
-            </div>
-          </div>
-
-          <div className="flex justify-end gap-2">
-            <Skeleton className="h-9 w-20" />
-            <Skeleton className="h-9 w-24" />
-          </div>
-        </div>
-      </div>
-    </div>
   );
 }

@@ -181,10 +181,6 @@ export const ParameterSliderTool = makeAssistantTool<SerializableParameterSlider
       description: "Called before action, return false to cancel",
       type: "(actionId: string) => boolean | Promise<boolean>",
     },
-    isLoading: {
-      description: "Shows loading state on Apply button",
-      type: "boolean",
-    },
     className: {
       description: "Additional CSS classes",
       type: "string",

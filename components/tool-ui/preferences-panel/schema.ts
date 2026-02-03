@@ -79,7 +79,6 @@ export interface PreferencesValue {
 export interface PreferencesPanelProps
   extends Omit<SerializablePreferencesPanel, "responseActions"> {
   className?: string;
-  isLoading?: boolean;
   value?: PreferencesValue;
   onChange?: (value: PreferencesValue) => void;
   onSave?: (value: PreferencesValue) => void | Promise<void>;

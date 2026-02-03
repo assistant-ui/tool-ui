@@ -77,37 +77,6 @@ function ApprovalCardReceipt({
   );
 }
 
-function ApprovalCardSkeleton({ className }: { className?: string }) {
-  return (
-    <div
-      className={cn(
-        "flex w-full min-w-64 max-w-md flex-col",
-        className,
-      )}
-      data-slot="approval-card-progress"
-      aria-busy="true"
-    >
-      <div className="bg-card flex w-full flex-col gap-4 rounded-2xl border p-5 shadow-xs">
-        <div className="flex items-start gap-3">
-          <div className="bg-muted size-10 rounded-xl motion-safe:animate-pulse" />
-          <div className="flex flex-1 flex-col gap-2">
-            <div className="bg-muted h-5 w-3/4 rounded motion-safe:animate-pulse" />
-            <div className="bg-muted h-4 w-full rounded motion-safe:animate-pulse" />
-          </div>
-        </div>
-        <div className="flex justify-end gap-2">
-          <div className="bg-muted h-9 w-16 rounded-full motion-safe:animate-pulse" />
-          <div className="bg-muted h-9 w-20 rounded-full motion-safe:animate-pulse" />
-        </div>
-      </div>
-    </div>
-  );
-}
-
-export function ApprovalCardProgress({ className }: { className?: string }) {
-  return <ApprovalCardSkeleton className={className} />;
-}
-
 export function ApprovalCard({
   id,
   title,
@@ -118,7 +87,6 @@ export function ApprovalCard({
   confirmLabel,
   cancelLabel,
   className,
-  isLoading,
   choice,
   onConfirm,
   onCancel,
@@ -156,13 +124,11 @@ export function ApprovalCard({
       id: "cancel",
       label: resolvedCancelLabel,
       variant: "ghost",
-      disabled: isLoading,
     },
     {
       id: "confirm",
       label: resolvedConfirmLabel,
       variant: isDestructive ? "destructive" : "default",
-      disabled: isLoading,
     },
   ];
 

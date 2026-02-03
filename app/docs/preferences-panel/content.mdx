@@ -246,10 +246,6 @@ export const PreferencesPanelTool = makeAssistantTool<SerializablePreferencesPan
       description: "Handler for custom response actions. Receives actionId and current values.",
       type: "(actionId: string, value: PreferencesValue) => void | Promise<void>",
     },
-    isLoading: {
-      description: "Shows loading spinner on Save button and disables all controls",
-      type: "boolean",
-    },
     className: {
       description: "Additional CSS classes for the root element",
       type: "string",

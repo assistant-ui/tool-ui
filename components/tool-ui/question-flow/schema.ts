@@ -91,7 +91,6 @@ export function parseSerializableQuestionFlow(
 
 interface BaseRuntimeProps {
   className?: string;
-  isLoading?: boolean;
 }
 
 export interface QuestionFlowProgressiveProps
@@ -115,7 +114,7 @@ export interface QuestionFlowUpfrontProps
 }
 
 export interface QuestionFlowReceiptProps
-  extends Omit<BaseRuntimeProps, "isLoading">,
+  extends BaseRuntimeProps,
     SerializableReceiptMode {
   step?: never;
   steps?: never;

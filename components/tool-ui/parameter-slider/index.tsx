@@ -1,4 +1,4 @@
-export { ParameterSlider, ParameterSliderProgress } from "./parameter-slider";
+export { ParameterSlider } from "./parameter-slider";
 export { ParameterSliderErrorBoundary } from "./error-boundary";
 export type {
   ParameterSliderProps,

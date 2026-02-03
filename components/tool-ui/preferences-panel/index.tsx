@@ -1,7 +1,4 @@
-export {
-  PreferencesPanel,
-  PreferencesPanelProgress,
-} from "./preferences-panel";
+export { PreferencesPanel } from "./preferences-panel";
 export { PreferencesPanelErrorBoundary } from "./error-boundary";
 export {
   SerializablePreferencesPanelSchema,
