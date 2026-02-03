@@ -76,7 +76,6 @@ export function DataTable<T extends object = RowData>({
   defaultSort,
   sort: controlledSort,
   emptyMessage = "No data available",
-  isLoading = false,
   maxHeight,
   id,
   onSortChange,
@@ -143,7 +142,6 @@ export function DataTable<T extends object = RowData>({
     sortDirection,
     toggleSort: handleSort,
     id,
-    isLoading,
     locale: resolvedLocale,
   };
 
@@ -191,7 +189,7 @@ export function DataTable<T extends object = RowData>({
               }
             >
               <DataTableErrorBoundary>
-                <Table aria-busy={isLoading || undefined}>
+                <Table>
                   {columns.length > 0 && (
                     <colgroup>
                       {columns.map((col) => (
@@ -202,9 +200,7 @@ export function DataTable<T extends object = RowData>({
                       ))}
                     </colgroup>
                   )}
-                  {isLoading ? (
-                    <DataTableSkeleton />
-                  ) : data.length === 0 ? (
+                  {data.length === 0 ? (
                     <DataTableEmpty message={emptyMessage} />
                   ) : (
                     <DataTableContent />
@@ -234,9 +230,7 @@ export function DataTable<T extends object = RowData>({
           </div>
 
           <DataTableErrorBoundary>
-            {isLoading ? (
-              <DataTableSkeletonCards />
-            ) : data.length === 0 ? (
+            {data.length === 0 ? (
               <div className="text-muted-foreground py-8 text-center">
                 {emptyMessage}
               </div>
@@ -304,41 +298,6 @@ function DataTableEmpty({ message }: { message: string }) {
   );
 }
 
-function DataTableSkeleton() {
-  const { columns } = useDataTable();
-
-  return (
-    <>
-      <DataTableHeader />
-      <TableBody>
-        {Array.from({ length: 5 }).map((_, i) => (
-          <TableRow key={i}>
-            {columns.map((_, j) => (
-              <TableCell key={j}>
-                <div className="bg-muted/50 h-4 rounded motion-safe:animate-pulse" />
-              </TableCell>
-            ))}
-          </TableRow>
-        ))}
-      </TableBody>
-    </>
-  );
-}
-
-function DataTableSkeletonCards() {
-  return (
-    <>
-      {Array.from({ length: 3 }).map((_, i) => (
-        <div key={i} className="flex flex-col gap-2 rounded-lg border p-4">
-          <div className="bg-muted/50 h-5 w-1/2 rounded motion-safe:animate-pulse" />
-          <div className="bg-muted/50 h-4 w-3/4 rounded motion-safe:animate-pulse" />
-          <div className="bg-muted/50 h-4 w-2/3 rounded motion-safe:animate-pulse" />
-        </div>
-      ))}
-    </>
-  );
-}
-
 function SortIcon({ state }: { state?: "asc" | "desc" }) {
   let char = "⇅";
   let className = "opacity-20";
@@ -392,7 +351,7 @@ function DataTableHead({
   columnIndex = 0,
   totalColumns = 1,
 }: DataTableHeadProps) {
-  const { sortBy, sortDirection, toggleSort, isLoading } = useDataTable();
+  const { sortBy, sortDirection, toggleSort } = useDataTable();
   const isFirstColumn = columnIndex === 0;
   const isLastColumn = columnIndex === totalColumns - 1;
 
@@ -400,7 +359,7 @@ function DataTableHead({
 
   const isSorted = sortBy === column.key;
   const direction = isSorted ? sortDirection : undefined;
-  const isDisabled = isLoading || !isSortable;
+  const isDisabled = !isSortable;
 
   const handleClick = () => {
     if (!isDisabled && toggleSort) {

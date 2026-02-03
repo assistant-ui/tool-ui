@@ -135,7 +135,7 @@ export const serializableDataSchema = z.record(
  * - data: Data rows (primitives only - no functions or class instances)
  * - layout: Optional layout override ('auto' | 'table' | 'cards')
  *
- * Non-serializable props like `onSortChange`, `className`, and `isLoading`
+ * Non-serializable props like `onSortChange`, `className`, and response actions
  * must be provided separately in your React component.
  *
  * @example
@@ -164,7 +164,7 @@ export const SerializableDataTableSchema = z.object({
  *
  * Excluded from this type:
  * - Event handlers (`onSortChange`, `onResponseAction`)
- * - React-specific props (`className`, `isLoading`, `responseActions`)
+ * - React-specific props (`className`, `responseActions`)
  *
  * @example
  * ```ts
@@ -191,7 +191,7 @@ export type SerializableDataTable = z.infer<typeof SerializableDataTableSchema>;
  * 3. Returns typed serializable props ready to pass to the `<DataTable>` component
  *
  * The returned props are **serializable only** - you must provide client-side props
- * separately (onSortChange, isLoading, className, responseActions, onResponseAction).
+ * separately (onSortChange, className, responseActions, onResponseAction).
  *
  * @param input - Unknown data to validate (typically from an LLM tool call)
  * @returns Validated and typed DataTable serializable props (id, columns, data)

@@ -198,7 +198,6 @@ export interface DataTableSerializableProps<T extends object = RowData> {
  * @example
  * ```tsx
  * const clientProps: DataTableClientProps = {
- *   isLoading: false,
  *   className: "my-table",
  *   onSortChange: (next) => setSort(next),
  *   responseActions: [{ id: "export", label: "Export" }],
@@ -207,8 +206,6 @@ export interface DataTableSerializableProps<T extends object = RowData> {
  * ```
  */
 export interface DataTableClientProps<T extends object = RowData> {
-  /** Show loading skeleton */
-  isLoading?: boolean;
   /** Additional CSS classes */
   className?: string;
   /**
@@ -265,7 +262,6 @@ export interface DataTableClientProps<T extends object = RowData> {
  *   onSortChange={setSort}
  *   responseActions={[{ id: "export", label: "Export" }]}
  *   onResponseAction={(id) => handleAction(id)}
- *   isLoading={loading}
  * />
  * ```
  */
@@ -280,6 +276,5 @@ export interface DataTableContextValue<T extends object = RowData> {
   sortDirection?: "asc" | "desc";
   toggleSort?: (key: ColumnKey<T>) => void;
   id?: string;
-  isLoading?: boolean;
   locale?: string;
 }
