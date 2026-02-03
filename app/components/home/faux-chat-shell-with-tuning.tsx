@@ -3,7 +3,10 @@
 import { useRef, useState } from "react";
 import { motion } from "motion/react";
 import { useControls, folder, button } from "leva";
-import { FauxChatShell, generateSineEasedGradient } from "./faux-chat-shell";
+import {
+  FauxChatShellNoLightOverlay,
+  generateSineEasedGradient,
+} from "./faux-chat-shell";
 import { generateNoiseDataUri } from "./noise-texture";
 
 type InitialTransformValues = {
@@ -274,7 +277,7 @@ export function FauxChatShellWithTuning() {
           translateZ: currentTranslateZ,
         }}
       >
-        <FauxChatShell disableLightOverlay />
+        <FauxChatShellNoLightOverlay />
 
         {/* Lighting overlay - fades in from 0 to full opacity */}
         <motion.div

@@ -6,7 +6,6 @@ import { ChatShowcase } from "./chat-showcase";
 
 type FauxChatShellMobileProps = {
   className?: string;
-  disableLightOverlay?: boolean;
 };
 
 function DynamicIsland() {
@@ -59,7 +58,7 @@ function StatusBar() {
   );
 }
 
-export function FauxChatShellMobile({ className, disableLightOverlay: _disableLightOverlay }: FauxChatShellMobileProps) {
+export function FauxChatShellMobile({ className }: FauxChatShellMobileProps) {
   return (
     <div
       className={cn(

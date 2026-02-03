@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { WeatherWidget } from "@/components/tool-ui/weather-widget";
 import { WeatherEffectsCanvas } from "@/components/tool-ui/weather-widget/effects/weather-effects-canvas";
+import type { WeatherEffectLayer } from "@/components/tool-ui/weather-widget/effects";
 import type { WeatherCondition } from "@/components/tool-ui/weather-widget/schema";
 import {
   WEATHER_CONDITIONS,
@@ -196,6 +197,14 @@ export default function WeatherCompositorSandbox() {
       snow: { value: mergedParams.layers.snow, label: "Snow" },
     }),
     [activeCondition],
+  );
+
+  const enabledLayers = useMemo(
+    () =>
+      (Object.entries(layers) as Array<[WeatherEffectLayer, boolean]>)
+        .filter(([, enabled]) => enabled)
+        .map(([layer]) => layer),
+    [layers],
   );
 
   const [celestial, setCelestial] = useControls(
@@ -1267,13 +1276,7 @@ export default function WeatherCompositorSandbox() {
               })()}
               effects={{ enabled: true }}
               customEffectProps={{
-                layers: {
-                  celestial: layers.celestial,
-                  clouds: layers.clouds,
-                  rain: layers.rain,
-                  lightning: layers.lightning,
-                  snow: layers.snow,
-                },
+                enabledLayers,
                 celestial: layers.celestial
                   ? {
                       timeOfDay,

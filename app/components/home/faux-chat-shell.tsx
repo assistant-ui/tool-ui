@@ -6,7 +6,6 @@ import { ChatShowcase } from "./chat-showcase";
 
 type FauxChatShellProps = {
   className?: string;
-  disableLightOverlay?: boolean;
 };
 
 export function generateSineEasedGradient(
@@ -105,7 +104,10 @@ function ComposerBar() {
   );
 }
 
-export function FauxChatShell({ className, disableLightOverlay }: FauxChatShellProps) {
+function FauxChatShellBase({
+  className,
+  showLightOverlay,
+}: FauxChatShellProps & { showLightOverlay: boolean }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const gradientStyle = useDirectionalLight(containerRef);
 
@@ -132,7 +134,7 @@ export function FauxChatShell({ className, disableLightOverlay }: FauxChatShellP
       }}
     >
       {/* Directional light reflection overlay */}
-      {!disableLightOverlay && (
+      {showLightOverlay && (
         <div
           className="pointer-events-none absolute inset-0 z-30 rounded-2xl"
           style={gradientStyle}
@@ -160,4 +162,12 @@ export function FauxChatShell({ className, disableLightOverlay }: FauxChatShellP
       <ComposerBar />
     </div>
   );
+}
+
+export function FauxChatShell(props: FauxChatShellProps) {
+  return <FauxChatShellBase {...props} showLightOverlay={true} />;
+}
+
+export function FauxChatShellNoLightOverlay(props: FauxChatShellProps) {
+  return <FauxChatShellBase {...props} showLightOverlay={false} />;
 }

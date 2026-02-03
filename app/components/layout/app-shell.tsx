@@ -9,29 +9,18 @@ type HeaderFrameProps = {
   children: ReactNode;
   rightContent?: ReactNode;
   background?: ReactNode;
-  animateNavbar?: boolean;
 };
 
 // Module-level flag that persists across client-side navigations
 // but resets on hard refresh (when the JS bundle reloads)
 let hasPlayedIntroAnimation = false;
 
-export function HeaderFrame({
+function HeaderFrameBase({
   children,
   rightContent,
   background,
-  animateNavbar = false,
-}: HeaderFrameProps) {
-  // Start with false to match server render, then update after hydration
-  const [shouldAnimate, setShouldAnimate] = useState(false);
-
-  useEffect(() => {
-    if (animateNavbar && !hasPlayedIntroAnimation) {
-      hasPlayedIntroAnimation = true;
-      setShouldAnimate(true);
-    }
-  }, [animateNavbar]);
-
+  shouldAnimate = false,
+}: HeaderFrameProps & { shouldAnimate?: boolean }) {
   return (
     <div className="relative flex h-dvh flex-col items-center overflow-hidden">
       {background ? (
@@ -52,4 +41,22 @@ export function HeaderFrame({
       </div>
     </div>
   );
+}
+
+export function HeaderFrame(props: HeaderFrameProps) {
+  return <HeaderFrameBase {...props} />;
+}
+
+export function AnimatedHeaderFrame(props: HeaderFrameProps) {
+  // Start with false to match server render, then update after hydration
+  const [shouldAnimate, setShouldAnimate] = useState(false);
+
+  useEffect(() => {
+    if (!hasPlayedIntroAnimation) {
+      hasPlayedIntroAnimation = true;
+      setShouldAnimate(true);
+    }
+  }, []);
+
+  return <HeaderFrameBase {...props} shouldAnimate={shouldAnimate} />;
 }

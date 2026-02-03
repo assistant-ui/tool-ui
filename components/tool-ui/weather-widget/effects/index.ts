@@ -1,5 +1,5 @@
 export { EffectCompositor } from "./effect-compositor";
-export type { CustomEffectProps } from "./effect-compositor";
+export type { CustomEffectProps, WeatherEffectLayer } from "./effect-compositor";
 export {
   mapWeatherToEffects,
   getSunAltitude,

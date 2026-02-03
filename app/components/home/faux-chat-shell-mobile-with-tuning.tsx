@@ -275,7 +275,7 @@ export function FauxChatShellMobileWithTuning() {
           translateZ: currentTranslateZ,
         }}
       >
-        <FauxChatShellMobile disableLightOverlay />
+        <FauxChatShellMobile />
 
         {/* Lighting overlay - fades in from 0 to full opacity */}
         <motion.div

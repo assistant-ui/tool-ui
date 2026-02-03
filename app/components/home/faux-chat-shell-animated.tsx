@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "motion/react";
-import { FauxChatShell } from "./faux-chat-shell";
+import { FauxChatShellNoLightOverlay } from "./faux-chat-shell";
 import { generateNoiseDataUri } from "./noise-texture";
 
 function generateSineEasedGradient(
@@ -108,7 +108,7 @@ export function FauxChatShellAnimated() {
           transformOrigin: `${originX}% ${originY}%`,
         }}
       >
-        <FauxChatShell disableLightOverlay />
+        <FauxChatShellNoLightOverlay />
 
         {/* Lighting overlay - fades in from 0 to full opacity */}
         <motion.div
