@@ -127,13 +127,6 @@ export interface DataTableSerializableProps<T extends object = RowData> {
   /** Row data (primitives only - no functions or class instances) */
   data: T[];
   /**
-   * Layout mode for the component.
-   * - 'auto' (default): Container queries choose table/cards
-   * - 'table': Force table layout
-   * - 'cards': Force stacked card layout
-   */
-  layout?: "auto" | "table" | "cards";
-  /**
    * Key in row data to use as unique identifier for React keys
    *
    * **Strongly recommended:** Always provide this for dynamic data to prevent

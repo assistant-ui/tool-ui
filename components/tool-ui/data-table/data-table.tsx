@@ -63,28 +63,42 @@ export function useDataTable<T extends object = RowData>() {
     | DataTableContextValue<T>
     | undefined;
   if (!context) {
-    throw new Error("useDataTable must be used within a DataTable");
+    throw new Error("useDataTable must be used within <DataTable.Provider />");
   }
   return context;
 }
 
-export function DataTable<T extends object = RowData>({
+type DataTableLayout = "auto" | "table" | "cards";
+
+type DataTableBaseProps<T extends object = RowData> = DataTableProps<T> & {
+  layout: DataTableLayout;
+};
+
+type DataTableProviderProps<T extends object = RowData> = Pick<
+  DataTableProps<T>,
+  | "columns"
+  | "data"
+  | "rowIdKey"
+  | "defaultSort"
+  | "sort"
+  | "onSortChange"
+  | "id"
+  | "locale"
+> & {
+  children: React.ReactNode;
+};
+
+function DataTableProvider<T extends object = RowData>({
   columns,
   data: rawData,
   rowIdKey,
-  layout = "auto",
   defaultSort,
   sort: controlledSort,
-  emptyMessage = "No data available",
-  maxHeight,
   id,
   onSortChange,
-  className,
   locale,
-  responseActions,
-  onResponseAction,
-  onBeforeResponseAction,
-}: DataTableProps<T>) {
+  children,
+}: DataTableProviderProps<T>) {
   // Default locale avoids SSR/client formatting mismatches.
   const resolvedLocale = locale ?? DEFAULT_LOCALE;
 
@@ -145,6 +159,34 @@ export function DataTable<T extends object = RowData>({
     locale: resolvedLocale,
   };
 
+  return (
+    <DataTableContext.Provider value={contextValue}>
+      {children}
+    </DataTableContext.Provider>
+  );
+}
+
+interface DataTableLayoutProps {
+  layout: DataTableLayout;
+  emptyMessage: string;
+  maxHeight?: string;
+  className?: string;
+  responseActions?: DataTableProps["responseActions"];
+  onResponseAction?: DataTableProps["onResponseAction"];
+  onBeforeResponseAction?: DataTableProps["onBeforeResponseAction"];
+}
+
+function DataTableLayout({
+  layout,
+  emptyMessage,
+  maxHeight,
+  className,
+  responseActions,
+  onResponseAction,
+  onBeforeResponseAction,
+}: DataTableLayoutProps) {
+  const { columns, data, rowIdKey, sortBy, sortDirection, id } = useDataTable();
+
   const sortAnnouncement = React.useMemo(() => {
     const col = columns.find((c) => c.key === sortBy);
     const label = col?.label ?? sortBy;
@@ -159,121 +201,183 @@ export function DataTable<T extends object = RowData>({
   );
 
   return (
-    <DataTableContext.Provider value={contextValue}>
+    <div
+      className={cn("@container w-full min-w-80", className)}
+      data-tool-ui-id={id}
+      data-slot="data-table"
+      data-layout={layout}
+    >
       <div
-        className={cn("@container w-full min-w-80", className)}
-        data-tool-ui-id={id}
-        data-slot="data-table"
-        data-layout={layout}
-      >
-        <div
-          className={cn(
-            layout === "table"
-              ? "block"
-              : layout === "cards"
-                ? "hidden"
-                : "hidden @md:block",
-          )}
-        >
-          <div className="relative">
-            <div
-              className={cn(
-                "bg-card relative w-full overflow-clip overflow-y-auto rounded-lg border",
-                "touch-pan-x",
-                maxHeight && "max-h-[--max-height]",
-              )}
-              style={
-                maxHeight
-                  ? ({ "--max-height": maxHeight } as React.CSSProperties)
-                  : undefined
-              }
-            >
-              <DataTableErrorBoundary>
-                <Table>
-                  {columns.length > 0 && (
-                    <colgroup>
-                      {columns.map((col) => (
-                        <col
-                          key={String(col.key)}
-                          style={col.width ? { width: col.width } : undefined}
-                        />
-                      ))}
-                    </colgroup>
-                  )}
-                  {data.length === 0 ? (
-                    <DataTableEmpty message={emptyMessage} />
-                  ) : (
-                    <DataTableContent />
-                  )}
-                </Table>
-              </DataTableErrorBoundary>
-            </div>
-          </div>
-        </div>
-
-        <div
-          className={cn(
-            layout === "cards"
-              ? ""
-              : layout === "table"
-                ? "hidden"
-                : "@md:hidden",
-          )}
-          role="list"
-          aria-label="Data table (mobile card view)"
-          aria-describedby="mobile-table-description"
-        >
-          <div id="mobile-table-description" className="sr-only">
-            Table data shown as expandable cards. Each card represents one row.
-            {columns.length > 0 &&
-              ` Columns: ${columns.map((c) => c.label).join(", ")}.`}
-          </div>
-
-          <DataTableErrorBoundary>
-            {data.length === 0 ? (
-              <div className="text-muted-foreground py-8 text-center">
-                {emptyMessage}
-              </div>
-            ) : (
-              <div className="bg-card flex flex-col overflow-hidden rounded-2xl border shadow-xs">
-                {data.map((row, i) => {
-                  const keyVal = rowIdKey ? row[rowIdKey] : undefined;
-                  const rowKey = keyVal != null ? String(keyVal) : String(i);
-                  return (
-                    <DataTableAccordionCard
-                      key={rowKey}
-                      row={row as unknown as DataTableRowData}
-                      index={i}
-                      isFirst={i === 0}
-                    />
-                  );
-                })}
-              </div>
-            )}
-          </DataTableErrorBoundary>
-        </div>
-
-        {sortAnnouncement && (
-          <div className="sr-only" aria-live="polite">
-            {sortAnnouncement}
-          </div>
+        className={cn(
+          layout === "table"
+            ? "block"
+            : layout === "cards"
+              ? "hidden"
+              : "hidden @md:block",
         )}
-
-        {normalizedFooterActions ? (
-          <div className="@container/actions mt-4">
-            <ActionButtons
-              actions={normalizedFooterActions.items}
-              align={normalizedFooterActions.align}
-              confirmTimeout={normalizedFooterActions.confirmTimeout}
-              onAction={(id) => onResponseAction?.(id)}
-              onBeforeAction={onBeforeResponseAction}
-            />
+      >
+        <div className="relative">
+          <div
+            className={cn(
+              "bg-card relative w-full overflow-clip overflow-y-auto rounded-lg border",
+              "touch-pan-x",
+              maxHeight && "max-h-[--max-height]",
+            )}
+            style={
+              maxHeight
+                ? ({ "--max-height": maxHeight } as React.CSSProperties)
+                : undefined
+            }
+          >
+            <DataTableErrorBoundary>
+              <Table>
+                {columns.length > 0 && (
+                  <colgroup>
+                    {columns.map((col) => (
+                      <col
+                        key={String(col.key)}
+                        style={col.width ? { width: col.width } : undefined}
+                      />
+                    ))}
+                  </colgroup>
+                )}
+                {data.length === 0 ? (
+                  <DataTableEmpty message={emptyMessage} />
+                ) : (
+                  <DataTableContent />
+                )}
+              </Table>
+            </DataTableErrorBoundary>
           </div>
-        ) : null}
+        </div>
       </div>
-    </DataTableContext.Provider>
+
+      <div
+        className={cn(
+          layout === "cards" ? "" : layout === "table" ? "hidden" : "@md:hidden",
+        )}
+        role="list"
+        aria-label="Data table (mobile card view)"
+        aria-describedby="mobile-table-description"
+      >
+        <div id="mobile-table-description" className="sr-only">
+          Table data shown as expandable cards. Each card represents one row.
+          {columns.length > 0 &&
+            ` Columns: ${columns.map((c) => c.label).join(", ")}.`}
+        </div>
+
+        <DataTableErrorBoundary>
+          {data.length === 0 ? (
+            <div className="text-muted-foreground py-8 text-center">
+              {emptyMessage}
+            </div>
+          ) : (
+            <div className="bg-card flex flex-col overflow-hidden rounded-2xl border shadow-xs">
+              {data.map((row, i) => {
+                const keyVal = rowIdKey ? row[rowIdKey] : undefined;
+                const rowKey = keyVal != null ? String(keyVal) : String(i);
+                return (
+                  <DataTableAccordionCard
+                    key={rowKey}
+                    row={row as unknown as DataTableRowData}
+                    index={i}
+                    isFirst={i === 0}
+                  />
+                );
+              })}
+            </div>
+          )}
+        </DataTableErrorBoundary>
+      </div>
+
+      {sortAnnouncement && (
+        <div className="sr-only" aria-live="polite">
+          {sortAnnouncement}
+        </div>
+      )}
+
+      {normalizedFooterActions ? (
+        <div className="@container/actions mt-4">
+          <ActionButtons
+            actions={normalizedFooterActions.items}
+            align={normalizedFooterActions.align}
+            confirmTimeout={normalizedFooterActions.confirmTimeout}
+            onAction={(actionId) => onResponseAction?.(actionId)}
+            onBeforeAction={onBeforeResponseAction}
+          />
+        </div>
+      ) : null}
+    </div>
   );
 }
+
+function DataTableBase<T extends object = RowData>(props: DataTableBaseProps<T>) {
+  const {
+    columns,
+    data,
+    rowIdKey,
+    defaultSort,
+    sort,
+    onSortChange,
+    id,
+    locale,
+    layout,
+    emptyMessage = "No data available",
+    maxHeight,
+    className,
+    responseActions,
+    onResponseAction,
+    onBeforeResponseAction,
+  } = props;
+
+  return (
+    <DataTableProvider
+      columns={columns}
+      data={data}
+      rowIdKey={rowIdKey}
+      defaultSort={defaultSort}
+      sort={sort}
+      onSortChange={onSortChange}
+      id={id}
+      locale={locale}
+    >
+      <DataTableLayout
+        layout={layout}
+        emptyMessage={emptyMessage}
+        maxHeight={maxHeight}
+        className={className}
+        responseActions={responseActions}
+        onResponseAction={onResponseAction}
+        onBeforeResponseAction={onBeforeResponseAction}
+      />
+    </DataTableProvider>
+  );
+}
+
+function DataTableRoot<T extends object = RowData>(props: DataTableProps<T>) {
+  return <DataTableBase {...props} layout="auto" />;
+}
+
+function DataTableTable<T extends object = RowData>(props: DataTableProps<T>) {
+  return <DataTableBase {...props} layout="table" />;
+}
+
+function DataTableCards<T extends object = RowData>(props: DataTableProps<T>) {
+  return <DataTableBase {...props} layout="cards" />;
+}
+
+type DataTableComponent = {
+  <T extends object = RowData>(props: DataTableProps<T>): React.ReactElement;
+  Table: typeof DataTableTable;
+  Cards: typeof DataTableCards;
+  Provider: typeof DataTableProvider;
+};
+
+export const DataTable = Object.assign(DataTableRoot, {
+  Table: DataTableTable,
+  Cards: DataTableCards,
+  Provider: DataTableProvider,
+}) as DataTableComponent;
 
 function DataTableContent() {
   return (

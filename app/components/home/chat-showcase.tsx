@@ -561,12 +561,11 @@ function createSceneConfigs(reducedMotion: boolean): SceneConfig[] {
       userMessage: "Find me flights to Tokyo in March",
       preamble: "Found 4 nonstop flights. Sorted by price.",
       toolUI: (
-        <DataTable<Flight>
+        <DataTable.Table<Flight>
           id="chat-showcase-data-table"
           rowIdKey="id"
           columns={TABLE_COLUMNS}
           data={TABLE_DATA}
-          layout="table"
           defaultSort={{ by: "price", direction: "asc" }}
         />
       ),
