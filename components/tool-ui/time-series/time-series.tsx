@@ -71,10 +71,25 @@ function formatUnitValue(value: number, unit?: string) {
   return `${formatted} ${unit}`;
 }
 
+function formatUnitParts(value: number, unit?: string) {
+  const abs = Math.abs(value);
+  const formatted = new Intl.NumberFormat(undefined, {
+    maximumFractionDigits: abs >= 100 ? 0 : 1,
+  }).format(value);
+
+  if (!unit) return { prefix: "", value: formatted, suffix: "" };
+  if (unit === "%") return { prefix: "", value: formatted, suffix: "%" };
+  if (unit.startsWith("$")) return { prefix: unit, value: formatted, suffix: "" };
+  return { prefix: "", value: formatted, suffix: ` ${unit}` };
+}
+
 function formatDelta(value: number, unit?: string) {
   const sign = value > 0 ? "+" : value < 0 ? "−" : "";
-  const formatted = formatUnitValue(Math.abs(value), unit);
-  return `${sign}${formatted}`;
+  const parts = formatUnitParts(Math.abs(value), unit);
+  return {
+    sign,
+    ...parts,
+  };
 }
 
 function formatTick(value: string, variant: TimeSeriesVariant) {
@@ -191,7 +206,10 @@ export function TimeSeries({
 
   const lastPoint = points[points.length - 1];
   const lastValue = lastPoint?.v;
-  const formattedLast = lastValue !== undefined ? formatUnitValue(lastValue, unit) : "—";
+  const lastParts =
+    lastValue !== undefined ? formatUnitParts(lastValue, unit) : null;
+  const formattedLast =
+    lastValue !== undefined ? formatUnitValue(lastValue, unit) : "—";
 
   const statusStyles = STATUS_STYLES[status];
   const chartConfig = React.useMemo<ChartConfig>(() => {
@@ -241,23 +259,58 @@ export function TimeSeries({
                 </CardTitle>
               )}
               {subtitle && variant !== "compact" && (
-                <CardDescription className="text-pretty text-[11px]">
+                <CardDescription className="text-pretty text-[11px] text-muted-foreground/80">
                   {subtitle}
                 </CardDescription>
               )}
             </div>
-            <div className="flex flex-col items-end gap-1">
-              <span className={cn("text-sm font-semibold", statusStyles.text)}>
-                {formattedLast}
+            <div className="flex flex-col items-end gap-1 text-right">
+              <span
+                className={cn(
+                  "flex items-baseline gap-1 tabular-nums",
+                  variant === "compact" ? "text-xs" : "text-sm",
+                  statusStyles.text,
+                )}
+              >
+                {lastParts ? (
+                  <>
+                    {lastParts.prefix && (
+                      <span className="text-muted-foreground/70">
+                        {lastParts.prefix}
+                      </span>
+                    )}
+                    <span className="font-semibold tracking-tight">
+                      {lastParts.value}
+                    </span>
+                    {lastParts.suffix && (
+                      <span className="text-muted-foreground/70">
+                        {lastParts.suffix}
+                      </span>
+                    )}
+                  </>
+                ) : (
+                  formattedLast
+                )}
               </span>
               {delta && (
                 <span
                   className={cn(
-                    "inline-flex items-center rounded-full px-1.5 py-0.5 text-[11px] font-medium",
+                    "inline-flex items-center gap-0.5 rounded-full px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide",
+                    "tabular-nums",
                     statusStyles.badge,
                   )}
                 >
-                  {formatDelta(delta.value, unit)}
+                  {(() => {
+                    const parts = formatDelta(delta.value, unit);
+                    return (
+                      <>
+                        <span>{parts.sign}</span>
+                        {parts.prefix && <span>{parts.prefix}</span>}
+                        <span>{parts.value}</span>
+                        {parts.suffix && <span>{parts.suffix}</span>}
+                      </>
+                    );
+                  })()}
                   {delta.label ? ` ${delta.label}` : ""}
                 </span>
               )}
@@ -283,9 +336,13 @@ export function TimeSeries({
               data={chartData}
               margin={{ left: 8, right: 8, top: 8, bottom: 4 }}
             >
-              {variant !== "compact" && (
-                <CartesianGrid vertical={false} strokeDasharray="3 3" />
-              )}
+            {variant !== "compact" && (
+              <CartesianGrid
+                vertical={false}
+                strokeDasharray="2 4"
+                strokeOpacity={0.4}
+              />
+            )}
               {variant !== "compact" && (
                 <XAxis
                   dataKey="t"
@@ -299,38 +356,41 @@ export function TimeSeries({
                 <YAxis tickLine={false} axisLine={false} width={32} />
               )}
 
-              {band && (
-                <Area
-                  type="monotone"
-                  dataKey="upper"
-                  baseLine={(datum: ChartDatum) => datum.lower ?? 0}
-                  stroke="none"
-                  fill="var(--color-band)"
-                  fillOpacity={0.12}
-                  isAnimationActive={false}
-                />
-              )}
-
-              {baseline && (
-                <Line
-                  type="monotone"
-                  dataKey="baseline"
-                  stroke="var(--color-baseline)"
-                  strokeWidth={1.5}
-                  dot={false}
-                  strokeDasharray="4 4"
-                  isAnimationActive={false}
-                />
-              )}
-
-              <Line
+            {band && (
+              <Area
                 type="monotone"
-                dataKey="value"
-                stroke="var(--color-series)"
-                strokeWidth={2}
-                dot={false}
+                dataKey="upper"
+                baseLine={(datum: ChartDatum) => datum.lower ?? 0}
+                stroke="none"
+                fill="var(--color-band)"
+                fillOpacity={0.08}
                 isAnimationActive={false}
               />
+            )}
+
+            {baseline && (
+              <Line
+                type="monotone"
+                dataKey="baseline"
+                stroke="var(--color-baseline)"
+                strokeWidth={1.25}
+                dot={false}
+                strokeDasharray="4 4"
+                strokeOpacity={0.7}
+                isAnimationActive={false}
+              />
+            )}
+
+            <Line
+              type="monotone"
+              dataKey="value"
+              stroke="var(--color-series)"
+              strokeWidth={2}
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              dot={false}
+              isAnimationActive={false}
+            />
 
               {variant === "detailed" &&
                 annotations?.map((annotation) => (
