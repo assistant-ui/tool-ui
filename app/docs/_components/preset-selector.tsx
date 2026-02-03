@@ -10,6 +10,7 @@ import {
 import { analytics } from "@/lib/analytics";
 import { approvalCardPresets } from "@/lib/presets/approval-card";
 import { chartPresets } from "@/lib/presets/chart";
+import { insightCardPresets } from "@/lib/presets/insight-card";
 import { timeSeriesPresets } from "@/lib/presets/time-series";
 import { citationPresets } from "@/lib/presets/citation";
 import { codeBlockPresets } from "@/lib/presets/code-block";
@@ -41,6 +42,7 @@ const PRESET_REGISTRY: Record<string, PresetMap> = {
   "activity-feed": activityFeedPresets,
   "approval-card": approvalCardPresets,
   chart: chartPresets,
+  "insight-card": insightCardPresets,
   "time-series": timeSeriesPresets,
   citation: citationPresets,
   "code-block": codeBlockPresets,

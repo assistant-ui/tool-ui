@@ -8,6 +8,7 @@ import type { PresetWithCodeGen } from "@/lib/presets/types";
 import type { ApprovalCard } from "@/components/tool-ui/approval-card";
 import type { ActivityFeed } from "@/components/tool-ui/activity-feed";
 import type { Chart } from "@/components/tool-ui/chart";
+import type { InsightCard } from "@/components/tool-ui/insight-card";
 import type { TimeSeries } from "@/components/tool-ui/time-series";
 import type { Citation } from "@/components/tool-ui/citation";
 import type { CodeBlock } from "@/components/tool-ui/code-block";
@@ -39,6 +40,10 @@ import {
   type ActivityFeedPresetName,
 } from "@/lib/presets/activity-feed";
 import { chartPresets, type ChartPresetName } from "@/lib/presets/chart";
+import {
+  insightCardPresets,
+  type InsightCardPresetName,
+} from "@/lib/presets/insight-card";
 import { timeSeriesPresets, type TimeSeriesPresetName } from "@/lib/presets/time-series";
 import {
   citationPresets,
@@ -119,6 +124,9 @@ const DynamicActivityFeed = dynamic(() =>
 );
 const DynamicChart = dynamic(() =>
   import("@/components/tool-ui/chart").then((m) => m.Chart)
+);
+const DynamicInsightCard = dynamic(() =>
+  import("@/components/tool-ui/insight-card").then((m) => m.InsightCard)
 );
 const DynamicTimeSeries = dynamic(() =>
   import("@/components/tool-ui/time-series").then((m) => m.TimeSeries)
@@ -239,6 +247,7 @@ export type ComponentId =
   | "activity-feed"
   | "approval-card"
   | "chart"
+  | "insight-card"
   | "time-series"
   | "citation"
   | "code-block"
@@ -349,6 +358,23 @@ export const previewConfigs: Record<
       const chartData = data as Omit<Parameters<typeof Chart>[0], "id">;
       return <DynamicChart id={`chart-${presetName}`} {...chartData} />;
     },
+  },
+  "insight-card": {
+    presets: insightCardPresets as Record<string, PresetWithCodeGen<unknown>>,
+    defaultPreset: "stale-work-alert" satisfies InsightCardPresetName,
+    wrapper: MaxWidthWrapper,
+    chatContext: {
+      userMessage: "Any risks we should address?",
+      preamble: "Here's an insight worth attention:",
+    },
+    renderComponent: ({ data }) => (
+      <DynamicInsightCard
+        {...(data as ComponentProps<typeof InsightCard>)}
+        onResponseAction={(actionId) =>
+          console.log("Insight action:", actionId)
+        }
+      />
+    ),
   },
   "time-series": {
     presets: timeSeriesPresets as Record<string, PresetWithCodeGen<unknown>>,

@@ -1,0 +1,142 @@
+import { DocsHeader } from "../_components/docs-header";
+import { InsightCard } from "@/components/tool-ui/insight-card";
+
+<DocsHeader
+  title="Insight Card"
+  description="Evidence-backed insights with citations and actions."
+  mdxPath="app/docs/insight-card/content.mdx"
+/>
+
+> **Canvas Component** — This card is designed for spatial workspaces. It adapts its layout based on container size using CSS container queries.
+
+<Tabs items={["Preview", "Code"]}>
+  <Tab>
+    <div className="not-prose mx-auto max-w-md">
+      <InsightCard
+        id="insight-stale-work"
+        title="Stale Work Alert"
+        summary="No commits on core pipeline in 10 days while error rate increased 22%."
+        severity="warning"
+        confidence={{ score: 0.83, label: "High" }}
+        citations={[
+          {
+            id: "c1",
+            title: "Pipeline Error Rate",
+            source: "monitoring",
+            excerpt: "Error rate rose from 1.8% to 2.2% over 10 days.",
+          },
+          {
+            id: "c2",
+            title: "Repo Activity",
+            source: "git",
+            excerpt: "No commits to /pipeline since Jan 24.",
+          },
+        ]}
+        action={{ id: "draft-pr", label: "Draft fix PR" }}
+        footer="Last refreshed 4m ago"
+      />
+    </div>
+  </Tab>
+  <Tab>
+    ```tsx
+    import { InsightCard } from "@/components/tool-ui/insight-card";
+
+    export function Example() {
+      return (
+        <InsightCard
+          id="insight-stale-work"
+          title="Stale Work Alert"
+          summary="No commits on core pipeline in 10 days while error rate increased 22%."
+          severity="warning"
+          confidence={{ score: 0.83, label: "High" }}
+          citations={[
+            {
+              id: "c1",
+              title: "Pipeline Error Rate",
+              source: "monitoring",
+              excerpt: "Error rate rose from 1.8% to 2.2% over 10 days.",
+            },
+            {
+              id: "c2",
+              title: "Repo Activity",
+              source: "git",
+              excerpt: "No commits to /pipeline since Jan 24.",
+            },
+          ]}
+          action={{ id: "draft-pr", label: "Draft fix PR" }}
+          footer="Last refreshed 4m ago"
+        />
+      );
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Canvas-Native Properties
+
+| Property | Implementation |
+|----------|----------------|
+| **Size-aware** | Compact/standard/detailed layouts based on container width and height |
+| **Evidence-first** | Citations list with source + excerpt |
+| **Action-ready** | Optional recommended action button |
+
+## Usage
+
+```tsx
+import { InsightCard } from "@/components/tool-ui/insight-card";
+
+<InsightCard
+  id="insight-activation-drop"
+  title="Activation Dip"
+  summary="Trial-to-activated conversion fell 3.2% week-over-week in enterprise tier."
+  severity="warning"
+  confidence={{ score: 0.71, label: "Medium" }}
+  citations={[
+    { id: "c1", title: "Activation Funnel", source: "analytics" },
+    { id: "c2", title: "Product Usage", source: "telemetry" },
+  ]}
+  action={{ id: "open-report", label: "Open cohort report", variant: "secondary" }}
+/>;
+```
+
+## Source and Install
+
+Copy [`components/tool-ui/insight-card`](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/insight-card) and the [`shared`](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/shared) directory into your project. The `shared` folder contains utilities used by all Tool UI components. The `tool-ui` directory should sit alongside your shadcn `ui` directory.
+
+### Prerequisites
+
+This component requires the following [shadcn/ui](https://ui.shadcn.com) components:
+
+```bash
+pnpm dlx shadcn@latest add button
+```
+
+### Directory Structure
+
+<Files>
+  <Folder name="components" defaultOpen>
+    <Folder name="ui">
+      <File name="button.tsx" />
+      <File name="..." />
+    </Folder>
+    <Folder name="tool-ui" defaultOpen>
+      <Folder name="shared" defaultOpen>
+        <File name="action-buttons.tsx" />
+        <File name="schema.ts" />
+        <File name="index.ts" />
+        <File name="..." />
+      </Folder>
+      <Folder name="insight-card" defaultOpen>
+        <File name="insight-card.tsx" />
+        <File name="schema.ts" />
+        <File name="index.tsx" />
+        <File name="..." />
+      </Folder>
+    </Folder>
+  </Folder>
+</Files>
+
+### Download
+
+- [**Shared Dependencies (GitHub)**](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/shared) ([ZIP](https://download-directory.github.io/?url=https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/shared))
+- [**Insight Card (GitHub)**](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/insight-card) ([ZIP](https://download-directory.github.io/?url=https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/insight-card))
