@@ -264,7 +264,6 @@ function AnimatedPlan({ className }: { className?: string }) {
       title="Gift Research"
       description="Finding the perfect birthday gift for Sarah"
       todos={todos}
-      showProgress
       className={className}
     />
   );

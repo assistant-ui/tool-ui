@@ -33,7 +33,6 @@ export const PlanPropsSchema = z.object({
   description: z.string().optional(),
   todos: z.array(PlanTodoSchema).min(1),
   maxVisibleTodos: z.number().min(1).optional(),
-  showProgress: z.boolean().optional(),
   responseActions: z
     .union([z.array(SerializableActionSchema), SerializableActionsConfigSchema])
     .optional(),

@@ -25,10 +25,6 @@ function generatePlanCode(data: SerializablePlan): string {
     props.push(`  maxVisibleTodos={${data.maxVisibleTodos}}`);
   }
 
-  if (data.showProgress === false) {
-    props.push(`  showProgress={false}`);
-  }
-
   if (data.responseActions && Array.isArray(data.responseActions) && data.responseActions.length > 0) {
     props.push(
       `  responseActions={${JSON.stringify(data.responseActions, null, 4).replace(/\n/g, "\n  ")}}`,
@@ -39,6 +35,34 @@ function generatePlanCode(data: SerializablePlan): string {
   return `<Plan\n${props.join("\n")}\n/>`;
 }
 
+function generatePlanCompactCode(data: SerializablePlan): string {
+  const props: string[] = [];
+
+  props.push(`  id="${data.id}"`);
+  props.push(`  title="${escape(data.title)}"`);
+
+  if (data.description) {
+    props.push(`  description="${escape(data.description)}"`);
+  }
+
+  props.push(
+    `  todos={${JSON.stringify(data.todos, null, 4).replace(/\n/g, "\n  ")}}`,
+  );
+
+  if (data.maxVisibleTodos) {
+    props.push(`  maxVisibleTodos={${data.maxVisibleTodos}}`);
+  }
+
+  if (data.responseActions && Array.isArray(data.responseActions) && data.responseActions.length > 0) {
+    props.push(
+      `  responseActions={${JSON.stringify(data.responseActions, null, 4).replace(/\n/g, "\n  ")}}`,
+    );
+    props.push(`  onResponseAction={(id) => console.log("Action:", id)}`);
+  }
+
+  return `<Plan.Compact\n${props.join("\n")}\n/>`;
+}
+
 export const planPresets: Record<PlanPresetName, PresetWithCodeGen<SerializablePlan>> = {
   simple: {
     description: "A minimal plan with 3 todos (no progress bar)",
@@ -46,14 +70,13 @@ export const planPresets: Record<PlanPresetName, PresetWithCodeGen<SerializableP
       id: "plan-simple",
       title: "Quick Setup",
       description: "Get started in 3 easy steps",
-      showProgress: false,
       todos: [
         { id: "1", label: "Install dependencies", status: "completed" },
         { id: "2", label: "Configure environment", status: "in_progress" },
         { id: "3", label: "Run the app", status: "pending" },
       ],
     } satisfies SerializablePlan,
-    generateExampleCode: generatePlanCode,
+    generateExampleCode: generatePlanCompactCode,
   },
   comprehensive: {
     description: "Detailed plan with descriptions and progress bar",

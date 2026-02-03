@@ -234,18 +234,18 @@ function ProgressBar({ progress, isCelebrating }: ProgressBarProps) {
   );
 }
 
-export function Plan({
+function PlanRoot({
   id,
   title,
   description,
   todos,
   maxVisibleTodos = INITIAL_VISIBLE_TODO_COUNT,
-  showProgress = true,
   responseActions,
   onResponseAction,
   onBeforeResponseAction,
   className,
-}: PlanProps) {
+  showProgress = true,
+}: PlanProps & { showProgress?: boolean }) {
   const seenTodoIds = useRef(new Set<string>());
   const [newTodoIds, setNewTodoIds] = useState<Set<string>>(new Set());
   const isInitialMount = useRef(true);
@@ -374,3 +374,13 @@ export function Plan({
     </Card>
   );
 }
+
+export function PlanCompact(props: PlanProps) {
+  return <PlanRoot {...props} showProgress={false} />;
+}
+
+type PlanComponent = typeof PlanRoot & {
+  Compact: typeof PlanCompact;
+};
+
+export const Plan = Object.assign(PlanRoot, { Compact: PlanCompact }) as PlanComponent;

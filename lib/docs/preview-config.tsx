@@ -20,7 +20,7 @@ import type { ItemCarousel } from "@/components/tool-ui/item-carousel";
 import type { OptionList } from "@/components/tool-ui/option-list";
 import type { OrderSummary } from "@/components/tool-ui/order-summary";
 import type { ParameterSlider } from "@/components/tool-ui/parameter-slider";
-import type { Plan } from "@/components/tool-ui/plan";
+import type { SerializablePlan } from "@/components/tool-ui/plan";
 import type {
   SerializablePreferencesPanel,
   SerializablePreferencesPanelReceipt,
@@ -157,6 +157,9 @@ const DynamicParameterSlider = dynamic(() =>
 );
 const DynamicPlan = dynamic(() =>
   import("@/components/tool-ui/plan").then((m) => m.Plan)
+);
+const DynamicPlanCompact = dynamic(() =>
+  import("@/components/tool-ui/plan").then((m) => m.PlanCompact)
 );
 const DynamicPreferencesPanel = dynamic(() =>
   import("@/components/tool-ui/preferences-panel").then((m) => m.PreferencesPanel)
@@ -658,9 +661,13 @@ export const previewConfigs: Record<
       userMessage: "Help me plan out this project",
       preamble: "Here's what I'm working on:",
     },
-    renderComponent: ({ data }) => (
-      <DynamicPlan {...(data as Parameters<typeof Plan>[0])} />
-    ),
+    renderComponent: ({ data, presetName }) => {
+      const planData = data as SerializablePlan;
+      if (presetName === "simple") {
+        return <DynamicPlanCompact {...planData} />;
+      }
+      return <DynamicPlan {...planData} />;
+    },
   },
   "preferences-panel": {
     presets: preferencesPanelPresets as Record<

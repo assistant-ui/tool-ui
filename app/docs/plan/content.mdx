@@ -190,11 +190,6 @@ export const ShowPlanUI = makeAssistantToolUI({
       type: "number",
       default: "4",
     },
-    showProgress: {
-      description: "Show/hide progress bar and summary",
-      type: "boolean",
-      default: "true",
-    },
     responseActions: {
       description: "Footer action buttons",
       type: "Action[] | ActionsConfig",
@@ -210,6 +205,10 @@ export const ShowPlanUI = makeAssistantToolUI({
     },
   }}
 />
+
+### Compact Variant
+
+Use `Plan.Compact` to hide the progress summary and bar.
 
 ## Todo Item Schema
 
