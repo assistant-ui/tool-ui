@@ -119,11 +119,11 @@ function TimeSeriesSkeleton({ className }: { className?: string }) {
       aria-busy="true"
     >
       <Card className="w-full py-4">
-        <CardHeader className="space-y-1.5">
+        <CardHeader className="space-y-1.5 px-5">
           <div className="h-3.5 w-28 rounded bg-muted" />
           <div className="h-3 w-40 rounded bg-muted" />
         </CardHeader>
-        <CardContent>
+        <CardContent className="px-5">
           <div className="h-24 w-full rounded bg-muted" />
         </CardContent>
       </Card>
@@ -226,7 +226,7 @@ export function TimeSeries({
           <CardHeader
             className={cn(
               "flex flex-row items-start justify-between gap-3",
-              variant === "compact" ? "py-2.5" : "py-3",
+              variant === "compact" ? "px-4 py-2" : "px-5 py-3",
             )}
           >
             <div className="space-y-1">
@@ -264,7 +264,11 @@ export function TimeSeries({
             </div>
           </CardHeader>
         )}
-        <CardContent className={cn(variant === "compact" ? "pt-0" : "pt-0.5")}>
+        <CardContent
+          className={cn(
+            variant === "compact" ? "px-4 pt-0" : "px-5 pt-0.5",
+          )}
+        >
           <ChartContainer
             id={id}
             config={chartConfig}
