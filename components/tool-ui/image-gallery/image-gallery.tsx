@@ -13,7 +13,6 @@ export function ImageGallery({
   title,
   description,
   className,
-  isLoading,
   onImageClick,
 }: ImageGalleryProps) {
   const handleImageClick = (imageId: string) => {
@@ -28,7 +27,6 @@ export function ImageGallery({
   return (
     <article
       className={cn("relative w-full min-w-80 max-w-lg", className)}
-      aria-busy={isLoading}
       data-tool-ui-id={id}
       data-slot="image-gallery"
     >
@@ -38,23 +36,19 @@ export function ImageGallery({
           "border border-border bg-card text-sm shadow-xs",
         )}
       >
-        {isLoading ? (
-          <LoadingSkeleton />
-        ) : (
-          <ImageGalleryProvider images={images}>
-            <Header title={title} description={description} />
-            <div className="p-3">
-              <GalleryGrid onImageClick={handleImageClick} />
-            </div>
-            <GalleryLightbox />
-          </ImageGalleryProvider>
-        )}
+        <ImageGalleryProvider images={images}>
+          <Header title={title} description={description} />
+          <div className="p-3">
+            <GalleryGrid onImageClick={handleImageClick} />
+          </div>
+          <GalleryLightbox />
+        </ImageGalleryProvider>
       </div>
     </article>
   );
 }
 
-function LoadingSkeleton() {
+export function ImageGalleryProgress() {
   return (
     <div className="flex w-full motion-safe:animate-pulse flex-col gap-3 p-4">
       <div className="grid grid-cols-2 gap-2">

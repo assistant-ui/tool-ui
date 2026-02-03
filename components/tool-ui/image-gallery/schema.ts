@@ -41,7 +41,6 @@ export type SerializableImageGallery = z.infer<
 
 export interface ImageGalleryProps extends SerializableImageGallery {
   className?: string;
-  isLoading?: boolean;
   onImageClick?: (imageId: string, image: ImageGalleryItem) => void;
 }
 
