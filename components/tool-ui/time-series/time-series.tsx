@@ -118,13 +118,13 @@ function TimeSeriesSkeleton({ className }: { className?: string }) {
       data-slot="time-series"
       aria-busy="true"
     >
-      <Card className="w-full">
-        <CardHeader className="space-y-2">
-          <div className="h-4 w-32 rounded bg-muted" />
-          <div className="h-3 w-44 rounded bg-muted" />
+      <Card className="w-full py-4">
+        <CardHeader className="space-y-1.5">
+          <div className="h-3.5 w-28 rounded bg-muted" />
+          <div className="h-3 w-40 rounded bg-muted" />
         </CardHeader>
         <CardContent>
-          <div className="h-32 w-full rounded bg-muted" />
+          <div className="h-24 w-full rounded bg-muted" />
         </CardContent>
       </Card>
     </div>
@@ -221,12 +221,12 @@ export function TimeSeries({
       data-slot="time-series"
       ref={containerRef}
     >
-      <Card className="w-full">
+      <Card className={cn("w-full", variant === "compact" ? "py-3" : "py-4")}>
         {(title || subtitle || delta) && (
           <CardHeader
             className={cn(
-              "flex flex-row items-start justify-between gap-4",
-              variant === "compact" ? "py-3" : "py-4",
+              "flex flex-row items-start justify-between gap-3",
+              variant === "compact" ? "py-2.5" : "py-3",
             )}
           >
             <div className="space-y-1">
@@ -234,14 +234,14 @@ export function TimeSeries({
                 <CardTitle
                   className={cn(
                     "text-pretty",
-                    variant === "compact" ? "text-sm" : "text-base",
+                    variant === "compact" ? "text-xs" : "text-sm",
                   )}
                 >
                   {title}
                 </CardTitle>
               )}
               {subtitle && variant !== "compact" && (
-                <CardDescription className="text-pretty text-xs">
+                <CardDescription className="text-pretty text-[11px]">
                   {subtitle}
                 </CardDescription>
               )}
@@ -253,7 +253,7 @@ export function TimeSeries({
               {delta && (
                 <span
                   className={cn(
-                    "inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-medium",
+                    "inline-flex items-center rounded-full px-1.5 py-0.5 text-[11px] font-medium",
                     statusStyles.badge,
                   )}
                 >
@@ -264,14 +264,14 @@ export function TimeSeries({
             </div>
           </CardHeader>
         )}
-        <CardContent className={cn(variant === "compact" ? "pt-0" : "pt-1")}>
+        <CardContent className={cn(variant === "compact" ? "pt-0" : "pt-0.5")}>
           <ChartContainer
             config={chartConfig}
             className={cn(
               "aspect-auto w-full",
-              variant === "compact" && "h-24",
-              variant === "standard" && "h-32",
-              variant === "detailed" && "h-40",
+              variant === "compact" && "h-20",
+              variant === "standard" && "h-28",
+              variant === "detailed" && "h-32",
             )}
           >
             <LineChart
