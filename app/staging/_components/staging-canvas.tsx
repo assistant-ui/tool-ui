@@ -13,14 +13,12 @@ interface StagingCanvasProps {
   componentId: ComponentId;
   presetName: string;
   debugLevel: DebugLevel;
-  isLoading: boolean;
 }
 
 export function StagingCanvas({
   componentId,
   presetName,
   debugLevel,
-  isLoading,
 }: StagingCanvasProps) {
   const componentRef = useRef<HTMLDivElement>(null);
   const [, forceUpdate] = useState(0);
@@ -84,22 +82,17 @@ export function StagingCanvas({
     );
   }
 
-  const componentData =
-    typeof preset.data === "object" && preset.data !== null
-      ? { ...preset.data, isLoading }
-      : preset.data;
-
   // If staging config has a tuning panel, render it instead of the normal component
   if (stagingConfig?.renderTuningPanel) {
     return (
       <div className="relative w-full">
-        {stagingConfig.renderTuningPanel({ data: componentData as Record<string, unknown> })}
+        {stagingConfig.renderTuningPanel({ data: preset.data as Record<string, unknown> })}
       </div>
     );
   }
 
   const component = previewConfig.renderComponent({
-    data: componentData,
+    data: preset.data,
     presetName,
     state: {},
     setState: () => {},

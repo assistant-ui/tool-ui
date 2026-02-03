@@ -15,12 +15,10 @@ interface StagingState {
   componentId: ComponentId;
   presetName: string;
   debugLevel: DebugLevel;
-  isLoading: boolean;
   viewMode: ViewMode;
   setComponent: (id: ComponentId) => void;
   setPreset: (name: string) => void;
   setDebugLevel: (level: DebugLevel) => void;
-  toggleLoading: () => void;
   cycleDebugLevel: () => void;
   setViewMode: (mode: ViewMode) => void;
 }
@@ -31,7 +29,6 @@ export const useStagingStore = create<StagingState>((set, get) => ({
   componentId: "parameter-slider",
   presetName: "photo-adjustments",
   debugLevel: "off",
-  isLoading: false,
   viewMode: "static",
 
   setComponent: (id) => {
@@ -46,8 +43,6 @@ export const useStagingStore = create<StagingState>((set, get) => ({
   setPreset: (name) => set({ presetName: name }),
 
   setDebugLevel: (level) => set({ debugLevel: level }),
-
-  toggleLoading: () => set((s) => ({ isLoading: !s.isLoading })),
 
   cycleDebugLevel: () => {
     const current = get().debugLevel;

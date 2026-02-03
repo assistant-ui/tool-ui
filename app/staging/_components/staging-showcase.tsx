@@ -188,14 +188,12 @@ interface StagingShowcaseProps {
   componentId: ComponentId;
   presetName: string;
   debugLevel: DebugLevel;
-  isLoading: boolean;
 }
 
 export function StagingShowcase({
   componentId,
   presetName,
   debugLevel,
-  isLoading,
 }: StagingShowcaseProps) {
   const [phase, setPhase] = useState<ShowcasePhase>("user");
   const [key, setKey] = useState(0);
@@ -244,13 +242,8 @@ export function StagingShowcase({
     );
   }
 
-  const componentData =
-    typeof preset.data === "object" && preset.data !== null
-      ? { ...preset.data, isLoading }
-      : preset.data;
-
   const component = previewConfig.renderComponent({
-    data: componentData,
+    data: preset.data,
     presetName,
     state: {},
     setState: () => {},
