@@ -108,7 +108,7 @@ export function FauxChatShellMobileAnimated() {
           transformOrigin: `${originX}% ${originY}%`,
         }}
       >
-        <FauxChatShellMobile disableLightOverlay />
+        <FauxChatShellMobile />
 
         {/* Lighting overlay - fades in from 0 to full opacity */}
         <motion.div

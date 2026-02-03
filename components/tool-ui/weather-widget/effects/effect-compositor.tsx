@@ -72,16 +72,27 @@ function mapEffectConfigToCanvasProps(
 function mapCustomEffectPropsToCanvasProps(
   custom: CustomEffectProps,
 ): WeatherEffectsCanvasProps | null {
-  const layerOverrides = custom.layers;
+  const enabledLayers = custom.enabledLayers;
+  const isLayerEnabled = (
+    layer: WeatherEffectLayer,
+    hasConfig: boolean,
+  ) => {
+    if (!hasConfig) return false;
+    if (!enabledLayers) return true;
+    return enabledLayers.includes(layer);
+  };
 
-  const hasCelestial =
-    layerOverrides?.celestial !== false && custom.celestial !== undefined;
-  const hasCloud =
-    layerOverrides?.clouds !== false && custom.cloud !== undefined;
-  const hasRain = layerOverrides?.rain !== false && custom.rain !== undefined;
-  const hasLightning =
-    layerOverrides?.lightning !== false && custom.lightning !== undefined;
-  const hasSnow = layerOverrides?.snow !== false && custom.snow !== undefined;
+  const hasCelestial = isLayerEnabled(
+    "celestial",
+    custom.celestial !== undefined,
+  );
+  const hasCloud = isLayerEnabled("clouds", custom.cloud !== undefined);
+  const hasRain = isLayerEnabled("rain", custom.rain !== undefined);
+  const hasLightning = isLayerEnabled(
+    "lightning",
+    custom.lightning !== undefined,
+  );
+  const hasSnow = isLayerEnabled("snow", custom.snow !== undefined);
 
   if (!hasCelestial && !hasCloud && !hasRain && !hasLightning && !hasSnow) {
     return null;
@@ -180,14 +191,15 @@ function mapCustomEffectPropsToCanvasProps(
  * Custom effect layer props for direct control.
  * When provided, these override the auto-calculated values from mapWeatherToEffects.
  */
+export type WeatherEffectLayer =
+  | "celestial"
+  | "clouds"
+  | "rain"
+  | "lightning"
+  | "snow";
+
 export interface CustomEffectProps {
-  layers?: {
-    celestial?: boolean;
-    clouds?: boolean;
-    rain?: boolean;
-    lightning?: boolean;
-    snow?: boolean;
-  };
+  enabledLayers?: WeatherEffectLayer[];
   celestial?: {
     timeOfDay: number;
     moonPhase: number;

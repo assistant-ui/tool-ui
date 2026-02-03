@@ -1,5 +1,5 @@
 import ContentLayout from "@/app/components/layout/page-shell";
-import { HeaderFrame } from "@/app/components/layout/app-shell";
+import { AnimatedHeaderFrame } from "@/app/components/layout/app-shell";
 import { ThemeToggle } from "@/app/components/builder/theme-toggle";
 import { HomeHero } from "@/app/components/home/home-hero";
 import { HomeBackground } from "@/app/components/home/home-background";
@@ -8,9 +8,8 @@ import { FauxChatShellAnimated } from "@/app/components/home/faux-chat-shell-ani
 
 export default function HomePage() {
   return (
-    <HeaderFrame
+    <AnimatedHeaderFrame
       rightContent={<ThemeToggle />}
-      animateNavbar={true}
       background={<HomeBackground />}
     >
       <ContentLayout>
@@ -38,6 +37,6 @@ export default function HomePage() {
           </div>
         </main>
       </ContentLayout>
-    </HeaderFrame>
+    </AnimatedHeaderFrame>
   );
 }
