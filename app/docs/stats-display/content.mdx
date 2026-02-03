@@ -226,17 +226,22 @@ export const StatsDisplayTool = makeAssistantTool<SerializableStatsDisplay>({
       description: "Additional CSS classes",
       type: "string",
     },
-    isLoading: {
-      description: "Show skeleton loading state",
-      type: "boolean",
-      default: "false",
-    },
     locale: {
       description: "Locale for number formatting",
       type: "string",
     },
   }}
 />
+
+### Loading
+
+```tsx
+import { StatsDisplay } from "@/components/tool-ui/stats-display";
+
+export function LoadingExample() {
+  return <StatsDisplay.Progress id="stats-loading" count={3} />;
+}
+```
 
 ## StatItem Schema
 

@@ -1,5 +1,6 @@
 "use client";
 
+import type { ReactElement } from "react";
 import {
   cn,
   Card,
@@ -191,13 +192,12 @@ function StatCardSkeleton() {
   );
 }
 
-export function StatsDisplay({
+function StatsDisplayRoot({
   id,
   title,
   description,
   stats,
   className,
-  isLoading = false,
   locale: localeProp,
 }: StatsDisplayProps) {
   const locale = localeProp ?? (typeof navigator !== "undefined" ? navigator.language : undefined);
@@ -208,7 +208,6 @@ export function StatsDisplay({
     <article
       data-slot="stats-display"
       data-tool-ui-id={id}
-      aria-busy={isLoading}
       className={cn(
         "w-full min-w-80 max-w-xl",
         isSingle && "max-w-sm",
@@ -233,21 +232,17 @@ export function StatsDisplay({
               gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
             }}
           >
-            {isLoading
-              ? Array.from({ length: stats.length }).map((_, index) => (
-                  <StatCardSkeleton key={index} />
-                ))
-              : stats.map((stat, index) => (
-                  <div
-                    key={stat.key}
-                    className={cn(
-                      "overflow-clip py-3 first:pt-0 @[440px]:py-3 @[440px]:first:pt-3 @[440px]:border-l @[440px]:border-t @[440px]:border-border",
-                      index > 0 && "border-border border-t"
-                    )}
-                  >
-                    <StatCard stat={stat} locale={locale} isSingle={isSingle} index={index} />
-                  </div>
-                ))}
+            {stats.map((stat, index) => (
+              <div
+                key={stat.key}
+                className={cn(
+                  "overflow-clip py-3 first:pt-0 @[440px]:py-3 @[440px]:first:pt-3 @[440px]:border-l @[440px]:border-t @[440px]:border-border",
+                  index > 0 && "border-border border-t"
+                )}
+              >
+                <StatCard stat={stat} locale={locale} isSingle={isSingle} index={index} />
+              </div>
+            ))}
           </div>
         </CardContent>
       </Card>
@@ -255,10 +250,21 @@ export function StatsDisplay({
   );
 }
 
-export function StatsDisplayProgress({ className }: { className?: string }) {
+type StatsDisplayProgressProps = {
+  id?: StatsDisplayProps["id"];
+  className?: string;
+  count?: number;
+};
+
+function StatsDisplayProgressVariant({
+  id,
+  className,
+  count = 3,
+}: StatsDisplayProgressProps) {
   return (
-    <div
-      data-slot="stats-display-progress"
+    <article
+      data-slot="stats-display"
+      data-tool-ui-id={id}
       aria-busy="true"
       className={cn("w-full min-w-80", className)}
     >
@@ -274,12 +280,21 @@ export function StatsDisplayProgress({ className }: { className?: string }) {
               gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
             }}
           >
-            {Array.from({ length: 3 }).map((_, index) => (
+            {Array.from({ length: count }).map((_, index) => (
               <StatCardSkeleton key={index} />
             ))}
           </div>
         </CardContent>
       </Card>
-    </div>
+    </article>
   );
 }
+
+type StatsDisplayComponent = {
+  (props: StatsDisplayProps): ReactElement;
+  Progress: typeof StatsDisplayProgressVariant;
+};
+
+export const StatsDisplay = Object.assign(StatsDisplayRoot, {
+  Progress: StatsDisplayProgressVariant,
+}) as StatsDisplayComponent;

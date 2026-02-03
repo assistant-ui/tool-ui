@@ -20,14 +20,13 @@ function formatTime(seconds: number): string {
 export interface AudioProps extends SerializableAudio {
   variant?: AudioVariant;
   className?: string;
-  isLoading?: boolean;
   onMediaEvent?: (type: "play" | "pause" | "mute" | "unmute") => void;
   responseActions?: ActionsProp;
   onResponseAction?: (actionId: string) => void | Promise<void>;
   onBeforeResponseAction?: (actionId: string) => boolean | Promise<boolean>;
 }
 
-export function Audio(props: AudioProps) {
+function AudioRoot(props: AudioProps) {
   return (
     <AudioProvider>
       <AudioInner {...props} />
@@ -243,7 +242,6 @@ function AudioInner(props: AudioProps) {
   const {
     variant = "full",
     className,
-    isLoading,
     onMediaEvent,
     responseActions,
     onResponseAction,
@@ -334,7 +332,6 @@ function AudioInner(props: AudioProps) {
         className,
       )}
       lang={locale}
-      aria-busy={isLoading}
       data-tool-ui-id={id}
       data-slot="audio"
     >
@@ -345,9 +342,7 @@ function AudioInner(props: AudioProps) {
           "rounded-xl",
         )}
       >
-        {isLoading ? (
-          isCompact ? <CompactProgress /> : <FullProgress />
-        ) : isCompact ? (
+        {isCompact ? (
           <CompactPlayer
             artwork={artwork}
             title={title}
@@ -403,3 +398,53 @@ function AudioInner(props: AudioProps) {
     </article>
   );
 }
+
+type AudioProgressProps = {
+  id?: SerializableAudio["id"];
+  className?: string;
+  locale?: string;
+  variant?: AudioVariant;
+};
+
+function AudioProgressVariant({
+  id,
+  className,
+  locale,
+  variant = "full",
+}: AudioProgressProps) {
+  const resolvedLocale = locale ?? FALLBACK_LOCALE;
+  const isCompact = variant === "compact";
+
+  return (
+    <article
+      className={cn(
+        "@container/actions relative w-full",
+        isCompact ? "min-w-72 max-w-md" : "min-w-52 max-w-sm",
+        className,
+      )}
+      lang={resolvedLocale}
+      aria-busy="true"
+      data-tool-ui-id={id}
+      data-slot="audio"
+    >
+      <div
+        className={cn(
+          "group @container relative isolate flex w-full min-w-0 flex-col overflow-hidden",
+          "border-border bg-card border text-sm shadow-xs",
+          "rounded-xl",
+        )}
+      >
+        {isCompact ? <CompactProgress /> : <FullProgress />}
+      </div>
+    </article>
+  );
+}
+
+type AudioComponent = {
+  (props: AudioProps): React.ReactElement;
+  Progress: typeof AudioProgressVariant;
+};
+
+export const Audio = Object.assign(AudioRoot, {
+  Progress: AudioProgressVariant,
+}) as AudioComponent;

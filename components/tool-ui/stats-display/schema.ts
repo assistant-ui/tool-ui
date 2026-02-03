@@ -79,6 +79,5 @@ export function parseSerializableStatsDisplay(
 
 export interface StatsDisplayProps extends SerializableStatsDisplay {
   className?: string;
-  isLoading?: boolean;
   locale?: string;
 }

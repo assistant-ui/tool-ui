@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, useCallback, useEffect } from "react";
+import { useMemo, useState, useCallback, useEffect, type ReactElement } from "react";
 import { createHighlighter, type Highlighter } from "shiki";
 import { Copy, Check, ChevronDown, ChevronUp } from "lucide-react";
 import type { CodeBlockProps } from "./schema";
@@ -106,7 +106,7 @@ function useResolvedTheme(): "light" | "dark" {
   return theme;
 }
 
-export function CodeBlock({
+function CodeBlockRoot({
   id,
   code,
   language = "text",
@@ -117,7 +117,6 @@ export function CodeBlock({
   responseActions,
   onResponseAction,
   onBeforeResponseAction,
-  isLoading,
   className,
 }: CodeBlockProps) {
   const resolvedTheme = useResolvedTheme();
@@ -235,23 +234,6 @@ export function CodeBlock({
     copy(code, COPY_ID);
   }, [code, copy]);
 
-  if (isLoading) {
-    return (
-      <div
-        className={cn(
-          "@container flex w-full min-w-80 flex-col gap-3",
-          className,
-        )}
-        data-tool-ui-id={id}
-        aria-busy="true"
-      >
-        <div className="border-border bg-card overflow-hidden rounded-lg border shadow-xs">
-          <CodeBlockProgress />
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div
       className={cn(
@@ -341,3 +323,35 @@ export function CodeBlock({
     </div>
   );
 }
+
+type CodeBlockProgressProps = {
+  id?: CodeBlockProps["id"];
+  className?: string;
+};
+
+function CodeBlockProgressVariant({ id, className }: CodeBlockProgressProps) {
+  return (
+    <div
+      className={cn(
+        "@container flex w-full min-w-80 flex-col gap-3",
+        className,
+      )}
+      data-tool-ui-id={id}
+      data-slot="code-block"
+      aria-busy="true"
+    >
+      <div className="border-border bg-card overflow-hidden rounded-lg border shadow-xs">
+        <CodeBlockProgress />
+      </div>
+    </div>
+  );
+}
+
+type CodeBlockComponent = {
+  (props: CodeBlockProps): ReactElement;
+  Progress: typeof CodeBlockProgressVariant;
+};
+
+export const CodeBlock = Object.assign(CodeBlockRoot, {
+  Progress: CodeBlockProgressVariant,
+}) as CodeBlockComponent;

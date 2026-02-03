@@ -144,7 +144,7 @@ export const ShowCodeBlockUI = makeAssistantToolUI({
   render: ({ result }) => {
     // Tool outputs stream in; `result` will be `undefined` until the tool resolves.
     if (result === undefined) {
-      return <CodeBlock id="loading" code="" language="text" isLoading />;
+      return <CodeBlock.Progress id="loading" />;
     }
 
     return (
@@ -215,10 +215,6 @@ export const ShowCodeBlockUI = makeAssistantToolUI({
     className: {
       description: "Additional CSS classes",
       type: "string",
-    },
-    isLoading: {
-      description: "Show loading skeleton state",
-      type: "boolean",
     },
   }}
 />
