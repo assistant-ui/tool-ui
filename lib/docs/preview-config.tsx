@@ -335,14 +335,12 @@ export const previewConfigs: Record<
         variant,
         maxVisible,
         responseActions,
-        isLoading: _isLoading,
       } =
         data as {
           citations: Parameters<typeof Citation>[0][];
           variant?: Parameters<typeof Citation>[0]["variant"];
           maxVisible?: number;
           responseActions?: unknown[];
-          isLoading?: boolean;
         };
 
       const wrapperClass =
@@ -389,10 +387,7 @@ export const previewConfigs: Record<
       preamble: "Here's the code:",
     },
     renderComponent: ({ data }) => {
-      const { isLoading: _isLoading, ...codeBlock } = data as Parameters<
-        typeof CodeBlock
-      >[0] & { isLoading?: boolean };
-
+      const codeBlock = data as Parameters<typeof CodeBlock>[0];
       return <DynamicCodeBlock {...codeBlock} />;
     },
   },
@@ -426,10 +421,9 @@ export const previewConfigs: Record<
       preamble: "Here's what I created:",
     },
     renderComponent: ({ data }) => {
-      const { image, responseActions, isLoading: _isLoading } = data as {
+      const { image, responseActions } = data as {
         image: Parameters<typeof Image>[0];
         responseActions?: unknown[];
-        isLoading?: boolean;
       };
       return (
         <DynamicImage
@@ -470,10 +464,9 @@ export const previewConfigs: Record<
       preamble: "Here's the video:",
     },
     renderComponent: ({ data }) => {
-      const { video, responseActions, isLoading: _isLoading } = data as {
+      const { video, responseActions } = data as {
         video: Parameters<typeof Video>[0];
         responseActions?: unknown[];
-        isLoading?: boolean;
       };
       return (
         <DynamicVideo
@@ -497,11 +490,10 @@ export const previewConfigs: Record<
       preamble: "Here it is:",
     },
     renderComponent: ({ data }) => {
-      const { audio, variant, responseActions, isLoading: _isLoading } = data as {
+      const { audio, variant, responseActions } = data as {
         audio: Parameters<typeof Audio>[0];
         variant?: "full" | "compact";
         responseActions?: unknown[];
-        isLoading?: boolean;
       };
       return (
         <DynamicAudio
@@ -526,10 +518,9 @@ export const previewConfigs: Record<
       preamble: "Was it this one?",
     },
     renderComponent: ({ data }) => {
-      const { linkPreview, responseActions, isLoading: _isLoading } = data as {
+      const { linkPreview, responseActions } = data as {
         linkPreview: Parameters<typeof LinkPreview>[0];
         responseActions?: unknown[];
-        isLoading?: boolean;
       };
       return (
         <DynamicLinkPreview
@@ -724,9 +715,7 @@ export const previewConfigs: Record<
       preamble: "Here's your performance summary:",
     },
     renderComponent: ({ data }) => {
-      const { isLoading: _isLoading, ...statsData } = data as Parameters<
-        typeof StatsDisplay
-      >[0] & { isLoading?: boolean };
+      const statsData = data as Parameters<typeof StatsDisplay>[0];
       return <DynamicStatsDisplay {...statsData} />;
     },
   },
