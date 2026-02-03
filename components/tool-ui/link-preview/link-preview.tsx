@@ -11,22 +11,6 @@ import type { SerializableLinkPreview } from "./schema";
 const FALLBACK_LOCALE = "en-US";
 const CONTENT_SPACING = "px-5 py-4 gap-2";
 
-function LinkPreviewProgressSkeleton() {
-  return (
-    <div className="flex w-full motion-safe:animate-pulse flex-col">
-      <div className="bg-muted aspect-[5/3] w-full" />
-      <div className={cn("flex flex-col", CONTENT_SPACING)}>
-        <div className="flex items-center gap-2">
-          <div className="bg-muted size-4 rounded-full" />
-          <div className="bg-muted h-3 w-24 rounded" />
-        </div>
-        <div className="bg-muted h-5 w-3/4 rounded" />
-        <div className="bg-muted h-4 w-full rounded" />
-      </div>
-    </div>
-  );
-}
-
 export interface LinkPreviewProps extends SerializableLinkPreview {
   className?: string;
   onNavigate?: (href: string, preview: SerializableLinkPreview) => void;
@@ -35,7 +19,7 @@ export interface LinkPreviewProps extends SerializableLinkPreview {
   onBeforeResponseAction?: (actionId: string) => boolean | Promise<boolean>;
 }
 
-function LinkPreviewRoot(props: LinkPreviewProps) {
+export function LinkPreview(props: LinkPreviewProps) {
   const {
     className,
     onNavigate,
@@ -178,45 +162,3 @@ function LinkPreviewRoot(props: LinkPreviewProps) {
     </article>
   );
 }
-
-type LinkPreviewProgressProps = {
-  id?: SerializableLinkPreview["id"];
-  className?: string;
-  locale?: string;
-};
-
-function LinkPreviewProgressVariant({
-  id,
-  className,
-  locale,
-}: LinkPreviewProgressProps) {
-  const resolvedLocale = locale ?? FALLBACK_LOCALE;
-
-  return (
-    <article
-      className={cn("relative w-full min-w-80 max-w-md", className)}
-      lang={resolvedLocale}
-      aria-busy="true"
-      data-tool-ui-id={id}
-      data-slot="link-preview"
-    >
-      <div
-        className={cn(
-          "group @container relative isolate flex w-full min-w-0 flex-col overflow-hidden rounded-xl",
-          "border border-border bg-card text-sm shadow-xs",
-        )}
-      >
-        <LinkPreviewProgressSkeleton />
-      </div>
-    </article>
-  );
-}
-
-type LinkPreviewComponent = {
-  (props: LinkPreviewProps): React.ReactElement;
-  Progress: typeof LinkPreviewProgressVariant;
-};
-
-export const LinkPreview = Object.assign(LinkPreviewRoot, {
-  Progress: LinkPreviewProgressVariant,
-}) as LinkPreviewComponent;

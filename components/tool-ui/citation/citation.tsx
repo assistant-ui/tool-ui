@@ -33,22 +33,6 @@ const TYPE_ICONS: Record<CitationType, LucideIcon> = {
   other: File,
 };
 
-function CitationProgressSkeleton() {
-  return (
-    <div className="flex w-full motion-safe:animate-pulse flex-col gap-2 p-4">
-      <div className="flex items-center gap-1.5">
-        <div className="bg-muted size-3.5 rounded" />
-        <div className="bg-muted h-3 w-32 rounded" />
-      </div>
-      <div className="bg-muted h-5 w-3/4 rounded" />
-      <div className="space-y-1.5">
-        <div className="bg-muted h-3.5 w-full rounded" />
-        <div className="bg-muted h-3.5 w-5/6 rounded" />
-      </div>
-    </div>
-  );
-}
-
 function extractDomain(url: string): string | undefined {
   try {
     const urlObj = new URL(url);
@@ -102,7 +86,7 @@ export interface CitationProps extends SerializableCitation {
   onBeforeResponseAction?: (actionId: string) => boolean | Promise<boolean>;
 }
 
-function CitationRoot(props: CitationProps) {
+export function Citation(props: CitationProps) {
   const {
     variant = "default",
     className,
@@ -305,45 +289,3 @@ function CitationRoot(props: CitationProps) {
     </article>
   );
 }
-
-type CitationProgressProps = {
-  id?: SerializableCitation["id"];
-  className?: string;
-  locale?: string;
-};
-
-function CitationProgressVariant({
-  id,
-  className,
-  locale,
-}: CitationProgressProps) {
-  const resolvedLocale = locale ?? FALLBACK_LOCALE;
-
-  return (
-    <article
-      className={cn("relative w-full min-w-72 max-w-md", className)}
-      lang={resolvedLocale}
-      aria-busy="true"
-      data-tool-ui-id={id}
-      data-slot="citation"
-    >
-      <div
-        className={cn(
-          "group @container relative isolate flex w-full min-w-0 flex-col overflow-hidden rounded-xl",
-          "border border-border bg-card text-sm shadow-xs",
-        )}
-      >
-        <CitationProgressSkeleton />
-      </div>
-    </article>
-  );
-}
-
-type CitationComponent = {
-  (props: CitationProps): React.ReactElement;
-  Progress: typeof CitationProgressVariant;
-};
-
-export const Citation = Object.assign(CitationRoot, {
-  Progress: CitationProgressVariant,
-}) as CitationComponent;

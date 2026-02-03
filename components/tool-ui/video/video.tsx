@@ -13,14 +13,6 @@ import type { SerializableVideo } from "./schema";
 
 const FALLBACK_LOCALE = "en-US";
 
-function VideoProgressSkeleton() {
-  return (
-    <div className="flex w-full motion-safe:animate-pulse flex-col gap-3">
-      <div className="bg-muted aspect-video w-full rounded-lg" />
-    </div>
-  );
-}
-
 export interface VideoProps extends SerializableVideo {
   className?: string;
   autoPlay?: boolean;
@@ -32,7 +24,7 @@ export interface VideoProps extends SerializableVideo {
   onBeforeResponseAction?: (actionId: string) => boolean | Promise<boolean>;
 }
 
-function VideoRoot(props: VideoProps) {
+export function Video(props: VideoProps) {
   const {
     defaultMuted = true,
     ...rest
@@ -195,45 +187,3 @@ function VideoInner(props: Omit<VideoProps, "defaultMuted">) {
     </article>
   );
 }
-
-type VideoProgressProps = {
-  id?: SerializableVideo["id"];
-  className?: string;
-  locale?: string;
-};
-
-function VideoProgressVariant({
-  id,
-  className,
-  locale,
-}: VideoProgressProps) {
-  const resolvedLocale = locale ?? FALLBACK_LOCALE;
-
-  return (
-    <article
-      className={cn("relative w-full min-w-80 max-w-md", className)}
-      lang={resolvedLocale}
-      aria-busy="true"
-      data-tool-ui-id={id}
-      data-slot="video"
-    >
-      <div
-        className={cn(
-          "group @container relative isolate flex w-full min-w-0 flex-col overflow-hidden rounded-xl",
-          "border border-border bg-card text-sm shadow-xs",
-        )}
-      >
-        <VideoProgressSkeleton />
-      </div>
-    </article>
-  );
-}
-
-type VideoComponent = {
-  (props: VideoProps): React.ReactElement;
-  Progress: typeof VideoProgressVariant;
-};
-
-export const Video = Object.assign(VideoRoot, {
-  Progress: VideoProgressVariant,
-}) as VideoComponent;

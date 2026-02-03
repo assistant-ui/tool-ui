@@ -113,17 +113,11 @@ const DynamicChart = dynamic(() =>
 const DynamicCitation = dynamic(() =>
   import("@/components/tool-ui/citation").then((m) => m.Citation)
 );
-const DynamicCitationProgress = dynamic(() =>
-  import("@/components/tool-ui/citation").then((m) => m.Citation.Progress)
-);
 const DynamicCitationList = dynamic(() =>
   import("@/components/tool-ui/citation").then((m) => m.CitationList)
 );
 const DynamicCodeBlock = dynamic(() =>
   import("@/components/tool-ui/code-block").then((m) => m.CodeBlock)
-);
-const DynamicCodeBlockProgress = dynamic(() =>
-  import("@/components/tool-ui/code-block").then((m) => m.CodeBlock.Progress)
 );
 const DynamicDataTable = dynamic(() =>
   import("@/components/tool-ui/data-table").then((m) => m.DataTable)
@@ -131,29 +125,17 @@ const DynamicDataTable = dynamic(() =>
 const DynamicImage = dynamic(() =>
   import("@/components/tool-ui/image").then((m) => m.Image)
 );
-const DynamicImageProgress = dynamic(() =>
-  import("@/components/tool-ui/image").then((m) => m.Image.Progress)
-);
 const DynamicImageGallery = dynamic(() =>
   import("@/components/tool-ui/image-gallery").then((m) => m.ImageGallery)
 );
 const DynamicVideo = dynamic(() =>
   import("@/components/tool-ui/video").then((m) => m.Video)
 );
-const DynamicVideoProgress = dynamic(() =>
-  import("@/components/tool-ui/video").then((m) => m.Video.Progress)
-);
 const DynamicAudio = dynamic(() =>
   import("@/components/tool-ui/audio").then((m) => m.Audio)
 );
-const DynamicAudioProgress = dynamic(() =>
-  import("@/components/tool-ui/audio").then((m) => m.Audio.Progress)
-);
 const DynamicLinkPreview = dynamic(() =>
   import("@/components/tool-ui/link-preview").then((m) => m.LinkPreview)
-);
-const DynamicLinkPreviewProgress = dynamic(() =>
-  import("@/components/tool-ui/link-preview").then((m) => m.LinkPreview.Progress)
 );
 const DynamicMessageDraft = dynamic(() =>
   import("@/components/tool-ui/message-draft").then((m) => m.MessageDraft)
@@ -181,9 +163,6 @@ const DynamicProgressTracker = dynamic(() =>
 );
 const DynamicStatsDisplay = dynamic(() =>
   import("@/components/tool-ui/stats-display").then((m) => m.StatsDisplay)
-);
-const DynamicStatsDisplayProgress = dynamic(() =>
-  import("@/components/tool-ui/stats-display").then((m) => m.StatsDisplay.Progress)
 );
 const DynamicTerminal = dynamic(() =>
   import("@/components/tool-ui/terminal").then((m) => m.Terminal)
@@ -351,7 +330,13 @@ export const previewConfigs: Record<
       preamble: "According to the source:",
     },
     renderComponent: ({ data, presetName }) => {
-      const { citations, variant, maxVisible, responseActions, isLoading } =
+      const {
+        citations,
+        variant,
+        maxVisible,
+        responseActions,
+        isLoading: _isLoading,
+      } =
         data as {
           citations: Parameters<typeof Citation>[0][];
           variant?: Parameters<typeof Citation>[0]["variant"];
@@ -362,23 +347,6 @@ export const previewConfigs: Record<
 
       const wrapperClass =
         variant === "inline" ? "mx-auto max-w-xl" : "mx-auto max-w-lg";
-
-      if (isLoading) {
-        const progressCount =
-          variant === "inline"
-            ? 1
-            : Math.max(1, maxVisible ?? citations.length);
-
-        return (
-          <div className={wrapperClass}>
-            <div className="flex flex-col gap-3">
-              {Array.from({ length: progressCount }).map((_, index) => (
-                <DynamicCitationProgress key={index} />
-              ))}
-            </div>
-          </div>
-        );
-      }
 
       // Single citation without list
       if (citations.length === 1 && !maxVisible) {
@@ -421,18 +389,9 @@ export const previewConfigs: Record<
       preamble: "Here's the code:",
     },
     renderComponent: ({ data }) => {
-      const { isLoading, ...codeBlock } = data as Parameters<
+      const { isLoading: _isLoading, ...codeBlock } = data as Parameters<
         typeof CodeBlock
       >[0] & { isLoading?: boolean };
-
-      if (isLoading) {
-        return (
-          <DynamicCodeBlockProgress
-            id={codeBlock.id}
-            className={codeBlock.className}
-          />
-        );
-      }
 
       return <DynamicCodeBlock {...codeBlock} />;
     },
@@ -467,20 +426,11 @@ export const previewConfigs: Record<
       preamble: "Here's what I created:",
     },
     renderComponent: ({ data }) => {
-      const { image, responseActions, isLoading } = data as {
+      const { image, responseActions, isLoading: _isLoading } = data as {
         image: Parameters<typeof Image>[0];
         responseActions?: unknown[];
         isLoading?: boolean;
       };
-      if (isLoading) {
-        return (
-          <DynamicImageProgress
-            id={image.id}
-            className={image.className}
-            locale={image.locale}
-          />
-        );
-      }
       return (
         <DynamicImage
           {...image}
@@ -520,20 +470,11 @@ export const previewConfigs: Record<
       preamble: "Here's the video:",
     },
     renderComponent: ({ data }) => {
-      const { video, responseActions, isLoading } = data as {
+      const { video, responseActions, isLoading: _isLoading } = data as {
         video: Parameters<typeof Video>[0];
         responseActions?: unknown[];
         isLoading?: boolean;
       };
-      if (isLoading) {
-        return (
-          <DynamicVideoProgress
-            id={video.id}
-            className={video.className}
-            locale={video.locale}
-          />
-        );
-      }
       return (
         <DynamicVideo
           {...video}
@@ -556,22 +497,12 @@ export const previewConfigs: Record<
       preamble: "Here it is:",
     },
     renderComponent: ({ data }) => {
-      const { audio, variant, responseActions, isLoading } = data as {
+      const { audio, variant, responseActions, isLoading: _isLoading } = data as {
         audio: Parameters<typeof Audio>[0];
         variant?: "full" | "compact";
         responseActions?: unknown[];
         isLoading?: boolean;
       };
-      if (isLoading) {
-        return (
-          <DynamicAudioProgress
-            id={audio.id}
-            className={audio.className}
-            locale={audio.locale}
-            variant={variant}
-          />
-        );
-      }
       return (
         <DynamicAudio
           {...audio}
@@ -595,20 +526,11 @@ export const previewConfigs: Record<
       preamble: "Was it this one?",
     },
     renderComponent: ({ data }) => {
-      const { linkPreview, responseActions, isLoading } = data as {
+      const { linkPreview, responseActions, isLoading: _isLoading } = data as {
         linkPreview: Parameters<typeof LinkPreview>[0];
         responseActions?: unknown[];
         isLoading?: boolean;
       };
-      if (isLoading) {
-        return (
-          <DynamicLinkPreviewProgress
-            id={linkPreview.id}
-            className={linkPreview.className}
-            locale={linkPreview.locale}
-          />
-        );
-      }
       return (
         <DynamicLinkPreview
           {...linkPreview}
@@ -802,18 +724,9 @@ export const previewConfigs: Record<
       preamble: "Here's your performance summary:",
     },
     renderComponent: ({ data }) => {
-      const { isLoading, ...statsData } = data as Parameters<
+      const { isLoading: _isLoading, ...statsData } = data as Parameters<
         typeof StatsDisplay
       >[0] & { isLoading?: boolean };
-      if (isLoading) {
-        return (
-          <DynamicStatsDisplayProgress
-            id={statsData.id}
-            className={statsData.className}
-            count={statsData.stats?.length ?? 3}
-          />
-        );
-      }
       return <DynamicStatsDisplay {...statsData} />;
     },
   },

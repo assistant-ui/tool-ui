@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, useCallback, useEffect, type ReactElement } from "react";
+import { useMemo, useState, useCallback, useEffect } from "react";
 import { createHighlighter, type Highlighter } from "shiki";
 import { Copy, Check, ChevronDown, ChevronUp } from "lucide-react";
 import type { CodeBlockProps } from "./schema";
@@ -10,8 +10,6 @@ import {
   useCopyToClipboard,
 } from "../shared";
 import { Button, cn, Collapsible, CollapsibleTrigger } from "./_adapter";
-import { CodeBlockProgress } from "./progress";
-
 const COPY_ID = "codeblock-code";
 
 let highlighterPromise: Promise<Highlighter> | null = null;
@@ -106,7 +104,7 @@ function useResolvedTheme(): "light" | "dark" {
   return theme;
 }
 
-function CodeBlockRoot({
+export function CodeBlock({
   id,
   code,
   language = "text",
@@ -323,35 +321,3 @@ function CodeBlockRoot({
     </div>
   );
 }
-
-type CodeBlockProgressProps = {
-  id?: CodeBlockProps["id"];
-  className?: string;
-};
-
-function CodeBlockProgressVariant({ id, className }: CodeBlockProgressProps) {
-  return (
-    <div
-      className={cn(
-        "@container flex w-full min-w-80 flex-col gap-3",
-        className,
-      )}
-      data-tool-ui-id={id}
-      data-slot="code-block"
-      aria-busy="true"
-    >
-      <div className="border-border bg-card overflow-hidden rounded-lg border shadow-xs">
-        <CodeBlockProgress />
-      </div>
-    </div>
-  );
-}
-
-type CodeBlockComponent = {
-  (props: CodeBlockProps): ReactElement;
-  Progress: typeof CodeBlockProgressVariant;
-};
-
-export const CodeBlock = Object.assign(CodeBlockRoot, {
-  Progress: CodeBlockProgressVariant,
-}) as CodeBlockComponent;

@@ -1,6 +1,4 @@
 "use client";
-
-import type { ReactElement } from "react";
 import {
   cn,
   Card,
@@ -180,19 +178,7 @@ function StatCard({ stat, locale, isSingle = false, index = 0 }: StatCardProps) 
   );
 }
 
-function StatCardSkeleton() {
-  return (
-    <div className="flex min-h-28 flex-col justify-end gap-1 overflow-clip px-6">
-      <div className="bg-muted h-3 w-16 rounded motion-safe:animate-pulse" />
-      <div className="flex items-baseline gap-2">
-        <div className="bg-muted h-8 w-20 rounded motion-safe:animate-pulse" />
-        <div className="bg-muted h-4 w-10 rounded motion-safe:animate-pulse" />
-      </div>
-    </div>
-  );
-}
-
-function StatsDisplayRoot({
+export function StatsDisplay({
   id,
   title,
   description,
@@ -249,52 +235,3 @@ function StatsDisplayRoot({
     </article>
   );
 }
-
-type StatsDisplayProgressProps = {
-  id?: StatsDisplayProps["id"];
-  className?: string;
-  count?: number;
-};
-
-function StatsDisplayProgressVariant({
-  id,
-  className,
-  count = 3,
-}: StatsDisplayProgressProps) {
-  return (
-    <article
-      data-slot="stats-display"
-      data-tool-ui-id={id}
-      aria-busy="true"
-      className={cn("w-full min-w-80", className)}
-    >
-      <Card>
-        <CardHeader>
-          <div className="bg-muted h-6 w-48 rounded motion-safe:animate-pulse" />
-          <div className="bg-muted h-4 w-64 rounded motion-safe:animate-pulse" />
-        </CardHeader>
-        <CardContent className="p-0">
-          <div
-            className="grid"
-            style={{
-              gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
-            }}
-          >
-            {Array.from({ length: count }).map((_, index) => (
-              <StatCardSkeleton key={index} />
-            ))}
-          </div>
-        </CardContent>
-      </Card>
-    </article>
-  );
-}
-
-type StatsDisplayComponent = {
-  (props: StatsDisplayProps): ReactElement;
-  Progress: typeof StatsDisplayProgressVariant;
-};
-
-export const StatsDisplay = Object.assign(StatsDisplayRoot, {
-  Progress: StatsDisplayProgressVariant,
-}) as StatsDisplayComponent;

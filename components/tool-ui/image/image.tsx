@@ -13,19 +13,6 @@ import type { SerializableImage, Source } from "./schema";
 
 const FALLBACK_LOCALE = "en-US";
 
-function ImageProgressSkeleton() {
-  return (
-    <div className="flex w-full motion-safe:animate-pulse flex-col gap-3 p-5">
-      <div className="flex items-center gap-3 text-xs">
-        <div className="bg-muted h-6 w-6 rounded-full" />
-        <div className="bg-muted h-3 w-28 rounded" />
-      </div>
-      <div className="bg-muted h-40 w-full rounded-lg" />
-      <div className="bg-muted h-4 w-3/4 rounded" />
-    </div>
-  );
-}
-
 export interface ImageProps extends SerializableImage {
   className?: string;
   onNavigate?: (href: string, image: SerializableImage) => void;
@@ -34,7 +21,7 @@ export interface ImageProps extends SerializableImage {
   onBeforeResponseAction?: (actionId: string) => boolean | Promise<boolean>;
 }
 
-function ImageRoot(props: ImageProps) {
+export function Image(props: ImageProps) {
   const {
     className,
     onNavigate,
@@ -175,48 +162,6 @@ function ImageRoot(props: ImageProps) {
     </article>
   );
 }
-
-type ImageProgressProps = {
-  id?: SerializableImage["id"];
-  className?: string;
-  locale?: string;
-};
-
-function ImageProgressVariant({
-  id,
-  className,
-  locale,
-}: ImageProgressProps) {
-  const resolvedLocale = locale ?? FALLBACK_LOCALE;
-
-  return (
-    <article
-      className={cn("relative w-full min-w-80 max-w-md", className)}
-      lang={resolvedLocale}
-      aria-busy="true"
-      data-tool-ui-id={id}
-      data-slot="image"
-    >
-      <div
-        className={cn(
-          "group @container relative isolate flex w-full min-w-0 flex-col overflow-hidden rounded-xl",
-          "border border-border bg-card text-sm shadow-xs",
-        )}
-      >
-        <ImageProgressSkeleton />
-      </div>
-    </article>
-  );
-}
-
-type ImageComponent = {
-  (props: ImageProps): React.ReactElement;
-  Progress: typeof ImageProgressVariant;
-};
-
-export const Image = Object.assign(ImageRoot, {
-  Progress: ImageProgressVariant,
-}) as ImageComponent;
 
 interface SourceAttributionProps {
   source?: Source;

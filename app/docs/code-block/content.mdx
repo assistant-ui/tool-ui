@@ -144,7 +144,7 @@ export const ShowCodeBlockUI = makeAssistantToolUI({
   render: ({ result }) => {
     // Tool outputs stream in; `result` will be `undefined` until the tool resolves.
     if (result === undefined) {
-      return <CodeBlock.Progress id="loading" />;
+      return <div className="text-muted-foreground text-sm">Loading…</div>;
     }
 
     return (
