@@ -12,9 +12,13 @@
 
 *Currently in progress. Limit to 1-3 items.*
 
-### WeatherDataOverlay continued polish
-- [x] Use lighter font weight for location label and weekly forecast
-- [x] Make high/low temperature display more interesting — unique and stylish but refined
+### WeatherDataOverlay layout/text polish
+- [x] Remove "Updated X ago" text/indicator
+- [x] Move location text directly above temperature (not top-left corner)
+- [x] Make location text semibold and slightly larger
+- [x] Add more space between main temp value and °F/°C indicator
+- [x] High/low row: remove gradient line, add semi-transparent "H"/"L" labels, small gap between
+- [x] Fix 5-day forecast vertical centering (more space at top than bottom currently)
 
 ---
 
@@ -24,13 +28,11 @@
 
 - [ ] Use a nicer code theme for code block in dark mode
 
-### Forecast card effects
-- [x] At peak day/night, reduce glassy background presence (less blur, less opacity). Keep border glassy. Add mouse-tracking highlight effect.
-
 ### Shader improvements
 - [ ] Clouds shader: allow clouds to become more opaque (increase density range)
 - [ ] Add sky brightness/saturation controls for stormy day rendering
 
+### Codebase health
 - [ ] Apply Vercel React best practices review across codebase
 - [ ] Address performance and optimization opportunities
 

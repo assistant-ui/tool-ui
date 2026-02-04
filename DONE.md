@@ -145,6 +145,11 @@ Archive of completed features and improvements. See `TODO.md` for active work.
 - Consolidated stats into single row with high/low temps
 - Reduced glass background opacity for subtler effect
 
+### WeatherDataOverlay Polish (Jan 2026)
+- Used lighter font weight for location label and weekly forecast
+- Made high/low temperature display more interesting — unique and stylish but refined
+- At peak day/night, reduced glassy background presence (less blur, less opacity), kept border glassy, added mouse-tracking highlight effect
+
 ### Message Draft Component (Jan 16, 2026)
 - Created new Message Draft component for email/Slack message review before sending
 - Removed channel indicator labels (email/slack at top) — channels are clear from context

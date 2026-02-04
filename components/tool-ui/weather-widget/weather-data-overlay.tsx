@@ -119,7 +119,7 @@ export function WeatherDataOverlay({
   visibility: _visibility,
   forecast = [],
   unit = "fahrenheit",
-  updatedAtLabel,
+  updatedAtLabel: _updatedAtLabel,
   timeOfDay: timeOfDayProp,
   timestamp,
   className,
@@ -278,14 +278,14 @@ export function WeatherDataOverlay({
     <div
       ref={containerRef}
       className={cn(
-        "pointer-events-auto absolute inset-0 z-10 flex select-none flex-col p-4",
+        "pointer-events-auto absolute inset-0 z-10 flex select-none flex-col p-6",
         className,
       )}
     >
-      {/* Top-left: Location */}
-      <div className="flex flex-col items-start gap-0.5">
+      {/* Current weather */}
+      <div className="flex flex-col items-start">
         <h2
-          className={cn("text-[15px] font-light tracking-tight", textSecondary)}
+          className={cn("text-[17px] font-medium tracking-tight", textSecondary)}
           style={{
             fontFamily: '"SF Pro Display", system-ui, sans-serif',
             textShadow: shadowStyle,
@@ -293,124 +293,72 @@ export function WeatherDataOverlay({
         >
           {location}
         </h2>
-        {updatedAtLabel && (
-          <p
-            className={cn("text-[11px] font-light tracking-tight", textMuted)}
+
+        <div className="flex items-start gap-1.5">
+          <span
+            className={cn(
+              "text-[72px] font-[200] leading-none tracking-[-0.04em]",
+              textPrimary,
+            )}
             style={{
-              fontFamily: '"SF Pro Display", system-ui, sans-serif',
-              textShadow: shadowStyle,
+              fontFamily: '"SF Pro Display", "Helvetica Neue", system-ui, sans-serif',
+              fontFeatureSettings: '"tnum"',
+              textShadow: isDark
+                ? "0 2px 20px rgba(0,0,0,0.25)"
+                : "0 2px 20px rgba(255,255,255,0.3)",
             }}
+            aria-label={`${Math.round(temperature)} degrees ${unit === "celsius" ? "Celsius" : "Fahrenheit"}`}
           >
-            {updatedAtLabel}
-          </p>
-        )}
+            {Math.round(temperature)}
+          </span>
+          <span
+            className={cn("mt-2 text-[28px] font-[200]", textMuted)}
+            style={{ fontFamily: '"SF Pro Display", system-ui, sans-serif' }}
+            aria-hidden="true"
+          >
+            °{unitSymbol}
+          </span>
+        </div>
+
+        <div
+          className="mt-1 flex items-center gap-4"
+          style={{ fontFamily: '"SF Pro Display", system-ui, sans-serif' }}
+        >
+          <span className="text-[15px] font-light tabular-nums">
+            <span className={textSubtle}>H </span>
+            <span className={textPrimary}>{Math.round(tempHigh)}°</span>
+          </span>
+          <span className="text-[15px] font-light tabular-nums">
+            <span className={textSubtle}>L </span>
+            <span className={textPrimary}>{Math.round(tempLow)}°</span>
+          </span>
+
+          {hasStats && (
+            <>
+              <div className={cn("h-3 w-px", isDark ? "bg-white/10" : "bg-black/10")} />
+              {humidity !== undefined && (
+                <div className="flex items-center gap-1">
+                  <Droplets className={cn("size-3", textSubtle)} strokeWidth={1.5} aria-hidden="true" />
+                  <span className={cn("text-[12px] font-light tabular-nums", textMuted)}>
+                    {Math.round(humidity)}%
+                  </span>
+                </div>
+              )}
+              {windSpeed !== undefined && (
+                <div className="flex items-center gap-1">
+                  <Wind className={cn("size-3", textSubtle)} strokeWidth={1.5} aria-hidden="true" />
+                  <span className={cn("text-[12px] font-light tabular-nums", textMuted)}>
+                    {Math.round(windSpeed)} mph
+                  </span>
+                </div>
+              )}
+            </>
+          )}
+        </div>
       </div>
 
-      {/* Spacer - leaves room for celestial in top-right */}
+      {/* Spacer */}
       <div className="flex-1" />
-
-      {/* Bottom-left: Main weather data */}
-      <div className="flex flex-col gap-4">
-        {/* Hero temperature */}
-        <div className="flex flex-col items-start">
-          <div className="relative flex items-start">
-            <span
-              className={cn(
-                "text-[72px] font-[200] leading-none tracking-[-0.04em]",
-                textPrimary,
-              )}
-              style={{
-                fontFamily:
-                  '"SF Pro Display", "Helvetica Neue", system-ui, sans-serif',
-                fontFeatureSettings: '"tnum"',
-                textShadow: isDark
-                  ? "0 2px 20px rgba(0,0,0,0.25)"
-                  : "0 2px 20px rgba(255,255,255,0.3)",
-              }}
-              aria-label={`${Math.round(temperature)} degrees ${
-                unit === "celsius" ? "Celsius" : "Fahrenheit"
-              }`}
-            >
-              {Math.round(temperature)}
-            </span>
-            <span
-              className={cn("mt-2 text-[28px] font-[200]", textMuted)}
-              style={{
-                fontFamily: '"SF Pro Display", system-ui, sans-serif',
-              }}
-              aria-hidden="true"
-            >
-              °{unitSymbol}
-            </span>
-          </div>
-
-          {/* High / Low range + Stats */}
-          <div
-            className="mt-2 flex items-center gap-5"
-            style={{ fontFamily: '"SF Pro Display", system-ui, sans-serif' }}
-          >
-            {/* Temperature range with gradient bar */}
-            <div className="flex items-center gap-2">
-              <span
-                className={cn("text-[15px] font-light tabular-nums", textSecondary)}
-              >
-                {Math.round(tempLow)}°
-              </span>
-              <div
-                className="h-[1.5px] w-12 rounded-full"
-                style={{
-                  background: isDark
-                    ? "linear-gradient(90deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0.5) 100%)"
-                    : "linear-gradient(90deg, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.4) 100%)",
-                }}
-              />
-              <span
-                className={cn("text-[15px] font-normal tabular-nums", textPrimary)}
-              >
-                {Math.round(tempHigh)}°
-              </span>
-            </div>
-
-            {hasStats && (
-              <>
-                <div
-                  className={cn("h-3 w-px", isDark ? "bg-white/10" : "bg-black/10")}
-                />
-
-                <div className="flex items-center gap-4">
-                  {humidity !== undefined && (
-                    <div className="flex items-center gap-1">
-                      <Droplets
-                        className={cn("size-3", textSubtle)}
-                        strokeWidth={1.5}
-                        aria-hidden="true"
-                      />
-                      <span
-                        className={cn("text-[12px] font-light tabular-nums", textMuted)}
-                      >
-                        {Math.round(humidity)}%
-                      </span>
-                    </div>
-                  )}
-                  {windSpeed !== undefined && (
-                    <div className="flex items-center gap-1">
-                      <Wind
-                        className={cn("size-3", textSubtle)}
-                        strokeWidth={1.5}
-                        aria-hidden="true"
-                      />
-                      <span
-                        className={cn("text-[12px] font-light tabular-nums", textMuted)}
-                      >
-                        {Math.round(windSpeed)} mph
-                      </span>
-                    </div>
-                  )}
-                </div>
-              </>
-            )}
-          </div>
-        </div>
 
         {/* Forecast strip - hidden at small container sizes */}
         {forecast.length > 0 && (
@@ -433,7 +381,7 @@ export function WeatherDataOverlay({
               }}
             />
             <div
-              className="relative overflow-hidden rounded-xl border p-3"
+              className="relative overflow-hidden rounded-xl border px-3 py-2.5"
               style={{
                 backgroundColor: `rgba(255, 255, 255, ${bgOpacity})`,
                 borderColor: `rgba(255, 255, 255, ${borderOpacity})`,
@@ -466,7 +414,7 @@ export function WeatherDataOverlay({
                     <div
                       key={day.day}
                       className={cn(
-                        "flex flex-1 flex-col items-center gap-0.5 py-0.5",
+                        "flex flex-1 flex-col items-center gap-0.5",
                         index === 0 ? "opacity-100" : "opacity-60",
                       )}
                       style={{
@@ -512,7 +460,6 @@ export function WeatherDataOverlay({
             </div>
           </div>
         )}
-      </div>
     </div>
   );
 }
