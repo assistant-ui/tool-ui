@@ -75,13 +75,15 @@ export async function POST(req: Request) {
       try {
         const { mcpEphemeralUrl } = await requestDevServer({ repoId });
 
-        const devServerMcp = await createMCPClient({
-          transport: new StreamableHTTPClientTransport(
-            new URL(mcpEphemeralUrl),
-          ),
-        });
+        if (mcpEphemeralUrl) {
+          const devServerMcp = await createMCPClient({
+            transport: new StreamableHTTPClientTransport(
+              new URL(mcpEphemeralUrl),
+            ),
+          });
 
-        tools = await devServerMcp.tools();
+          tools = await devServerMcp.tools();
+        }
       } catch (error) {
         console.error("Error setting up Freestyle MCP:", error);
         // Continue without Freestyle tools if there's an error
