@@ -38,8 +38,9 @@ describe("component docs registry installation contract", () => {
         `npx shadcn@latest add https://tool-ui.com/r/${componentId}.json`,
       );
       expect(content).toContain(
-        `npx shadcn@latest add --cwd apps/web https://tool-ui.com/r/${componentId}.json`,
+        `npx shadcn@latest add --cwd <path-to-package-with-components-json> https://tool-ui.com/r/${componentId}.json`,
       );
+      expect(content).toContain("contains `components.json`");
       expect(content).toContain("pnpm workspace");
       expect(content).not.toContain("### Download");
       expect(content).not.toContain("download-directory.github.io");
