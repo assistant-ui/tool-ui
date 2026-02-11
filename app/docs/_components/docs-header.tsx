@@ -1,7 +1,7 @@
 import { CopyMarkdownButton } from "./copy-markdown-button";
 import { HeaderPreviewTabs } from "./header-preview-tabs";
 import { getMdxAsMarkdown } from "./mdx-to-markdown";
-import type { ComponentId } from "@/lib/docs/preview-config";
+import { getPreviewConfig, type ComponentId } from "@/lib/docs/preview-config";
 
 type DocsHeaderProps = {
   title: string;
@@ -13,37 +13,14 @@ export function DocsHeader({ title, description, mdxPath }: DocsHeaderProps) {
   const markdown = mdxPath ? getMdxAsMarkdown(mdxPath) : undefined;
   const componentIdMatch = mdxPath?.match(/^app\/docs\/([^/]+)\/content\.mdx$/);
   const parsedComponentId = componentIdMatch?.[1];
-  const previewSupportedIds = new Set<ComponentId>([
-    "approval-card",
-    "audio",
-    "chart",
-    "citation",
-    "code-block",
-    "data-table",
-    "image",
-    "image-gallery",
-    "instagram-post",
-    "item-carousel",
-    "link-preview",
-    "linkedin-post",
-    "message-draft",
-    "option-list",
-    "order-summary",
-    "parameter-slider",
-    "plan",
-    "preferences-panel",
-    "progress-tracker",
-    "question-flow",
-    "stats-display",
-    "terminal",
-    "video",
-    "weather-widget",
-    "x-post",
-  ]);
-  const componentId =
-    parsedComponentId && previewSupportedIds.has(parsedComponentId as ComponentId)
-      ? (parsedComponentId as ComponentId)
-      : null;
+  const componentId = (() => {
+    if (!parsedComponentId) {
+      return null;
+    }
+
+    const candidateId = parsedComponentId as ComponentId;
+    return getPreviewConfig(candidateId) ? candidateId : null;
+  })();
 
   return (
     <div className="mb-12 flex flex-col gap-2">
