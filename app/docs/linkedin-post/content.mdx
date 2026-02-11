@@ -7,80 +7,51 @@ import { LinkedInPost } from "@/components/tool-ui/linkedin-post";
   mdxPath="app/docs/linkedin-post/content.mdx"
 />
 
-<Tabs items={["Preview", "Code"]}>
-  <Tab>
-    <div className="not-prose w-full max-w-[540px]">
-      <LinkedInPost
-        post={{
-          id: "linkedin-post-1",
-          author: {
-            name: "Athia Zohra",
-            avatarUrl:
-              "https://images.unsplash.com/photo-1740510294141-33ebf26e0809?q=80&w=987&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-            headline: "Engineering Lead | Building AI products",
-          },
-          text: "Excited to share that our team shipped a major update today. Six months of hard work paid off!",
-          stats: { likes: 234 },
-          createdAt: "2025-01-05T09:00:00.000Z",
-        }}
-      />
-    </div>
-  </Tab>
-  <Tab>
-    ```tsx
-    import { LinkedInPost } from "@/components/tool-ui/linkedin-post";
+## Getting Started
 
-    export function Example() {
-      return (
-        <LinkedInPost
-          post={{
-            id: "linkedin-post-1",
-            author: {
-              name: "Athia Zohra",
-              avatarUrl: "https://images.unsplash.com/photo-1740510294141-33ebf26e0809?q=80&w=987&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-              headline: "Engineering Lead | Building AI products",
-            },
-            text: "Excited to share that our team shipped a major update today. Six months of hard work paid off!",
-            stats: { likes: 234 },
-            createdAt: "2025-01-05T09:00:00.000Z",
-          }}
-        />
-      );
-    }
-    ```
-  </Tab>
-</Tabs>
+<Steps>
 
-## Source and Install
+<Step title="Install the component">
 
-Source code: [components/tool-ui/linkedin-post](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/linkedin-post)
-
-Install this component directly from the Tool UI shadcn registry:
+Run this once from your project root.
 
 ```bash
 npx shadcn@latest add https://tool-ui.com/r/linkedin-post.json
 ```
 
-This command installs `components/tool-ui/linkedin-post`, `components/tool-ui/shared` into your project.
+</Step>
 
-## Key Features
+<Step title="Use it in your application">
 
-<FeatureGrid>
-  <Feature icon="Paintbrush" title="Platform-native styling">
-    Matches LinkedIn visual language and interaction patterns
-  </Feature>
-  <Feature icon="FileText" title="Long-form post support">
-    Optimized layout for professional and text-heavy content
-  </Feature>
-  <Feature icon="MousePointerClick" title="Response actions">
-    Add custom actions below each post
-  </Feature>
-  <Feature icon="Link" title="Link previews">
-    Supports rich previews with title, image, and domain metadata
-  </Feature>
-</FeatureGrid>
+<div className="[&_pre]:max-h-[30rem] [&_pre]:overflow-y-auto">
 
-## Usage
+```tsx
+import { LinkedInPost } from "@/components/tool-ui/linkedin-post";
+
+export function Example() {
+  return (
+    <LinkedInPost
+      post={{
+        id: "linkedin-post-1",
+        author: {
+          name: "Athia Zohra",
+          avatarUrl: "https://images.unsplash.com/photo-1740510294141-33ebf26e0809?q=80&w=987&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+          headline: "Engineering Lead | Building AI products",
+        },
+        text: "Excited to share that our team shipped a major update today. Six months of hard work paid off!",
+        stats: { likes: 234 },
+        createdAt: "2025-01-05T09:00:00.000Z",
+      }}
+    />
+  );
+}
+```
+
+</div>
+
+</Step>
+
+<Step title="Register it in your runtime provider">
 
 ```tsx
 import { type Toolkit } from "@assistant-ui/react";
@@ -100,6 +71,29 @@ export const toolkit: Toolkit = {
   },
 };
 ```
+
+</Step>
+
+</Steps>
+
+These snippets use [assistant-ui](https://assistant-ui.com) for end-to-end wiring, but the LinkedInPost component itself is framework-agnostic at the UI layer: you can use it in any React codebase with any LLM SDK or tool-calling interface that can provide compatible props.
+
+## Key Features
+
+<FeatureGrid>
+  <Feature icon="Paintbrush" title="Platform-native styling">
+    Matches LinkedIn visual language and interaction patterns
+  </Feature>
+  <Feature icon="FileText" title="Long-form post support">
+    Optimized layout for professional and text-heavy content
+  </Feature>
+  <Feature icon="MousePointerClick" title="Response actions">
+    Add custom actions below each post
+  </Feature>
+  <Feature icon="Link" title="Link previews">
+    Supports rich previews with title, image, and domain metadata
+  </Feature>
+</FeatureGrid>
 
 ## Props
 

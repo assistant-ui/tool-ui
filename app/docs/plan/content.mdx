@@ -6,19 +6,90 @@ import { DocsHeader } from "../_components/docs-header";
   mdxPath="app/docs/plan/content.mdx"
 />
 
-<PlanPresetExample preset="comprehensive" />
+## Getting Started
 
-## Source and Install
+<Steps>
 
-Source code: [components/tool-ui/plan](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/plan)
+<Step title="Install the component">
 
-Install this component directly from the Tool UI shadcn registry:
+Run this once from your project root.
 
 ```bash
 npx shadcn@latest add https://tool-ui.com/r/plan.json
 ```
 
-This command installs `components/tool-ui/plan`, `components/tool-ui/shared` into your project.
+</Step>
+
+<Step title="Use it in your application">
+
+Create a backend tool that returns a serializable plan payload.
+
+<div className="[&_pre]:max-h-[30rem] [&_pre]:overflow-y-auto">
+
+```tsx
+// Backend tool
+import { tool } from "ai";
+
+const showPlan = tool({
+  description: "Display an implementation plan to the user",
+  inputSchema: {
+    type: "object",
+    properties: { task: { type: "string" } },
+    required: ["task"],
+    additionalProperties: false,
+  },
+  async execute({ task }) {
+    return {
+      id: "plan-1",
+      title: "Implementation Plan",
+      description: "Steps to complete: " + task,
+      todos: [
+        { id: "1", label: "Analyze requirements", status: "completed" },
+        { id: "2", label: "Implement solution", status: "in_progress" },
+        { id: "3", label: "Write tests", status: "pending" },
+      ],
+    };
+  },
+});
+```
+
+</div>
+
+</Step>
+
+<Step title="Register it in your runtime provider">
+
+Drop this into your runtime provider so tool results render as `Plan`.
+
+```tsx
+import { type Toolkit } from "@assistant-ui/react";
+import { Plan, safeParseSerializablePlan } from "@/components/tool-ui/plan";
+import { createResultToolRenderer } from "@/components/tool-ui/shared";
+
+export const toolkit: Toolkit = {
+  showPlan: {
+    type: "backend",
+    render: createResultToolRenderer({
+      safeParse: safeParseSerializablePlan,
+      render: (parsedResult) => (
+        <Plan
+          {...parsedResult}
+          responseActions={[
+            { id: "approve", label: "Approve Plan" },
+            { id: "revise", label: "Request Changes", variant: "secondary" },
+          ]}
+        />
+      ),
+    }),
+  },
+};
+```
+
+</Step>
+
+</Steps>
+
+These snippets use [assistant-ui](https://assistant-ui.com) for end-to-end wiring, but the Plan component itself is framework-agnostic at the UI layer: you can use it in any React codebase with any LLM SDK or tool-calling interface that can provide compatible props.
 
 ## Key Features
 
@@ -36,95 +107,6 @@ This command installs `components/tool-ui/plan`, `components/tool-ui/shared` int
     Visual feedback when all tasks complete
   </Feature>
 </FeatureGrid>
-
-## Usage
-
-```tsx
-// Backend tool
-import { tool, jsonSchema } from "ai";
-
-const showPlan = tool({
-  description: "Display an implementation plan to the user",
-  inputSchema: jsonSchema<{ task: string }>({
-    type: "object",
-    properties: { task: { type: "string" } },
-    required: ["task"],
-    additionalProperties: false,
-  }),
-  async execute({ task }) {
-    return {
-      id: "plan-1",
-      title: "Implementation Plan",
-      description: `Steps to complete: ${task}`,
-      todos: [
-        { id: "1", label: "Analyze requirements", status: "completed" },
-        { id: "2", label: "Implement solution", status: "in_progress" },
-        { id: "3", label: "Write tests", status: "pending" },
-      ],
-    };
-  },
-});
-
-// Frontend with assistant-ui
-import { type Toolkit } from "@assistant-ui/react";
-import {
-  Plan,
-  safeParseSerializablePlan,
-} from "@/components/tool-ui/plan";
-import { createResultToolRenderer } from "@/components/tool-ui/shared";
-
-export const toolkit: Toolkit = {
-  showPlan: {
-    type: "backend",
-    render: createResultToolRenderer({
-      safeParse: safeParseSerializablePlan,
-      render: (parsedResult) => (
-        <>
-            <Plan
-              {...parsedResult}
-              responseActions={[
-                { id: "approve", label: "Approve Plan" },
-                {
-                  id: "revise",
-                  label: "Request Changes",
-                  variant: "secondary",
-                },
-              ]}
-              onResponseAction={(id) => {
-                if (id === "approve") console.log("Plan approved");
-                // Handle other actions
-              }}
-            />
-        </>
-      ),
-    }),
-  },
-};
-```
-
-### With Expandable Details
-
-```tsx
-<Plan
-  id="feature-plan"
-  title="Feature Implementation"
-  todos={[
-    {
-      id: "1",
-      label: "Design API schema",
-      status: "completed",
-      description: "Created OpenAPI spec with all endpoints documented",
-    },
-    {
-      id: "2",
-      label: "Implement endpoints",
-      status: "in_progress",
-      description: "Working on authentication middleware",
-    },
-    { id: "3", label: "Write tests", status: "pending" },
-  ]}
-/>
-```
 
 ## Props
 
@@ -193,24 +175,6 @@ Use `Plan.Compact` to hide the progress summary and bar.
   }}
 />
 
-## Examples
-
-### Simple Plan (No Accordion)
-
-<PlanPresetExample preset="simple" />
-
-### Comprehensive Plan with Details
-
-<PlanPresetExample preset="comprehensive" />
-
-### Mixed Status States
-
-<PlanPresetExample preset="mixed_states" />
-
-### All Complete (Celebration State)
-
-<PlanPresetExample preset="all_complete" />
-
 ## Status States
 
 <TypeTable
@@ -233,35 +197,6 @@ Use `Plan.Compact` to hide the progress summary and bar.
     },
   }}
 />
-
-## Animations
-
-The Plan component includes animations that respect accessibility preferences:
-
-### State Transitions
-
-- **Spring bounce effects**: When todos complete or are cancelled, icons bounce with spring physics
-- **Stroke-drawing animations**: Checkmarks and X icons draw themselves with a stroke animation
-- **Fast spinner**: In-progress todos show a 0.7-second rotation
-- **Shimmer effect**: Labels of in-progress todos shimmer to draw attention
-
-### Entrance Animations
-
-New todos fade up with a 50ms stagger between each item. This applies on initial render and when todos are dynamically added.
-
-### Progress Celebration
-
-When the progress bar reaches 100%, it triggers a completion effect:
-
-- Color pulse with brightness increase
-- Shimmer sweep across the bar
-- Glow effect from the edges
-
-### Accordion Interactions
-
-- Chevron rotates with spring physics (bouncy cubic-bezier easing)
-- Content fades up with a slight delay after the accordion opens
-- Staggered reveal for description and metadata
 
 ## Accessibility
 

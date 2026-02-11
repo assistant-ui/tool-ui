@@ -7,26 +7,25 @@ import { MessageDraft } from "@/components/tool-ui/message-draft";
   mdxPath="app/docs/message-draft/content.mdx"
 />
 
-<Tabs items={["Preview", "Code"]}>
-  <Tab>
-    <div className="not-prose mx-auto max-w-sm">
-      <MessageDraft
-        id="message-draft-example"
-        channel="email"
-        subject="Q4 Planning Follow-up"
-        to={["sarah.chen@company.com"]}
-        body={`Hi Sarah,
+## Getting Started
 
-Thanks for joining the planning meeting today. I've attached the updated timeline.
+<Steps>
 
-Best,
-Alex`}
-/>
-</div>
+<Step title="Install the component">
 
-  </Tab>
-  <Tab>
-    ```tsx
+Run this once from your project root.
+
+```bash
+npx shadcn@latest add https://tool-ui.com/r/message-draft.json
+```
+
+</Step>
+
+<Step title="Use it in your application">
+
+<div className="[&_pre]:max-h-[30rem] [&_pre]:overflow-y-auto">
+
+```tsx
     import { MessageDraft } from "@/components/tool-ui/message-draft";
 
     export function Example() {
@@ -49,20 +48,54 @@ onCancel={() => console.log("Cancelled")}
 }
 ```
 
-  </Tab>
-</Tabs>
+</div>
 
-## Source and Install
+</Step>
 
-Source code: [components/tool-ui/message-draft](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/message-draft)
+<Step title="Register it in your runtime provider">
 
-Install this component directly from the Tool UI shadcn registry:
+```tsx
+"use client";
 
-```bash
-npx shadcn@latest add https://tool-ui.com/r/message-draft.json
+import { type Toolkit } from "@assistant-ui/react";
+import {
+  MessageDraft,
+  safeParseSerializableMessageDraft,
+  SerializableMessageDraftSchema,
+} from "@/components/tool-ui/message-draft";
+import { createArgsToolRenderer } from "@/components/tool-ui/shared";
+
+export const toolkit: Toolkit = {
+  draftMessage: {
+    description: "Draft a message for the user to review before sending.",
+    parameters: SerializableMessageDraftSchema,
+    render: createArgsToolRenderer({
+      safeParse: safeParseSerializableMessageDraft,
+      idPrefix: "message-draft",
+      render: (parsedArgs, { result, addResult }) =>
+        result ? (
+            <MessageDraft {...parsedArgs} outcome={result} />
+          ) : (
+            <MessageDraft
+              {...parsedArgs}
+              onSend={async () => {
+                // Perform actual send logic here
+                await sendMessage(parsedArgs);
+                await addResult?.("sent");
+              }}
+              onCancel={() => addResult?.("cancelled")}
+            />
+          ),
+    }),
+  },
+};
 ```
 
-This command installs `components/tool-ui/message-draft`, `components/tool-ui/shared` into your project.
+</Step>
+
+</Steps>
+
+These snippets use [assistant-ui](https://assistant-ui.com) for end-to-end wiring, but the MessageDraft component itself is framework-agnostic at the UI layer: you can use it in any React codebase with any LLM SDK or tool-calling interface that can provide compatible props.
 
 ## Key Features
 
@@ -89,77 +122,11 @@ The component supports multiple channel types, each with its own metadata fields
 
 Shows subject line, To/CC/BCC recipients, and message body.
 
-<Tabs items={["Preview", "Code"]}>
-  <Tab>
-    <div className="not-prose mx-auto max-w-sm">
-      <MessageDraft
-        id="email-example"
-        channel="email"
-        subject="Re: Q4 Budget Review"
-        to={["finance@company.com"]}
-        cc={["manager@company.com"]}
-        body={`Hi team,
-
-I've compiled the department requests. Key changes:
-
-- Engineering: +15% for infrastructure
-- Marketing: Flat (reallocating to digital)
-
-Please review by Friday.
-
-Thanks,
-Dana`}
-/>
-</div>
-
-  </Tab>
-  <Tab>
-    ```tsx
-    <MessageDraft
-      id="email-example"
-      channel="email"
-      subject="Re: Q4 Budget Review"
-      to={["finance@company.com"]}
-      cc={["manager@company.com"]}
-      body="..."
-      onSend={() => sendEmail()}
-      onCancel={() => console.log("Cancelled")}
-    />
-    ```
-  </Tab>
-</Tabs>
 
 ### Slack
 
 Shows channel or DM target with the Slack icon.
 
-<Tabs items={["Channel", "Direct Message"]}>
-  <Tab>
-    <div className="not-prose mx-auto max-w-sm">
-      <MessageDraft
-        id="slack-channel-example"
-        channel="slack"
-        target={{ type: "channel", name: "eng-releases" }}
-        body={`Shipped v2.4.1 to production:
-- Fixed auth token refresh bug
-- Improved search latency by 40%
-
-Monitoring dashboards look good.`}
-/>
-</div>
-
-  </Tab>
-  <Tab>
-    <div className="not-prose mx-auto max-w-sm">
-      <MessageDraft
-        id="slack-dm-example"
-        channel="slack"
-        target={{ type: "dm", name: "Alex Rivera" }}
-        body="Hey Alex, just wanted to check in on the API integration. Are we still on track for the Thursday demo?"
-      />
-    </div>
-  </Tab>
-</Tabs>
 
 ## Send Flow
 
@@ -175,73 +142,6 @@ The grace period is configurable via `undoGracePeriod` (in milliseconds).
 
 When `outcome` is set, the component renders a compact receipt showing the result. This is useful for displaying the outcome in conversation history.
 
-<Tabs items={["Sent", "Cancelled"]}>
-  <Tab>
-    <div className="not-prose mx-auto max-w-sm">
-      <MessageDraft
-        id="sent-receipt"
-        channel="email"
-        subject="Interview follow-up"
-        to={["hiring@company.com"]}
-        body="Thank you for the interview..."
-        outcome="sent"
-      />
-    </div>
-  </Tab>
-  <Tab>
-    <div className="not-prose mx-auto max-w-sm">
-      <MessageDraft
-        id="cancelled-receipt"
-        channel="slack"
-        target={{ type: "channel", name: "general" }}
-        body="Cancelled message..."
-        outcome="cancelled"
-      />
-    </div>
-  </Tab>
-</Tabs>
-
-## Usage
-
-```tsx
-"use client";
-
-import { type Toolkit } from "@assistant-ui/react";
-import {
-  MessageDraft,
-  safeParseSerializableMessageDraft,
-  SerializableMessageDraftSchema,
-} from "@/components/tool-ui/message-draft";
-import { createArgsToolRenderer } from "@/components/tool-ui/shared";
-
-export const toolkit: Toolkit = {
-  draftMessage: {
-    description: "Draft a message for the user to review before sending.",
-    parameters: SerializableMessageDraftSchema,
-    render: createArgsToolRenderer({
-      safeParse: safeParseSerializableMessageDraft,
-      idPrefix: "message-draft",
-      render: (parsedArgs, { result, addResult }) => (
-          {result ? (
-            <MessageDraft {...parsedArgs} outcome={result} />
-          ) : (
-            <MessageDraft
-              {...parsedArgs}
-              onSend={async () => {
-                // Perform actual send logic here
-                await sendMessage(parsedArgs);
-                await addResult?.("sent");
-              }}
-              onCancel={() => addResult?.("cancelled")}
-            />
-          )}
-      ),
-    }),
-  },
-};
-```
-
-Register this toolkit with `Tools({ toolkit })` to expose the tool UI.
 
 ## Props
 

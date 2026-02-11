@@ -6,38 +6,23 @@ import { DocsHeader } from "../_components/docs-header";
   mdxPath="app/docs/code-block/content.mdx"
 />
 
-<CodeBlockPresetExample preset="typescript" />
+## Getting Started
 
-## Source and Install
+<Steps>
 
-Source code: [components/tool-ui/code-block](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/code-block)
+<Step title="Install the component">
 
-Install this component directly from the Tool UI shadcn registry:
+Run this once from your project root.
 
 ```bash
 npx shadcn@latest add https://tool-ui.com/r/code-block.json
 ```
 
-This command installs `components/tool-ui/code-block`, `components/tool-ui/shared` into your project.
+</Step>
 
-## Key Features
+<Step title="Use it in your application">
 
-<FeatureGrid>
-  <Feature icon="Palette" title="Syntax highlighting">
-    Powered by Shiki with support for 100+ languages
-  </Feature>
-  <Feature icon="Highlighter" title="Line highlighting">
-    Highlight specific lines for explanations or bug indicators
-  </Feature>
-  <Feature icon="FoldVertical" title="Collapsible mode">
-    Auto-collapse long snippets to keep conversations scannable
-  </Feature>
-  <Feature icon="FileCode" title="Filename header">
-    Show filename and language badge for context
-  </Feature>
-</FeatureGrid>
-
-## Usage
+<div className="[&_pre]:max-h-[30rem] [&_pre]:overflow-y-auto">
 
 ```tsx
 import { CodeBlock } from "@/components/tool-ui/code-block";
@@ -57,9 +42,11 @@ export function MyComponent() {
 }
 ```
 
-### With assistant-ui (tool output)
+</div>
 
-Define a tool that returns Code Block props, then render the component with runtime validation.
+</Step>
+
+<Step title="Register it in your runtime provider">
 
 ```tsx
 // Backend tool
@@ -105,6 +92,29 @@ export const toolkit: Toolkit = {
   },
 };
 ```
+
+</Step>
+
+</Steps>
+
+These snippets use [assistant-ui](https://assistant-ui.com) for end-to-end wiring, but the CodeBlock component itself is framework-agnostic at the UI layer: you can use it in any React codebase with any LLM SDK or tool-calling interface that can provide compatible props.
+
+## Key Features
+
+<FeatureGrid>
+  <Feature icon="Palette" title="Syntax highlighting">
+    Powered by Shiki with support for 100+ languages
+  </Feature>
+  <Feature icon="Highlighter" title="Line highlighting">
+    Highlight specific lines for explanations or bug indicators
+  </Feature>
+  <Feature icon="FoldVertical" title="Collapsible mode">
+    Auto-collapse long snippets to keep conversations scannable
+  </Feature>
+  <Feature icon="FileCode" title="Filename header">
+    Show filename and language badge for context
+  </Feature>
+</FeatureGrid>
 
 ## Props
 

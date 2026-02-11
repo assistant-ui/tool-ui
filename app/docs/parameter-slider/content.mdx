@@ -7,73 +7,49 @@ import { ParameterSlider } from "@/components/tool-ui/parameter-slider";
   mdxPath="app/docs/parameter-slider/content.mdx"
 />
 
-<Tabs items={["Preview", "Code"]}>
-  <Tab>
-    <div className="not-prose mx-auto max-w-sm">
-      <ParameterSlider
-        id="parameter-slider-example"
-        sliders={[
-          { id: "exposure", label: "Exposure", min: -3, max: 3, step: 0.1, value: 0.3, unit: "EV", precision: 1 },
-          { id: "contrast", label: "Contrast", min: -100, max: 100, step: 5, value: 15, unit: "%" },
-          { id: "highlights", label: "Highlights", min: -100, max: 100, step: 5, value: -20, unit: "%" },
-        ]}
-      />
-    </div>
-  </Tab>
-  <Tab>
-    ```tsx
-    import { ParameterSlider } from "@/components/tool-ui/parameter-slider";
+## Getting Started
 
-    export function Example() {
-      return (
-        <ParameterSlider
-          id="parameter-slider-example"
-          sliders={[
-            { id: "exposure", label: "Exposure", min: -3, max: 3, step: 0.1, value: 0.3, unit: "EV", precision: 1 },
-            { id: "contrast", label: "Contrast", min: -100, max: 100, step: 5, value: 15, unit: "%" },
-            { id: "highlights", label: "Highlights", min: -100, max: 100, step: 5, value: -20, unit: "%" },
-          ]}
-          onResponseAction={(actionId, values) => {
-            console.log(actionId, values);
-          }}
-        />
-      );
-    }
-    ```
+<Steps>
 
-  </Tab>
-</Tabs>
+<Step title="Install the component">
 
-## Source and Install
-
-Source code: [components/tool-ui/parameter-slider](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/parameter-slider)
-
-Install this component directly from the Tool UI shadcn registry:
+Run this once from your project root.
 
 ```bash
 npx shadcn@latest add https://tool-ui.com/r/parameter-slider.json
 ```
 
-This command installs `components/tool-ui/parameter-slider`, `components/tool-ui/shared` into your project.
+</Step>
 
-## Key Features
+<Step title="Use it in your application">
 
-<FeatureGrid>
-  <Feature icon="ListChecks" title="Multiple parameters">
-    Group related sliders with shared Reset/Apply actions
-  </Feature>
-  <Feature icon="SlidersHorizontal" title="Inline labels and values">
-    Label and current value displayed directly on the track
-  </Feature>
-  <Feature icon="Settings2" title="Custom units">
-    Display domain-specific units like EV, dB, %, or Mbps
-  </Feature>
-  <Feature icon="Accessibility" title="Built-in accessibility">
-    Keyboard navigation and screen reader support
-  </Feature>
-</FeatureGrid>
+<div className="[&_pre]:max-h-[30rem] [&_pre]:overflow-y-auto">
 
-## Usage
+```tsx
+import { ParameterSlider } from "@/components/tool-ui/parameter-slider";
+
+export function Example() {
+  return (
+    <ParameterSlider
+      id="parameter-slider-example"
+      sliders={[
+        { id: "exposure", label: "Exposure", min: -3, max: 3, step: 0.1, value: 0.3, unit: "EV", precision: 1 },
+        { id: "contrast", label: "Contrast", min: -100, max: 100, step: 5, value: 15, unit: "%" },
+        { id: "highlights", label: "Highlights", min: -100, max: 100, step: 5, value: -20, unit: "%" },
+      ]}
+      onResponseAction={(actionId, values) => {
+        console.log(actionId, values);
+      }}
+    />
+  );
+}
+```
+
+</div>
+
+</Step>
+
+<Step title="Register it in your runtime provider">
 
 ```tsx
 "use client";
@@ -107,6 +83,29 @@ export const toolkit: Toolkit = {
   },
 };
 ```
+
+</Step>
+
+</Steps>
+
+These snippets use [assistant-ui](https://assistant-ui.com) for end-to-end wiring, but the ParameterSlider component itself is framework-agnostic at the UI layer: you can use it in any React codebase with any LLM SDK or tool-calling interface that can provide compatible props.
+
+## Key Features
+
+<FeatureGrid>
+  <Feature icon="ListChecks" title="Multiple parameters">
+    Group related sliders with shared Reset/Apply actions
+  </Feature>
+  <Feature icon="SlidersHorizontal" title="Inline labels and values">
+    Label and current value displayed directly on the track
+  </Feature>
+  <Feature icon="Settings2" title="Custom units">
+    Display domain-specific units like EV, dB, %, or Mbps
+  </Feature>
+  <Feature icon="Accessibility" title="Built-in accessibility">
+    Keyboard navigation and screen reader support
+  </Feature>
+</FeatureGrid>
 
 ## Props
 

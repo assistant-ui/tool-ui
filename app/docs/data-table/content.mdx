@@ -20,191 +20,101 @@ import {
   mdxPath="app/docs/data-table/content.mdx"
 />
 
-<Tabs items={["Preview", "Code"]}>
-  <Tab>
-    <div className="not-prose">
-      <DataTable
-        rowIdKey="id"
-        defaultSort={{ by: "createdAt", direction: "desc" }}
-        columns={[
-          { key: "issue", label: "Issue", priority: "primary", truncate: true },
-          {
-            key: "priority",
-            label: "Urgency",
-            format: {
-              kind: "status",
-              statusMap: {
-                high: { tone: "danger", label: "High" },
-                medium: { tone: "warning", label: "Medium" },
-                low: { tone: "neutral", label: "Low" },
-              },
-            },
-          },
-          {
-            key: "createdAt",
-            label: "Created",
-            format: { kind: "date", dateFormat: "relative" },
-          },
-          {
-            key: "amount",
-            label: "Amount",
-            align: "right",
-            format: { kind: "currency", currency: "USD", decimals: 2 },
-          },
-        ]}
-        data={[
-          {
-            id: "1",
-            issue: "Payment failing on checkout",
-            priority: "high",
-            createdAt: "2025-11-11T09:24:00Z",
-            amount: 129.99,
-          },
-          {
-            id: "2",
-            issue: "Billing UI alignment bug",
-            priority: "medium",
-            createdAt: "2025-11-10T17:03:00Z",
-            amount: 42,
-          },
-          {
-            id: "3",
-            issue: "Export CSV missing headers",
-            priority: "low",
-            createdAt: "2025-11-08T08:00:00Z",
-            amount: 0,
-          },
-          {
-            id: "4",
-            issue: "Webhook retries inconsistent",
-            priority: "high",
-            createdAt: "2025-11-13T22:15:00Z",
-            amount: 527.5,
-          },
-        ]}
-      />
-    </div>
-  </Tab>
-  <Tab>
-    ```tsx
-    import { DataTable, type Column } from "@/components/tool-ui/data-table";
+## Getting Started
 
-    type Row = {
-      id: string;
-      issue: string;
-      priority: "high" | "medium" | "low";
-      createdAt: string;
-      amount: number;
-    };
+<Steps>
 
-    const columns: Column<Row>[] = [
-      { key: "issue", label: "Issue", priority: "primary", truncate: true },
-      {
-        key: "priority",
-        label: "Urgency",
-        format: {
-          kind: "status",
-          statusMap: {
-            high: { tone: "danger", label: "High" },
-            medium: { tone: "warning", label: "Medium" },
-            low: { tone: "neutral", label: "Low" },
-          },
-        },
-      },
-      { key: "createdAt", label: "Created", format: { kind: "date", dateFormat: "relative" } },
-      { key: "amount", label: "Amount", align: "right", format: { kind: "currency", currency: "USD", decimals: 2 } },
-    ];
+<Step title="Install the component">
 
-    const data: Row[] = [
-      {
-        id: "1",
-        issue: "Payment failing on checkout",
-        priority: "high",
-        createdAt: "2025-11-11T09:24:00Z",
-        amount: 129.99,
-      },
-      {
-        id: "2",
-        issue: "Billing UI alignment bug",
-        priority: "medium",
-        createdAt: "2025-11-10T17:03:00Z",
-        amount: 42,
-      },
-      {
-        id: "3",
-        issue: "Export CSV missing headers",
-        priority: "low",
-        createdAt: "2025-11-08T08:00:00Z",
-        amount: 0,
-      },
-      {
-        id: "4",
-        issue: "Webhook retries inconsistent",
-        priority: "high",
-        createdAt: "2025-11-13T22:15:00Z",
-        amount: 527.5,
-      },
-    ];
-
-    export default function Example() {
-      return (
-        <DataTable
-          rowIdKey="id"
-          columns={columns}
-          data={data}
-          defaultSort={{ by: "createdAt", direction: "desc" }}
-        />
-      );
-    }
-    ```
-
-  </Tab>
-</Tabs>
-
-## Source and Install
-
-Source code: [components/tool-ui/data-table](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/data-table)
-
-Install this component directly from the Tool UI shadcn registry:
+Run this once from your project root.
 
 ```bash
 npx shadcn@latest add https://tool-ui.com/r/data-table.json
 ```
 
-This command installs `components/tool-ui/data-table`, `components/tool-ui/shared` into your project.
+</Step>
 
-## Key Features
+<Step title="Use it in your application">
 
-<FeatureGrid>
-  <Feature icon="Smartphone" title="Responsive layout">
-    Automatically switches from table to cards on mobile
-  </Feature>
-  <Feature icon="ArrowUpDown" title="Sorting">
-    Tri-state column sorting: none → ascending → descending
-  </Feature>
-  <Feature icon="Table2" title="Declarative formatting">
-    Currency, dates, links, badges, and more via config
-  </Feature>
-  <Feature icon="MousePointerClick" title="Response actions">
-    Add actionable buttons below the table
-  </Feature>
-</FeatureGrid>
-
-## Layout Variants
-
-Use explicit components when you want to force a layout:
-
-- `<DataTable>` (default): responsive auto layout
-- `<DataTable.Table>`: always render the table view
-- `<DataTable.Cards>`: always render the card view
+<div className="[&_pre]:max-h-[30rem] [&_pre]:overflow-y-auto">
 
 ```tsx
-import { DataTable } from "@/components/tool-ui/data-table";
+import { DataTable, type Column } from "@/components/tool-ui/data-table";
+
+type Row = {
+  id: string;
+  issue: string;
+  priority: "high" | "medium" | "low";
+  createdAt: string;
+  amount: number;
+};
+
+const columns: Column<Row>[] = [
+  { key: "issue", label: "Issue", priority: "primary", truncate: true },
+  {
+    key: "priority",
+    label: "Urgency",
+    format: {
+      kind: "status",
+      statusMap: {
+        high: { tone: "danger", label: "High" },
+        medium: { tone: "warning", label: "Medium" },
+        low: { tone: "neutral", label: "Low" },
+      },
+    },
+  },
+  { key: "createdAt", label: "Created", format: { kind: "date", dateFormat: "relative" } },
+  { key: "amount", label: "Amount", align: "right", format: { kind: "currency", currency: "USD", decimals: 2 } },
+];
+
+const data: Row[] = [
+  {
+    id: "1",
+    issue: "Payment failing on checkout",
+    priority: "high",
+    createdAt: "2025-11-11T09:24:00Z",
+    amount: 129.99,
+  },
+  {
+    id: "2",
+    issue: "Billing UI alignment bug",
+    priority: "medium",
+    createdAt: "2025-11-10T17:03:00Z",
+    amount: 42,
+  },
+  {
+    id: "3",
+    issue: "Export CSV missing headers",
+    priority: "low",
+    createdAt: "2025-11-08T08:00:00Z",
+    amount: 0,
+  },
+  {
+    id: "4",
+    issue: "Webhook retries inconsistent",
+    priority: "high",
+    createdAt: "2025-11-13T22:15:00Z",
+    amount: 527.5,
+  },
+];
+
+export default function Example() {
+  return (
+    <DataTable
+      rowIdKey="id"
+      columns={columns}
+      data={data}
+      defaultSort={{ by: "createdAt", direction: "desc" }}
+    />
+  );
+}
 ```
 
-## Usage
+</div>
 
-Define a tool that returns table data, then render with the DataTable component.
+</Step>
+
+<Step title="Register it in your runtime provider">
 
 ```tsx
 // Backend tool
@@ -262,6 +172,41 @@ export const toolkit: Toolkit = {
     }),
   },
 };
+```
+
+</Step>
+
+</Steps>
+
+These snippets use [assistant-ui](https://assistant-ui.com) for end-to-end wiring, but the DataTable component itself is framework-agnostic at the UI layer: you can use it in any React codebase with any LLM SDK or tool-calling interface that can provide compatible props.
+
+## Key Features
+
+<FeatureGrid>
+  <Feature icon="Smartphone" title="Responsive layout">
+    Automatically switches from table to cards on mobile
+  </Feature>
+  <Feature icon="ArrowUpDown" title="Sorting">
+    Tri-state column sorting: none → ascending → descending
+  </Feature>
+  <Feature icon="Table2" title="Declarative formatting">
+    Currency, dates, links, badges, and more via config
+  </Feature>
+  <Feature icon="MousePointerClick" title="Response actions">
+    Add actionable buttons below the table
+  </Feature>
+</FeatureGrid>
+
+## Layout Variants
+
+Use explicit components when you want to force a layout:
+
+- `<DataTable>` (default): responsive auto layout
+- `<DataTable.Table>`: always render the table view
+- `<DataTable.Cards>`: always render the card view
+
+```tsx
+import { DataTable } from "@/components/tool-ui/data-table";
 ```
 
 ## Props

@@ -7,135 +7,77 @@ import { StatsDisplay } from "@/components/tool-ui/stats-display";
   mdxPath="app/docs/stats-display/content.mdx"
 />
 
-<Tabs items={["Preview", "Code"]}>
-  <Tab>
-    <div className="not-prose mx-auto max-w-lg">
-      <StatsDisplay
-        id="stats-example"
-        title="Q4 Performance"
-        description="October through December 2024"
-        stats={[
-          {
-            key: "revenue",
-            label: "Revenue",
-            value: 847300,
-            format: { kind: "currency", currency: "USD", decimals: 0 },
-            sparkline: { data: [72000, 68000, 74000, 81000, 78000, 85000, 89000, 91000, 86000, 94000, 97000, 102000], color: "var(--chart-1)" },
-            diff: { value: 12.4, decimals: 1 },
-          },
-          {
-            key: "active-users",
-            label: "Active Users",
-            value: 24890,
-            format: { kind: "number", compact: true },
-            sparkline: { data: [18200, 19100, 19800, 20400, 21200, 21900, 22600, 23100, 23800, 24200, 24500, 24890], color: "var(--chart-3)" },
-            diff: { value: 8.2, decimals: 1 },
-          },
-          {
-            key: "churn",
-            label: "Churn Rate",
-            value: 2.1,
-            format: { kind: "percent", decimals: 1, basis: "unit" },
-            sparkline: { data: [3.2, 3.0, 2.8, 2.9, 2.7, 2.5, 2.4, 2.3, 2.2, 2.1, 2.1, 2.1], color: "var(--chart-4)" },
-            diff: { value: -0.8, decimals: 1, upIsPositive: false },
-          },
-          {
-            key: "nps",
-            label: "NPS Score",
-            value: 72,
-            format: { kind: "number" },
-            sparkline: { data: [58, 61, 64, 62, 65, 68, 66, 69, 70, 71, 71, 72], color: "var(--chart-5)" },
-            diff: { value: 5.0, decimals: 0 },
-          },
-        ]}
-      />
-    </div>
-  </Tab>
-  <Tab>
-    ```tsx
-    import { StatsDisplay } from "@/components/tool-ui/stats-display";
+## Getting Started
 
-    export function Example() {
-      return (
-        <StatsDisplay
-          id="stats-example"
-          title="Q4 Performance"
-          description="October through December 2024"
-          stats={[
-            {
-              key: "revenue",
-              label: "Revenue",
-              value: 847300,
-              format: { kind: "currency", currency: "USD", decimals: 0 },
-              sparkline: { data: [72000, 68000, 74000, 81000, 78000, 85000, 89000, 91000, 86000, 94000, 97000, 102000], color: "var(--chart-1)" },
-              diff: { value: 12.4, decimals: 1 },
-            },
-            {
-              key: "active-users",
-              label: "Active Users",
-              value: 24890,
-              format: { kind: "number", compact: true },
-              sparkline: { data: [18200, 19100, 19800, 20400, 21200, 21900, 22600, 23100, 23800, 24200, 24500, 24890], color: "var(--chart-3)" },
-              diff: { value: 8.2, decimals: 1 },
-            },
-            {
-              key: "churn",
-              label: "Churn Rate",
-              value: 2.1,
-              format: { kind: "percent", decimals: 1, basis: "unit" },
-              sparkline: { data: [3.2, 3.0, 2.8, 2.9, 2.7, 2.5, 2.4, 2.3, 2.2, 2.1, 2.1, 2.1], color: "var(--chart-4)" },
-              diff: { value: -0.8, decimals: 1, upIsPositive: false },
-            },
-            {
-              key: "nps",
-              label: "NPS Score",
-              value: 72,
-              format: { kind: "number" },
-              sparkline: { data: [58, 61, 64, 62, 65, 68, 66, 69, 70, 71, 71, 72], color: "var(--chart-5)" },
-              diff: { value: 5.0, decimals: 0 },
-            },
-          ]}
-        />
-      );
-    }
-    ```
+<Steps>
 
-  </Tab>
-</Tabs>
+<Step title="Install the component">
 
-## Source and Install
-
-Source code: [components/tool-ui/stats-display](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/stats-display)
-
-Install this component directly from the Tool UI shadcn registry:
+Run this once from your project root.
 
 ```bash
 npx shadcn@latest add https://tool-ui.com/r/stats-display.json
 ```
 
-This command installs `components/tool-ui/stats-display`, `components/tool-ui/shared` into your project.
+</Step>
 
-## Key Features
+<Step title="Use it in your application">
 
-<FeatureGrid>
-  <Feature icon="Grid2x2" title="Auto-responsive grid">
-    CSS grid with auto-fit adapts to container width
-  </Feature>
-  <Feature icon="LineChart" title="Inline sparklines">
-    Pure SVG trend visualization without external dependencies
-  </Feature>
-  <Feature icon="BarChart3" title="Delta indicators">
-    Semantic colors with upIsPositive for metrics where down is good
-  </Feature>
-  <Feature icon="DollarSign" title="Format options">
-    Currency, percent, number, and text with locale support
-  </Feature>
-  <Feature icon="Target" title="Single-stat hero mode">
-    Pass a single stat for a larger, centered presentation
-  </Feature>
-</FeatureGrid>
+<div className="[&_pre]:max-h-[30rem] [&_pre]:overflow-y-auto">
 
-## Usage
+```tsx
+import { StatsDisplay } from "@/components/tool-ui/stats-display";
+
+export function Example() {
+  return (
+    <StatsDisplay
+      id="stats-example"
+      title="Q4 Performance"
+      description="October through December 2024"
+      stats={[
+        {
+          key: "revenue",
+          label: "Revenue",
+          value: 847300,
+          format: { kind: "currency", currency: "USD", decimals: 0 },
+          sparkline: { data: [72000, 68000, 74000, 81000, 78000, 85000, 89000, 91000, 86000, 94000, 97000, 102000], color: "var(--chart-1)" },
+          diff: { value: 12.4, decimals: 1 },
+        },
+        {
+          key: "active-users",
+          label: "Active Users",
+          value: 24890,
+          format: { kind: "number", compact: true },
+          sparkline: { data: [18200, 19100, 19800, 20400, 21200, 21900, 22600, 23100, 23800, 24200, 24500, 24890], color: "var(--chart-3)" },
+          diff: { value: 8.2, decimals: 1 },
+        },
+        {
+          key: "churn",
+          label: "Churn Rate",
+          value: 2.1,
+          format: { kind: "percent", decimals: 1, basis: "unit" },
+          sparkline: { data: [3.2, 3.0, 2.8, 2.9, 2.7, 2.5, 2.4, 2.3, 2.2, 2.1, 2.1, 2.1], color: "var(--chart-4)" },
+          diff: { value: -0.8, decimals: 1, upIsPositive: false },
+        },
+        {
+          key: "nps",
+          label: "NPS Score",
+          value: 72,
+          format: { kind: "number" },
+          sparkline: { data: [58, 61, 64, 62, 65, 68, 66, 69, 70, 71, 71, 72], color: "var(--chart-5)" },
+          diff: { value: 5.0, decimals: 0 },
+        },
+      ]}
+    />
+  );
+}
+```
+
+</div>
+
+</Step>
+
+<Step title="Register it in your runtime provider">
 
 ```tsx
 "use client";
@@ -162,6 +104,32 @@ export const toolkit: Toolkit = {
   },
 };
 ```
+
+</Step>
+
+</Steps>
+
+These snippets use [assistant-ui](https://assistant-ui.com) for end-to-end wiring, but the StatsDisplay component itself is framework-agnostic at the UI layer: you can use it in any React codebase with any LLM SDK or tool-calling interface that can provide compatible props.
+
+## Key Features
+
+<FeatureGrid>
+  <Feature icon="Grid2x2" title="Auto-responsive grid">
+    CSS grid with auto-fit adapts to container width
+  </Feature>
+  <Feature icon="LineChart" title="Inline sparklines">
+    Pure SVG trend visualization without external dependencies
+  </Feature>
+  <Feature icon="BarChart3" title="Delta indicators">
+    Semantic colors with upIsPositive for metrics where down is good
+  </Feature>
+  <Feature icon="DollarSign" title="Format options">
+    Currency, percent, number, and text with locale support
+  </Feature>
+  <Feature icon="Target" title="Single-stat hero mode">
+    Pass a single stat for a larger, centered presentation
+  </Feature>
+</FeatureGrid>
 
 ## Props
 

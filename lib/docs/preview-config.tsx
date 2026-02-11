@@ -108,81 +108,89 @@ import {
 import type { SerializableUpfrontMode } from "@/components/tool-ui/question-flow";
 
 const DynamicApprovalCard = dynamic(() =>
-  import("@/components/tool-ui/approval-card").then((m) => m.ApprovalCard)
+  import("@/components/tool-ui/approval-card").then((m) => m.ApprovalCard),
 );
 const DynamicChart = dynamic(() =>
-  import("@/components/tool-ui/chart").then((m) => m.Chart)
+  import("@/components/tool-ui/chart").then((m) => m.Chart),
 );
 const DynamicCitation = dynamic(() =>
-  import("@/components/tool-ui/citation").then((m) => m.Citation)
+  import("@/components/tool-ui/citation").then((m) => m.Citation),
 );
 const DynamicCitationList = dynamic(() =>
-  import("@/components/tool-ui/citation").then((m) => m.CitationList)
+  import("@/components/tool-ui/citation").then((m) => m.CitationList),
 );
 const DynamicCodeBlock = dynamic(() =>
-  import("@/components/tool-ui/code-block").then((m) => m.CodeBlock)
+  import("@/components/tool-ui/code-block").then((m) => m.CodeBlock),
 );
 const DynamicDataTable = dynamic(() =>
-  import("@/components/tool-ui/data-table").then((m) => m.DataTable)
+  import("@/components/tool-ui/data-table").then((m) => m.DataTable),
 );
 const DynamicImage = dynamic(() =>
-  import("@/components/tool-ui/image").then((m) => m.Image)
+  import("@/components/tool-ui/image").then((m) => m.Image),
 );
 const DynamicImageGallery = dynamic(() =>
-  import("@/components/tool-ui/image-gallery").then((m) => m.ImageGallery)
+  import("@/components/tool-ui/image-gallery").then((m) => m.ImageGallery),
 );
 const DynamicVideo = dynamic(() =>
-  import("@/components/tool-ui/video").then((m) => m.Video)
+  import("@/components/tool-ui/video").then((m) => m.Video),
 );
 const DynamicAudio = dynamic(() =>
-  import("@/components/tool-ui/audio").then((m) => m.Audio)
+  import("@/components/tool-ui/audio").then((m) => m.Audio),
 );
 const DynamicLinkPreview = dynamic(() =>
-  import("@/components/tool-ui/link-preview").then((m) => m.LinkPreview)
+  import("@/components/tool-ui/link-preview").then((m) => m.LinkPreview),
 );
 const DynamicMessageDraft = dynamic(() =>
-  import("@/components/tool-ui/message-draft").then((m) => m.MessageDraft)
+  import("@/components/tool-ui/message-draft").then((m) => m.MessageDraft),
 );
 const DynamicItemCarousel = dynamic(() =>
-  import("@/components/tool-ui/item-carousel").then((m) => m.ItemCarousel)
+  import("@/components/tool-ui/item-carousel").then((m) => m.ItemCarousel),
 );
 const DynamicOptionList = dynamic(() =>
-  import("@/components/tool-ui/option-list").then((m) => m.OptionList)
+  import("@/components/tool-ui/option-list").then((m) => m.OptionList),
 );
 const DynamicOrderSummary = dynamic(() =>
-  import("@/components/tool-ui/order-summary").then((m) => m.OrderSummary)
+  import("@/components/tool-ui/order-summary").then((m) => m.OrderSummary),
 );
 const DynamicParameterSlider = dynamic(() =>
-  import("@/components/tool-ui/parameter-slider").then((m) => m.ParameterSlider)
+  import("@/components/tool-ui/parameter-slider").then(
+    (m) => m.ParameterSlider,
+  ),
 );
 const DynamicPlan = dynamic(() =>
-  import("@/components/tool-ui/plan").then((m) => m.Plan)
+  import("@/components/tool-ui/plan").then((m) => m.Plan),
 );
 const DynamicPlanCompact = dynamic(() =>
-  import("@/components/tool-ui/plan").then((m) => m.PlanCompact)
+  import("@/components/tool-ui/plan").then((m) => m.PlanCompact),
 );
 const DynamicPreferencesPanel = dynamic(() =>
-  import("@/components/tool-ui/preferences-panel").then((m) => m.PreferencesPanel)
+  import("@/components/tool-ui/preferences-panel").then(
+    (m) => m.PreferencesPanel,
+  ),
 );
 const DynamicPreferencesPanelReceipt = dynamic(() =>
   import("@/components/tool-ui/preferences-panel").then(
     (m) => m.PreferencesPanelReceipt,
-  )
+  ),
 );
 const DynamicProgressTracker = dynamic(() =>
-  import("@/components/tool-ui/progress-tracker").then((m) => m.ProgressTracker)
+  import("@/components/tool-ui/progress-tracker").then(
+    (m) => m.ProgressTracker,
+  ),
 );
 const DynamicStatsDisplay = dynamic(() =>
-  import("@/components/tool-ui/stats-display").then((m) => m.StatsDisplay)
+  import("@/components/tool-ui/stats-display").then((m) => m.StatsDisplay),
 );
 const DynamicTerminal = dynamic(() =>
-  import("@/components/tool-ui/terminal").then((m) => m.Terminal)
+  import("@/components/tool-ui/terminal").then((m) => m.Terminal),
 );
 const DynamicQuestionFlow = dynamic(() =>
-  import("@/components/tool-ui/question-flow").then((m) => m.QuestionFlow)
+  import("@/components/tool-ui/question-flow").then((m) => m.QuestionFlow),
 );
 const DynamicWeatherWidget = dynamic(() =>
-  import("@/components/tool-ui/weather-widget/runtime").then((m) => m.WeatherWidget)
+  import("@/components/tool-ui/weather-widget/runtime").then(
+    (m) => m.WeatherWidget,
+  ),
 );
 
 function QuestionFlowUpfrontWithReceipt({
@@ -341,18 +349,12 @@ export const previewConfigs: Record<
       preamble: "According to the source:",
     },
     renderComponent: ({ data, presetName }) => {
-      const {
-        citations,
-        variant,
-        maxVisible,
-        responseActions,
-      } =
-        data as {
-          citations: Parameters<typeof Citation>[0][];
-          variant?: Parameters<typeof Citation>[0]["variant"];
-          maxVisible?: number;
-          responseActions?: unknown[];
-        };
+      const { citations, variant, maxVisible, responseActions } = data as {
+        citations: Parameters<typeof Citation>[0][];
+        variant?: Parameters<typeof Citation>[0]["variant"];
+        maxVisible?: number;
+        responseActions?: unknown[];
+      };
 
       const wrapperClass =
         variant === "inline" ? "mx-auto max-w-xl" : "mx-auto max-w-lg";
@@ -663,7 +665,7 @@ export const previewConfigs: Record<
     },
     renderComponent: ({ data, presetName }) => {
       const planData = data as SerializablePlan;
-      if (presetName === "simple") {
+      if (presetName === "compact") {
         return <DynamicPlanCompact {...planData} />;
       }
       return <DynamicPlan {...planData} />;
@@ -820,7 +822,9 @@ export const previewConfigs: Record<
       preamble: "Here's the current weather:",
     },
     renderComponent: ({ data }) => (
-      <DynamicWeatherWidget {...(data as Parameters<typeof WeatherWidget>[0])} />
+      <DynamicWeatherWidget
+        {...(data as Parameters<typeof WeatherWidget>[0])}
+      />
     ),
   },
 };

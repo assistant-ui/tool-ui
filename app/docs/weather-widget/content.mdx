@@ -7,96 +7,59 @@ import { WeatherWidget } from "@/components/tool-ui/weather-widget/runtime";
   mdxPath="app/docs/weather-widget/content.mdx"
 />
 
-<Tabs items={["Preview", "Code"]}>
-  <Tab>
-    <div className="not-prose mx-auto max-w-md">
-      <WeatherWidget
-        version="3.1"
-        id="weather-widget-example"
-        location={{ name: "Kansas City, MO" }}
-        units={{ temperature: "fahrenheit" }}
-        current={{
-          temperature: 72,
-          tempMin: 65,
-          tempMax: 78,
-          conditionCode: "thunderstorm",
-        }}
-        forecast={[
-          { label: "Tue", tempMin: 62, tempMax: 75, conditionCode: "heavy-rain" },
-          { label: "Wed", tempMin: 58, tempMax: 70, conditionCode: "rain" },
-          { label: "Thu", tempMin: 55, tempMax: 68, conditionCode: "cloudy" },
-          { label: "Fri", tempMin: 52, tempMax: 72, conditionCode: "partly-cloudy" },
-          { label: "Sat", tempMin: 58, tempMax: 76, conditionCode: "clear" },
-        ]}
-        time={{ localTimeOfDay: 22 / 24 }}
-        updatedAt="2026-01-28T22:00:00Z"
-      />
-    </div>
-  </Tab>
-  <Tab>
-    ```tsx
-    import { WeatherWidget } from "@/components/tool-ui/weather-widget/runtime";
+## Getting Started
 
-    export function Example() {
-      return (
-        <WeatherWidget
-          version="3.1"
-          id="weather-widget-example"
-          location={{ name: "Kansas City, MO" }}
-          units={{ temperature: "fahrenheit" }}
-          current={{
-            temperature: 72,
-            tempMin: 65,
-            tempMax: 78,
-            conditionCode: "thunderstorm",
-          }}
-          forecast={[
-            { label: "Tue", tempMin: 62, tempMax: 75, conditionCode: "heavy-rain" },
-            { label: "Wed", tempMin: 58, tempMax: 70, conditionCode: "rain" },
-            { label: "Thu", tempMin: 55, tempMax: 68, conditionCode: "cloudy" },
-            { label: "Fri", tempMin: 52, tempMax: 72, conditionCode: "partly-cloudy" },
-            { label: "Sat", tempMin: 58, tempMax: 76, conditionCode: "clear" },
-          ]}
-          time={{ localTimeOfDay: 22 / 24 }}
-          updatedAt="2026-01-28T22:00:00Z"
-        />
-      );
-    }
-    ```
+<Steps>
 
-  </Tab>
-</Tabs>
+<Step title="Install the component">
 
-## Source and Install
-
-Source code: [components/tool-ui/weather-widget](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/weather-widget)
-
-Install this component directly from the Tool UI shadcn registry:
+Run this once from your project root.
 
 ```bash
 npx shadcn@latest add https://tool-ui.com/r/weather-widget.json
 ```
 
-This command installs `components/tool-ui/weather-widget`, `components/tool-ui/shared` into your project.
+</Step>
 
-## Key Features
+<Step title="Use it in your application">
 
-<FeatureGrid>
-  <Feature icon="CloudSun" title="Weather conditions">
-    13 condition types with matching icons: clear, cloudy, rain, snow, and more
-  </Feature>
-  <Feature icon="MapPin" title="Location display">
-    Show city and region with the current temperature
-  </Feature>
-  <Feature icon="Thermometer" title="Temperature units">
-    Support for both Celsius and Fahrenheit display
-  </Feature>
-  <Feature icon="Calendar" title="Multi-day forecast">
-    Display 1-7 day forecasts with high/low temperatures
-  </Feature>
-</FeatureGrid>
+<div className="[&_pre]:max-h-[30rem] [&_pre]:overflow-y-auto">
 
-## Usage
+```tsx
+import { WeatherWidget } from "@/components/tool-ui/weather-widget/runtime";
+
+export function Example() {
+  return (
+    <WeatherWidget
+      version="3.1"
+      id="weather-widget-example"
+      location={{ name: "Kansas City, MO" }}
+      units={{ temperature: "fahrenheit" }}
+      current={{
+        temperature: 72,
+        tempMin: 65,
+        tempMax: 78,
+        conditionCode: "thunderstorm",
+      }}
+      forecast={[
+        { label: "Tue", tempMin: 62, tempMax: 75, conditionCode: "heavy-rain" },
+        { label: "Wed", tempMin: 58, tempMax: 70, conditionCode: "rain" },
+        { label: "Thu", tempMin: 55, tempMax: 68, conditionCode: "cloudy" },
+        { label: "Fri", tempMin: 52, tempMax: 72, conditionCode: "partly-cloudy" },
+        { label: "Sat", tempMin: 58, tempMax: 76, conditionCode: "clear" },
+      ]}
+      time={{ localTimeOfDay: 22 / 24 }}
+      updatedAt="2026-01-28T22:00:00Z"
+    />
+  );
+}
+```
+
+</div>
+
+</Step>
+
+<Step title="Register it in your runtime provider">
 
 ```tsx
 "use client";
@@ -127,6 +90,29 @@ export const toolkit: Toolkit = {
   },
 };
 ```
+
+</Step>
+
+</Steps>
+
+These snippets use [assistant-ui](https://assistant-ui.com) for end-to-end wiring, but the WeatherWidget component itself is framework-agnostic at the UI layer: you can use it in any React codebase with any LLM SDK or tool-calling interface that can provide compatible props.
+
+## Key Features
+
+<FeatureGrid>
+  <Feature icon="CloudSun" title="Weather conditions">
+    13 condition types with matching icons: clear, cloudy, rain, snow, and more
+  </Feature>
+  <Feature icon="MapPin" title="Location display">
+    Show city and region with the current temperature
+  </Feature>
+  <Feature icon="Thermometer" title="Temperature units">
+    Support for both Celsius and Fahrenheit display
+  </Feature>
+  <Feature icon="Calendar" title="Multi-day forecast">
+    Display 1-7 day forecasts with high/low temperatures
+  </Feature>
+</FeatureGrid>
 
 ## Props
 

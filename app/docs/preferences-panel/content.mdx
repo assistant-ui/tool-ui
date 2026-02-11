@@ -7,125 +7,73 @@ import { PreferencesPanel } from "@/components/tool-ui/preferences-panel";
   mdxPath="app/docs/preferences-panel/content.mdx"
 />
 
-<Tabs items={["Preview", "Code"]}>
-  <Tab>
-    <div className="not-prose mx-auto max-w-md">
-      <PreferencesPanel
-        id="preferences-panel-example"
-        sections={[
-          {
-            items: [
-              {
-                id: "notifications",
-                label: "Notifications",
-                description: "Receive push notifications",
-                type: "switch",
-                defaultChecked: true,
-              },
-              {
-                id: "theme",
-                label: "Theme",
-                description: "Choose your appearance",
-                type: "toggle",
-                options: [
-                  { value: "light", label: "Light" },
-                  { value: "dark", label: "Dark" },
-                  { value: "auto", label: "Auto" },
-                ],
-                defaultValue: "auto",
-              },
-              {
-                id: "analytics",
-                label: "Analytics",
-                description: "Help improve the product",
-                type: "switch",
-                defaultChecked: false,
-              },
-            ],
-          },
-        ]}
-      />
-    </div>
-  </Tab>
-  <Tab>
-    ```tsx
-    import { PreferencesPanel } from "@/components/tool-ui/preferences-panel";
+## Getting Started
 
-    export function Example() {
-      return (
-        <PreferencesPanel
-          id="preferences-panel-example"
-          sections={[
-            {
-              items: [
-                {
-                  id: "notifications",
-                  label: "Notifications",
-                  description: "Receive push notifications",
-                  type: "switch",
-                  defaultChecked: true,
-                },
-                {
-                  id: "theme",
-                  label: "Theme",
-                  description: "Choose your appearance",
-                  type: "toggle",
-                  options: [
-                    { value: "light", label: "Light" },
-                    { value: "dark", label: "Dark" },
-                    { value: "auto", label: "Auto" },
-                  ],
-                  defaultValue: "auto",
-                },
-                {
-                  id: "analytics",
-                  label: "Analytics",
-                  description: "Help improve the product",
-                  type: "switch",
-                  defaultChecked: false,
-                },
-              ],
-            },
-          ]}
-        />
-      );
-    }
-    ```
+<Steps>
 
-  </Tab>
-</Tabs>
+<Step title="Install the component">
 
-## Source and Install
-
-Source code: [components/tool-ui/preferences-panel](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/preferences-panel)
-
-Install this component directly from the Tool UI shadcn registry:
+Run this once from your project root.
 
 ```bash
 npx shadcn@latest add https://tool-ui.com/r/preferences-panel.json
 ```
 
-This command installs `components/tool-ui/preferences-panel`, `components/tool-ui/shared` into your project.
+</Step>
 
-## Key Features
+<Step title="Use it in your application">
 
-<FeatureGrid>
-  <Feature icon="Settings2" title="Three control types">
-    Switch for binary choices, toggle for 2-4 options, select for 5+ options
-  </Feature>
-  <Feature icon="SquareCheck" title="Staged changes">
-    Explicit Save/Cancel actions prevent accidental changes
-  </Feature>
-  <Feature icon="CheckCircle2" title="Receipt state">
-    Use `PreferencesPanel.Receipt` for confirmed selections with success
-    indicators
-  </Feature>
-  <Feature icon="Layers" title="Organized sections">
-    Group related settings with optional section headings
-  </Feature>
-</FeatureGrid>
+<div className="[&_pre]:max-h-[30rem] [&_pre]:overflow-y-auto">
 
-## Usage
+```tsx
+import { PreferencesPanel } from "@/components/tool-ui/preferences-panel";
+
+export function Example() {
+  return (
+    <PreferencesPanel
+      id="preferences-panel-example"
+      sections={[
+        {
+          items: [
+            {
+              id: "notifications",
+              label: "Notifications",
+              description: "Receive push notifications",
+              type: "switch",
+              defaultChecked: true,
+            },
+            {
+              id: "theme",
+              label: "Theme",
+              description: "Choose your appearance",
+              type: "toggle",
+              options: [
+                { value: "light", label: "Light" },
+                { value: "dark", label: "Dark" },
+                { value: "auto", label: "Auto" },
+              ],
+              defaultValue: "auto",
+            },
+            {
+              id: "analytics",
+              label: "Analytics",
+              description: "Help improve the product",
+              type: "switch",
+              defaultChecked: false,
+            },
+          ],
+        },
+      ]}
+    />
+  );
+}
+```
+
+</div>
+
+</Step>
+
+<Step title="Register it in your runtime provider">
 
 ```tsx
 "use client";
@@ -160,6 +108,30 @@ export const toolkit: Toolkit = {
   },
 };
 ```
+
+</Step>
+
+</Steps>
+
+These snippets use [assistant-ui](https://assistant-ui.com) for end-to-end wiring, but the PreferencesPanel component itself is framework-agnostic at the UI layer: you can use it in any React codebase with any LLM SDK or tool-calling interface that can provide compatible props.
+
+## Key Features
+
+<FeatureGrid>
+  <Feature icon="Settings2" title="Three control types">
+    Switch for binary choices, toggle for 2-4 options, select for 5+ options
+  </Feature>
+  <Feature icon="SquareCheck" title="Staged changes">
+    Explicit Save/Cancel actions prevent accidental changes
+  </Feature>
+  <Feature icon="CheckCircle2" title="Receipt state">
+    Use `PreferencesPanel.Receipt` for confirmed selections with success
+    indicators
+  </Feature>
+  <Feature icon="Layers" title="Organized sections">
+    Group related settings with optional section headings
+  </Feature>
+</FeatureGrid>
 
 ## Receipt Example
 

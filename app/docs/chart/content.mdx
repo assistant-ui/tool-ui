@@ -6,19 +6,71 @@ import { DocsHeader } from "../_components/docs-header";
   mdxPath="app/docs/chart/content.mdx"
 />
 
-<ChartPresetExample preset="revenue" />
+## Getting Started
 
-## Source and Install
+<Steps>
 
-Source code: [components/tool-ui/chart](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/chart)
+<Step title="Install the component">
 
-Install this component directly from the Tool UI shadcn registry:
+Run this once from your project root.
 
 ```bash
 npx shadcn@latest add https://tool-ui.com/r/chart.json
 ```
 
-This command installs `components/tool-ui/chart`, `components/tool-ui/shared` into your project.
+</Step>
+
+<Step title="Use it in your application">
+
+<div className="[&_pre]:max-h-[30rem] [&_pre]:overflow-y-auto">
+
+```tsx
+import { Chart } from "@/components/tool-ui/chart";
+
+<Chart
+  id="monthly-revenue"
+  type="bar"
+  title="Monthly Revenue"
+  description="2024 YTD"
+  data={[
+    { month: "Jan", revenue: 4000, expenses: 2400 },
+    { month: "Feb", revenue: 3000, expenses: 1398 },
+    // ...
+  ]}
+  xKey="month"
+  series={[
+    { key: "revenue", label: "Revenue" },
+    { key: "expenses", label: "Expenses" },
+  ]}
+  showLegend
+  showGrid
+/>;
+```
+
+</div>
+
+</Step>
+
+<Step title="Register it in your runtime provider">
+
+```tsx
+<Chart
+  id="clickable"
+  type="line"
+  data={data}
+  xKey="time"
+  series={[{ key: "value", label: "Value" }]}
+  onDataPointClick={(point) => {
+    console.log("Clicked:", point.xValue, point.yValue);
+  }}
+/>
+```
+
+</Step>
+
+</Steps>
+
+These snippets use [assistant-ui](https://assistant-ui.com) for end-to-end wiring, but the Chart component itself is framework-agnostic at the UI layer: you can use it in any React codebase with any LLM SDK or tool-calling interface that can provide compatible props.
 
 ## Key Features
 
@@ -50,115 +102,6 @@ Switch to line charts for time-series or continuous data.
 Charts work with just `data`, `xKey`, and `series`. Title, description, legend, and grid are optional.
 
 <ChartPresetExample preset="minimal" />
-
-## Usage
-
-```tsx
-import { Chart } from "@/components/tool-ui/chart";
-
-<Chart
-  id="monthly-revenue"
-  type="bar"
-  title="Monthly Revenue"
-  description="2024 YTD"
-  data={[
-    { month: "Jan", revenue: 4000, expenses: 2400 },
-    { month: "Feb", revenue: 3000, expenses: 1398 },
-    // ...
-  ]}
-  xKey="month"
-  series={[
-    { key: "revenue", label: "Revenue" },
-    { key: "expenses", label: "Expenses" },
-  ]}
-  showLegend
-  showGrid
-/>;
-```
-
-### With assistant-ui (tool output)
-
-Define a tool that returns chart data, then render the component with runtime validation.
-
-```tsx
-// Backend tool
-import { tool, jsonSchema } from "ai";
-
-const showChart = tool({
-  description: "Display data as a chart",
-  inputSchema: jsonSchema<{ metric: string }>({
-    type: "object",
-    properties: { metric: { type: "string" } },
-    required: ["metric"],
-    additionalProperties: false,
-  }),
-  async execute({ metric }) {
-    const data = await fetchMetricData(metric);
-    return {
-      id: `chart-${metric}`,
-      type: "line",
-      title: `${metric} Over Time`,
-      data,
-      xKey: "date",
-      series: [{ key: "value", label: metric }],
-      showGrid: true,
-    };
-  },
-});
-
-// Frontend with assistant-ui
-import { type Toolkit } from "@assistant-ui/react";
-import {
-  Chart,
-  safeParseSerializableChart,
-} from "@/components/tool-ui/chart";
-import { createResultToolRenderer } from "@/components/tool-ui/shared";
-
-export const toolkit: Toolkit = {
-  showChart: {
-    type: "backend",
-    render: createResultToolRenderer({
-      safeParse: safeParseSerializableChart,
-      render: (parsedResult) => (
-        <>
-            <Chart {...parsedResult} />
-        </>
-      ),
-    }),
-  },
-};
-```
-
-### With Custom Colors
-
-```tsx
-<Chart
-  id="custom-colors"
-  type="bar"
-  data={data}
-  xKey="month"
-  series={[
-    { key: "revenue", label: "Revenue" },
-    { key: "expenses", label: "Expenses" },
-  ]}
-  colors={["#22c55e", "#ef4444"]}
-/>
-```
-
-### With Click Handler
-
-```tsx
-<Chart
-  id="clickable"
-  type="line"
-  data={data}
-  xKey="time"
-  series={[{ key: "value", label: "Value" }]}
-  onDataPointClick={(point) => {
-    console.log("Clicked:", point.xValue, point.yValue);
-  }}
-/>
-```
 
 ## Props
 

@@ -6,19 +6,80 @@ import { DocsHeader } from "../_components/docs-header";
   mdxPath="app/docs/option-list/content.mdx"
 />
 
-<OptionListPresetExample preset="max-selections" />
+## Getting Started
 
-## Source and Install
+<Steps>
 
-Source code: [components/tool-ui/option-list](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/option-list)
+<Step title="Install the component">
 
-Install this component directly from the Tool UI shadcn registry:
+Run this once from your project root.
 
 ```bash
 npx shadcn@latest add https://tool-ui.com/r/option-list.json
 ```
 
-This command installs `components/tool-ui/option-list`, `components/tool-ui/shared` into your project.
+</Step>
+
+<Step title="Use it in your application">
+
+<div className="[&_pre]:max-h-[30rem] [&_pre]:overflow-y-auto">
+
+```tsx
+import { OptionList } from "@/components/tool-ui/option-list";
+
+export function Example({ payload }: { payload: React.ComponentProps<typeof OptionList> }) {
+  return <OptionList {...payload} />;
+}
+```
+
+</div>
+
+</Step>
+
+<Step title="Register it in your runtime provider">
+
+```tsx
+"use client";
+
+// Frontend tool (recommended for decision surfaces like Option List):
+// - The model calls the tool with SerializableOptionList props as the args
+// - Your UI calls addResult(selection) when the user confirms
+import { type Toolkit } from "@assistant-ui/react";
+import {
+  OptionList,
+  safeParseSerializableOptionList,
+  SerializableOptionListSchema,
+} from "@/components/tool-ui/option-list";
+import { createArgsToolRenderer } from "@/components/tool-ui/shared";
+
+export const toolkit: Toolkit = {
+  selectFormat: {
+    description: "Let the user choose an output format.",
+    parameters: SerializableOptionListSchema,
+    render: createArgsToolRenderer({
+      safeParse: safeParseSerializableOptionList,
+      idPrefix: "format-selection",
+      render: (parsedArgs, { result, addResult }) =>
+        result ? (
+            <OptionList {...parsedArgs} value={undefined} choice={result} />
+          ) : (
+            <OptionList
+              {...parsedArgs}
+              // Avoid controlled selection in LLM-driven payloads.
+              value={undefined}
+              onConfirm={(selection) => addResult?.(selection)}
+            />
+          ),
+    }),
+  },
+};
+```
+
+</Step>
+
+</Steps>
+
+These snippets use [assistant-ui](https://assistant-ui.com) for end-to-end wiring, but the OptionList component itself is framework-agnostic at the UI layer: you can use it in any React codebase with any LLM SDK or tool-calling interface that can provide compatible props.
 
 ## Key Features
 
@@ -48,48 +109,6 @@ The receipt state:
 - Shows only the confirmed option(s) with a checkmark
 - Hides unselected options and response actions
 - Is read-only (no interaction)
-
-## Usage
-
-```tsx
-"use client";
-
-// Frontend tool (recommended for decision surfaces like Option List):
-// - The model calls the tool with SerializableOptionList props as the args
-// - Your UI calls addResult(selection) when the user confirms
-import { type Toolkit } from "@assistant-ui/react";
-import {
-  OptionList,
-  safeParseSerializableOptionList,
-  SerializableOptionListSchema,
-} from "@/components/tool-ui/option-list";
-import { createArgsToolRenderer } from "@/components/tool-ui/shared";
-
-export const toolkit: Toolkit = {
-  selectFormat: {
-    description: "Let the user choose an output format.",
-    parameters: SerializableOptionListSchema,
-    render: createArgsToolRenderer({
-      safeParse: safeParseSerializableOptionList,
-      idPrefix: "format-selection",
-      render: (parsedArgs, { result, addResult }) => (
-          {result ? (
-            <OptionList {...parsedArgs} value={undefined} choice={result} />
-          ) : (
-            <OptionList
-              {...parsedArgs}
-              // Avoid controlled selection in LLM-driven payloads.
-              value={undefined}
-              onConfirm={(selection) => addResult?.(selection)}
-            />
-          )}
-      ),
-    }),
-  },
-};
-```
-
-Register this toolkit with `Tools({ toolkit })` to expose the tool UI. For auto-continue after `addResult(...)`, see the **Frontend tools** section in [Quick Start](/docs/quick-start).
 
 ## Props
 

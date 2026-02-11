@@ -6,19 +6,86 @@ import { DocsHeader } from "../_components/docs-header";
   mdxPath="app/docs/question-flow/content.mdx"
 />
 
-<QuestionFlowPresetExample preset="upfront" />
+## Getting Started
 
-## Source and Install
+<Steps>
 
-Source code: [components/tool-ui/question-flow](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/question-flow)
+<Step title="Install the component">
 
-Install this component directly from the Tool UI shadcn registry:
+Run this once from your project root.
 
 ```bash
 npx shadcn@latest add https://tool-ui.com/r/question-flow.json
 ```
 
-This command installs `components/tool-ui/question-flow`, `components/tool-ui/shared` into your project.
+</Step>
+
+<Step title="Use it in your application">
+
+<div className="[&_pre]:max-h-[30rem] [&_pre]:overflow-y-auto">
+
+```tsx
+import { QuestionFlow } from "@/components/tool-ui/question-flow";
+
+export function Example({ payload }: { payload: React.ComponentProps<typeof QuestionFlow> }) {
+  return <QuestionFlow {...payload} />;
+}
+```
+
+</div>
+
+</Step>
+
+<Step title="Register it in your runtime provider">
+
+```tsx
+"use client";
+
+import { type Toolkit } from "@assistant-ui/react";
+import {
+  QuestionFlow,
+  safeParseSerializableQuestionFlow,
+  SerializableQuestionFlowSchema,
+} from "@/components/tool-ui/question-flow";
+import { createArgsToolRenderer } from "@/components/tool-ui/shared";
+
+export const toolkit: Toolkit = {
+  configureProject: {
+    description: "Guide user through project configuration.",
+    parameters: SerializableQuestionFlowSchema,
+    render: createArgsToolRenderer({
+      safeParse: safeParseSerializableQuestionFlow,
+      idPrefix: "wizard",
+      render: (parsedArgs, { result, addResult }) =>
+        result ? (
+            <QuestionFlow
+              id={parsedArgs.id}
+              choice={{
+                title: "Project configured",
+                summary: Object.entries(result as Record<string, string[]>).map(
+                  ([key, values]) => ({
+                    label: key,
+                    value: values.join(", "),
+                  }),
+                ),
+              }}
+            />
+          ) : (
+            <QuestionFlow
+              {...parsedArgs}
+              onComplete={(answers) => addResult?.(answers)}
+            />
+          ),
+    }),
+  },
+};
+```
+
+</Step>
+
+</Steps>
+
+These snippets use [assistant-ui](https://assistant-ui.com) for end-to-end wiring, but the QuestionFlow component itself is framework-agnostic at the UI layer: you can use it in any React codebase with any LLM SDK or tool-calling interface that can provide compatible props.
 
 ## Key Features
 
@@ -68,54 +135,6 @@ The receipt state:
 - Shows a "Complete" badge with the configuration title
 - Displays a summary of all choices made during the flow
 - Is read-only (no interaction)
-
-## Usage
-
-```tsx
-"use client";
-
-import { type Toolkit } from "@assistant-ui/react";
-import {
-  QuestionFlow,
-  safeParseSerializableQuestionFlow,
-  SerializableQuestionFlowSchema,
-} from "@/components/tool-ui/question-flow";
-import { createArgsToolRenderer } from "@/components/tool-ui/shared";
-
-export const toolkit: Toolkit = {
-  configureProject: {
-    description: "Guide user through project configuration.",
-    parameters: SerializableQuestionFlowSchema,
-    render: createArgsToolRenderer({
-      safeParse: safeParseSerializableQuestionFlow,
-      idPrefix: "wizard",
-      render: (parsedArgs, { result, addResult }) => (
-          {result ? (
-            <QuestionFlow
-              id={parsedArgs.id}
-              choice={{
-                title: "Project configured",
-                summary: Object.entries(result as Record<string, string[]>).map(
-                  ([key, values]) => ({
-                    label: key,
-                    value: values.join(", "),
-                  }),
-                ),
-              }}
-            />
-          ) : (
-            <QuestionFlow
-              {...parsedArgs}
-              onComplete={(answers) => addResult?.(answers)}
-            />
-          )}
-      ),
-    }),
-  },
-};
-```
-
-Register this toolkit with `Tools({ toolkit })` inside your runtime provider.
 
 ## Progressive Mode Props
 

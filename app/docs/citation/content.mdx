@@ -7,52 +7,68 @@ import { Citation } from "@/components/tool-ui/citation";
   mdxPath="app/docs/citation/content.mdx"
 />
 
-<Tabs items={["Preview", "Code"]}>
-  <Tab>
-    <div className="not-prose mx-auto max-w-md">
-      <Citation
-        id="citation-example"
-        href="https://react.dev/reference/react/useState"
-        title="useState – React"
-        snippet="useState is a React Hook that lets you add a state variable to your component. Call useState at the top level of your component to declare a state variable."
-        domain="react.dev"
-        favicon="https://www.google.com/s2/favicons?domain=react.dev&sz=32"
-        type="document"
-      />
-    </div>
-  </Tab>
-  <Tab>
-    ```tsx
-    import { Citation } from "@/components/tool-ui/citation";
+## Getting Started
 
-    export function Example() {
-      return (
-        <Citation
-          id="citation-example"
-          href="https://react.dev/reference/react/useState"
-          title="useState – React"
-          snippet="useState is a React Hook that lets you add a state variable to your component."
-          domain="react.dev"
-          favicon="https://www.google.com/s2/favicons?domain=react.dev&sz=32"
-          type="document"
-        />
-      );
-    }
-    ```
-  </Tab>
-</Tabs>
+<Steps>
 
-## Source and Install
+<Step title="Install the component">
 
-Source code: [components/tool-ui/citation](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/citation)
-
-Install this component directly from the Tool UI shadcn registry:
+Run this once from your project root.
 
 ```bash
 npx shadcn@latest add https://tool-ui.com/r/citation.json
 ```
 
-This command installs `components/tool-ui/citation`, `components/tool-ui/shared` into your project.
+</Step>
+
+<Step title="Use it in your application">
+
+<div className="[&_pre]:max-h-[30rem] [&_pre]:overflow-y-auto">
+
+```tsx
+import { Citation } from "@/components/tool-ui/citation";
+
+export function Example() {
+  return (
+    <Citation
+      id="citation-example"
+      href="https://react.dev/reference/react/useState"
+      title="useState – React"
+      snippet="useState is a React Hook that lets you add a state variable to your component."
+      domain="react.dev"
+      favicon="https://www.google.com/s2/favicons?domain=react.dev&sz=32"
+      type="document"
+    />
+  );
+}
+```
+
+</div>
+
+</Step>
+
+<Step title="Register it in your runtime provider">
+
+```tsx
+import { type Toolkit } from "@assistant-ui/react";
+import { Citation } from "@/components/tool-ui/citation";
+import { createResultToolRenderer } from "@/components/tool-ui/shared";
+
+export const toolkit: Toolkit = {
+  showCitation: {
+    type: "backend",
+    render: createResultToolRenderer({
+      render: (parsedResult) => <Citation {...parsedResult} />,
+    }),
+  },
+};
+```
+
+</Step>
+
+</Steps>
+
+These snippets use [assistant-ui](https://assistant-ui.com) for end-to-end wiring, but the Citation component itself is framework-agnostic at the UI layer: you can use it in any React codebase with any LLM SDK or tool-calling interface that can provide compatible props.
 
 ## Key Features
 

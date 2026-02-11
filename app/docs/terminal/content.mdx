@@ -6,38 +6,23 @@ import { DocsHeader } from "../_components/docs-header";
   mdxPath="app/docs/terminal/content.mdx"
 />
 
-<TerminalPresetExample preset="success" />
+## Getting Started
 
-## Source and Install
+<Steps>
 
-Source code: [components/tool-ui/terminal](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/terminal)
+<Step title="Install the component">
 
-Install this component directly from the Tool UI shadcn registry:
+Run this once from your project root.
 
 ```bash
 npx shadcn@latest add https://tool-ui.com/r/terminal.json
 ```
 
-This command installs `components/tool-ui/terminal`, `components/tool-ui/shared` into your project.
+</Step>
 
-## Key Features
+<Step title="Use it in your application">
 
-<FeatureGrid>
-  <Feature icon="Paintbrush" title="ANSI color support">
-    Renders colored terminal output exactly as it appears in your shell
-  </Feature>
-  <Feature icon="CircleCheck" title="Exit code display">
-    Visual indicators for success and failure states
-  </Feature>
-  <Feature icon="Timer" title="Duration tracking">
-    Shows how long the command took to execute
-  </Feature>
-  <Feature icon="AlertCircle" title="Stdout/Stderr separation">
-    Errors are visually distinct from standard output
-  </Feature>
-</FeatureGrid>
-
-## Usage
+<div className="[&_pre]:max-h-[30rem] [&_pre]:overflow-y-auto">
 
 ```tsx
 import { Terminal } from "@/components/tool-ui/terminal";
@@ -59,9 +44,11 @@ drwxr-xr-x 12 user user 4096 Dec  3 10:20 ..
 }
 ```
 
-### With assistant-ui (tool output)
+</div>
 
-Define a tool that returns a terminal result payload, then render the component with runtime validation.
+</Step>
+
+<Step title="Register it in your runtime provider">
 
 ```tsx
 // Backend tool
@@ -108,6 +95,29 @@ export const toolkit: Toolkit = {
   },
 };
 ```
+
+</Step>
+
+</Steps>
+
+These snippets use [assistant-ui](https://assistant-ui.com) for end-to-end wiring, but the Terminal component itself is framework-agnostic at the UI layer: you can use it in any React codebase with any LLM SDK or tool-calling interface that can provide compatible props.
+
+## Key Features
+
+<FeatureGrid>
+  <Feature icon="Paintbrush" title="ANSI color support">
+    Renders colored terminal output exactly as it appears in your shell
+  </Feature>
+  <Feature icon="CircleCheck" title="Exit code display">
+    Visual indicators for success and failure states
+  </Feature>
+  <Feature icon="Timer" title="Duration tracking">
+    Shows how long the command took to execute
+  </Feature>
+  <Feature icon="AlertCircle" title="Stdout/Stderr separation">
+    Errors are visually distinct from standard output
+  </Feature>
+</FeatureGrid>
 
 ## Props
 

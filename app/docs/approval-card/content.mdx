@@ -7,53 +7,86 @@ import { ApprovalCard } from "@/components/tool-ui/approval-card";
   mdxPath="app/docs/approval-card/content.mdx"
 />
 
-<Tabs items={["Preview", "Code"]}>
-  <Tab>
-    <div className="not-prose mx-auto max-w-sm">
-      <ApprovalCard
-        id="approval-card-example"
-        title="Deploy to Production?"
-        description="This will push the latest changes to all users."
-        icon="rocket"
-        confirmLabel="Deploy"
-      />
-    </div>
-  </Tab>
-  <Tab>
-    ```tsx
-    import { ApprovalCard } from "@/components/tool-ui/approval-card";
+## Getting Started
 
-    export function Example() {
-      return (
-        <ApprovalCard
-          id="approval-card-example"
-          title="Deploy to Production?"
-          description="This will push the latest changes to all users."
-          icon="rocket"
-          confirmLabel="Deploy"
-          onConfirm={() => console.log("Approved")}
-          onCancel={() => console.log("Denied")}
-        />
-      );
-    }
-    ```
+<Steps>
 
-  </Tab>
-</Tabs>
+<Step title="Install the component">
 
-> **Note:** Buttons use a responsive layout—they appear as compact pills at wider widths and stack full-width on narrow containers.
-
-## Source and Install
-
-Source code: [components/tool-ui/approval-card](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/approval-card)
-
-Install this component directly from the Tool UI shadcn registry:
+Run this once from your project root.
 
 ```bash
 npx shadcn@latest add https://tool-ui.com/r/approval-card.json
 ```
 
-This command installs `components/tool-ui/approval-card`, `components/tool-ui/shared` into your project.
+</Step>
+
+<Step title="Use it in your application">
+
+<div className="[&_pre]:max-h-[30rem] [&_pre]:overflow-y-auto">
+
+```tsx
+import { ApprovalCard } from "@/components/tool-ui/approval-card";
+
+export function Example() {
+  return (
+    <ApprovalCard
+      id="approval-card-example"
+      title="Deploy to Production?"
+      description="This will push the latest changes to all users."
+      icon="rocket"
+      confirmLabel="Deploy"
+      onConfirm={() => console.log("Approved")}
+      onCancel={() => console.log("Denied")}
+    />
+  );
+}
+```
+
+</div>
+
+</Step>
+
+<Step title="Register it in your runtime provider">
+
+```tsx
+"use client";
+
+import { type Toolkit } from "@assistant-ui/react";
+import {
+  ApprovalCard,
+  safeParseSerializableApprovalCard,
+  SerializableApprovalCardSchema,
+} from "@/components/tool-ui/approval-card";
+import { createArgsToolRenderer } from "@/components/tool-ui/shared";
+
+export const toolkit: Toolkit = {
+  requestApproval: {
+    description: "Request user approval before performing an action.",
+    parameters: SerializableApprovalCardSchema,
+    render: createArgsToolRenderer({
+      safeParse: safeParseSerializableApprovalCard,
+      idPrefix: "approval",
+      render: (parsedArgs, { result, addResult }) =>
+        result ? (
+            <ApprovalCard {...parsedArgs} choice={result} />
+          ) : (
+            <ApprovalCard
+              {...parsedArgs}
+              onConfirm={() => addResult?.("approved")}
+              onCancel={() => addResult?.("denied")}
+            />
+          ),
+    }),
+  },
+};
+```
+
+</Step>
+
+</Steps>
+
+These snippets use [assistant-ui](https://assistant-ui.com) for end-to-end wiring, but the ApprovalCard component itself is framework-agnostic at the UI layer: you can use it in any React codebase with any LLM SDK or tool-calling interface that can provide compatible props.
 
 ## Key Features
 
@@ -76,30 +109,6 @@ This command installs `components/tool-ui/approval-card`, `components/tool-ui/sh
 
 When `decision` is set, the component renders in a compact receipt state showing the approval decision. Use this to display the outcome in conversation history.
 
-<Tabs items={["Approved", "Denied"]}>
-  <Tab>
-    <div className="not-prose mx-auto max-w-sm">
-      <ApprovalCard
-        id="receipt-approved-example"
-        title="Deploy to Production"
-        choice="approved"
-        confirmLabel="Deploy"
-      />
-    </div>
-  </Tab>
-  <Tab>
-    <div className="not-prose mx-auto max-w-sm">
-      <ApprovalCard
-        id="receipt-denied-example"
-        title="Delete Project"
-        choice="denied"
-        variant="destructive"
-        confirmLabel="Delete"
-        cancelLabel="Keep"
-      />
-    </div>
-  </Tab>
-</Tabs>
 
 The receipt state:
 
@@ -112,74 +121,6 @@ The receipt state:
 
 Use `variant="destructive"` for dangerous or irreversible actions. This changes the icon background and confirm button to destructive styling.
 
-<Tabs items={["Preview", "Code"]}>
-  <Tab>
-    <div className="not-prose mx-auto max-w-sm">
-      <ApprovalCard
-        id="destructive-example"
-        title="Delete Project?"
-        description="This action cannot be undone. All data will be permanently removed."
-        icon="trash-2"
-        variant="destructive"
-        confirmLabel="Delete"
-        cancelLabel="Keep"
-      />
-    </div>
-  </Tab>
-  <Tab>
-    ```tsx
-    <ApprovalCard
-      id="destructive-example"
-      title="Delete Project?"
-      description="This action cannot be undone."
-      icon="trash-2"
-      variant="destructive"
-      confirmLabel="Delete"
-      cancelLabel="Keep"
-      onConfirm={() => deleteProject()}
-      onCancel={() => console.log("Kept")}
-    />
-    ```
-  </Tab>
-</Tabs>
-
-## Usage
-
-```tsx
-"use client";
-
-import { type Toolkit } from "@assistant-ui/react";
-import {
-  ApprovalCard,
-  safeParseSerializableApprovalCard,
-  SerializableApprovalCardSchema,
-} from "@/components/tool-ui/approval-card";
-import { createArgsToolRenderer } from "@/components/tool-ui/shared";
-
-export const toolkit: Toolkit = {
-  requestApproval: {
-    description: "Request user approval before performing an action.",
-    parameters: SerializableApprovalCardSchema,
-    render: createArgsToolRenderer({
-      safeParse: safeParseSerializableApprovalCard,
-      idPrefix: "approval",
-      render: (parsedArgs, { result, addResult }) => (
-          {result ? (
-            <ApprovalCard {...parsedArgs} choice={result} />
-          ) : (
-            <ApprovalCard
-              {...parsedArgs}
-              onConfirm={() => addResult?.("approved")}
-              onCancel={() => addResult?.("denied")}
-            />
-          )}
-      ),
-    }),
-  },
-};
-```
-
-Register this toolkit with `Tools({ toolkit })` to expose the tool UI.
 
 ## Props
 

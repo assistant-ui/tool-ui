@@ -1,7 +1,12 @@
 import type { SerializablePlan } from "@/components/tool-ui/plan";
 import type { PresetWithCodeGen } from "./types";
 
-export type PlanPresetName = "simple" | "comprehensive" | "mixed_states" | "all_complete";
+export type PlanPresetName =
+  | "simple"
+  | "compact"
+  | "comprehensive"
+  | "mixed_states"
+  | "all_complete";
 
 function escape(value: string): string {
   return value.replace(/\\/g, "\\\\").replace(/"/g, '\\"');
@@ -25,7 +30,11 @@ function generatePlanCode(data: SerializablePlan): string {
     props.push(`  maxVisibleTodos={${data.maxVisibleTodos}}`);
   }
 
-  if (data.responseActions && Array.isArray(data.responseActions) && data.responseActions.length > 0) {
+  if (
+    data.responseActions &&
+    Array.isArray(data.responseActions) &&
+    data.responseActions.length > 0
+  ) {
     props.push(
       `  responseActions={${JSON.stringify(data.responseActions, null, 4).replace(/\n/g, "\n  ")}}`,
     );
@@ -53,7 +62,11 @@ function generatePlanCompactCode(data: SerializablePlan): string {
     props.push(`  maxVisibleTodos={${data.maxVisibleTodos}}`);
   }
 
-  if (data.responseActions && Array.isArray(data.responseActions) && data.responseActions.length > 0) {
+  if (
+    data.responseActions &&
+    Array.isArray(data.responseActions) &&
+    data.responseActions.length > 0
+  ) {
     props.push(
       `  responseActions={${JSON.stringify(data.responseActions, null, 4).replace(/\n/g, "\n  ")}}`,
     );
@@ -63,11 +76,28 @@ function generatePlanCompactCode(data: SerializablePlan): string {
   return `<Plan.Compact\n${props.join("\n")}\n/>`;
 }
 
-export const planPresets: Record<PlanPresetName, PresetWithCodeGen<SerializablePlan>> = {
+export const planPresets: Record<
+  PlanPresetName,
+  PresetWithCodeGen<SerializablePlan>
+> = {
   simple: {
-    description: "A minimal plan with 3 todos (no progress bar)",
+    description: "A minimal plan with 3 todos",
     data: {
       id: "plan-simple",
+      title: "Quick Setup",
+      description: "Get started in 3 easy steps",
+      todos: [
+        { id: "1", label: "Install dependencies", status: "completed" },
+        { id: "2", label: "Configure environment", status: "in_progress" },
+        { id: "3", label: "Run the app", status: "pending" },
+      ],
+    } satisfies SerializablePlan,
+    generateExampleCode: generatePlanCode,
+  },
+  compact: {
+    description: "Compact variant with no progress summary bar",
+    data: {
+      id: "plan-compact",
       title: "Quick Setup",
       description: "Get started in 3 easy steps",
       todos: [
@@ -97,13 +127,15 @@ export const planPresets: Record<PlanPresetName, PresetWithCodeGen<SerializableP
           id: "2",
           label: "Design new token structure",
           status: "completed",
-          description: "Created JWT schema with access/refresh token separation",
+          description:
+            "Created JWT schema with access/refresh token separation",
         },
         {
           id: "3",
           label: "Implement JWT middleware",
           status: "in_progress",
-          description: "Adding token validation and refresh logic to API routes",
+          description:
+            "Adding token validation and refresh logic to API routes",
         },
         { id: "4", label: "Add refresh token logic", status: "pending" },
         { id: "5", label: "Update user model", status: "pending" },

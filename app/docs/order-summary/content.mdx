@@ -7,92 +7,114 @@ import { OrderSummary } from "@/components/tool-ui/order-summary";
   mdxPath="app/docs/order-summary/content.mdx"
 />
 
-<Tabs items={["Preview", "Code"]}>
-  <Tab>
-    <div className="not-prose mx-auto max-w-md">
-      <OrderSummary
-        id="order-summary-example"
-        items={[
-          {
-            id: "item-1",
-            name: "Wireless Earbuds Pro",
-            description: "Active noise cancellation",
-            imageUrl: "https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=100&h=100&fit=crop",
-            quantity: 1,
-            unitPrice: 149.99,
-          },
-          {
-            id: "item-2",
-            name: "USB-C Charging Cable",
-            description: "2m braided",
-            quantity: 2,
-            unitPrice: 19.99,
-          },
-        ]}
-        pricing={{
-          subtotal: 189.97,
-          tax: 16.62,
-          shipping: 0,
-          total: 206.59,
-          currency: "USD",
-        }}
-      />
-    </div>
-  </Tab>
-  <Tab>
-    ```tsx
-    import { OrderSummary } from "@/components/tool-ui/order-summary";
+## Getting Started
 
-    export function Example() {
-      return (
-        <OrderSummary
-          id="order-summary-example"
-          items={[
-            {
-              id: "item-1",
-              name: "Wireless Earbuds Pro",
-              description: "Active noise cancellation",
-              imageUrl: "https://example.com/earbuds.jpg",
-              quantity: 1,
-              unitPrice: 149.99,
-            },
-            {
-              id: "item-2",
-              name: "USB-C Charging Cable",
-              description: "2m braided",
-              quantity: 2,
-              unitPrice: 19.99,
-            },
-          ]}
-          pricing={{
-            subtotal: 189.97,
-            tax: 16.62,
-            shipping: 0,
-            total: 206.59,
-            currency: "USD",
-          }}
-          onResponseAction={(actionId) => {
-            console.log("Action:", actionId);
-          }}
-        />
-      );
-    }
-    ```
+<Steps>
 
-  </Tab>
-</Tabs>
+<Step title="Install the component">
 
-## Source and Install
-
-Source code: [components/tool-ui/order-summary](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/order-summary)
-
-Install this component directly from the Tool UI shadcn registry:
+Run this once from your project root.
 
 ```bash
 npx shadcn@latest add https://tool-ui.com/r/order-summary.json
 ```
 
-This command installs `components/tool-ui/order-summary`, `components/tool-ui/shared` into your project.
+</Step>
+
+<Step title="Use it in your application">
+
+<div className="[&_pre]:max-h-[30rem] [&_pre]:overflow-y-auto">
+
+```tsx
+import { OrderSummary } from "@/components/tool-ui/order-summary";
+
+export function Example() {
+  return (
+    <OrderSummary
+      id="order-summary-example"
+      items={[
+        {
+          id: "item-1",
+          name: "Wireless Earbuds Pro",
+          description: "Active noise cancellation",
+          imageUrl: "https://example.com/earbuds.jpg",
+          quantity: 1,
+          unitPrice: 149.99,
+        },
+        {
+          id: "item-2",
+          name: "USB-C Charging Cable",
+          description: "2m braided",
+          quantity: 2,
+          unitPrice: 19.99,
+        },
+      ]}
+      pricing={{
+        subtotal: 189.97,
+        tax: 16.62,
+        shipping: 0,
+        total: 206.59,
+        currency: "USD",
+      }}
+      onResponseAction={(actionId) => {
+        console.log("Action:", actionId);
+      }}
+    />
+  );
+}
+```
+
+</div>
+
+</Step>
+
+<Step title="Register it in your runtime provider">
+
+```tsx
+"use client";
+
+import { type Toolkit } from "@assistant-ui/react";
+import {
+  OrderSummary,
+  safeParseSerializableOrderSummary,
+  SerializableOrderSummarySchema,
+} from "@/components/tool-ui/order-summary";
+import { createArgsToolRenderer } from "@/components/tool-ui/shared";
+
+export const toolkit: Toolkit = {
+  createOrder: {
+    description: "Display a purchase order for user confirmation",
+    parameters: SerializableOrderSummarySchema,
+    render: createArgsToolRenderer({
+      safeParse: safeParseSerializableOrderSummary,
+      idPrefix: "order",
+      render: (parsedArgs, { result, addResult }) =>
+        result ? (
+            <OrderSummary {...parsedArgs} choice={result} />
+          ) : (
+            <OrderSummary
+              {...parsedArgs}
+              onResponseAction={(actionId) => {
+                if (actionId === "confirm") {
+                  void addResult?.({
+                    action: "confirm",
+                    orderId: `ORD-${Date.now()}`,
+                    confirmedAt: new Date().toISOString(),
+                  });
+                }
+              }}
+            />
+          ),
+    }),
+  },
+};
+```
+
+</Step>
+
+</Steps>
+
+These snippets use [assistant-ui](https://assistant-ui.com) for end-to-end wiring, but the OrderSummary component itself is framework-agnostic at the UI layer: you can use it in any React codebase with any LLM SDK or tool-calling interface that can provide compatible props.
 
 ## Key Features
 
@@ -115,149 +137,11 @@ This command installs `components/tool-ui/order-summary`, `components/tool-ui/sh
 
 When `decision` is set, the component renders in a dimmed receipt state showing the confirmed order with order ID and timestamp.
 
-<Tabs items={["Preview", "Code"]}>
-  <Tab>
-    <div className="not-prose mx-auto max-w-md">
-      <OrderSummary
-        id="receipt-example"
-        title="Order Confirmed"
-        items={[
-          {
-            id: "item-1",
-            name: "Running Shoes",
-            description: "Lightweight cushioning",
-            imageUrl: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=100&h=100&fit=crop",
-            quantity: 1,
-            unitPrice: 129.00,
-          },
-        ]}
-        pricing={{
-          subtotal: 129.00,
-          tax: 10.32,
-          total: 139.32,
-          currency: "USD",
-        }}
-        choice={{
-          action: "confirm",
-          orderId: "ORD-2024-8847",
-          confirmedAt: "2024-12-15T14:32:00Z",
-        }}
-      />
-    </div>
-  </Tab>
-  <Tab>
-    ```tsx
-    <OrderSummary
-      id="receipt-example"
-      title="Order Confirmed"
-      items={[...]}
-      pricing={{...}}
-      decision={{
-        action: "confirm",
-        orderId: "ORD-2024-8847",
-        confirmedAt: "2024-12-15T14:32:00Z",
-      }}
-    />
-    ```
-  </Tab>
-</Tabs>
 
 ## With Discount
 
 Use the `discount` and `discountLabel` fields in pricing to show promotional savings.
 
-<Tabs items={["Preview", "Code"]}>
-  <Tab>
-    <div className="not-prose mx-auto max-w-md">
-      <OrderSummary
-        id="discount-example"
-        title="Your Cart"
-        items={[
-          {
-            id: "item-1",
-            name: "Standing Desk Frame",
-            description: "Electric height adjustable",
-            imageUrl:
-              "https://images.unsplash.com/photo-1595515106969-1ce29566ff1c?w=100&h=100&fit=crop",
-            quantity: 1,
-            unitPrice: 449.0,
-          },
-        ]}
-        pricing={{
-          subtotal: 449.0,
-          discount: 44.9,
-          discountLabel: "SAVE10 (10% off)",
-          tax: 35.92,
-          shipping: 0,
-          total: 440.02,
-          currency: "USD",
-        }}
-      />
-    </div>
-  </Tab>
-  <Tab>
-    ```tsx
-    <OrderSummary
-      id="discount-example"
-      pricing={{
-        subtotal: 449.0,
-        discount: 44.9,
-        discountLabel: "SAVE10 (10% off)",
-        tax: 35.92,
-        shipping: 0,
-        total: 440.02,
-        currency: "USD",
-      }}
-      // ...
-    />
-    ```
-  </Tab>
-</Tabs>
-
-## Usage
-
-```tsx
-"use client";
-
-import { type Toolkit } from "@assistant-ui/react";
-import {
-  OrderSummary,
-  safeParseSerializableOrderSummary,
-  SerializableOrderSummarySchema,
-} from "@/components/tool-ui/order-summary";
-import { createArgsToolRenderer } from "@/components/tool-ui/shared";
-
-export const toolkit: Toolkit = {
-  createOrder: {
-    description: "Display a purchase order for user confirmation",
-    parameters: SerializableOrderSummarySchema,
-    render: createArgsToolRenderer({
-      safeParse: safeParseSerializableOrderSummary,
-      idPrefix: "order",
-      render: (parsedArgs, { result, addResult }) => (
-          {result ? (
-            <OrderSummary {...parsedArgs} choice={result} />
-          ) : (
-            <OrderSummary
-              {...parsedArgs}
-              onResponseAction={(actionId) => {
-                if (actionId === "confirm") {
-                  void addResult?.({
-                    action: "confirm",
-                    orderId: `ORD-${Date.now()}`,
-                    confirmedAt: new Date().toISOString(),
-                  });
-                }
-              }}
-            />
-          )}
-      ),
-    }),
-  },
-};
-```
-
-Register this toolkit with `Tools({ toolkit })` to expose the tool UI.
 
 ## Props
 

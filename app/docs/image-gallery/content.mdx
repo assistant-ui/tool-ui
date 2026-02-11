@@ -7,100 +7,85 @@ import { ImageGallery } from "@/components/tool-ui/image-gallery";
   mdxPath="app/docs/image-gallery/content.mdx"
 />
 
-<Tabs items={["Preview", "Code"]}>
-  <Tab>
-    <div className="not-prose">
-      <ImageGallery
-        id="image-gallery-example"
-        title="Mountain landscapes"
-        description="Here are some images matching your search"
-        images={[
-          {
-            id: "img-1",
-            src: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=600&fit=crop",
-            alt: "Dramatic mountain peaks at sunrise with golden light",
-            width: 800,
-            height: 600,
-            title: "Alpine Sunrise",
-            caption: "Dolomites, Italy",
-          },
-          {
-            id: "img-2",
-            src: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=800&h=1200&fit=crop",
-            alt: "Misty mountain valley with evergreen trees",
-            width: 800,
-            height: 1200,
-            title: "Misty Valley",
-          },
-          {
-            id: "img-3",
-            src: "https://images.unsplash.com/photo-1519681393784-d120267933ba?w=800&h=600&fit=crop",
-            alt: "Snow-covered mountain peak under starry night sky",
-            width: 800,
-            height: 600,
-            title: "Night Summit",
-            caption: "Mount Hood, Oregon",
-          },
-          {
-            id: "img-4",
-            src: "https://images.unsplash.com/photo-1454496522488-7a8e488e8606?w=800&h=600&fit=crop",
-            alt: "Reflection of mountains in a crystal clear lake",
-            width: 800,
-            height: 600,
-          },
-        ]}
-      />
-    </div>
-  </Tab>
-  <Tab>
-    ```tsx
-    import { ImageGallery } from "@/components/tool-ui/image-gallery";
+## Getting Started
 
-    export function Example() {
-      return (
-        <ImageGallery
-          id="image-gallery-example"
-          title="Mountain landscapes"
-          description="Here are some images matching your search"
-          images={[
-            {
-              id: "img-1",
-              src: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=600&fit=crop",
-              alt: "Dramatic mountain peaks at sunrise",
-              width: 800,
-              height: 600,
-              title: "Alpine Sunrise",
-              caption: "Dolomites, Italy",
-            },
-            {
-              id: "img-2",
-              src: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=800&h=1200&fit=crop",
-              alt: "Misty mountain valley",
-              width: 800,
-              height: 1200,
-              title: "Misty Valley",
-            },
-            // ... more images
-          ]}
-          onImageClick={(id, image) => console.log("Clicked:", id, image)}
-        />
-      );
-    }
-    ```
-  </Tab>
-</Tabs>
+<Steps>
 
-## Source and Install
+<Step title="Install the component">
 
-Source code: [components/tool-ui/image-gallery](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/image-gallery)
-
-Install this component directly from the Tool UI shadcn registry:
+Run this once from your project root.
 
 ```bash
 npx shadcn@latest add https://tool-ui.com/r/image-gallery.json
 ```
 
-This command installs `components/tool-ui/image-gallery`, `components/tool-ui/shared` into your project.
+</Step>
+
+<Step title="Use it in your application">
+
+<div className="[&_pre]:max-h-[30rem] [&_pre]:overflow-y-auto">
+
+```tsx
+import { ImageGallery } from "@/components/tool-ui/image-gallery";
+
+export function Example() {
+  return (
+    <ImageGallery
+      id="image-gallery-example"
+      title="Mountain landscapes"
+      description="Here are some images matching your search"
+      images={[
+        {
+          id: "img-1",
+          src: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=600&fit=crop",
+          alt: "Dramatic mountain peaks at sunrise",
+          width: 800,
+          height: 600,
+          title: "Alpine Sunrise",
+          caption: "Dolomites, Italy",
+        },
+        {
+          id: "img-2",
+          src: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=800&h=1200&fit=crop",
+          alt: "Misty mountain valley",
+          width: 800,
+          height: 1200,
+          title: "Misty Valley",
+        },
+        // ... more images
+      ]}
+      onImageClick={(id, image) => console.log("Clicked:", id, image)}
+    />
+  );
+}
+```
+
+</div>
+
+</Step>
+
+<Step title="Register it in your runtime provider">
+
+```tsx
+import { type Toolkit } from "@assistant-ui/react";
+import { ImageGallery } from "@/components/tool-ui/image-gallery";
+import { createResultToolRenderer } from "@/components/tool-ui/shared";
+
+export const toolkit: Toolkit = {
+  showImageGallery: {
+    type: "backend",
+    render: createResultToolRenderer({
+      render: (parsedResult) => <ImageGallery {...parsedResult} />,
+    }),
+  },
+};
+```
+
+</Step>
+
+</Steps>
+
+These snippets use [assistant-ui](https://assistant-ui.com) for end-to-end wiring, but the ImageGallery component itself is framework-agnostic at the UI layer: you can use it in any React codebase with any LLM SDK or tool-calling interface that can provide compatible props.
 
 ## Key Features
 

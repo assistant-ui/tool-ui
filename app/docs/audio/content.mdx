@@ -7,52 +7,68 @@ import { Audio } from "@/components/tool-ui/audio";
   mdxPath="app/docs/audio/content.mdx"
 />
 
-<Tabs items={["Preview", "Code"]}>
-  <Tab>
-    <div className="not-prose mx-auto max-w-sm">
-      <Audio
-        id="audio-example"
-        assetId="sample-audio"
-        src="https://samplelib.com/lib/preview/mp3/sample-6s.mp3"
-        title="Bell Labs hallway recording"
-        description="Ambient sounds where UNIX, C, and more took shape."
-        artwork="https://images.unsplash.com/photo-1454165205744-3b78555e5572?w=400&auto=format&fit=crop"
-        durationMs={30000}
-      />
-    </div>
-  </Tab>
-  <Tab>
-    ```tsx
-    import { Audio } from "@/components/tool-ui/audio";
+## Getting Started
 
-    export function Example() {
-      return (
-        <Audio
-          id="audio-example"
-          assetId="sample-audio"
-          src="https://samplelib.com/lib/preview/mp3/sample-6s.mp3"
-          title="Bell Labs hallway recording"
-          description="Ambient sounds where UNIX, C, and more took shape."
-          artwork="https://images.unsplash.com/photo-1454165205744-3b78555e5572"
-          durationMs={30000}
-        />
-      );
-    }
-    ```
-  </Tab>
-</Tabs>
+<Steps>
 
-## Source and Install
+<Step title="Install the component">
 
-Source code: [components/tool-ui/audio](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/audio)
-
-Install this component directly from the Tool UI shadcn registry:
+Run this once from your project root.
 
 ```bash
 npx shadcn@latest add https://tool-ui.com/r/audio.json
 ```
 
-This command installs `components/tool-ui/audio`, `components/tool-ui/shared` into your project.
+</Step>
+
+<Step title="Use it in your application">
+
+<div className="[&_pre]:max-h-[30rem] [&_pre]:overflow-y-auto">
+
+```tsx
+import { Audio } from "@/components/tool-ui/audio";
+
+export function Example() {
+  return (
+    <Audio
+      id="audio-example"
+      assetId="sample-audio"
+      src="https://samplelib.com/lib/preview/mp3/sample-6s.mp3"
+      title="Bell Labs hallway recording"
+      description="Ambient sounds where UNIX, C, and more took shape."
+      artwork="https://images.unsplash.com/photo-1454165205744-3b78555e5572"
+      durationMs={30000}
+    />
+  );
+}
+```
+
+</div>
+
+</Step>
+
+<Step title="Register it in your runtime provider">
+
+```tsx
+import { type Toolkit } from "@assistant-ui/react";
+import { Audio } from "@/components/tool-ui/audio";
+import { createResultToolRenderer } from "@/components/tool-ui/shared";
+
+export const toolkit: Toolkit = {
+  showAudio: {
+    type: "backend",
+    render: createResultToolRenderer({
+      render: (parsedResult) => <Audio {...parsedResult} />,
+    }),
+  },
+};
+```
+
+</Step>
+
+</Steps>
+
+These snippets use [assistant-ui](https://assistant-ui.com) for end-to-end wiring, but the Audio component itself is framework-agnostic at the UI layer: you can use it in any React codebase with any LLM SDK or tool-calling interface that can provide compatible props.
 
 ## Key Features
 

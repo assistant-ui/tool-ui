@@ -6,58 +6,37 @@ import { DocsHeader } from "../_components/docs-header";
   mdxPath="app/docs/item-carousel/content.mdx"
 />
 
-<ItemCarouselPresetExample preset="recommendations" />
+## Getting Started
 
-## Source and Install
+<Steps>
 
-Source code: [components/tool-ui/item-carousel](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/item-carousel)
+<Step title="Install the component">
 
-Install this component directly from the Tool UI shadcn registry:
+Run this once from your project root.
 
 ```bash
 npx shadcn@latest add https://tool-ui.com/r/item-carousel.json
 ```
 
-This command installs `components/tool-ui/item-carousel`, `components/tool-ui/shared` into your project.
+</Step>
 
-## Key Features
+<Step title="Use it in your application">
 
-<FeatureGrid>
-  <Feature icon="Layers" title="Collection browsing">
-    Display multiple items side-by-side for easy comparison with equal-height
-    cards via CSS Grid
-  </Feature>
-  <Feature icon="GalleryHorizontalEnd" title="Smart scrolling">
-    Custom scroll animation with cubic-bezier easing, snap points, and reduced
-    motion support
-  </Feature>
-  <Feature icon="MousePointerClick" title="Per-card actions">
-    Buttons adapt via container queries: stacked on narrow cards, side-by-side
-    when wider
-  </Feature>
-  <Feature icon="Keyboard" title="Full accessibility">
-    Keyboard navigation (Enter/Space), focus rings, ARIA roles, and screen
-    reader labels
-  </Feature>
-</FeatureGrid>
+<div className="[&_pre]:max-h-[30rem] [&_pre]:overflow-y-auto">
 
-## Design Details
+```tsx
+import { ItemCarousel } from "@/components/tool-ui/item-carousel";
 
-How the Item Carousel handles common interaction patterns:
+export function Example({ payload }: { payload: React.ComponentProps<typeof ItemCarousel> }) {
+  return <ItemCarousel {...payload} />;
+}
+```
 
-**Responsive button layout:** Each card is its own container (`@container/card`). When the card is narrow, buttons stack vertically with the primary action on top. Above 176px, they flow horizontally with primary on the right. This uses `flex-col-reverse` to maintain consistent DOM order while adapting visual hierarchy.
+</div>
 
-**Equal card heights:** Cards use CSS Grid (`grid-flow-col` with `auto-cols-max`) rather than flexbox. Grid cells in the same row automatically match heights, so a card with a two-line title aligns perfectly with one-line neighbors.
+</Step>
 
-**Smooth scroll animation:** The carousel implements custom JavaScript scrolling with a cubic-bezier ease-out curve. It respects `prefers-reduced-motion` and falls back to instant scrolling. Navigation calculates snap positions dynamically based on actual card offsets.
-
-**Image handling:** Supports both image URLs and hex color fallbacks. Images use `loading="lazy"` and `decoding="async"` for performance. On hover, images scale up 5% with a 300ms transition.
-
-**Click delegation:** Cards can be interactive (`onItemClick`) while containing action buttons. Click handlers check if the event originated from a button and delegate appropriately, preventing double-firing.
-
-**Touch optimization:** Cards use `touch-manipulation` to eliminate the 300ms tap delay on iOS. Navigation buttons appear only on hover/focus (desktop) and use backdrop blur for visual polish.
-
-## Usage
+<Step title="Register it in your runtime provider">
 
 ```tsx
 // Backend tool
@@ -120,6 +99,49 @@ export const toolkit: Toolkit = {
   },
 };
 ```
+
+</Step>
+
+</Steps>
+
+These snippets use [assistant-ui](https://assistant-ui.com) for end-to-end wiring, but the ItemCarousel component itself is framework-agnostic at the UI layer: you can use it in any React codebase with any LLM SDK or tool-calling interface that can provide compatible props.
+
+## Key Features
+
+<FeatureGrid>
+  <Feature icon="Layers" title="Collection browsing">
+    Display multiple items side-by-side for easy comparison with equal-height
+    cards via CSS Grid
+  </Feature>
+  <Feature icon="GalleryHorizontalEnd" title="Smart scrolling">
+    Custom scroll animation with cubic-bezier easing, snap points, and reduced
+    motion support
+  </Feature>
+  <Feature icon="MousePointerClick" title="Per-card actions">
+    Buttons adapt via container queries: stacked on narrow cards, side-by-side
+    when wider
+  </Feature>
+  <Feature icon="Keyboard" title="Full accessibility">
+    Keyboard navigation (Enter/Space), focus rings, ARIA roles, and screen
+    reader labels
+  </Feature>
+</FeatureGrid>
+
+## Design Details
+
+How the Item Carousel handles common interaction patterns:
+
+**Responsive button layout:** Each card is its own container (`@container/card`). When the card is narrow, buttons stack vertically with the primary action on top. Above 176px, they flow horizontally with primary on the right. This uses `flex-col-reverse` to maintain consistent DOM order while adapting visual hierarchy.
+
+**Equal card heights:** Cards use CSS Grid (`grid-flow-col` with `auto-cols-max`) rather than flexbox. Grid cells in the same row automatically match heights, so a card with a two-line title aligns perfectly with one-line neighbors.
+
+**Smooth scroll animation:** The carousel implements custom JavaScript scrolling with a cubic-bezier ease-out curve. It respects `prefers-reduced-motion` and falls back to instant scrolling. Navigation calculates snap positions dynamically based on actual card offsets.
+
+**Image handling:** Supports both image URLs and hex color fallbacks. Images use `loading="lazy"` and `decoding="async"` for performance. On hover, images scale up 5% with a 300ms transition.
+
+**Click delegation:** Cards can be interactive (`onItemClick`) while containing action buttons. Click handlers check if the event originated from a button and delegate appropriately, preventing double-firing.
+
+**Touch optimization:** Cards use `touch-manipulation` to eliminate the 300ms tap delay on iOS. Navigation buttons appear only on hover/focus (desktop) and use backdrop blur for visual polish.
 
 ## Props
 

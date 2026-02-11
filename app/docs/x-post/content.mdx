@@ -7,63 +7,74 @@ import { XPost } from "@/components/tool-ui/x-post";
   mdxPath="app/docs/x-post/content.mdx"
 />
 
-<Tabs items={["Preview", "Code"]}>
-  <Tab>
-    <div className="not-prose w-full max-w-[540px]">
-      <XPost
-        post={{
-          id: "x-post-1",
-          author: {
-            name: "Athia Zohra",
-            handle: "athiazohra",
-            avatarUrl:
-              "https://images.unsplash.com/photo-1740510294141-33ebf26e0809?q=80&w=987&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-            verified: true,
-          },
-          text: "Thinking about how to make Tool UIs feel more like collaboration than chrome.",
-          stats: { likes: 12 },
-          createdAt: "2025-01-05T12:00:00.000Z",
-        }}
-      />
-    </div>
-  </Tab>
-  <Tab>
-    ```tsx
-    import { XPost } from "@/components/tool-ui/x-post";
+## Getting Started
 
-    export function Example() {
-      return (
-        <XPost
-          post={{
-            id: "x-post-1",
-            author: {
-              name: "Athia Zohra",
-              handle: "athiazohra",
-              avatarUrl: "https://images.unsplash.com/photo-1740510294141-33ebf26e0809?q=80&w=987&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-              verified: true,
-            },
-            text: "Thinking about how to make Tool UIs feel more like collaboration than chrome.",
-            stats: { likes: 12 },
-            createdAt: "2025-01-05T12:00:00.000Z",
-          }}
-        />
-      );
-    }
-    ```
-  </Tab>
-</Tabs>
+<Steps>
 
-## Source and Install
+<Step title="Install the component">
 
-Source code: [components/tool-ui/x-post](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/x-post)
-
-Install this component directly from the Tool UI shadcn registry:
+Run this once from your project root.
 
 ```bash
 npx shadcn@latest add https://tool-ui.com/r/x-post.json
 ```
 
-This command installs `components/tool-ui/x-post`, `components/tool-ui/shared` into your project.
+</Step>
+
+<Step title="Use it in your application">
+
+<div className="[&_pre]:max-h-[30rem] [&_pre]:overflow-y-auto">
+
+```tsx
+import { XPost } from "@/components/tool-ui/x-post";
+
+export function Example() {
+  return (
+    <XPost
+      post={{
+        id: "x-post-1",
+        author: {
+          name: "Athia Zohra",
+          handle: "athiazohra",
+          avatarUrl: "https://images.unsplash.com/photo-1740510294141-33ebf26e0809?q=80&w=987&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+          verified: true,
+        },
+        text: "Thinking about how to make Tool UIs feel more like collaboration than chrome.",
+        stats: { likes: 12 },
+        createdAt: "2025-01-05T12:00:00.000Z",
+      }}
+    />
+  );
+}
+```
+
+</div>
+
+</Step>
+
+<Step title="Register it in your runtime provider">
+
+```tsx
+import { type Toolkit } from "@assistant-ui/react";
+import { XPost, safeParseSerializableXPost } from "@/components/tool-ui/x-post";
+import { createResultToolRenderer } from "@/components/tool-ui/shared";
+
+export const toolkit: Toolkit = {
+  showXPost: {
+    type: "backend",
+    render: createResultToolRenderer({
+      safeParse: safeParseSerializableXPost,
+      render: (parsedResult) => <XPost post={parsedResult} />,
+    }),
+  },
+};
+```
+
+</Step>
+
+</Steps>
+
+These snippets use [assistant-ui](https://assistant-ui.com) for end-to-end wiring, but the XPost component itself is framework-agnostic at the UI layer: you can use it in any React codebase with any LLM SDK or tool-calling interface that can provide compatible props.
 
 ## Key Features
 
@@ -81,24 +92,6 @@ This command installs `components/tool-ui/x-post`, `components/tool-ui/shared` i
     Built-in safe navigation helpers for external URLs
   </Feature>
 </FeatureGrid>
-
-## Usage
-
-```tsx
-import { type Toolkit } from "@assistant-ui/react";
-import { XPost, safeParseSerializableXPost } from "@/components/tool-ui/x-post";
-import { createResultToolRenderer } from "@/components/tool-ui/shared";
-
-export const toolkit: Toolkit = {
-  showXPost: {
-    type: "backend",
-    render: createResultToolRenderer({
-      safeParse: safeParseSerializableXPost,
-      render: (parsedResult) => <XPost post={parsedResult} />,
-    }),
-  },
-};
-```
 
 ## Props
 

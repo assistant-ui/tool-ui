@@ -7,52 +7,68 @@ import { LinkPreview } from "@/components/tool-ui/link-preview";
   mdxPath="app/docs/link-preview/content.mdx"
 />
 
-<Tabs items={["Preview", "Code"]}>
-  <Tab>
-    <div className="not-prose mx-auto max-w-md">
-      <LinkPreview
-        id="link-preview-example"
-        href="https://react.dev/reference/rsc/server-components"
-        title="React Server Components"
-        description="Server Components are a new type of Component that renders ahead of time."
-        image="https://images.unsplash.com/photo-1633356122544-f134324a6cee?auto=format&fit=crop&q=80&w=1200"
-        domain="react.dev"
-        ratio="16:9"
-      />
-    </div>
-  </Tab>
-  <Tab>
-    ```tsx
-    import { LinkPreview } from "@/components/tool-ui/link-preview";
+## Getting Started
 
-    export function Example() {
-      return (
-        <LinkPreview
-          id="link-preview-example"
-          href="https://react.dev/reference/rsc/server-components"
-          title="React Server Components"
-          description="Server Components are a new type of Component that renders ahead of time."
-          image="https://images.unsplash.com/photo-1633356122544-f134324a6cee"
-          domain="react.dev"
-          ratio="16:9"
-        />
-      );
-    }
-    ```
-  </Tab>
-</Tabs>
+<Steps>
 
-## Source and Install
+<Step title="Install the component">
 
-Source code: [components/tool-ui/link-preview](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/link-preview)
-
-Install this component directly from the Tool UI shadcn registry:
+Run this once from your project root.
 
 ```bash
 npx shadcn@latest add https://tool-ui.com/r/link-preview.json
 ```
 
-This command installs `components/tool-ui/link-preview`, `components/tool-ui/shared` into your project.
+</Step>
+
+<Step title="Use it in your application">
+
+<div className="[&_pre]:max-h-[30rem] [&_pre]:overflow-y-auto">
+
+```tsx
+import { LinkPreview } from "@/components/tool-ui/link-preview";
+
+export function Example() {
+  return (
+    <LinkPreview
+      id="link-preview-example"
+      href="https://react.dev/reference/rsc/server-components"
+      title="React Server Components"
+      description="Server Components are a new type of Component that renders ahead of time."
+      image="https://images.unsplash.com/photo-1633356122544-f134324a6cee"
+      domain="react.dev"
+      ratio="16:9"
+    />
+  );
+}
+```
+
+</div>
+
+</Step>
+
+<Step title="Register it in your runtime provider">
+
+```tsx
+import { type Toolkit } from "@assistant-ui/react";
+import { LinkPreview } from "@/components/tool-ui/link-preview";
+import { createResultToolRenderer } from "@/components/tool-ui/shared";
+
+export const toolkit: Toolkit = {
+  showLinkPreview: {
+    type: "backend",
+    render: createResultToolRenderer({
+      render: (parsedResult) => <LinkPreview {...parsedResult} />,
+    }),
+  },
+};
+```
+
+</Step>
+
+</Steps>
+
+These snippets use [assistant-ui](https://assistant-ui.com) for end-to-end wiring, but the LinkPreview component itself is framework-agnostic at the UI layer: you can use it in any React codebase with any LLM SDK or tool-calling interface that can provide compatible props.
 
 ## Key Features
 

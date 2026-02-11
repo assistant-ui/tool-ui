@@ -6,8 +6,6 @@ const PROJECT_ROOT = process.cwd();
 const COMPONENTS_ROOT = path.join(PROJECT_ROOT, "components/tool-ui");
 const DOCS_ROOT = path.join(PROJECT_ROOT, "app/docs");
 const QUICK_START_DOC_PATH = path.join(DOCS_ROOT, "quick-start/content.mdx");
-const SOURCE_REPO_BASE_URL =
-  "https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui";
 
 function listDirectories(rootPath: string): string[] {
   return fs
@@ -30,30 +28,38 @@ describe("component docs registry installation contract", () => {
     expect(missingDocPages).toEqual([]);
   });
 
-  test("component docs are registry-first and contain no zip/manual install instructions", () => {
+  test("component docs are getting-started first and registry-only", () => {
     for (const componentId of componentIds) {
       const docPath = path.join(DOCS_ROOT, componentId, "content.mdx");
       const content = fs.readFileSync(docPath, "utf8");
-      const sourceHeadingIndex = content.indexOf("## Source and Install");
+      const gettingStartedHeadingIndex = content.indexOf("## Getting Started");
       const keyFeaturesHeadingIndex = content.indexOf("## Key Features");
+      const installCommand =
+        `npx shadcn@latest add https://tool-ui.com/r/${componentId}.json`;
+      const installCommandIndex = content.indexOf(installCommand);
 
-      expect(content).toContain("## Source and Install");
+      expect(content).toContain("## Getting Started");
+      expect(content).not.toContain("## Source and Install");
       expect(content).toContain("## Key Features");
-      expect(content).toContain(
-        `npx shadcn@latest add https://tool-ui.com/r/${componentId}.json`,
-      );
-      expect(content).toContain(
-        `Source code: [components/tool-ui/${componentId}](${SOURCE_REPO_BASE_URL}/${componentId})`,
-      );
-      expect(sourceHeadingIndex).toBeGreaterThanOrEqual(0);
+      expect(content).toContain(installCommand);
+      expect(content).toContain("[assistant-ui](https://assistant-ui.com)");
+      expect(gettingStartedHeadingIndex).toBeGreaterThanOrEqual(0);
       expect(keyFeaturesHeadingIndex).toBeGreaterThanOrEqual(0);
-      expect(sourceHeadingIndex).toBeLessThan(keyFeaturesHeadingIndex);
+      expect(installCommandIndex).toBeGreaterThan(gettingStartedHeadingIndex);
+      expect(gettingStartedHeadingIndex).toBeLessThan(keyFeaturesHeadingIndex);
+
+      expect(content).not.toContain("Source code: [components/tool-ui/");
+      expect(content).not.toContain("<Tabs items={");
       expect(content).not.toContain("--cwd");
       expect(content).not.toContain("pnpm workspace");
       expect(content).not.toContain("### Download");
       expect(content).not.toContain("download-directory.github.io");
       expect(content).not.toContain("Copy the component");
       expect(content).not.toContain("copy files manually");
+      expect(content).not.toContain(
+        "Install this component directly from the Tool UI shadcn registry:",
+      );
+      expect(content).not.toContain("This command installs");
       expect(content).not.toContain("lib/ui/cn.ts");
     }
   });

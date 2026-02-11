@@ -7,54 +7,69 @@ import { Video } from "@/components/tool-ui/video";
   mdxPath="app/docs/video/content.mdx"
 />
 
-<Tabs items={["Preview", "Code"]}>
-  <Tab>
-    <div className="not-prose mx-auto max-w-md">
-      <Video
-        id="video-example"
-        assetId="sample-video"
-        src="https://samplelib.com/lib/preview/mp4/sample-5s.mp4"
-        poster="https://images.unsplash.com/photo-1518770660439-4636190af475?w=900&auto=format&fit=crop"
-        title="The GUI moment"
-        description="From command lines to windows, icons, menus, and pointers."
-        ratio="16:9"
-        durationMs={128000}
-      />
-    </div>
-  </Tab>
-  <Tab>
-    ```tsx
-    import { Video } from "@/components/tool-ui/video";
+## Getting Started
 
-    export function Example() {
-      return (
-        <Video
-          id="video-example"
-          assetId="sample-video"
-          src="https://samplelib.com/lib/preview/mp4/sample-5s.mp4"
-          poster="https://images.unsplash.com/photo-1518770660439-4636190af475"
-          title="The GUI moment"
-          description="From command lines to windows, icons, menus, and pointers."
-          ratio="16:9"
-          durationMs={128000}
-        />
-      );
-    }
-    ```
-  </Tab>
-</Tabs>
+<Steps>
 
-## Source and Install
+<Step title="Install the component">
 
-Source code: [components/tool-ui/video](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/video)
-
-Install this component directly from the Tool UI shadcn registry:
+Run this once from your project root.
 
 ```bash
 npx shadcn@latest add https://tool-ui.com/r/video.json
 ```
 
-This command installs `components/tool-ui/video`, `components/tool-ui/shared` into your project.
+</Step>
+
+<Step title="Use it in your application">
+
+<div className="[&_pre]:max-h-[30rem] [&_pre]:overflow-y-auto">
+
+```tsx
+import { Video } from "@/components/tool-ui/video";
+
+export function Example() {
+  return (
+    <Video
+      id="video-example"
+      assetId="sample-video"
+      src="https://samplelib.com/lib/preview/mp4/sample-5s.mp4"
+      poster="https://images.unsplash.com/photo-1518770660439-4636190af475"
+      title="The GUI moment"
+      description="From command lines to windows, icons, menus, and pointers."
+      ratio="16:9"
+      durationMs={128000}
+    />
+  );
+}
+```
+
+</div>
+
+</Step>
+
+<Step title="Register it in your runtime provider">
+
+```tsx
+import { type Toolkit } from "@assistant-ui/react";
+import { Video } from "@/components/tool-ui/video";
+import { createResultToolRenderer } from "@/components/tool-ui/shared";
+
+export const toolkit: Toolkit = {
+  showVideo: {
+    type: "backend",
+    render: createResultToolRenderer({
+      render: (parsedResult) => <Video {...parsedResult} />,
+    }),
+  },
+};
+```
+
+</Step>
+
+</Steps>
+
+These snippets use [assistant-ui](https://assistant-ui.com) for end-to-end wiring, but the Video component itself is framework-agnostic at the UI layer: you can use it in any React codebase with any LLM SDK or tool-calling interface that can provide compatible props.
 
 ## Key Features
 
