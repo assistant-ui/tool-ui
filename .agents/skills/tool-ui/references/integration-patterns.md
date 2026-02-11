@@ -1,10 +1,10 @@
 # Tool UI Integration Patterns
 
-Use these patterns after component installation.
+Use these patterns after installation.
 
 ## Pattern A: assistant-ui backend tool rendering (recommended default)
 
-Use this when tool results are returned by the backend.
+Use when tool results are returned by the backend.
 
 ```tsx
 import { type Toolkit } from "@assistant-ui/react";
@@ -22,9 +22,15 @@ export const toolkit: Toolkit = {
 };
 ```
 
+Generate this shape quickly:
+
+```bash
+python scripts/tool_ui_scaffold.py --mode assistant-backend --component plan
+```
+
 ## Pattern B: assistant-ui frontend interactive tool rendering
 
-Use this when user interaction in the component should produce a tool result.
+Use when user interaction must call `addResult(...)`.
 
 ```tsx
 import { type Toolkit } from "@assistant-ui/react";
@@ -59,9 +65,15 @@ export const toolkit: Toolkit = {
 };
 ```
 
+Generate starter snippet:
+
+```bash
+python scripts/tool_ui_scaffold.py --mode assistant-frontend --component option-list
+```
+
 ## Pattern C: non-assistant-ui manual rendering
 
-Use this when app already has a chat/runtime stack.
+Use when app already has a runtime stack.
 
 ```tsx
 import { Plan, safeParseSerializablePlan } from "@/components/tool-ui/plan";
@@ -76,8 +88,14 @@ function ToolResultView({ toolName, result }: { toolName: string; result: unknow
 }
 ```
 
+Generate starter snippet:
+
+```bash
+python scripts/tool_ui_scaffold.py --mode manual --component plan
+```
+
 ## Notes
 
-- Keep tool payloads serializable and schema-validated.
 - Render only after safe parsing succeeds.
-- Add one component first, then expand to multiple components.
+- Keep payloads serializable and schema-validated.
+- Integrate one component first, then scale up.

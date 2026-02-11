@@ -1,0 +1,177 @@
+[
+  {
+    "id": "approval-card",
+    "label": "Approval Card",
+    "description": "Binary confirmation for agent actions",
+    "path": "/docs/approval-card",
+    "category": "confirmation"
+  },
+  {
+    "id": "audio",
+    "label": "Audio",
+    "description": "Audio playback with artwork and metadata",
+    "path": "/docs/audio",
+    "category": "media"
+  },
+  {
+    "id": "chart",
+    "label": "Chart",
+    "description": "Visualize data with interactive charts",
+    "path": "/docs/chart",
+    "category": "artifacts"
+  },
+  {
+    "id": "citation",
+    "label": "Citation",
+    "description": "Display source references with attribution",
+    "path": "/docs/citation",
+    "category": "display"
+  },
+  {
+    "id": "code-block",
+    "label": "Code Block",
+    "description": "Display syntax-highlighted code snippets",
+    "path": "/docs/code-block",
+    "category": "artifacts"
+  },
+  {
+    "id": "data-table",
+    "label": "Data Table",
+    "description": "Present structured data in sortable tables",
+    "path": "/docs/data-table",
+    "category": "artifacts"
+  },
+  {
+    "id": "image",
+    "label": "Image",
+    "description": "Display images with metadata and attribution",
+    "path": "/docs/image",
+    "category": "media"
+  },
+  {
+    "id": "image-gallery",
+    "label": "Image Gallery",
+    "description": "Masonry grid with fullscreen lightbox viewer",
+    "path": "/docs/image-gallery",
+    "category": "media"
+  },
+  {
+    "id": "instagram-post",
+    "label": "Instagram Post",
+    "description": "Render Instagram post previews",
+    "path": "/docs/instagram-post",
+    "category": "artifacts"
+  },
+  {
+    "id": "item-carousel",
+    "label": "Item Carousel",
+    "description": "Horizontal carousel for browsing collections",
+    "path": "/docs/item-carousel",
+    "category": "display"
+  },
+  {
+    "id": "link-preview",
+    "label": "Link Preview",
+    "description": "Rich link previews with OG data",
+    "path": "/docs/link-preview",
+    "category": "display"
+  },
+  {
+    "id": "linkedin-post",
+    "label": "LinkedIn Post",
+    "description": "Render LinkedIn post previews",
+    "path": "/docs/linkedin-post",
+    "category": "artifacts"
+  },
+  {
+    "id": "message-draft",
+    "label": "Message Draft",
+    "description": "Review and approve messages before sending",
+    "path": "/docs/message-draft",
+    "category": "artifacts"
+  },
+  {
+    "id": "option-list",
+    "label": "Option List",
+    "description": "Let users select from multiple choices",
+    "path": "/docs/option-list",
+    "category": "input"
+  },
+  {
+    "id": "order-summary",
+    "label": "Order Summary",
+    "description": "Display purchases with itemized pricing",
+    "path": "/docs/order-summary",
+    "category": "confirmation"
+  },
+  {
+    "id": "parameter-slider",
+    "label": "Parameter Slider",
+    "description": "Numeric parameter adjustment controls",
+    "path": "/docs/parameter-slider",
+    "category": "input"
+  },
+  {
+    "id": "plan",
+    "label": "Plan",
+    "description": "Display step-by-step task workflows",
+    "path": "/docs/plan",
+    "category": "progress"
+  },
+  {
+    "id": "preferences-panel",
+    "label": "Preferences Panel",
+    "description": "Compact settings panel for user preferences",
+    "path": "/docs/preferences-panel",
+    "category": "input"
+  },
+  {
+    "id": "progress-tracker",
+    "label": "Progress Tracker",
+    "description": "Real-time status feedback for multi-step operations",
+    "path": "/docs/progress-tracker",
+    "category": "progress"
+  },
+  {
+    "id": "question-flow",
+    "label": "Question Flow",
+    "description": "Multi-step guided questions with branching",
+    "path": "/docs/question-flow",
+    "category": "input"
+  },
+  {
+    "id": "stats-display",
+    "label": "Stats Display",
+    "description": "Display key metrics in a grid",
+    "path": "/docs/stats-display",
+    "category": "display"
+  },
+  {
+    "id": "terminal",
+    "label": "Terminal",
+    "description": "Show command-line output and logs",
+    "path": "/docs/terminal",
+    "category": "display"
+  },
+  {
+    "id": "video",
+    "label": "Video",
+    "description": "Video playback with controls and poster",
+    "path": "/docs/video",
+    "category": "media"
+  },
+  {
+    "id": "weather-widget",
+    "label": "Weather Widget",
+    "description": "Display weather conditions and forecasts",
+    "path": "/docs/weather-widget",
+    "category": "display"
+  },
+  {
+    "id": "x-post",
+    "label": "X Post",
+    "description": "Render X post previews",
+    "path": "/docs/x-post",
+    "category": "artifacts"
+  }
+]
