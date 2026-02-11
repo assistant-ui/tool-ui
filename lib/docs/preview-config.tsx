@@ -881,7 +881,7 @@ export const previewConfigs: Record<
   },
   "weather-widget": {
     presets: weatherWidgetPresets as Record<string, PresetWithCodeGen<unknown>>,
-    defaultPreset: "sunny-forecast" satisfies WeatherWidgetPresetName,
+    defaultPreset: "thunderstorm" satisfies WeatherWidgetPresetName,
     wrapper: MaxWidthSmStartWrapper,
     chatContext: {
       userMessage: "What's the weather like in San Diego?",

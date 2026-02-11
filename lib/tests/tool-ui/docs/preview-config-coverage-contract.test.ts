@@ -28,4 +28,11 @@ describe("preview config coverage contract", () => {
       expect(wrapperMarkup).toContain("mx-auto");
     }
   });
+
+  test("weather widget preview defaults to thunderstorm preset", () => {
+    const config = getPreviewConfig("weather-widget");
+
+    expect(config).toBeDefined();
+    expect(config?.defaultPreset).toBe("thunderstorm");
+  });
 });
