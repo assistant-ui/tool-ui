@@ -55,7 +55,13 @@ describe("Tool UI registry artifacts", () => {
     ).toBe(true);
     expect(
       dataTableItem?.files.some((file) => file.path === "lib/ui/cn.ts"),
-    ).toBe(true);
+    ).toBe(false);
+    const dataTableAdapter = dataTableItem?.files.find(
+      (file) => file.path === "components/tool-ui/data-table/_adapter.tsx",
+    );
+    expect(dataTableAdapter?.content).toContain('export { cn } from "@/lib/utils";');
+    expect(dataTableItem?.dependencies?.includes("clsx")).toBe(false);
+    expect(dataTableItem?.dependencies?.includes("tailwind-merge")).toBe(false);
     expect(dataTableItem?.dependencies?.includes("zod")).toBe(true);
     expect(dataTableItem?.registryDependencies).toEqual([
       "accordion",

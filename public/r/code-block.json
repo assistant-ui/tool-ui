@@ -5,10 +5,8 @@
   "title": "Code Block",
   "description": "Display syntax-highlighted code snippets.",
   "dependencies": [
-    "clsx",
     "lucide-react",
     "shiki",
-    "tailwind-merge",
     "zod"
   ],
   "registryDependencies": [
@@ -20,7 +18,7 @@
       "path": "components/tool-ui/code-block/_adapter.tsx",
       "type": "registry:component",
       "target": "components/tool-ui/code-block/_adapter.tsx",
-      "content": "/**\n * Adapter: UI and utility re-exports for copy-standalone portability.\n *\n * When copying this component to another project, update these imports\n * to match your project's paths:\n *\n *   cn          → Your Tailwind merge utility (e.g., \"@/lib/utils\", \"~/lib/cn\")\n *   Button      → shadcn/ui Button\n *   Collapsible → shadcn/ui Collapsible\n */\n\nexport { cn } from \"@/lib/ui/cn\";\nexport { Button } from \"@/components/ui/button\";\nexport { Collapsible, CollapsibleTrigger } from \"@/components/ui/collapsible\";\n"
+      "content": "/**\n * Adapter: UI and utility re-exports for copy-standalone portability.\n *\n * When copying this component to another project, update these imports\n * to match your project's paths:\n *\n *   cn          → Your Tailwind merge utility (e.g., \"@/lib/utils\", \"~/lib/cn\")\n *   Button      → shadcn/ui Button\n *   Collapsible → shadcn/ui Collapsible\n */\n\nexport { cn } from \"@/lib/utils\";\nexport { Button } from \"@/components/ui/button\";\nexport { Collapsible, CollapsibleTrigger } from \"@/components/ui/collapsible\";\n"
     },
     {
       "path": "components/tool-ui/code-block/code-block.tsx",
@@ -50,7 +48,7 @@
       "path": "components/tool-ui/shared/_adapter.tsx",
       "type": "registry:component",
       "target": "components/tool-ui/shared/_adapter.tsx",
-      "content": "/**\n * Adapter: UI and utility re-exports for copy-standalone portability.\n *\n * When copying this component to another project, update these imports\n * to match your project's paths:\n *\n *   cn     → Your Tailwind merge utility (e.g., \"@/lib/utils\", \"~/lib/cn\")\n *   Button → shadcn/ui Button\n */\n\nexport { cn } from \"@/lib/ui/cn\";\nexport { Button } from \"@/components/ui/button\";\n"
+      "content": "/**\n * Adapter: UI and utility re-exports for copy-standalone portability.\n *\n * When copying this component to another project, update these imports\n * to match your project's paths:\n *\n *   cn     → Your Tailwind merge utility (e.g., \"@/lib/utils\", \"~/lib/cn\")\n *   Button → shadcn/ui Button\n */\n\nexport { cn } from \"@/lib/utils\";\nexport { Button } from \"@/components/ui/button\";\n"
     },
     {
       "path": "components/tool-ui/shared/action-buttons.tsx",
@@ -93,12 +91,6 @@
       "type": "registry:lib",
       "target": "components/tool-ui/shared/use-copy-to-clipboard.ts",
       "content": "\"use client\";\n\nimport { useCallback, useEffect, useState } from \"react\";\n\nfunction fallbackCopyToClipboard(text: string): boolean {\n  try {\n    const textArea = document.createElement(\"textarea\");\n    textArea.value = text;\n    textArea.setAttribute(\"readonly\", \"\");\n    textArea.style.position = \"fixed\";\n    textArea.style.top = \"-9999px\";\n    textArea.style.left = \"-9999px\";\n    document.body.appendChild(textArea);\n    textArea.select();\n    const ok = document.execCommand(\"copy\");\n    document.body.removeChild(textArea);\n    return ok;\n  } catch {\n    return false;\n  }\n}\n\nexport function useCopyToClipboard(options?: {\n  resetAfterMs?: number;\n}): {\n  copiedId: string | null;\n  copy: (text: string, id?: string) => Promise<boolean>;\n} {\n  const resetAfterMs = options?.resetAfterMs ?? 2000;\n  const [copiedId, setCopiedId] = useState<string | null>(null);\n\n  const copy = useCallback(\n    async (text: string, id: string = \"default\") => {\n      let ok = false;\n      try {\n        if (navigator.clipboard?.writeText) {\n          await navigator.clipboard.writeText(text);\n          ok = true;\n        } else {\n          ok = fallbackCopyToClipboard(text);\n        }\n      } catch {\n        ok = fallbackCopyToClipboard(text);\n      }\n\n      if (ok) {\n        setCopiedId(id);\n      }\n\n      return ok;\n    },\n    [],\n  );\n\n  useEffect(() => {\n    if (!copiedId) return;\n    const timeout = setTimeout(() => setCopiedId(null), resetAfterMs);\n    return () => clearTimeout(timeout);\n  }, [copiedId, resetAfterMs]);\n\n  return { copiedId, copy };\n}\n\n"
-    },
-    {
-      "path": "lib/ui/cn.ts",
-      "type": "registry:lib",
-      "target": "lib/ui/cn.ts",
-      "content": "import { clsx, type ClassValue } from \"clsx\";\nimport { twMerge } from \"tailwind-merge\";\n\nexport function cn(...inputs: ClassValue[]) {\n  return twMerge(clsx(inputs));\n}\n"
     }
   ]
 }

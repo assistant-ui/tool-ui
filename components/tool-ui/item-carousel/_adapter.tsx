@@ -5,13 +5,7 @@
  * copied to another project by updating these imports to match the target
  * project's paths.
  */
-import type { ClassValue } from "clsx";
-import { clsx } from "clsx";
-import { twMerge } from "tailwind-merge";
-
-export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs));
-}
+export { cn } from "@/lib/utils";
 
 export { Button } from "@/components/ui/button";
 export { Card } from "@/components/ui/card";

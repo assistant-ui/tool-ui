@@ -5,9 +5,7 @@
   "title": "Chart",
   "description": "Visualize data with interactive charts.",
   "dependencies": [
-    "clsx",
     "recharts",
-    "tailwind-merge",
     "zod"
   ],
   "registryDependencies": [
@@ -19,7 +17,7 @@
       "path": "components/tool-ui/chart/_adapter.tsx",
       "type": "registry:component",
       "target": "components/tool-ui/chart/_adapter.tsx",
-      "content": "/**\n * Adapter: UI and utility re-exports for copy-standalone portability.\n *\n * When copying this component to another project, update these imports\n * to match your project's paths:\n *\n *   cn    → Your Tailwind merge utility (e.g., \"@/lib/utils\", \"~/lib/cn\")\n *   Chart → shadcn/ui Chart (recharts wrapper)\n *   Card  → shadcn/ui Card\n */\n\nexport { cn } from \"@/lib/ui/cn\";\nexport {\n  ChartContainer,\n  ChartTooltip,\n  ChartTooltipContent,\n  ChartLegend,\n  ChartLegendContent,\n  type ChartConfig,\n} from \"@/components/ui/chart\";\nexport { Card, CardHeader, CardTitle, CardDescription, CardContent } from \"@/components/ui/card\";\n"
+      "content": "/**\n * Adapter: UI and utility re-exports for copy-standalone portability.\n *\n * When copying this component to another project, update these imports\n * to match your project's paths:\n *\n *   cn    → Your Tailwind merge utility (e.g., \"@/lib/utils\", \"~/lib/cn\")\n *   Chart → shadcn/ui Chart (recharts wrapper)\n *   Card  → shadcn/ui Card\n */\n\nexport { cn } from \"@/lib/utils\";\nexport {\n  ChartContainer,\n  ChartTooltip,\n  ChartTooltipContent,\n  ChartLegend,\n  ChartLegendContent,\n  type ChartConfig,\n} from \"@/components/ui/chart\";\nexport { Card, CardHeader, CardTitle, CardDescription, CardContent } from \"@/components/ui/card\";\n"
     },
     {
       "path": "components/tool-ui/chart/chart.tsx",
@@ -62,12 +60,6 @@
       "type": "registry:lib",
       "target": "components/tool-ui/shared/schema.ts",
       "content": "import { z } from \"zod\";\nimport type { ReactNode } from \"react\";\n\n/**\n * Tool UI conventions:\n * - Serializable schemas are JSON-safe (no callbacks/ReactNode/`className`).\n * - Schema: `SerializableXSchema`\n * - Parser: `parseSerializableX(input: unknown)` (throws on invalid)\n * - Safe parser: `safeParseSerializableX(input: unknown)` (returns `null` on invalid)\n * - Actions: `responseActions`, `onResponseAction`, `onBeforeResponseAction`\n * - Root attrs: `data-tool-ui-id` + `data-slot`\n */\n\n/**\n * Schema for tool UI identity.\n *\n * Every tool UI should have a unique identifier that:\n * - Is stable across re-renders\n * - Is meaningful (not auto-generated)\n * - Is unique within the conversation\n *\n * Format recommendation: `{component-type}-{semantic-identifier}`\n * Examples: \"data-table-expenses-q3\", \"option-list-deploy-target\"\n */\nexport const ToolUIIdSchema = z.string().min(1);\n\nexport type ToolUIId = z.infer<typeof ToolUIIdSchema>;\n\n/**\n * Primary role of a Tool UI surface in a chat context.\n */\nexport const ToolUIRoleSchema = z.enum([\n  \"information\",\n  \"decision\",\n  \"control\",\n  \"state\",\n  \"composite\",\n]);\n\nexport type ToolUIRole = z.infer<typeof ToolUIRoleSchema>;\n\nexport const ToolUIReceiptOutcomeSchema = z.enum([\n  \"success\",\n  \"partial\",\n  \"failed\",\n  \"cancelled\",\n]);\n\nexport type ToolUIReceiptOutcome = z.infer<typeof ToolUIReceiptOutcomeSchema>;\n\n/**\n * Optional receipt metadata: a durable summary of an outcome.\n */\nexport const ToolUIReceiptSchema = z.object({\n  outcome: ToolUIReceiptOutcomeSchema,\n  summary: z.string().min(1),\n  identifiers: z.record(z.string(), z.string()).optional(),\n  at: z.string().datetime(),\n});\n\nexport type ToolUIReceipt = z.infer<typeof ToolUIReceiptSchema>;\n\n/**\n * Base schema for Tool UI payloads (id + optional role/receipt).\n */\nexport const ToolUISurfaceSchema = z.object({\n  id: ToolUIIdSchema,\n  role: ToolUIRoleSchema.optional(),\n  receipt: ToolUIReceiptSchema.optional(),\n});\n\nexport type ToolUISurface = z.infer<typeof ToolUISurfaceSchema>;\n\nexport const ActionSchema = z.object({\n  id: z.string().min(1),\n  label: z.string().min(1),\n  /**\n   * Canonical narration the assistant can use after this action is taken.\n   *\n   * Example: \"I exported the table as CSV.\" / \"I opened the link in a new tab.\"\n   */\n  sentence: z.string().optional(),\n  confirmLabel: z.string().optional(),\n  variant: z\n    .enum([\"default\", \"destructive\", \"secondary\", \"ghost\", \"outline\"])\n    .optional(),\n  icon: z.custom<ReactNode>().optional(),\n  loading: z.boolean().optional(),\n  disabled: z.boolean().optional(),\n  shortcut: z.string().optional(),\n});\n\nexport type Action = z.infer<typeof ActionSchema>;\n\nexport const ActionButtonsPropsSchema = z.object({\n  actions: z.array(ActionSchema).min(1),\n  align: z.enum([\"left\", \"center\", \"right\"]).optional(),\n  confirmTimeout: z.number().positive().optional(),\n  className: z.string().optional(),\n});\n\nexport const SerializableActionSchema = ActionSchema.omit({ icon: true });\nexport const SerializableActionsSchema = ActionButtonsPropsSchema.extend({\n  actions: z.array(SerializableActionSchema),\n}).omit({ className: true });\n\nexport interface ActionsConfig {\n  items: Action[];\n  align?: \"left\" | \"center\" | \"right\";\n  confirmTimeout?: number;\n}\n\nexport const SerializableActionsConfigSchema = z.object({\n  items: z.array(SerializableActionSchema).min(1),\n  align: z.enum([\"left\", \"center\", \"right\"]).optional(),\n  confirmTimeout: z.number().positive().optional(),\n});\n\nexport type SerializableActionsConfig = z.infer<\n  typeof SerializableActionsConfigSchema\n>;\n\nexport type SerializableAction = z.infer<typeof SerializableActionSchema>;\n"
-    },
-    {
-      "path": "lib/ui/cn.ts",
-      "type": "registry:lib",
-      "target": "lib/ui/cn.ts",
-      "content": "import { clsx, type ClassValue } from \"clsx\";\nimport { twMerge } from \"tailwind-merge\";\n\nexport function cn(...inputs: ClassValue[]) {\n  return twMerge(clsx(inputs));\n}\n"
     }
   ]
 }

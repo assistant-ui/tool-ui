@@ -5,9 +5,7 @@
   "title": "Weather Widget",
   "description": "Display weather conditions and forecasts.",
   "dependencies": [
-    "clsx",
     "lucide-react",
-    "tailwind-merge",
     "zod"
   ],
   "registryDependencies": [
@@ -30,7 +28,7 @@
       "path": "components/tool-ui/weather-widget/_adapter.tsx",
       "type": "registry:component",
       "target": "components/tool-ui/weather-widget/_adapter.tsx",
-      "content": "/**\n * Adapter: UI and utility re-exports for copy-standalone portability.\n *\n * When copying this component to another project, update these imports\n * to match your project's paths:\n *\n *   cn   → Your Tailwind merge utility (e.g., \"@/lib/utils\", \"~/lib/cn\")\n *   Card → shadcn/ui Card\n */\n\nexport { cn } from \"@/lib/ui/cn\";\nexport { Card } from \"@/components/ui/card\";\n"
+      "content": "/**\n * Adapter: UI and utility re-exports for copy-standalone portability.\n *\n * When copying this component to another project, update these imports\n * to match your project's paths:\n *\n *   cn   → Your Tailwind merge utility (e.g., \"@/lib/utils\", \"~/lib/cn\")\n *   Card → shadcn/ui Card\n */\n\nexport { cn } from \"@/lib/utils\";\nexport { Card } from \"@/components/ui/card\";\n"
     },
     {
       "path": "components/tool-ui/weather-widget/assets/moon-texture.jpg",
@@ -235,12 +233,6 @@
       "type": "registry:component",
       "target": "components/tool-ui/weather-widget/weather-widget.tsx",
       "content": "\"use client\";\n\nimport { cn, Card } from \"./_adapter\";\nimport { EffectCompositor } from \"./effects/effect-compositor\";\nimport {\n  getSceneBrightnessFromTimeOfDay,\n  getWeatherTheme,\n} from \"./effects/parameter-mapper\";\nimport { getNearestCheckpoint } from \"./effects/tuning\";\nimport { TUNED_WEATHER_EFFECTS_CHECKPOINT_OVERRIDES } from \"./effects/tuned-presets\";\nimport type { WeatherWidgetProps } from \"./schema\";\nimport { resolveWeatherTime } from \"./time\";\nimport { WeatherDataOverlay } from \"./weather-data-overlay\";\n\nexport function WeatherWidget({\n  version: _version,\n  id,\n  location,\n  units,\n  current,\n  forecast,\n  time,\n  updatedAt,\n  className,\n  effects,\n  customEffectProps,\n}: WeatherWidgetProps) {\n  const prefersReducedMotion =\n    typeof window !== \"undefined\" &&\n    window.matchMedia?.(\"(prefers-reduced-motion: reduce)\")?.matches;\n  const reducedMotion = effects?.reducedMotion ?? Boolean(prefersReducedMotion);\n  const effectsEnabled = effects?.enabled !== false && !reducedMotion;\n\n  const overlayTimeOfDay = customEffectProps?.celestial?.timeOfDay;\n  const resolvedTime = resolveWeatherTime({\n    time,\n    updatedAt,\n  });\n  const timeOfDay =\n    typeof overlayTimeOfDay === \"number\"\n      ? overlayTimeOfDay\n      : resolvedTime.timeOfDay;\n\n  const tunedOverrides =\n    TUNED_WEATHER_EFFECTS_CHECKPOINT_OVERRIDES[current.conditionCode];\n  const tunedGlass =\n    tunedOverrides?.[getNearestCheckpoint(timeOfDay)]?.glass;\n  const glassParams = customEffectProps?.glass\n    ? { ...tunedGlass, ...customEffectProps.glass }\n    : tunedGlass;\n  const brightness = getSceneBrightnessFromTimeOfDay(timeOfDay, current.conditionCode);\n  const weatherTheme = getWeatherTheme(brightness);\n  const isWeatherDark = weatherTheme === \"dark\";\n  const backgroundClass = isWeatherDark\n    ? \"bg-gradient-to-b from-zinc-950 via-zinc-900/70 to-zinc-950\"\n    : \"bg-gradient-to-b from-sky-50 via-sky-100/70 to-white\";\n\n  return (\n    <article\n      data-slot=\"weather-widget\"\n      data-tool-ui-id={id}\n      className={cn(\"w-full max-w-md\", className)}\n    >\n      <Card\n        className={cn(\n          \"@container/weather [container-type:size] relative overflow-clip aspect-[4/3] border-0 p-0 shadow-none\",\n          backgroundClass,\n        )}\n      >\n        {effectsEnabled && (\n          <EffectCompositor\n            conditionCode={current.conditionCode}\n            windSpeed={current.windSpeed}\n            precipitationLevel={current.precipitationLevel}\n            visibility={current.visibility}\n            timestamp={updatedAt}\n            timeOfDay={timeOfDay}\n            settings={effects}\n            customProps={customEffectProps}\n          />\n        )}\n\n        <WeatherDataOverlay\n          location={location.name}\n          conditionCode={current.conditionCode}\n          temperature={current.temperature}\n          tempHigh={current.tempMax}\n          tempLow={current.tempMin}\n          forecast={forecast}\n          unit={units.temperature}\n          theme={weatherTheme}\n          timeOfDay={timeOfDay}\n          timestamp={updatedAt}\n          glassParams={glassParams}\n        />\n      </Card>\n    </article>\n  );\n}\n"
-    },
-    {
-      "path": "lib/ui/cn.ts",
-      "type": "registry:lib",
-      "target": "lib/ui/cn.ts",
-      "content": "import { clsx, type ClassValue } from \"clsx\";\nimport { twMerge } from \"tailwind-merge\";\n\nexport function cn(...inputs: ClassValue[]) {\n  return twMerge(clsx(inputs));\n}\n"
     }
   ]
 }

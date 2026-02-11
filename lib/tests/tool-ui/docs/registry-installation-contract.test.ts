@@ -43,6 +43,7 @@ describe("component docs registry installation contract", () => {
       expect(content).not.toContain("download-directory.github.io");
       expect(content).not.toContain("Copy the component");
       expect(content).not.toContain("copy files manually");
+      expect(content).not.toContain("lib/ui/cn.ts");
     }
   });
 
@@ -53,6 +54,7 @@ describe("component docs registry installation contract", () => {
     expect(content).not.toContain("manual copy");
     expect(content).not.toContain("download ZIP");
     expect(content).not.toContain("download ZIP archives");
+    expect(content).not.toContain("lib/ui/cn.ts");
   });
 
   test("quick start uses a single root-level install command", () => {

@@ -5,9 +5,7 @@
   "title": "Progress Tracker",
   "description": "Show real-time status feedback for multi-step operations in AI interfaces.",
   "dependencies": [
-    "clsx",
     "lucide-react",
-    "tailwind-merge",
     "zod"
   ],
   "registryDependencies": [
@@ -18,7 +16,7 @@
       "path": "components/tool-ui/progress-tracker/_adapter.tsx",
       "type": "registry:component",
       "target": "components/tool-ui/progress-tracker/_adapter.tsx",
-      "content": "/**\n * Adapter: UI and utility re-exports for copy-standalone portability.\n *\n * When copying this component to another project, update these imports\n * to match your project's paths:\n *\n *   cn        → Your Tailwind merge utility (e.g., \"@/lib/utils\", \"~/lib/cn\")\n *   Button    → shadcn/ui Button\n */\n\nexport { cn } from \"@/lib/ui/cn\";\nexport { Button } from \"@/components/ui/button\";\n"
+      "content": "/**\n * Adapter: UI and utility re-exports for copy-standalone portability.\n *\n * When copying this component to another project, update these imports\n * to match your project's paths:\n *\n *   cn        → Your Tailwind merge utility (e.g., \"@/lib/utils\", \"~/lib/cn\")\n *   Button    → shadcn/ui Button\n */\n\nexport { cn } from \"@/lib/utils\";\nexport { Button } from \"@/components/ui/button\";\n"
     },
     {
       "path": "components/tool-ui/progress-tracker/index.tsx",
@@ -48,7 +46,7 @@
       "path": "components/tool-ui/shared/_adapter.tsx",
       "type": "registry:component",
       "target": "components/tool-ui/shared/_adapter.tsx",
-      "content": "/**\n * Adapter: UI and utility re-exports for copy-standalone portability.\n *\n * When copying this component to another project, update these imports\n * to match your project's paths:\n *\n *   cn     → Your Tailwind merge utility (e.g., \"@/lib/utils\", \"~/lib/cn\")\n *   Button → shadcn/ui Button\n */\n\nexport { cn } from \"@/lib/ui/cn\";\nexport { Button } from \"@/components/ui/button\";\n"
+      "content": "/**\n * Adapter: UI and utility re-exports for copy-standalone portability.\n *\n * When copying this component to another project, update these imports\n * to match your project's paths:\n *\n *   cn     → Your Tailwind merge utility (e.g., \"@/lib/utils\", \"~/lib/cn\")\n *   Button → shadcn/ui Button\n */\n\nexport { cn } from \"@/lib/utils\";\nexport { Button } from \"@/components/ui/button\";\n"
     },
     {
       "path": "components/tool-ui/shared/action-buttons.tsx",
@@ -85,12 +83,6 @@
       "type": "registry:component",
       "target": "components/tool-ui/shared/use-action-buttons.tsx",
       "content": "\"use client\";\n\nimport { useCallback, useEffect, useMemo, useState } from \"react\";\nimport type { Action } from \"./schema\";\n\nexport type UseActionButtonsOptions = {\n  actions: Action[];\n  onAction: (actionId: string) => void | Promise<void>;\n  onBeforeAction?: (actionId: string) => boolean | Promise<boolean>;\n  confirmTimeout?: number;\n};\n\nexport type UseActionButtonsResult = {\n  actions: Array<\n    Action & {\n      currentLabel: string;\n      isConfirming: boolean;\n      isExecuting: boolean;\n      isDisabled: boolean;\n      isLoading: boolean;\n    }\n  >;\n  runAction: (actionId: string) => Promise<void>;\n  confirmingActionId: string | null;\n  executingActionId: string | null;\n};\n\nexport function useActionButtons(\n  options: UseActionButtonsOptions,\n): UseActionButtonsResult {\n  const {\n    actions,\n    onAction,\n    onBeforeAction,\n    confirmTimeout = 3000,\n  } = options;\n\n  const [confirmingActionId, setConfirmingActionId] = useState<string | null>(\n    null,\n  );\n  const [executingActionId, setExecutingActionId] = useState<string | null>(\n    null,\n  );\n\n  useEffect(() => {\n    if (!confirmingActionId) return;\n    const id = setTimeout(() => setConfirmingActionId(null), confirmTimeout);\n    return () => clearTimeout(id);\n  }, [confirmingActionId, confirmTimeout]);\n\n  useEffect(() => {\n    if (!confirmingActionId) return;\n    const handleKeyDown = (e: KeyboardEvent) => {\n      if (e.key === \"Escape\") {\n        setConfirmingActionId(null);\n      }\n    };\n\n    window.addEventListener(\"keydown\", handleKeyDown);\n    return () => window.removeEventListener(\"keydown\", handleKeyDown);\n  }, [confirmingActionId]);\n\n  const runAction = useCallback(\n    async (actionId: string) => {\n      const action = actions.find((a) => a.id === actionId);\n      if (!action) return;\n\n      const isAnyActionExecuting = executingActionId !== null;\n      if (action.disabled || action.loading || isAnyActionExecuting) {\n        return;\n      }\n\n      if (action.confirmLabel && confirmingActionId !== action.id) {\n        setConfirmingActionId(action.id);\n        return;\n      }\n\n      if (onBeforeAction) {\n        const shouldProceed = await onBeforeAction(action.id);\n        if (!shouldProceed) {\n          setConfirmingActionId(null);\n          return;\n        }\n      }\n\n      try {\n        setExecutingActionId(action.id);\n        await onAction(action.id);\n      } finally {\n        setExecutingActionId(null);\n        setConfirmingActionId(null);\n      }\n    },\n    [actions, confirmingActionId, executingActionId, onAction, onBeforeAction],\n  );\n\n  const resolvedActions = useMemo(\n    () =>\n      actions.map((action) => {\n        const isConfirming = confirmingActionId === action.id;\n        const isThisActionExecuting = executingActionId === action.id;\n        const isLoading = action.loading || isThisActionExecuting;\n        const isDisabled =\n          action.disabled || (executingActionId !== null && !isThisActionExecuting);\n        const currentLabel =\n          isConfirming && action.confirmLabel\n            ? action.confirmLabel\n            : action.label;\n\n        return {\n          ...action,\n          currentLabel,\n          isConfirming,\n          isExecuting: isThisActionExecuting,\n          isDisabled,\n          isLoading,\n        };\n      }),\n    [actions, confirmingActionId, executingActionId],\n  );\n\n  return {\n    actions: resolvedActions,\n    runAction,\n    confirmingActionId,\n    executingActionId,\n  };\n}\n"
-    },
-    {
-      "path": "lib/ui/cn.ts",
-      "type": "registry:lib",
-      "target": "lib/ui/cn.ts",
-      "content": "import { clsx, type ClassValue } from \"clsx\";\nimport { twMerge } from \"tailwind-merge\";\n\nexport function cn(...inputs: ClassValue[]) {\n  return twMerge(clsx(inputs));\n}\n"
     }
   ]
 }

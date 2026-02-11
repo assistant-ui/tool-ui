@@ -13,7 +13,7 @@
  *   Label        → shadcn/ui Label
  */
 
-export { cn } from "@/lib/ui/cn";
+export { cn } from "@/lib/utils";
 export { Button } from "@/components/ui/button";
 export { Switch } from "@/components/ui/switch";
 export {

@@ -256,7 +256,6 @@ function shouldIncludeResolvedPath(
   relativePath: string,
   sourceDir: string,
 ): boolean {
-  if (relativePath === "lib/ui/cn.ts") return true;
   if (relativePath.startsWith(`${sourceDir}/`)) return true;
   return relativePath.startsWith("components/tool-ui/shared/");
 }

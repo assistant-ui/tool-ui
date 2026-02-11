@@ -177,7 +177,7 @@ OPENAI_API_KEY=sk-...
 
 ### Install Tool UI components via the shadcn registry
 
-Tool UI publishes every component as a shadcn registry entry under `https://tool-ui.com/r/<component>.json`. That JSON snippet bundles the component code, the shared helpers from `components/tool-ui/shared`, and the common `lib/ui/cn.ts` utility.
+Tool UI publishes every component as a shadcn registry entry under `https://tool-ui.com/r/<component>.json`. Each JSON snippet bundles component code plus the shared helpers from `components/tool-ui/shared`, and expects your app's existing shadcn `@/lib/utils` helper.
 
 1. Make sure your `components.json` lists the `@tool-ui` registry alongside the default `@assistant-ui` registry so the CLI knows where to fetch the files. This repo already has the necessary entry:
 
@@ -195,7 +195,7 @@ npx shadcn@latest add https://tool-ui.com/r/plan.json
 ```
 
 
-The CLI will copy `components/tool-ui/plan`, `components/tool-ui/shared`, and `lib/ui/cn.ts` into your project and wire up the right Tailwind styles, just like any other shadcn block.
+The CLI will copy `components/tool-ui/plan`, `components/tool-ui/shared` into your project and wire up the right Tailwind styles, just like any other shadcn block.
 
 3. Repeat the command (or rerun the CLI) for additional Tool UI surfaces; the registry automatically lists every surface we ship, and each artifact brings along the `shared` helpers it needs.
 
@@ -317,7 +317,7 @@ const runtime = useChatRuntime({
 
 Tool UI components work with any React app. Without assistant-ui, you'll need to manually parse tool outputs and render components. For the best experience, we recommend using assistant-ui.
 
-Tool UI components are installed from registry entries, and each entry includes `components/tool-ui/shared` and `lib/ui/cn.ts` automatically.
+Tool UI components are installed from registry entries, and each entry includes `components/tool-ui/shared` automatically.
 
 ## Runtime Options
 

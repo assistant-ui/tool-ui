@@ -5,9 +5,7 @@
   "title": "Linkedin Post",
   "description": "Render LinkedIn post previews.",
   "dependencies": [
-    "clsx",
     "lucide-react",
-    "tailwind-merge",
     "zod"
   ],
   "registryDependencies": [
@@ -19,7 +17,7 @@
       "path": "components/tool-ui/linkedin-post/_adapter.tsx",
       "type": "registry:component",
       "target": "components/tool-ui/linkedin-post/_adapter.tsx",
-      "content": "/**\n * Adapter: UI and utility re-exports for copy-standalone portability.\n *\n * When copying this component to another project, update these imports\n * to match your project's paths:\n *\n *   cn      → Your Tailwind merge utility (e.g., \"@/lib/utils\", \"~/lib/cn\")\n *   Button  → shadcn/ui Button\n *   Tooltip → shadcn/ui Tooltip\n */\n\nexport { cn } from \"@/lib/ui/cn\";\nexport { Button } from \"@/components/ui/button\";\nexport {\n  Tooltip,\n  TooltipContent,\n  TooltipProvider,\n  TooltipTrigger,\n} from \"@/components/ui/tooltip\";\n"
+      "content": "/**\n * Adapter: UI and utility re-exports for copy-standalone portability.\n *\n * When copying this component to another project, update these imports\n * to match your project's paths:\n *\n *   cn      → Your Tailwind merge utility (e.g., \"@/lib/utils\", \"~/lib/cn\")\n *   Button  → shadcn/ui Button\n *   Tooltip → shadcn/ui Tooltip\n */\n\nexport { cn } from \"@/lib/utils\";\nexport { Button } from \"@/components/ui/button\";\nexport {\n  Tooltip,\n  TooltipContent,\n  TooltipProvider,\n  TooltipTrigger,\n} from \"@/components/ui/tooltip\";\n"
     },
     {
       "path": "components/tool-ui/linkedin-post/index.ts",
@@ -49,7 +47,7 @@
       "path": "components/tool-ui/shared/_adapter.tsx",
       "type": "registry:component",
       "target": "components/tool-ui/shared/_adapter.tsx",
-      "content": "/**\n * Adapter: UI and utility re-exports for copy-standalone portability.\n *\n * When copying this component to another project, update these imports\n * to match your project's paths:\n *\n *   cn     → Your Tailwind merge utility (e.g., \"@/lib/utils\", \"~/lib/cn\")\n *   Button → shadcn/ui Button\n */\n\nexport { cn } from \"@/lib/ui/cn\";\nexport { Button } from \"@/components/ui/button\";\n"
+      "content": "/**\n * Adapter: UI and utility re-exports for copy-standalone portability.\n *\n * When copying this component to another project, update these imports\n * to match your project's paths:\n *\n *   cn     → Your Tailwind merge utility (e.g., \"@/lib/utils\", \"~/lib/cn\")\n *   Button → shadcn/ui Button\n */\n\nexport { cn } from \"@/lib/utils\";\nexport { Button } from \"@/components/ui/button\";\n"
     },
     {
       "path": "components/tool-ui/shared/action-buttons.tsx",
@@ -128,12 +126,6 @@
       "type": "registry:lib",
       "target": "components/tool-ui/shared/utils.ts",
       "content": "export function formatRelativeTime(iso: string): string {\n  const seconds = Math.round((Date.now() - new Date(iso).getTime()) / 1000);\n  if (seconds < 60) return `${seconds}s`;\n  if (seconds < 3600) return `${Math.round(seconds / 60)}m`;\n  if (seconds < 86400) return `${Math.round(seconds / 3600)}h`;\n  if (seconds < 604800) return `${Math.round(seconds / 86400)}d`;\n  return `${Math.round(seconds / 604800)}w`;\n}\n\nexport function formatCount(count: number): string {\n  if (count >= 1_000_000) return `${(count / 1_000_000).toFixed(1)}M`;\n  if (count >= 1_000) return `${(count / 1_000).toFixed(1)}K`;\n  return String(count);\n}\n\nexport function getDomain(url: string): string {\n  try {\n    return new URL(url).hostname.replace(/^www\\./, \"\");\n  } catch {\n    return \"\";\n  }\n}\n\nexport function prefersReducedMotion(): boolean {\n  return (\n    typeof window !== \"undefined\" &&\n    window.matchMedia?.(\"(prefers-reduced-motion: reduce)\").matches\n  );\n}\n"
-    },
-    {
-      "path": "lib/ui/cn.ts",
-      "type": "registry:lib",
-      "target": "lib/ui/cn.ts",
-      "content": "import { clsx, type ClassValue } from \"clsx\";\nimport { twMerge } from \"tailwind-merge\";\n\nexport function cn(...inputs: ClassValue[]) {\n  return twMerge(clsx(inputs));\n}\n"
     }
   ]
 }

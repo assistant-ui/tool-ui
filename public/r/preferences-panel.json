@@ -5,9 +5,7 @@
   "title": "Preferences Panel",
   "description": "Compact settings panel for user preferences.",
   "dependencies": [
-    "clsx",
     "lucide-react",
-    "tailwind-merge",
     "zod"
   ],
   "registryDependencies": [
@@ -23,7 +21,7 @@
       "path": "components/tool-ui/preferences-panel/_adapter.tsx",
       "type": "registry:component",
       "target": "components/tool-ui/preferences-panel/_adapter.tsx",
-      "content": "/**\n * Adapter: UI and utility re-exports for copy-standalone portability.\n *\n * When copying this component to another project, update these imports\n * to match your project's paths:\n *\n *   cn           → Your Tailwind merge utility (e.g., \"@/lib/utils\", \"~/lib/cn\")\n *   Button       → shadcn/ui Button\n *   Switch       → shadcn/ui Switch\n *   ToggleGroup  → shadcn/ui ToggleGroup\n *   Select       → shadcn/ui Select\n *   Separator    → shadcn/ui Separator\n *   Label        → shadcn/ui Label\n */\n\nexport { cn } from \"@/lib/ui/cn\";\nexport { Button } from \"@/components/ui/button\";\nexport { Switch } from \"@/components/ui/switch\";\nexport {\n  ToggleGroup,\n  ToggleGroupItem,\n} from \"@/components/ui/toggle-group\";\nexport {\n  Select,\n  SelectContent,\n  SelectItem,\n  SelectTrigger,\n  SelectValue,\n} from \"@/components/ui/select\";\nexport { Separator } from \"@/components/ui/separator\";\nexport { Label } from \"@/components/ui/label\";\n"
+      "content": "/**\n * Adapter: UI and utility re-exports for copy-standalone portability.\n *\n * When copying this component to another project, update these imports\n * to match your project's paths:\n *\n *   cn           → Your Tailwind merge utility (e.g., \"@/lib/utils\", \"~/lib/cn\")\n *   Button       → shadcn/ui Button\n *   Switch       → shadcn/ui Switch\n *   ToggleGroup  → shadcn/ui ToggleGroup\n *   Select       → shadcn/ui Select\n *   Separator    → shadcn/ui Separator\n *   Label        → shadcn/ui Label\n */\n\nexport { cn } from \"@/lib/utils\";\nexport { Button } from \"@/components/ui/button\";\nexport { Switch } from \"@/components/ui/switch\";\nexport {\n  ToggleGroup,\n  ToggleGroupItem,\n} from \"@/components/ui/toggle-group\";\nexport {\n  Select,\n  SelectContent,\n  SelectItem,\n  SelectTrigger,\n  SelectValue,\n} from \"@/components/ui/select\";\nexport { Separator } from \"@/components/ui/separator\";\nexport { Label } from \"@/components/ui/label\";\n"
     },
     {
       "path": "components/tool-ui/preferences-panel/index.tsx",
@@ -59,7 +57,7 @@
       "path": "components/tool-ui/shared/_adapter.tsx",
       "type": "registry:component",
       "target": "components/tool-ui/shared/_adapter.tsx",
-      "content": "/**\n * Adapter: UI and utility re-exports for copy-standalone portability.\n *\n * When copying this component to another project, update these imports\n * to match your project's paths:\n *\n *   cn     → Your Tailwind merge utility (e.g., \"@/lib/utils\", \"~/lib/cn\")\n *   Button → shadcn/ui Button\n */\n\nexport { cn } from \"@/lib/ui/cn\";\nexport { Button } from \"@/components/ui/button\";\n"
+      "content": "/**\n * Adapter: UI and utility re-exports for copy-standalone portability.\n *\n * When copying this component to another project, update these imports\n * to match your project's paths:\n *\n *   cn     → Your Tailwind merge utility (e.g., \"@/lib/utils\", \"~/lib/cn\")\n *   Button → shadcn/ui Button\n */\n\nexport { cn } from \"@/lib/utils\";\nexport { Button } from \"@/components/ui/button\";\n"
     },
     {
       "path": "components/tool-ui/shared/action-buttons.tsx",
@@ -108,12 +106,6 @@
       "type": "registry:lib",
       "target": "components/tool-ui/shared/use-signature-reset.ts",
       "content": "\"use client\";\n\nimport { useEffect, useRef } from \"react\";\n\nexport function useSignatureReset(\n  signature: string,\n  onSignatureChange: () => void,\n) {\n  const previousSignature = useRef(signature);\n\n  useEffect(() => {\n    if (previousSignature.current === signature) return;\n    previousSignature.current = signature;\n    onSignatureChange();\n  }, [signature, onSignatureChange]);\n}\n"
-    },
-    {
-      "path": "lib/ui/cn.ts",
-      "type": "registry:lib",
-      "target": "lib/ui/cn.ts",
-      "content": "import { clsx, type ClassValue } from \"clsx\";\nimport { twMerge } from \"tailwind-merge\";\n\nexport function cn(...inputs: ClassValue[]) {\n  return twMerge(clsx(inputs));\n}\n"
     }
   ]
 }

@@ -9,9 +9,7 @@
       "title": "Approval Card",
       "description": "Binary confirmation for agent actions.",
       "dependencies": [
-        "clsx",
         "lucide-react",
-        "tailwind-merge",
         "zod"
       ],
       "registryDependencies": [
@@ -73,11 +71,6 @@
           "path": "components/tool-ui/shared/use-action-buttons.tsx",
           "type": "registry:component",
           "target": "components/tool-ui/shared/use-action-buttons.tsx"
-        },
-        {
-          "path": "lib/ui/cn.ts",
-          "type": "registry:lib",
-          "target": "lib/ui/cn.ts"
         }
       ]
     },
@@ -87,9 +80,7 @@
       "title": "Audio",
       "description": "Audio playback with artwork and metadata.",
       "dependencies": [
-        "clsx",
         "lucide-react",
-        "tailwind-merge",
         "zod"
       ],
       "registryDependencies": [
@@ -161,11 +152,6 @@
           "path": "components/tool-ui/shared/use-action-buttons.tsx",
           "type": "registry:component",
           "target": "components/tool-ui/shared/use-action-buttons.tsx"
-        },
-        {
-          "path": "lib/ui/cn.ts",
-          "type": "registry:lib",
-          "target": "lib/ui/cn.ts"
         }
       ]
     },
@@ -175,9 +161,7 @@
       "title": "Chart",
       "description": "Visualize data with interactive charts.",
       "dependencies": [
-        "clsx",
         "recharts",
-        "tailwind-merge",
         "zod"
       ],
       "registryDependencies": [
@@ -224,11 +208,6 @@
           "path": "components/tool-ui/shared/schema.ts",
           "type": "registry:lib",
           "target": "components/tool-ui/shared/schema.ts"
-        },
-        {
-          "path": "lib/ui/cn.ts",
-          "type": "registry:lib",
-          "target": "lib/ui/cn.ts"
         }
       ]
     },
@@ -238,9 +217,7 @@
       "title": "Citation",
       "description": "Display source references with attribution.",
       "dependencies": [
-        "clsx",
         "lucide-react",
-        "tailwind-merge",
         "zod"
       ],
       "registryDependencies": [
@@ -342,11 +319,6 @@
           "path": "components/tool-ui/shared/use-action-buttons.tsx",
           "type": "registry:component",
           "target": "components/tool-ui/shared/use-action-buttons.tsx"
-        },
-        {
-          "path": "lib/ui/cn.ts",
-          "type": "registry:lib",
-          "target": "lib/ui/cn.ts"
         }
       ]
     },
@@ -356,10 +328,8 @@
       "title": "Code Block",
       "description": "Display syntax-highlighted code snippets.",
       "dependencies": [
-        "clsx",
         "lucide-react",
         "shiki",
-        "tailwind-merge",
         "zod"
       ],
       "registryDependencies": [
@@ -431,11 +401,6 @@
           "path": "components/tool-ui/shared/use-copy-to-clipboard.ts",
           "type": "registry:lib",
           "target": "components/tool-ui/shared/use-copy-to-clipboard.ts"
-        },
-        {
-          "path": "lib/ui/cn.ts",
-          "type": "registry:lib",
-          "target": "lib/ui/cn.ts"
         }
       ]
     },
@@ -445,8 +410,6 @@
       "title": "Data Table",
       "description": "Sortable, responsive data tables for tool call results.",
       "dependencies": [
-        "clsx",
-        "tailwind-merge",
         "zod"
       ],
       "registryDependencies": [
@@ -562,11 +525,6 @@
           "path": "components/tool-ui/shared/use-action-buttons.tsx",
           "type": "registry:component",
           "target": "components/tool-ui/shared/use-action-buttons.tsx"
-        },
-        {
-          "path": "lib/ui/cn.ts",
-          "type": "registry:lib",
-          "target": "lib/ui/cn.ts"
         }
       ]
     },
@@ -576,8 +534,6 @@
       "title": "Image",
       "description": "Display images with metadata and attribution.",
       "dependencies": [
-        "clsx",
-        "tailwind-merge",
         "zod"
       ],
       "registryDependencies": [
@@ -673,11 +629,6 @@
           "path": "components/tool-ui/shared/use-action-buttons.tsx",
           "type": "registry:component",
           "target": "components/tool-ui/shared/use-action-buttons.tsx"
-        },
-        {
-          "path": "lib/ui/cn.ts",
-          "type": "registry:lib",
-          "target": "lib/ui/cn.ts"
         }
       ]
     },
@@ -687,9 +638,7 @@
       "title": "Image Gallery",
       "description": "Grid layout for browsing image collections.",
       "dependencies": [
-        "clsx",
         "lucide-react",
-        "tailwind-merge",
         "zod"
       ],
       "registryDependencies": [
@@ -785,11 +734,6 @@
           "path": "components/tool-ui/shared/schema.ts",
           "type": "registry:lib",
           "target": "components/tool-ui/shared/schema.ts"
-        },
-        {
-          "path": "lib/ui/cn.ts",
-          "type": "registry:lib",
-          "target": "lib/ui/cn.ts"
         }
       ]
     },
@@ -799,9 +743,7 @@
       "title": "Instagram Post",
       "description": "Render Instagram post previews.",
       "dependencies": [
-        "clsx",
         "lucide-react",
-        "tailwind-merge",
         "zod"
       ],
       "registryDependencies": [
@@ -873,11 +815,6 @@
           "path": "components/tool-ui/shared/utils.ts",
           "type": "registry:lib",
           "target": "components/tool-ui/shared/utils.ts"
-        },
-        {
-          "path": "lib/ui/cn.ts",
-          "type": "registry:lib",
-          "target": "lib/ui/cn.ts"
         }
       ]
     },
@@ -887,9 +824,7 @@
       "title": "Item Carousel",
       "description": "Horizontal carousel for browsing collections.",
       "dependencies": [
-        "clsx",
         "lucide-react",
-        "tailwind-merge",
         "zod"
       ],
       "registryDependencies": [
@@ -955,9 +890,7 @@
       "title": "Link Preview",
       "description": "Rich link previews with OG data.",
       "dependencies": [
-        "clsx",
         "lucide-react",
-        "tailwind-merge",
         "zod"
       ],
       "registryDependencies": [
@@ -1053,11 +986,6 @@
           "path": "components/tool-ui/shared/use-action-buttons.tsx",
           "type": "registry:component",
           "target": "components/tool-ui/shared/use-action-buttons.tsx"
-        },
-        {
-          "path": "lib/ui/cn.ts",
-          "type": "registry:lib",
-          "target": "lib/ui/cn.ts"
         }
       ]
     },
@@ -1067,9 +995,7 @@
       "title": "Linkedin Post",
       "description": "Render LinkedIn post previews.",
       "dependencies": [
-        "clsx",
         "lucide-react",
-        "tailwind-merge",
         "zod"
       ],
       "registryDependencies": [
@@ -1171,11 +1097,6 @@
           "path": "components/tool-ui/shared/utils.ts",
           "type": "registry:lib",
           "target": "components/tool-ui/shared/utils.ts"
-        },
-        {
-          "path": "lib/ui/cn.ts",
-          "type": "registry:lib",
-          "target": "lib/ui/cn.ts"
         }
       ]
     },
@@ -1185,9 +1106,7 @@
       "title": "Message Draft",
       "description": "Review and confirm drafted messages before sending.",
       "dependencies": [
-        "clsx",
         "lucide-react",
-        "tailwind-merge",
         "zod"
       ],
       "registryDependencies": [
@@ -1248,11 +1167,6 @@
           "path": "components/tool-ui/shared/use-action-buttons.tsx",
           "type": "registry:component",
           "target": "components/tool-ui/shared/use-action-buttons.tsx"
-        },
-        {
-          "path": "lib/ui/cn.ts",
-          "type": "registry:lib",
-          "target": "lib/ui/cn.ts"
         }
       ]
     },
@@ -1262,9 +1176,7 @@
       "title": "Option List",
       "description": "Single or multi-select choices with confirmation actions.",
       "dependencies": [
-        "clsx",
         "lucide-react",
-        "tailwind-merge",
         "zod"
       ],
       "registryDependencies": [
@@ -1331,11 +1243,6 @@
           "path": "components/tool-ui/shared/use-action-buttons.tsx",
           "type": "registry:component",
           "target": "components/tool-ui/shared/use-action-buttons.tsx"
-        },
-        {
-          "path": "lib/ui/cn.ts",
-          "type": "registry:lib",
-          "target": "lib/ui/cn.ts"
         }
       ]
     },
@@ -1345,9 +1252,7 @@
       "title": "Order Summary",
       "description": "Itemized purchase confirmation with pricing.",
       "dependencies": [
-        "clsx",
         "lucide-react",
-        "tailwind-merge",
         "zod"
       ],
       "registryDependencies": [
@@ -1410,11 +1315,6 @@
           "path": "components/tool-ui/shared/use-action-buttons.tsx",
           "type": "registry:component",
           "target": "components/tool-ui/shared/use-action-buttons.tsx"
-        },
-        {
-          "path": "lib/ui/cn.ts",
-          "type": "registry:lib",
-          "target": "lib/ui/cn.ts"
         }
       ]
     },
@@ -1425,8 +1325,6 @@
       "description": "Numeric parameter adjustment controls.",
       "dependencies": [
         "@radix-ui/react-slider",
-        "clsx",
-        "tailwind-merge",
         "zod"
       ],
       "registryDependencies": [
@@ -1509,11 +1407,6 @@
           "path": "components/tool-ui/shared/use-signature-reset.ts",
           "type": "registry:lib",
           "target": "components/tool-ui/shared/use-signature-reset.ts"
-        },
-        {
-          "path": "lib/ui/cn.ts",
-          "type": "registry:lib",
-          "target": "lib/ui/cn.ts"
         }
       ]
     },
@@ -1523,9 +1416,7 @@
       "title": "Plan",
       "description": "Display step-by-step task workflows in AI interfaces.",
       "dependencies": [
-        "clsx",
         "lucide-react",
-        "tailwind-merge",
         "zod"
       ],
       "registryDependencies": [
@@ -1599,11 +1490,6 @@
           "path": "components/tool-ui/shared/use-action-buttons.tsx",
           "type": "registry:component",
           "target": "components/tool-ui/shared/use-action-buttons.tsx"
-        },
-        {
-          "path": "lib/ui/cn.ts",
-          "type": "registry:lib",
-          "target": "lib/ui/cn.ts"
         }
       ]
     },
@@ -1613,9 +1499,7 @@
       "title": "Preferences Panel",
       "description": "Compact settings panel for user preferences.",
       "dependencies": [
-        "clsx",
         "lucide-react",
-        "tailwind-merge",
         "zod"
       ],
       "registryDependencies": [
@@ -1701,11 +1585,6 @@
           "path": "components/tool-ui/shared/use-signature-reset.ts",
           "type": "registry:lib",
           "target": "components/tool-ui/shared/use-signature-reset.ts"
-        },
-        {
-          "path": "lib/ui/cn.ts",
-          "type": "registry:lib",
-          "target": "lib/ui/cn.ts"
         }
       ]
     },
@@ -1715,9 +1594,7 @@
       "title": "Progress Tracker",
       "description": "Show real-time status feedback for multi-step operations in AI interfaces.",
       "dependencies": [
-        "clsx",
         "lucide-react",
-        "tailwind-merge",
         "zod"
       ],
       "registryDependencies": [
@@ -1783,11 +1660,6 @@
           "path": "components/tool-ui/shared/use-action-buttons.tsx",
           "type": "registry:component",
           "target": "components/tool-ui/shared/use-action-buttons.tsx"
-        },
-        {
-          "path": "lib/ui/cn.ts",
-          "type": "registry:lib",
-          "target": "lib/ui/cn.ts"
         }
       ]
     },
@@ -1797,9 +1669,7 @@
       "title": "Question Flow",
       "description": "Multi-step guided questions with branching.",
       "dependencies": [
-        "clsx",
         "lucide-react",
-        "tailwind-merge",
         "zod"
       ],
       "registryDependencies": [
@@ -1846,11 +1716,6 @@
           "path": "components/tool-ui/shared/schema.ts",
           "type": "registry:lib",
           "target": "components/tool-ui/shared/schema.ts"
-        },
-        {
-          "path": "lib/ui/cn.ts",
-          "type": "registry:lib",
-          "target": "lib/ui/cn.ts"
         }
       ]
     },
@@ -1860,8 +1725,6 @@
       "title": "Stats Display",
       "description": "Display key metrics in compact cards.",
       "dependencies": [
-        "clsx",
-        "tailwind-merge",
         "zod"
       ],
       "registryDependencies": [
@@ -1912,11 +1775,6 @@
           "path": "components/tool-ui/stats-display/stats-display.tsx",
           "type": "registry:component",
           "target": "components/tool-ui/stats-display/stats-display.tsx"
-        },
-        {
-          "path": "lib/ui/cn.ts",
-          "type": "registry:lib",
-          "target": "lib/ui/cn.ts"
         }
       ]
     },
@@ -1927,9 +1785,7 @@
       "description": "Show command-line output and logs.",
       "dependencies": [
         "ansi-to-react",
-        "clsx",
         "lucide-react",
-        "tailwind-merge",
         "zod"
       ],
       "registryDependencies": [
@@ -2001,11 +1857,6 @@
           "path": "components/tool-ui/terminal/terminal.tsx",
           "type": "registry:component",
           "target": "components/tool-ui/terminal/terminal.tsx"
-        },
-        {
-          "path": "lib/ui/cn.ts",
-          "type": "registry:lib",
-          "target": "lib/ui/cn.ts"
         }
       ]
     },
@@ -2015,9 +1866,7 @@
       "title": "Video",
       "description": "Video playback with controls and poster.",
       "dependencies": [
-        "clsx",
         "lucide-react",
-        "tailwind-merge",
         "zod"
       ],
       "registryDependencies": [
@@ -2118,11 +1967,6 @@
           "path": "components/tool-ui/video/video.tsx",
           "type": "registry:component",
           "target": "components/tool-ui/video/video.tsx"
-        },
-        {
-          "path": "lib/ui/cn.ts",
-          "type": "registry:lib",
-          "target": "lib/ui/cn.ts"
         }
       ]
     },
@@ -2132,9 +1976,7 @@
       "title": "Weather Widget",
       "description": "Display weather conditions and forecasts.",
       "dependencies": [
-        "clsx",
         "lucide-react",
-        "tailwind-merge",
         "zod"
       ],
       "registryDependencies": [
@@ -2325,11 +2167,6 @@
           "path": "components/tool-ui/weather-widget/weather-widget.tsx",
           "type": "registry:component",
           "target": "components/tool-ui/weather-widget/weather-widget.tsx"
-        },
-        {
-          "path": "lib/ui/cn.ts",
-          "type": "registry:lib",
-          "target": "lib/ui/cn.ts"
         }
       ]
     },
@@ -2339,9 +2176,7 @@
       "title": "X Post",
       "description": "Render X (Twitter) post previews.",
       "dependencies": [
-        "clsx",
         "lucide-react",
-        "tailwind-merge",
         "zod"
       ],
       "registryDependencies": [
@@ -2443,11 +2278,6 @@
           "path": "components/tool-ui/x-post/x-post.tsx",
           "type": "registry:component",
           "target": "components/tool-ui/x-post/x-post.tsx"
-        },
-        {
-          "path": "lib/ui/cn.ts",
-          "type": "registry:lib",
-          "target": "lib/ui/cn.ts"
         }
       ]
     }

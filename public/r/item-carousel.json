@@ -5,9 +5,7 @@
   "title": "Item Carousel",
   "description": "Horizontal carousel for browsing collections.",
   "dependencies": [
-    "clsx",
     "lucide-react",
-    "tailwind-merge",
     "zod"
   ],
   "registryDependencies": [
@@ -19,7 +17,7 @@
       "path": "components/tool-ui/item-carousel/_adapter.tsx",
       "type": "registry:component",
       "target": "components/tool-ui/item-carousel/_adapter.tsx",
-      "content": "/**\n * UI and utility re-exports for copy-standalone portability.\n *\n * This file centralizes dependencies so the component can be easily\n * copied to another project by updating these imports to match the target\n * project's paths.\n */\nimport type { ClassValue } from \"clsx\";\nimport { clsx } from \"clsx\";\nimport { twMerge } from \"tailwind-merge\";\n\nexport function cn(...inputs: ClassValue[]) {\n  return twMerge(clsx(inputs));\n}\n\nexport { Button } from \"@/components/ui/button\";\nexport { Card } from \"@/components/ui/card\";\nexport { ChevronLeft, ChevronRight } from \"lucide-react\";\n"
+      "content": "/**\n * UI and utility re-exports for copy-standalone portability.\n *\n * This file centralizes dependencies so the component can be easily\n * copied to another project by updating these imports to match the target\n * project's paths.\n */\nexport { cn } from \"@/lib/utils\";\n\nexport { Button } from \"@/components/ui/button\";\nexport { Card } from \"@/components/ui/card\";\nexport { ChevronLeft, ChevronRight } from \"lucide-react\";\n"
     },
     {
       "path": "components/tool-ui/item-carousel/index.tsx",
