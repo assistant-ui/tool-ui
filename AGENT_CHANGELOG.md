@@ -5,18 +5,40 @@
 
 ## Current State Summary
 
-Tool UI is a maintainer-owned copy/paste component library (shadcn/ui model) for AI assistant interfaces. Component APIs are flat, receipt semantics are unified on `choice`, and component directories are treated as the product surface (`schema`, `component`, `README`, exports). Weather Widget is on a clean-break V3.1 payload contract with deterministic scene-time input via `time`.
+Tool UI is a maintainer-owned copy/paste component library (shadcn/ui model) for AI assistant interfaces. Component APIs are flat, receipt semantics are unified on `choice`, and component directories are treated as the product surface (`schema`, `component`, `README`, exports). Interactive component modules import UI primitives through local `_adapter.tsx` files, and per-component `error-boundary.tsx` wrappers are no longer part of the component contract. Weather Widget is on a clean-break V3.1 payload contract with deterministic scene-time input via `time`.
 
 ## Stale Information Detected
 
 | Location | States | Reality | Since |
 |----------|--------|---------|-------|
-| `plan-sequential-munching-canyon.md` | References `app/sandbox/weather-tuning/hooks/use-code-gen.ts` export workflow | Tuning flow is apply/recover via repo routes; `use-code-gen.ts` removed | 2026-02 |
 | `.claude/plans/plan-sequential-munching-canyon.md` | References `hooks/use-code-gen.ts` TypeScript generation | Tuning flow is apply/recover via repo routes; `use-code-gen.ts` removed | 2026-02 |
-| `plan-sequential-munching-canyon.md` | Targets deletion of `app/sandbox/weather-compositor/` | `weather-tuning` still imports compositor presets/interpolation modules; compositor remains active | 2026-02 |
 | `.claude/plans/plan-sequential-munching-canyon.md` | Targets deletion of `app/sandbox/weather-compositor/` | `weather-tuning` still imports compositor presets/interpolation modules; compositor remains active | 2026-02 |
+| `.claude/docs/component-workflow.md` | New component contract requires `error-boundary.tsx` | Error-boundary layer was removed from component contracts; index exports no longer include local error boundaries | 2026-02 |
+| `.claude/agents/tool-ui-implementer.md` | Instructs creating `error-boundary.tsx` and using `createToolUiErrorBoundary` | Error-boundary wrappers were removed; component contract now centers on `_adapter`, schema, component, index, README | 2026-02 |
+| `.claude/agents/tool-ui-reviewer.md` | Blocks review if `error-boundary.tsx` is missing | `error-boundary.tsx` is no longer required in component directories | 2026-02 |
+| `.claude/compiled/component-creation.md` | Uses `../shared` barrel and error-boundary scaffolding in canonical template | Current standards forbid `../shared` barrel imports for core logic and remove per-component error boundary scaffolds | 2026-02 |
+| `docs/plans/2026-01-22-feat-wizard-step-component-plan.md` | Active implementation target is `WizardStep` at `components/tool-ui/wizard-step/*` | Implemented component is `QuestionFlow` at `components/tool-ui/question-flow/*` | 2026-01 |
+| `docs/plans/2026-01-23-feat-wizard-step-visual-polish-plan.md` | Polish targets `WizardStep` paths and naming | Final shipped component naming/path is `QuestionFlow` | 2026-01 |
 
 ## Timeline
+
+### 2026-02-11 — Import Boundary Enforcement + Error Boundary Layer Removal
+
+**What changed:** Tool UI component contracts were tightened around portability boundaries and local adapter ownership.
+
+Highlights:
+- Removed per-component `error-boundary.tsx` files and related exports across component directories
+- Normalized component `_adapter.tsx` files to alias-based UI imports
+- Enforced adapter-only UI primitive imports via ESLint (`@/components/ui/*` and `@/lib/ui/cn` are restricted outside `_adapter.tsx`)
+- Hardened registry/ID contracts and tests (`data-table` row keys, `question-flow` ids, registry generation edge cases like OS metadata files)
+
+**Why:** Reduce copy/paste friction, prevent component-internal import drift, and keep portability constraints enforceable by lint/tests instead of convention.
+
+**Agent impact:** Do not add local `error-boundary.tsx` files for new components. In non-adapter component modules, import UI primitives and `cn` only from `./_adapter`; keep shared imports as direct leaf modules (`../shared/*`), not barrels.
+
+**Files:** `eslint.config.ts`, `components/tool-ui/*/_adapter.tsx`, `components/tool-ui/*/index.ts*`, `lib/registry/tool-ui-registry.ts`, `lib/tests/tool-ui/data-table/row-keys-contract.test.ts`, `lib/tests/tool-ui/question-flow/ids-contract.test.ts`, `lib/tests/registry/tool-ui-registry.test.ts`
+
+---
 
 ### 2026-02-11 — Maintainer Workflow + State Contract Hardening
 
@@ -288,6 +310,8 @@ const glassStyles = useGlassStyles({
 | Use `app/sandbox/weather-tuning/hooks/use-code-gen.ts` export flow | Use apply/recover API routes and `tuned-presets.ts` | 2026-02-10 |
 | Curate registry component lists by hand | Discover from `components/tool-ui/*` and validate with registry tests | 2026-02-10 |
 | Import from `../shared` barrel in core interactive components | Import direct leaf modules from `../shared/*` | 2026-02-10 |
+| Import shadcn primitives (`@/components/ui/*`, `@/lib/ui/cn`) directly in non-adapter component files | Import those primitives from local `./_adapter` files | 2026-02-11 |
+| Require/export per-component `error-boundary.tsx` wrappers | Export component + schema contracts directly; rely on caller/app-level boundaries | 2026-02-11 |
 | Add new components without local READMEs and contract scaffold files | Use `pnpm component:new` and keep the full component directory contract | 2026-02-11 |
 
 ## Trajectory
@@ -303,3 +327,4 @@ Based on recent changes, the project is:
 - **Adding analytics** — PostHog + Vercel Analytics for usage tracking
 - **Hardening weather contracts** — V3.1 clean-break payloads with deterministic `time` input and apply-only tuning workflow
 - **Hardening delivery rails** — registry auto-discovery + CI gates to catch drift early
+- **Tightening portability boundaries** — adapter-only UI imports and removal of per-component error-boundary wrappers
