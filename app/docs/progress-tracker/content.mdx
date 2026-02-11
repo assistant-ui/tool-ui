@@ -217,46 +217,13 @@ Pass `elapsedTime` in milliseconds to display a timer badge. Automatically forma
 
 ## Source and Install
 
-Copy [`components/tool-ui/progress-tracker`](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/progress-tracker) and the [`shared`](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/shared) directory into your project. The `shared` folder contains utilities used by all Tool UI components. The `tool-ui` directory should sit alongside your shadcn `ui` directory.
-
-### Prerequisites
-
-This component requires the following [shadcn/ui](https://ui.shadcn.com) components:
+Install this component directly from the Tool UI shadcn registry:
 
 ```bash
-pnpm dlx shadcn@latest add button
+npx shadcn@latest add https://tool-ui.com/r/progress-tracker.json
 ```
 
-### Directory Structure
-
-<Files>
-  <Folder name="components" defaultOpen>
-    <Folder name="ui">
-      <File name="button.tsx" />
-      <File name="..." />
-    </Folder>
-    <Folder name="tool-ui" defaultOpen>
-      <Folder name="shared" defaultOpen>
-        <File name="action-buttons.tsx" />
-        <File name="schema.ts" />
-        <File name="parse.ts" />
-        <File name="index.ts" />
-        <File name="..." />
-      </Folder>
-      <Folder name="progress-tracker" defaultOpen>
-        <File name="progress-tracker.tsx" />
-        <File name="schema.ts" />
-        <File name="index.tsx" />
-        <File name="_adapter.tsx" />
-      </Folder>
-    </Folder>
-  </Folder>
-</Files>
-
-### Download
-
-- [**Shared Dependencies (GitHub)**](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/shared) ([ZIP](https://download-directory.github.io/?url=https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/shared))
-- [**Progress Tracker (GitHub)**](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/progress-tracker) ([ZIP](https://download-directory.github.io/?url=https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/progress-tracker))
+This command installs `components/tool-ui/progress-tracker`, `components/tool-ui/shared`, and `lib/ui/cn.ts` into your project.
 
 ## Usage
 

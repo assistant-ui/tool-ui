@@ -41,46 +41,13 @@ Charts work with just `data`, `xKey`, and `series`. Title, description, legend, 
 
 ## Source and Install
 
-Copy [`components/tool-ui/chart`](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/chart) and the [`shared`](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/shared) directory into your project. The `shared` folder contains utilities used by all Tool UI components. The `tool-ui` directory should sit alongside your shadcn `ui` directory.
-
-### Prerequisites
-
-This component requires the following [shadcn/ui](https://ui.shadcn.com) components:
+Install this component directly from the Tool UI shadcn registry:
 
 ```bash
-pnpm dlx shadcn@latest add card chart
+npx shadcn@latest add https://tool-ui.com/r/chart.json
 ```
 
-### Directory Structure
-
-<Files>
-  <Folder name="components" defaultOpen>
-    <Folder name="ui">
-      <File name="chart.tsx" />
-      <File name="card.tsx" />
-      <File name="..." />
-    </Folder>
-    <Folder name="tool-ui" defaultOpen>
-      <Folder name="shared" defaultOpen>
-        <File name="action-buttons.tsx" />
-        <File name="schema.ts" />
-        <File name="index.ts" />
-        <File name="..." />
-      </Folder>
-      <Folder name="chart" defaultOpen>
-        <File name="chart.tsx" />
-        <File name="schema.ts" />
-        <File name="index.tsx" />
-        <File name="..." />
-      </Folder>
-    </Folder>
-  </Folder>
-</Files>
-
-### Download
-
-- [**Shared Dependencies (GitHub)**](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/shared) ([ZIP](https://download-directory.github.io/?url=https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/shared))
-- [**Chart (GitHub)**](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/chart) ([ZIP](https://download-directory.github.io/?url=https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/chart))
+This command installs `components/tool-ui/chart`, `components/tool-ui/shared`, and `lib/ui/cn.ts` into your project.
 
 ## Usage
 

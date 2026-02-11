@@ -1,0 +1,131 @@
+import { DocsHeader } from "../_components/docs-header";
+import { XPost } from "@/components/tool-ui/x-post";
+
+<DocsHeader
+  title="X Post"
+  description="Platform-native post card for X (Twitter)."
+  mdxPath="app/docs/x-post/content.mdx"
+/>
+
+<Tabs items={["Preview", "Code"]}>
+  <Tab>
+    <div className="not-prose w-full max-w-[540px]">
+      <XPost
+        post={{
+          id: "x-post-1",
+          author: {
+            name: "Athia Zohra",
+            handle: "athiazohra",
+            avatarUrl:
+              "https://images.unsplash.com/photo-1740510294141-33ebf26e0809?q=80&w=987&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+            verified: true,
+          },
+          text: "Thinking about how to make Tool UIs feel more like collaboration than chrome.",
+          stats: { likes: 12 },
+          createdAt: "2025-01-05T12:00:00.000Z",
+        }}
+      />
+    </div>
+  </Tab>
+  <Tab>
+    ```tsx
+    import { XPost } from "@/components/tool-ui/x-post";
+
+    export function Example() {
+      return (
+        <XPost
+          post={{
+            id: "x-post-1",
+            author: {
+              name: "Athia Zohra",
+              handle: "athiazohra",
+              avatarUrl: "https://images.unsplash.com/photo-1740510294141-33ebf26e0809?q=80&w=987&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+              verified: true,
+            },
+            text: "Thinking about how to make Tool UIs feel more like collaboration than chrome.",
+            stats: { likes: 12 },
+            createdAt: "2025-01-05T12:00:00.000Z",
+          }}
+        />
+      );
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Key Features
+
+<FeatureGrid>
+  <Feature icon="Paintbrush" title="Platform-native styling">
+    Matches X visual language and interaction patterns
+  </Feature>
+  <Feature icon="MessageSquare" title="Rich post content">
+    Supports text, quoted posts, media, and link previews
+  </Feature>
+  <Feature icon="MousePointerClick" title="Response actions">
+    Add custom actions below each post
+  </Feature>
+  <Feature icon="ShieldCheck" title="Safe links">
+    Built-in safe navigation helpers for external URLs
+  </Feature>
+</FeatureGrid>
+
+## Source and Install
+
+Install this component directly from the Tool UI shadcn registry:
+
+```bash
+npx shadcn@latest add https://tool-ui.com/r/x-post.json
+```
+
+This command installs `components/tool-ui/x-post`, `components/tool-ui/shared`, and `lib/ui/cn.ts` into your project.
+
+## Usage
+
+```tsx
+import { type Toolkit } from "@assistant-ui/react";
+import { XPost, safeParseSerializableXPost } from "@/components/tool-ui/x-post";
+import { createResultToolRenderer } from "@/components/tool-ui/shared";
+
+export const toolkit: Toolkit = {
+  showXPost: {
+    type: "backend",
+    render: createResultToolRenderer({
+      safeParse: safeParseSerializableXPost,
+      render: (parsedResult) => <XPost post={parsedResult} />,
+    }),
+  },
+};
+```
+
+## Props
+
+<TypeTable
+  type={{
+    post: {
+      description: "Post payload validated by `SerializableXPostSchema`",
+      type: "XPostData",
+      required: true,
+    },
+    className: {
+      description: "Optional className for the outer card",
+      type: "string",
+    },
+    onAction: {
+      description: "Fires when the user triggers a built-in post action",
+      type: "(action: string, post: XPostData) => void",
+    },
+    responseActions: {
+      description: "Optional custom response actions",
+      type: "Action[]",
+    },
+    onResponseAction: {
+      description: "Fires when a response action is selected",
+      type: "(actionId: string) => void | Promise<void>",
+    },
+    onBeforeResponseAction: {
+      description: "Optional preflight guard before a response action runs",
+      type: "(actionId: string) => boolean | Promise<boolean>",
+    },
+  }}
+/>

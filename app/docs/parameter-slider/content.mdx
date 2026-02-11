@@ -63,45 +63,13 @@ import { ParameterSlider } from "@/components/tool-ui/parameter-slider";
 
 ## Source and Install
 
-Copy [`components/tool-ui/parameter-slider`](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/parameter-slider) and the [`shared`](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/shared) directory into your project. The `shared` folder contains utilities used by all Tool UI components. The `tool-ui` directory should sit alongside your shadcn `ui` directory.
-
-### Prerequisites
-
-This component requires the following [shadcn/ui](https://ui.shadcn.com) components:
+Install this component directly from the Tool UI shadcn registry:
 
 ```bash
-pnpm dlx shadcn@latest add button separator slider
+npx shadcn@latest add https://tool-ui.com/r/parameter-slider.json
 ```
 
-### Directory Structure
-
-<Files>
-  <Folder name="components" defaultOpen>
-    <Folder name="ui">
-      <File name="button.tsx" />
-      <File name="separator.tsx" />
-      <File name="slider.tsx" />
-    </Folder>
-    <Folder name="tool-ui" defaultOpen>
-      <Folder name="shared" defaultOpen>
-        <File name="action-buttons.tsx" />
-        <File name="schema.ts" />
-        <File name="index.ts" />
-      </Folder>
-      <Folder name="parameter-slider" defaultOpen>
-        <File name="parameter-slider.tsx" />
-        <File name="schema.ts" />
-        <File name="index.tsx" />
-        <File name="_adapter.tsx" />
-      </Folder>
-    </Folder>
-  </Folder>
-</Files>
-
-### Download
-
-- [**Shared Dependencies (GitHub)**](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/shared) ([ZIP](https://download-directory.github.io/?url=https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/shared))
-- [**Parameter Slider (GitHub)**](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/parameter-slider) ([ZIP](https://download-directory.github.io/?url=https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/parameter-slider))
+This command installs `components/tool-ui/parameter-slider`, `components/tool-ui/shared`, and `lib/ui/cn.ts` into your project.
 
 ## Usage
 

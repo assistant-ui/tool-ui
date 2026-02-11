@@ -156,10 +156,24 @@ export const componentsRegistry: ComponentMeta[] = [
     category: "display",
   },
   {
-    id: "social-post",
-    label: "Social Posts",
-    description: "Render social media content previews",
-    path: "/docs/social-post",
+    id: "instagram-post",
+    label: "Instagram Post",
+    description: "Render Instagram post previews",
+    path: "/docs/instagram-post",
+    category: "artifacts",
+  },
+  {
+    id: "linkedin-post",
+    label: "LinkedIn Post",
+    description: "Render LinkedIn post previews",
+    path: "/docs/linkedin-post",
+    category: "artifacts",
+  },
+  {
+    id: "x-post",
+    label: "X Post",
+    description: "Render X post previews",
+    path: "/docs/x-post",
     category: "artifacts",
   },
   {

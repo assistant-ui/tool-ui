@@ -153,20 +153,27 @@ function PresetSelector({
   );
 }
 
-export function SocialPostPreview() {
+export function SocialPostPreview({
+  platformLock,
+}: {
+  platformLock?: Platform;
+}) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const lockedPlatform = platformLock;
+  const isPlatformLocked = Boolean(lockedPlatform);
 
   const platformParam = searchParams.get("platform");
   const presetParam = searchParams.get("preset");
 
   const initialPlatform = useMemo((): Platform => {
+    if (lockedPlatform) return lockedPlatform;
     if (platformParam && VALID_PLATFORMS.includes(platformParam as Platform)) {
       return platformParam as Platform;
     }
     return "x";
-  }, [platformParam]);
+  }, [lockedPlatform, platformParam]);
 
   const initialPreset = useMemo(
     () => getValidPreset(initialPlatform, presetParam),
@@ -178,6 +185,18 @@ export function SocialPostPreview() {
   const [currentPreset, setCurrentPreset] = useState<PresetName>(initialPreset);
 
   useEffect(() => {
+    if (lockedPlatform) {
+      if (currentPlatform !== lockedPlatform) {
+        setCurrentPlatform(lockedPlatform);
+      }
+
+      const validPreset = getValidPreset(lockedPlatform, presetParam);
+      if (validPreset !== currentPreset) {
+        setCurrentPreset(validPreset);
+      }
+      return;
+    }
+
     if (
       platformParam &&
       VALID_PLATFORMS.includes(platformParam as Platform) &&
@@ -191,26 +210,32 @@ export function SocialPostPreview() {
         setCurrentPreset(validPreset);
       }
     }
-  }, [platformParam, presetParam, currentPlatform, currentPreset]);
+  }, [platformParam, presetParam, currentPlatform, currentPreset, lockedPlatform]);
 
   const updateUrl = useCallback(
     (platform: Platform, preset: PresetName) => {
       const params = new URLSearchParams(searchParams.toString());
-      params.set("platform", platform);
+
+      if (isPlatformLocked) {
+        params.delete("platform");
+      } else {
+        params.set("platform", platform);
+      }
       params.set("preset", preset);
       router.push(`${pathname}?${params.toString()}`, { scroll: false });
     },
-    [router, pathname, searchParams],
+    [isPlatformLocked, pathname, router, searchParams],
   );
 
   const handleSelectPlatform = useCallback(
     (platform: Platform) => {
+      if (isPlatformLocked) return;
       const defaultPreset = platformConfig[platform].presetNames[0];
       setCurrentPlatform(platform);
       setCurrentPreset(defaultPreset);
       updateUrl(platform, defaultPreset);
     },
-    [updateUrl],
+    [isPlatformLocked, updateUrl],
   );
 
   const handleSelectPreset = useCallback(
@@ -283,13 +308,15 @@ export function SocialPostPreview() {
 
   return (
     <ComponentPreviewShell
-      componentId={`social-post-${currentPlatform}`}
+      componentId={`${currentPlatform}-post`}
       sidebar={
         <>
-          <PlatformSelector
-            currentPlatform={currentPlatform}
-            onSelectPlatform={handleSelectPlatform}
-          />
+          {!isPlatformLocked && (
+            <PlatformSelector
+              currentPlatform={currentPlatform}
+              onSelectPlatform={handleSelectPlatform}
+            />
+          )}
           <PresetSelector
             platform={currentPlatform}
             currentPreset={currentPreset}

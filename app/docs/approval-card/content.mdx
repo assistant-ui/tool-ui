@@ -133,46 +133,13 @@ Use `variant="destructive"` for dangerous or irreversible actions. This changes 
 
 ## Source and Install
 
-Copy [`components/tool-ui/approval-card`](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/approval-card) and the [`shared`](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/shared) directory into your project. The `shared` folder contains utilities used by all Tool UI components. The `tool-ui` directory should sit alongside your shadcn `ui` directory.
-
-### Prerequisites
-
-This component requires the following [shadcn/ui](https://ui.shadcn.com) components:
+Install this component directly from the Tool UI shadcn registry:
 
 ```bash
-pnpm dlx shadcn@latest add button
+npx shadcn@latest add https://tool-ui.com/r/approval-card.json
 ```
 
-### Directory Structure
-
-<Files>
-  <Folder name="components" defaultOpen>
-    <Folder name="ui">
-      <File name="button.tsx" />
-      <File name="..." />
-    </Folder>
-    <Folder name="tool-ui" defaultOpen>
-      <Folder name="shared" defaultOpen>
-        <File name="action-buttons.tsx" />
-        <File name="schema.ts" />
-        <File name="parse.ts" />
-        <File name="index.ts" />
-        <File name="..." />
-      </Folder>
-      <Folder name="approval-card" defaultOpen>
-        <File name="approval-card.tsx" />
-        <File name="schema.ts" />
-        <File name="index.tsx" />
-        <File name="..." />
-      </Folder>
-    </Folder>
-  </Folder>
-</Files>
-
-### Download
-
-- [**Shared Dependencies (GitHub)**](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/shared) ([ZIP](https://download-directory.github.io/?url=https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/shared))
-- [**Approval Card (GitHub)**](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/approval-card) ([ZIP](https://download-directory.github.io/?url=https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/approval-card))
+This command installs `components/tool-ui/approval-card`, `components/tool-ui/shared`, and `lib/ui/cn.ts` into your project.
 
 ## Usage
 

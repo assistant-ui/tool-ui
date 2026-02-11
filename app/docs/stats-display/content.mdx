@@ -125,45 +125,13 @@ import { StatsDisplay } from "@/components/tool-ui/stats-display";
 
 ## Source and Install
 
-Copy [`components/tool-ui/stats-display`](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/stats-display) and the [`shared`](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/shared) directory into your project. The `shared` folder contains utilities used by all Tool UI components. The `tool-ui` directory should sit alongside your shadcn `ui` directory.
-
-### Prerequisites
-
-This component requires the following [shadcn/ui](https://ui.shadcn.com) components:
+Install this component directly from the Tool UI shadcn registry:
 
 ```bash
-pnpm dlx shadcn@latest add card
+npx shadcn@latest add https://tool-ui.com/r/stats-display.json
 ```
 
-### Directory Structure
-
-<Files>
-  <Folder name="components" defaultOpen>
-    <Folder name="ui">
-      <File name="card.tsx" />
-      <File name="..." />
-    </Folder>
-    <Folder name="tool-ui" defaultOpen>
-      <Folder name="shared" defaultOpen>
-        <File name="action-buttons.tsx" />
-        <File name="schema.ts" />
-        <File name="index.ts" />
-        <File name="..." />
-      </Folder>
-      <Folder name="stats-display" defaultOpen>
-        <File name="stats-display.tsx" />
-        <File name="sparkline.tsx" />
-        <File name="schema.ts" />
-        <File name="index.tsx" />
-      </Folder>
-    </Folder>
-  </Folder>
-</Files>
-
-### Download
-
-- [**Shared Dependencies (GitHub)**](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/shared) ([ZIP](https://download-directory.github.io/?url=https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/shared))
-- [**Stats Display (GitHub)**](https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/stats-display) ([ZIP](https://download-directory.github.io/?url=https://github.com/assistant-ui/tool-ui/tree/main/components/tool-ui/stats-display))
+This command installs `components/tool-ui/stats-display`, `components/tool-ui/shared`, and `lib/ui/cn.ts` into your project.
 
 ## Usage
 

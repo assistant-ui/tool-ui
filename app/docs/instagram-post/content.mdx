@@ -1,0 +1,148 @@
+import { DocsHeader } from "../_components/docs-header";
+import { InstagramPost } from "@/components/tool-ui/instagram-post";
+
+<DocsHeader
+  title="Instagram Post"
+  description="Platform-native post card for Instagram."
+  mdxPath="app/docs/instagram-post/content.mdx"
+/>
+
+<Tabs items={["Preview", "Code"]}>
+  <Tab>
+    <div className="not-prose w-full max-w-[540px]">
+      <InstagramPost
+        post={{
+          id: "instagram-post-1",
+          author: {
+            name: "Athia Zohra",
+            handle: "athiazohra",
+            avatarUrl:
+              "https://images.unsplash.com/photo-1740510294141-33ebf26e0809?q=80&w=987&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+            verified: true,
+          },
+          text: "Golden hour vibes",
+          media: [
+            {
+              type: "image",
+              url: "https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?w=800&h=800&fit=crop",
+              alt: "City skyline",
+            },
+          ],
+          stats: { likes: 842 },
+          createdAt: "2025-01-05T18:00:00.000Z",
+        }}
+      />
+    </div>
+  </Tab>
+  <Tab>
+    ```tsx
+    import { InstagramPost } from "@/components/tool-ui/instagram-post";
+
+    export function Example() {
+      return (
+        <InstagramPost
+          post={{
+            id: "instagram-post-1",
+            author: {
+              name: "Athia Zohra",
+              handle: "athiazohra",
+              avatarUrl: "https://images.unsplash.com/photo-1740510294141-33ebf26e0809?q=80&w=987&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+              verified: true,
+            },
+            text: "Golden hour vibes",
+            media: [
+              {
+                type: "image",
+                url: "https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?w=800&h=800&fit=crop",
+                alt: "City skyline",
+              },
+            ],
+            stats: { likes: 842 },
+            createdAt: "2025-01-05T18:00:00.000Z",
+          }}
+        />
+      );
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Key Features
+
+<FeatureGrid>
+  <Feature icon="Paintbrush" title="Platform-native styling">
+    Matches Instagram visual language and interaction patterns
+  </Feature>
+  <Feature icon="Images" title="Media-first layout">
+    Supports single-image and carousel-style media content
+  </Feature>
+  <Feature icon="MousePointerClick" title="Response actions">
+    Add custom actions below each post
+  </Feature>
+  <Feature icon="BadgeCheck" title="Verified identity">
+    Supports verified author badges and creator context
+  </Feature>
+</FeatureGrid>
+
+## Source and Install
+
+Install this component directly from the Tool UI shadcn registry:
+
+```bash
+npx shadcn@latest add https://tool-ui.com/r/instagram-post.json
+```
+
+This command installs `components/tool-ui/instagram-post`, `components/tool-ui/shared`, and `lib/ui/cn.ts` into your project.
+
+## Usage
+
+```tsx
+import { type Toolkit } from "@assistant-ui/react";
+import {
+  InstagramPost,
+  safeParseSerializableInstagramPost,
+} from "@/components/tool-ui/instagram-post";
+import { createResultToolRenderer } from "@/components/tool-ui/shared";
+
+export const toolkit: Toolkit = {
+  showInstagramPost: {
+    type: "backend",
+    render: createResultToolRenderer({
+      safeParse: safeParseSerializableInstagramPost,
+      render: (parsedResult) => <InstagramPost post={parsedResult} />,
+    }),
+  },
+};
+```
+
+## Props
+
+<TypeTable
+  type={{
+    post: {
+      description: "Post payload validated by `SerializableInstagramPostSchema`",
+      type: "InstagramPostData",
+      required: true,
+    },
+    className: {
+      description: "Optional className for the outer card",
+      type: "string",
+    },
+    onAction: {
+      description: "Fires when the user triggers a built-in post action",
+      type: "(action: string, post: InstagramPostData) => void",
+    },
+    responseActions: {
+      description: "Optional custom response actions",
+      type: "Action[]",
+    },
+    onResponseAction: {
+      description: "Fires when a response action is selected",
+      type: "(actionId: string) => void | Promise<void>",
+    },
+    onBeforeResponseAction: {
+      description: "Optional preflight guard before a response action runs",
+      type: "(actionId: string) => boolean | Promise<boolean>",
+    },
+  }}
+/>
