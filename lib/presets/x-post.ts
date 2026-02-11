@@ -1,6 +1,6 @@
 import type { XPostData } from "@/components/tool-ui/x-post";
 import type { ActionsProp } from "@/components/tool-ui/shared";
-import type { Preset } from "./types";
+import type { PresetWithCodeGen } from "./types";
 
 interface XPostPresetData {
   post: XPostData;
@@ -9,7 +9,26 @@ interface XPostPresetData {
 
 export type XPostPresetName = "basic" | "quoted" | "media" | "link" | "footer-actions";
 
-export const xPostPresets: Record<XPostPresetName, Preset<XPostPresetData>> = {
+function generateXPostCode(data: XPostPresetData): string {
+  const props: string[] = [];
+
+  props.push(
+    `  post={${JSON.stringify(data.post, null, 2).replace(/\n/g, "\n  ")}}`,
+  );
+
+  if (data.responseActions) {
+    props.push(
+      `  responseActions={${JSON.stringify(data.responseActions, null, 2).replace(/\n/g, "\n  ")}}`,
+    );
+  }
+
+  return `<XPost\n${props.join("\n")}\n/>`;
+}
+
+export const xPostPresets: Record<
+  XPostPresetName,
+  PresetWithCodeGen<XPostPresetData>
+> = {
   basic: {
     description: "Simple text post with stats",
     data: {
@@ -26,6 +45,7 @@ export const xPostPresets: Record<XPostPresetName, Preset<XPostPresetData>> = {
         createdAt: "2025-11-05T14:01:00.000Z",
       },
     } satisfies XPostPresetData,
+    generateExampleCode: generateXPostCode,
   },
   quoted: {
     description: "Post with quoted tweet",
@@ -54,6 +74,7 @@ export const xPostPresets: Record<XPostPresetName, Preset<XPostPresetData>> = {
         createdAt: "2025-11-05T14:01:00.000Z",
       },
     } satisfies XPostPresetData,
+    generateExampleCode: generateXPostCode,
   },
   media: {
     description: "Post with image attachment",
@@ -77,6 +98,7 @@ export const xPostPresets: Record<XPostPresetName, Preset<XPostPresetData>> = {
         createdAt: "2025-11-24T10:30:00.000Z",
       },
     } satisfies XPostPresetData,
+    generateExampleCode: generateXPostCode,
   },
   link: {
     description: "Post with link preview card",
@@ -100,6 +122,7 @@ export const xPostPresets: Record<XPostPresetName, Preset<XPostPresetData>> = {
         createdAt: "2025-11-23T16:45:00.000Z",
       },
     } satisfies XPostPresetData,
+    generateExampleCode: generateXPostCode,
   },
   "footer-actions": {
     description: "Post with custom response actions",
@@ -121,5 +144,6 @@ export const xPostPresets: Record<XPostPresetName, Preset<XPostPresetData>> = {
         { id: "view-templates", label: "View Templates", variant: "default" },
       ],
     } satisfies XPostPresetData,
+    generateExampleCode: generateXPostCode,
   },
 };

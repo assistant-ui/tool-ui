@@ -1,6 +1,6 @@
 import type { LinkedInPostData } from "@/components/tool-ui/linkedin-post";
 import type { ActionsProp } from "@/components/tool-ui/shared";
-import type { Preset } from "./types";
+import type { PresetWithCodeGen } from "./types";
 
 interface LinkedInPostPresetData {
   post: LinkedInPostData;
@@ -9,7 +9,26 @@ interface LinkedInPostPresetData {
 
 export type LinkedInPostPresetName = "basic" | "link" | "media" | "footer-actions";
 
-export const linkedInPostPresets: Record<LinkedInPostPresetName, Preset<LinkedInPostPresetData>> = {
+function generateLinkedInPostCode(data: LinkedInPostPresetData): string {
+  const props: string[] = [];
+
+  props.push(
+    `  post={${JSON.stringify(data.post, null, 2).replace(/\n/g, "\n  ")}}`,
+  );
+
+  if (data.responseActions) {
+    props.push(
+      `  responseActions={${JSON.stringify(data.responseActions, null, 2).replace(/\n/g, "\n  ")}}`,
+    );
+  }
+
+  return `<LinkedInPost\n${props.join("\n")}\n/>`;
+}
+
+export const linkedInPostPresets: Record<
+  LinkedInPostPresetName,
+  PresetWithCodeGen<LinkedInPostPresetData>
+> = {
   basic: {
     description: "Text-only professional post",
     data: {
@@ -25,6 +44,7 @@ export const linkedInPostPresets: Record<LinkedInPostPresetName, Preset<LinkedIn
         createdAt: "2025-11-05T09:15:00.000Z",
       },
     } satisfies LinkedInPostPresetData,
+    generateExampleCode: generateLinkedInPostCode,
   },
   link: {
     description: "Post with link preview",
@@ -48,6 +68,7 @@ export const linkedInPostPresets: Record<LinkedInPostPresetName, Preset<LinkedIn
         createdAt: "2025-11-24T14:30:00.000Z",
       },
     } satisfies LinkedInPostPresetData,
+    generateExampleCode: generateLinkedInPostCode,
   },
   media: {
     description: "Post with image",
@@ -69,6 +90,7 @@ export const linkedInPostPresets: Record<LinkedInPostPresetName, Preset<LinkedIn
         createdAt: "2025-11-22T16:00:00.000Z",
       },
     } satisfies LinkedInPostPresetData,
+    generateExampleCode: generateLinkedInPostCode,
   },
   "footer-actions": {
     description: "Post with custom response actions",
@@ -89,5 +111,6 @@ export const linkedInPostPresets: Record<LinkedInPostPresetName, Preset<LinkedIn
         { id: "apply", label: "Apply Now", variant: "default" },
       ],
     } satisfies LinkedInPostPresetData,
+    generateExampleCode: generateLinkedInPostCode,
   },
 };

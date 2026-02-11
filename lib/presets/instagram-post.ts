@@ -1,6 +1,6 @@
 import type { InstagramPostData } from "@/components/tool-ui/instagram-post";
 import type { ActionsProp } from "@/components/tool-ui/shared";
-import type { Preset } from "./types";
+import type { PresetWithCodeGen } from "./types";
 
 interface InstagramPostPresetData {
   post: InstagramPostData;
@@ -9,7 +9,26 @@ interface InstagramPostPresetData {
 
 export type InstagramPostPresetName = "basic" | "carousel" | "footer-actions";
 
-export const instagramPostPresets: Record<InstagramPostPresetName, Preset<InstagramPostPresetData>> = {
+function generateInstagramPostCode(data: InstagramPostPresetData): string {
+  const props: string[] = [];
+
+  props.push(
+    `  post={${JSON.stringify(data.post, null, 2).replace(/\n/g, "\n  ")}}`,
+  );
+
+  if (data.responseActions) {
+    props.push(
+      `  responseActions={${JSON.stringify(data.responseActions, null, 2).replace(/\n/g, "\n  ")}}`,
+    );
+  }
+
+  return `<InstagramPost\n${props.join("\n")}\n/>`;
+}
+
+export const instagramPostPresets: Record<
+  InstagramPostPresetName,
+  PresetWithCodeGen<InstagramPostPresetData>
+> = {
   basic: {
     description: "Single image post",
     data: {
@@ -33,6 +52,7 @@ export const instagramPostPresets: Record<InstagramPostPresetName, Preset<Instag
         createdAt: "2025-11-05T18:45:00.000Z",
       },
     } satisfies InstagramPostPresetData,
+    generateExampleCode: generateInstagramPostCode,
   },
   carousel: {
     description: "Multi-image carousel",
@@ -67,6 +87,7 @@ export const instagramPostPresets: Record<InstagramPostPresetName, Preset<Instag
         createdAt: "2025-11-24T12:00:00.000Z",
       },
     } satisfies InstagramPostPresetData,
+    generateExampleCode: generateInstagramPostCode,
   },
   "footer-actions": {
     description: "Post with custom response actions",
@@ -94,5 +115,6 @@ export const instagramPostPresets: Record<InstagramPostPresetName, Preset<Instag
         { id: "save-location", label: "Save Location", variant: "default" },
       ],
     } satisfies InstagramPostPresetData,
+    generateExampleCode: generateInstagramPostCode,
   },
 };

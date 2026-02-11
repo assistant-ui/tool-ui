@@ -22,8 +22,10 @@ export function DocsHeader({ title, description, mdxPath }: DocsHeaderProps) {
     "data-table",
     "image",
     "image-gallery",
+    "instagram-post",
     "item-carousel",
     "link-preview",
+    "linkedin-post",
     "message-draft",
     "option-list",
     "order-summary",
@@ -36,6 +38,7 @@ export function DocsHeader({ title, description, mdxPath }: DocsHeaderProps) {
     "terminal",
     "video",
     "weather-widget",
+    "x-post",
   ]);
   const componentId =
     parsedComponentId && previewSupportedIds.has(parsedComponentId as ComponentId)
