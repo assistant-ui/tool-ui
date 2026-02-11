@@ -549,7 +549,7 @@ export const previewConfigs: Record<
   "instagram-post": {
     presets: instagramPostPresets as Record<string, PresetWithCodeGen<unknown>>,
     defaultPreset: "basic" satisfies InstagramPostPresetName,
-    wrapper: MaxWidthSmStartWrapper,
+    wrapper: MaxWidthSmWrapper,
     chatContext: {
       userMessage: "Draft an Instagram post for this launch",
       preamble: "Here's the post preview:",
@@ -598,7 +598,7 @@ export const previewConfigs: Record<
   "linkedin-post": {
     presets: linkedInPostPresets as Record<string, PresetWithCodeGen<unknown>>,
     defaultPreset: "basic" satisfies LinkedInPostPresetName,
-    wrapper: MaxWidthSmStartWrapper,
+    wrapper: MaxWidthSmWrapper,
     chatContext: {
       userMessage: "Create a LinkedIn update about the release",
       preamble: "Here's the LinkedIn post preview:",
@@ -896,7 +896,7 @@ export const previewConfigs: Record<
   "x-post": {
     presets: xPostPresets as Record<string, PresetWithCodeGen<unknown>>,
     defaultPreset: "basic" satisfies XPostPresetName,
-    wrapper: MaxWidthSmStartWrapper,
+    wrapper: MaxWidthSmWrapper,
     chatContext: {
       userMessage: "Write a post for X about today's launch",
       preamble: "Here's the X post preview:",
