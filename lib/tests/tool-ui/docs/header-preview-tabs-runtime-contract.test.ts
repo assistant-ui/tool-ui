@@ -35,6 +35,7 @@ describe("header preview tabs runtime contract", () => {
       );
 
       expect(html).toContain("header-preview-center");
+      expect(html).not.toContain("rounded-lg border bg-background p-4");
     }
   });
 });
