@@ -16,4 +16,25 @@ describe("header preview tabs runtime contract", () => {
       ),
     ).not.toThrow();
   });
+
+  test("uses shared centering container for preview layout", () => {
+    const centeredIds: ComponentId[] = [
+      "plan",
+      "progress-tracker",
+      "parameter-slider",
+      "preferences-panel",
+      "citation",
+      "stats-display",
+      "weather-widget",
+      "image-gallery",
+    ];
+
+    for (const componentId of centeredIds) {
+      const html = renderToString(
+        React.createElement(HeaderPreviewTabs, { componentId }),
+      );
+
+      expect(html).toContain("header-preview-center");
+    }
+  });
 });

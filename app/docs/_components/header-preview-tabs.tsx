@@ -44,7 +44,11 @@ export function HeaderPreviewTabs({ componentId }: HeaderPreviewTabsProps) {
     <div className="not-prose mt-6">
       <Tabs items={["Preview", "Code"]}>
         <Tab value="Preview">
-          <div className="rounded-lg border bg-background p-4">{wrappedPreview}</div>
+          <div className="rounded-lg border bg-background p-4">
+            <div className="header-preview-center flex w-full justify-center">
+              {wrappedPreview}
+            </div>
+          </div>
         </Tab>
         <Tab value="Code">
           <DynamicCodeBlock lang="tsx" code={code} />
