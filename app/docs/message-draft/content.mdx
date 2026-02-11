@@ -23,6 +23,8 @@ npx shadcn@latest add https://tool-ui.com/r/message-draft.json
 
 <Step title="Use it in your application">
 
+Render `MessageDraft` in your UI with tool-compatible props.
+
 <div className="[&_pre]:max-h-[30rem] [&_pre]:overflow-y-auto">
 
 ```tsx
@@ -53,6 +55,8 @@ onCancel={() => console.log("Cancelled")}
 </Step>
 
 <Step title="Register it in your runtime provider">
+
+Register this renderer so tool results display as `MessageDraft`.
 
 ```tsx
 "use client";

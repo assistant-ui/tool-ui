@@ -22,6 +22,8 @@ npx shadcn@latest add https://tool-ui.com/r/chart.json
 
 <Step title="Use it in your application">
 
+Render `Chart` in your UI with tool-compatible props.
+
 <div className="[&_pre]:max-h-[30rem] [&_pre]:overflow-y-auto">
 
 ```tsx
@@ -52,6 +54,8 @@ import { Chart } from "@/components/tool-ui/chart";
 </Step>
 
 <Step title="Register it in your runtime provider">
+
+Register this renderer so tool results display as `Chart`.
 
 ```tsx
 <Chart
@@ -95,13 +99,9 @@ These snippets use [assistant-ui](https://assistant-ui.com) for end-to-end wirin
 
 Switch to line charts for time-series or continuous data.
 
-<ChartPresetExample preset="performance" />
-
 ### Minimal Configuration
 
 Charts work with just `data`, `xKey`, and `series`. Title, description, legend, and grid are optional.
-
-<ChartPresetExample preset="minimal" />
 
 ## Props
 

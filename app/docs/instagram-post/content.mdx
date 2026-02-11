@@ -23,6 +23,8 @@ npx shadcn@latest add https://tool-ui.com/r/instagram-post.json
 
 <Step title="Use it in your application">
 
+Render `InstagramPost` in your UI with tool-compatible props.
+
 <div className="[&_pre]:max-h-[30rem] [&_pre]:overflow-y-auto">
 
 ```tsx
@@ -60,6 +62,8 @@ export function Example() {
 </Step>
 
 <Step title="Register it in your runtime provider">
+
+Register this renderer so tool results display as `InstagramPost`.
 
 ```tsx
 import { type Toolkit } from "@assistant-ui/react";

@@ -22,6 +22,8 @@ npx shadcn@latest add https://tool-ui.com/r/option-list.json
 
 <Step title="Use it in your application">
 
+Render `OptionList` in your UI with tool-compatible props.
+
 <div className="[&_pre]:max-h-[30rem] [&_pre]:overflow-y-auto">
 
 ```tsx
@@ -37,6 +39,8 @@ export function Example({ payload }: { payload: React.ComponentProps<typeof Opti
 </Step>
 
 <Step title="Register it in your runtime provider">
+
+Register this renderer so tool results display as `OptionList`.
 
 ```tsx
 "use client";
@@ -101,8 +105,6 @@ These snippets use [assistant-ui](https://assistant-ui.com) for end-to-end wirin
 ## Receipt State
 
 When `confirmed` is set, the component renders in a read-only receipt state showing only the confirmed selection(s). Use this to display past decisions in conversation history.
-
-<OptionListPresetExample preset="receipt" />
 
 The receipt state:
 
