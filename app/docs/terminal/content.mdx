@@ -32,6 +32,11 @@ Install this component directly from the Tool UI shadcn registry:
 ```bash
 npx shadcn@latest add https://tool-ui.com/r/terminal.json
 ```
+If you're in a pnpm workspace, run the command against your app package directory:
+
+```bash
+npx shadcn@latest add --cwd apps/web https://tool-ui.com/r/terminal.json
+```
 
 This command installs `components/tool-ui/terminal`, `components/tool-ui/shared`, and `lib/ui/cn.ts` into your project.
 

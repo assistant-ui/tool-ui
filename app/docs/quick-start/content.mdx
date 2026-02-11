@@ -194,6 +194,12 @@ Tool UI publishes every component as a shadcn registry entry under `https://tool
 npx shadcn@latest add https://tool-ui.com/r/plan.json
 ```
 
+If you're in a pnpm workspace, run the command against your app package directory:
+
+```bash
+npx shadcn@latest add --cwd apps/web https://tool-ui.com/r/plan.json
+```
+
 The CLI will copy `components/tool-ui/plan`, `components/tool-ui/shared`, and `lib/ui/cn.ts` into your project and wire up the right Tailwind styles, just like any other shadcn block.
 
 3. Repeat the command (or rerun the CLI) for additional Tool UI surfaces; the registry automatically lists every surface we ship, and each artifact brings along the `shared` helpers it needs.

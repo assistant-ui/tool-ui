@@ -37,6 +37,10 @@ describe("component docs registry installation contract", () => {
       expect(content).toContain(
         `npx shadcn@latest add https://tool-ui.com/r/${componentId}.json`,
       );
+      expect(content).toContain(
+        `npx shadcn@latest add --cwd apps/web https://tool-ui.com/r/${componentId}.json`,
+      );
+      expect(content).toContain("pnpm workspace");
       expect(content).not.toContain("### Download");
       expect(content).not.toContain("download-directory.github.io");
       expect(content).not.toContain("Copy the component");
@@ -51,5 +55,12 @@ describe("component docs registry installation contract", () => {
     expect(content).not.toContain("manual copy");
     expect(content).not.toContain("download ZIP");
     expect(content).not.toContain("download ZIP archives");
+  });
+
+  test("quick start includes a pnpm workspace-safe install command", () => {
+    const content = fs.readFileSync(QUICK_START_DOC_PATH, "utf8");
+
+    expect(content).toContain("--cwd");
+    expect(content).toContain("pnpm workspace");
   });
 });
