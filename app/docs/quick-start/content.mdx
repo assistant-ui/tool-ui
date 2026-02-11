@@ -194,11 +194,6 @@ Tool UI publishes every component as a shadcn registry entry under `https://tool
 npx shadcn@latest add https://tool-ui.com/r/plan.json
 ```
 
-If you're in a pnpm workspace, run the command in the package directory that contains `components.json`:
-
-```bash
-npx shadcn@latest add --cwd <path-to-package-with-components-json> https://tool-ui.com/r/plan.json
-```
 
 The CLI will copy `components/tool-ui/plan`, `components/tool-ui/shared`, and `lib/ui/cn.ts` into your project and wire up the right Tailwind styles, just like any other shadcn block.
 
