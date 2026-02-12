@@ -1,0 +1,45 @@
+import { DocsHeader } from "../_components/docs-header";
+
+<DocsHeader
+  title="Changelog"
+  mdxPath="app/docs/changelog/content.mdx"
+/>
+
+## 2026-02-12
+
+### Breaking changes
+
+- Tool UI component entrypoints now enforce /schema boundaries; imports from non-schema entrypoints may break.
+- Removed the error boundary layer across Tool UI components; existing error handling may no longer apply.
+
+### Migration prompt
+
+<div className="not-prose max-h-[300px] overflow-auto rounded-lg border border-border">
+  <pre className="m-0 whitespace-pre-wrap p-4 text-sm leading-6">
+{`Migrate codebase to adopt explicit /schema entrypoints for Tool UI schemas.
+
+Goals:
+1) Move all schema helper imports to dedicated /schema entrypoints per component.
+2) Keep public UI imports under their component paths; import schema only from /schema modules.
+3) Update tests and docs to reflect new entrypoints and boundary semantics.
+4) Regenerate artifacts (registry/public assets) and update docs accordingly.
+5) Validate UI rendering with updated imports and schema contracts.
+
+Steps:
+- Replace imports of Serializable*Schema, parseSerializable*, and safeParseSerializable* from non-schema tool-ui entrypoints with imports from the component's /schema module (e.g., @/components/tool-ui/<component>/schema).
+- For all affected components, update imports to reference /schema entrypoints; preserve existing UI imports.
+- Update relevant tests and docs to reflect new entrypoints and boundary semantics.
+- Run lint, typecheck, and tests; fix breakages.
+- Regenerate artifacts (registry/public assets) and update docs accordingly.
+- Validate UI rendering with updated imports and schema contracts.`}
+  </pre>
+</div>
+
+### Changes
+
+- Tool UI: repo-wide enforcement of /schema entrypoints.
+- Option List: receipt presets codegen updated to omit onConfirm; multi-receipt preset added; receipt spacing refined; related tests updated.
+- Progress Tracker: shipped v2 display with result-driven UI; tests updated.
+- Plan: compact variant steps-only mode implemented.
+- Image Gallery and Item Carousel: aligned tool-ui contracts.
+- Docs: clarified /schema entrypoints and boundary rules for Tool UI and data-table schemas; registry artifacts regenerated for updated components.
