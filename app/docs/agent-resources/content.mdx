@@ -1,0 +1,85 @@
+import { DocsHeader } from "../_components/docs-header";
+
+<DocsHeader
+  title="Agent Resources"
+  description="Project resources tailored for coding agents working in this repo."
+  mdxPath="app/docs/agent-resources/content.mdx"
+/>
+
+This page is the operating map for coding agents integrating or maintaining Tool UI.
+
+## Available project-local skills
+
+Tool UI currently ships one project-local skill:
+
+- **`tool-ui-integrator`** at `.agents/skills/tool-ui/SKILL.md`
+
+Use it when the task is to find, install, configure, or integrate Tool UI components in React apps.
+
+## Recommended execution flow for agents
+
+1. Run compatibility checks:
+
+```bash
+python .agents/skills/tool-ui/scripts/tool_ui_compat.py --project .
+python .agents/skills/tool-ui/scripts/tool_ui_compat.py --project . --doctor
+```
+
+2. Discover components or bundles:
+
+```bash
+python .agents/skills/tool-ui/scripts/tool_ui_components.py find "<intent>"
+python .agents/skills/tool-ui/scripts/tool_ui_components.py bundle
+```
+
+3. Generate install command and scaffold:
+
+```bash
+python .agents/skills/tool-ui/scripts/tool_ui_components.py install plan
+python .agents/skills/tool-ui/scripts/tool_ui_scaffold.py --mode assistant-backend --component plan
+```
+
+4. Validate and debug:
+
+```bash
+python3 -m unittest discover -s .agents/skills/tool-ui/tests -p "test_*.py"
+```
+
+## High-signal resources for coding agents
+
+| Resource | Why it matters | Path |
+| --- | --- | --- |
+| Skill workflow | End-to-end integration playbook | `.agents/skills/tool-ui/SKILL.md` |
+| Component metadata (canonical) | Source of truth for shipped docs components | `lib/docs/component-registry.ts` |
+| Component metadata (agent-optimized) | Fast lookup for scripts and intent matching | `.agents/skills/tool-ui/references/components-data.json` |
+| Catalog and bundles | Human-readable component discovery and intent bundles | `.agents/skills/tool-ui/references/components-catalog.md`, `.agents/skills/tool-ui/references/recipes.md` |
+| Integration recipes | Runtime wiring patterns by integration mode | `.agents/skills/tool-ui/references/integration-patterns.md` |
+| Troubleshooting matrix | Symptom → likely cause → fix | `.agents/skills/tool-ui/references/troubleshooting.md` |
+| Component sync script | Regenerates agent metadata from canonical source | `.agents/skills/tool-ui/scripts/sync_components.py` |
+| Compatibility doctor | Detects and explains integration blockers | `.agents/skills/tool-ui/scripts/tool_ui_compat.py` |
+| Install/discovery helper | Lists, finds, bundles, and prints install commands | `.agents/skills/tool-ui/scripts/tool_ui_components.py` |
+| Scaffold generator | Generates ready-to-paste runtime wiring snippets | `.agents/skills/tool-ui/scripts/tool_ui_scaffold.py` |
+| Script test suite | Regression coverage for agent-facing tooling | `.agents/skills/tool-ui/tests/` |
+| Docs contract tests | Guards docs consistency and registry-installation policy | `lib/tests/tool-ui/docs/` |
+
+## Suggested additions to improve agent success
+
+These additions would reduce agent error rate and speed up integration work:
+
+1. **Agent resource manifest (`agent-resources.json`)**
+   - Add one machine-readable index for skills, scripts, references, and tests with purpose tags and entry commands.
+2. **Integration fixture app + smoke test**
+   - Add a minimal fixture app that runs compatibility checks and verifies at least one backend tool and one frontend tool end-to-end.
+3. **Troubleshooting examples with known-failing fixtures**
+   - Add reproducible broken setups that map directly to the troubleshooting matrix and expected doctor output.
+4. **CI drift guard for component metadata**
+   - Fail CI when `.agents/skills/tool-ui/references/components-data.json` drifts from `lib/docs/component-registry.ts`.
+5. **Agent-ready prompt templates**
+   - Add templates for common intents such as "onboard first component", "integrate a decision flow", and "migrate from manual wiring to assistant-ui."
+
+## Related docs
+
+- [Quick Start](/docs/quick-start)
+- [UI Guidelines](/docs/design-guidelines)
+- [Maintainer Guide](/docs/contributing)
+- [Gallery](/docs/gallery)
