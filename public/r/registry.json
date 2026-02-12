@@ -1210,6 +1210,11 @@
           "target": "components/tool-ui/option-list/schema.ts"
         },
         {
+          "path": "components/tool-ui/option-list/selection.ts",
+          "type": "registry:lib",
+          "target": "components/tool-ui/option-list/selection.ts"
+        },
+        {
           "path": "components/tool-ui/shared/_adapter.tsx",
           "type": "registry:component",
           "target": "components/tool-ui/shared/_adapter.tsx"
@@ -1256,9 +1261,7 @@
         "zod"
       ],
       "registryDependencies": [
-        "button",
-        "separator",
-        "skeleton"
+        "separator"
       ],
       "files": [
         {
@@ -1287,16 +1290,6 @@
           "target": "components/tool-ui/order-summary/schema.ts"
         },
         {
-          "path": "components/tool-ui/shared/_adapter.tsx",
-          "type": "registry:component",
-          "target": "components/tool-ui/shared/_adapter.tsx"
-        },
-        {
-          "path": "components/tool-ui/shared/action-buttons.tsx",
-          "type": "registry:component",
-          "target": "components/tool-ui/shared/action-buttons.tsx"
-        },
-        {
           "path": "components/tool-ui/shared/contract.ts",
           "type": "registry:lib",
           "target": "components/tool-ui/shared/contract.ts"
@@ -1310,11 +1303,6 @@
           "path": "components/tool-ui/shared/schema.ts",
           "type": "registry:lib",
           "target": "components/tool-ui/shared/schema.ts"
-        },
-        {
-          "path": "components/tool-ui/shared/use-action-buttons.tsx",
-          "type": "registry:component",
-          "target": "components/tool-ui/shared/use-action-buttons.tsx"
         }
       ]
     },

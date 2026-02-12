@@ -644,14 +644,7 @@ export const previewConfigs: Record<
     },
     renderComponent: ({ data }) => {
       const orderData = data as Parameters<typeof OrderSummary>[0];
-      return (
-        <DynamicOrderSummary
-          {...orderData}
-          onResponseAction={(actionId) =>
-            console.log("Response action:", actionId)
-          }
-        />
-      );
+      return <DynamicOrderSummary {...orderData} />;
     },
   },
   "parameter-slider": {

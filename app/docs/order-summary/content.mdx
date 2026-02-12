@@ -58,9 +58,6 @@ export function Example() {
         total: 206.59,
         currency: "USD",
       }}
-      onResponseAction={(actionId) => {
-        console.log("Action:", actionId);
-      }}
     />
   );
 }
@@ -81,34 +78,15 @@ import { type Toolkit } from "@assistant-ui/react";
 import {
   OrderSummary,
   safeParseSerializableOrderSummary,
-  SerializableOrderSummarySchema,
 } from "@/components/tool-ui/order-summary";
-import { createArgsToolRenderer } from "@/components/tool-ui/shared";
+import { createResultToolRenderer } from "@/components/tool-ui/shared";
 
 export const toolkit: Toolkit = {
-  createOrder: {
-    description: "Display a purchase order for user confirmation",
-    parameters: SerializableOrderSummarySchema,
-    render: createArgsToolRenderer({
+  createOrderReceipt: {
+    type: "backend",
+    render: createResultToolRenderer({
       safeParse: safeParseSerializableOrderSummary,
-      idPrefix: "order",
-      render: (parsedArgs, { result, addResult }) =>
-        result ? (
-            <OrderSummary {...parsedArgs} choice={result} />
-          ) : (
-            <OrderSummary
-              {...parsedArgs}
-              onResponseAction={(actionId) => {
-                if (actionId === "confirm") {
-                  void addResult?.({
-                    action: "confirm",
-                    orderId: `ORD-${Date.now()}`,
-                    confirmedAt: new Date().toISOString(),
-                  });
-                }
-              }}
-            />
-          ),
+      render: (parsedResult) => <OrderSummary {...parsedResult} />,
     }),
   },
 };
@@ -119,6 +97,8 @@ export const toolkit: Toolkit = {
 </Steps>
 
 These snippets use [assistant-ui](https://assistant-ui.com) for end-to-end wiring, but the OrderSummary component itself is framework-agnostic at the UI layer: you can use it in any React codebase with any LLM SDK or tool-calling interface that can provide compatible props.
+
+OrderSummary is display-only and result-driven: render it directly from backend tool results. For user decisions, use interactive decision surfaces like Option List or Approval Card.
 
 ## Key Features
 
@@ -139,7 +119,7 @@ These snippets use [assistant-ui](https://assistant-ui.com) for end-to-end wirin
 
 ## Receipt State
 
-When `decision` is set, the component renders in a dimmed receipt state showing the confirmed order with order ID and timestamp.
+When `choice` is set, the component renders in a dimmed receipt state showing the confirmed order with order ID and timestamp.
 
 
 ## With Discount
@@ -171,21 +151,13 @@ Use the `discount` and `discountLabel` fields in pricing to show promotional sav
       type: "Pricing",
       required: true,
     },
-    decision: {
+    choice: {
       description: "When set, renders the receipt state",
       type: "OrderDecision",
     },
     className: {
       description: "Additional CSS classes",
       type: "string",
-    },
-    responseActions: {
-      description: "Custom action buttons (defaults to Purchase/Cancel)",
-      type: "ResponseAction[]",
-    },
-    onResponseAction: {
-      description: "Handler when user clicks an action button",
-      type: "(actionId: string) => void",
     },
   }}
 />
@@ -272,6 +244,5 @@ Use the `discount` and `discountLabel` fields in pricing to show promotional sav
 ## Accessibility
 
 - Uses semantic `<article>` with `aria-labelledby` pointing to the title
-- Action buttons are keyboard accessible with visible focus states
 - Images use `alt=""` since item names provide the description
 - Receipt state shows clear visual indication of confirmation
