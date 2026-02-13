@@ -3,14 +3,75 @@ import { ActionsExamples } from "./actions-examples";
 
 <DocsHeader
   title="Actions"
-  description="Display surfaces stay display-only. Render LocalActions and DecisionActions as siblings."
+  description="How Tool UI actions work, when to use each action pattern, and why some components intentionally use dedicated action props."
   mdxPath="app/docs/actions/content.mdx"
 />
 
-## Model
+Tool UI actions are how a user turns a rendered tool UI into behavior.
 
-- `LocalActions`: runtime side effects only, no `addResult(...)`.
-- `DecisionActions`: consequential actions that commit a typed decision envelope.
-- Display components: render data only, plus intrinsic controls.
+If you're new to tool calling, this page gives you the mental model first, then the implementation patterns.
+
+## Start Here
+
+In Tool UI, a typical interaction looks like this:
+
+1. The model calls a tool with arguments.
+2. Your app renders a Tool UI component from those arguments.
+3. The user clicks an action.
+4. Your runtime handles the action.
+5. If the action is consequential, your runtime commits a result that can be rendered as a receipt state.
+
+This is why action modeling matters: it defines where behavior lives and how outcomes become durable.
+
+## The Two Standard Action Surfaces
+
+Most display-first components follow this split:
+
+- `ToolUI.LocalActions`: for local/runtime side effects. These are non-consequential.
+- `ToolUI.DecisionActions`: for consequential choices. These produce a typed decision envelope and commit outcome state.
+
+For display-first components, keep the data surface display-only and compose actions as siblings with:
+
+- `ToolUI`
+- `ToolUI.Surface`
+- `ToolUI.Actions`
+
+## Which Pattern Should I Use?
+
+| Scenario | Use | Why |
+|---|---|---|
+| Display-first component with utility actions (export/open/copy) | `ToolUI.LocalActions` | Side effects stay local and do not require durable decision state |
+| Display-first component with consequential user decision | `ToolUI.DecisionActions` | Decisions are explicit, typed, and commit-ready |
+| Action-centric component where behavior is intrinsic to the component itself | Dedicated component props | The action logic is part of the component state model, not sibling chrome |
+
+## Important Exception: Action-Centric Components
+
+Some Tool UI components are intentionally action-centric, so they keep dedicated action props.
+
+| Component | Dedicated action props | Why |
+|---|---|---|
+| `OptionList` | `selectionActions`, `onSelectionAction`, `onBeforeSelectionAction` | Selection and confirmation are intrinsic to the list workflow |
+| `ParameterSlider` | `adjustmentActions`, `onAdjustmentAction`, `onBeforeAdjustmentAction` | Apply/reset behavior is part of adjustment semantics |
+| `PreferencesPanel` | `formActions`, `onFormAction`, `onBeforeFormAction` | Save/cancel is part of form lifecycle and dirty-state handling |
+
+These components are intentionally not forced into sibling `LocalActions` or `DecisionActions`.
+
+## Where `addResult(...)` Belongs
+
+- `ToolUI.LocalActions`: never commit result state from these handlers.
+- `ToolUI.DecisionActions`: produce envelope in decision handler, then commit in the commit step.
+- Action-centric components: commit from their explicit confirm/apply/save flow in your tool renderer.
+
+## Visual Examples
 
 <ActionsExamples />
+
+## Legacy Mapping
+
+If you are migrating older code:
+
+| Legacy API | Current API |
+|---|---|
+| `responseActions` on display-first components | Sibling `ToolUI.LocalActions` or `ToolUI.DecisionActions` |
+| `onResponseAction` / `onBeforeResponseAction` | `ToolUI.LocalActions` handlers, `ToolUI.DecisionActions` handlers, or dedicated outlier handlers |
+| `/docs/local-actions` and `/docs/response-actions` | `/docs/actions` |

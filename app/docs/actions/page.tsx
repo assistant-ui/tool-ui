@@ -5,7 +5,7 @@ import { DocsArticle } from "../_components/docs-article";
 export const metadata: Metadata = {
   title: "Actions",
   description:
-    "Use LocalActions for non-receipt interactions and DecisionActions for consequential commits.",
+    "Learn the Tool UI action model: sibling LocalActions and DecisionActions for display-first components, plus dedicated action props for action-centric components.",
 };
 
 export const revalidate = 3600;
