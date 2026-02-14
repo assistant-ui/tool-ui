@@ -2,7 +2,7 @@ import { DocsHeader } from "../_components/docs-header";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { FlaskConical } from "lucide-react";
 import { MockThread, MockMessage } from "../_components/mock-thread";
-import { LinkPreview } from "@/components/tool-ui/link-preview";
+import { OptionList } from "@/components/tool-ui/option-list";
 import { InteractiveOptionDemo } from "../_components/interactive-option-demo";
 
 <DocsHeader
@@ -23,48 +23,50 @@ import { InteractiveOptionDemo } from "../_components/interactive-option-demo";
   </AlertDescription>
 </Alert>
 
-When an AI assistant calls a tool, it usually returns plain text or raw JSON. The user sees a wall of data they have to parse themselves.
+When an AI assistant calls a tool, the result lands in the conversation as text. The user reads it, interprets it, and types a response.
 
-Tool UI turns those tool results into **real React components**: cards, tables, option lists that render inline in the conversation and let users interact without leaving the chat.
+Tool UI turns those results into **real React components** that render inline and let users interact without leaving the chat.
 
 <div className="mt-8 grid gap-6 md:grid-cols-2">
   <MockThread caption="Without Tool UI">
-    <MockMessage role="user">Find me a link to the Tailwind docs</MockMessage>
+    <MockMessage role="user">I want to understand how LLMs work. Where should I start?</MockMessage>
     <MockMessage role="assistant">
       <span className="text-foreground text-sm">
-        {"Here's the link to the Tailwind CSS documentation:"}
+        {"Here are three solid paths depending on how you learn best:"}
       </span>
-      <pre className="bg-muted text-muted-foreground mt-2 overflow-x-auto rounded-lg p-3 font-mono text-xs">
-{`{
-  "href": "https://tailwindcss.com/docs",
-  "title": "Tailwind CSS",
-  "description": "Rapidly build modern websites without ever leaving your HTML."
-}`}
-      </pre>
+      <ol className="text-foreground text-sm mt-2 list-decimal space-y-1 pl-5">
+        <li><strong>Visual intuition first</strong> — 3Blue1Brown + Karpathy's Zero to Hero. Watch, then build.</li>
+        <li><strong>Code-first, build a transformer</strong> — Karpathy's nanoGPT walkthrough. Learn by implementing.</li>
+        <li><strong>Textbook foundations</strong> — Jurafsky & Martin. Rigorous, math-heavy, thorough.</li>
+      </ol>
+      <span className="text-foreground text-sm mt-2 block">
+        {"Which approach sounds right?"}
+      </span>
     </MockMessage>
   </MockThread>
 
   <MockThread caption="With Tool UI">
-    <MockMessage role="user">Find me a link to the Tailwind docs</MockMessage>
+    <MockMessage role="user">I want to understand how LLMs work. Where should I start?</MockMessage>
     <MockMessage role="assistant">
       <span className="text-foreground text-sm">
-        {"Found it."}
+        {"Here are three paths depending on how you learn best:"}
       </span>
       <div className="mt-3">
-        <LinkPreview
-          id="lp-tailwind"
-          href="https://tailwindcss.com/docs"
-          title="Tailwind CSS"
-          description="Rapidly build modern websites without ever leaving your HTML."
-          domain="tailwindcss.com"
-          favicon="https://tailwindcss.com/favicons/favicon-32x32.png"
+        <OptionList
+          id="overview-learn-llms"
+          selectionMode="single"
+          options={[
+            { id: "visual", label: "Visual intuition first", description: "3Blue1Brown + Karpathy's Zero to Hero. Watch, then build." },
+            { id: "code", label: "Code-first, build a transformer", description: "Karpathy's nanoGPT walkthrough. Learn by implementing." },
+            { id: "textbook", label: "Textbook foundations", description: "Jurafsky & Martin. Rigorous, math-heavy, thorough." },
+          ]}
         />
       </div>
     </MockMessage>
   </MockThread>
 </div>
 
-Same data, different experience. The left side dumps JSON the user has to read. The right side renders a clickable card that looks and behaves like a native part of the conversation.
+The left side ends with a question you have to type an answer to. The right side gives structured options you can click, and your choice feeds back to the assistant as a typed result.
 
 ## What is tool calling?
 
