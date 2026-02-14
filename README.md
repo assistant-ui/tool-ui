@@ -1,31 +1,10 @@
 # Tool UI
 
-### UI components for AI interfaces.
+When an AI assistant calls a tool, the result is usually raw JSON dumped into the conversation. Tool UI turns those results into interactive React components: cards, tables, option lists that render inline and let users act without leaving the chat.
 
-Responsive, accessible, typed, copy-pasteable. Built on Radix, shadcn/ui, and Tailwind. Open Source.
+**[tool-ui.com](https://tool-ui.com)** | [Docs](https://tool-ui.com/docs/overview) | [Gallery](https://tool-ui.com/docs/gallery)
 
-## Local development
-
-```bash
-pnpm install
-pnpm dev
-```
-
-Open:
-
-- `http://localhost:3000/docs/quick-start` for integration walkthrough
-- `http://localhost:3000/docs/changelog` for release notes and migration prompts
-- `http://localhost:3000/playground` for interactive prototype testing
-
-## Quality checks
-
-```bash
-pnpm test
-pnpm lint:ci
-pnpm registry:check
-```
-
-## First aha in 10 minutes
+## Quick start
 
 1. Run `pnpm dev` and open `/playground`.
 2. Add a prototype entry in `lib/playground/registry.ts`.
@@ -33,66 +12,52 @@ pnpm registry:check
 4. Iterate on the matching component under `components/tool-ui/<component>/`.
 5. Rebuild registry artifacts with `pnpm registry:build`.
 
-For detailed maintainer workflow see `docs/tests.md` and `docs/playground.md`.
-
 ## Components
 
-- Approval Card — Binary confirmation for agent actions
-- Audio — Audio playback with artwork and metadata
-- Chart — Visualize data with interactive charts
-- Citation — Display source references with attribution
-- Code Block — Display syntax-highlighted code snippets
-- Data Table — Sortable columns, row actions, mobile accordion layout
-- Image — Display images with metadata and attribution
-- Image Gallery — Grid layout for browsing image collections
-- Item Carousel — Horizontal carousel for browsing collections
-- Link Preview — Rich link previews with OG data
-- Option List — Single/multi-select choices with external local/decision actions
-- Order Summary — Itemized purchase confirmation with pricing
-- Parameter Slider — Numeric parameter adjustment controls
-- Plan — Display step-by-step task workflows
-- Preferences Panel — Compact settings/preferences surface
-- Progress Tracker — Multi-step progress and status surface
-- Question Flow — Guided multi-step input/selection flow
-- Social Post — X/Instagram/LinkedIn renderers with media previews
-- Stats Display — Compact metric cards and deltas
-- Terminal — Show command-line output and logs
-- Video — Video playback with controls and poster
-- Weather Widget — Forecast and conditions surface
+- Approval Card: Binary confirmation for agent actions
+- Audio: Playback with artwork and metadata
+- Chart: Interactive data visualization
+- Citation: Source references with attribution
+- Code Block: Syntax-highlighted code snippets
+- Data Table: Sortable columns, row actions, mobile accordion layout
+- Image: Images with metadata and attribution
+- Image Gallery: Grid layout for browsing collections
+- Item Carousel: Horizontal browsing for collections
+- Link Preview: Rich previews with OG data
+- Option List: Single/multi-select with local and decision actions
+- Order Summary: Itemized purchase confirmation with pricing
+- Parameter Slider: Numeric parameter adjustment
+- Plan: Step-by-step task workflows
+- Preferences Panel: Compact settings surface
+- Progress Tracker: Multi-step progress and status
+- Question Flow: Guided multi-step input and selection
+- Social Post: X/Instagram/LinkedIn renderers with media previews
+- Stats Display: Metric cards and deltas
+- Terminal: Command-line output and logs
+- Video: Playback with controls and poster
+- Weather Widget: Forecast and conditions
 
-👀 [Browse components](https://tool-ui.com/components)
+[Browse all components](https://tool-ui.com/docs/gallery)
 
-## Maintenance
+## Development
 
-Tool UI is maintained by assistant-ui. This repository is optimized for direct maintenance rather than open-ended external contribution flow.
+```bash
+pnpm install
+pnpm dev
+```
 
-- [UI Guidelines](https://tool-ui.com/docs/design-guidelines) — design philosophy and principles
-- [Changelog](https://tool-ui.com/docs/changelog) — release notes and migration guidance
+- `http://localhost:3000/docs/quick-start` for integration walkthrough
+- `http://localhost:3000/docs/changelog` for release notes
+- `http://localhost:3000/playground` for interactive prototype testing
+
+## Testing
+
+```bash
+pnpm test
+pnpm lint:ci
+pnpm registry:check
+```
 
 ## License
 
-MIT License — see the [LICENSE](LICENSE) file for details.
-
-## Shadcn Registry
-
-Build Tool UI registry artifacts:
-
-```bash
-pnpm registry:build
-```
-
-This generates:
-
-- `public/r/registry.json`
-- `public/r/<component>.json` (e.g. `public/r/plan.json`)
-
-Each component artifact includes only the shared files it directly depends on
-(plus `lib/ui/cn.ts`) instead of requiring a monolithic `shared.json`.
-
-## Component scaffold
-
-Create a new component skeleton (component files + docs page + preset stub):
-
-```bash
-pnpm component:new my-component
-```
+MIT License. See [LICENSE](LICENSE) for details.
