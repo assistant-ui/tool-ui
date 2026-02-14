@@ -1,9 +1,8 @@
 import { DocsHeader } from "../_components/docs-header";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { FlaskConical } from "lucide-react";
-import { MockThread, MockMessage } from "../_components/mock-thread";
-import { OptionList } from "@/components/tool-ui/option-list";
 import { InteractiveOptionDemo } from "../_components/interactive-option-demo";
+import { HeroComparison } from "../_components/hero-comparison";
 
 <DocsHeader
   title="Overview"
@@ -27,46 +26,9 @@ When an AI assistant calls a tool, the result lands in the conversation as text.
 
 Tool UI turns those results into **real React components** that render inline and let users interact without leaving the chat.
 
-<div className="mt-8 grid gap-6 md:grid-cols-2">
-  <MockThread caption="Without Tool UI">
-    <MockMessage role="user">I want to understand how LLMs work. Where should I start?</MockMessage>
-    <MockMessage role="assistant">
-      <span className="text-foreground text-sm">
-        {"Here are three solid paths depending on how you learn best:"}
-      </span>
-      <ol className="text-foreground text-sm mt-2 list-decimal space-y-1 pl-5">
-        <li><strong>Visual intuition first</strong> — 3Blue1Brown + Karpathy's Zero to Hero. Watch, then build.</li>
-        <li><strong>Code-first, build a transformer</strong> — Karpathy's nanoGPT walkthrough. Learn by implementing.</li>
-        <li><strong>Textbook foundations</strong> — Jurafsky & Martin. Rigorous, math-heavy, thorough.</li>
-      </ol>
-      <span className="text-foreground text-sm mt-2 block">
-        {"Which approach sounds right?"}
-      </span>
-    </MockMessage>
-  </MockThread>
+<HeroComparison />
 
-  <MockThread caption="With Tool UI">
-    <MockMessage role="user">I want to understand how LLMs work. Where should I start?</MockMessage>
-    <MockMessage role="assistant">
-      <span className="text-foreground text-sm">
-        {"Here are three paths depending on how you learn best:"}
-      </span>
-      <div className="mt-3">
-        <OptionList
-          id="overview-learn-llms"
-          selectionMode="single"
-          options={[
-            { id: "visual", label: "Visual intuition first", description: "3Blue1Brown + Karpathy's Zero to Hero. Watch, then build." },
-            { id: "code", label: "Code-first, build a transformer", description: "Karpathy's nanoGPT walkthrough. Learn by implementing." },
-            { id: "textbook", label: "Textbook foundations", description: "Jurafsky & Martin. Rigorous, math-heavy, thorough." },
-          ]}
-        />
-      </div>
-    </MockMessage>
-  </MockThread>
-</div>
-
-The left side ends with a question you have to type an answer to. The right side gives structured options you can click, and your choice feeds back to the assistant as a typed result.
+Without Tool UI, you read a list and type your answer. With Tool UI, you click an option and confirm. Same data, structured for action.
 
 ## What is tool calling?
 
