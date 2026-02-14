@@ -7,6 +7,8 @@ import { PreferencesPanel } from "@/components/tool-ui/preferences-panel";
   mdxPath="app/docs/preferences-panel/content.mdx"
 />
 
+Configuration screens need structured input, not free text. PreferencesPanel renders switches, toggles, and selects in a compact card with explicit Save/Cancel actions. Changes are staged locally until the user commits them, and the confirmed state shows as a receipt.
+
 ## Getting Started
 
 <Steps>
@@ -120,23 +122,20 @@ export const toolkit: Toolkit = {
 
 </Steps>
 
-These snippets use [assistant-ui](https://assistant-ui.com) for end-to-end wiring, but the PreferencesPanel component itself is framework-agnostic at the UI layer: you can use it in any React codebase with any LLM SDK or tool-calling interface that can provide compatible props.
-
 ## Key Features
 
 <FeatureGrid>
   <Feature icon="Settings2" title="Three control types">
-    Switch for binary choices, toggle for 2-4 options, select for 5+ options
+    Switch (on/off), toggle (2-4 options), or select (5+ options)
   </Feature>
   <Feature icon="SquareCheck" title="Staged changes">
-    Explicit Save/Cancel actions prevent accidental changes
+    Save/Cancel buttons prevent accidental changes
   </Feature>
   <Feature icon="CheckCircle2" title="Receipt state">
-    Use `PreferencesPanel.Receipt` for confirmed selections with success
-    indicators
+    `PreferencesPanel.Receipt` shows confirmed values with per-field error badges
   </Feature>
   <Feature icon="Layers" title="Organized sections">
-    Group related settings with optional section headings
+    Group related settings under optional section headings
   </Feature>
 </FeatureGrid>
 

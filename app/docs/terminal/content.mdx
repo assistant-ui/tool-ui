@@ -6,6 +6,8 @@ import { DocsHeader } from "../_components/docs-header";
   mdxPath="app/docs/terminal/content.mdx"
 />
 
+Shell output loses all formatting when pasted into a chat. No ANSI colors, no exit codes, no stderr separation. Terminal renders command output the way you would see it in a real terminal, and long output auto-collapses so it does not take over the conversation. Without it, you would paste monospace text and lose everything that makes terminal output useful.
+
 ## Getting Started
 
 <Steps>
@@ -102,22 +104,20 @@ export const toolkit: Toolkit = {
 
 </Steps>
 
-These snippets use [assistant-ui](https://assistant-ui.com) for end-to-end wiring, but the Terminal component itself is framework-agnostic at the UI layer: you can use it in any React codebase with any LLM SDK or tool-calling interface that can provide compatible props.
-
 ## Key Features
 
 <FeatureGrid>
   <Feature icon="Paintbrush" title="ANSI color support">
-    Renders colored terminal output exactly as it appears in your shell
+    Renders colored output exactly as it appears in your shell
   </Feature>
   <Feature icon="CircleCheck" title="Exit code display">
-    Visual indicators for success and failure states
+    Green for success (0), red for any non-zero code
   </Feature>
   <Feature icon="Timer" title="Duration tracking">
-    Shows how long the command took to execute
+    Badge showing how long the command took
   </Feature>
   <Feature icon="AlertCircle" title="Stdout/Stderr separation">
-    Errors are visually distinct from standard output
+    Stderr rendered separately with distinct styling
   </Feature>
 </FeatureGrid>
 

@@ -20,6 +20,8 @@ import {
   mdxPath="app/docs/data-table/content.mdx"
 />
 
+Agents regularly surface tabular data: search results, issue lists, transaction logs. DataTable renders those rows as a sortable table on desktop and stacked cards on mobile. You define columns with declarative formatting configs: currency, dates, status badges, links. Without it, you would dump JSON or build a custom table from scratch.
+
 ## Getting Started
 
 <Steps>
@@ -189,22 +191,20 @@ export const toolkit: Toolkit = {
 
 </Steps>
 
-These snippets use [assistant-ui](https://assistant-ui.com) for end-to-end wiring, but the DataTable component itself is framework-agnostic at the UI layer: you can use it in any React codebase with any LLM SDK or tool-calling interface that can provide compatible props.
-
 ## Key Features
 
 <FeatureGrid>
   <Feature icon="Smartphone" title="Responsive layout">
-    Automatically switches from table to cards on mobile
+    Table on desktop, stacked cards on mobile
   </Feature>
   <Feature icon="ArrowUpDown" title="Sorting">
-    Tri-state column sorting: none → ascending → descending
+    Tri-state column headers: none, ascending, descending
   </Feature>
   <Feature icon="Table2" title="Declarative formatting">
-    Currency, dates, links, badges, and more via config
+    Currency, dates, links, badges, and status pills via column config
   </Feature>
   <Feature icon="MousePointerClick" title="External actions">
-    Compose actionable buttons below the table
+    Compose action buttons below the table
   </Feature>
 </FeatureGrid>
 

@@ -6,6 +6,8 @@ import { DocsHeader } from "../_components/docs-header";
   mdxPath="app/docs/chart/content.mdx"
 />
 
+Some answers only make sense as a picture: spending breakdowns, revenue trends, performance over time. Chart renders bar or line visualizations inline in the conversation. You pass data, an x-axis key, and one or more series. Without it, the assistant would describe the numbers in prose or return raw JSON.
+
 ## Getting Started
 
 <Steps>
@@ -74,22 +76,20 @@ Register this renderer so tool results display as `Chart`.
 
 </Steps>
 
-These snippets use [assistant-ui](https://assistant-ui.com) for end-to-end wiring, but the Chart component itself is framework-agnostic at the UI layer: you can use it in any React codebase with any LLM SDK or tool-calling interface that can provide compatible props.
-
 ## Key Features
 
 <FeatureGrid>
   <Feature icon="BarChart3" title="Bar and line charts">
-    Choose the right visualization for your data
+    Bar for categorical data, line for time-series
   </Feature>
   <Feature icon="Layers" title="Multiple series">
-    Compare datasets side-by-side with automatic coloring
+    Plot multiple datasets with automatic color assignment
   </Feature>
   <Feature icon="MousePointerClick" title="Interactive tooltips">
-    Click handlers and hover tooltips for deeper exploration
+    Hover tooltips and click handlers on data points
   </Feature>
   <Feature icon="Settings2" title="Configurable display">
-    Toggle legends, grid lines, and custom color palettes
+    Optional legends, grid lines, and custom color palettes
   </Feature>
 </FeatureGrid>
 
@@ -97,11 +97,11 @@ These snippets use [assistant-ui](https://assistant-ui.com) for end-to-end wirin
 
 ### Line Charts
 
-Switch to line charts for time-series or continuous data.
+Use `type="line"` for time-series or continuous data.
 
 ### Minimal Configuration
 
-Charts work with just `data`, `xKey`, and `series`. Title, description, legend, and grid are optional.
+Only `data`, `xKey`, and `series` are required. Title, description, legend, and grid are all optional.
 
 ## Props
 

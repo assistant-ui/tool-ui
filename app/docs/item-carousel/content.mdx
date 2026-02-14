@@ -6,6 +6,8 @@ import { DocsHeader } from "../_components/docs-header";
   mdxPath="app/docs/item-carousel/content.mdx"
 />
 
+ItemCarousel lays out a scrollable row of cards for browsing products, restaurants, or any collection the assistant returns. Each card can show an image, subtitle, and action buttons. The user scrolls horizontally, clicks into a card, or takes an action without leaving the conversation.
+
 ## Getting Started
 
 <Steps>
@@ -106,44 +108,38 @@ export const toolkit: Toolkit = {
 
 </Steps>
 
-These snippets use [assistant-ui](https://assistant-ui.com) for end-to-end wiring, but the ItemCarousel component itself is framework-agnostic at the UI layer: you can use it in any React codebase with any LLM SDK or tool-calling interface that can provide compatible props.
-
 ## Key Features
 
 <FeatureGrid>
   <Feature icon="Layers" title="Collection browsing">
-    Display multiple items side-by-side for easy comparison with equal-height
-    cards via CSS Grid
+    Equal-height cards via CSS Grid so items line up regardless of title length
   </Feature>
   <Feature icon="GalleryHorizontalEnd" title="Smart scrolling">
-    Custom scroll animation with cubic-bezier easing, snap points, and reduced
-    motion support
+    Smooth scroll with snap points and reduced-motion fallback
   </Feature>
   <Feature icon="MousePointerClick" title="Per-card actions">
-    Buttons adapt via container queries: stacked on narrow cards, side-by-side
-    when wider
+    Buttons stack or sit side-by-side based on card width via container queries
   </Feature>
   <Feature icon="Keyboard" title="Full accessibility">
-    Keyboard navigation (Enter/Space), focus rings, ARIA roles, and screen
-    reader labels
+    Enter/Space activation, focus rings, and ARIA roles throughout
   </Feature>
 </FeatureGrid>
 
 ## Design Details
 
-How the Item Carousel handles common interaction patterns:
+How the carousel handles common interaction patterns:
 
-**Responsive button layout:** Each card is its own container (`@container/card`). When the card is narrow, buttons stack vertically with the primary action on top. Above 176px, they flow horizontally with primary on the right. This uses `flex-col-reverse` to maintain consistent DOM order while adapting visual hierarchy.
+**Responsive button layout:** Each card is a container (`@container/card`). Narrow cards stack buttons vertically with the primary on top. Above 176px, buttons flow horizontally with the primary on the right. `flex-col-reverse` keeps DOM order consistent while adapting visual hierarchy.
 
-**Equal card heights:** Cards use CSS Grid (`grid-flow-col` with `auto-cols-max`) rather than flexbox. Grid cells in the same row automatically match heights, so a card with a two-line title aligns perfectly with one-line neighbors.
+**Equal card heights:** Cards use CSS Grid (`grid-flow-col` with `auto-cols-max`). Grid cells match heights automatically, so a two-line title aligns with one-line neighbors.
 
-**Smooth scroll animation:** The carousel implements custom JavaScript scrolling with a cubic-bezier ease-out curve. It respects `prefers-reduced-motion` and falls back to instant scrolling. Navigation calculates snap positions dynamically based on actual card offsets.
+**Smooth scroll animation:** Custom JavaScript scrolling with a cubic-bezier ease-out curve. Respects `prefers-reduced-motion` with an instant-scroll fallback. Snap positions are calculated dynamically from card offsets.
 
-**Image handling:** Supports both image URLs and hex color fallbacks. Images use `loading="lazy"` and `decoding="async"` for performance. On hover, images scale up 5% with a 300ms transition.
+**Image handling:** Accepts image URLs or hex color fallbacks. Images use `loading="lazy"` and `decoding="async"`. On hover, images scale up 5% with a 300ms transition.
 
-**Click delegation:** Cards can be interactive (`onItemClick`) while containing action buttons. Click handlers check if the event originated from a button and delegate appropriately, preventing double-firing.
+**Click delegation:** Cards can be interactive (`onItemClick`) while containing action buttons. The handler checks if the event came from a button and delegates, preventing double-firing.
 
-**Touch optimization:** Cards use `touch-manipulation` to eliminate the 300ms tap delay on iOS. Navigation buttons appear only on hover/focus (desktop) and use backdrop blur for visual polish.
+**Touch optimization:** `touch-manipulation` eliminates the 300ms tap delay on iOS. Navigation buttons appear only on hover/focus (desktop) with backdrop blur.
 
 ## Props
 

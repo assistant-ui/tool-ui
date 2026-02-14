@@ -7,6 +7,8 @@ import { Image } from "@/components/tool-ui/image";
   mdxPath="app/docs/image/content.mdx"
 />
 
+Image renders pictures inline in the conversation with title, description, and source attribution. Use it when a tool returns an image URL and you want more than a bare `<img>` tag. Without it, the user sees a raw link they have to open in a new tab.
+
 ## Getting Started
 
 <Steps>
@@ -73,19 +75,17 @@ export const toolkit: Toolkit = {
 
 </Steps>
 
-These snippets use [assistant-ui](https://assistant-ui.com) for end-to-end wiring, but the Image component itself is framework-agnostic at the UI layer: you can use it in any React codebase with any LLM SDK or tool-calling interface that can provide compatible props.
-
 ## Key Features
 
 <FeatureGrid>
   <Feature icon="Eye" title="Hover overlay">
-    Title and source attribution appear on hover
+    Title and source appear on hover, stay hidden otherwise
   </Feature>
   <Feature icon="ExternalLink" title="Source attribution">
-    Click-through to source with icon and domain
+    Links back to the original source with favicon and domain
   </Feature>
   <Feature icon="Maximize2" title="Aspect ratios">
-    Support for 1:1, 4:3, 16:9, 9:16, or auto
+    Constrain to 1:1, 4:3, 16:9, 9:16, or let the image decide with auto
   </Feature>
 </FeatureGrid>
 

@@ -7,6 +7,8 @@ import { ApprovalCard } from "@/components/tool-ui/approval-card";
   mdxPath="app/docs/approval-card/content.mdx"
 />
 
+Deploying to production, deleting a project, sending an email. Consequential actions deserve a gate. ApprovalCard renders a confirmation prompt with context about the action, and records the decision as a receipt once the user responds.
+
 ## Getting Started
 
 <Steps>
@@ -90,40 +92,30 @@ export const toolkit: Toolkit = {
 
 </Steps>
 
-These snippets use [assistant-ui](https://assistant-ui.com) for end-to-end wiring, but the ApprovalCard component itself is framework-agnostic at the UI layer: you can use it in any React codebase with any LLM SDK or tool-calling interface that can provide compatible props.
-
 ## Key Features
 
 <FeatureGrid>
   <Feature icon="ShieldCheck" title="Human-in-the-loop">
-    Gate agent actions with explicit user approval
+    Blocks agent actions until the user approves or denies
   </Feature>
   <Feature icon="AlertTriangle" title="Destructive variant">
-    Warning styling for dangerous operations
+    Red styling for irreversible or dangerous operations
   </Feature>
   <Feature icon="List" title="Contextual metadata">
-    Show key-value details about what's being approved
+    Key-value pairs giving context about the action
   </Feature>
   <Feature icon="CheckCircle2" title="Receipt state">
-    Display the decision outcome in conversation history
+    Compact read-only view of the decision in conversation history
   </Feature>
 </FeatureGrid>
 
 ## Receipt State
 
-When `decision` is set, the component renders in a compact receipt state showing the approval decision. Use this to display the outcome in conversation history.
-
-
-The receipt state:
-
-- Shows the decision (approved/denied) with a checkmark or X icon
-- Displays the custom button label used (e.g., "Deploy" instead of generic "Approved")
-- Fades in with a subtle animation
-- Is read-only (no interaction)
+Pass `decision` to render the component as a compact receipt. The receipt shows the outcome (approved or denied) with the custom button label you specified, fades in with a subtle animation, and is read-only.
 
 ## Destructive Variant
 
-Use `variant="destructive"` for dangerous or irreversible actions. This changes the icon background and confirm button to destructive styling.
+Set `variant="destructive"` for dangerous or irreversible actions. The icon background and confirm button turn red.
 
 
 ## Props

@@ -7,6 +7,8 @@ import { XPost } from "@/components/tool-ui/x-post";
   mdxPath="app/docs/x-post/content.mdx"
 />
 
+Raw tweet links in a chat are just URLs. XPost embeds the full post inline: author, text, media, quoted posts, and engagement stats, styled to match the platform. You use it when the assistant fetches or drafts social content and you want it to look like a real post instead of JSON.
+
 ## Getting Started
 
 <Steps>
@@ -79,22 +81,20 @@ export const toolkit: Toolkit = {
 
 </Steps>
 
-These snippets use [assistant-ui](https://assistant-ui.com) for end-to-end wiring, but the XPost component itself is framework-agnostic at the UI layer: you can use it in any React codebase with any LLM SDK or tool-calling interface that can provide compatible props.
-
 ## Key Features
 
 <FeatureGrid>
   <Feature icon="Paintbrush" title="Platform-native styling">
-    Matches X visual language and interaction patterns
+    Uses X's layout, typography, and color scheme
   </Feature>
   <Feature icon="MessageSquare" title="Rich post content">
-    Supports text, quoted posts, media, and link previews
+    Text, quoted posts, media attachments, and link previews
   </Feature>
   <Feature icon="MousePointerClick" title="External actions">
-    Compose custom actions with ToolUI action surfaces
+    Add actions like "Save Draft" or "Share" via ToolUI action surfaces
   </Feature>
   <Feature icon="ShieldCheck" title="Safe links">
-    Built-in safe navigation helpers for external URLs
+    External URLs open safely with built-in navigation helpers
   </Feature>
 </FeatureGrid>
 

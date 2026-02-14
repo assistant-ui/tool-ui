@@ -7,6 +7,8 @@ import { ParameterSlider } from "@/components/tool-ui/parameter-slider";
   mdxPath="app/docs/parameter-slider/content.mdx"
 />
 
+Agents often need the user to fine-tune numeric values: image exposure, audio levels, model temperature. ParameterSlider renders grouped sliders with labels, units, and Reset/Apply actions. The confirmed values feed back to the assistant as a tool result.
+
 ## Getting Started
 
 <Steps>
@@ -92,22 +94,20 @@ export const toolkit: Toolkit = {
 
 </Steps>
 
-These snippets use [assistant-ui](https://assistant-ui.com) for end-to-end wiring, but the ParameterSlider component itself is framework-agnostic at the UI layer: you can use it in any React codebase with any LLM SDK or tool-calling interface that can provide compatible props.
-
 ## Key Features
 
 <FeatureGrid>
   <Feature icon="ListChecks" title="Multiple parameters">
-    Group related sliders with shared Reset/Apply actions
+    Group related sliders under shared Reset/Apply actions
   </Feature>
   <Feature icon="SlidersHorizontal" title="Inline labels and values">
-    Label and current value displayed directly on the track
+    Label and current value sit directly on the slider track
   </Feature>
   <Feature icon="Settings2" title="Custom units">
-    Display domain-specific units like EV, dB, %, or Mbps
+    Show domain-specific units: EV, dB, %, Mbps, or custom strings
   </Feature>
   <Feature icon="Accessibility" title="Built-in accessibility">
-    Keyboard navigation and screen reader support
+    Arrow keys adjust values; screen readers announce the unit
   </Feature>
 </FeatureGrid>
 

@@ -6,6 +6,8 @@ import { DocsHeader } from "../_components/docs-header";
   mdxPath="app/docs/option-list/content.mdx"
 />
 
+Sometimes the agent needs the user to pick: output format, plan tier, movie genre. OptionList renders selectable options with single or multi-select behavior. The selection feeds back to the assistant as a tool result, and the chosen option stays visible as a receipt. Without it, the agent would have to ask for a text reply and parse the answer.
+
 ## Getting Started
 
 <Steps>
@@ -87,34 +89,26 @@ export const toolkit: Toolkit = {
 
 </Steps>
 
-These snippets use [assistant-ui](https://assistant-ui.com) for end-to-end wiring, but the OptionList component itself is framework-agnostic at the UI layer: you can use it in any React codebase with any LLM SDK or tool-calling interface that can provide compatible props.
-
 ## Key Features
 
 <FeatureGrid>
   <Feature icon="CircleCheck" title="Single or multi-select">
-    Radio-style for one choice, checkbox-style for many
+    Radio buttons for one choice, checkboxes for many
   </Feature>
   <Feature icon="ListChecks" title="Selection constraints">
-    Enforce minimum and maximum selection limits
+    Set minimum and maximum selection counts
   </Feature>
   <Feature icon="Settings2" title="Configurable actions">
-    Customize confirm, cancel, and other footer buttons
+    Confirm, cancel, and custom footer buttons
   </Feature>
   <Feature icon="CheckCircle2" title="Receipt state">
-    Chosen selections render as read-only receipts in conversation history
+    Shows only the chosen option(s) as a read-only record
   </Feature>
 </FeatureGrid>
 
 ## Receipt State
 
-When `choice` is set, the component renders in a read-only receipt state showing only the chosen selection(s). Use this to display past decisions in conversation history.
-
-The receipt state:
-
-- Shows only the chosen option(s) with a checkmark
-- Hides unselected options and actions
-- Is read-only (no interaction)
+Pass `choice` to render a read-only receipt showing only the selected option(s) with a checkmark. Unselected options and action buttons are hidden.
 
 ## Props
 

@@ -7,6 +7,8 @@ import { InstagramPost } from "@/components/tool-ui/instagram-post";
   mdxPath="app/docs/instagram-post/content.mdx"
 />
 
+InstagramPost renders a media-first card that matches Instagram's visual language: author info, image carousel, caption, and engagement stats. Use it when the assistant surfaces or drafts Instagram content and you want it displayed natively instead of as raw data.
+
 ## Getting Started
 
 <Steps>
@@ -86,22 +88,20 @@ export const toolkit: Toolkit = {
 
 </Steps>
 
-These snippets use [assistant-ui](https://assistant-ui.com) for end-to-end wiring, but the InstagramPost component itself is framework-agnostic at the UI layer: you can use it in any React codebase with any LLM SDK or tool-calling interface that can provide compatible props.
-
 ## Key Features
 
 <FeatureGrid>
   <Feature icon="Paintbrush" title="Platform-native styling">
-    Matches Instagram visual language and interaction patterns
+    Uses Instagram's layout, typography, and color scheme
   </Feature>
   <Feature icon="Images" title="Media-first layout">
-    Supports single-image and carousel-style media content
+    Single images and swipeable carousels with proper aspect ratios
   </Feature>
   <Feature icon="MousePointerClick" title="External actions">
-    Compose custom actions with ToolUI action surfaces
+    Add actions like "Save Draft" or "Share" via ToolUI action surfaces
   </Feature>
   <Feature icon="BadgeCheck" title="Verified identity">
-    Supports verified author badges and creator context
+    Verified badges and creator context on author profiles
   </Feature>
 </FeatureGrid>
 

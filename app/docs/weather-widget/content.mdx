@@ -7,6 +7,8 @@ import { WeatherWidget } from "@/components/tool-ui/weather-widget/runtime";
   mdxPath="app/docs/weather-widget/content.mdx"
 />
 
+When someone asks "What's the weather like?", a text answer works but a visual answer is better. WeatherWidget renders current conditions and a multi-day forecast with time-aware backgrounds and weather icons. You pass temperature, condition codes, and location data from any weather API.
+
 ## Getting Started
 
 <Steps>
@@ -101,22 +103,20 @@ export const toolkit: Toolkit = {
 
 </Steps>
 
-These snippets use [assistant-ui](https://assistant-ui.com) for end-to-end wiring, but the WeatherWidget component itself is framework-agnostic at the UI layer: you can use it in any React codebase with any LLM SDK or tool-calling interface that can provide compatible props.
-
 ## Key Features
 
 <FeatureGrid>
   <Feature icon="CloudSun" title="Weather conditions">
-    13 condition types with matching icons: clear, cloudy, rain, snow, and more
+    13 condition codes with matching icons: clear, cloudy, rain, snow, thunderstorm, and more
   </Feature>
   <Feature icon="MapPin" title="Location display">
-    Show city and region with the current temperature
+    City name, current temperature, and today's high/low range
   </Feature>
   <Feature icon="Thermometer" title="Temperature units">
-    Support for both Celsius and Fahrenheit display
+    Celsius or Fahrenheit via a single config flag
   </Feature>
   <Feature icon="Calendar" title="Multi-day forecast">
-    Display 1-7 day forecasts with high/low temperatures
+    1 to 7 day forecasts with daily highs, lows, and condition icons
   </Feature>
 </FeatureGrid>
 

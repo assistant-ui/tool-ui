@@ -7,6 +7,8 @@ import { Video } from "@/components/tool-ui/video";
   mdxPath="app/docs/video/content.mdx"
 />
 
+Raw video URLs are just links in a chat. Video renders an inline player with poster image, native controls, and metadata. You pass a `src`, optional title, and an aspect ratio. The user can watch without leaving the conversation.
+
 ## Getting Started
 
 <Steps>
@@ -73,22 +75,20 @@ export const toolkit: Toolkit = {
 
 </Steps>
 
-These snippets use [assistant-ui](https://assistant-ui.com) for end-to-end wiring, but the Video component itself is framework-agnostic at the UI layer: you can use it in any React codebase with any LLM SDK or tool-calling interface that can provide compatible props.
-
 ## Key Features
 
 <FeatureGrid>
   <Feature icon="Play" title="Muted autoplay">
-    Plays automatically (muted) for inline previews
+    Starts muted for inline previews so it won't surprise the user
   </Feature>
   <Feature icon="Image" title="Poster image">
-    Display a thumbnail before video plays
+    Shows a thumbnail before the first play
   </Feature>
   <Feature icon="Video" title="Native controls">
-    Full browser video controls for playback
+    Uses the browser's built-in play, pause, seek, and fullscreen
   </Feature>
   <Feature icon="AspectRatio" title="Aspect ratio control">
-    Support for auto, 1:1, 4:3, 16:9, and 9:16 formats
+    Locks to auto, 1:1, 4:3, 16:9, or 9:16
   </Feature>
 </FeatureGrid>
 

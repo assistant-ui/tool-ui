@@ -7,6 +7,8 @@ import { Audio } from "@/components/tool-ui/audio";
   mdxPath="app/docs/audio/content.mdx"
 />
 
+A bare audio URL gives your users nothing to see. Audio wraps the browser's native player with artwork, title, duration, and source attribution so the track looks intentional rather than dumped into the chat.
+
 ## Getting Started
 
 <Steps>
@@ -72,22 +74,20 @@ export const toolkit: Toolkit = {
 
 </Steps>
 
-These snippets use [assistant-ui](https://assistant-ui.com) for end-to-end wiring, but the Audio component itself is framework-agnostic at the UI layer: you can use it in any React codebase with any LLM SDK or tool-calling interface that can provide compatible props.
-
 ## Key Features
 
 <FeatureGrid>
   <Feature icon="Headphones" title="Native audio controls">
-    Play, pause, seek, and volume with browser controls
+    Browser-native play, pause, seek, and volume
   </Feature>
   <Feature icon="Image" title="Artwork display">
-    Album art or thumbnail alongside the player
+    Album art or thumbnail displayed beside the player
   </Feature>
   <Feature icon="FileText" title="Metadata display">
-    Show title, description, duration, and file size
+    Title, description, duration, and file size at a glance
   </Feature>
   <Feature icon="Link" title="Source attribution">
-    Display artist, album, or source information with optional link
+    Artist, album, or source with an optional link
   </Feature>
 </FeatureGrid>
 

@@ -7,6 +7,8 @@ import { LinkedInPost } from "@/components/tool-ui/linkedin-post";
   mdxPath="app/docs/linkedin-post/content.mdx"
 />
 
+Professional content often benefits from AI-assisted drafting: announcements, thought leadership, company updates. LinkedInPost renders a card that matches LinkedIn's layout with author headline, long-form text, link previews, and engagement stats. Without it, the draft is just a text blob.
+
 ## Getting Started
 
 <Steps>
@@ -78,22 +80,20 @@ export const toolkit: Toolkit = {
 
 </Steps>
 
-These snippets use [assistant-ui](https://assistant-ui.com) for end-to-end wiring, but the LinkedInPost component itself is framework-agnostic at the UI layer: you can use it in any React codebase with any LLM SDK or tool-calling interface that can provide compatible props.
-
 ## Key Features
 
 <FeatureGrid>
   <Feature icon="Paintbrush" title="Platform-native styling">
-    Matches LinkedIn visual language and interaction patterns
+    Uses LinkedIn's layout, typography, and color scheme
   </Feature>
   <Feature icon="FileText" title="Long-form post support">
-    Optimized layout for professional and text-heavy content
+    Handles professional long-form text with proper truncation and expansion
   </Feature>
   <Feature icon="MousePointerClick" title="External actions">
-    Compose custom actions below each post
+    Add actions like "Post" or "Edit" via ToolUI action surfaces
   </Feature>
   <Feature icon="Link" title="Link previews">
-    Supports rich previews with title, image, and domain metadata
+    Rich article previews with title, image, and domain
   </Feature>
 </FeatureGrid>
 

@@ -7,6 +7,8 @@ import { StatsDisplay } from "@/components/tool-ui/stats-display";
   mdxPath="app/docs/stats-display/content.mdx"
 />
 
+Agents often surface numerical summaries: revenue this quarter, active users, error rates. StatsDisplay renders those numbers in a responsive grid with sparklines, delta indicators, and locale-aware formatting. Without it, the assistant would list the figures in prose.
+
 ## Getting Started
 
 <Steps>
@@ -113,25 +115,23 @@ export const toolkit: Toolkit = {
 
 </Steps>
 
-These snippets use [assistant-ui](https://assistant-ui.com) for end-to-end wiring, but the StatsDisplay component itself is framework-agnostic at the UI layer: you can use it in any React codebase with any LLM SDK or tool-calling interface that can provide compatible props.
-
 ## Key Features
 
 <FeatureGrid>
   <Feature icon="Grid2x2" title="Auto-responsive grid">
-    CSS grid with auto-fit adapts to container width
+    Tiles stats in columns that reflow to fit the container
   </Feature>
   <Feature icon="LineChart" title="Inline sparklines">
-    Pure SVG trend visualization without external dependencies
+    Pure SVG trend lines with no extra dependencies
   </Feature>
   <Feature icon="BarChart3" title="Delta indicators">
-    Semantic colors with upIsPositive for metrics where down is good
+    Green for up, red for down (flip with `upIsPositive: false` for metrics like churn)
   </Feature>
   <Feature icon="DollarSign" title="Format options">
-    Currency, percent, number, and text with locale support
+    Currency, percent, number, and text with locale-aware formatting
   </Feature>
   <Feature icon="Target" title="Single-stat hero mode">
-    Pass a single stat for a larger, centered presentation
+    Pass one stat for a larger, centered card
   </Feature>
 </FeatureGrid>
 

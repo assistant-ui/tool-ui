@@ -7,6 +7,8 @@ import { LinkPreview } from "@/components/tool-ui/link-preview";
   mdxPath="app/docs/link-preview/content.mdx"
 />
 
+Raw URLs are invisible in a chat thread. The user has no idea what's behind the link. LinkPreview renders fetched URLs as clickable cards with the page title, description, image, and favicon, giving you the same kind of rich embed you see in Slack or iMessage. Without it, the user sees a bare href or a blob of Open Graph JSON.
+
 ## Getting Started
 
 <Steps>
@@ -72,22 +74,20 @@ export const toolkit: Toolkit = {
 
 </Steps>
 
-These snippets use [assistant-ui](https://assistant-ui.com) for end-to-end wiring, but the LinkPreview component itself is framework-agnostic at the UI layer: you can use it in any React codebase with any LLM SDK or tool-calling interface that can provide compatible props.
-
 ## Key Features
 
 <FeatureGrid>
   <Feature icon="Link" title="Open Graph metadata">
-    Display title, description, and image from Open Graph tags
+    Title, description, and image pulled from Open Graph tags
   </Feature>
   <Feature icon="Globe" title="Domain with favicon">
-    Show site favicon alongside domain name
+    Site favicon next to the domain name
   </Feature>
   <Feature icon="AspectRatio" title="Flexible aspect ratios">
-    Support for auto, 1:1, 4:3, 16:9, and 9:16 image formats
+    Auto, 1:1, 4:3, 16:9, and 9:16 image crops
   </Feature>
   <Feature icon="MousePointerClick" title="External actions">
-    Compose custom action buttons below the preview card
+    Compose action buttons below the preview card
   </Feature>
 </FeatureGrid>
 

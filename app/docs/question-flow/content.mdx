@@ -6,6 +6,8 @@ import { DocsHeader } from "../_components/docs-header";
   mdxPath="app/docs/question-flow/content.mdx"
 />
 
+Some tasks require multiple decisions in sequence: project setup, onboarding, triage. QuestionFlow walks the user through single- or multi-select steps with back/next navigation. You can define all steps upfront or let the AI generate each step based on previous answers.
+
 ## Getting Started
 
 <Steps>
@@ -89,36 +91,32 @@ export const toolkit: Toolkit = {
 
 </Steps>
 
-These snippets use [assistant-ui](https://assistant-ui.com) for end-to-end wiring, but the QuestionFlow component itself is framework-agnostic at the UI layer: you can use it in any React codebase with any LLM SDK or tool-calling interface that can provide compatible props.
-
 ## Key Features
 
 <FeatureGrid>
   <Feature icon="Play" title="Progressive mode">
-    AI generates each step dynamically based on previous answers
+    The AI generates each step based on previous answers
   </Feature>
   <Feature icon="ListChecks" title="Upfront mode">
-    Define all steps upfront, component manages navigation internally
+    All steps defined upfront; the component handles navigation
   </Feature>
   <Feature icon="SquareCheck" title="Single or multi-select">
-    Each step can allow one choice or multiple selections
+    Each step allows one pick or multiple selections
   </Feature>
   <Feature icon="CheckCircle2" title="Receipt state">
-    Display a summary of completed configuration choices
+    Shows a summary of all choices once the flow completes
   </Feature>
 </FeatureGrid>
 
 ## Modes
 
-QuestionFlow has two modes:
-
 ### Progressive Mode
 
-Pass `step`, `title`, and `options` to render a single step. The AI controls progression by generating new steps based on user selections.
+Pass `step`, `title`, and `options` to render one step at a time. The AI generates each subsequent step based on the user's previous selections.
 
 ### Upfront Mode
 
-Pass `steps` with all step definitions. The component manages internal state and navigation.
+Pass `steps` with all step definitions. The component manages navigation internally.
 
 ### Multi-Select Steps
 
@@ -126,13 +124,7 @@ Set `selectionMode="multi"` to allow multiple selections per step.
 
 ## Receipt State
 
-Pass `choice` with a title and summary to show what was configured.
-
-The receipt state:
-
-- Shows a "Complete" badge with the configuration title
-- Displays a summary of all choices made during the flow
-- Is read-only (no interaction)
+Pass `choice` with a title and summary to display the completed configuration. The receipt is read-only and shows a "Complete" badge with all choices listed.
 
 ## Progressive Mode Props
 

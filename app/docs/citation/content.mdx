@@ -7,6 +7,8 @@ import { Citation } from "@/components/tool-ui/citation";
   mdxPath="app/docs/citation/content.mdx"
 />
 
+Citation renders a clickable reference card with title, domain, favicon, and an optional text snippet. Use it when the assistant cites a source and you want the user to see where the information came from. Three variants cover different density needs: a full card, an inline chip, or stacked favicons.
+
 ## Getting Started
 
 <Steps>
@@ -72,22 +74,20 @@ export const toolkit: Toolkit = {
 
 </Steps>
 
-These snippets use [assistant-ui](https://assistant-ui.com) for end-to-end wiring, but the Citation component itself is framework-agnostic at the UI layer: you can use it in any React codebase with any LLM SDK or tool-calling interface that can provide compatible props.
-
 ## Key Features
 
 <FeatureGrid>
   <Feature icon="FileText" title="Source attribution">
-    Display title, domain, author, and publication date
+    Title, domain, author, and publication date in one card
   </Feature>
   <Feature icon="Quote" title="Snippet preview">
-    Show relevant excerpts from the source
+    Shows a relevant excerpt so users can judge relevance before clicking
   </Feature>
   <Feature icon="Layers" title="Three variants">
-    Default card, inline chips, or stacked favicons
+    Full card for detail, inline chip for tight spaces, stacked favicons for lists
   </Feature>
   <Feature icon="Keyboard" title="Keyboard accessible">
-    Full keyboard navigation for stacked variant popover
+    Arrow keys and Enter navigate the stacked variant popover
   </Feature>
 </FeatureGrid>
 
@@ -153,8 +153,8 @@ Use [`ToolUI.LocalActions`](/docs/actions) to compose external actions next to c
 
 The stacked variant popover supports full keyboard navigation:
 
-- **Enter / Space** — Open the popover
-- **Tab** — Navigate between citations
-- **Escape** — Close popover and return focus to trigger
+- **Enter / Space:** Open the popover
+- **Tab:** Navigate between citations
+- **Escape:** Close popover and return focus to trigger
 
 Mouse users can hover to reveal the popover. All variants open links in new tabs with `noopener,noreferrer` for security.

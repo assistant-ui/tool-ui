@@ -7,6 +7,8 @@ import { MessageDraft } from "@/components/tool-ui/message-draft";
   mdxPath="app/docs/message-draft/content.mdx"
 />
 
+Sending a message on someone's behalf is a high-stakes action. MessageDraft shows the full email or Slack message for review, gives the user a Send button with an undo grace period, and collapses into a compact receipt once sent or cancelled. Without it, the agent would send silently or dump the draft as plain text.
+
 ## Getting Started
 
 <Steps>
@@ -99,28 +101,26 @@ export const toolkit: Toolkit = {
 
 </Steps>
 
-These snippets use [assistant-ui](https://assistant-ui.com) for end-to-end wiring, but the MessageDraft component itself is framework-agnostic at the UI layer: you can use it in any React codebase with any LLM SDK or tool-calling interface that can provide compatible props.
-
 ## Key Features
 
 <FeatureGrid>
   <Feature icon="ShieldCheck" title="Human-in-the-loop">
-    Review messages before the AI sends them on your behalf
+    Nothing sends until the user clicks Send
   </Feature>
   <Feature icon="Timer" title="Undo grace period">
-    Cancel within a configurable window after clicking Send
+    Configurable countdown after Send where the user can still cancel
   </Feature>
   <Feature icon="Layers" title="Channel skins">
-    Email and Slack with channel-specific metadata display
+    Email shows subject/recipients, Slack shows channel or DM target
   </Feature>
   <Feature icon="CheckCircle2" title="Receipt states">
-    Compact confirmation after send or cancel
+    Collapses to a one-line confirmation after send or cancel
   </Feature>
 </FeatureGrid>
 
 ## Channel Skins
 
-The component supports multiple channel types, each with its own metadata fields.
+Two channel types, each with its own metadata layout.
 
 ### Email
 
@@ -134,17 +134,17 @@ Shows channel or DM target with the Slack icon.
 
 ## Send Flow
 
-After clicking Send, there's a grace period where the user can undo:
+Clicking Send starts a countdown. The user can undo before it completes:
 
 1. **Review** - User reviews the draft with Send/Cancel buttons
 2. **Sending** - Countdown with Undo button (default 5 seconds)
 3. **Sent** - Compact receipt confirming the message was sent
 
-The grace period is configurable via `undoGracePeriod` (in milliseconds).
+Configure the countdown length with `undoGracePeriod` (in milliseconds).
 
 ## Receipt States
 
-When `outcome` is set, the component renders a compact receipt showing the result. This is useful for displaying the outcome in conversation history.
+Pass `outcome` to render a one-line receipt. Useful for showing the final state in conversation history.
 
 
 ## Props

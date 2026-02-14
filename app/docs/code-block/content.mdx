@@ -6,6 +6,8 @@ import { DocsHeader } from "../_components/docs-header";
   mdxPath="app/docs/code-block/content.mdx"
 />
 
+CodeBlock renders agent-produced code with syntax highlighting, line numbers, and a copy button. You can highlight specific lines to draw attention to changes or bugs, and long snippets auto-collapse so they do not overwhelm the conversation. Without it, code appears as unstyled monospace text.
+
 ## Getting Started
 
 <Steps>
@@ -99,22 +101,20 @@ export const toolkit: Toolkit = {
 
 </Steps>
 
-These snippets use [assistant-ui](https://assistant-ui.com) for end-to-end wiring, but the CodeBlock component itself is framework-agnostic at the UI layer: you can use it in any React codebase with any LLM SDK or tool-calling interface that can provide compatible props.
-
 ## Key Features
 
 <FeatureGrid>
   <Feature icon="Palette" title="Syntax highlighting">
-    Powered by Shiki with support for 100+ languages
+    Shiki-powered with 100+ languages
   </Feature>
   <Feature icon="Highlighter" title="Line highlighting">
-    Highlight specific lines for explanations or bug indicators
+    Draw attention to specific lines for explanations or diffs
   </Feature>
   <Feature icon="FoldVertical" title="Collapsible mode">
-    Auto-collapse long snippets to keep conversations scannable
+    Long snippets auto-collapse to keep conversations scannable
   </Feature>
   <Feature icon="FileCode" title="Filename header">
-    Show filename and language badge for context
+    Filename and language badge in the header
   </Feature>
 </FeatureGrid>
 

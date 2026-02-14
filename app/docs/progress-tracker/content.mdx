@@ -7,6 +7,8 @@ import { ProgressTracker } from "@/components/tool-ui/progress-tracker";
   mdxPath="app/docs/progress-tracker/content.mdx"
 />
 
+Long-running operations need progress visibility. ProgressTracker shows each step of a multi-step workflow (build, test, deploy) with its current status: pending, in-progress, completed, or failed. The user sees exactly where the operation is and what went wrong if it breaks. Once it finishes, the tracker collapses into a receipt with the final outcome.
+
 ## Getting Started
 
 <Steps>
@@ -91,24 +93,22 @@ export const toolkit: Toolkit = {
 
 </Steps>
 
-These snippets use [assistant-ui](https://assistant-ui.com) for end-to-end wiring, but the ProgressTracker component itself is framework-agnostic at the UI layer: you can use it in any React codebase with any LLM SDK or tool-calling interface that can provide compatible props.
-
-ProgressTracker v2 is display-only and result-driven: render it from backend tool result updates. For interactive decisions or confirmations, use dedicated decision surfaces like Option List or Preferences Panel.
+ProgressTracker is display-only and result-driven: render it from backend tool result updates. For interactive decisions or confirmations, use OptionList or ApprovalCard.
 
 ## Key Features
 
 <FeatureGrid>
   <Feature icon="ListChecks" title="Status indicators">
-    Visual states for pending, in-progress, completed, and failed steps
+    Pending, in-progress, completed, and failed with distinct icons
   </Feature>
   <Feature icon="Timer" title="Elapsed time">
-    Optional time tracking with automatic formatting
+    Auto-formatted timer badge (seconds or minutes)
   </Feature>
   <Feature icon="AlertCircle" title="Error handling">
-    Failed step indicators with descriptive error messages
+    Failed steps show red indicators with error details
   </Feature>
   <Feature icon="CheckCircle2" title="Receipt state">
-    Terminal state view showing complete operation history
+    Read-only summary of the completed operation
   </Feature>
 </FeatureGrid>
 
@@ -116,26 +116,16 @@ ProgressTracker v2 is display-only and result-driven: render it from backend too
 
 Each step has one of four statuses:
 
-- **Pending** — Not yet started (empty circle)
-- **In-progress** — Currently executing (animated spinner)
-- **Completed** — Successfully finished (filled checkmark)
-- **Failed** — Encountered an error (filled X icon)
+- **Pending**: not yet started (empty circle)
+- **In-progress**: currently executing (animated spinner)
+- **Completed**: finished successfully (filled checkmark)
+- **Failed**: encountered an error (filled X icon)
 
 The component automatically highlights the current step (first `in-progress`, otherwise first `failed`, otherwise first `pending`) with a subtle background and `aria-current="step"` for accessibility.
 
 ## Receipt Pattern
 
-Use the `choice` prop to render a terminal state after an operation completes, fails, or is cancelled. The receipt displays the full step history with an outcome indicator, which works well in conversation history.
-
-
-Receipt features:
-
-- Displays all steps with final statuses and connecting lines
-- Shows elapsed time badge at the top (if provided)
-- Outcome indicator in top-right: green check (success), red alert (failure), gray check (cancelled)
-- Supports `success`, `partial`, `failed`, and `cancelled` outcomes
-- Read-only with no action buttons
-- Uses `role="status"` for screen reader announcements
+Pass `choice` to render the final state after an operation completes, fails, or is cancelled. The receipt shows all steps with their final statuses, an elapsed time badge, and an outcome indicator in the top-right corner. Supports `success`, `partial`, `failed`, and `cancelled` outcomes. Read-only with no action buttons.
 
 ## Elapsed Time
 
