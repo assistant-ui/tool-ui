@@ -55,24 +55,11 @@ Run `pnpm dev` and confirm you see a working chat interface before continuing.
 
 <Step title="Add a Tool UI component">
 
-Install the LinkPreview component from the Tool UI registry. This works exactly like installing any shadcn component. The CLI copies the source files into your project.
-
-First, make sure your `components.json` includes the `@tool-ui` registry. You may already have this if you used `assistant-ui init`:
-
-```json
-"registries": {
-  "@assistant-ui": "https://r.assistant-ui.com/{name}.json",
-  "@tool-ui": "https://tool-ui.com/r/{name}.json"
-}
-```
-
-Then install:
-
 ```bash
-npx shadcn@latest add @tool-ui/link-preview
+npx shadcn@latest add https://tool-ui.com/r/link-preview.json
 ```
 
-This copies `components/tool-ui/link-preview/` and `components/tool-ui/shared/` into your project. You own the code. Modify it however you like.
+This copies the source files into your project. You own the code. Modify it however you like.
 
 </Step>
 
@@ -196,7 +183,7 @@ Same pattern for any component:
 1. Install from the registry:
 
 ```bash
-npx shadcn@latest add @tool-ui/approval-card
+npx shadcn@latest add https://tool-ui.com/r/approval-card.json
 ```
 
 2. Define a backend tool that returns data matching the component's schema.
