@@ -47,6 +47,35 @@ async function cleanupHydration(root: Root, container: HTMLDivElement) {
 }
 
 describe("tool-ui compound hydration contracts", () => {
+  it("applies a default stacked gap layout at the ToolUI root", async () => {
+    const app = h(
+      ToolUIRoot,
+      { id: "hydrate-root-layout" },
+      h(ToolUI.Surface, null, h("div", { "data-slot": "surface" }, "Surface")),
+      h(
+        ToolUI.Actions,
+        null,
+        h(ToolUI.LocalActions, {
+          actions: localActions,
+          onAction: async () => undefined,
+        }),
+      ),
+    );
+
+    const serverHtml = renderToString(app);
+    const container = createHydrationContainer(serverHtml);
+    const root = await hydrate(container, app);
+
+    const toolUIRoot = container.querySelector('[data-slot="tool-ui"]');
+    expect(toolUIRoot).not.toBeNull();
+    expect(toolUIRoot?.getAttribute("data-tool-ui-id")).toBe("hydrate-root-layout");
+    expect(toolUIRoot?.className).toContain("flex");
+    expect(toolUIRoot?.className).toContain("flex-col");
+    expect(toolUIRoot?.className).toContain("gap-3");
+
+    await cleanupHydration(root, container);
+  });
+
   it("reveals ToolUI.Actions only after hydration mounts ToolUI.Surface", async () => {
     const app = h(
       ToolUIRoot,

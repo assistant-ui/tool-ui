@@ -9,9 +9,10 @@ import { DecisionActions } from "./decision-actions";
 export interface ToolUIProps {
   id: string;
   children: ReactNode;
+  className?: string;
 }
 
-function ToolUIRoot({ id, children }: ToolUIProps) {
+function ToolUIRoot({ id, children, className }: ToolUIProps) {
   const [surfaceMounted, setSurfaceMounted] = useState(false);
 
   const value = useMemo(
@@ -20,7 +21,15 @@ function ToolUIRoot({ id, children }: ToolUIProps) {
   );
 
   return (
-    <ToolUIContext.Provider value={value}>{children}</ToolUIContext.Provider>
+    <ToolUIContext.Provider value={value}>
+      <div
+        className={cn("flex flex-col gap-3", className)}
+        data-slot="tool-ui"
+        data-tool-ui-id={id}
+      >
+        {children}
+      </div>
+    </ToolUIContext.Provider>
   );
 }
 
