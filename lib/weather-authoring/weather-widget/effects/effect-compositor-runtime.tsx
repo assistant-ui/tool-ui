@@ -5,11 +5,16 @@ import type { WeatherConditionCode } from "../schema";
 import type { EffectSettings } from "./types";
 import { WeatherEffectsCanvas } from "./weather-effects-canvas";
 import type { WeatherEffectsCanvasProps } from "./weather-effects-types";
+import { TUNED_WEATHER_EFFECTS_CHECKPOINT_OVERRIDES } from "./generated/tuned-presets.generated";
+import { type WeatherEffectsTunedPresets } from "./tuning";
 import { resolveWeatherEffectsCanvasRuntimeProps } from "./canvas-resolver-runtime";
 import {
   resolveEffectCanvasDpr,
   resolveEffectQuality,
 } from "./effect-compositor-quality";
+
+const DEFAULT_TUNED_PRESETS: WeatherEffectsTunedPresets =
+  TUNED_WEATHER_EFFECTS_CHECKPOINT_OVERRIDES;
 
 interface EffectCompositorRuntimeProps {
   conditionCode: WeatherConditionCode;
@@ -58,6 +63,7 @@ export function EffectCompositorRuntime({
       visibility,
       timestamp,
       timeOfDay,
+      tunedPresets: DEFAULT_TUNED_PRESETS,
     });
   }, [
     enabled,
