@@ -41,9 +41,10 @@ export type FormatConfig =
 interface DeltaValueProps {
   value: number;
   options?: Extract<FormatConfig, { kind: "delta" }>;
+  locale?: string;
 }
 
-export function DeltaValue({ value, options }: DeltaValueProps) {
+export function DeltaValue({ value, options, locale }: DeltaValueProps) {
   const decimals = options?.decimals ?? 2;
   const upIsPositive = options?.upIsPositive ?? true;
   const showSign = options?.showSign ?? true;
@@ -61,8 +62,15 @@ export function DeltaValue({ value, options }: DeltaValueProps) {
       ? "text-destructive"
       : "text-muted-foreground";
 
-  const formatted = value.toFixed(decimals);
-  const display = showSign && !isNegative ? `+${formatted}` : formatted;
+  const absValue = Math.abs(value);
+  const formatted = new Intl.NumberFormat(locale, {
+    minimumFractionDigits: decimals,
+    maximumFractionDigits: decimals,
+  }).format(absValue);
+
+  const display = showSign && !isNeutral 
+    ? (isNegative ? `-${formatted}` : `+${formatted}`) 
+    : formatted;
 
   const arrow = isPositive ? "↑" : isNegative ? "↓" : "";
 
@@ -136,23 +144,24 @@ export function CurrencyValue({ value, options, locale }: CurrencyValueProps) {
 interface PercentValueProps {
   value: number;
   options?: Extract<FormatConfig, { kind: "percent" }>;
+  locale?: string;
 }
 
-export function PercentValue({ value, options }: PercentValueProps) {
+export function PercentValue({ value, options, locale }: PercentValueProps) {
   const decimals = options?.decimals ?? 2;
   const showSign = options?.showSign ?? false;
   const basis = options?.basis ?? "fraction";
 
-  const numeric = basis === "fraction" ? value * 100 : value;
-  const absoluteFormatted = Math.abs(numeric).toFixed(decimals);
-  const signed =
-    numeric > 0 && showSign
-      ? `+${absoluteFormatted}`
-      : numeric < 0
-        ? `-${absoluteFormatted}`
-        : absoluteFormatted;
+  const numeric = basis === "fraction" ? value : value / 100;
+  
+  const formatted = new Intl.NumberFormat(locale, {
+    style: "percent",
+    minimumFractionDigits: decimals,
+    maximumFractionDigits: decimals,
+    signDisplay: showSign ? "always" : "auto",
+  }).format(numeric);
 
-  return <span className="tabular-nums">{signed}%</span>;
+  return <span className="tabular-nums">{formatted}</span>;
 }
 
 interface DateValueProps {
@@ -166,7 +175,7 @@ export function DateValue({ value, options, locale }: DateValueProps) {
   const date = new Date(value);
 
   if (isNaN(date.getTime())) {
-    return <span>Invalid date</span>;
+    return <span className="text-muted-foreground">{value}</span>;
   }
 
   let formatted: string;
@@ -424,7 +433,7 @@ export function renderFormattedValue({
 
   switch (fmt?.kind) {
     case "delta":
-      return <DeltaValue value={Number(value)} options={fmt} />;
+      return <DeltaValue value={Number(value)} options={fmt} locale={locale} />;
     case "status":
       return <StatusBadge value={String(value)} options={fmt} />;
     case "currency":
@@ -432,7 +441,7 @@ export function renderFormattedValue({
         <CurrencyValue value={Number(value)} options={fmt} locale={locale} />
       );
     case "percent":
-      return <PercentValue value={Number(value)} options={fmt} />;
+      return <PercentValue value={Number(value)} options={fmt} locale={locale} />;
     case "date":
       return <DateValue value={String(value)} options={fmt} locale={locale} />;
     case "boolean":

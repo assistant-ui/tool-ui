@@ -6,7 +6,6 @@ import { ArrowRight } from "lucide-react";
 import { motion } from "motion/react";
 import { HomeHexnutScene } from "./home-hexnut-scene";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { analytics } from "@/lib/analytics";
 
 const smoothSpring = {
@@ -35,28 +34,14 @@ export function HomeHero() {
       </motion.div>
       <div className="flex flex-col gap-3">
         <div className="flex flex-col gap-3">
-          <div className="flex flex-col items-start md:flex-row md:items-end md:gap-3">
-            <motion.h1
-              className="text-6xl font-bold tracking-wide"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ ...smoothSpring, delay: 0.1 }}
-            >
-              Tool UI
-            </motion.h1>
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ ...smoothSpring, delay: 0.2 }}
-            >
-              <Badge
-                variant="outline"
-                className="text-muted-foreground bg-background/50 mt-1 cursor-default font-mono text-xs font-light backdrop-blur-md select-none md:mt-0 md:mb-1"
-              >
-                research preview
-              </Badge>
-            </motion.div>
-          </div>
+          <motion.h1
+            className="text-6xl font-bold tracking-wide"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ ...smoothSpring, delay: 0.1 }}
+          >
+            Tool UI
+          </motion.h1>
         </div>
         <motion.h2
           className="text-2xl text-pretty"
