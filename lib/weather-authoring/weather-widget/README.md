@@ -17,6 +17,7 @@ Implementation for the "weather-widget" Tool UI surface.
 - authoring runtime modules: lib/weather-authoring/runtime/*.tsx
 - generated runtime artifacts:
   - lib/weather-authoring/weather-widget/effects/generated/tuned-presets.generated.ts
+  - lib/weather-authoring/weather-widget/effects/generated/discrete-canvas-presets.generated.ts
   - lib/weather-authoring/weather-widget/effects/generated/weather-effect-shaders.generated.ts
   - lib/weather-authoring/weather-widget/effects/generated/glass-panel-svg.generated.tsx
   - lib/weather-authoring/weather-widget/weather-data-overlay.generated.ts
