@@ -74,6 +74,12 @@
       "content": "import { z } from \"zod\";\nimport { parseWithSchema, safeParseWithSchema } from \"./parse\";\n\nexport interface ToolUiContract<T> {\n  schema: z.ZodType<T>;\n  parse: (input: unknown) => T;\n  safeParse: (input: unknown) => T | null;\n}\n\nexport function defineToolUiContract<T>(\n  componentName: string,\n  schema: z.ZodType<T>,\n): ToolUiContract<T> {\n  return {\n    schema,\n    parse: (input: unknown) => parseWithSchema(schema, input, componentName),\n    safeParse: (input: unknown) => safeParseWithSchema(schema, input),\n  };\n}\n"
     },
     {
+      "path": "components/tool-ui/shared/embedded-actions.ts",
+      "type": "registry:lib",
+      "target": "components/tool-ui/shared/embedded-actions.ts",
+      "content": "import type { ActionsProp } from \"./actions-config\";\n\nexport type EmbeddedActionHandler<TState> = (\n  actionId: string,\n  state: TState,\n) => void | Promise<void>;\n\nexport type EmbeddedBeforeActionHandler<TState> = (\n  actionId: string,\n  state: TState,\n) => boolean | Promise<boolean>;\n\nexport interface EmbeddedActionsProps<TState> {\n  actions?: ActionsProp;\n  onAction?: EmbeddedActionHandler<TState>;\n  onBeforeAction?: EmbeddedBeforeActionHandler<TState>;\n}\n"
+    },
+    {
       "path": "components/tool-ui/shared/parse.ts",
       "type": "registry:lib",
       "target": "components/tool-ui/shared/parse.ts",

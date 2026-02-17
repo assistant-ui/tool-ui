@@ -1058,6 +1058,11 @@
           "target": "components/tool-ui/shared/contract.ts"
         },
         {
+          "path": "components/tool-ui/shared/embedded-actions.ts",
+          "type": "registry:lib",
+          "target": "components/tool-ui/shared/embedded-actions.ts"
+        },
+        {
           "path": "components/tool-ui/shared/parse.ts",
           "type": "registry:lib",
           "target": "components/tool-ui/shared/parse.ts"
@@ -1195,6 +1200,11 @@
           "path": "components/tool-ui/shared/contract.ts",
           "type": "registry:lib",
           "target": "components/tool-ui/shared/contract.ts"
+        },
+        {
+          "path": "components/tool-ui/shared/embedded-actions.ts",
+          "type": "registry:lib",
+          "target": "components/tool-ui/shared/embedded-actions.ts"
         },
         {
           "path": "components/tool-ui/shared/parse.ts",
@@ -1352,6 +1362,11 @@
           "path": "components/tool-ui/shared/contract.ts",
           "type": "registry:lib",
           "target": "components/tool-ui/shared/contract.ts"
+        },
+        {
+          "path": "components/tool-ui/shared/embedded-actions.ts",
+          "type": "registry:lib",
+          "target": "components/tool-ui/shared/embedded-actions.ts"
         },
         {
           "path": "components/tool-ui/shared/parse.ts",

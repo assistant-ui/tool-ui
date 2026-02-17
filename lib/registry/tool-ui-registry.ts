@@ -180,7 +180,11 @@ function resolveLocalImport(
   return null;
 }
 
-function extractImportSpecifiers(content: string): string[] {
+function extractImportSpecifiers(
+  content: string,
+  options?: { includeTypeOnly?: boolean },
+): string[] {
+  const includeTypeOnly = options?.includeTypeOnly ?? false;
   const imports = new Set<string>();
   const sourceFile = ts.createSourceFile(
     "registry-import-scan.tsx",
@@ -204,16 +208,16 @@ function extractImportSpecifiers(content: string): string[] {
     if (
       ts.isImportDeclaration(node) &&
       ts.isStringLiteral(node.moduleSpecifier) &&
-      !isTypeOnlyImport(node.importClause)
+      (includeTypeOnly || !isTypeOnlyImport(node.importClause))
     ) {
       imports.add(node.moduleSpecifier.text);
     }
 
     if (
       ts.isExportDeclaration(node) &&
-      !node.isTypeOnly &&
       node.moduleSpecifier &&
-      ts.isStringLiteral(node.moduleSpecifier)
+      ts.isStringLiteral(node.moduleSpecifier) &&
+      (includeTypeOnly || !node.isTypeOnly)
     ) {
       imports.add(node.moduleSpecifier.text);
     }
@@ -251,7 +255,7 @@ function extractImportMetaUrlSpecifiers(content: string): string[] {
 function extractLocalImportSpecifiers(content: string): string[] {
   const imports = new Set<string>();
 
-  for (const specifier of extractImportSpecifiers(content)) {
+  for (const specifier of extractImportSpecifiers(content, { includeTypeOnly: true })) {
     if (specifier.startsWith(".") || specifier.startsWith("@/")) {
       imports.add(specifier);
     }

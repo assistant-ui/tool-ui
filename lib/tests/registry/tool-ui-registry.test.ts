@@ -117,6 +117,26 @@ describe("Tool UI registry artifacts", () => {
     );
   });
 
+  it("includes local type-only import files required by shipped schemas", async () => {
+    const artifacts = await buildToolUiRegistryArtifacts(getProjectRoot());
+
+    const componentsRequiringEmbeddedActions = [
+      "option-list",
+      "parameter-slider",
+      "preferences-panel",
+    ] as const;
+
+    for (const componentName of componentsRequiringEmbeddedActions) {
+      const item = artifacts.items.find((candidate) => candidate.name === componentName);
+      expect(item, `missing registry item: ${componentName}`).toBeDefined();
+
+      const itemPaths = new Set(item?.files.map((file) => file.path) ?? []);
+      expect(itemPaths.has("components/tool-ui/shared/embedded-actions.ts")).toBe(
+        true,
+      );
+    }
+  });
+
   it("ships weather-widget as runtime-entry closure without authoring-only effects files", async () => {
     const artifacts = await buildToolUiRegistryArtifacts(getProjectRoot());
     const weatherWidgetItem = artifacts.items.find(
