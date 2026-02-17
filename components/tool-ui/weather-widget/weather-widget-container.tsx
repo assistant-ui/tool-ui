@@ -93,7 +93,7 @@ export function WeatherWidget({
       <div
         data-slot="card"
         className={cn(
-          "@container/weather [container-type:size] relative overflow-clip aspect-[4/3] border-0 p-0 shadow-none",
+          "@container/weather [container-type:size] relative overflow-clip aspect-[4/3] rounded-2xl border-0 p-0 shadow-none",
           backgroundClass,
         )}
       >

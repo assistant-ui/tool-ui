@@ -109,6 +109,12 @@ export interface WeatherDataOverlayProps {
   glassParams?: GlassEffectParams;
 }
 
+interface GlowState {
+  x: number;
+  y: number;
+  intensity: number;
+}
+
 export function observeCardDimensions(
   element: HTMLDivElement | null,
   onResize: () => void,
@@ -144,14 +150,16 @@ export function WeatherDataOverlay({
         ? getTimeOfDay(timestamp)
         : 0.5;
 
-  const [glowState, setGlowState] = useState<{
-    x: number;
-    y: number;
-    intensity: number;
-  }>({ x: 0, y: 0, intensity: 0 });
+  const [glowState, setGlowState] = useState<GlowState>({
+    x: 0,
+    y: 0,
+    intensity: 0,
+  });
   const [cardDimensions, setCardDimensions] = useState({ width: 0, height: 0 });
   const cardRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const pendingGlowStateRef = useRef<GlowState | null>(null);
+  const pendingGlowFrameRef = useRef<number | null>(null);
 
   // Glass effect styles applied directly to forecast container.
   // Enabled by default - falls back to simple blur if SVG filter unsupported.
@@ -189,9 +197,78 @@ export function WeatherDataOverlay({
     themeProp ??
     getWeatherTheme(getSceneBrightnessFromTimeOfDay(timeOfDay, conditionCode));
 
+  const commitGlowState = useCallback((nextState: GlowState) => {
+    setGlowState((prevState) => {
+      if (
+        prevState.x === nextState.x &&
+        prevState.y === nextState.y &&
+        prevState.intensity === nextState.intensity
+      ) {
+        return prevState;
+      }
+
+      return nextState;
+    });
+  }, [setGlowState]);
+
+  const cancelPendingGlowFrame = useCallback(() => {
+    pendingGlowStateRef.current = null;
+
+    if (
+      pendingGlowFrameRef.current !== null &&
+      typeof window !== "undefined" &&
+      typeof window.cancelAnimationFrame === "function"
+    ) {
+      window.cancelAnimationFrame(pendingGlowFrameRef.current);
+    }
+
+    pendingGlowFrameRef.current = null;
+  }, []);
+
+  const scheduleGlowState = useCallback(
+    (nextState: GlowState) => {
+      pendingGlowStateRef.current = nextState;
+
+      if (pendingGlowFrameRef.current !== null) {
+        return;
+      }
+
+      if (
+        typeof window === "undefined" ||
+        typeof window.requestAnimationFrame !== "function"
+      ) {
+        pendingGlowStateRef.current = null;
+        commitGlowState(nextState);
+        return;
+      }
+
+      pendingGlowFrameRef.current = window.requestAnimationFrame(() => {
+        pendingGlowFrameRef.current = null;
+        const pendingState = pendingGlowStateRef.current;
+        pendingGlowStateRef.current = null;
+
+        if (pendingState) {
+          commitGlowState(pendingState);
+        }
+      });
+    },
+    [commitGlowState],
+  );
+
+  const clearGlowIntensity = useCallback(() => {
+    cancelPendingGlowFrame();
+    setGlowState((prevState) => {
+      if (prevState.intensity === 0) {
+        return prevState;
+      }
+
+      return { ...prevState, intensity: 0 };
+    });
+  }, [cancelPendingGlowFrame, setGlowState]);
+
   useEffect(() => {
     if (reducedMotion) {
-      setGlowState((prev) => ({ ...prev, intensity: 0 }));
+      clearGlowIntensity();
       return;
     }
 
@@ -228,7 +305,7 @@ export function WeatherDataOverlay({
       const maxDistance = 150;
       const intensity = Math.max(0, 1 - distance / maxDistance);
 
-      setGlowState({
+      scheduleGlowState({
         x: clampedX - cardRect.left,
         y: clampedY - cardRect.top,
         intensity,
@@ -236,7 +313,7 @@ export function WeatherDataOverlay({
     };
 
     const handleMouseLeave = () => {
-      setGlowState((prev) => ({ ...prev, intensity: 0 }));
+      clearGlowIntensity();
     };
 
     container.addEventListener("mousemove", handleMouseMove);
@@ -245,8 +322,9 @@ export function WeatherDataOverlay({
     return () => {
       container.removeEventListener("mousemove", handleMouseMove);
       container.removeEventListener("mouseleave", handleMouseLeave);
+      cancelPendingGlowFrame();
     };
-  }, [reducedMotion]);
+  }, [reducedMotion, clearGlowIntensity, scheduleGlowState, cancelPendingGlowFrame]);
 
   const unitSymbol = unit === "celsius" ? "C" : "F";
   const peakIntensity = getPeakIntensity(timeOfDay);
