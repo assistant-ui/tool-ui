@@ -19,8 +19,8 @@ Implementation for the "weather-widget" Tool UI surface.
   - lib/weather-authoring/weather-widget/effects/generated/tuned-presets.generated.ts
   - lib/weather-authoring/weather-widget/effects/generated/weather-effect-shaders.generated.ts
   - lib/weather-authoring/weather-widget/effects/generated/glass-panel-svg.generated.tsx
-  - lib/weather-authoring/weather-widget/weather-data-overlay.generated.js
-  - components/tool-ui/weather-widget/generated/weather-runtime-core.generated.js
+  - lib/weather-authoring/weather-widget/weather-data-overlay.generated.ts
+  - components/tool-ui/weather-widget/generated/weather-runtime-core.generated.ts
 
 ## Build workflow
 

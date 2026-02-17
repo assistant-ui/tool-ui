@@ -158,7 +158,7 @@ describe("Tool UI registry artifacts", () => {
     );
     expect(
       weatherPaths.has(
-        "components/tool-ui/weather-widget/generated/weather-runtime-core.generated.js",
+        "components/tool-ui/weather-widget/generated/weather-runtime-core.generated.ts",
       ),
     ).toBe(true);
     expect(

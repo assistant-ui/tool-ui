@@ -31,7 +31,7 @@ describe("weather runtime codegen", () => {
   test("bundled runtime does not reference removed component asset paths", () => {
     const bundledRuntimePath = path.join(
       PROJECT_ROOT,
-      "components/tool-ui/weather-widget/generated/weather-runtime-core.generated.js",
+      "components/tool-ui/weather-widget/generated/weather-runtime-core.generated.ts",
     );
     const bundledRuntime = readFileSync(bundledRuntimePath, "utf8");
 

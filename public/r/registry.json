@@ -1729,9 +1729,9 @@
       ],
       "files": [
         {
-          "path": "components/tool-ui/weather-widget/generated/weather-runtime-core.generated.js",
-          "type": "registry:file",
-          "target": "components/tool-ui/weather-widget/generated/weather-runtime-core.generated.js"
+          "path": "components/tool-ui/weather-widget/generated/weather-runtime-core.generated.ts",
+          "type": "registry:lib",
+          "target": "components/tool-ui/weather-widget/generated/weather-runtime-core.generated.ts"
         },
         {
           "path": "components/tool-ui/weather-widget/runtime.ts",

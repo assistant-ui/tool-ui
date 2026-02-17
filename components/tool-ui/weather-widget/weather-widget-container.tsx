@@ -10,7 +10,7 @@ import {
   getWeatherTheme,
   resolveWeatherTime,
   TUNED_WEATHER_EFFECTS_CHECKPOINT_OVERRIDES,
-} from "./generated/weather-runtime-core.generated.js";
+} from "./generated/weather-runtime-core.generated";
 import type { WeatherWidgetRuntimeProps } from "./schema-runtime";
 import { WeatherDataOverlay } from "./weather-data-overlay";
 
@@ -78,7 +78,7 @@ export function WeatherWidget({
       ? checkpointOverrides.glass
       : undefined;
   const brightness = getSceneBrightnessFromTimeOfDay(timeOfDay, current.conditionCode);
-  const weatherTheme = getWeatherTheme(brightness);
+  const weatherTheme = getWeatherTheme(brightness, undefined);
   const isWeatherDark = weatherTheme === "dark";
   const backgroundClass = isWeatherDark
     ? "bg-gradient-to-b from-zinc-950 via-zinc-900/70 to-zinc-950"

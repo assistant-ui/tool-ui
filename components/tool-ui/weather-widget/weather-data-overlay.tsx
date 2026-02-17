@@ -24,11 +24,11 @@ import {
   getSceneBrightnessFromTimeOfDay,
   getTimeOfDay,
   getWeatherTheme,
-} from "./generated/weather-runtime-core.generated.js";
+} from "./generated/weather-runtime-core.generated";
 import {
   resolveGlassBackdropFilterStyles,
   useGlassStyles,
-} from "./generated/weather-runtime-core.generated.js";
+} from "./generated/weather-runtime-core.generated";
 
 type WeatherTheme = "light" | "dark";
 
@@ -195,7 +195,10 @@ export function WeatherDataOverlay({
 
   const theme =
     themeProp ??
-    getWeatherTheme(getSceneBrightnessFromTimeOfDay(timeOfDay, conditionCode));
+    getWeatherTheme(
+      getSceneBrightnessFromTimeOfDay(timeOfDay, conditionCode),
+      undefined,
+    );
 
   const commitGlowState = useCallback((nextState: GlowState) => {
     setGlowState((prevState) => {
