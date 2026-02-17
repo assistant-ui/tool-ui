@@ -9,6 +9,9 @@ import {
 } from "@/lib/weather-authoring/weather-widget/effects/generated/tuned-presets.generated";
 import * as generatedShaders from "@/lib/weather-authoring/weather-widget/effects/generated/weather-effect-shaders.generated";
 import {
+  TUNED_WEATHER_EFFECTS_CHECKPOINT_OVERRIDES as bundledRuntimeTunedOverrides,
+} from "@/components/tool-ui/weather-widget/generated/weather-runtime-core.generated";
+import {
   canonicalizeWeatherPresetData,
   getStaleWeatherRuntimeArtifacts,
   loadWeatherAuthoringPreset,
@@ -23,6 +26,13 @@ const WEATHER_RUNTIME_MAX_BYTES = 120_000;
 const WEATHER_RUNTIME_MAX_LINES = 120;
 const WEATHER_REGISTRY_ENTRY_PATH = "public/r/weather-widget.json";
 const WEATHER_REGISTRY_MAX_BYTES = 170_000;
+const WEATHER_REGISTRY_RUNTIME_FILES = [
+  "components/tool-ui/weather-widget/generated/weather-runtime-core.generated.ts",
+  "components/tool-ui/weather-widget/runtime.ts",
+  "components/tool-ui/weather-widget/schema-runtime.ts",
+  "components/tool-ui/weather-widget/weather-data-overlay.tsx",
+  "components/tool-ui/weather-widget/weather-widget-container.tsx",
+] as const;
 const SHADER_EXPORT_NAMES = [
   "FULLSCREEN_VERTEX",
   "CELESTIAL_FRAGMENT",
@@ -91,6 +101,36 @@ describe("weather runtime codegen", () => {
     const byteCount = Buffer.byteLength(registryEntry, "utf8");
 
     expect(byteCount).toBeLessThanOrEqual(WEATHER_REGISTRY_MAX_BYTES);
+  });
+
+  test("bundled runtime uses the generated tuned preset overrides", () => {
+    expect(bundledRuntimeTunedOverrides).toEqual(
+      TUNED_WEATHER_EFFECTS_CHECKPOINT_OVERRIDES,
+    );
+  });
+
+  test("weather registry payload embeds the current runtime files", () => {
+    const registryEntryPath = path.join(PROJECT_ROOT, WEATHER_REGISTRY_ENTRY_PATH);
+    const registryEntry = JSON.parse(readFileSync(registryEntryPath, "utf8")) as {
+      files: Array<{ path: string; content?: string }>;
+    };
+    const fileContentsByPath = new Map(
+      registryEntry.files.map((file) => [file.path, file.content] as const),
+    );
+
+    expect(fileContentsByPath.size).toBe(WEATHER_REGISTRY_RUNTIME_FILES.length);
+
+    for (const relativePath of WEATHER_REGISTRY_RUNTIME_FILES) {
+      const embedded = fileContentsByPath.get(relativePath);
+      expect(typeof embedded).toBe("string");
+
+      const currentFileContents = readFileSync(
+        path.join(PROJECT_ROOT, relativePath),
+        "utf8",
+      );
+
+      expect(embedded).toBe(currentFileContents);
+    }
   });
 
   test("generated presets match canonicalized authoring source", () => {
