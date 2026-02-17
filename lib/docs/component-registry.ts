@@ -200,7 +200,7 @@ export const componentsRegistry: ComponentMeta[] = [
   {
     id: "weather-widget",
     label: "Weather Widget",
-    description: "Display weather conditions and forecasts",
+    description: "Probably more weather widget than anyone asked for",
     path: "/docs/weather-widget",
     category: "display",
   },

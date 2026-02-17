@@ -41,7 +41,7 @@ export const weatherWidgetPresets: Record<
   PresetWithCodeGen<WeatherWidgetPayload>
 > = {
   thunderstorm: {
-    description: "Dramatic thunderstorm with lightning",
+    description: "Kansas City having a night",
     data: {
       version: "3.1",
       id: "weather-widget-thunderstorm",
@@ -66,7 +66,7 @@ export const weatherWidgetPresets: Record<
     generateExampleCode: generateWeatherWidgetCode,
   },
   "cold-snap": {
-    description: "Winter weather with snow at night",
+    description: "Minneapolis doing Minneapolis things",
     data: {
       version: "3.1",
       id: "weather-widget-cold-snap",
@@ -91,7 +91,7 @@ export const weatherWidgetPresets: Record<
     generateExampleCode: generateWeatherWidgetCode,
   },
   "rainy-week": {
-    description: "Persistent rain throughout the week",
+    description: "Seattle, so... rain",
     data: {
       version: "3.1",
       id: "weather-widget-rainy-week",
@@ -116,7 +116,7 @@ export const weatherWidgetPresets: Record<
     generateExampleCode: generateWeatherWidgetCode,
   },
   "cloudy-sunset": {
-    description: "Dramatic overcast sunset",
+    description: "That golden hour cloud thing",
     data: {
       version: "3.1",
       id: "weather-widget-cloudy-sunset",
@@ -141,7 +141,7 @@ export const weatherWidgetPresets: Record<
     generateExampleCode: generateWeatherWidgetCode,
   },
   "sunny-forecast": {
-    description: "Clear skies and warm temperatures",
+    description: "San Diego being San Diego",
     data: {
       version: "3.1",
       id: "weather-widget-sunny-forecast",
