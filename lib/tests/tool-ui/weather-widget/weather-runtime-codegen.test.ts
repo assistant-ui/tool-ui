@@ -17,6 +17,12 @@ import {
 } from "@/lib/weather-codegen/compile-weather-runtime";
 
 const PROJECT_ROOT = process.cwd();
+const WEATHER_RUNTIME_BUNDLE_PATH =
+  "components/tool-ui/weather-widget/generated/weather-runtime-core.generated.ts";
+const WEATHER_RUNTIME_MAX_BYTES = 120_000;
+const WEATHER_RUNTIME_MAX_LINES = 120;
+const WEATHER_REGISTRY_ENTRY_PATH = "public/r/weather-widget.json";
+const WEATHER_REGISTRY_MAX_BYTES = 170_000;
 const SHADER_EXPORT_NAMES = [
   "FULLSCREEN_VERTEX",
   "CELESTIAL_FRAGMENT",
@@ -31,7 +37,7 @@ describe("weather runtime codegen", () => {
   test("bundled runtime does not reference removed component asset paths", () => {
     const bundledRuntimePath = path.join(
       PROJECT_ROOT,
-      "components/tool-ui/weather-widget/generated/weather-runtime-core.generated.ts",
+      WEATHER_RUNTIME_BUNDLE_PATH,
     );
     const bundledRuntime = readFileSync(bundledRuntimePath, "utf8");
 
@@ -64,6 +70,27 @@ describe("weather runtime codegen", () => {
     await expect(getStaleWeatherRuntimeArtifacts(PROJECT_ROOT)).resolves.toEqual(
       [],
     );
+  });
+
+  test("bundled runtime stays under size budget", () => {
+    const bundledRuntimePath = path.join(
+      PROJECT_ROOT,
+      WEATHER_RUNTIME_BUNDLE_PATH,
+    );
+    const bundledRuntime = readFileSync(bundledRuntimePath, "utf8");
+    const lineCount = bundledRuntime.split("\n").length;
+    const byteCount = Buffer.byteLength(bundledRuntime, "utf8");
+
+    expect(lineCount).toBeLessThanOrEqual(WEATHER_RUNTIME_MAX_LINES);
+    expect(byteCount).toBeLessThanOrEqual(WEATHER_RUNTIME_MAX_BYTES);
+  });
+
+  test("weather registry payload stays under size budget", () => {
+    const registryEntryPath = path.join(PROJECT_ROOT, WEATHER_REGISTRY_ENTRY_PATH);
+    const registryEntry = readFileSync(registryEntryPath, "utf8");
+    const byteCount = Buffer.byteLength(registryEntry, "utf8");
+
+    expect(byteCount).toBeLessThanOrEqual(WEATHER_REGISTRY_MAX_BYTES);
   });
 
   test("generated presets match canonicalized authoring source", () => {

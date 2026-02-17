@@ -112,7 +112,9 @@ function serializeJsLiteral(value: unknown): string {
   if (value === null) return "null";
 
   if (typeof value === "number") {
-    return normalizeNumber(value).toFixed(4);
+    const normalized = normalizeNumber(value);
+    const fixed = normalized.toFixed(4);
+    return fixed.replace(/(?:\.0+|(\.\d*?[1-9])0+)$/, "$1");
   }
 
   if (typeof value === "string") {
@@ -203,7 +205,22 @@ export function minifyWeatherShaderSource(source: string): string {
         .replace(/\s*([{}()[\];,+\-*/%=<>!?:|&])\s*/g, "$1");
     });
 
-  return `${minifiedLines.join("\n")}\n`;
+  let output = "";
+
+  for (const line of minifiedLines) {
+    if (line.startsWith("#")) {
+      if (output.length > 0 && !output.endsWith("\n")) {
+        output += "\n";
+      }
+
+      output += `${line}\n`;
+      continue;
+    }
+
+    output += line;
+  }
+
+  return output.trimEnd();
 }
 
 function escapeRegExp(value: string): string {
