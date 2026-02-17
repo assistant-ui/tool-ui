@@ -7,7 +7,7 @@ import { WeatherWidget } from "@/components/tool-ui/weather-widget/runtime";
   mdxPath="app/docs/weather-widget/content.mdx"
 />
 
-Weather widgets have become the "hello world" of generative UI—Vercel shows one in their docs, every AI demo seems to start with one. So we built the most absurdly detailed weather widget anyone has ever made. Real-time WebGL atmospheric effects, physically-based weather simulations, time-of-day scene rendering, 13 condition codes. It's genuinely more detailed than Apple's iOS weather app. Starting to think there's something poetic about taking the most clich&eacute;d demo component in AI and overengineering it until it transcends the bit.
+Weather widgets have become the "hello world" of generative UI, and `get_weather` is the "hello world" of tool calling. [Vercel shows one in their docs](https://ai-sdk.dev/docs/ai-sdk-ui/generative-user-interfaces), every AI demo seems to start with one or both. So we built the most absurdly detailed weather widget anyone has ever made. Real-time WebGL atmospheric effects, physically-based weather simulations, time-of-day scene rendering, 13 condition codes. It's genuinely more detailed than Apple's iOS weather app. Starting to think there's something poetic about taking the most clich&eacute;d demo component in AI and overengineering it until it transcends the bit.
 
 **Role:** Information. Displays data without requiring user input. See [Design Guidelines](/docs/design-guidelines) for how component roles work.
 
@@ -122,7 +122,7 @@ export const toolkit: Toolkit = {
 
 <FeatureGrid>
   <Feature icon="CloudSun" title="Weather conditions">
-    13 condition codes with matching icons: clear, cloudy, rain, snow, thunderstorm, and more
+    13 condition codes because someone had to distinguish sleet from hail
   </Feature>
   <Feature icon="MapPin" title="Location display">
     City name, current temperature, and today's high/low range
