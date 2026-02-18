@@ -98,7 +98,7 @@ export function WeatherWidget({
     >
       <Card
         className={cn(
-          "@container/weather [container-type:size] relative overflow-clip aspect-[4/3] rounded-2xl border-0 p-0 shadow-none",
+          "@container/weather relative aspect-[4/3] overflow-clip rounded-2xl border-0 p-0 shadow-none [container-type:size]",
           backgroundClass,
         )}
       >

@@ -44,6 +44,37 @@ const SHADER_EXPORT_NAMES = [
 ] as const;
 
 describe("weather runtime codegen", () => {
+  test("bundled runtime is emitted with ts-nocheck for strict consumer tsconfigs", () => {
+    const bundledRuntimePath = path.join(
+      PROJECT_ROOT,
+      WEATHER_RUNTIME_BUNDLE_PATH,
+    );
+    const bundledRuntime = readFileSync(bundledRuntimePath, "utf8");
+
+    expect(bundledRuntime.startsWith("// @ts-nocheck\n")).toBe(true);
+  });
+
+  test("runtime entrypoint uses type-only export syntax", () => {
+    const runtimeEntrypoint = readFileSync(
+      path.join(PROJECT_ROOT, "components/tool-ui/weather-widget/runtime.ts"),
+      "utf8",
+    );
+
+    expect(runtimeEntrypoint).toContain("export type {");
+  });
+
+  test("overlay does not use unsupported aria-label on span elements", () => {
+    const overlaySource = readFileSync(
+      path.join(
+        PROJECT_ROOT,
+        "components/tool-ui/weather-widget/weather-data-overlay.tsx",
+      ),
+      "utf8",
+    );
+
+    expect(overlaySource).not.toMatch(/<span[^>]*aria-label=/);
+  });
+
   test("bundled runtime does not reference removed component asset paths", () => {
     const bundledRuntimePath = path.join(
       PROJECT_ROOT,

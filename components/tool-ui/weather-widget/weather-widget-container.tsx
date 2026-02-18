@@ -34,15 +34,22 @@ export function WeatherWidget({
       return false;
     }
 
-    return window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches ?? false;
+    return (
+      window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches ?? false
+    );
   });
 
   useEffect(() => {
-    if (typeof window === "undefined" || typeof window.matchMedia !== "function") {
+    if (
+      typeof window === "undefined" ||
+      typeof window.matchMedia !== "function"
+    ) {
       return;
     }
 
-    const mediaQueryList = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const mediaQueryList = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    );
     setPrefersReducedMotion(mediaQueryList.matches);
 
     const handleMotionPreferenceChange = (event: MediaQueryListEvent) => {
@@ -52,7 +59,10 @@ export function WeatherWidget({
     if (typeof mediaQueryList.addEventListener === "function") {
       mediaQueryList.addEventListener("change", handleMotionPreferenceChange);
       return () => {
-        mediaQueryList.removeEventListener("change", handleMotionPreferenceChange);
+        mediaQueryList.removeEventListener(
+          "change",
+          handleMotionPreferenceChange,
+        );
       };
     }
 
@@ -78,7 +88,10 @@ export function WeatherWidget({
     checkpointOverrides && "glass" in checkpointOverrides
       ? checkpointOverrides.glass
       : undefined;
-  const brightness = getSceneBrightnessFromTimeOfDay(timeOfDay, current.conditionCode);
+  const brightness = getSceneBrightnessFromTimeOfDay(
+    timeOfDay,
+    current.conditionCode,
+  );
   const weatherTheme = getWeatherTheme(brightness, undefined);
   const isWeatherDark = weatherTheme === "dark";
   const backgroundClass = isWeatherDark
@@ -94,7 +107,7 @@ export function WeatherWidget({
       <div
         data-slot="card"
         className={cn(
-          "@container/weather [container-type:size] relative overflow-clip aspect-[4/3] rounded-2xl border-0 p-0 shadow-none",
+          "@container/weather relative aspect-[4/3] overflow-clip rounded-2xl border-0 p-0 shadow-none [container-type:size]",
           backgroundClass,
         )}
       >

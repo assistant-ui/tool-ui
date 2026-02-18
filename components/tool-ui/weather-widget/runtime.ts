@@ -5,14 +5,14 @@
  * Reach for `index.tsx` only if you're actively working on authoring/debug internals.
  */
 export { WeatherWidget } from "./weather-widget-container";
-export {
-  type WeatherWidgetPayload,
-  type WeatherWidgetRuntimeProps as WeatherWidgetProps,
-  type WeatherWidgetCurrent,
-  type WeatherWidgetTime,
-  type WeatherWidgetLocation,
-  type WeatherConditionCode,
-  type ForecastDay,
-  type TemperatureUnit,
-  type PrecipitationLevel,
+export type {
+  WeatherWidgetPayload,
+  WeatherWidgetRuntimeProps as WeatherWidgetProps,
+  WeatherWidgetCurrent,
+  WeatherWidgetTime,
+  WeatherWidgetLocation,
+  WeatherConditionCode,
+  ForecastDay,
+  TemperatureUnit,
+  PrecipitationLevel,
 } from "./schema-runtime";

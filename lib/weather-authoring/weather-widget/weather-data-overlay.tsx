@@ -94,14 +94,14 @@ export interface WeatherDataOverlayProps {
    * If neither is provided, defaults to noon (0.5).
    */
   timeOfDay?: number;
-  timestamp?: string;
+  timestamp?: string | undefined;
   className?: string;
   reducedMotion?: boolean;
   /**
    * Glass refraction effect parameters for the forecast card.
    * When enabled, applies SVG displacement filter for realistic glass distortion.
    */
-  glassParams?: GlassEffectParams;
+  glassParams?: GlassEffectParams | undefined;
 }
 
 interface GlowState {
@@ -205,7 +205,7 @@ export function WeatherDataOverlay({
 
       return nextState;
     });
-  }, [setGlowState]);
+  }, []);
 
   const cancelPendingGlowFrame = useCallback(() => {
     pendingGlowStateRef.current = null;
@@ -260,7 +260,7 @@ export function WeatherDataOverlay({
 
       return { ...prevState, intensity: 0 };
     });
-  }, [cancelPendingGlowFrame, setGlowState]);
+  }, [cancelPendingGlowFrame]);
 
   useEffect(() => {
     if (reducedMotion) {
@@ -385,7 +385,7 @@ export function WeatherDataOverlay({
           <div className="-mt-0.5 flex items-start gap-1">
             <span
               className={cn(
-                "font-[250] leading-[1.02] tracking-[-0.015em] tabular-nums",
+                "font-[250] tabular-nums leading-[1.02] tracking-[-0.015em]",
                 textPrimarySoft,
               )}
               style={{
@@ -396,7 +396,6 @@ export function WeatherDataOverlay({
                   ? "0 2px 20px rgba(0,0,0,0.25)"
                   : "0 2px 20px rgba(255,255,255,0.3)",
               }}
-              aria-label={`${Math.round(temperature)} degrees ${unit === "celsius" ? "Celsius" : "Fahrenheit"}`}
             >
               {Math.round(temperature)}
             </span>
@@ -469,7 +468,7 @@ export function WeatherDataOverlay({
             >
               {/* Inner glow */}
               <div
-                className="pointer-events-none absolute inset-0 transition-opacity duration-300 ease-out mix-blend-color-dodge"
+                className="pointer-events-none absolute inset-0 mix-blend-color-dodge transition-opacity duration-300 ease-out"
                 style={{
                   opacity: glowState.intensity,
                   background: sineEasedGradient(
@@ -517,7 +516,7 @@ export function WeatherDataOverlay({
                       <div className="flex flex-col items-center gap-0.5">
                         <span
                           className={cn(
-                            "text-[15px] leading-[1.2] tabular-nums tracking-[-0.01em]",
+                            "text-[15px] tabular-nums leading-[1.2] tracking-[-0.01em]",
                             index === 0 ? "font-semibold" : "font-medium",
                             textPrimary,
                           )}
@@ -526,7 +525,7 @@ export function WeatherDataOverlay({
                         </span>
                         <span
                           className={cn(
-                            "text-[12px] leading-[1.3] font-normal tabular-nums",
+                            "font-normal text-[12px] tabular-nums leading-[1.3]",
                             textPrimary,
                           )}
                         >

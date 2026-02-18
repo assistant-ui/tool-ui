@@ -105,7 +105,7 @@ export function WeatherDataOverlay({ location, conditionCode, temperature, tempH
             }
             return nextState;
         });
-    }, [setGlowState]);
+    }, []);
     const cancelPendingGlowFrame = useCallback(() => {
         pendingGlowStateRef.current = null;
         if (pendingGlowFrameRef.current !== null &&
@@ -143,7 +143,7 @@ export function WeatherDataOverlay({ location, conditionCode, temperature, tempH
             }
             return { ...prevState, intensity: 0 };
         });
-    }, [cancelPendingGlowFrame, setGlowState]);
+    }, [cancelPendingGlowFrame]);
     useEffect(() => {
         if (reducedMotion) {
             clearGlowIntensity();
@@ -217,14 +217,14 @@ export function WeatherDataOverlay({ location, conditionCode, temperature, tempH
                                 fontSize: locationFontSize,
                                 fontFamily: forecastFontFamily,
                                 textShadow: shadowStyle,
-                            }, children: location }), _jsxs("div", { className: "-mt-0.5 flex items-start gap-1", children: [_jsx("span", { className: cn("font-[250] leading-[1.02] tracking-[-0.015em] tabular-nums", textPrimarySoft), style: {
+                            }, children: location }), _jsxs("div", { className: "-mt-0.5 flex items-start gap-1", children: [_jsx("span", { className: cn("font-[250] tabular-nums leading-[1.02] tracking-[-0.015em]", textPrimarySoft), style: {
                                         fontSize: temperatureFontSize,
                                         fontFamily: forecastFontFamily,
                                         fontFeatureSettings: '"tnum" 1, "case" 1',
                                         textShadow: isDark
                                             ? "0 2px 20px rgba(0,0,0,0.25)"
                                             : "0 2px 20px rgba(255,255,255,0.3)",
-                                    }, "aria-label": `${Math.round(temperature)} degrees ${unit === "celsius" ? "Celsius" : "Fahrenheit"}`, children: Math.round(temperature) }), _jsxs("span", { className: cn("mt-2 font-[250] tabular-nums", textSecondary), style: {
+                                    }, children: Math.round(temperature) }), _jsxs("span", { className: cn("mt-2 font-[250] tabular-nums", textSecondary), style: {
                                         fontSize: degreeFontSize,
                                         fontFamily: forecastFontFamily,
                                         fontFeatureSettings: '"tnum" 1, "case" 1',
@@ -244,7 +244,7 @@ export function WeatherDataOverlay({ location, conditionCode, temperature, tempH
                                     glassStyles,
                                     blurAmount,
                                 }),
-                            }, children: [_jsx("div", { className: "pointer-events-none absolute inset-0 transition-opacity duration-300 ease-out mix-blend-color-dodge", style: {
+                            }, children: [_jsx("div", { className: "pointer-events-none absolute inset-0 mix-blend-color-dodge transition-opacity duration-300 ease-out", style: {
                                         opacity: glowState.intensity,
                                         background: sineEasedGradient(glowState.x, glowState.y, 120, isDark ? 0.06 : 0.15),
                                     } }), _jsx("div", { className: "relative flex items-center justify-between", children: forecast.slice(0, 5).map((day, index) => {
@@ -253,7 +253,7 @@ export function WeatherDataOverlay({ location, conditionCode, temperature, tempH
                                                 fontFamily: forecastFontFamily,
                                                 fontFeatureSettings: '"tnum" 1, "case" 1',
                                                 textShadow: forecastTextShadow,
-                                            }, children: [_jsx("span", { className: cn("text-[10px] uppercase tracking-[0.08em]", index === 0 ? "font-semibold" : "font-medium", textPrimary), children: day.label }), _jsx(DayIcon, { className: cn("my-0.5 size-5", textPrimary, index === 0 ? "opacity-100" : "opacity-70", "weather-forecast-icon hidden"), strokeWidth: 1.5, "aria-hidden": "true" }), _jsxs("div", { className: "flex flex-col items-center gap-0.5", children: [_jsxs("span", { className: cn("text-[15px] leading-[1.2] tabular-nums tracking-[-0.01em]", index === 0 ? "font-semibold" : "font-medium", textPrimary), children: [Math.round(day.tempMax), "\u00B0"] }), _jsxs("span", { className: cn("text-[12px] leading-[1.3] font-normal tabular-nums", textPrimary), children: [Math.round(day.tempMin), "\u00B0"] })] })] }, `${day.label}-${index}`));
+                                            }, children: [_jsx("span", { className: cn("text-[10px] uppercase tracking-[0.08em]", index === 0 ? "font-semibold" : "font-medium", textPrimary), children: day.label }), _jsx(DayIcon, { className: cn("my-0.5 size-5", textPrimary, index === 0 ? "opacity-100" : "opacity-70", "weather-forecast-icon hidden"), strokeWidth: 1.5, "aria-hidden": "true" }), _jsxs("div", { className: "flex flex-col items-center gap-0.5", children: [_jsxs("span", { className: cn("text-[15px] tabular-nums leading-[1.2] tracking-[-0.01em]", index === 0 ? "font-semibold" : "font-medium", textPrimary), children: [Math.round(day.tempMax), "\u00B0"] }), _jsxs("span", { className: cn("font-normal text-[12px] tabular-nums leading-[1.3]", textPrimary), children: [Math.round(day.tempMin), "\u00B0"] })] })] }, `${day.label}-${index}`));
                                     }) })] })] }) })), _jsx("style", { children: `
         @container weather (min-height: 245px) {
           .weather-forecast-strip {
