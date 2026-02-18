@@ -34,6 +34,10 @@ function generateCodeDiffCode(data: SerializableCodeDiff): string {
     props.push(`  maxCollapsedLines={${data.maxCollapsedLines}}`);
   }
 
+  if (data.lineNumbers && data.lineNumbers !== "visible") {
+    props.push(`  lineNumbers="${data.lineNumbers}"`);
+  }
+
   if (data.diffStyle && data.diffStyle !== "unified") {
     props.push(`  diffStyle="${data.diffStyle}"`);
   }
