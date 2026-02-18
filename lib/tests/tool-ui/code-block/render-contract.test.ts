@@ -183,7 +183,7 @@ describe("code-block render contract", () => {
     const call = shiki.codeToHtml.mock.calls.at(0)?.[1] as
       | { theme?: string }
       | undefined;
-    expect(call?.theme).toBe("github-dark");
+    expect(call?.theme).toBe("pierre-dark");
 
     await cleanupClientRender(root, container);
   });

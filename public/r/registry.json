@@ -312,6 +312,16 @@
           "target": "components/tool-ui/code-block/index.tsx"
         },
         {
+          "path": "components/tool-ui/code-block/pierre-dark-theme.js",
+          "type": "registry:file",
+          "target": "components/tool-ui/code-block/pierre-dark-theme.js"
+        },
+        {
+          "path": "components/tool-ui/code-block/pierre-light-theme.js",
+          "type": "registry:file",
+          "target": "components/tool-ui/code-block/pierre-light-theme.js"
+        },
+        {
           "path": "components/tool-ui/code-block/README.md",
           "type": "registry:file",
           "target": "components/tool-ui/code-block/README.md"
