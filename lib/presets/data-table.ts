@@ -423,7 +423,6 @@ export const dataTablePresets: Record<
           confirmLabel: "Confirm close",
           variant: "destructive",
         },
-        { id: "escalate", label: "Escalate", variant: "secondary" },
         { id: "assign", label: "Assign to me", variant: "default" },
       ],
     },

@@ -30,4 +30,12 @@ describe("data-table presets contract", () => {
       maxVisible: 2,
     });
   });
+
+  test("actions preset omits the escalate action", () => {
+    const localActions = dataTablePresets.actions.data.localActions ?? [];
+    const actionIds = localActions.map((action) => action.id);
+
+    expect(actionIds).toEqual(["close", "assign"]);
+    expect(actionIds).not.toContain("escalate");
+  });
 });
