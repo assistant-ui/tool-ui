@@ -6,7 +6,7 @@ import { DocsHeader } from "../_components/docs-header";
   mdxPath="app/docs/code-diff/content.mdx"
 />
 
-CodeDiff renders syntax-highlighted diffs with additions and deletions marked clearly, so changes are obvious at a glance. Pass `oldCode` / `newCode` for file comparisons or a `patch` string for unified diffs from version control.
+CodeDiff renders syntax-highlighted diffs with additions and deletions marked in color. Pass `oldCode` / `newCode` for file comparisons or a `patch` string for unified diffs from version control.
 
 **Role:** Information. Displays data for the user to read. See [Design Guidelines](/docs/design-guidelines) for how component roles work.
 
@@ -97,152 +97,19 @@ export const toolkit: Toolkit = {
 ## Key Features
 
 <FeatureGrid>
-  <Feature icon="GitCompareArrows" title="Two input modes">
+  <Feature icon="Code" title="Two input modes">
     Pass `oldCode`/`newCode` for file diffs, or `patch` for unified diffs
   </Feature>
   <Feature icon="Palette" title="Syntax highlighting">
     Language-aware highlighting powered by @pierre/diffs
   </Feature>
+  <Feature icon="Expand" title="Split view">
+    Side-by-side comparison with `diffStyle="split"`
+  </Feature>
   <Feature icon="FoldVertical" title="Collapsible diffs">
     Collapse long diffs with `maxCollapsedLines`
   </Feature>
-  <Feature icon="FileCode" title="Filename header">
-    Show the file path and language in the header bar
-  </Feature>
 </FeatureGrid>
-
-## Input Modes
-
-### File comparison
-
-Pass `oldCode` and `newCode` to compare two versions of a file. CodeDiff computes the diff internally.
-
-```tsx
-<CodeDiff
-  id="file-diff"
-  language="typescript"
-  filename="hooks/use-pagination.ts"
-  oldCode={`const totalPages = Math.floor(items.length / pageSize);`}
-  newCode={`const totalPages = Math.ceil(items.length / pageSize);`}
-/>
-```
-
-### Unified patch
-
-Pass a `patch` string (unified diff format) when you already have output from `git diff` or a pull request.
-
-```tsx
-<CodeDiff
-  id="patch-diff"
-  language="typescript"
-  filename="api/routes.ts"
-  patch={`--- a/api/routes.ts
-+++ b/api/routes.ts
-@@ -14,6 +14,10 @@ export function registerRoutes(app: Express) {
-   app.get("/api/users", listUsers);
-   app.post("/api/users", createUser);
--  app.put("/api/users/:id", updateUser);
-+  app.patch("/api/users/:id", updateUser);
-   app.delete("/api/users/:id", deleteUser);
-+
-+  app.get("/healthz", (_req, res) => {
-+    res.json({ status: "ok" });
-+  });
- }`}
-/>
-```
-
-## Split View
-
-Set `diffStyle="split"` for a side-by-side comparison. Split view shows what was removed alongside what replaced it, making structural changes — renamed parameters, reordered logic, signature rewrites — easier to follow than interleaved lines. It needs more horizontal space than unified, so it works best in wide containers.
-
-```tsx
-<CodeDiff
-  id="split-example"
-  language="typescript"
-  filename="utils/format.ts"
-  diffStyle="split"
-  oldCode={`export function formatDate(d: Date) {
-  return d.toLocaleDateString("en-US");
-}`}
-  newCode={`export function formatDate(d: Date, locale = "en-US") {
-  return new Intl.DateTimeFormat(locale, {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-  }).format(d);
-}`}
-/>
-```
-
-## Collapsible Diffs
-
-Set `maxCollapsedLines` to collapse long diffs behind an expand toggle. When the rendered diff exceeds the line count, CodeDiff truncates the view and shows a "Show full diff" button.
-
-```tsx
-<CodeDiff
-  id="collapsible-example"
-  language="typescript"
-  filename="services/auth.ts"
-  maxCollapsedLines={12}
-  oldCode={`export class AuthService {
-  private secret: string;
-
-  constructor(secret: string) {
-    this.secret = secret;
-  }
-
-  verify(token: string) {
-    return jwt.verify(token, this.secret);
-  }
-}`}
-  newCode={`export class AuthService {
-  private secret: string;
-  private issuer: string;
-
-  constructor(secret: string, issuer: string) {
-    this.secret = secret;
-    this.issuer = issuer;
-  }
-
-  verify(token: string): TokenPayload {
-    const decoded = jwt.verify(token, this.secret);
-    if (decoded.iss !== this.issuer) {
-      throw new AuthError("invalid_issuer");
-    }
-    return decoded;
-  }
-}`}
-/>
-```
-
-## Compound Components
-
-`CodeDiff` renders a header, diff content, and collapse toggle in that order. For custom layouts, use the compound components directly:
-
-```tsx
-<CodeDiff.Root
-  id="custom-diff"
-  language="typescript"
-  filename="config.ts"
-  maxCollapsedLines={8}
-  oldCode={oldCode}
-  newCode={newCode}
->
-  <CodeDiff.Header />
-  <CodeDiff.Content />
-  <CodeDiff.CollapseToggle />
-</CodeDiff.Root>
-```
-
-This lets you rearrange, omit, or wrap individual sections. For example, you can drop the header for inline diffs or add your own controls between sections.
-
-| Subcomponent | Description |
-|---|---|
-| `CodeDiff.Root` | Context provider. Accepts all `CodeDiff` props plus `children`. |
-| `CodeDiff.Header` | Filename, language badge, and copy button. |
-| `CodeDiff.Content` | The syntax-highlighted diff view. |
-| `CodeDiff.CollapseToggle` | Expand/collapse button. Only renders when `maxCollapsedLines` triggers collapse. |
 
 ## Props
 

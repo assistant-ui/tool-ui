@@ -382,9 +382,9 @@ function CodeDiffCollapseToggle({ className }: CodeDiffSectionProps) {
 
 /* ── Composed preset (callable as a flat component) ─────────────── */
 
-export type CodeDiffStandardProps = Omit<CodeDiffRootProps, "children">;
+export type CodeDiffComposedProps = Omit<CodeDiffRootProps, "children">;
 
-function CodeDiffComposed(props: CodeDiffStandardProps) {
+function CodeDiffComposed(props: CodeDiffComposedProps) {
   return (
     <CodeDiffRoot {...props}>
       <CodeDiffHeader />
