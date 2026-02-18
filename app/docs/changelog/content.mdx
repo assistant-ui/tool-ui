@@ -5,6 +5,44 @@ import { DocsHeader } from "../_components/docs-header";
   mdxPath="app/docs/changelog/content.mdx"
 />
 
+<!-- changelog-generated-to: 16038eb -->
+
+## 2026-02-17
+
+### Breaking changes
+
+- Core components ([Code Block](/docs/code-block), [Terminal](/docs/terminal), [Order Summary](/docs/order-summary), [Video](/docs/video), [Progress Tracker](/docs/progress-tracker), [Item Carousel](/docs/item-carousel)) migrated to compound composition APIs. Components now expose explicit subcomponents (e.g., `CodeBlock.Root`, `Terminal.Output`) instead of monolithic prop interfaces.
+- Shared theme tokens refactored across code components; theme resolution for `Code Block` and `CodeDiff` changed.
+
+### Migration prompt
+
+```text
+Migrate codebase to adopt compound composition APIs for Tool UI components.
+
+Goals:
+1) Replace monolithic component usage with explicit subcomponent composition (e.g., CodeBlock.Root, Terminal.Output, OrderSummary.Display).
+2) Update Code Block and CodeDiff theme usage to consume shared theme tokens.
+3) Adopt compound root syntax for Video, Progress Tracker, and Item Carousel.
+4) Update tests and docs to reflect new subcomponent APIs and theme token contracts.
+
+Steps:
+- Replace single-element usage of Code Block, Terminal, Order Summary, Video, Progress Tracker, and Item Carousel with their compound subcomponent equivalents.
+- Update Code Block and CodeDiff theme references to use shared theme tokens instead of component-local tokens.
+- For Progress Tracker, split live and receipt rendering into dedicated compound subcomponents.
+- For Order Summary, adopt explicit Display and Receipt subcomponent variants.
+- Run lint, typecheck, and tests; fix breakages.
+- Validate UI rendering with updated compound APIs and theme tokens.
+```
+
+### Changes
+
+- New component: [CodeDiff](/docs/code-diff) — unified and split diff views for code.
+- Compound composition API shipped across [Code Block](/docs/code-block), [Terminal](/docs/terminal), [Order Summary](/docs/order-summary), [Video](/docs/video), [Progress Tracker](/docs/progress-tracker), and [Item Carousel](/docs/item-carousel).
+- [Weather Widget](/docs/weather-widget): runtime artifacts now generate as TypeScript; generated payload shrunk with size guardrails.
+- Shared theme tokens introduced across code components; `Code Block` mirrors shared tokens locally with tightened content line-height.
+- Normalized action button styling and layout across components; default spacing added between `ToolUI` surface and actions.
+- [Data Table](/docs/data-table): added links-tags preset; removed escalate from actions preset; removed resources preset from docs.
+
 ## 2026-02-12
 
 ### Breaking changes
