@@ -105,9 +105,9 @@ function toMarkdownCodeFence(input: string, language: string): string {
 
 function extractGeneratedToRef(content: string): string | null {
   const markerMatch = content.match(
-    /<!--\s*changelog-generated-to:\s*([^\s>][^>]*)\s*-->/,
+    /(?:<!--\s*changelog-generated-to:\s*([^\s>][^>]*)\s*-->|\{\/\*\s*changelog-generated-to:\s*(\S+)\s*\*\/\})/,
   );
-  const marker = markerMatch?.[1]?.trim();
+  const marker = (markerMatch?.[1] ?? markerMatch?.[2])?.trim();
   return marker && marker.length > 0 ? marker : null;
 }
 
@@ -121,7 +121,10 @@ function extractReleaseDateFromHeading(heading: string): string | null {
 }
 
 function introAreaContainsOnlyAllowedComments(introArea: string): boolean {
-  const stripped = introArea.replace(/<!--[\s\S]*?-->/g, "").trim();
+  const stripped = introArea
+    .replace(/<!--[\s\S]*?-->/g, "")
+    .replace(/\{\/\*[\s\S]*?\*\/\}/g, "")
+    .trim();
   return stripped.length === 0;
 }
 
@@ -161,7 +164,7 @@ export function renderReleaseSection({
 
   if (normalizedGeneratedToRef) {
     lines.push(
-      `<!-- changelog-generated-to: ${normalizedGeneratedToRef} -->`,
+      `{/* changelog-generated-to: ${normalizedGeneratedToRef} */}`,
       "",
     );
   }
