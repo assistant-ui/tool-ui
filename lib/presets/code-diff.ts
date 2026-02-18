@@ -4,10 +4,10 @@ import type { PresetWithCodeGen } from "./types";
 export type CodeDiffPresetName =
   | "refactor"
   | "bug-fix"
-  | "new-code"
-  | "config-change"
   | "patch"
-  | "split";
+  | "split"
+  | "collapsed"
+  | "minimal";
 
 function escape(value: string): string {
   return value
@@ -57,7 +57,7 @@ export const codeDiffPresets: Record<
   PresetWithCodeGen<SerializableCodeDiff>
 > = {
   refactor: {
-    description: "Function rename and restructure",
+    description: "Function rename and return type change",
     data: {
       id: "code-diff-preview-refactor",
       language: "typescript",
@@ -66,27 +66,13 @@ export const codeDiffPresets: Record<
       diffStyle: "unified",
       oldCode: `export function checkAuth(token: string) {
   const decoded = jwt.verify(token, SECRET);
-  if (!decoded) {
-    throw new Error("Invalid token");
-  }
-  const user = db.users.find(u => u.id === decoded.sub);
-  if (!user) {
-    throw new Error("User not found");
-  }
-  return user;
+  if (!decoded) throw new Error("Invalid token");
+  return db.users.find(u => u.id === decoded.sub);
 }`,
       newCode: `export function verifySession(token: string): AuthResult {
   const decoded = jwt.verify(token, SECRET);
-  if (!decoded) {
-    return { ok: false, error: "invalid_token" };
-  }
-
-  const user = db.users.findById(decoded.sub);
-  if (!user) {
-    return { ok: false, error: "user_not_found" };
-  }
-
-  return { ok: true, user };
+  if (!decoded) return { ok: false, error: "invalid_token" };
+  return { ok: true, user: db.users.findById(decoded.sub) };
 }`,
     } satisfies SerializableCodeDiff,
     generateExampleCode: generateCodeDiffCode,
@@ -99,97 +85,90 @@ export const codeDiffPresets: Record<
       filename: "hooks/use-pagination.ts",
       lineNumbers: "visible",
       diffStyle: "unified",
-      oldCode: `export function usePagination(items: unknown[], pageSize: number) {
-  const totalPages = Math.floor(items.length / pageSize);
-  const [page, setPage] = useState(1);
-
-  const pageItems = items.slice(
-    (page - 1) * pageSize,
-    page * pageSize - 1
-  );
-
-  return { page, totalPages, pageItems, setPage };
-}`,
-      newCode: `export function usePagination(items: unknown[], pageSize: number) {
-  const totalPages = Math.ceil(items.length / pageSize);
-  const [page, setPage] = useState(1);
-
-  const pageItems = items.slice(
-    (page - 1) * pageSize,
-    page * pageSize
-  );
-
-  return { page, totalPages, pageItems, setPage };
-}`,
+      oldCode: `const totalPages = Math.floor(items.length / pageSize);
+const end = page * pageSize - 1;`,
+      newCode: `const totalPages = Math.ceil(items.length / pageSize);
+const end = page * pageSize;`,
     } satisfies SerializableCodeDiff,
     generateExampleCode: generateCodeDiffCode,
   },
-  "new-code": {
-    description: "Adding rate limiting middleware",
+  collapsed: {
+    description: "Large refactor with collapsible diff",
     data: {
-      id: "code-diff-preview-new-code",
+      id: "code-diff-preview-collapsed",
       language: "typescript",
-      filename: "middleware/rate-limit.ts",
+      filename: "lib/permissions.ts",
       lineNumbers: "visible",
       diffStyle: "unified",
-      oldCode: "",
-      newCode: `import { Ratelimit } from "@upstash/ratelimit";
-import { Redis } from "@upstash/redis";
+      maxCollapsedLines: 12,
+      oldCode: `export function resolvePermissions(
+  user: User,
+  resource: Resource,
+  context: RequestContext,
+): Permission[] {
+  const base = getBasePermissions(user.role);
+  const overrides = getResourceOverrides(resource.id);
+  const result: Permission[] = [];
 
-const ratelimit = new Ratelimit({
-  redis: Redis.fromEnv(),
-  limiter: Ratelimit.slidingWindow(10, "10 s"),
-});
-
-export async function rateLimit(req: Request) {
-  const ip = req.headers.get("x-forwarded-for") ?? "127.0.0.1";
-  const { success, remaining } = await ratelimit.limit(ip);
-
-  if (!success) {
-    return new Response("Too many requests", {
-      status: 429,
-      headers: { "X-RateLimit-Remaining": String(remaining) },
-    });
+  for (const perm of base) {
+    if (overrides.denied.includes(perm)) continue;
+    if (perm === "write" && resource.locked) continue;
+    if (perm === "admin" && !context.elevated) continue;
+    result.push(perm);
   }
 
-  return null;
+  for (const perm of overrides.granted) {
+    if (!result.includes(perm)) {
+      result.push(perm);
+    }
+  }
+
+  if (user.isSuperAdmin) {
+    return ALL_PERMISSIONS;
+  }
+
+  return result;
+}`,
+      newCode: `export function resolvePermissions(
+  user: User,
+  resource: Resource,
+  context: RequestContext,
+): Permission[] {
+  if (user.isSuperAdmin) return ALL_PERMISSIONS;
+
+  const base = getBasePermissions(user.role);
+  const overrides = getResourceOverrides(resource.id);
+
+  const filtered = base.filter((perm) => {
+    if (overrides.denied.includes(perm)) return false;
+    if (perm === "write" && resource.locked) return false;
+    if (perm === "admin" && !context.elevated) return false;
+    return true;
+  });
+
+  const granted = overrides.granted.filter(
+    (perm) => !filtered.includes(perm),
+  );
+
+  return [...filtered, ...granted];
 }`,
     } satisfies SerializableCodeDiff,
     generateExampleCode: generateCodeDiffCode,
   },
-  "config-change": {
-    description: "Updating TypeScript compiler options",
+  minimal: {
+    description: "Clean diff without line numbers",
     data: {
-      id: "code-diff-preview-config",
-      language: "json",
-      filename: "tsconfig.json",
-      lineNumbers: "visible",
+      id: "code-diff-preview-minimal",
+      language: "python",
+      filename: "app/config.py",
+      lineNumbers: "hidden",
       diffStyle: "unified",
-      oldCode: `{
-  "compilerOptions": {
-    "target": "es2020",
-    "module": "commonjs",
-    "strict": true,
-    "esModuleInterop": true,
-    "outDir": "./dist",
-    "rootDir": "./src"
-  },
-  "include": ["src/**/*"]
-}`,
-      newCode: `{
-  "compilerOptions": {
-    "target": "es2022",
-    "module": "nodenext",
-    "moduleResolution": "nodenext",
-    "strict": true,
-    "esModuleInterop": true,
-    "outDir": "./dist",
-    "rootDir": "./src",
-    "verbatimModuleSyntax": true
-  },
-  "include": ["src/**/*"],
-  "exclude": ["**/*.test.ts"]
-}`,
+      oldCode: `ALLOWED_ORIGINS = ["https://app.example.com"]
+RATE_LIMIT = 100
+SESSION_TTL = 3600`,
+      newCode: `ALLOWED_ORIGINS = ["https://app.example.com", "https://staging.example.com"]
+RATE_LIMIT = 250
+SESSION_TTL = 7200`,
     } satisfies SerializableCodeDiff,
     generateExampleCode: generateCodeDiffCode,
   },

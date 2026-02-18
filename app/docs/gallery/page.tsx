@@ -289,7 +289,7 @@ export default function ComponentsGalleryPage() {
     {
       componentId: "code-diff",
       className: "mb-5 flex break-inside-avoid justify-center 2xl:mb-5",
-      render: () => <CodeDiffStandard {...codeDiffPresets["bug-fix"].data} />,
+      render: () => <CodeDiffStandard {...codeDiffPresets["refactor"].data} />,
     },
     {
       componentId: "chart",

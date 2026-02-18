@@ -6,7 +6,7 @@ import { DocsHeader } from "../_components/docs-header";
   mdxPath="app/docs/code-diff/content.mdx"
 />
 
-Dumping raw before-and-after text into a chat message forces users to play spot-the-difference. CodeDiff renders syntax-highlighted diffs with additions and deletions marked clearly, so changes are obvious at a glance. Pass `oldCode` and `newCode` to compare two versions of a file, or pass a `patch` string for unified diffs straight from version control.
+CodeDiff renders syntax-highlighted diffs with additions and deletions marked clearly, so changes are obvious at a glance. Pass `oldCode` / `newCode` for file comparisons or a `patch` string for unified diffs from version control.
 
 **Role:** Information. Displays data for the user to read. See [Design Guidelines](/docs/design-guidelines) for how component roles work.
 
@@ -72,28 +72,6 @@ export function MyComponent() {
 Register this renderer so tool results display as `CodeDiff`.
 
 ```tsx
-// Backend tool
-import { tool, jsonSchema } from "ai";
-
-const showCodeDiff = tool({
-  description: "Show a code diff",
-  inputSchema: jsonSchema<{}>({
-    type: "object",
-    properties: {},
-    additionalProperties: false,
-  }),
-  async execute() {
-    return {
-      id: "diff-1",
-      language: "typescript",
-      filename: "lib/auth.ts",
-      oldCode: "function checkAuth() { throw new Error(); }",
-      newCode: "function checkAuth(): Result { return { ok: false }; }",
-    };
-  },
-});
-
-// Frontend with assistant-ui
 import { type Toolkit } from "@assistant-ui/react";
 import { CodeDiff } from "@/components/tool-ui/code-diff";
 import { safeParseSerializableCodeDiff } from "@/components/tool-ui/code-diff/schema";
@@ -184,10 +162,87 @@ Set `diffStyle="split"` for a side-by-side comparison. Split view shows what was
   language="typescript"
   filename="utils/format.ts"
   diffStyle="split"
-  oldCode={oldCode}
-  newCode={newCode}
+  oldCode={`export function formatDate(d: Date) {
+  return d.toLocaleDateString("en-US");
+}`}
+  newCode={`export function formatDate(d: Date, locale = "en-US") {
+  return new Intl.DateTimeFormat(locale, {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  }).format(d);
+}`}
 />
 ```
+
+## Collapsible Diffs
+
+Set `maxCollapsedLines` to collapse long diffs behind an expand toggle. When the rendered diff exceeds the line count, CodeDiff truncates the view and shows a "Show full diff" button.
+
+```tsx
+<CodeDiff.Standard
+  id="collapsible-example"
+  language="typescript"
+  filename="services/auth.ts"
+  maxCollapsedLines={12}
+  oldCode={`export class AuthService {
+  private secret: string;
+
+  constructor(secret: string) {
+    this.secret = secret;
+  }
+
+  verify(token: string) {
+    return jwt.verify(token, this.secret);
+  }
+}`}
+  newCode={`export class AuthService {
+  private secret: string;
+  private issuer: string;
+
+  constructor(secret: string, issuer: string) {
+    this.secret = secret;
+    this.issuer = issuer;
+  }
+
+  verify(token: string): TokenPayload {
+    const decoded = jwt.verify(token, this.secret);
+    if (decoded.iss !== this.issuer) {
+      throw new AuthError("invalid_issuer");
+    }
+    return decoded;
+  }
+}`}
+/>
+```
+
+## Compound Components
+
+`CodeDiff.Standard` renders a header, diff content, and collapse toggle in that order. For custom layouts, use the compound components directly:
+
+```tsx
+<CodeDiff.Root
+  id="custom-diff"
+  language="typescript"
+  filename="config.ts"
+  maxCollapsedLines={8}
+  oldCode={oldCode}
+  newCode={newCode}
+>
+  <CodeDiff.Header />
+  <CodeDiff.Content />
+  <CodeDiff.CollapseToggle />
+</CodeDiff.Root>
+```
+
+This lets you rearrange, omit, or wrap individual sections. For example, you can drop the header for inline diffs or add your own controls between sections.
+
+| Subcomponent | Description |
+|---|---|
+| `CodeDiff.Root` | Context provider. Accepts all `CodeDiff` props plus `children`. |
+| `CodeDiff.Header` | Filename, language badge, and copy button. |
+| `CodeDiff.Content` | The syntax-highlighted diff view. |
+| `CodeDiff.CollapseToggle` | Expand/collapse button. Only renders when `maxCollapsedLines` triggers collapse. |
 
 ## Props
 

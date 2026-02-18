@@ -455,8 +455,8 @@ export const previewConfigs: Record<
     presets: codeDiffPresets as Record<string, PresetWithCodeGen<unknown>>,
     defaultPreset: "refactor" satisfies CodeDiffPresetName,
     chatContext: {
-      userMessage: "Refactor checkAuth to return a result type instead of throwing",
-      preamble: "Here are the changes:",
+      userMessage: "Can you refactor checkAuth to return a result instead of throwing?",
+      preamble: "Here's the updated function:",
     },
     renderComponent: ({ data }) => {
       const diffData = data as CodeDiffStandardProps;
