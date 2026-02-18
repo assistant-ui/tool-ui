@@ -239,83 +239,6 @@ const taskData: GenericRow[] = [
   },
 ];
 
-const resourceColumns: Column<GenericRow>[] = [
-  { key: "name", label: "Resource", priority: "primary" },
-  {
-    key: "category",
-    label: "Category",
-    priority: "primary",
-    format: {
-      kind: "badge",
-      colorMap: {
-        Documentation: "info",
-        Tutorial: "success",
-        Reference: "neutral",
-        Tool: "warning",
-      },
-    },
-  },
-  {
-    key: "url",
-    label: "Link",
-    priority: "secondary",
-    format: { kind: "link", external: true },
-  },
-  {
-    key: "localPath",
-    label: "Local Copy",
-    priority: "secondary",
-    format: { kind: "link" },
-  },
-  {
-    key: "tags",
-    label: "Tags",
-    priority: "secondary",
-    format: { kind: "array", maxVisible: 2 },
-  },
-  {
-    key: "updatedAt",
-    label: "Last Updated",
-    priority: "tertiary",
-    format: { kind: "date", dateFormat: "relative" },
-  },
-];
-
-const resourceData: GenericRow[] = [
-  {
-    name: "The ENIAC Story",
-    category: "Documentation",
-    url: "https://www.computerhistory.org/revolution/early-computers/5",
-    localPath: "/docs/eniac-story.pdf",
-    tags: ["eniac", "vacuum-tube", "history"],
-    updatedAt: "2025-05-12T09:00:00.000Z",
-  },
-  {
-    name: "The UNIX Philosophy",
-    category: "Reference",
-    url: "https://homepage.cs.uri.edu/~thenry/resources/unix_art/ch01s06.html",
-    localPath: "/docs/unix-philosophy.md",
-    tags: ["unix", "pipe", "philosophy"],
-    updatedAt: "2025-05-12T13:00:00.000Z",
-  },
-  {
-    name: "ARPANET Origins",
-    category: "Tutorial",
-    url: "https://www.internetsociety.org/internet/history-internet/brief-history-internet/",
-    localPath: null,
-    tags: ["arpanet", "internet", "packet-switching"],
-    updatedAt: "2025-05-12T18:00:00.000Z",
-  },
-  {
-    name: "Xerox PARC Research",
-    category: "Tool",
-    url: "https://xeroxparc.archive.org/",
-    localPath: "/docs/parc-archive/",
-    tags: ["gui", "wimp", "innovation"],
-    updatedAt: "2025-05-06T09:00:00.000Z",
-  },
-];
-
 const actionsColumns: Column<GenericRow>[] = [
   { key: "id", label: "Ticket", priority: "primary" },
   { key: "subject", label: "Subject", priority: "primary", truncate: true },
@@ -401,7 +324,7 @@ const actionsData: GenericRow[] = [
   },
 ];
 
-export type DataTablePresetName = "stocks" | "tasks" | "resources" | "actions";
+export type DataTablePresetName = "stocks" | "tasks" | "actions";
 
 export const dataTablePresets: Record<
   DataTablePresetName,
@@ -424,17 +347,6 @@ export const dataTablePresets: Record<
       columns: taskColumns,
       data: taskData,
       rowIdKey: "title",
-    },
-    generateExampleCode: generateDataTableCode,
-  },
-  resources: {
-    description:
-      "External and internal links, tag arrays, badges, and relative dates",
-    data: {
-      id: "data-table-preview-resources",
-      columns: resourceColumns,
-      data: resourceData,
-      rowIdKey: "name",
     },
     generateExampleCode: generateDataTableCode,
   },
