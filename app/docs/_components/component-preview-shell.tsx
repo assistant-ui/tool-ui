@@ -108,7 +108,12 @@ const ResizablePreviewArea = memo(function ResizablePreviewArea({
         minSize={PREVIEW_MIN_WIDTH}
         maxSize={PREVIEW_MAX_WIDTH}
       >
-        <div className={cn("scrollbar-subtle relative", "transition-all")}>
+        <div
+          className={cn(
+            "scrollbar-subtle relative overflow-x-auto",
+            "transition-all",
+          )}
+        >
           {children}
         </div>
       </Panel>
