@@ -4,7 +4,39 @@ import { describe, expect, test } from "vitest";
 
 import { ParameterSlider } from "@/components/tool-ui/parameter-slider";
 
+function getClassForDataSlot(html: string, dataSlot: string): string {
+  const tagMatch = html.match(new RegExp(`<[^>]*data-slot="${dataSlot}"[^>]*>`));
+  if (!tagMatch) {
+    throw new Error(`Could not find class for data-slot="${dataSlot}"`);
+  }
+  const classMatch = tagMatch[0].match(/class="([^"]+)"/);
+  if (!classMatch) {
+    throw new Error(`Could not find class for data-slot="${dataSlot}"`);
+  }
+  return classMatch[1];
+}
+
 describe("parameter-slider visual alignment contract", () => {
+  test("creates an isolated stacking context at the root container", () => {
+    const html = renderToStaticMarkup(
+      React.createElement(ParameterSlider, {
+        id: "parameter-slider-isolate-contract",
+        sliders: [
+          {
+            id: "s",
+            label: "S",
+            min: 0,
+            max: 100,
+            value: 42,
+          },
+        ],
+      }),
+    );
+
+    const rootClass = getClassForDataSlot(html, "parameter-slider");
+    expect(rootClass).toContain("isolate");
+  });
+
   test("keeps fill edge in the same inset coordinate system as the thumb", () => {
     const html = renderToStaticMarkup(
       React.createElement(ParameterSlider, {

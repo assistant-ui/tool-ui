@@ -5,6 +5,18 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 import { ProgressTracker } from "@/components/tool-ui/progress-tracker";
 
+function getClassForDataSlot(html: string, dataSlot: string): string {
+  const tagMatch = html.match(new RegExp(`<[^>]*data-slot="${dataSlot}"[^>]*>`));
+  if (!tagMatch) {
+    throw new Error(`Could not find class for data-slot="${dataSlot}"`);
+  }
+  const classMatch = tagMatch[0].match(/class="([^"]+)"/);
+  if (!classMatch) {
+    throw new Error(`Could not find class for data-slot="${dataSlot}"`);
+  }
+  return classMatch[1];
+}
+
 describe("progress tracker render contract", () => {
   it("is server-renderable (no client directive)", () => {
     const sourcePath = path.join(
@@ -57,6 +69,12 @@ describe("progress tracker render contract", () => {
     );
 
     expect(liveHtml).toContain('data-slot="progress-tracker"');
+    expect(getClassForDataSlot(liveHtml, "progress-tracker")).toContain(
+      "isolate",
+    );
+    expect(getClassForDataSlot(receiptHtml, "progress-tracker")).toContain(
+      "isolate",
+    );
     expect(receiptHtml).toContain('data-receipt="true"');
   });
 

@@ -174,7 +174,7 @@ function ProgressTrackerReceipt({
   return (
     <div
       className={cn(
-        "flex w-full max-w-md min-w-80 flex-col",
+        "isolate flex w-full max-w-md min-w-80 flex-col",
         "text-foreground select-none",
         "motion-safe:animate-in motion-safe:fade-in motion-safe:blur-in-sm motion-safe:zoom-in-95 motion-safe:duration-300 motion-safe:ease-[cubic-bezier(0.16,1,0.3,1)] motion-safe:fill-mode-both",
         className,
@@ -247,7 +247,7 @@ function ProgressTrackerLive({
   return (
     <article
       className={cn(
-        "flex w-full max-w-md min-w-80 flex-col gap-3",
+        "isolate flex w-full max-w-md min-w-80 flex-col gap-3",
         "text-foreground select-none",
         className,
       )}

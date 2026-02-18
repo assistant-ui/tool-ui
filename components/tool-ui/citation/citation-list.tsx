@@ -132,7 +132,7 @@ export function CitationList(props: CitationListProps) {
   if (variant === "default") {
     return (
       <div
-        className={cn("flex flex-col gap-4", className)}
+        className={cn("isolate flex flex-col gap-4", className)}
         data-tool-ui-id={id}
         data-slot="citation-list"
       >
@@ -158,7 +158,7 @@ export function CitationList(props: CitationListProps) {
 
   return (
     <div
-      className={cn(wrapperClass, className)}
+      className={cn("isolate", wrapperClass, className)}
       data-tool-ui-id={id}
       data-slot="citation-list"
     >
@@ -381,7 +381,7 @@ function StackedCitations({
               }
             }}
             className={cn(
-              "inline-flex cursor-pointer items-center gap-2 rounded-lg px-3 py-2",
+              "isolate inline-flex cursor-pointer items-center gap-2 rounded-lg px-3 py-2",
               "bg-muted/40 outline-none",
               "transition-colors duration-150",
               "hover:bg-muted/70",

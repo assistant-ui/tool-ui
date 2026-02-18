@@ -782,7 +782,7 @@ export function ParameterSlider({
   return (
     <article
       className={cn(
-        "@container/parameter-slider flex w-full max-w-md min-w-80 flex-col gap-3",
+        "@container/parameter-slider isolate flex w-full max-w-md min-w-80 flex-col gap-3",
         "text-foreground",
         className,
       )}

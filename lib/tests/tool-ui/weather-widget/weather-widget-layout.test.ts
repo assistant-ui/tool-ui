@@ -5,14 +5,15 @@ import { describe, expect, test } from "vitest";
 import { WeatherWidget } from "@/lib/weather-authoring/weather-widget";
 
 function getClassForDataSlot(html: string, dataSlot: string): string {
-  const pattern = new RegExp(
-    `data-slot="${dataSlot}"[^>]*class="([^"]+)"`,
-  );
-  const match = html.match(pattern);
-  if (!match) {
+  const tagMatch = html.match(new RegExp(`<[^>]*data-slot="${dataSlot}"[^>]*>`));
+  if (!tagMatch) {
     throw new Error(`Could not find class for data-slot="${dataSlot}"`);
   }
-  return match[1];
+  const classMatch = tagMatch[0].match(/class="([^"]+)"/);
+  if (!classMatch) {
+    throw new Error(`Could not find class for data-slot="${dataSlot}"`);
+  }
+  return classMatch[1];
 }
 
 describe("weather-widget layout containment", () => {
@@ -43,6 +44,7 @@ describe("weather-widget layout containment", () => {
     const wrapperClass = getClassForDataSlot(html, "weather-widget");
     const cardClass = getClassForDataSlot(html, "card");
 
+    expect(wrapperClass).toContain("isolate");
     expect(wrapperClass).not.toContain("[container-type:size]");
     expect(cardClass).toContain("@container/weather");
     expect(cardClass).toContain("[container-type:size]");
