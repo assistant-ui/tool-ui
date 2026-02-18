@@ -373,7 +373,7 @@ function CodeBlockContent({ className }: CodeBlockSectionProps) {
   return (
     <div
       className={cn(
-        "overflow-x-auto overflow-y-clip text-sm [&_pre]:bg-transparent [&_pre]:py-4",
+        "overflow-x-auto overflow-y-clip text-[13px] [&_pre]:bg-transparent [&_pre]:py-4",
         isCollapsed && "max-h-[200px]",
         className,
       )}

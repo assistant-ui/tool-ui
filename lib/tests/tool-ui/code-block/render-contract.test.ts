@@ -187,4 +187,25 @@ describe("code-block render contract", () => {
 
     await cleanupClientRender(root, container);
   });
+
+  it("uses 13px content sizing to match code-diff", async () => {
+    setupShikiMock();
+    const { CodeBlock } = await import("@/components/tool-ui/code-block");
+
+    const { container, root } = await renderClient(
+      h(CodeBlock, {
+        id: "content-font-size-contract",
+        code: "const value = 1;",
+        language: "typescript",
+        lineNumbers: "visible",
+      }),
+    );
+
+    const content = container.querySelector('[data-slot="code-block"] .overflow-x-auto');
+    expect(content).not.toBeNull();
+    expect(content?.className).toContain("text-[13px]");
+    expect(content?.className).not.toContain("text-sm");
+
+    await cleanupClientRender(root, container);
+  });
 });
