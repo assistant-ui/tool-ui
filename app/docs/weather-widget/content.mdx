@@ -125,47 +125,51 @@ export const toolkit: Toolkit = {
 
 </Steps>
 
-## Agent Integration Prompt (Optional)
+## Coding Agent Prompt
 
-Copy-paste this into your coding agent if you want it to wire `WeatherWidget` to your weather API (for example, Open-Meteo):
+Copy this prompt into your coding agent (Claude Code, Cursor, etc.) and it will wire `WeatherWidget` to whatever weather API you use.
+
+<div className="[&_pre]:max-h-[30rem] [&_pre]:overflow-y-auto">
 
 ```text
-Integrate the Tool UI WeatherWidget with a weather API (Open-Meteo is fine).
+Integrate the Tool UI WeatherWidget with a live weather API.
 
-Requirements:
-1) Keep the existing WeatherWidget runtime usage:
-   import { WeatherWidget } from "@/components/tool-ui/weather-widget/runtime";
-2) Build and return a payload that matches WeatherWidgetProps exactly.
-3) Use deterministic mapping from provider weather codes into Tool UI WeatherConditionCode values:
-   clear | partly-cloudy | cloudy | overcast | fog | drizzle | rain | heavy-rain | thunderstorm | snow | sleet | hail | windy
-4) Include:
-   - version: "3.1"
-   - id: stable id string
-   - location: { name }
-   - units: { temperature: "celsius" | "fahrenheit" }
-   - current: { temperature, tempMin, tempMax, conditionCode, windSpeed?, precipitationLevel?, visibility? }
-   - forecast: 1-7 items of { label, tempMin, tempMax, conditionCode }
-   - time: { localTimeOfDay } where localTimeOfDay is 0..1 based on location local time
-   - updatedAt: ISO timestamp
-5) Register a get_weather tool renderer so tool output renders WeatherWidget (not raw JSON).
+Step 1 — Discover the weather API:
+- Check the codebase for an existing weather API integration (look for API keys, env vars, fetch calls to weather services).
+- If one exists, use that provider. If not, ask the user which weather API they want to use.
 
-Implementation tasks:
-- Create a provider adapter module (e.g. openMeteoToWeatherWidgetPayload.ts) that:
-  - fetches geocode + forecast/current data from Open-Meteo
-  - maps provider weather codes to WeatherConditionCode with an explicit lookup table and sensible fallback
-  - derives precipitationLevel from precipitation/rain intensity
-  - derives localTimeOfDay from provider timezone/current time
-  - returns validated WeatherWidgetProps
+Step 2 — Build the adapter:
+Create a provider adapter module (e.g. weatherAdapter.ts) that:
+- Fetches current conditions and forecast data from the chosen provider
+- Maps provider-specific weather codes to WeatherConditionCode with an explicit lookup table and a sensible fallback
+- Derives localTimeOfDay (0..1) from the location's local time
+- Returns a validated WeatherWidgetProps payload
+
+The payload must match WeatherWidgetProps exactly:
+- version: "3.1"
+- id: stable id string
+- location: { name }
+- units: { temperature: "celsius" | "fahrenheit" }
+- current: { temperature, tempMin, tempMax, conditionCode, windSpeed?, precipitationLevel?, visibility? }
+- forecast: 1–7 items of { label, tempMin, tempMax, conditionCode }
+- time: { localTimeOfDay } where localTimeOfDay is 0..1 based on location local time
+- updatedAt: ISO timestamp
+
+Valid WeatherConditionCode values:
+clear | partly-cloudy | cloudy | overcast | fog | drizzle | rain | heavy-rain | thunderstorm | snow | sleet | hail | windy
+
+Step 3 — Register the tool:
+Register a get_weather tool renderer so tool output renders WeatherWidget (not raw JSON).
+Keep the existing runtime import:
+  import { WeatherWidget } from "@/components/tool-ui/weather-widget/runtime";
+
+Additional requirements:
 - Add lightweight runtime validation before rendering (zod safeParse + fallback behavior).
 - Keep all API keys/secrets server-side only.
-- Add tests for code mapping and payload shape.
-
-Deliverables:
-- adapter module
-- tool registration update for get_weather
-- one example invocation path that renders <WeatherWidget {...payload} />
-- tests + brief README comment explaining mapping assumptions
+- Add tests for condition code mapping and payload shape.
 ```
+
+</div>
 
 ## Key Features
 
