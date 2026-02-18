@@ -50,7 +50,7 @@ export function InteractiveOptionDemo() {
   }, []);
 
   return (
-    <div className="relative">
+    <div>
       <MockThread caption="Click an option and confirm — then reset to try again">
         <MockMessage role="user">
           Help me pick a database for the new project
@@ -80,7 +80,7 @@ export function InteractiveOptionDemo() {
       {choice && (
         <div
           className={cn(
-            "absolute -bottom-4 left-1/2 -translate-x-1/2",
+            "flex justify-center",
             "motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-1 motion-safe:duration-200",
           )}
         >
