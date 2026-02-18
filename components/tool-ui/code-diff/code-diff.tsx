@@ -24,14 +24,14 @@ import { Button, cn, Collapsible, CollapsibleTrigger } from "./_adapter";
  * Pierre's shared_highlighter registers custom themes with dynamic imports
  * (`import("../themes/pierre-dark.js")`) that fail under Turbopack because the
  * package `exports` field doesn't include those subpaths. We override the
- * RegisteredCustomThemes map entries with loaders that point to local copies of
- * the theme files, which Turbopack can resolve.
+ * RegisteredCustomThemes map entries with loaders that point to local vendored
+ * theme files in `components/tool-ui/shared`, which Turbopack can resolve.
  */
 RegisteredCustomThemes.set("pierre-dark", () =>
-  import("./pierre-dark-theme.js").then((m) => m.default as never),
+  import("../shared/pierre-dark-theme.js").then((m) => m.default as never),
 );
 RegisteredCustomThemes.set("pierre-light", () =>
-  import("./pierre-light-theme.js").then((m) => m.default as never),
+  import("../shared/pierre-light-theme.js").then((m) => m.default as never),
 );
 
 const COPY_ID = "codediff-code";

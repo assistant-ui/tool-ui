@@ -312,16 +312,6 @@
           "target": "components/tool-ui/code-block/index.tsx"
         },
         {
-          "path": "components/tool-ui/code-block/pierre-dark-theme.js",
-          "type": "registry:file",
-          "target": "components/tool-ui/code-block/pierre-dark-theme.js"
-        },
-        {
-          "path": "components/tool-ui/code-block/pierre-light-theme.js",
-          "type": "registry:file",
-          "target": "components/tool-ui/code-block/pierre-light-theme.js"
-        },
-        {
           "path": "components/tool-ui/code-block/README.md",
           "type": "registry:file",
           "target": "components/tool-ui/code-block/README.md"
@@ -340,6 +330,16 @@
           "path": "components/tool-ui/shared/parse.ts",
           "type": "registry:lib",
           "target": "components/tool-ui/shared/parse.ts"
+        },
+        {
+          "path": "components/tool-ui/shared/pierre-dark-theme.js",
+          "type": "registry:file",
+          "target": "components/tool-ui/shared/pierre-dark-theme.js"
+        },
+        {
+          "path": "components/tool-ui/shared/pierre-light-theme.js",
+          "type": "registry:file",
+          "target": "components/tool-ui/shared/pierre-light-theme.js"
         },
         {
           "path": "components/tool-ui/shared/schema.ts",
@@ -384,16 +384,6 @@
           "target": "components/tool-ui/code-diff/index.tsx"
         },
         {
-          "path": "components/tool-ui/code-diff/pierre-dark-theme.js",
-          "type": "registry:file",
-          "target": "components/tool-ui/code-diff/pierre-dark-theme.js"
-        },
-        {
-          "path": "components/tool-ui/code-diff/pierre-light-theme.js",
-          "type": "registry:file",
-          "target": "components/tool-ui/code-diff/pierre-light-theme.js"
-        },
-        {
           "path": "components/tool-ui/code-diff/schema.ts",
           "type": "registry:lib",
           "target": "components/tool-ui/code-diff/schema.ts"
@@ -407,6 +397,16 @@
           "path": "components/tool-ui/shared/parse.ts",
           "type": "registry:lib",
           "target": "components/tool-ui/shared/parse.ts"
+        },
+        {
+          "path": "components/tool-ui/shared/pierre-dark-theme.js",
+          "type": "registry:file",
+          "target": "components/tool-ui/shared/pierre-dark-theme.js"
+        },
+        {
+          "path": "components/tool-ui/shared/pierre-light-theme.js",
+          "type": "registry:file",
+          "target": "components/tool-ui/shared/pierre-light-theme.js"
         },
         {
           "path": "components/tool-ui/shared/schema.ts",

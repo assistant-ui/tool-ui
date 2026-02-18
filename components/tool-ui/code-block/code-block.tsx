@@ -10,8 +10,8 @@ import {
 } from "react";
 import { createHighlighter, type Highlighter } from "shiki";
 import { Copy, Check, ChevronDown, ChevronUp } from "lucide-react";
-import pierreDarkTheme from "./pierre-dark-theme.js";
-import pierreLightTheme from "./pierre-light-theme.js";
+import pierreDarkTheme from "../shared/pierre-dark-theme.js";
+import pierreLightTheme from "../shared/pierre-light-theme.js";
 import type {
   CodeBlockLineNumbersMode,
   CodeBlockProps,
