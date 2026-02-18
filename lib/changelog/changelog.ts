@@ -170,7 +170,7 @@ export function renderReleaseSection({
     lines.push("### Breaking changes", "", listToBullets(breakingChanges), "");
   }
 
-  if (breakingChanges.length > 0 && migrationPrompt) {
+  if (migrationPrompt) {
     lines.push(
       "### Migration prompt",
       "",
@@ -271,11 +271,6 @@ export function validateChangelogStructure(
       );
     }
 
-    if (idxMigration !== -1 && idxBreaking === -1) {
-      errors.push(
-        `Release "${section.heading}" has "### Migration prompt" but no "### Breaking changes".`,
-      );
-    }
 
     if (migrationPromptCount > 1) {
       errors.push(
