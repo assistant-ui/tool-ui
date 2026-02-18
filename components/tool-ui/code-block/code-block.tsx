@@ -414,7 +414,7 @@ function CodeBlockCollapseToggle({ className }: CodeBlockSectionProps) {
 
 export type CodeBlockStandardProps = Omit<CodeBlockRootProps, "children">;
 
-export function CodeBlockStandard(props: CodeBlockStandardProps) {
+function CodeBlockComposed(props: CodeBlockStandardProps) {
   return (
     <CodeBlockRoot {...props}>
       <CodeBlockHeader />
@@ -424,18 +424,16 @@ export function CodeBlockStandard(props: CodeBlockStandardProps) {
   );
 }
 
-type CodeBlockComponent = {
+type CodeBlockComponent = typeof CodeBlockComposed & {
   Root: typeof CodeBlockRoot;
-  Standard: typeof CodeBlockStandard;
   Header: typeof CodeBlockHeader;
   Content: typeof CodeBlockContent;
   CollapseToggle: typeof CodeBlockCollapseToggle;
 };
 
-export const CodeBlock = {
+export const CodeBlock = Object.assign(CodeBlockComposed, {
   Root: CodeBlockRoot,
-  Standard: CodeBlockStandard,
   Header: CodeBlockHeader,
   Content: CodeBlockContent,
   CollapseToggle: CodeBlockCollapseToggle,
-} as CodeBlockComponent;
+}) as CodeBlockComponent;

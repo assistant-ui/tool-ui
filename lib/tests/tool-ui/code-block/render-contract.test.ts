@@ -103,7 +103,7 @@ describe("code-block render contract", () => {
     const shiki = setupShikiMock();
     const { CodeBlock } = await import("@/components/tool-ui/code-block");
 
-    const first = h(CodeBlock.Standard, {
+    const first = h(CodeBlock, {
       id: "collision-a",
       code: "snippet",
       language: "lang::x",
@@ -111,7 +111,7 @@ describe("code-block render contract", () => {
     });
     const { container, root } = await renderClient(first);
 
-    const second = h(CodeBlock.Standard, {
+    const second = h(CodeBlock, {
       id: "collision-b",
       code: "snippet::lang",
       language: "x",
@@ -130,7 +130,7 @@ describe("code-block render contract", () => {
     const { CodeBlock } = await import("@/components/tool-ui/code-block");
 
     const { container, root } = await renderClient(
-      h(CodeBlock.Standard, {
+      h(CodeBlock, {
         id: "bounded-cache-0",
         code: "code-0",
         language: "text",
@@ -142,7 +142,7 @@ describe("code-block render contract", () => {
     for (let index = 1; index < uniqueEntries; index += 1) {
       await rerenderClient(
         root,
-        h(CodeBlock.Standard, {
+        h(CodeBlock, {
           id: `bounded-cache-${index}`,
           code: `code-${index}`,
           language: "text",
@@ -153,7 +153,7 @@ describe("code-block render contract", () => {
 
     await rerenderClient(
       root,
-      h(CodeBlock.Standard, {
+      h(CodeBlock, {
         id: "bounded-cache-revisit",
         code: "code-0",
         language: "text",
@@ -172,7 +172,7 @@ describe("code-block render contract", () => {
 
     const { CodeBlock } = await import("@/components/tool-ui/code-block");
     const { container, root } = await renderClient(
-      h(CodeBlock.Standard, {
+      h(CodeBlock, {
         id: "data-theme-dark",
         code: "const value = 1;",
         language: "typescript",

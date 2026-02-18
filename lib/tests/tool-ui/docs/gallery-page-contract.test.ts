@@ -47,9 +47,8 @@ describe("gallery page contract", () => {
   test("gallery uses a direct dynamic binding for the code-block variant", () => {
     const content = fs.readFileSync(GALLERY_PAGE_PATH, "utf8");
 
-    expect(content).toContain("const CodeBlockStandard = dynamic(");
-    expect(content).toContain(".then((m) => m.CodeBlockStandard)");
-    expect(content).toContain("<CodeBlockStandard");
-    expect(content).not.toContain("const CodeBlock = {");
+    expect(content).toContain("const CodeBlock = dynamic(");
+    expect(content).toContain(".then((m) => m.CodeBlock)");
+    expect(content).toContain("<CodeBlock");
   });
 });

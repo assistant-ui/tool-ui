@@ -1,4 +1,4 @@
-export { CodeDiff, CodeDiffStandard } from "./code-diff";
+export { CodeDiff, CodeDiff as CodeDiffStandard } from "./code-diff";
 export type {
   CodeDiffRootProps,
   CodeDiffStandardProps,

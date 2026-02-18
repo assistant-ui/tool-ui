@@ -145,7 +145,7 @@ const DynamicCitationList = dynamic(() =>
   import("@/components/tool-ui/citation").then((m) => m.CitationList),
 );
 const DynamicCodeDiff = dynamic(() =>
-  import("@/components/tool-ui/code-diff").then((m) => m.CodeDiffStandard),
+  import("@/components/tool-ui/code-diff").then((m) => m.CodeDiff),
 );
 const DynamicDataTable = dynamic(() =>
   import("@/components/tool-ui/data-table").then((m) => m.DataTable),
@@ -448,7 +448,7 @@ export const previewConfigs: Record<
     },
     renderComponent: ({ data }) => {
       const codeBlock = data as CodeBlockStandardProps;
-      return <CodeBlock.Standard {...codeBlock} />;
+      return <CodeBlock {...codeBlock} />;
     },
   },
   "code-diff": {

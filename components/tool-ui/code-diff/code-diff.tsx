@@ -380,11 +380,11 @@ function CodeDiffCollapseToggle({ className }: CodeDiffSectionProps) {
   );
 }
 
-/* ── Standard preset (callable as a flat component) ─────────────── */
+/* ── Composed preset (callable as a flat component) ─────────────── */
 
 export type CodeDiffStandardProps = Omit<CodeDiffRootProps, "children">;
 
-export function CodeDiffStandard(props: CodeDiffStandardProps) {
+function CodeDiffComposed(props: CodeDiffStandardProps) {
   return (
     <CodeDiffRoot {...props}>
       <CodeDiffHeader />
@@ -396,17 +396,16 @@ export function CodeDiffStandard(props: CodeDiffStandardProps) {
 
 /* ── Compound export: CodeDiff is callable AND has subcomponents ── */
 
-type CodeDiffCompound = typeof CodeDiffStandard & {
+type CodeDiffComponent = typeof CodeDiffComposed & {
   Root: typeof CodeDiffRoot;
-  Standard: typeof CodeDiffStandard;
   Header: typeof CodeDiffHeader;
   Content: typeof CodeDiffContent;
   CollapseToggle: typeof CodeDiffCollapseToggle;
 };
 
-export const CodeDiff = CodeDiffStandard as CodeDiffCompound;
-CodeDiff.Root = CodeDiffRoot;
-CodeDiff.Standard = CodeDiffStandard;
-CodeDiff.Header = CodeDiffHeader;
-CodeDiff.Content = CodeDiffContent;
-CodeDiff.CollapseToggle = CodeDiffCollapseToggle;
+export const CodeDiff = Object.assign(CodeDiffComposed, {
+  Root: CodeDiffRoot,
+  Header: CodeDiffHeader,
+  Content: CodeDiffContent,
+  CollapseToggle: CodeDiffCollapseToggle,
+}) as CodeDiffComponent;

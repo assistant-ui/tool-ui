@@ -49,7 +49,7 @@ function generateCodeDiffCode(data: SerializableCodeDiff): string {
     }
   }
 
-  return `<CodeDiff.Standard\n${props.join("\n")}\n/>`;
+  return `<CodeDiff\n${props.join("\n")}\n/>`;
 }
 
 export const codeDiffPresets: Record<

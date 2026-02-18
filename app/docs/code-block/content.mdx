@@ -35,7 +35,7 @@ import { CodeBlock } from "@/components/tool-ui/code-block";
 
 export function MyComponent() {
   return (
-    <CodeBlock.Standard
+    <CodeBlock
       id="my-code-example"
       code={`function hello(name: string) {
   return \`Hello, \${name}!\`;
@@ -90,7 +90,7 @@ export const toolkit: Toolkit = {
     render: createResultToolRenderer({
       safeParse: safeParseSerializableCodeBlock,
       render: (parsedResult) => (
-        <CodeBlock.Standard {...parsedResult} />
+        <CodeBlock {...parsedResult} />
       ),
     }),
   },

@@ -104,7 +104,7 @@ function generateCodeBlockCode(preset: CodeBlockPresetName): string {
     props.push(`  maxCollapsedLines={${block.maxCollapsedLines}}`);
   }
 
-  return `<CodeBlock.Standard\n${props.join("\n")}\n/>`;
+  return `<CodeBlock\n${props.join("\n")}\n/>`;
 }
 
 function generateTerminalCode(preset: TerminalPresetName): string {
@@ -236,7 +236,7 @@ export function CodeBlockPresetExample({
     <Tabs items={["Preview", "Code"]}>
       <Tab value="Preview">
         <div className="not-prose">
-          <CodeBlock.Standard {...data} />
+          <CodeBlock {...data} />
         </div>
       </Tab>
       <Tab value="Code">

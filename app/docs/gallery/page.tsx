@@ -81,11 +81,11 @@ const Plan = dynamic(() =>
 const Terminal = dynamic(() =>
   import("@/components/tool-ui/terminal").then((m) => m.Terminal),
 );
-const CodeBlockStandard = dynamic(() =>
-  import("@/components/tool-ui/code-block").then((m) => m.CodeBlockStandard),
+const CodeBlock = dynamic(() =>
+  import("@/components/tool-ui/code-block").then((m) => m.CodeBlock),
 );
-const CodeDiffStandard = dynamic(() =>
-  import("@/components/tool-ui/code-diff").then((m) => m.CodeDiffStandard),
+const CodeDiff = dynamic(() =>
+  import("@/components/tool-ui/code-diff").then((m) => m.CodeDiff),
 );
 const Chart = dynamic(() =>
   import("@/components/tool-ui/chart").then((m) => m.Chart),
@@ -284,12 +284,12 @@ export default function ComponentsGalleryPage() {
     {
       componentId: "code-block",
       className: "mb-5 flex break-inside-avoid justify-center 2xl:mb-5",
-      render: () => <CodeBlockStandard {...codeBlockPresets.typescript.data} />,
+      render: () => <CodeBlock {...codeBlockPresets.typescript.data} />,
     },
     {
       componentId: "code-diff",
       className: "mb-5 flex break-inside-avoid justify-center 2xl:mb-5",
-      render: () => <CodeDiffStandard {...codeDiffPresets["refactor"].data} />,
+      render: () => <CodeDiff {...codeDiffPresets["refactor"].data} />,
     },
     {
       componentId: "chart",

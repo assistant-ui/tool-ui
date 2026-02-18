@@ -1,4 +1,6 @@
-export { CodeBlock, CodeBlockStandard } from "./code-block";
+export { CodeBlock } from "./code-block";
+/** @deprecated Use `CodeBlock` directly instead of `CodeBlockStandard` */
+export { CodeBlock as CodeBlockStandard } from "./code-block";
 export type {
   CodeBlockRootProps,
   CodeBlockStandardProps,

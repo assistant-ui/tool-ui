@@ -576,7 +576,7 @@ function createSceneConfigs(reducedMotion: boolean): SceneConfig[] {
       userMessage: "Create a skill that learns from mistakes",
       preamble: "Here's a self-improving metaskill.",
       toolUI: (
-        <CodeBlock.Standard
+        <CodeBlock
           id="chat-showcase-code-block"
           language="markdown"
           lineNumbers="visible"
