@@ -240,5 +240,4 @@ describe("Tool UI registry artifacts", () => {
     expect(weatherPaths.has("components/tool-ui/shared/contract.ts")).toBe(false);
     expect(weatherPaths.has("components/tool-ui/shared/parse.ts")).toBe(false);
   });
-
 });
