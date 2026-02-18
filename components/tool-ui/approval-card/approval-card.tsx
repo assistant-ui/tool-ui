@@ -2,7 +2,8 @@
 
 import * as React from "react";
 import { cn, Separator } from "./_adapter";
-import type { ApprovalCardProps, ApprovalDecision } from "./schema";import { ActionButtons } from "../shared/action-buttons";
+import type { ApprovalCardProps, ApprovalDecision } from "./schema";
+import { ActionButtons } from "../shared/action-buttons";
 import { type Action } from "../shared/schema";
 
 import { icons, Check, X } from "lucide-react";
@@ -146,7 +147,7 @@ export function ApprovalCard({
       ) : (
         <article
           className={cn(
-            "@container/actions flex w-full min-w-64 max-w-md flex-col",
+            "flex w-full min-w-64 max-w-md flex-col gap-3",
             "text-foreground",
             className,
           )}
@@ -204,7 +205,8 @@ export function ApprovalCard({
                 </dl>
               </>
             )}
-
+          </div>
+          <div className="@container/actions">
             <ActionButtons actions={actions} onAction={handleAction} />
           </div>
         </article>
