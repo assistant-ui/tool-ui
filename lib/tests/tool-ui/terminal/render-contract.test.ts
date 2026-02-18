@@ -50,4 +50,19 @@ describe("terminal render contract", () => {
     expect(html).toContain('aria-label="No output to copy"');
     expect(html).toContain("disabled");
   });
+
+  it("preserves terminal line formatting and avoids aggressive character wrapping", () => {
+    const html = renderToStaticMarkup(
+      React.createElement(Terminal, {
+        id: "terminal-whitespace-contract",
+        command: "pnpm install",
+        stdout: "package-with-a-very-long-name-without-spaces",
+        exitCode: 0,
+      }),
+    );
+
+    expect(html).toContain("whitespace-pre");
+    expect(html).not.toContain("break-all");
+    expect(html).not.toContain("whitespace-pre-wrap");
+  });
 });

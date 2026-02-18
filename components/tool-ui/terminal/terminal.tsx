@@ -129,12 +129,12 @@ function TerminalOutput({
       >
         <div className="overflow-x-auto p-4">
           {stdout && (
-            <div className="text-foreground break-all whitespace-pre-wrap">
+            <div className="text-foreground whitespace-pre">
               <Ansi>{stdout}</Ansi>
             </div>
           )}
           {stderr && (
-            <div className="mt-2 break-all whitespace-pre-wrap text-red-500 dark:text-red-400">
+            <div className="mt-2 whitespace-pre text-red-500 dark:text-red-400">
               <Ansi>{stderr}</Ansi>
             </div>
           )}
