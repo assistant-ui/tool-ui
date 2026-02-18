@@ -9,6 +9,59 @@ function getProjectRoot(): string {
   return path.resolve(path.dirname(currentFile), "../../..");
 }
 
+function normalizeDependencySpecifier(specifier: string): string {
+  if (specifier.startsWith("@")) {
+    const secondSlash = specifier.indexOf("/", 1);
+    if (secondSlash === -1) return specifier;
+    const versionSeparator = specifier.indexOf("@", secondSlash + 1);
+    return versionSeparator === -1
+      ? specifier
+      : specifier.slice(0, versionSeparator);
+  }
+
+  const versionSeparator = specifier.indexOf("@");
+  return versionSeparator === -1
+    ? specifier
+    : specifier.slice(0, versionSeparator);
+}
+
+function normalizeImportSpecifier(specifier: string): string {
+  const withoutQuery = specifier.split("?")[0];
+  if (withoutQuery.startsWith("@")) {
+    const [scope, name] = withoutQuery.split("/");
+    return `${scope}/${name}`;
+  }
+  return withoutQuery.split("/")[0];
+}
+
+function collectExternalImportPackages(source: string): string[] {
+  const packages = new Set<string>();
+  const staticImportRegex =
+    /\b(?:import|export)\s+(?:type\s+)?(?:[^"']*?\s+from\s+)?["']([^"']+)["']/g;
+  const dynamicImportRegex = /\bimport\s*\(\s*["']([^"']+)["']\s*\)/g;
+
+  const addIfExternal = (specifier: string) => {
+    if (
+      specifier.startsWith(".") ||
+      specifier.startsWith("/") ||
+      specifier.startsWith("@/")
+    ) {
+      return;
+    }
+    packages.add(normalizeImportSpecifier(specifier));
+  };
+
+  let match: RegExpExecArray | null;
+  while ((match = staticImportRegex.exec(source)) !== null) {
+    addIfExternal(match[1]);
+  }
+  while ((match = dynamicImportRegex.exec(source)) !== null) {
+    addIfExternal(match[1]);
+  }
+
+  return Array.from(packages).sort((a, b) => a.localeCompare(b));
+}
+
 describe("Tool UI registry artifacts", () => {
   async function listExpectedComponents(): Promise<string[]> {
     const projectRoot = getProjectRoot();
@@ -239,5 +292,32 @@ describe("Tool UI registry artifacts", () => {
     );
     expect(weatherPaths.has("components/tool-ui/shared/contract.ts")).toBe(false);
     expect(weatherPaths.has("components/tool-ui/shared/parse.ts")).toBe(false);
+  });
+
+  it("declares every external code-diff import dependency except react peers", async () => {
+    const artifacts = await buildToolUiRegistryArtifacts(getProjectRoot());
+    const codeDiffItem = artifacts.items.find((item) => item.name === "code-diff");
+
+    expect(codeDiffItem, "missing registry item: code-diff").toBeDefined();
+
+    const codeDiffFile = codeDiffItem?.files.find((file) =>
+      file.path.endsWith("components/tool-ui/code-diff/code-diff.tsx"),
+    );
+
+    expect(codeDiffFile?.content, "missing code-diff source in registry item").toBeTruthy();
+
+    const imports = collectExternalImportPackages(codeDiffFile?.content ?? "").filter(
+      (pkg) => pkg !== "react",
+    );
+    const declaredDependencies = new Set(
+      (codeDiffItem?.dependencies ?? []).map(normalizeDependencySpecifier),
+    );
+
+    for (const externalPackage of imports) {
+      expect(
+        declaredDependencies.has(externalPackage),
+        `missing dependency "${externalPackage}" for code-diff`,
+      ).toBe(true);
+    }
   });
 });

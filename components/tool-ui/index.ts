@@ -3,6 +3,7 @@ export * as AudioToolUi from "./audio";
 export * as ChartToolUi from "./chart";
 export * as CitationToolUi from "./citation";
 export * as CodeBlockToolUi from "./code-block";
+export * as CodeDiffToolUi from "./code-diff";
 export * as DataTableToolUi from "./data-table";
 export * as ImageToolUi from "./image";
 export * as ImageGalleryToolUi from "./image-gallery";
