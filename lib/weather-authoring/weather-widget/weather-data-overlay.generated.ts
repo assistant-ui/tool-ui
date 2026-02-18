@@ -89,10 +89,11 @@ export function WeatherDataOverlay({ location, conditionCode, temperature, tempH
             });
         }
     }, []);
+    const hasForecastStrip = forecast.length > 0;
     useEffect(() => {
         updateCardDimensions();
         return observeCardDimensions(cardRef.current, updateCardDimensions);
-    }, [updateCardDimensions]);
+    }, [hasForecastStrip, updateCardDimensions]);
     const theme = themeProp ??
         getWeatherTheme(getSceneBrightnessFromTimeOfDay(timeOfDay, conditionCode));
     const commitGlowState = useCallback((nextState) => {
