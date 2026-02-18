@@ -475,7 +475,7 @@ export const previewConfigs: Record<
       const localActionItems = resolveLocalActionItems(data);
       return renderWithLocalActions(
         tableData.id,
-        <div className="flex flex-col gap-4">
+        <div className="flex w-full flex-col gap-4">
           <DynamicDataTable
             {...tableData}
             sort={state.sort as Parameters<typeof DataTable>[0]["sort"]}
