@@ -187,11 +187,12 @@ export function WeatherDataOverlay({
       });
     }
   }, []);
+  const hasForecastStrip = forecast.length > 0;
 
   useEffect(() => {
     updateCardDimensions();
     return observeCardDimensions(cardRef.current, updateCardDimensions);
-  }, [updateCardDimensions]);
+  }, [hasForecastStrip, updateCardDimensions]);
 
   const theme =
     themeProp ??
