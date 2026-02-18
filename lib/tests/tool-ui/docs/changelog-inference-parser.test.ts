@@ -19,17 +19,17 @@ describe("changelog inference parser", () => {
     expect(parsed.migrationPrompt).toBe("C");
   });
 
-  test("forces null migration prompt for non-breaking output", () => {
+  test("preserves migration prompt even without breaking changes", () => {
     const output = JSON.stringify({
       breakingChanges: [],
       changes: ["B"],
-      migrationPrompt: "Should be ignored",
+      migrationPrompt: "Re-install components via npx shadcn@latest add",
     });
 
     const parsed = parseInferredReleaseNotes(output);
     expect(parsed.breakingChanges).toEqual([]);
     expect(parsed.changes).toEqual(["B"]);
-    expect(parsed.migrationPrompt).toBeNull();
+    expect(parsed.migrationPrompt).toBe("Re-install components via npx shadcn@latest add");
   });
 
   test("throws when JSON payload is missing required fields", () => {

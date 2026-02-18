@@ -166,10 +166,7 @@ function normalizeInferredNotes(notes: InferredReleaseNotes): InferredReleaseNot
   return {
     breakingChanges: normalizedBreakingChanges,
     changes: normalizedChanges,
-    migrationPrompt:
-      normalizedBreakingChanges.length > 0
-        ? normalizedMigrationPrompt
-        : null,
+    migrationPrompt: normalizedMigrationPrompt,
   };
 }
 
@@ -301,7 +298,7 @@ export function buildInferencePrompt(input: InferReleaseNotesInput): string {
     '{ "breakingChanges": string[], "changes": string[], "migrationPrompt": string | null }',
     "",
     "Rules:",
-    "- Only include a migrationPrompt when breakingChanges is non-empty.",
+    "- Include a migrationPrompt when components have been updated and users may want to re-install. A migration prompt can exist with or without breaking changes.",
     "- Keep migrationPrompt as an imperative migration checklist for coding agents.",
     "- Keep entries concise and user-facing.",
     "- Include markdown links to relevant docs routes when confidence is high (for example [Actions](/docs/actions) for action-model changes).",

@@ -1,10 +1,15 @@
-# Changelog Authoring
+# Changelog System
 
-Guide for writing changelog entries in `app/docs/changelog/content.mdx`.
+Automated changelog for `app/docs/changelog/content.mdx`. This is a copy/paste component library (shadcn model), not an npm package — there is no semver contract.
 
-For deeper background on the changelog system design, see the RFC at `docs/rfcs/2026-02-12-automated-changelog-and-migration-prompts.md`. Note: the RFC's original constraint that migration prompts require breaking changes is outdated — the validator now allows migration prompts independently.
+## Commands
 
-## File Structure
+```bash
+pnpm changelog:generate   # Generate entries from git history via agent inference
+pnpm changelog:check      # Validate structure (runs in CI via verify:ci)
+```
+
+## Entry Structure
 
 The changelog is a single MDX file. Each release is a `## YYYY-MM-DD` section with subsections in this order:
 
@@ -14,7 +19,7 @@ The changelog is a single MDX file. Each release is a `## YYYY-MM-DD` section wi
 
 No prose between the `##` heading and first `###` subsection. MDX comments are allowed (see Marker below).
 
-## Marker Comment
+### Marker comment
 
 The top of the file may include an MDX comment tracking the last generated commit ref:
 
@@ -24,17 +29,16 @@ The top of the file may include an MDX comment tracking the last generated commi
 
 Use MDX comment syntax `{/* */}`, not HTML `<!-- -->`.
 
-## What Counts as a Breaking Change
+## Breaking Changes vs Component Updates
 
 - **Breaking change** = a cross-cutting change affecting ALL components at once (e.g., enforcing `/schema` entrypoints repo-wide, migrating the action model across all components)
-- **Component update** = individual components evolved — existing copies still work, users upgrade via `npx shadcn@latest add`. NOT a breaking change.
-- This is a copy/paste library (shadcn model), not an npm package. No semver contract.
+- **Component update** = individual component evolution — existing copies still work, users upgrade via `npx shadcn@latest add`. NOT a breaking change.
 
 ## Migration Prompt
 
 A prompt users copy-paste into their **coding agent** (e.g., Claude Code). Can exist with or without breaking changes.
 
-### Voice & structure
+### Voice and structure
 
 - Write in imperative, agent-directed voice
 - Structure: opening directive → numbered Goals → bulleted Steps → verification
@@ -51,23 +55,16 @@ A prompt users copy-paste into their **coding agent** (e.g., Claude Code). Can e
 - Wrap the entire prompt in a `` ```text `` code fence
 - The validator (`lib/changelog/changelog.ts`) rejects migration prompts without a code fence
 
-## Changes Bullet Style
+## Writing Style
 
 - New components: `New component: [Name](/docs/name) — short description.`
 - Component names in inline code when mentioned in prose: `` `Code Block` ``
 - Use markdown links to doc routes when introducing a component: `[Code Block](/docs/code-block)`
 - Group related changes; lead with the most significant
-
-## Naming Conventions
-
 - Use "shared theme tokens" (never "pierre theme tokens")
+- Only user-facing changes — no internal fixes (terminal wrapping, docs preview clipping, gallery exports, registry closure fixes)
 
-## What NOT to Include
-
-- Internal fixes: terminal wrapping, docs preview clipping, gallery exports, registry closure fixes
-- Only user-facing changes belong in the changelog
-
-## Validation
+## Validation Rules
 
 `lib/changelog/changelog.ts` exports `validateChangelogStructure`. Rules enforced:
 
@@ -78,3 +75,19 @@ A prompt users copy-paste into their **coding agent** (e.g., Claude Code). Can e
 - Migration prompt body must contain a markdown code fence
 - No unsupported `###` subsection headings
 - No prose between `##` heading and first `###` subsection (MDX comments OK)
+
+## Architecture
+
+The `lib/changelog/` directory contains three modules:
+
+- **`changelog.ts`** — Validation (`validateChangelogStructure`) and rendering (inserts new sections into the MDX file)
+- **`git.ts`** — Commit range resolution (last release tag to HEAD)
+- **`inference.ts`** — LLM inference (gathers commit evidence, asks a coding agent for structured release notes)
+
+### Maintainer flow
+
+1. `release-please` opens/updates release PR
+2. Run `pnpm changelog:generate`
+3. Review/edit generated section in `app/docs/changelog/content.mdx`
+4. CI runs `pnpm changelog:check`
+5. Merge release PR
