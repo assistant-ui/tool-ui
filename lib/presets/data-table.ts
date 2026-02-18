@@ -239,6 +239,50 @@ const taskData: GenericRow[] = [
   },
 ];
 
+const linksTagsColumns: Column<GenericRow>[] = [
+  { key: "name", label: "Resource", priority: "primary" },
+  {
+    key: "linkLabel",
+    label: "Link",
+    priority: "primary",
+    truncate: true,
+    format: { kind: "link", hrefKey: "url", external: true },
+  },
+  {
+    key: "tags",
+    label: "Tags",
+    priority: "secondary",
+    format: { kind: "array", maxVisible: 2 },
+  },
+];
+
+const linksTagsData: GenericRow[] = [
+  {
+    name: "UNIX Philosophy",
+    linkLabel: "Read chapter",
+    url: "https://homepage.cs.uri.edu/~thenry/resources/unix_art/ch01s06.html",
+    tags: ["unix", "pipelines", "design"],
+  },
+  {
+    name: "ARPANET Origins",
+    linkLabel: "Internet Society brief",
+    url: "https://www.internetsociety.org/internet/history-internet/brief-history-internet/",
+    tags: ["arpanet", "history", "networking"],
+  },
+  {
+    name: "Xerox PARC Archive",
+    linkLabel: "Open archive",
+    url: "https://xeroxparc.archive.org/",
+    tags: ["gui", "research", "innovation"],
+  },
+  {
+    name: "ENIAC Collection",
+    linkLabel: "Computer History Museum",
+    url: "https://www.computerhistory.org/revolution/early-computers/5",
+    tags: ["eniac", "hardware", "history"],
+  },
+];
+
 const actionsColumns: Column<GenericRow>[] = [
   { key: "id", label: "Ticket", priority: "primary" },
   { key: "subject", label: "Subject", priority: "primary", truncate: true },
@@ -324,7 +368,11 @@ const actionsData: GenericRow[] = [
   },
 ];
 
-export type DataTablePresetName = "stocks" | "tasks" | "actions";
+export type DataTablePresetName =
+  | "stocks"
+  | "tasks"
+  | "links-tags"
+  | "actions";
 
 export const dataTablePresets: Record<
   DataTablePresetName,
@@ -347,6 +395,16 @@ export const dataTablePresets: Record<
       columns: taskColumns,
       data: taskData,
       rowIdKey: "title",
+    },
+    generateExampleCode: generateDataTableCode,
+  },
+  "links-tags": {
+    description: "Compact link and tag formatting without wide resource metadata",
+    data: {
+      id: "data-table-preview-links-tags",
+      columns: linksTagsColumns,
+      data: linksTagsData,
+      rowIdKey: "name",
     },
     generateExampleCode: generateDataTableCode,
   },
