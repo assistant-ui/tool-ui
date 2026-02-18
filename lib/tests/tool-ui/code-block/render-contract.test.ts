@@ -204,6 +204,7 @@ describe("code-block render contract", () => {
     const content = container.querySelector('[data-slot="code-block"] .overflow-x-auto');
     expect(content).not.toBeNull();
     expect(content?.className).toContain("text-[13px]");
+    expect(content?.className).toContain("leading-[1.4]");
     expect(content?.className).not.toContain("text-sm");
 
     await cleanupClientRender(root, container);
