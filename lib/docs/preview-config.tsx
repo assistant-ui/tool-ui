@@ -894,7 +894,7 @@ export const previewConfigs: Record<
 
       return renderWithLocalActions(
         terminalData.id,
-        <div className="flex flex-col gap-3">
+        <div className="flex w-full flex-col gap-3">
           <DynamicTerminal {...terminalData} />
         </div>,
         localActionItems,
