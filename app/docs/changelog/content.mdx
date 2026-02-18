@@ -15,18 +15,21 @@ import { DocsHeader } from "../_components/docs-header";
 Update Tool UI components to the compound composition API.
 
 Goals:
-1) Re-install affected components to pull in the new compound subcomponent exports.
+1) Re-install only the affected components that already exist in this project.
 2) Migrate usage from monolithic component props to compound subcomponents (e.g., CodeBlock.Root, Terminal.Output).
 3) Validate UI rendering with updated component APIs.
 
 Steps:
-- Run the following install commands to update each component:
-  npx shadcn@latest add https://tool-ui.dev/r/code-block.json
-  npx shadcn@latest add https://tool-ui.dev/r/terminal.json
-  npx shadcn@latest add https://tool-ui.dev/r/order-summary.json
-  npx shadcn@latest add https://tool-ui.dev/r/video.json
-  npx shadcn@latest add https://tool-ui.dev/r/progress-tracker.json
-  npx shadcn@latest add https://tool-ui.dev/r/item-carousel.json
+- Check which of these components exist in this project by looking for their directories under components/tool-ui/:
+  code-block, terminal, order-summary, video, progress-tracker, item-carousel
+- For each component that exists, re-install it to pull in the new compound exports:
+  npx shadcn@latest add @tool-ui/code-block
+  npx shadcn@latest add @tool-ui/terminal
+  npx shadcn@latest add @tool-ui/order-summary
+  npx shadcn@latest add @tool-ui/video
+  npx shadcn@latest add @tool-ui/progress-tracker
+  npx shadcn@latest add @tool-ui/item-carousel
+- Skip any component not already installed — do not add new components.
 - Update imports and usage to reference compound subcomponents instead of monolithic component props.
 - Run lint, typecheck, and tests; fix any breakages.
 - Validate UI rendering with updated component APIs.

@@ -46,7 +46,7 @@ A prompt users copy-paste into their **coding agent** (e.g., Claude Code). Can e
 
 ### Required content
 
-- Include `npx shadcn@latest add` commands with full registry URLs (`https://tool-ui.dev/r/{name}.json`)
+- Include `npx shadcn@latest add @tool-ui/{name}` commands
 - End steps with: lint, typecheck, tests; fix breakages
 - End with: validate UI rendering
 
