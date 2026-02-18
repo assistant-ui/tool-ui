@@ -1,4 +1,5 @@
 import { getTimeOfDay } from "./effects/parameter-mapper";
+import { getNearestCheckpoint, TIME_CHECKPOINTS } from "./effects/tuning";
 import type { WeatherWidgetTime } from "./schema-runtime";
 
 export interface ResolveWeatherTimeInput {
@@ -20,6 +21,12 @@ export interface ResolvedWeatherTime {
 function normalizeTimeOfDay(value: number): number {
   const normalized = ((value % 1) + 1) % 1;
   return normalized;
+}
+
+export function snapTimeOfDayToNearestCheckpoint(timeOfDay: number): number {
+  const normalized = normalizeTimeOfDay(timeOfDay);
+  const checkpoint = getNearestCheckpoint(normalized);
+  return TIME_CHECKPOINTS[checkpoint];
 }
 
 export function timeBucketToTimeOfDay(timeBucket: number): number {

@@ -1,6 +1,9 @@
 import { describe, expect, test } from "vitest";
 
-import { resolveWeatherTime } from "@/lib/weather-authoring/weather-widget/time";
+import {
+  resolveWeatherTime,
+  snapTimeOfDayToNearestCheckpoint,
+} from "@/lib/weather-authoring/weather-widget/time";
 
 describe("weather-widget time precedence", () => {
   test("prefers time.timeBucket over localTimeOfDay and updatedAt", () => {
@@ -42,5 +45,13 @@ describe("weather-widget time precedence", () => {
 
     expect(resolved.source).toBe("defaultNoon");
     expect(resolved.timeOfDay).toBe(0.5);
+  });
+
+  test("snaps continuous time to nearest checkpoint center", () => {
+    expect(snapTimeOfDayToNearestCheckpoint(0.25)).toBe(0.25);
+    expect(snapTimeOfDayToNearestCheckpoint(0.37)).toBe(0.25);
+    expect(snapTimeOfDayToNearestCheckpoint(0.38)).toBe(0.5);
+    expect(snapTimeOfDayToNearestCheckpoint(0.74)).toBe(0.75);
+    expect(snapTimeOfDayToNearestCheckpoint(0.99)).toBe(0);
   });
 });

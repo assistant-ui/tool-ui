@@ -11,7 +11,10 @@ import {
 import { getNearestCheckpoint } from "./effects/tuning";
 import { TUNED_WEATHER_EFFECTS_CHECKPOINT_OVERRIDES } from "./effects/generated/tuned-presets.generated";
 import type { WeatherWidgetProps } from "./schema";
-import { resolveWeatherTime } from "./time";
+import {
+  resolveWeatherTime,
+  snapTimeOfDayToNearestCheckpoint,
+} from "./time";
 import { WeatherDataOverlay } from "./weather-data-overlay";
 
 export function WeatherWidget({
@@ -70,8 +73,8 @@ export function WeatherWidget({
   });
   const timeOfDay =
     typeof overlayTimeOfDay === "number"
-      ? overlayTimeOfDay
-      : resolvedTime.timeOfDay;
+      ? snapTimeOfDayToNearestCheckpoint(overlayTimeOfDay)
+      : snapTimeOfDayToNearestCheckpoint(resolvedTime.timeOfDay);
 
   const tunedOverrides =
     TUNED_WEATHER_EFFECTS_CHECKPOINT_OVERRIDES[current.conditionCode];

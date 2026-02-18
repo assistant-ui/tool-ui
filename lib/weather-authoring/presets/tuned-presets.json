@@ -358,8 +358,8 @@
         "hazeHorizon": 1,
         "hazeContrast": 0,
         "bloomThreshold": 0.81,
-        "godRayIntensity": 1.11,
-        "godRayWeight": 0.57
+        "godRayIntensity": 0.32,
+        "godRayWeight": 0.3
       }
     },
     "noon": {
@@ -398,8 +398,8 @@
         "hazeHorizon": 1,
         "hazeContrast": 0,
         "bloomThreshold": 0.81,
-        "godRayIntensity": 1.11,
-        "godRayWeight": 0.57
+        "godRayIntensity": 0.12,
+        "godRayWeight": 0.2
       }
     },
     "dusk": {
@@ -437,8 +437,8 @@
         "hazeHorizon": 1,
         "hazeContrast": 0,
         "bloomThreshold": 0.81,
-        "godRayIntensity": 1.11,
-        "godRayWeight": 0.57
+        "godRayIntensity": 0.32,
+        "godRayWeight": 0.3
       }
     },
     "midnight": {
@@ -474,8 +474,8 @@
         "hazeHorizon": 0.96,
         "hazeContrast": 0,
         "bloomThreshold": 0.81,
-        "godRayIntensity": 1.11,
-        "godRayWeight": 0.57
+        "godRayIntensity": 0.02,
+        "godRayWeight": 0.15
       }
     }
   },
