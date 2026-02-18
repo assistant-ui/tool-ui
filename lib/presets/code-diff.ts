@@ -61,23 +61,25 @@ export const codeDiffPresets: Record<
   PresetWithCodeGen<SerializableCodeDiff>
 > = {
   refactor: {
-    description: "Function rename and return type change",
+    description: "Safer error handling in fetch helper",
     data: {
       id: "code-diff-preview-refactor",
       language: "typescript",
       filename: "lib/auth.ts",
       lineNumbers: "visible",
       diffStyle: "unified",
-      oldCode: `export function checkAuth(token: string) {
-  const decoded = jwt.verify(token, SECRET);
-  if (!decoded) throw new Error("Invalid token");
-  return db.users.find(u => u.id === decoded.sub);
-}`,
-      newCode: `export function verifySession(token: string): AuthResult {
-  const decoded = jwt.verify(token, SECRET);
-  if (!decoded) return { ok: false, error: "invalid_token" };
-  return { ok: true, user: db.users.findById(decoded.sub) };
-}`,
+      oldCode: `export async function fetchUser(id: string) {
+  const res = await db.users.findUnique({ where: { id } });
+  if (!res) throw new Error("User not found");
+  return res;
+}
+`,
+      newCode: `export async function fetchUser(id: string) {
+  const res = await db.users.findUnique({ where: { id } });
+  if (!res) return null;
+  return res;
+}
+`,
     } satisfies SerializableCodeDiff,
     generateExampleCode: generateCodeDiffCode,
   },
