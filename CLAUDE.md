@@ -74,3 +74,4 @@ Reference: `components/tool-ui/approval-card/approval-card.tsx:183`
 - Adding/modifying components: `.claude/docs/component-workflow.md`
 - Writing doc pages: `.claude/docs/mdx-authoring.md`
 - Copy style for examples: `.claude/docs/copy-guide.md`
+- Writing changelog entries: `.claude/docs/changelog-authoring.md`
