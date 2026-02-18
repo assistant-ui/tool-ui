@@ -73,7 +73,7 @@ export function WeatherWidget({
   });
   const timeOfDay =
     typeof overlayTimeOfDay === "number"
-      ? snapTimeOfDayToNearestCheckpoint(overlayTimeOfDay)
+      ? overlayTimeOfDay
       : snapTimeOfDayToNearestCheckpoint(resolvedTime.timeOfDay);
 
   const tunedOverrides =

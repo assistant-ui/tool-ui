@@ -27,6 +27,7 @@ import { getNearestCheckpoint } from "@/lib/weather-authoring/weather-widget/eff
 import { WeatherEffectsCanvas } from "@/lib/weather-authoring/weather-widget/effects/weather-effects-canvas";
 import type { WeatherEffectsCanvasProps } from "@/lib/weather-authoring/weather-widget/effects/weather-effects-types";
 import { resolveWeatherEffectsCanvasRuntimeProps as resolveRuntimeDefaults } from "@/lib/weather-authoring/weather-widget/effects/weather-effects-props";
+import { createProductionHarnessRuntimeInput } from "./runtime-input";
 
 const CONDITION_OPTIONS: WeatherConditionCode[] = [
   "clear",
@@ -78,6 +79,7 @@ interface UntunedPreviewProps {
   effectsEnabled: boolean;
   quality: EffectQuality;
   canvasProps: WeatherEffectsCanvasProps;
+  timeOfDay: number;
 }
 
 function UntunedPreview({
@@ -85,8 +87,8 @@ function UntunedPreview({
   effectsEnabled,
   quality,
   canvasProps,
+  timeOfDay,
 }: UntunedPreviewProps) {
-  const timeOfDay = payload.time.localTimeOfDay ?? 0.5;
   const weatherTheme = getWeatherTheme(
     getSceneBrightnessFromTimeOfDay(timeOfDay, payload.current.conditionCode),
     undefined,
@@ -235,15 +237,16 @@ export default function WeatherWidgetProductionHarnessPage() {
   );
 
   const runtimeInput = useMemo(
-    () => ({
-      conditionCode: payload.current.conditionCode,
-      windSpeed: payload.current.windSpeed,
-      precipitationLevel: payload.current.precipitationLevel,
-      visibility: payload.current.visibility,
-      timestamp: payload.updatedAt,
-      timeOfDay,
-    }),
-    [payload.current, payload.updatedAt, timeOfDay],
+    () =>
+      createProductionHarnessRuntimeInput({
+        conditionCode: payload.current.conditionCode,
+        windSpeed: payload.current.windSpeed ?? 0,
+        precipitationLevel: payload.current.precipitationLevel ?? "none",
+        visibility: payload.current.visibility ?? 10000,
+        timestamp: payload.updatedAt ?? updatedAt,
+        timeOfDay,
+      }),
+    [payload.current, payload.updatedAt, timeOfDay, updatedAt],
   );
 
   const untunedCanvasProps = useMemo(
@@ -268,7 +271,7 @@ export default function WeatherWidgetProductionHarnessPage() {
     [tunedCanvasProps],
   );
 
-  const checkpoint = getNearestCheckpoint(timeOfDay);
+  const checkpoint = getNearestCheckpoint(runtimeInput.timeOfDay);
   const metrics = [
     {
       label: "post.bloomIntensity",
@@ -358,6 +361,7 @@ export default function WeatherWidgetProductionHarnessPage() {
               effectsEnabled={effectsEnabled}
               quality={quality as EffectQuality}
               canvasProps={untunedCanvasProps}
+              timeOfDay={runtimeInput.timeOfDay}
             />
           </div>
         </section>
