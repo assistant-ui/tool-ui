@@ -130,6 +130,8 @@ type CodeDiffSharedState = {
   pierreThemes: ThemesType;
   fileDiffMetadata: FileDiffMetadata | null;
   patch: string | null;
+  additions: number;
+  deletions: number;
 };
 
 const CodeDiffContext = createContext<CodeDiffSharedState | null>(null);
@@ -213,6 +215,28 @@ function CodeDiffRoot({
     return 0;
   }, [isPatchMode, patch, fileDiffMetadata]);
 
+  const { additions, deletions } = useMemo(() => {
+    if (!isPatchMode && fileDiffMetadata) {
+      let add = 0;
+      let del = 0;
+      for (const hunk of fileDiffMetadata.hunks) {
+        add += hunk.additionLines;
+        del += hunk.deletionLines;
+      }
+      return { additions: add, deletions: del };
+    }
+    if (isPatchMode && patch) {
+      let add = 0;
+      let del = 0;
+      for (const line of patch.split("\n")) {
+        if (line.startsWith("+") && !line.startsWith("+++")) add++;
+        else if (line.startsWith("-") && !line.startsWith("---")) del++;
+      }
+      return { additions: add, deletions: del };
+    }
+    return { additions: 0, deletions: 0 };
+  }, [isPatchMode, fileDiffMetadata, patch]);
+
   const shouldCollapse = !!maxCollapsedLines && lineCount > maxCollapsedLines;
   const isCollapsed = shouldCollapse && !expanded;
 
@@ -241,6 +265,8 @@ function CodeDiffRoot({
     pierreThemes,
     fileDiffMetadata,
     patch: isPatchMode ? (patch ?? null) : null,
+    additions,
+    deletions,
   };
 
   return (
@@ -263,7 +289,9 @@ export type CodeDiffSectionProps = {
 };
 
 function CodeDiffHeader({ className }: CodeDiffSectionProps) {
-  const { language, filename, isCopied, copyCode } = useCodeDiff();
+  const { language, filename, isCopied, copyCode, additions, deletions } =
+    useCodeDiff();
+  const hasChanges = additions > 0 || deletions > 0;
   return (
     <div
       className={cn(
@@ -279,6 +307,20 @@ function CodeDiffHeader({ className }: CodeDiffSectionProps) {
           <>
             <span className="text-muted-foreground/50">&bull;</span>
             <span className="text-foreground text-sm font-medium">{filename}</span>
+          </>
+        )}
+        {hasChanges && (
+          <>
+            <span className="text-muted-foreground/50">&bull;</span>
+            <span className="text-xs font-mono tabular-nums">
+              {additions > 0 && (
+                <span style={{ color: "#00cab1" }}>+{additions}</span>
+              )}
+              {additions > 0 && deletions > 0 && " "}
+              {deletions > 0 && (
+                <span style={{ color: "#ff2e3f" }}>-{deletions}</span>
+              )}
+            </span>
           </>
         )}
       </div>
