@@ -229,8 +229,8 @@ function CodeDiffRoot({
       let add = 0;
       let del = 0;
       for (const line of patch.split("\n")) {
-        if (line.startsWith("+") && !line.startsWith("+++")) add++;
-        else if (line.startsWith("-") && !line.startsWith("---")) del++;
+        if (line.startsWith("+") && !line.startsWith("+++ ")) add++;
+        else if (line.startsWith("-") && !line.startsWith("--- ")) del++;
       }
       return { additions: add, deletions: del };
     }
