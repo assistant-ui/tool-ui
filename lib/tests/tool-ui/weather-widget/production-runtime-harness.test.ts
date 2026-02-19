@@ -19,6 +19,29 @@ describe("weather-widget production runtime harness", () => {
     expect(input.timeOfDay).toBe(0.25);
   });
 
+  test("snaps tie-boundary diagnostics input to midnight checkpoint", () => {
+    const dawnBoundaryInput = createProductionHarnessRuntimeInput({
+      conditionCode: "overcast",
+      windSpeed: 3.3,
+      precipitationLevel: "none",
+      visibility: 10000,
+      timeOfDay: 0.125,
+      timestamp: "2026-02-18T08:53:00.000Z",
+    });
+
+    const duskBoundaryInput = createProductionHarnessRuntimeInput({
+      conditionCode: "overcast",
+      windSpeed: 3.3,
+      precipitationLevel: "none",
+      visibility: 10000,
+      timeOfDay: 0.875,
+      timestamp: "2026-02-18T20:53:00.000Z",
+    });
+
+    expect(dawnBoundaryInput.timeOfDay).toBe(0);
+    expect(duskBoundaryInput.timeOfDay).toBe(0);
+  });
+
   test("overcast noon uses stronger tuned post effects than untuned base", () => {
     const input = createProductionHarnessRuntimeInput({
       conditionCode: "overcast" as const,

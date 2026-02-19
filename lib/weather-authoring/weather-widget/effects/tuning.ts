@@ -61,7 +61,8 @@ export function getNearestCheckpoint(timeOfDay: number): TimeCheckpoint {
     const value = TIME_CHECKPOINTS[checkpoint];
     let dist = Math.abs(normalized - value);
     if (dist > 0.5) dist = 1 - dist;
-    if (dist < minDist) {
+    const isTie = Math.abs(dist - minDist) <= Number.EPSILON;
+    if (dist < minDist || (isTie && checkpoint === "midnight")) {
       minDist = dist;
       nearest = checkpoint;
     }
