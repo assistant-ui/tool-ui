@@ -309,21 +309,18 @@ function CodeDiffHeader({ className }: CodeDiffSectionProps) {
             <span className="text-foreground text-sm font-medium">{filename}</span>
           </>
         )}
-        {hasChanges && (
-          <>
-            <span className="text-muted-foreground/50">&bull;</span>
-            <span className="text-xs font-mono tabular-nums">
-              {additions > 0 && (
-                <span style={{ color: "#00cab1" }}>+{additions}</span>
-              )}
-              {additions > 0 && deletions > 0 && " "}
-              {deletions > 0 && (
-                <span style={{ color: "#ff2e3f" }}>-{deletions}</span>
-              )}
-            </span>
-          </>
-        )}
       </div>
+      {hasChanges && (
+        <span className="ml-auto text-xs font-mono tabular-nums">
+          {additions > 0 && (
+            <span style={{ color: "#00cab1" }}>+{additions}</span>
+          )}
+          {additions > 0 && deletions > 0 && " "}
+          {deletions > 0 && (
+            <span style={{ color: "#ff2e3f" }}>-{deletions}</span>
+          )}
+        </span>
+      )}
       <Button
         variant="ghost"
         size="sm"
