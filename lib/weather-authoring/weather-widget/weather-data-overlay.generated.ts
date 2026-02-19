@@ -188,7 +188,9 @@ export function WeatherDataOverlay({ location, conditionCode, temperature, tempH
             cancelPendingGlowFrame();
         };
     }, [reducedMotion, clearGlowIntensity, scheduleGlowState, cancelPendingGlowFrame]);
+    const roundedTemperature = Math.round(temperature);
     const unitSymbol = unit === "celsius" ? "C" : "F";
+    const spokenUnit = unit === "celsius" ? "Celsius" : "Fahrenheit";
     const peakIntensity = getPeakIntensity(timeOfDay);
     const isDark = theme === "dark";
     const textPrimary = isDark ? "text-white" : "text-black";
@@ -224,11 +226,11 @@ export function WeatherDataOverlay({ location, conditionCode, temperature, tempH
                                         textShadow: isDark
                                             ? "0 2px 20px rgba(0,0,0,0.25)"
                                             : "0 2px 20px rgba(255,255,255,0.3)",
-                                    }, children: Math.round(temperature) }), _jsxs("span", { className: cn("mt-2 font-[250] tabular-nums", textSecondary), style: {
+                                    }, "aria-hidden": "true", children: roundedTemperature }), _jsxs("span", { className: cn("mt-2 font-[250] tabular-nums", textSecondary), style: {
                                         fontSize: degreeFontSize,
                                         fontFamily: forecastFontFamily,
                                         fontFeatureSettings: '"tnum" 1, "case" 1',
-                                    }, "aria-hidden": "true", children: ["\u00B0", unitSymbol] })] }), _jsxs("div", { className: "mt-0.5 flex items-center gap-3", style: {
+                                    }, "aria-hidden": "true", children: ["\u00B0", unitSymbol] }), _jsxs("span", { className: "sr-only", children: [roundedTemperature, " degrees ", spokenUnit] })] }), _jsxs("div", { className: "mt-0.5 flex items-center gap-3", style: {
                                 fontFamily: forecastFontFamily,
                                 fontFeatureSettings: '"tnum" 1, "case" 1',
                             }, children: [_jsxs("span", { className: "font-medium tabular-nums", style: { fontSize: hiLoFontSize }, children: [_jsx("span", { className: textSubtle, children: "H " }), _jsxs("span", { className: textPrimary, children: [Math.round(tempHigh), "\u00B0"] })] }), _jsxs("span", { className: "font-medium tabular-nums", style: { fontSize: hiLoFontSize }, children: [_jsx("span", { className: textSubtle, children: "L " }), _jsxs("span", { className: textPrimary, children: [Math.round(tempLow), "\u00B0"] })] })] })] }) }), _jsx("div", { className: "flex-1" }), forecast.length > 0 && (_jsx("div", { className: "px-3 pb-3", children: _jsxs("div", { ref: cardRef, className: "weather-forecast-strip relative hidden", children: [_jsx("div", { className: "pointer-events-none absolute inset-0 z-10 rounded-xl transition-opacity duration-300 ease-out", style: {

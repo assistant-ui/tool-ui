@@ -335,7 +335,9 @@ export function WeatherDataOverlay({
     cancelPendingGlowFrame,
   ]);
 
+  const roundedTemperature = Math.round(temperature);
   const unitSymbol = unit === "celsius" ? "C" : "F";
+  const spokenUnit = unit === "celsius" ? "Celsius" : "Fahrenheit";
   const peakIntensity = getPeakIntensity(timeOfDay);
 
   const isDark = theme === "dark";
@@ -411,8 +413,9 @@ export function WeatherDataOverlay({
                   ? "0 2px 20px rgba(0,0,0,0.25)"
                   : "0 2px 20px rgba(255,255,255,0.3)",
               }}
+              aria-hidden="true"
             >
-              {Math.round(temperature)}
+              {roundedTemperature}
             </span>
             <span
               className={cn("mt-2 font-[250] tabular-nums", textSecondary)}
@@ -424,6 +427,9 @@ export function WeatherDataOverlay({
               aria-hidden="true"
             >
               °{unitSymbol}
+            </span>
+            <span className="sr-only">
+              {roundedTemperature} degrees {spokenUnit}
             </span>
           </div>
 
