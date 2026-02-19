@@ -93,7 +93,7 @@ export const ComponentDocsTabs = memo(function ComponentDocsTabs({
             value="docs"
             className="scrollbar-subtle h-full min-h-0 flex-1 overflow-y-auto"
           >
-            <div className="z-0 min-h-0 flex-1 p-6 pb-24 sm:p-10 lg:p-12">
+            <div className="z-0 min-h-0 min-w-0 flex-1 px-4 pt-12 pb-24 sm:px-6 sm:pt-6 lg:px-10 lg:pt-10 xl:px-12 xl:pt-12">
               <DocsContent>{docs}</DocsContent>
             </div>
           </TabsContent>

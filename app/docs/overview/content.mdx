@@ -13,7 +13,7 @@ When an AI assistant calls a tool, the result is usually plain text or raw JSON.
 
 Tool UI is a component library for this problem. Each component turns a specific kind of tool output into a real piece of UI: a card, a table, an option list, a chart. They render inline in the conversation and let users interact without leaving the chat.
 
-<div className="mt-8 grid gap-6 md:grid-cols-2">
+<div className="mt-8 grid min-w-0 gap-6 md:grid-cols-2">
   <MockThread caption="Without Tool UI">
     <MockMessage role="user">Find me a link to the Tailwind docs</MockMessage>
     <MockMessage role="assistant">

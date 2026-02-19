@@ -34,7 +34,7 @@ interface MockThreadProps {
 
 export function MockThread({ children, className, caption }: MockThreadProps) {
   return (
-    <figure className={cn("not-prose my-8 flex flex-col", className)}>
+    <figure className={cn("not-prose my-8 flex min-w-0 flex-col overflow-hidden", className)}>
       <div className="border-border bg-background flex flex-1 flex-col overflow-hidden rounded-xl border shadow-sm">
         {/* Title bar */}
         <div className="bg-muted/50 border-border border-b px-4 py-1 text-center">

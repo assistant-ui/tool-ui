@@ -87,7 +87,7 @@
   }
 
   .prose :where(pre):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
-    @apply my-6 overflow-x-auto rounded-lg bg-red-500 p-4;
+    @apply my-6 overflow-x-auto rounded-lg bg-muted p-4;
   }
 
   .prose
