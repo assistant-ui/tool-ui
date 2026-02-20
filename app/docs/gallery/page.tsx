@@ -7,7 +7,7 @@ import {
   GalleryPreviewImpression,
 } from "@/app/docs/_components/gallery-analytics.client";
 import { DocsBorderedShell } from "@/app/docs/_components/docs-bordered-shell";
-import { GalleryInstallStrip } from "@/app/docs/_components/gallery-install-strip";
+import { GalleryDocsLink } from "@/app/docs/_components/gallery-docs-link";
 import { DataTable } from "@/components/tool-ui/data-table";
 import { Image } from "@/components/tool-ui/image";
 import { ItemCarousel } from "@/components/tool-ui/item-carousel";
@@ -17,8 +17,6 @@ import {
   galleryComponentDocs,
   type GalleryComponentDocId,
 } from "@/lib/docs/gallery-component-docs";
-import type { ComponentId } from "@/lib/docs/component-ids";
-import { withComponentImport } from "@/lib/docs/preview-code";
 import { approvalCardPresets } from "@/lib/presets/approval-card";
 import { audioPresets } from "@/lib/presets/audio";
 import { chartPresets } from "@/lib/presets/chart";
@@ -136,47 +134,23 @@ interface GalleryCardConfig {
   render: () => ReactNode;
 }
 
-const COMPONENT_SYMBOL_OVERRIDES: Partial<Record<GalleryComponentDocId, string>> = {
-  "linkedin-post": "LinkedInPost",
-  "x-post": "XPost",
-};
-
-function toComponentSymbol(componentId: GalleryComponentDocId): string {
-  const override = COMPONENT_SYMBOL_OVERRIDES[componentId];
-  if (override) return override;
-  return componentId
-    .split("-")
-    .map((segment) => segment.charAt(0).toUpperCase() + segment.slice(1))
-    .join("");
-}
-
-function getGalleryUsageCode(componentId: GalleryComponentDocId): string {
-  const symbol = toComponentSymbol(componentId);
-  const baseCode = `export default function Demo() {
-  return (
-    <${symbol} />
-  );
-}`;
-  return withComponentImport(componentId as ComponentId, baseCode);
-}
-
 function GalleryPreviewCard({
   componentId,
   className,
   children,
 }: GalleryPreviewCardProps) {
   const componentMeta = galleryComponentDocs[componentId];
-  const installCommand = `npx shadcn@latest add @tool-ui/${componentId}`;
 
   return (
-    <div className={cn("group/gallery-card relative flex flex-col gap-2", className)}>
-      <GalleryInstallStrip
-        componentId={componentId}
-        componentName={componentMeta.name}
-        docsHref={componentMeta.docsHref}
-        usageCode={getGalleryUsageCode(componentId)}
-        installCommand={installCommand}
-      />
+    <div className={cn("group/gallery-card relative pt-[44px]", className)}>
+      <div className="pointer-events-none absolute top-0 left-1/2 z-20 w-fit -translate-x-1/2 -translate-y-1 whitespace-nowrap rounded-xl border border-neutral-700/70 bg-neutral-900/90 px-3 py-2 text-[11px] font-medium tracking-wide text-neutral-100 opacity-0 shadow-sm backdrop-blur-sm transition-all duration-200 group-focus-within/gallery-card:translate-y-0 group-focus-within/gallery-card:opacity-100 group-hover/gallery-card:translate-y-0 group-hover/gallery-card:opacity-100 dark:border-neutral-300/80 dark:bg-neutral-100/90 dark:text-neutral-900">
+        <GalleryDocsLink
+          componentId={componentId}
+          label={componentMeta.name}
+          href={componentMeta.docsHref}
+          className="pointer-events-auto inline-flex items-center gap-1 whitespace-nowrap text-neutral-200/90 hover:text-white dark:text-neutral-700 dark:hover:text-neutral-950"
+        />
+      </div>
       <GalleryPreviewImpression componentId={componentId} />
       {children}
     </div>

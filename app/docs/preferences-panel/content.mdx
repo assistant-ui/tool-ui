@@ -92,35 +92,30 @@ import {
   safeParseSerializablePreferencesPanel,
   SerializablePreferencesPanelSchema,
 } from "@/components/tool-ui/preferences-panel/schema";
+import { createArgsToolRenderer } from "@/components/tool-ui/shared";
 
 export const toolkit: Toolkit = {
   show_preferences_panel: {
     description: "Display user preference settings with staged changes",
     parameters: SerializablePreferencesPanelSchema,
-    render: ({ args, toolCallId, addResult }) => {
-      const parsedArgs = safeParseSerializablePreferencesPanel({
-        ...args,
-        id: args.id ?? `preferences-panel-${toolCallId}`,
-      });
-      if (!parsedArgs) {
-        return null;
-      }
-
-      return (
-        <PreferencesPanel
-          {...parsedArgs}
-          onAction={async (actionId, values) => {
-            if (actionId === "save") {
-              await addResult({ choice: values });
-              return;
-            }
-            if (actionId === "cancel") {
-              await addResult({ choice: values });
-            }
-          }}
-        />
-      );
-    },
+    render: createArgsToolRenderer({
+      safeParse: safeParseSerializablePreferencesPanel,
+      idPrefix: "preferences-panel",
+      render: (parsedArgs, { addResult }) => (
+          <PreferencesPanel
+            {...parsedArgs}
+            onAction={async (actionId, values) => {
+              if (actionId === "save") {
+                await addResult({ choice: values });
+                return;
+              }
+              if (actionId === "cancel") {
+                await addResult({ choice: values });
+              }
+            }}
+          />
+      ),
+    }),
   },
 };
 ```

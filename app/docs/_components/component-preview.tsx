@@ -9,7 +9,6 @@ import {
   getPreviewConfig,
   type PreviewState,
 } from "@/lib/docs/preview-config";
-import { withComponentImport } from "@/lib/docs/preview-code";
 import { usePresetParam } from "@/hooks/use-preset-param";
 import { DynamicCodeBlock } from "fumadocs-ui/components/dynamic-codeblock";
 
@@ -47,10 +46,7 @@ export function ComponentPreview({ componentId }: ComponentPreviewProps) {
 
   const preset = config.presets[currentPreset] ?? config.presets[config.defaultPreset];
   const selectedPreset = config.presets[currentPreset] ?? preset;
-  const code = withComponentImport(
-    componentId,
-    selectedPreset.generateExampleCode(selectedPreset.data),
-  );
+  const code = selectedPreset.generateExampleCode(selectedPreset.data);
 
   const previewContent = config.renderComponent({
     data: preset.data,

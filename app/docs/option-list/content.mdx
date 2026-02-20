@@ -58,35 +58,31 @@ import {
   safeParseSerializableOptionList,
   SerializableOptionListSchema,
 } from "@/components/tool-ui/option-list/schema";
+import { createArgsToolRenderer } from "@/components/tool-ui/shared";
 
 export const toolkit: Toolkit = {
   selectFormat: {
     description: "Let the user choose an output format.",
     parameters: SerializableOptionListSchema,
-    render: ({ args, toolCallId, result, addResult }) => {
-      const parsedArgs = safeParseSerializableOptionList({
-        ...args,
-        id: args.id ?? `format-selection-${toolCallId}`,
-      });
-      if (!parsedArgs) {
-        return null;
-      }
-
-      return result ? (
-        <OptionList {...parsedArgs} value={undefined} choice={result} />
-      ) : (
-        <OptionList
-          {...parsedArgs}
-          // Avoid controlled selection in LLM-driven payloads.
-          value={undefined}
-          onAction={(actionId, selection) => {
-            if (actionId === "confirm") {
-              void addResult?.(selection);
-            }
-          }}
-        />
-      );
-    },
+    render: createArgsToolRenderer({
+      safeParse: safeParseSerializableOptionList,
+      idPrefix: "format-selection",
+      render: (parsedArgs, { result, addResult }) =>
+        result ? (
+            <OptionList {...parsedArgs} value={undefined} choice={result} />
+          ) : (
+            <OptionList
+              {...parsedArgs}
+              // Avoid controlled selection in LLM-driven payloads.
+              value={undefined}
+              onAction={(actionId, selection) => {
+                if (actionId === "confirm") {
+                  void addResult?.(selection);
+                }
+              }}
+            />
+          ),
+    }),
   },
 };
 ```

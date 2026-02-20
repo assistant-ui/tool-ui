@@ -83,6 +83,7 @@ import {
   WeatherWidget,
   type WeatherWidgetProps,
 } from "@/components/tool-ui/weather-widget/runtime";
+import { createArgsToolRenderer } from "@/components/tool-ui/shared";
 
 const WeatherWidgetPayloadSchema = z.object({}).passthrough();
 
@@ -107,17 +108,15 @@ export const toolkit: Toolkit = {
   get_weather: {
     description: "Display current weather and forecast for a location",
     parameters: WeatherWidgetPayloadSchema,
-    render: ({ args, toolCallId }) => {
-      const parsedArgs = safeParseWeatherWidgetPayload({
-        ...args,
-        id: args.id ?? `weather-${toolCallId}`,
-      });
-      if (!parsedArgs) {
-        return null;
-      }
-
-      return <WeatherWidget {...parsedArgs} />;
-    },
+    render: createArgsToolRenderer({
+      safeParse: (input) =>
+        safeParseWeatherWidgetPayload({
+          version: "3.1",
+          ...(input as Record<string, unknown>),
+        }),
+      idPrefix: "weather",
+      render: (parsedArgs) => <WeatherWidget {...parsedArgs} />,
+    }),
   },
 };
 ```

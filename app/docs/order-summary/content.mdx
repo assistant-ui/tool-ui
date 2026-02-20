@@ -86,6 +86,7 @@ import {
 } from "@/components/tool-ui/order-summary/schema";
 import {
   ToolUI,
+  createArgsToolRenderer,
   createDecisionResult,
 } from "@/components/tool-ui/shared";
 
@@ -93,62 +94,55 @@ export const toolkit: Toolkit = {
   createOrder: {
     description: "Display a purchase order for user confirmation",
     parameters: SerializableOrderSummarySchema,
-    render: ({ args, toolCallId, result, addResult }) => {
-      const parsedArgs = safeParseSerializableOrderSummary({
-        ...args,
-        id: args.id ?? `order-${toolCallId}`,
-      });
-      if (!parsedArgs) {
-        return null;
-      }
-
-      return result ? (
-        <OrderSummary.Receipt {...parsedArgs} choice={result} />
-      ) : (
-        <ToolUI id={parsedArgs.id}>
-          <ToolUI.Surface>
-            <OrderSummary.Display {...parsedArgs} />
-          </ToolUI.Surface>
-          <ToolUI.Actions>
-            <ToolUI.DecisionActions
-              actions={[
-                { id: "cancel", label: "Cancel", variant: "outline" },
-                { id: "confirm", label: "Purchase", variant: "default" },
-              ]}
-              onAction={(action) =>
-                createDecisionResult({
-                  decisionId: `${parsedArgs.id}-decision`,
-                  action,
-                  payload:
-                    action.id === "confirm"
-                      ? {
-                          orderId: `ORD-${Date.now()}`,
-                          confirmedAt: new Date().toISOString(),
-                        }
-                      : undefined,
-                })
-              }
-              onCommit={async (decision) => {
-                if (decision.actionId !== "confirm") return;
-                const orderId =
-                  typeof decision.payload?.orderId === "string"
-                    ? decision.payload.orderId
-                    : `ORD-${Date.now()}`;
-                const confirmedAt =
-                  typeof decision.payload?.confirmedAt === "string"
-                    ? decision.payload.confirmedAt
-                    : new Date().toISOString();
-                await addResult?.({
-                  action: "confirm",
-                  orderId,
-                  confirmedAt,
-                });
-              }}
-            />
-          </ToolUI.Actions>
-        </ToolUI>
-      );
-    },
+    render: createArgsToolRenderer({
+      safeParse: safeParseSerializableOrderSummary,
+      idPrefix: "order",
+      render: (parsedArgs, { result, addResult }) =>
+        result ? <OrderSummary.Receipt {...parsedArgs} choice={result} /> : (
+          <ToolUI id={parsedArgs.id}>
+            <ToolUI.Surface>
+              <OrderSummary.Display {...parsedArgs} />
+            </ToolUI.Surface>
+            <ToolUI.Actions>
+              <ToolUI.DecisionActions
+                actions={[
+                  { id: "cancel", label: "Cancel", variant: "outline" },
+                  { id: "confirm", label: "Purchase", variant: "default" },
+                ]}
+                onAction={(action) =>
+                  createDecisionResult({
+                    decisionId: `${parsedArgs.id}-decision`,
+                    action,
+                    payload:
+                      action.id === "confirm"
+                        ? {
+                            orderId: `ORD-${Date.now()}`,
+                            confirmedAt: new Date().toISOString(),
+                          }
+                        : undefined,
+                  })
+                }
+                onCommit={async (decision) => {
+                  if (decision.actionId !== "confirm") return;
+                  const orderId =
+                    typeof decision.payload?.orderId === "string"
+                      ? decision.payload.orderId
+                      : `ORD-${Date.now()}`;
+                  const confirmedAt =
+                    typeof decision.payload?.confirmedAt === "string"
+                      ? decision.payload.confirmedAt
+                      : new Date().toISOString();
+                  await addResult?.({
+                    action: "confirm",
+                    orderId,
+                    confirmedAt,
+                  });
+                }}
+              />
+            </ToolUI.Actions>
+          </ToolUI>
+        ),
+    }),
   },
 };
 ```

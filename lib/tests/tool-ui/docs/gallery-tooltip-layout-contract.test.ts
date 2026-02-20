@@ -3,16 +3,13 @@ import path from "node:path";
 import { describe, expect, test } from "vitest";
 
 describe("gallery tooltip layout contract", () => {
-  test("gallery cards render install strip metadata instead of legacy hover tooltip markup", () => {
+  test("gallery cards keep a single-row clickable tooltip with extended spacing buffer", () => {
     const galleryPagePath = path.join(process.cwd(), "app/docs/gallery/page.tsx");
     const content = fs.readFileSync(galleryPagePath, "utf8");
 
-    expect(content).toContain("group/gallery-card relative flex flex-col gap-2");
-    expect(content).toContain("<GalleryInstallStrip");
-    expect(content).toContain("componentName={componentMeta.name}");
-    expect(content).toContain("usageCode={getGalleryUsageCode(componentId)}");
-    expect(content).toContain("installCommand={installCommand}");
-    expect(content).not.toContain("pt-[44px]");
+    expect(content).toContain("group/gallery-card relative pt-[44px]");
+    expect(content).toContain("label={componentMeta.name}");
+    expect(content).toContain("pointer-events-auto inline-flex items-center");
     expect(content).not.toContain("focus-visible:outline-none");
   });
 

@@ -84,48 +84,45 @@ import {
 import {
   ToolUI,
   createDecisionResult,
+  createArgsToolRenderer,
 } from "@/components/tool-ui/shared";
 
 export const toolkit: Toolkit = {
   confirmOrder: {
     description: "Present order for user confirmation.",
     parameters: SerializableOrderSummarySchema,
-    render: ({ args, toolCallId, result, addResult }) => {
-      const parsedArgs = safeParseSerializableOrderSummary({
-        ...args,
-        id: args.id ?? `order-summary-${toolCallId}`,
-      });
-      if (!parsedArgs) {
-        return null;
-      }
+    render: createArgsToolRenderer({
+      safeParse: safeParseSerializableOrderSummary,
+      idPrefix: "order-summary",
+      render: (parsedArgs, { result, addResult }) => {
+        if (result) {
+          return <OrderSummary {...parsedArgs} choice={result} />;
+        }
 
-      if (result) {
-        return <OrderSummary {...parsedArgs} choice={result} />;
-      }
-
-      return (
-        <ToolUI id={parsedArgs.id}>
-          <ToolUI.Surface>
-            <OrderSummary {...parsedArgs} />
-          </ToolUI.Surface>
-          <ToolUI.Actions>
-            <ToolUI.DecisionActions
-              actions={[
-                { id: "cancel", label: "Cancel", variant: "outline" },
-                { id: "confirm", label: "Purchase" },
-              ]}
-              onAction={(action) =>
-                createDecisionResult({
-                  decisionId: parsedArgs.id,
-                  action,
-                })
-              }
-              onCommit={(decision) => addResult?.(decision)}
-            />
-          </ToolUI.Actions>
-        </ToolUI>
-      );
-    },
+        return (
+          <ToolUI id={parsedArgs.id}>
+            <ToolUI.Surface>
+              <OrderSummary {...parsedArgs} />
+            </ToolUI.Surface>
+            <ToolUI.Actions>
+              <ToolUI.DecisionActions
+                actions={[
+                  { id: "cancel", label: "Cancel", variant: "outline" },
+                  { id: "confirm", label: "Purchase" },
+                ]}
+                onAction={(action) =>
+                  createDecisionResult({
+                    decisionId: parsedArgs.id,
+                    action,
+                  })
+                }
+                onCommit={(decision) => addResult?.(decision)}
+              />
+            </ToolUI.Actions>
+          </ToolUI>
+        );
+      },
+    }),
   },
 };
 ```
@@ -137,28 +134,24 @@ export const toolkit: Toolkit = {
 OptionList, ParameterSlider, and PreferencesPanel keep embedded action props (`actions`, `onAction`, `onBeforeAction`). Do not wrap them in a `ToolUI` compound — wire actions directly:
 
 ```tsx
-render: ({ args, toolCallId, result, addResult }) => {
-  const parsedArgs = safeParseSerializableOptionList({
-    ...args,
-    id: args.id ?? `option-list-${toolCallId}`,
-  });
-  if (!parsedArgs) {
-    return null;
-  }
+render: createArgsToolRenderer({
+  safeParse: safeParseSerializableOptionList,
+  idPrefix: "option-list",
+  render: (parsedArgs, { result, addResult }) => {
+    if (result) {
+      return <OptionList {...parsedArgs} choice={result} />;
+    }
 
-  if (result) {
-    return <OptionList {...parsedArgs} choice={result} />;
-  }
-
-  return (
-    <OptionList
-      {...parsedArgs}
-      onAction={(actionId, selection) => {
-        if (actionId === "confirm") addResult?.(selection);
-      }}
-    />
-  );
-},
+    return (
+      <OptionList
+        {...parsedArgs}
+        onAction={(actionId, selection) => {
+          if (actionId === "confirm") addResult?.(selection);
+        }}
+      />
+    );
+  },
+}),
 ```
 
 Generate starter snippet:

@@ -71,34 +71,30 @@ import {
   safeParseSerializableMessageDraft,
   SerializableMessageDraftSchema,
 } from "@/components/tool-ui/message-draft/schema";
+import { createArgsToolRenderer } from "@/components/tool-ui/shared";
 
 export const toolkit: Toolkit = {
   draftMessage: {
     description: "Draft a message for the user to review before sending.",
     parameters: SerializableMessageDraftSchema,
-    render: ({ args, toolCallId, result, addResult }) => {
-      const parsedArgs = safeParseSerializableMessageDraft({
-        ...args,
-        id: args.id ?? `message-draft-${toolCallId}`,
-      });
-      if (!parsedArgs) {
-        return null;
-      }
-
-      return result ? (
-        <MessageDraft {...parsedArgs} outcome={result} />
-      ) : (
-        <MessageDraft
-          {...parsedArgs}
-          onSend={async () => {
-            // Perform actual send logic here
-            await sendMessage(parsedArgs);
-            await addResult?.("sent");
-          }}
-          onCancel={() => addResult?.("cancelled")}
-        />
-      );
-    },
+    render: createArgsToolRenderer({
+      safeParse: safeParseSerializableMessageDraft,
+      idPrefix: "message-draft",
+      render: (parsedArgs, { result, addResult }) =>
+        result ? (
+            <MessageDraft {...parsedArgs} outcome={result} />
+          ) : (
+            <MessageDraft
+              {...parsedArgs}
+              onSend={async () => {
+                // Perform actual send logic here
+                await sendMessage(parsedArgs);
+                await addResult?.("sent");
+              }}
+              onCancel={() => addResult?.("cancelled")}
+            />
+          ),
+    }),
   },
 };
 ```

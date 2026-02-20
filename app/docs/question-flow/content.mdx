@@ -55,40 +55,36 @@ import {
   safeParseSerializableQuestionFlow,
   SerializableQuestionFlowSchema,
 } from "@/components/tool-ui/question-flow/schema";
+import { createArgsToolRenderer } from "@/components/tool-ui/shared";
 
 export const toolkit: Toolkit = {
   configureProject: {
     description: "Guide user through project configuration.",
     parameters: SerializableQuestionFlowSchema,
-    render: ({ args, toolCallId, result, addResult }) => {
-      const parsedArgs = safeParseSerializableQuestionFlow({
-        ...args,
-        id: args.id ?? `wizard-${toolCallId}`,
-      });
-      if (!parsedArgs) {
-        return null;
-      }
-
-      return result ? (
-        <QuestionFlow
-          id={parsedArgs.id}
-          choice={{
-            title: "Project configured",
-            summary: Object.entries(result as Record<string, string[]>).map(
-              ([key, values]) => ({
-                label: key,
-                value: values.join(", "),
-              }),
-            ),
-          }}
-        />
-      ) : (
-        <QuestionFlow
-          {...parsedArgs}
-          onComplete={(answers) => addResult?.(answers)}
-        />
-      );
-    },
+    render: createArgsToolRenderer({
+      safeParse: safeParseSerializableQuestionFlow,
+      idPrefix: "wizard",
+      render: (parsedArgs, { result, addResult }) =>
+        result ? (
+            <QuestionFlow
+              id={parsedArgs.id}
+              choice={{
+                title: "Project configured",
+                summary: Object.entries(result as Record<string, string[]>).map(
+                  ([key, values]) => ({
+                    label: key,
+                    value: values.join(", "),
+                  }),
+                ),
+              }}
+            />
+          ) : (
+            <QuestionFlow
+              {...parsedArgs}
+              onComplete={(answers) => addResult?.(answers)}
+            />
+          ),
+    }),
   },
 };
 ```

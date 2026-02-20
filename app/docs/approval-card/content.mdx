@@ -66,30 +66,26 @@ import {
   safeParseSerializableApprovalCard,
   SerializableApprovalCardSchema,
 } from "@/components/tool-ui/approval-card/schema";
+import { createArgsToolRenderer } from "@/components/tool-ui/shared";
 
 export const toolkit: Toolkit = {
   requestApproval: {
     description: "Request user approval before performing an action.",
     parameters: SerializableApprovalCardSchema,
-    render: ({ args, toolCallId, result, addResult }) => {
-      const parsedArgs = safeParseSerializableApprovalCard({
-        ...args,
-        id: args.id ?? `approval-${toolCallId}`,
-      });
-      if (!parsedArgs) {
-        return null;
-      }
-
-      return result ? (
-        <ApprovalCard {...parsedArgs} choice={result} />
-      ) : (
-        <ApprovalCard
-          {...parsedArgs}
-          onConfirm={() => addResult?.("approved")}
-          onCancel={() => addResult?.("denied")}
-        />
-      );
-    },
+    render: createArgsToolRenderer({
+      safeParse: safeParseSerializableApprovalCard,
+      idPrefix: "approval",
+      render: (parsedArgs, { result, addResult }) =>
+        result ? (
+            <ApprovalCard {...parsedArgs} choice={result} />
+          ) : (
+            <ApprovalCard
+              {...parsedArgs}
+              onConfirm={() => addResult?.("approved")}
+              onCancel={() => addResult?.("denied")}
+            />
+          ),
+    }),
   },
 };
 ```
