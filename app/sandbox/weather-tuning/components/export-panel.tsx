@@ -9,12 +9,20 @@ import { hasAnyTuningDelta } from "../lib/has-any-tuning-delta";
 import { listUpdatedParams } from "../lib/list-updated-params";
 
 interface ExportPanelProps {
-  checkpointOverrides: Partial<Record<WeatherConditionCode, CheckpointOverrides>>;
+  checkpointOverrides: Partial<
+    Record<WeatherConditionCode, CheckpointOverrides>
+  >;
   signedOff: Set<WeatherConditionCode>;
   onApplied?: (
-    checkpointOverrides: Partial<Record<WeatherConditionCode, CheckpointOverrides>>,
+    checkpointOverrides: Partial<
+      Record<WeatherConditionCode, CheckpointOverrides>
+    >,
   ) => void;
-  onRecovered?: (checkpointOverrides: Partial<Record<WeatherConditionCode, CheckpointOverrides>>) => void;
+  onRecovered?: (
+    checkpointOverrides: Partial<
+      Record<WeatherConditionCode, CheckpointOverrides>
+    >,
+  ) => void;
 }
 
 type ToastState = {
@@ -46,7 +54,9 @@ export function ExportPanel({
         return;
       }
       const payload = (await response.json()) as {
-        checkpointOverrides?: Partial<Record<WeatherConditionCode, CheckpointOverrides>>;
+        checkpointOverrides?: Partial<
+          Record<WeatherConditionCode, CheckpointOverrides>
+        >;
       };
       if (!payload?.checkpointOverrides) {
         setApplyError("No recovered presets returned.");
@@ -87,7 +97,9 @@ export function ExportPanel({
 
       const payload = (await response.json()) as {
         path?: string;
-        checkpointOverrides?: Partial<Record<WeatherConditionCode, CheckpointOverrides>>;
+        checkpointOverrides?: Partial<
+          Record<WeatherConditionCode, CheckpointOverrides>
+        >;
       };
       const filePath =
         typeof payload?.path === "string"
@@ -159,7 +171,9 @@ export function ExportPanel({
             : applyStatus === "success"
               ? "Applied"
               : "Apply to repo"}
-          {applyStatus === "success" && <Check className="size-4 text-emerald-400" />}
+          {applyStatus === "success" && (
+            <Check className="size-4 text-emerald-400" />
+          )}
         </Button>
       </div>
       {applyError && (

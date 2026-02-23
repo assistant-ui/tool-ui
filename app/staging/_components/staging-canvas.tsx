@@ -1,10 +1,7 @@
 "use client";
 
 import { useRef, useState, useEffect, useCallback } from "react";
-import {
-  previewConfigs,
-  type ComponentId,
-} from "@/lib/docs/preview-config";
+import { previewConfigs, type ComponentId } from "@/lib/docs/preview-config";
 import { getStagingConfig } from "@/lib/staging/staging-config";
 import type { DebugLevel } from "@/lib/staging/types";
 import { ChatContextPreview } from "@/app/docs/_components/chat-context-preview";
@@ -86,7 +83,9 @@ export function StagingCanvas({
   if (stagingConfig?.renderTuningPanel) {
     return (
       <div className="relative w-full">
-        {stagingConfig.renderTuningPanel({ data: preset.data as Record<string, unknown> })}
+        {stagingConfig.renderTuningPanel({
+          data: preset.data as Record<string, unknown>,
+        })}
       </div>
     );
   }
@@ -109,7 +108,10 @@ export function StagingCanvas({
         userMessage={previewConfig.chatContext.userMessage}
         preamble={previewConfig.chatContext.preamble}
       >
-        <div ref={componentRef} className="relative min-w-[500px] [&_article]:max-w-none">
+        <div
+          ref={componentRef}
+          className="relative min-w-[500px] [&_article]:max-w-none"
+        >
           {wrappedComponent}
 
           {debugLevel !== "off" && (
@@ -119,10 +121,11 @@ export function StagingCanvas({
                   No debug overlay for {componentId}
                 </div>
               )}
-              {shouldShowOverlay && stagingConfig?.renderDebugOverlay?.({
-                level: debugLevel,
-                componentRef,
-              })}
+              {shouldShowOverlay &&
+                stagingConfig?.renderDebugOverlay?.({
+                  level: debugLevel,
+                  componentRef,
+                })}
             </div>
           )}
         </div>

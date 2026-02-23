@@ -6,7 +6,10 @@ import { validateChangelogStructure } from "../lib/changelog/changelog";
 function main(): void {
   const scriptDir = path.dirname(fileURLToPath(import.meta.url));
   const projectRoot = path.resolve(scriptDir, "..");
-  const changelogPath = path.join(projectRoot, "app/docs/changelog/content.mdx");
+  const changelogPath = path.join(
+    projectRoot,
+    "app/docs/changelog/content.mdx",
+  );
 
   if (!fs.existsSync(changelogPath)) {
     throw new Error(

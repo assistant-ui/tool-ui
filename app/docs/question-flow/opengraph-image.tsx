@@ -10,5 +10,8 @@ export const size = ogSize;
 export const contentType = ogContentType;
 
 export default async function Image() {
-  return generateOgImage("Question Flow", "Multi-step guided questions with branching");
+  return generateOgImage(
+    "Question Flow",
+    "Multi-step guided questions with branching",
+  );
 }

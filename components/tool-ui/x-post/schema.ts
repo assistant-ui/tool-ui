@@ -1,4 +1,5 @@
-import { z } from "zod";import { defineToolUiContract } from "../shared/contract";
+import { z } from "zod";
+import { defineToolUiContract } from "../shared/contract";
 
 export const XPostAuthorSchema = z.object({
   name: z.string(),

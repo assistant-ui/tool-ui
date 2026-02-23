@@ -10,7 +10,10 @@ type FauxChatShellMobileProps = {
 
 function DynamicIsland() {
   return (
-    <div className="absolute left-1/2 top-3 z-30 -translate-x-1/2" aria-hidden="true">
+    <div
+      className="absolute left-1/2 top-3 z-30 -translate-x-1/2"
+      aria-hidden="true"
+    >
       <div className="border-gradient-glow-notch h-9 w-32 rounded-full" />
     </div>
   );
@@ -32,7 +35,8 @@ function StatusBar() {
 
     const scheduleNextUpdate = () => {
       const now = new Date();
-      const msUntilNextMinute = (60 - now.getSeconds()) * 1000 - now.getMilliseconds();
+      const msUntilNextMinute =
+        (60 - now.getSeconds()) * 1000 - now.getMilliseconds();
       return setTimeout(() => {
         updateTime();
         intervalRef = setInterval(updateTime, 60000);
@@ -95,7 +99,6 @@ export function FauxChatShellMobile({ className }: FauxChatShellMobileProps) {
         }}
         aria-hidden="true"
       />
-
     </div>
   );
 }

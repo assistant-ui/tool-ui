@@ -36,7 +36,12 @@ export function createWeatherOverlayStubData(
     tempLow: 65,
     forecast: [
       { label: "Today", tempMin: 65, tempMax: 78, conditionCode },
-      { label: "Tue", tempMin: 64, tempMax: 77, conditionCode: "partly-cloudy" },
+      {
+        label: "Tue",
+        tempMin: 64,
+        tempMax: 77,
+        conditionCode: "partly-cloudy",
+      },
       { label: "Wed", tempMin: 62, tempMax: 75, conditionCode: "cloudy" },
       { label: "Thu", tempMin: 60, tempMax: 73, conditionCode: "rain" },
       { label: "Fri", tempMin: 63, tempMax: 76, conditionCode: "clear" },

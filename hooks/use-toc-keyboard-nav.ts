@@ -23,9 +23,7 @@ export function useTocKeyboardNav(
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "ArrowDown") {
       e.preventDefault();
-      setFocusIndex((prev) =>
-        prev < headings.length - 1 ? prev + 1 : prev,
-      );
+      setFocusIndex((prev) => (prev < headings.length - 1 ? prev + 1 : prev));
     } else if (e.key === "ArrowUp") {
       e.preventDefault();
       setFocusIndex((prev) => (prev > 0 ? prev - 1 : prev));

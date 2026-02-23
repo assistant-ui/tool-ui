@@ -30,7 +30,10 @@ function generateStatsDisplayCode(data: SerializableStatsDisplay): string {
   return `<StatsDisplay\n${props.join("\n")}\n/>`;
 }
 
-export const statsDisplayPresets: Record<StatsDisplayPresetName, StatsDisplayPreset> = {
+export const statsDisplayPresets: Record<
+  StatsDisplayPresetName,
+  StatsDisplayPreset
+> = {
   "business-metrics": {
     description: "Full-featured dashboard with sparklines and diff indicators",
     data: {
@@ -44,7 +47,10 @@ export const statsDisplayPresets: Record<StatsDisplayPresetName, StatsDisplayPre
           value: 847300,
           format: { kind: "currency", currency: "USD", decimals: 0 },
           sparkline: {
-            data: [72000, 68000, 74000, 81000, 78000, 85000, 89000, 91000, 86000, 94000, 97000, 102000],
+            data: [
+              72000, 68000, 74000, 81000, 78000, 85000, 89000, 91000, 86000,
+              94000, 97000, 102000,
+            ],
             color: "var(--chart-1)",
           },
           diff: { value: 12.4, decimals: 1 },
@@ -55,7 +61,10 @@ export const statsDisplayPresets: Record<StatsDisplayPresetName, StatsDisplayPre
           value: 24890,
           format: { kind: "number", compact: true },
           sparkline: {
-            data: [18200, 19100, 19800, 20400, 21200, 21900, 22600, 23100, 23800, 24200, 24500, 24890],
+            data: [
+              18200, 19100, 19800, 20400, 21200, 21900, 22600, 23100, 23800,
+              24200, 24500, 24890,
+            ],
             color: "var(--chart-3)",
           },
           diff: { value: 8.2, decimals: 1 },
@@ -150,14 +159,16 @@ export const statsDisplayPresets: Record<StatsDisplayPresetName, StatsDisplayPre
           value: 284750,
           format: { kind: "currency", currency: "USD", decimals: 0 },
           sparkline: {
-            data: [268000, 271000, 265000, 274000, 278000, 282000, 279000, 284750],
+            data: [
+              268000, 271000, 265000, 274000, 278000, 282000, 279000, 284750,
+            ],
             color: "var(--chart-1)",
           },
         },
         {
           key: "day-change",
           label: "Day Change",
-          value: 1847.50,
+          value: 1847.5,
           format: { kind: "currency", currency: "USD" },
           diff: { value: 0.65, decimals: 2 },
         },

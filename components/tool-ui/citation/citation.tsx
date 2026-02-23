@@ -1,4 +1,3 @@
-/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import * as React from "react";
@@ -83,12 +82,7 @@ export interface CitationProps extends SerializableCitation {
 }
 
 export function Citation(props: CitationProps) {
-  const {
-    variant = "default",
-    className,
-    onNavigate,
-    ...serializable
-  } = props;
+  const { variant = "default", className, onNavigate, ...serializable } = props;
 
   const {
     id,

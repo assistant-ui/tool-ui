@@ -18,12 +18,12 @@ This prototype and the [Design Guidelines](/docs/design-guidelines) evolve toget
 
 ### Learnings Fed Back to Guidelines
 
-| Discovery | Guideline Update |
-|-----------|------------------|
-| Assistant said "Where to?" and UI had "Where to?" header | Expanded "Redundant narration" to be bidirectional — neither assistant nor surface should echo the other |
-| Pickup location change needed dedicated UI, not inline edit | Secondary actions that require selection should spawn new Tool UIs rather than inline editing |
-| Changing a term of a "contract" UI (like RideQuote) invalidates it | New pattern: **Contract with Revocation**. Some Tool UIs represent a contract (offer with specific terms). Changing any term revokes the contract and requires a fresh one. The revoked UI shows "superseded" state, a new Tool UI appears with updated terms. |
-| User can type "take me home" instead of clicking the picker | Design decision: **Skip redundant selection UIs**. When destination is implicit in user's message, skip the picker and go straight to the quote. The quote shows the destination anyway, so a separate confirmation is redundant. Selection UIs are for clarification, not confirmation. |
+| Discovery                                                          | Guideline Update                                                                                                                                                                                                                                                                         |
+| ------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Assistant said "Where to?" and UI had "Where to?" header           | Expanded "Redundant narration" to be bidirectional — neither assistant nor surface should echo the other                                                                                                                                                                                 |
+| Pickup location change needed dedicated UI, not inline edit        | Secondary actions that require selection should spawn new Tool UIs rather than inline editing                                                                                                                                                                                            |
+| Changing a term of a "contract" UI (like RideQuote) invalidates it | New pattern: **Contract with Revocation**. Some Tool UIs represent a contract (offer with specific terms). Changing any term revokes the contract and requires a fresh one. The revoked UI shows "superseded" state, a new Tool UI appears with updated terms.                           |
+| User can type "take me home" instead of clicking the picker        | Design decision: **Skip redundant selection UIs**. When destination is implicit in user's message, skip the picker and go straight to the quote. The quote shows the destination anyway, so a separate confirmation is redundant. Selection UIs are for clarification, not confirmation. |
 
 ---
 
@@ -48,6 +48,7 @@ controls  observes
 4. **Assistant narrates** what happened and continues
 
 This is NOT just "show UI, wait for click." The assistant must:
+
 - **Introduce** each surface ("Where would you like to go?")
 - **Acknowledge** user actions ("Great, Home it is.")
 - **Reference** surface data in follow-ups ("Your 5-minute ride to Home...")
@@ -56,6 +57,7 @@ This is NOT just "show UI, wait for click." The assistant must:
 ### Anti-pattern: Silent Surfaces
 
 ❌ **Wrong:**
+
 ```
 User: "I need a ride"
 [DestinationPicker appears silently]
@@ -64,6 +66,7 @@ User: clicks Home
 ```
 
 ✅ **Right:**
+
 ```
 User: "I need a ride"
 Assistant: "Where would you like to go?"
@@ -83,6 +86,7 @@ With Toolkit tool definitions and `type: "human"`:
 4. **Assistant generates response** → Can reference the selection and call next tool
 
 The model sees the full result object, so it knows:
+
 - What the user selected (`selectedLocation.label === "Home"`)
 - Any metadata (ETA, price from quote, etc.)
 
@@ -115,12 +119,12 @@ When someone says "I need a ride", they're thinking:
 
 ### Entry Points
 
-| Entry | Example | Handling |
-|-------|---------|----------|
-| No destination | "I need a ride" | Show DestinationPicker |
-| Known intent | "Take me home" | Resolve from profile, show RideQuote |
-| Price check | "How much to SFO?" | Show RideQuote (no immediate booking) |
-| Full intent | "Book a Waymo to 123 Main St" | Resolve address, show RideQuote |
+| Entry          | Example                       | Handling                              |
+| -------------- | ----------------------------- | ------------------------------------- |
+| No destination | "I need a ride"               | Show DestinationPicker                |
+| Known intent   | "Take me home"                | Resolve from profile, show RideQuote  |
+| Price check    | "How much to SFO?"            | Show RideQuote (no immediate booking) |
+| Full intent    | "Book a Waymo to 123 Main St" | Resolve address, show RideQuote       |
 
 ### The Golden Path
 
@@ -188,6 +192,7 @@ This prototype exercises three fundamental patterns that generalize across domai
 **Purpose:** User chooses from discrete options
 
 **Behavior:**
+
 - Displays options visually
 - User clicks to select
 - Transforms to receipt showing choice
@@ -195,6 +200,7 @@ This prototype exercises three fundamental patterns that generalize across domai
 **Generalizes to:** Payment methods, ride types, menu items, time slots, any multi-choice input
 
 **Library needs:**
+
 - `addResult()` for capturing user choice
 - Receipt state detection from result data
 - Option rendering primitives
@@ -218,6 +224,7 @@ The key insight: Don't show a UI that asks a question the user already answered.
 **Purpose:** Present a contract (offer with specific terms) for user approval
 
 **Behavior:**
+
 - Shows key details in scannable format
 - Primary action: Accept (Confirm)
 - Secondary actions: Modify terms (e.g., "Change pickup location")
@@ -226,6 +233,7 @@ The key insight: Don't show a UI that asks a question the user already answered.
 - Transforms to receipt on acceptance
 
 **States:**
+
 - `interactive` → User reviewing the contract
 - `revoked` → User changed a term, contract superseded (dimmed, shows "Quote updated")
 - `confirmed` → User accepted, contract fulfilled (receipt)
@@ -235,6 +243,7 @@ The key insight: Don't show a UI that asks a question the user already answered.
 **Key insight:** A contract is a snapshot of specific terms. You can't "edit" a contract in place—you revoke and replace it. This maps naturally to conversation flow where each Tool UI is a discrete event.
 
 **Library needs:**
+
 - Structured card layouts
 - Primary + secondary action buttons
 - Revoked/superseded state styling
@@ -247,6 +256,7 @@ The key insight: Don't show a UI that asks a question the user already answered.
 **Purpose:** Show live-updating state over time
 
 **Behavior:**
+
 - Timeline/stepper visualization
 - Updates as external state changes
 - Actions available at certain states (e.g., Cancel before pickup)
@@ -255,6 +265,7 @@ The key insight: Don't show a UI that asks a question the user already answered.
 **Generalizes to:** Order tracking, file uploads, deployment status, any long-running task
 
 **Library needs:**
+
 - Polling/subscription mechanism for updates
 - State machine visualization components
 - Conditional action availability
@@ -264,12 +275,12 @@ The key insight: Don't show a UI that asks a question the user already answered.
 
 ## Tool UI Components
 
-| Component | Pattern | States |
-|-----------|---------|--------|
-| **DestinationPicker** | Selection | interactive → receipt |
-| **PickupPicker** | Selection | interactive → receipt |
-| **RideQuote** | Contract | interactive → revoked \| confirmed |
-| **TripStatus** | Progress | live (multiple phases) → completed \| cancelled |
+| Component             | Pattern   | States                                          |
+| --------------------- | --------- | ----------------------------------------------- |
+| **DestinationPicker** | Selection | interactive → receipt                           |
+| **PickupPicker**      | Selection | interactive → receipt                           |
+| **RideQuote**         | Contract  | interactive → revoked \| confirmed              |
+| **TripStatus**        | Progress  | live (multiple phases) → completed \| cancelled |
 
 ---
 
@@ -321,4 +332,4 @@ The key insight: Don't show a UI that asks a question the user already answered.
 
 ---
 
-*Last updated: 2025-01-25*
+_Last updated: 2025-01-25_

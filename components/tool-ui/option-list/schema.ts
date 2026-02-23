@@ -90,9 +90,7 @@ function validateOptionListInvariants(
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           path:
-            typeof selection === "string"
-              ? [fieldName]
-              : [fieldName, index],
+            typeof selection === "string" ? [fieldName] : [fieldName, index],
           message: `Selection id "${selectionId}" must exist in options.`,
         });
       }
@@ -184,7 +182,10 @@ export const SerializableOptionListSchema = OptionListPropsSchemaBase.omit({
   .extend({
     options: z.array(OptionListOptionSchema.omit({ icon: true })),
     actions: z
-      .union([z.array(SerializableActionSchema), SerializableActionsConfigSchema])
+      .union([
+        z.array(SerializableActionSchema),
+        SerializableActionsConfigSchema,
+      ])
       .optional(),
   })
   .strict()

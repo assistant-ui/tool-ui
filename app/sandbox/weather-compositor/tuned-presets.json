@@ -22,11 +22,11 @@
         "layerSpread": 0.6,
         "starTwinkleAmount": 0.75,
         "starTwinkleSpeed": 0.8,
-        "horizonLine": 0.30
+        "horizonLine": 0.3
       },
       "celestial": {
-        "celestialX": 0.70,
-        "celestialY": 0.80,
+        "celestialX": 0.7,
+        "celestialY": 0.8,
         "sunSize": 0.052,
         "moonSize": 0.044,
         "starDensity": 0.85
@@ -65,7 +65,7 @@
         "softness": 0.42,
         "windSpeed": 0.28,
         "windAngle": 0.08,
-        "turbulence": 0.30,
+        "turbulence": 0.3,
         "ambientDarkness": 0.22,
         "lightIntensity": 0.88,
         "numLayers": 4,
@@ -76,7 +76,7 @@
         "celestialX": 0.62,
         "celestialY": 0.68,
         "sunSize": 0.072,
-        "moonSize": 0.060,
+        "moonSize": 0.06,
         "starDensity": 0.15
       }
     },
@@ -100,7 +100,7 @@
         "celestialX": 0.58,
         "celestialY": 0.65,
         "sunSize": 0.085,
-        "moonSize": 0.070,
+        "moonSize": 0.07,
         "starDensity": 0.0
       }
     },
@@ -158,7 +158,7 @@
       },
       "celestial": {
         "celestialX": 0.62,
-        "celestialY": 0.70,
+        "celestialY": 0.7,
         "sunSize": 0.068,
         "moonSize": 0.055,
         "starDensity": 0.08
@@ -185,15 +185,15 @@
         "zoom": 1.0,
         "fallingIntensity": 0.58,
         "fallingSpeed": 1.15,
-        "fallingAngle": 0.10,
+        "fallingAngle": 0.1,
         "fallingStreakLength": 0.72,
         "fallingLayers": 3,
         "fallingRefraction": 0.38,
-        "fallingWaviness": 0.10,
+        "fallingWaviness": 0.1,
         "fallingThicknessVar": 0.48
       },
       "celestial": {
-        "celestialX": 0.60,
+        "celestialX": 0.6,
         "celestialY": 0.66,
         "sunSize": 0.065,
         "moonSize": 0.052,
@@ -231,7 +231,7 @@
       "celestial": {
         "celestialX": 0.55,
         "celestialY": 0.62,
-        "sunSize": 0.060,
+        "sunSize": 0.06,
         "moonSize": 0.048,
         "starDensity": 0.0
       }
@@ -336,14 +336,14 @@
         "lightIntensity": 0.72,
         "numLayers": 4,
         "layerSpread": 0.28,
-        "horizonLine": 0.50
+        "horizonLine": 0.5
       },
       "rain": {
         "glassIntensity": 0.42,
         "zoom": 0.95,
         "fallingIntensity": 0.48,
         "fallingSpeed": 1.35,
-        "fallingAngle": 0.20,
+        "fallingAngle": 0.2,
         "fallingStreakLength": 0.55,
         "fallingLayers": 3,
         "fallingRefraction": 0.32,

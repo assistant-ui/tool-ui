@@ -10,5 +10,8 @@ export const size = ogSize;
 export const contentType = ogContentType;
 
 export default async function Image() {
-  return generateOgImage("Citation", "Display source references with attribution");
+  return generateOgImage(
+    "Citation",
+    "Display source references with attribution",
+  );
 }

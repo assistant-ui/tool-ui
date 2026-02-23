@@ -4,13 +4,9 @@ import { describe, expect, test } from "vitest";
 import { readFileSync } from "node:fs";
 import path from "node:path";
 
-import {
-  TUNED_WEATHER_EFFECTS_CHECKPOINT_OVERRIDES,
-} from "@/lib/weather-authoring/weather-widget/effects/generated/tuned-presets.generated";
+import { TUNED_WEATHER_EFFECTS_CHECKPOINT_OVERRIDES } from "@/lib/weather-authoring/weather-widget/effects/generated/tuned-presets.generated";
 import * as generatedShaders from "@/lib/weather-authoring/weather-widget/effects/generated/weather-effect-shaders.generated";
-import {
-  TUNED_WEATHER_EFFECTS_CHECKPOINT_OVERRIDES as bundledRuntimeTunedOverrides,
-} from "@/components/tool-ui/weather-widget/generated/weather-runtime-core.generated";
+import { TUNED_WEATHER_EFFECTS_CHECKPOINT_OVERRIDES as bundledRuntimeTunedOverrides } from "@/components/tool-ui/weather-widget/generated/weather-runtime-core.generated";
 import {
   canonicalizeWeatherPresetData,
   getStaleWeatherRuntimeArtifacts,
@@ -98,9 +94,7 @@ describe("weather runtime codegen", () => {
     for (const file of registryEntry.files) {
       const absolutePath = path.join(PROJECT_ROOT, file.path);
       const source = readFileSync(absolutePath, "utf8");
-      expect(source).not.toMatch(
-        /\bfrom\s+["']@\/lib\/weather-authoring\//,
-      );
+      expect(source).not.toMatch(/\bfrom\s+["']@\/lib\/weather-authoring\//);
       expect(source).not.toMatch(
         /\bimport\s*\(\s*["']@\/lib\/weather-authoring\//,
       );
@@ -108,9 +102,9 @@ describe("weather runtime codegen", () => {
   });
 
   test("generated artifacts are not stale", async () => {
-    await expect(getStaleWeatherRuntimeArtifacts(PROJECT_ROOT)).resolves.toEqual(
-      [],
-    );
+    await expect(
+      getStaleWeatherRuntimeArtifacts(PROJECT_ROOT),
+    ).resolves.toEqual([]);
   });
 
   test("bundled runtime stays under size budget", () => {
@@ -127,7 +121,10 @@ describe("weather runtime codegen", () => {
   });
 
   test("weather registry payload stays under size budget", () => {
-    const registryEntryPath = path.join(PROJECT_ROOT, WEATHER_REGISTRY_ENTRY_PATH);
+    const registryEntryPath = path.join(
+      PROJECT_ROOT,
+      WEATHER_REGISTRY_ENTRY_PATH,
+    );
     const registryEntry = readFileSync(registryEntryPath, "utf8");
     const byteCount = Buffer.byteLength(registryEntry, "utf8");
 
@@ -141,8 +138,13 @@ describe("weather runtime codegen", () => {
   });
 
   test("weather registry payload embeds the current runtime files", () => {
-    const registryEntryPath = path.join(PROJECT_ROOT, WEATHER_REGISTRY_ENTRY_PATH);
-    const registryEntry = JSON.parse(readFileSync(registryEntryPath, "utf8")) as {
+    const registryEntryPath = path.join(
+      PROJECT_ROOT,
+      WEATHER_REGISTRY_ENTRY_PATH,
+    );
+    const registryEntry = JSON.parse(
+      readFileSync(registryEntryPath, "utf8"),
+    ) as {
       files: Array<{ path: string; content?: string }>;
     };
     const fileContentsByPath = new Map(

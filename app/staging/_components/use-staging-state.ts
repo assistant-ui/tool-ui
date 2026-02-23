@@ -3,10 +3,7 @@
 import { create } from "zustand";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { useEffect, useCallback } from "react";
-import {
-  previewConfigs,
-  type ComponentId,
-} from "@/lib/docs/preview-config";
+import { previewConfigs, type ComponentId } from "@/lib/docs/preview-config";
 import type { DebugLevel } from "@/lib/staging/types";
 
 type ViewMode = "static" | "showcase";
@@ -35,7 +32,8 @@ export const useStagingStore = create<StagingState>((set, get) => ({
     const config = previewConfigs[id];
     set({
       componentId: id,
-      presetName: config?.defaultPreset ?? Object.keys(config?.presets ?? {})[0] ?? "",
+      presetName:
+        config?.defaultPreset ?? Object.keys(config?.presets ?? {})[0] ?? "",
       debugLevel: "off",
     });
   },
@@ -71,9 +69,10 @@ export function useStagingState() {
       const presetName =
         presetParam && presetParam in (config?.presets ?? {})
           ? presetParam
-          : config?.defaultPreset ?? "";
+          : (config?.defaultPreset ?? "");
 
-      const debugLevel = debugParam && DEBUG_LEVELS.includes(debugParam) ? debugParam : "off";
+      const debugLevel =
+        debugParam && DEBUG_LEVELS.includes(debugParam) ? debugParam : "off";
 
       // Only update store if values have changed to prevent infinite loop
       const currentState = useStagingStore.getState();

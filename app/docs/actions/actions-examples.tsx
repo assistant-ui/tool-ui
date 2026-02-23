@@ -2,9 +2,15 @@
 
 import { useState } from "react";
 import { DataTable } from "@/components/tool-ui/data-table";
-import { OptionList, type OptionListSelection } from "@/components/tool-ui/option-list";
+import {
+  OptionList,
+  type OptionListSelection,
+} from "@/components/tool-ui/option-list";
 import { OrderSummary } from "@/components/tool-ui/order-summary";
-import { ParameterSlider, type SliderValue } from "@/components/tool-ui/parameter-slider";
+import {
+  ParameterSlider,
+  type SliderValue,
+} from "@/components/tool-ui/parameter-slider";
 import {
   PreferencesPanel,
   type PreferencesValue,
@@ -65,12 +71,14 @@ const preferencesSections = [
 export function ActionFlowToolCallVisual() {
   return (
     <MockThread caption="Step 1: the model chooses a tool call.">
-      <MockMessage role="user">Show last month&apos;s travel expenses.</MockMessage>
+      <MockMessage role="user">
+        Show last month&apos;s travel expenses.
+      </MockMessage>
       <MockMessage role="assistant">
         <div className="border-border bg-card rounded-xl border p-3 text-sm">
           Calling <code>getExpenses</code> with args:
           <pre className="bg-muted mt-2 overflow-x-auto rounded-md p-2 text-xs">
-{`{
+            {`{
   "month": "2026-01",
   "category": "travel"
 }`}
@@ -118,7 +126,11 @@ export function ActionFlowUserActionVisual() {
           <ToolUI.LocalActions
             actions={[
               { id: "export-csv", label: "Export CSV", variant: "secondary" },
-              { id: "open-report", label: "Open Full Report", variant: "outline" },
+              {
+                id: "open-report",
+                label: "Open Full Report",
+                variant: "outline",
+              },
             ]}
             onAction={(actionId) => {
               setEvent(`Clicked: ${actionId}`);
@@ -276,7 +288,11 @@ export function DisplaySurfaceLocalActionsExample() {
           <ToolUI.LocalActions
             actions={[
               { id: "export-csv", label: "Export CSV", variant: "secondary" },
-              { id: "open-report", label: "Open Full Report", variant: "outline" },
+              {
+                id: "open-report",
+                label: "Open Full Report",
+                variant: "outline",
+              },
             ]}
             onAction={(actionId) => {
               setEvent(`Local action executed: ${actionId}`);
@@ -387,9 +403,8 @@ export function ActionCentricExceptionsExample() {
     actionId: string;
     state: OptionListSelection;
   } | null>(null);
-  const [sliderValues, setSliderValues] = useState<SliderValue[]>(
-    initialSliderValues,
-  );
+  const [sliderValues, setSliderValues] =
+    useState<SliderValue[]>(initialSliderValues);
   const [sliderOutput, setSliderOutput] = useState<{
     actionId: string;
     state: SliderValue[];

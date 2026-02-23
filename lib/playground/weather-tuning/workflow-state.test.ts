@@ -38,7 +38,12 @@ describe("weather-tuning workflow state persistence", () => {
 
     const state: WorkflowState = {
       checkpoints: {
-        clear: { dawn: "reviewed", noon: "pending", dusk: "pending", midnight: "pending" },
+        clear: {
+          dawn: "reviewed",
+          noon: "pending",
+          dusk: "pending",
+          midnight: "pending",
+        },
       },
       signedOff: ["clear"],
       repoCheckpointOverrides: {
@@ -59,6 +64,8 @@ describe("weather-tuning workflow state persistence", () => {
 
     const loaded = loadWorkflowState();
     expect(loaded?.repoCheckpointOverrides?.clear?.dawn?.glass?.depth).toBe(9);
-    expect(loaded?.repoCheckpointOverrides?.clear?.dawn?.glass?.strength).toBe(95);
+    expect(loaded?.repoCheckpointOverrides?.clear?.dawn?.glass?.strength).toBe(
+      95,
+    );
   });
 });

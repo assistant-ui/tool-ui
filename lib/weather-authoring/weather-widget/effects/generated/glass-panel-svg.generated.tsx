@@ -252,7 +252,16 @@ export function GlassPanelUnderlay({ children, className, depth = DEFAULT_GLASS_
             backdropFilter,
             WebkitBackdropFilter: backdropFilter,
         };
-    }, [dimensions, radius, depth, strength, chromaticAberration, blur, disabled, supported]);
+    }, [
+        dimensions,
+        radius,
+        depth,
+        strength,
+        chromaticAberration,
+        blur,
+        disabled,
+        supported,
+    ]);
     return (<div ref={ref} className={className} style={style}>
       {children}
     </div>);

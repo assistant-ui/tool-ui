@@ -10,5 +10,8 @@ export const size = ogSize;
 export const contentType = ogContentType;
 
 export default async function Image() {
-  return generateOgImage("Receipts", "Confirm what happened after a user decision");
+  return generateOgImage(
+    "Receipts",
+    "Confirm what happened after a user decision",
+  );
 }

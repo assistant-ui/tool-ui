@@ -192,7 +192,9 @@ Document this component's intent, schema contract, and usage examples.
   console.log(`- components/tool-ui/${slug}`);
   console.log(`- app/docs/${slug}/content.mdx`);
   console.log(`- lib/presets/${slug}.ts`);
-  console.log("Next: wire category metadata in lib/docs/component-registry.ts.");
+  console.log(
+    "Next: wire category metadata in lib/docs/component-registry.ts.",
+  );
 }
 
 main().catch((error: unknown) => {

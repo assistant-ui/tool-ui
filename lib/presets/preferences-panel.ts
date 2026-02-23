@@ -54,9 +54,11 @@ function generatePreferencesPanelCode(
 
 export const preferencesPanelPresets: Record<
   PreferencesPanelPresetName,
-  PresetWithCodeGen<SerializablePreferencesPanel | SerializablePreferencesPanelReceipt>
+  PresetWithCodeGen<
+    SerializablePreferencesPanel | SerializablePreferencesPanelReceipt
+  >
 > = {
-  "notifications": {
+  notifications: {
     description: "Basic notification preferences with switches",
     data: {
       id: "preferences-panel-preview-notifications",
@@ -90,7 +92,7 @@ export const preferencesPanelPresets: Record<
     } satisfies SerializablePreferencesPanel,
     generateExampleCode: generatePreferencesPanelCode,
   },
-  "privacy": {
+  privacy: {
     description: "Multi-section settings with headings and mixed controls",
     data: {
       id: "preferences-panel-preview-privacy",
@@ -136,7 +138,7 @@ export const preferencesPanelPresets: Record<
     } satisfies SerializablePreferencesPanel,
     generateExampleCode: generatePreferencesPanelCode,
   },
-  "appearance": {
+  appearance: {
     description: "Mixed control types: toggle and select",
     data: {
       id: "preferences-panel-preview-appearance",
@@ -182,7 +184,7 @@ export const preferencesPanelPresets: Record<
     } satisfies SerializablePreferencesPanel,
     generateExampleCode: generatePreferencesPanelCode,
   },
-  "workflow": {
+  workflow: {
     description: "Workflow automation settings with select dropdown",
     data: {
       id: "preferences-panel-preview-workflow",
@@ -229,7 +231,7 @@ export const preferencesPanelPresets: Record<
     } satisfies SerializablePreferencesPanel,
     generateExampleCode: generatePreferencesPanelCode,
   },
-  "receipt": {
+  receipt: {
     description: "Confirmed preferences in receipt state",
     data: {
       id: "preferences-panel-preview-receipt",
@@ -275,12 +277,12 @@ export const preferencesPanelPresets: Record<
       choice: {
         "profile-visibility": "private",
         "activity-status": false,
-        "analytics": false,
+        analytics: false,
       },
     } satisfies SerializablePreferencesPanelReceipt,
     generateExampleCode: generatePreferencesPanelCode,
   },
-  "error": {
+  error: {
     description: "Partial save with errors showing failed fields",
     data: {
       id: "preferences-panel-preview-error",
@@ -326,10 +328,10 @@ export const preferencesPanelPresets: Record<
       choice: {
         "profile-visibility": "private",
         "activity-status": false,
-        "analytics": false,
+        analytics: false,
       },
       error: {
-        "analytics": "Analytics requires accepting Terms of Service",
+        analytics: "Analytics requires accepting Terms of Service",
       },
     } satisfies SerializablePreferencesPanelReceipt,
     generateExampleCode: generatePreferencesPanelCode,

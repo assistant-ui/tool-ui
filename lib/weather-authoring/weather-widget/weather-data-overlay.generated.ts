@@ -9,7 +9,7 @@ import { useEffect, useRef, useState, useCallback } from "react";
 import { Sun, Cloud, CloudSun, CloudFog, CloudDrizzle, CloudRain, CloudLightning, Snowflake, CloudHail, Wind, } from "lucide-react";
 import { cn } from "./_adapter";
 import { getSceneBrightnessFromTimeOfDay, getTimeOfDay, getWeatherTheme, } from "./effects/parameter-mapper";
-import { resolveGlassBackdropFilterStyles, } from "./effects/glass-style-resolver";
+import { resolveGlassBackdropFilterStyles } from "./effects/glass-style-resolver";
 import { useGlassStyles } from "./effects/use-glass-styles";
 function getPeakIntensity(timeOfDay) {
     const noonDistance = Math.abs(timeOfDay - 0.5);
@@ -187,7 +187,12 @@ export function WeatherDataOverlay({ location, conditionCode, temperature, tempH
             container.removeEventListener("mouseleave", handleMouseLeave);
             cancelPendingGlowFrame();
         };
-    }, [reducedMotion, clearGlowIntensity, scheduleGlowState, cancelPendingGlowFrame]);
+    }, [
+        reducedMotion,
+        clearGlowIntensity,
+        scheduleGlowState,
+        cancelPendingGlowFrame,
+    ]);
     const roundedTemperature = Math.round(temperature);
     const unitSymbol = unit === "celsius" ? "C" : "F";
     const spokenUnit = unit === "celsius" ? "Celsius" : "Fahrenheit";
@@ -201,7 +206,9 @@ export function WeatherDataOverlay({ location, conditionCode, temperature, tempH
     const bgOpacity = baseBgOpacity * (1 - peakIntensity * 0.7);
     const midnightDistance = Math.min(timeOfDay, 1 - timeOfDay);
     const baseBlur = isDark ? 2 + midnightDistance * 38 : 24;
-    const blurAmount = isDark ? baseBlur : baseBlur - peakIntensity * (baseBlur - 8);
+    const blurAmount = isDark
+        ? baseBlur
+        : baseBlur - peakIntensity * (baseBlur - 8);
     const isDawn = timeOfDay > 0.1 && timeOfDay < 0.4;
     const dawnIntensity = isDawn ? 1 - Math.abs(timeOfDay - 0.25) * 4 : 0;
     const forecastTextShadow = dawnIntensity > 0

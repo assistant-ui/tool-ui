@@ -380,7 +380,6 @@ function PlanRoot({
           {todoList}
         </div>
       </CardContent>
-
     </Card>
   );
 }

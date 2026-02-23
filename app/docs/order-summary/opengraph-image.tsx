@@ -12,6 +12,6 @@ export const contentType = ogContentType;
 export default async function Image() {
   return generateOgImage(
     "Order Summary",
-    "Agent-suggested purchases with itemized pricing"
+    "Agent-suggested purchases with itemized pricing",
   );
 }

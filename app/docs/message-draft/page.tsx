@@ -10,10 +10,5 @@ export const metadata: Metadata = {
 export const revalidate = 3600;
 
 export default function MessageDraftDocsPage() {
-  return (
-    <ComponentDocsTabs
-      docs={<Content />}
-      componentId="message-draft"
-    />
-  );
+  return <ComponentDocsTabs docs={<Content />} componentId="message-draft" />;
 }

@@ -15,12 +15,11 @@ export interface DecisionActionsProps<
 > {
   id?: string;
   actions: DecisionAction[];
-  onAction: (
-    action: { id: string; label: string },
-  ) => DecisionResult<TPayload> | Promise<DecisionResult<TPayload>>;
-  onCommit: (
-    result: DecisionResult<TPayload>,
-  ) => void | Promise<void>;
+  onAction: (action: {
+    id: string;
+    label: string;
+  }) => DecisionResult<TPayload> | Promise<DecisionResult<TPayload>>;
+  onCommit: (result: DecisionResult<TPayload>) => void | Promise<void>;
   onBeforeAction?: (actionId: string) => boolean | Promise<boolean>;
   confirmTimeout?: number;
   align?: "left" | "center" | "right";

@@ -73,7 +73,9 @@ const OptionList = dynamic(() =>
   import("@/components/tool-ui/option-list").then((m) => m.OptionList),
 );
 const ParameterSlider = dynamic(() =>
-  import("@/components/tool-ui/parameter-slider").then((m) => m.ParameterSlider),
+  import("@/components/tool-ui/parameter-slider").then(
+    (m) => m.ParameterSlider,
+  ),
 );
 const Plan = dynamic(() =>
   import("@/components/tool-ui/plan").then((m) => m.Plan),
@@ -163,7 +165,9 @@ export default function ComponentsGalleryPage() {
     {
       componentId: "item-carousel",
       className: "mb-5 flex justify-center [column-span:all] 2xl:mb-5",
-      render: () => <ItemCarousel {...itemCarouselPresets.recommendations.data} />,
+      render: () => (
+        <ItemCarousel {...itemCarouselPresets.recommendations.data} />
+      ),
     },
     {
       componentId: "data-table",
@@ -197,7 +201,9 @@ export default function ComponentsGalleryPage() {
     {
       componentId: "image-gallery",
       className: "mb-5 flex break-inside-avoid justify-center 2xl:mb-5",
-      render: () => <ImageGallery {...imageGalleryPresets["search-results"].data} />,
+      render: () => (
+        <ImageGallery {...imageGalleryPresets["search-results"].data} />
+      ),
     },
     {
       componentId: "link-preview",
@@ -225,12 +231,16 @@ export default function ComponentsGalleryPage() {
     {
       componentId: "option-list",
       className: "mb-5 flex break-inside-avoid justify-center 2xl:mb-5",
-      render: () => <OptionList {...optionListPresets["max-selections"].data} />,
+      render: () => (
+        <OptionList {...optionListPresets["max-selections"].data} />
+      ),
     },
     {
       componentId: "approval-card",
       className: "mb-5 flex break-inside-avoid justify-center 2xl:mb-5",
-      render: () => <ApprovalCard {...approvalCardPresets["with-metadata"].data} />,
+      render: () => (
+        <ApprovalCard {...approvalCardPresets["with-metadata"].data} />
+      ),
     },
     {
       componentId: "message-draft",
@@ -268,13 +278,17 @@ export default function ComponentsGalleryPage() {
       componentId: "parameter-slider",
       className: "mb-5 flex break-inside-avoid justify-center 2xl:mb-5",
       render: () => (
-        <ParameterSlider {...parameterSliderPresets["photo-adjustments"].data} />
+        <ParameterSlider
+          {...parameterSliderPresets["photo-adjustments"].data}
+        />
       ),
     },
     {
       componentId: "preferences-panel",
       className: "mb-5 flex break-inside-avoid justify-center 2xl:mb-5",
-      render: () => <PreferencesPanel {...preferencesPanelPresets.privacy.data} />,
+      render: () => (
+        <PreferencesPanel {...preferencesPanelPresets.privacy.data} />
+      ),
     },
     {
       componentId: "terminal",
@@ -314,7 +328,9 @@ export default function ComponentsGalleryPage() {
     {
       componentId: "instagram-post",
       className: "mb-5 flex break-inside-avoid justify-center 2xl:mb-5",
-      render: () => <InstagramPost post={instagramPostPresets.basic.data.post} />,
+      render: () => (
+        <InstagramPost post={instagramPostPresets.basic.data.post} />
+      ),
     },
     {
       componentId: "x-post",

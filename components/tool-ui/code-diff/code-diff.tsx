@@ -198,8 +198,16 @@ function CodeDiffRoot({
   const fileDiffMetadata = useMemo(() => {
     if (isPatchMode) return null;
     return parseDiffFromFile(
-      { name: filename ?? "file", contents: oldCode ?? "", lang: language as never },
-      { name: filename ?? "file", contents: newCode ?? "", lang: language as never },
+      {
+        name: filename ?? "file",
+        contents: oldCode ?? "",
+        lang: language as never,
+      },
+      {
+        name: filename ?? "file",
+        contents: newCode ?? "",
+        lang: language as never,
+      },
     );
   }, [isPatchMode, oldCode, newCode, filename, language]);
 
@@ -272,7 +280,10 @@ function CodeDiffRoot({
   return (
     <CodeDiffContext.Provider value={state}>
       <div
-        className={cn("@container flex w-full min-w-80 flex-col gap-3", className)}
+        className={cn(
+          "@container flex w-full min-w-80 flex-col gap-3",
+          className,
+        )}
         data-tool-ui-id={id}
         data-slot="code-diff"
       >
@@ -306,7 +317,9 @@ function CodeDiffHeader({ className }: CodeDiffSectionProps) {
         {filename && (
           <>
             <span className="text-muted-foreground/50">&bull;</span>
-            <span className="text-foreground text-sm font-medium">{filename}</span>
+            <span className="text-foreground text-sm font-medium">
+              {filename}
+            </span>
           </>
         )}
       </div>

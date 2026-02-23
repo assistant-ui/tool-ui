@@ -10,5 +10,8 @@ export const size = ogSize;
 export const contentType = ogContentType;
 
 export default async function Image() {
-  return generateOgImage("Data Table", "Present structured data in sortable tables");
+  return generateOgImage(
+    "Data Table",
+    "Present structured data in sortable tables",
+  );
 }

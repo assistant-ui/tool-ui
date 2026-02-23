@@ -5,7 +5,9 @@ import { describe, expect, test } from "vitest";
 import { WeatherWidget } from "@/lib/weather-authoring/weather-widget";
 
 function getClassForDataSlot(html: string, dataSlot: string): string {
-  const tagMatch = html.match(new RegExp(`<[^>]*data-slot="${dataSlot}"[^>]*>`));
+  const tagMatch = html.match(
+    new RegExp(`<[^>]*data-slot="${dataSlot}"[^>]*>`),
+  );
   if (!tagMatch) {
     throw new Error(`Could not find class for data-slot="${dataSlot}"`);
   }

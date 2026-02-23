@@ -58,7 +58,10 @@ interface ParameterPanelProps {
   activeEditCheckpoint: TimeCheckpoint;
   isPreviewing: boolean;
   currentCondition?: WeatherConditionCode;
-  onCopyLayer?: (targetCondition: WeatherConditionCode, layerKey: LayerKey) => void;
+  onCopyLayer?: (
+    targetCondition: WeatherConditionCode,
+    layerKey: LayerKey,
+  ) => void;
   onCopyLayerToAll?: (layerKey: LayerKey) => void;
 }
 

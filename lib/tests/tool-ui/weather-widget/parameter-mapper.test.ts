@@ -23,7 +23,10 @@ describe("weather-widget parameter-mapper", () => {
 
   test("getSceneBrightness is clamped to [0, 1]", () => {
     const middayClear = getSceneBrightness("2025-01-01T12:00:00Z", "clear");
-    const midnightStorm = getSceneBrightness("2025-01-01T00:00:00Z", "thunderstorm");
+    const midnightStorm = getSceneBrightness(
+      "2025-01-01T00:00:00Z",
+      "thunderstorm",
+    );
 
     for (const value of [middayClear, midnightStorm]) {
       expect(value).toBeGreaterThanOrEqual(0);
@@ -50,7 +53,7 @@ describe("weather-widget parameter-mapper", () => {
 
     const snow = configToSnowProps(config);
     expect(snow).not.toBeNull();
-    expect((snow?.intensity ?? 0)).toBeGreaterThan(0);
+    expect(snow?.intensity ?? 0).toBeGreaterThan(0);
   });
 
   test("explicit timeOfDay drives atmosphere day/night state even when timestamp differs", () => {
@@ -62,7 +65,10 @@ describe("weather-widget parameter-mapper", () => {
     });
 
     expect(config.celestial?.timeOfDay).toBe(0);
-    expect(config.atmosphere.sunAltitude).toBeCloseTo(timeOfDayToSunAltitude(0), 6);
+    expect(config.atmosphere.sunAltitude).toBeCloseTo(
+      timeOfDayToSunAltitude(0),
+      6,
+    );
     expect(config.atmosphere.starVisibility).toBeGreaterThan(0);
   });
 

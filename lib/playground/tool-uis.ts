@@ -2,16 +2,17 @@ import type { ToolCallMessagePartComponent } from "@assistant-ui/react";
 
 import type { ToolUiId } from "./types";
 
-const registry: Record<ToolUiId, () => Promise<ToolCallMessagePartComponent>> = {
-  fallback: () =>
-    import("@/app/components/assistant-ui/tool-fallback").then(
-      (mod) => mod.ToolFallback,
-    ),
-  "waymo-location-selector": () =>
-    import("@/app/components/assistant-ui/tool-fallback").then(
-      (mod) => mod.ToolFallback,
-    ),
-};
+const registry: Record<ToolUiId, () => Promise<ToolCallMessagePartComponent>> =
+  {
+    fallback: () =>
+      import("@/app/components/assistant-ui/tool-fallback").then(
+        (mod) => mod.ToolFallback,
+      ),
+    "waymo-location-selector": () =>
+      import("@/app/components/assistant-ui/tool-fallback").then(
+        (mod) => mod.ToolFallback,
+      ),
+  };
 
 export const TOOL_UI_REGISTRY = registry;
 

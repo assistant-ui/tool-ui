@@ -6,11 +6,15 @@ type CheckpointKey = keyof CheckpointOverrides;
 const CHECKPOINTS: CheckpointKey[] = ["dawn", "noon", "dusk", "midnight"];
 
 export function listUpdatedParams(
-  checkpointOverrides: Partial<Record<WeatherConditionCode, CheckpointOverrides>>,
+  checkpointOverrides: Partial<
+    Record<WeatherConditionCode, CheckpointOverrides>
+  >,
 ): string[] {
   const out: string[] = [];
 
-  for (const condition of Object.keys(checkpointOverrides) as WeatherConditionCode[]) {
+  for (const condition of Object.keys(
+    checkpointOverrides,
+  ) as WeatherConditionCode[]) {
     const byCheckpoint = checkpointOverrides[condition];
     if (!byCheckpoint) continue;
 

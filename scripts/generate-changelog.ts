@@ -10,7 +10,10 @@ import {
   upsertReleaseSection,
   validateChangelogStructure,
 } from "../lib/changelog/changelog";
-import { collectReleaseGitContext, formatCommitSummary } from "../lib/changelog/git";
+import {
+  collectReleaseGitContext,
+  formatCommitSummary,
+} from "../lib/changelog/git";
 import { inferReleaseNotes } from "../lib/changelog/inference";
 
 function resolveArgValue(argv: string[], prefix: string): string | undefined {
@@ -109,7 +112,10 @@ async function main(): Promise<void> {
   ensureChangelogFileExists(changelogPath);
 
   const currentContent = fs.readFileSync(changelogPath, "utf8");
-  const resolvedToCommitHash = resolveStableCommitHash(projectRoot, requestedToRef);
+  const resolvedToCommitHash = resolveStableCommitHash(
+    projectRoot,
+    requestedToRef,
+  );
   const markerFromRef = fromChangelog
     ? readLatestReleaseGeneratedToRef(currentContent)
     : null;
@@ -124,9 +130,12 @@ async function main(): Promise<void> {
           latestReleaseDate,
         )
       : null;
-  const fromRef = explicitFromRef ?? markerFromRef ?? latestEntryCommitRef ?? undefined;
+  const fromRef =
+    explicitFromRef ?? markerFromRef ?? latestEntryCommitRef ?? undefined;
   const fromDate =
-    fromChangelog && !fromRef && latestReleaseDate ? latestReleaseDate : undefined;
+    fromChangelog && !fromRef && latestReleaseDate
+      ? latestReleaseDate
+      : undefined;
   const fromChangelogPath =
     fromChangelog && !fromRef && !fromDate ? changelogRelativePath : undefined;
   const baselineSource = explicitFromRef
@@ -135,11 +144,11 @@ async function main(): Promise<void> {
       ? "latest changelog marker"
       : latestEntryCommitRef
         ? "latest changelog entry commit"
-      : fromDate
-        ? "latest changelog release date"
-        : fromChangelogPath
-          ? "last changelog file commit"
-          : "latest git tag";
+        : fromDate
+          ? "latest changelog release date"
+          : fromChangelogPath
+            ? "last changelog file commit"
+            : "latest git tag";
   const gitContext = collectReleaseGitContext(projectRoot, {
     fromRef,
     fromDate,

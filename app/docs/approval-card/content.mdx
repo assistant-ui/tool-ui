@@ -77,14 +77,14 @@ export const toolkit: Toolkit = {
       idPrefix: "approval",
       render: (parsedArgs, { result, addResult }) =>
         result ? (
-            <ApprovalCard {...parsedArgs} choice={result} />
-          ) : (
-            <ApprovalCard
-              {...parsedArgs}
-              onConfirm={() => addResult?.("approved")}
-              onCancel={() => addResult?.("denied")}
-            />
-          ),
+          <ApprovalCard {...parsedArgs} choice={result} />
+        ) : (
+          <ApprovalCard
+            {...parsedArgs}
+            onConfirm={() => addResult?.("approved")}
+            onCancel={() => addResult?.("denied")}
+          />
+        ),
     }),
   },
 };
@@ -120,7 +120,6 @@ The receipt shows the outcome (approved or denied) with the custom button label 
 ## Destructive Variant
 
 Set `variant="destructive"` for dangerous or irreversible actions. The icon background and confirm button turn red.
-
 
 ## Props
 

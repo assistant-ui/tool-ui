@@ -1,9 +1,11 @@
 # Waymo Tool UI Library Design (v3)
 
 ## Goal
+
 Build a **library-grade** Tool UI system for LLM assistants, using Waymo as the demo vertical.
 
 **Key principles:**
+
 - Tool UIs are reusable primitives with 4 states (loading/interactive/receipt/error)
 - Clean separation: tools return data, UIs take presentation props
 - Explicit protocol for how LLMs invoke UIs
@@ -49,17 +51,17 @@ Each tool has a default UI component and prop mapper:
 const toolUIRegistry = {
   "rides.get_quote": {
     component: "RideQuote",
-    mapProps: (toolResult: Quote) => RideQuoteProps
+    mapProps: (toolResult: Quote) => RideQuoteProps,
   },
   "rides.book_trip": {
     component: "BookingConfirmation",
-    mapProps: (toolResult: BookedTrip) => BookingConfirmationProps
+    mapProps: (toolResult: BookedTrip) => BookingConfirmationProps,
   },
   "rides.get_trip_status": {
     component: "TripStatusTracker",
-    mapProps: (toolResult: TripStatus) => TripStatusTrackerProps
-  }
-}
+    mapProps: (toolResult: TripStatus) => TripStatusTrackerProps,
+  },
+};
 ```
 
 ---
@@ -109,6 +111,7 @@ interface BaseToolUIProps {
 #### 1. `rides.get_rider_context`
 
 **Output with error handling:**
+
 ```typescript
 {
   home: Location | null,
@@ -132,6 +135,7 @@ interface BaseToolUIProps {
 #### 2. `rides.get_pickup_location`
 
 **Output with source tracking:**
+
 ```typescript
 {
   resolved_location: {
@@ -152,6 +156,7 @@ interface BaseToolUIProps {
 #### 3. `rides.get_quote`
 
 **Output with expiry and metadata:**
+
 ```typescript
 {
   quote_id: string,
@@ -181,6 +186,7 @@ interface BaseToolUIProps {
 #### 4. `rides.book_trip`
 
 **Output with failure cases:**
+
 ```typescript
 {
   success: boolean,
@@ -204,6 +210,7 @@ interface BaseToolUIProps {
 #### 5. `rides.get_trip_status`
 
 **Output with progress tracking:**
+
 ```typescript
 {
   trip_id: string,
@@ -237,15 +244,17 @@ interface BaseToolUIProps {
 ### Base Primitives (Generic)
 
 #### 1. LoadingCard
+
 ```typescript
 interface LoadingCardProps {
-  lines?: number;  // Number of skeleton lines
+  lines?: number; // Number of skeleton lines
   showImage?: boolean;
-  message?: string;  // "Getting your quote..."
+  message?: string; // "Getting your quote..."
 }
 ```
 
 #### 2. ErrorCard
+
 ```typescript
 interface ErrorCardProps {
   message: string;
@@ -256,6 +265,7 @@ interface ErrorCardProps {
 ```
 
 #### 3. OptionCardSelector
+
 ```typescript
 interface OptionCardSelectorProps extends BaseToolUIProps {
   options: Array<{
@@ -274,6 +284,7 @@ interface OptionCardSelectorProps extends BaseToolUIProps {
 ```
 
 #### 4. TimelineStatusCard
+
 ```typescript
 interface TimelineStatusCardProps extends BaseToolUIProps {
   steps: Array<{
@@ -294,16 +305,17 @@ interface TimelineStatusCardProps extends BaseToolUIProps {
 #### 1. RideQuote (Hero Component)
 
 **Presentation-focused props (decoupled from Quote):**
+
 ```typescript
 interface RideQuoteProps extends BaseToolUIProps {
   // Display data
-  routeLabel: string;          // "Downtown Coffee → 123 Main St"
-  etaLabel: string;            // "Arrives in 5 minutes"
-  priceLabel: string;          // "$12.50"
-  priceBadge?: string;         // "Estimate" | "Surge pricing"
-  vehicleLabel?: string;       // "Waymo One"
-  expiresLabel?: string;       // "Price valid for 2 minutes"
-  paymentSummary?: string;     // "Apple Pay (...4242)"
+  routeLabel: string; // "Downtown Coffee → 123 Main St"
+  etaLabel: string; // "Arrives in 5 minutes"
+  priceLabel: string; // "$12.50"
+  priceBadge?: string; // "Estimate" | "Surge pricing"
+  vehicleLabel?: string; // "Waymo One"
+  expiresLabel?: string; // "Price valid for 2 minutes"
+  paymentSummary?: string; // "Apple Pay (...4242)"
 
   // Actions
   onConfirm?: () => void;
@@ -314,6 +326,7 @@ interface RideQuoteProps extends BaseToolUIProps {
 ```
 
 **State behaviors:**
+
 - **loading**: Skeleton with route, shimmer for price/ETA
 - **interactive**: Full card with Confirm button
 - **receipt**: "✓ Ride confirmed" with summary
@@ -324,13 +337,14 @@ interface RideQuoteProps extends BaseToolUIProps {
 #### 2. TripStatusTracker (The Wow Factor)
 
 **Presentation-focused props:**
+
 ```typescript
 interface TripStatusTrackerProps extends BaseToolUIProps {
   tripId: string;
   currentStatus: string;
-  statusLabel: string;         // "Vehicle on the way"
-  progressPercent?: number;    // For progress bar
-  etaLabel?: string;           // "3 minutes away"
+  statusLabel: string; // "Vehicle on the way"
+  progressPercent?: number; // For progress bar
+  etaLabel?: string; // "3 minutes away"
 
   timeline: Array<{
     step: string;
@@ -340,7 +354,7 @@ interface TripStatusTrackerProps extends BaseToolUIProps {
   }>;
 
   vehicleInfo?: {
-    description: string;      // "White Jaguar I-PACE"
+    description: string; // "White Jaguar I-PACE"
     plate: string;
     imageUrl?: string;
   };
@@ -357,6 +371,7 @@ interface TripStatusTrackerProps extends BaseToolUIProps {
 ```
 
 **State behaviors:**
+
 - **loading**: Skeleton timeline
 - **interactive**: Live timeline with actions
 - **receipt**: Completed trip summary
@@ -367,11 +382,12 @@ interface TripStatusTrackerProps extends BaseToolUIProps {
 #### 3. PickupConfirmCard
 
 **Props:**
+
 ```typescript
 interface PickupConfirmCardProps extends BaseToolUIProps {
   addressLabel: string;
   confidenceBadge?: "High" | "Medium" | "Low";
-  nearbyContext?: string;      // "Near City Hall, Metro Station"
+  nearbyContext?: string; // "Near City Hall, Metro Station"
   mapThumbnailUrl?: string;
 
   onConfirm?: () => void;
@@ -385,9 +401,10 @@ interface PickupConfirmCardProps extends BaseToolUIProps {
 #### 4. BookingConfirmation
 
 **Props:**
+
 ```typescript
 interface BookingConfirmationProps extends BaseToolUIProps {
-  title: string;               // "Your Waymo is on the way!"
+  title: string; // "Your Waymo is on the way!"
   routeLabel: string;
   etaLabel: string;
   priceLabel: string;
@@ -458,6 +475,7 @@ rides.book_trip returns {
 ## Demo Implementation Priority
 
 ### Phase 0: Foundation (Day 1-2)
+
 **Goal:** Tool UI protocol and base components
 
 1. **Define protocol:**
@@ -477,20 +495,24 @@ rides.book_trip returns {
 ---
 
 ### Phase 1: Golden Path (Day 3-4)
+
 **Goal:** Perfect "I need a ride home" → 1 click flow
 
 **Tools:**
+
 - rides.get_rider_context
 - rides.get_pickup_location
 - rides.get_quote
 - rides.book_trip
 
 **Tool UIs:**
+
 - RideQuote (all 4 states)
 - BookingConfirmation
 - TripStatusTracker (basic)
 
 **Demo:**
+
 1. User: "I need a ride home"
 2. Loading → RideQuote (interactive)
 3. Click Confirm → Receipt → BookingConfirmation
@@ -499,17 +521,21 @@ rides.book_trip returns {
 ---
 
 ### Phase 2: Ambiguity & Correction (Day 5-6)
+
 **Goal:** Handle edge cases and post-decision edits
 
 **Add Tools:**
+
 - rides.search_places
 - rides.get_trip_status (with progress)
 
 **Add Tool UIs:**
+
 - PickupConfirmCard
 - DestinationPicker
 
 **Flows:**
+
 - Low confidence GPS → PickupConfirmCard
 - No home saved → DestinationPicker
 - "Actually, change destination" → Edit flow
@@ -517,6 +543,7 @@ rides.book_trip returns {
 ---
 
 ### Phase 3: Polish (Day 7+)
+
 **Goal:** Delight features
 
 - PaymentMethodPicker
@@ -529,18 +556,21 @@ rides.book_trip returns {
 ## Success Metrics
 
 ### Library Quality
+
 ✅ Components work with any backend (presentation props)
 ✅ All 4 states handled gracefully
 ✅ Clear protocol for LLM → UI invocation
 ✅ Correction flows are first-class
 
 ### Demo Impact
+
 ✅ Golden path feels instant (< 2s to quote)
 ✅ Loading states prevent UI pop-in
 ✅ Errors recover gracefully
 ✅ TripStatusTracker creates "wow" moment
 
 ### Developer Experience
+
 ✅ Components compose naturally
 ✅ Props are self-documenting (TypeScript)
 ✅ State transitions are predictable
@@ -551,15 +581,19 @@ rides.book_trip returns {
 ## Key Design Decisions
 
 ### 1. Why 4 states not 2?
+
 Loading and error states are critical for perceived quality. Users need to see the assistant "thinking" and failures need graceful recovery.
 
 ### 2. Why presentation props?
+
 Library components shouldn't know about Waymo's Quote type. They should work for Lyft, DoorDash, or any vertical with similar UI needs.
 
 ### 3. Why explicit protocol?
+
 Without a clear contract for how LLMs invoke UIs, every implementation becomes ad-hoc. The protocol enables tooling, testing, and cross-model portability.
 
 ### 4. Why correction callbacks?
+
 LLM assistants should support "actually, change X" naturally. Post-decision edits are where conversational UI shines versus traditional forms.
 
 ---

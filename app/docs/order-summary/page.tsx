@@ -11,10 +11,5 @@ export const metadata: Metadata = {
 export const revalidate = 3600;
 
 export default function OrderSummaryDocsPage() {
-  return (
-    <ComponentDocsTabs
-      docs={<Content />}
-      componentId="order-summary"
-    />
-  );
+  return <ComponentDocsTabs docs={<Content />} componentId="order-summary" />;
 }

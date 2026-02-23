@@ -73,8 +73,12 @@ export function RoundedRectOverlay({
   const borderRadius = `${radiusLeft}px ${radiusRight}px ${radiusRight}px ${radiusLeft}px`;
 
   // Asymmetric margin: outer-facing side uses marginSizeOuter if provided
-  const marginLeft_ = isLeftAligned ? (marginSizeOuter ?? marginSize) : marginSize;
-  const marginRight_ = isLeftAligned ? marginSize : (marginSizeOuter ?? marginSize);
+  const marginLeft_ = isLeftAligned
+    ? (marginSizeOuter ?? marginSize)
+    : marginSize;
+  const marginRight_ = isLeftAligned
+    ? marginSize
+    : (marginSizeOuter ?? marginSize);
 
   // Margin overlay dimensions
   const marginLeftPos = left - marginLeft_;
@@ -83,8 +87,12 @@ export function RoundedRectOverlay({
   const marginHeight = height + marginSize * 2;
   const marginFullRadius = marginHeight / 2;
   const marginReducedRadius = marginFullRadius * outerEdgeRadiusFactor;
-  const marginRadiusLeft = isLeftAligned ? marginReducedRadius : marginFullRadius;
-  const marginRadiusRight = isLeftAligned ? marginFullRadius : marginReducedRadius;
+  const marginRadiusLeft = isLeftAligned
+    ? marginReducedRadius
+    : marginFullRadius;
+  const marginRadiusRight = isLeftAligned
+    ? marginFullRadius
+    : marginReducedRadius;
   const marginBorderRadius = `${marginRadiusLeft}px ${marginRadiusRight}px ${marginRadiusRight}px ${marginRadiusLeft}px`;
 
   return (

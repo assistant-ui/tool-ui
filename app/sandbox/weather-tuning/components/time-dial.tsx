@@ -57,7 +57,7 @@ export function TimeDial({
       const newValue = getValueFromAngle(angle);
       onScrub(newValue);
     },
-    [onScrub]
+    [onScrub],
   );
 
   const handleMouseDown = (e: React.MouseEvent) => {
@@ -116,7 +116,7 @@ export function TimeDial({
                     ? "scale-150 bg-foreground"
                     : isViewingHere
                       ? "scale-125 bg-foreground/60"
-                      : "bg-foreground/20 hover:bg-foreground/40"
+                      : "bg-foreground/20 hover:bg-foreground/40",
                 )}
                 style={{
                   transform: `translate(${x}px, ${y}px)`,
@@ -168,7 +168,7 @@ export function TimeDial({
                   ? "bg-muted-foreground/20 text-foreground"
                   : isViewingHere
                     ? "text-foreground"
-                    : "text-muted-foreground/40 hover:text-muted-foreground"
+                    : "text-muted-foreground/40 hover:text-muted-foreground",
               )}
               title={`${label}${isEditingHere ? " (editing)" : ""}`}
             >

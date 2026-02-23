@@ -82,9 +82,7 @@ export const toolkit: Toolkit = {
     type: "backend",
     render: createResultToolRenderer({
       safeParse: safeParseSerializableCodeDiff,
-      render: (parsedResult) => (
-        <CodeDiff {...parsedResult} />
-      ),
+      render: (parsedResult) => <CodeDiff {...parsedResult} />,
     }),
   },
 };

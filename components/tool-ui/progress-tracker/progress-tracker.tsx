@@ -56,9 +56,10 @@ function getCurrentStepId(steps: ProgressStep[]): string | null {
   return null;
 }
 
-function getReceiptState(
-  outcome: ProgressTrackerChoice["outcome"],
-): { toneClassName: string; icon: LucideIcon } {
+function getReceiptState(outcome: ProgressTrackerChoice["outcome"]): {
+  toneClassName: string;
+  icon: LucideIcon;
+} {
   switch (outcome) {
     case "success":
       return {

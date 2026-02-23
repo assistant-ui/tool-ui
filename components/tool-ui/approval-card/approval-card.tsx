@@ -63,11 +63,7 @@ function ApprovalCardReceipt({
             isApproved ? "text-primary" : "text-muted-foreground",
           )}
         >
-          {isApproved ? (
-            <Check className="size-4" />
-          ) : (
-            <X className="size-4" />
-          )}
+          {isApproved ? <Check className="size-4" /> : <X className="size-4" />}
         </span>
         <div className="flex flex-col">
           <span className="text-sm font-medium">{displayLabel}</span>

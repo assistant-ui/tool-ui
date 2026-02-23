@@ -242,34 +242,36 @@ export function OptionList({
   }
 
   const effectiveMaxSelections = selectionMode === "single" ? 1 : maxSelections;
-  const optionIds = useMemo(() => new Set(options.map((option) => option.id)), [
-    options,
-  ]);
+  const optionIds = useMemo(
+    () => new Set(options.map((option) => option.id)),
+    [options],
+  );
 
   const [uncontrolledSelected, setUncontrolledSelected] = useState<Set<string>>(
     () =>
       normalizeSelectionForOptions(
-        parseSelectionToIdSet(defaultValue, selectionMode, effectiveMaxSelections),
+        parseSelectionToIdSet(
+          defaultValue,
+          selectionMode,
+          effectiveMaxSelections,
+        ),
         optionIds,
       ),
   );
 
-  const selectedIds = useMemo(
-    () => {
-      const parsed =
-        value !== undefined
-          ? parseSelectionToIdSet(value, selectionMode, effectiveMaxSelections)
-          : uncontrolledSelected;
-      return normalizeSelectionForOptions(parsed, optionIds);
-    },
-    [
-      value,
-      uncontrolledSelected,
-      selectionMode,
-      effectiveMaxSelections,
-      optionIds,
-    ],
-  );
+  const selectedIds = useMemo(() => {
+    const parsed =
+      value !== undefined
+        ? parseSelectionToIdSet(value, selectionMode, effectiveMaxSelections)
+        : uncontrolledSelected;
+    return normalizeSelectionForOptions(parsed, optionIds);
+  }, [
+    value,
+    uncontrolledSelected,
+    selectionMode,
+    effectiveMaxSelections,
+    optionIds,
+  ]);
 
   const selectedCount = selectedIds.size;
 
@@ -387,7 +389,10 @@ export function OptionList({
     return toSelectionState(empty);
   }, [toSelectionState, updateSelection]);
 
-  const customActions = useMemo(() => normalizeActionsConfig(actions), [actions]);
+  const customActions = useMemo(
+    () => normalizeActionsConfig(actions),
+    [actions],
+  );
 
   const handleFooterAction = useCallback(
     async (actionId: string) => {
@@ -608,10 +613,7 @@ export function OptionList({
               onBeforeAction={
                 onBeforeAction
                   ? (actionId) =>
-                      onBeforeAction(
-                        actionId,
-                        toSelectionState(selectedIds),
-                      )
+                      onBeforeAction(actionId, toSelectionState(selectedIds))
                   : undefined
               }
             />

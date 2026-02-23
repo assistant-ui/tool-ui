@@ -10,5 +10,8 @@ export const size = ogSize;
 export const contentType = ogContentType;
 
 export default async function Image() {
-  return generateOgImage("Code Diff", "Compare code changes with syntax-highlighted diffs");
+  return generateOgImage(
+    "Code Diff",
+    "Compare code changes with syntax-highlighted diffs",
+  );
 }

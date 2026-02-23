@@ -100,7 +100,9 @@ function extractJsonPayload(text: string): string {
   return text.slice(firstBrace, lastBrace + 1).trim();
 }
 
-function normalizeInferredNotes(notes: InferredReleaseNotes): InferredReleaseNotes {
+function normalizeInferredNotes(
+  notes: InferredReleaseNotes,
+): InferredReleaseNotes {
   const normalizeText = (text: string): string =>
     text
       .replace(/\\n/g, "\n")
@@ -111,7 +113,9 @@ function normalizeInferredNotes(notes: InferredReleaseNotes): InferredReleaseNot
   const breakingChanges = notes.breakingChanges
     .map((item) => normalizeText(item))
     .filter(Boolean);
-  const changes = notes.changes.map((item) => normalizeText(item)).filter(Boolean);
+  const changes = notes.changes
+    .map((item) => normalizeText(item))
+    .filter(Boolean);
 
   const isGlobalSchemaBoundaryLine = (item: string): boolean => {
     const hasToolUiScope =
@@ -135,21 +139,21 @@ function normalizeInferredNotes(notes: InferredReleaseNotes): InferredReleaseNot
 
     return items.filter(
       (item) =>
-        !(
-          /datatable/i.test(item) &&
-          /schema|entrypoint|boundary/i.test(item)
-        ),
+        !(/datatable/i.test(item) && /schema|entrypoint|boundary/i.test(item)),
     );
   };
 
   const normalizedBreakingChanges = dedupeSchemaScope(breakingChanges);
   const normalizedChanges = dedupeSchemaScope(changes);
   const hasGlobalSchemaBoundaryLine =
-    normalizedBreakingChanges.some((item) => isGlobalSchemaBoundaryLine(item)) ||
-    normalizedChanges.some((item) => isGlobalSchemaBoundaryLine(item));
+    normalizedBreakingChanges.some((item) =>
+      isGlobalSchemaBoundaryLine(item),
+    ) || normalizedChanges.some((item) => isGlobalSchemaBoundaryLine(item));
 
   if (normalizedChanges.length === 0) {
-    throw new Error("Inferred changelog output must include at least one change.");
+    throw new Error(
+      "Inferred changelog output must include at least one change.",
+    );
   }
 
   const migrationPrompt = notes.migrationPrompt
@@ -244,7 +248,9 @@ export function ensureCriticalMigrationCoverage(
 
     const shouldAppendMigrationSteps =
       isBreakingEvidence ||
-      next.breakingChanges.some((line) => textHasAnySignal(line, theme.summarySignals));
+      next.breakingChanges.some((line) =>
+        textHasAnySignal(line, theme.summarySignals),
+      );
     if (shouldAppendMigrationSteps) {
       next = {
         ...next,
@@ -310,12 +316,12 @@ export function buildInferencePrompt(input: InferReleaseNotesInput): string {
     "Scenario examples:",
     "1) Cross-component schema migration (global wording)",
     "Evidence: DataTable commit appears first, then similar schema-entrypoint changes across multiple Tool UI components.",
-    "Good breakingChanges example: [\"Tool UI component entrypoints now enforce /schema boundaries across components.\"]",
-    "Bad breakingChanges example: [\"DataTable moved to /schema entrypoint.\"]",
+    'Good breakingChanges example: ["Tool UI component entrypoints now enforce /schema boundaries across components."]',
+    'Bad breakingChanges example: ["DataTable moved to /schema entrypoint."]',
     "",
     "2) Component-local fix (specific wording)",
     "Evidence: only option-list files changed, with no matching changes in other components.",
-    "Good changes example: [\"Option List receipt preset generation no longer includes onConfirm in receipt mode.\"]",
+    'Good changes example: ["Option List receipt preset generation no longer includes onConfirm in receipt mode."]',
     "",
     "3) Migration prompt scope",
     "When breaking scope is global, migrationPrompt should describe repo-wide migration steps.",

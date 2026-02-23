@@ -213,7 +213,10 @@ export const componentsRegistry: ComponentMeta[] = [
   },
 ];
 
-export const componentsByCategory = new Map<ComponentCategory, ComponentMeta[]>();
+export const componentsByCategory = new Map<
+  ComponentCategory,
+  ComponentMeta[]
+>();
 for (const component of componentsRegistry) {
   const arr = componentsByCategory.get(component.category) || [];
   arr.push(component);

@@ -1,9 +1,6 @@
 type AnalyticsProperties = Record<string, string | number | boolean>;
 
-const trackEvent = (
-  event: string,
-  properties?: AnalyticsProperties,
-) => {
+const trackEvent = (event: string, properties?: AnalyticsProperties) => {
   if (typeof window === "undefined") {
     return;
   }
@@ -99,8 +96,7 @@ export const analytics = {
       }),
 
     /** CRITICAL: Content gaps - what doesn't exist yet */
-    noResults: (query: string) =>
-      trackEvent("search_no_results", { query }),
+    noResults: (query: string) => trackEvent("search_no_results", { query }),
 
     /** Which search results convert to visits */
     resultClicked: (query: string, url: string, position: number) =>
@@ -169,7 +165,9 @@ export const analytics = {
 
   /** External link clicks (GitHub, npm, etc.) */
   external: {
-    linkClicked: (destination: "github" | "npm" | "docs" | "other", url: string) =>
-      trackEvent("external_link_clicked", { destination, url }),
+    linkClicked: (
+      destination: "github" | "npm" | "docs" | "other",
+      url: string,
+    ) => trackEvent("external_link_clicked", { destination, url }),
   },
 };

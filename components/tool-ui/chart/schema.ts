@@ -1,5 +1,10 @@
-import { z } from "zod";import { defineToolUiContract } from "../shared/contract";
-import { ToolUIIdSchema, ToolUIReceiptSchema, ToolUIRoleSchema } from "../shared/schema";
+import { z } from "zod";
+import { defineToolUiContract } from "../shared/contract";
+import {
+  ToolUIIdSchema,
+  ToolUIReceiptSchema,
+  ToolUIRoleSchema,
+} from "../shared/schema";
 
 export const ChartSeriesSchema = z.object({
   key: z.string().min(1),

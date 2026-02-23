@@ -2,7 +2,9 @@ import type { WeatherConditionCode } from "@/lib/weather-authoring/weather-widge
 import type { CheckpointOverrides } from "../../weather-compositor/presets";
 
 type RecoverPayload = {
-  checkpointOverrides?: Partial<Record<WeatherConditionCode, CheckpointOverrides>>;
+  checkpointOverrides?: Partial<
+    Record<WeatherConditionCode, CheckpointOverrides>
+  >;
 };
 
 export async function recoverRepoCheckpointOverrides(

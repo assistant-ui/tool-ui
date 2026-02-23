@@ -1,5 +1,6 @@
 import { z } from "zod";
-import { ToolUIIdSchema, ToolUIRoleSchema } from "../shared/schema";import { defineToolUiContract } from "../shared/contract";
+import { ToolUIIdSchema, ToolUIRoleSchema } from "../shared/schema";
+import { defineToolUiContract } from "../shared/contract";
 
 export const MetadataItemSchema = z.object({
   key: z.string().min(1),

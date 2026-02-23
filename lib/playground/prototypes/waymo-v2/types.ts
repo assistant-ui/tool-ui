@@ -36,7 +36,6 @@ export interface Vehicle {
 // Pattern: Selection
 // ============================================================================
 
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface SelectDestinationArgs {
   // No args - only used when destination is unknown
 }

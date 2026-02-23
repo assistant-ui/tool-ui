@@ -85,7 +85,11 @@ export const toolkit: Toolkit = {
             <ToolUI.LocalActions
               actions={[
                 { id: "approve", label: "Approve Plan" },
-                { id: "revise", label: "Request Changes", variant: "secondary" },
+                {
+                  id: "revise",
+                  label: "Request Changes",
+                  variant: "secondary",
+                },
               ]}
               onAction={(actionId) => console.log(actionId)}
             />
@@ -191,7 +195,8 @@ Use `Plan.Compact` for a steps-only card body:
       type: "Not started",
     },
     in_progress: {
-      description: "Spinner icon with subtle highlight ring, shimmer text effect",
+      description:
+        "Spinner icon with subtle highlight ring, shimmer text effect",
       type: "Active",
     },
     completed: {

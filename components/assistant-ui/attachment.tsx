@@ -110,9 +110,7 @@ const AttachmentPreviewDialog: FC<PropsWithChildren> = ({ children }) => {
 };
 
 const AttachmentThumb: FC = () => {
-  const isImage = useAuiState(
-    ({ attachment }) => attachment.type === "image",
-  );
+  const isImage = useAuiState(({ attachment }) => attachment.type === "image");
   const src = useAttachmentSrc();
 
   return (
@@ -133,9 +131,7 @@ const AttachmentUI: FC = () => {
   const aui = useAui();
   const isComposer = aui.attachment.source === "composer";
 
-  const isImage = useAuiState(
-    ({ attachment }) => attachment.type === "image",
-  );
+  const isImage = useAuiState(({ attachment }) => attachment.type === "image");
   const typeLabel = useAuiState(({ attachment }) => {
     const type = attachment.type;
     switch (type) {

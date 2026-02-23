@@ -255,7 +255,9 @@ function extractImportMetaUrlSpecifiers(content: string): string[] {
 function extractLocalImportSpecifiers(content: string): string[] {
   const imports = new Set<string>();
 
-  for (const specifier of extractImportSpecifiers(content, { includeTypeOnly: true })) {
+  for (const specifier of extractImportSpecifiers(content, {
+    includeTypeOnly: true,
+  })) {
     if (specifier.startsWith(".") || specifier.startsWith("@/")) {
       imports.add(specifier);
     }
@@ -391,7 +393,8 @@ async function collectItemFilePaths(
       const relativePath = toPosixPath(
         path.relative(projectRoot, resolvedPath),
       );
-      if (!shouldIncludeResolvedPath(relativePath, definition.sourceDir)) continue;
+      if (!shouldIncludeResolvedPath(relativePath, definition.sourceDir))
+        continue;
 
       if (!included.has(resolvedPath)) {
         included.add(resolvedPath);
@@ -498,9 +501,7 @@ export async function buildToolUiRegistryArtifacts(
 ): Promise<ToolUiRegistryArtifacts> {
   const definitions = await discoverToolUiRegistryDefinitions(projectRoot);
   const items = await Promise.all(
-    definitions.map((definition) =>
-      buildRegistryItem(projectRoot, definition),
-    ),
+    definitions.map((definition) => buildRegistryItem(projectRoot, definition)),
   );
 
   const index: RegistryIndex = {

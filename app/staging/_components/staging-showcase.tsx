@@ -10,10 +10,7 @@ import {
 } from "react";
 import { AnimatePresence, motion, type Transition } from "motion/react";
 import { cn } from "@/lib/ui/cn";
-import {
-  previewConfigs,
-  type ComponentId,
-} from "@/lib/docs/preview-config";
+import { previewConfigs, type ComponentId } from "@/lib/docs/preview-config";
 import { getStagingConfig } from "@/lib/staging/staging-config";
 import type { DebugLevel } from "@/lib/staging/types";
 
@@ -70,7 +67,8 @@ function ChatBubble({ role, children, className }: ChatBubbleProps) {
       <div
         className={cn(
           "relative max-w-[min(720px,100%)] text-base leading-relaxed",
-          isUser && "rounded-2xl bg-blue-600 px-4 py-2.5 text-white dark:bg-blue-700",
+          isUser &&
+            "rounded-2xl bg-blue-600 px-4 py-2.5 text-white dark:bg-blue-700",
           !isUser && "text-foreground",
           className,
         )}
@@ -252,7 +250,8 @@ export function StagingShowcase({
   const wrappedComponent = Wrapper ? <Wrapper>{component}</Wrapper> : component;
 
   const showTyping = phase === "typing";
-  const showPreamble = phase === "preamble" || phase === "tool" || phase === "complete";
+  const showPreamble =
+    phase === "preamble" || phase === "tool" || phase === "complete";
   const showTool = phase === "tool" || phase === "complete";
 
   return (
@@ -308,7 +307,10 @@ export function StagingShowcase({
               key={`tool-${key}`}
               className="mt-4 flex w-full justify-start"
             >
-              <div ref={componentRef} className="relative min-w-[500px] [&_article]:max-w-none">
+              <div
+                ref={componentRef}
+                className="relative min-w-[500px] [&_article]:max-w-none"
+              >
                 <ToolReveal>{wrappedComponent}</ToolReveal>
 
                 {debugLevel !== "off" && stagingConfig?.renderDebugOverlay && (

@@ -8,7 +8,9 @@ export type ParameterSliderPresetName =
   | "single-slider"
   | "video-export";
 
-function formatSliderConfig(slider: SerializableParameterSlider["sliders"][number]): string {
+function formatSliderConfig(
+  slider: SerializableParameterSlider["sliders"][number],
+): string {
   const parts: string[] = [
     `id: "${slider.id}"`,
     `label: "${slider.label}"`,
@@ -33,7 +35,9 @@ function formatSliderConfig(slider: SerializableParameterSlider["sliders"][numbe
   return `{ ${parts.join(", ")} }`;
 }
 
-function generateParameterSliderCode(data: SerializableParameterSlider): string {
+function generateParameterSliderCode(
+  data: SerializableParameterSlider,
+): string {
   const props: string[] = [];
 
   props.push(`  id="${data.id}"`);
@@ -65,10 +69,43 @@ export const parameterSliderPresets: Record<
     data: {
       id: "parameter-slider-photo-adjustments",
       sliders: [
-        { id: "exposure", label: "Exposure", min: -3, max: 3, step: 0.1, value: 0.3, unit: "EV", precision: 1 },
-        { id: "contrast", label: "Contrast", min: -100, max: 100, step: 5, value: 15, unit: "%" },
-        { id: "highlights", label: "Highlights", min: -100, max: 100, step: 5, value: -20, unit: "%" },
-        { id: "shadows", label: "Shadows", min: -100, max: 100, step: 5, value: 25, unit: "%" },
+        {
+          id: "exposure",
+          label: "Exposure",
+          min: -3,
+          max: 3,
+          step: 0.1,
+          value: 0.3,
+          unit: "EV",
+          precision: 1,
+        },
+        {
+          id: "contrast",
+          label: "Contrast",
+          min: -100,
+          max: 100,
+          step: 5,
+          value: 15,
+          unit: "%",
+        },
+        {
+          id: "highlights",
+          label: "Highlights",
+          min: -100,
+          max: 100,
+          step: 5,
+          value: -20,
+          unit: "%",
+        },
+        {
+          id: "shadows",
+          label: "Shadows",
+          min: -100,
+          max: 100,
+          step: 5,
+          value: 25,
+          unit: "%",
+        },
       ],
       actions: [
         { id: "reset", label: "Reset", variant: "ghost" },
@@ -83,9 +120,25 @@ export const parameterSliderPresets: Record<
     data: {
       id: "parameter-slider-color-grading",
       sliders: [
-        { id: "temperature", label: "Temperature", min: 2000, max: 10000, step: 100, value: 5600, unit: "K" },
+        {
+          id: "temperature",
+          label: "Temperature",
+          min: 2000,
+          max: 10000,
+          step: 100,
+          value: 5600,
+          unit: "K",
+        },
         { id: "tint", label: "Tint", min: -100, max: 100, step: 5, value: -8 },
-        { id: "saturation", label: "Saturation", min: -100, max: 100, step: 5, value: 12, unit: "%" },
+        {
+          id: "saturation",
+          label: "Saturation",
+          min: -100,
+          max: 100,
+          step: 5,
+          value: 12,
+          unit: "%",
+        },
       ],
       actions: [
         { id: "reset", label: "Reset", variant: "ghost" },
@@ -100,9 +153,33 @@ export const parameterSliderPresets: Record<
     data: {
       id: "parameter-slider-audio-eq",
       sliders: [
-        { id: "bass", label: "Bass", min: -12, max: 12, step: 1, value: 3, unit: "dB" },
-        { id: "mid", label: "Mid", min: -12, max: 12, step: 1, value: -2, unit: "dB" },
-        { id: "treble", label: "Treble", min: -12, max: 12, step: 1, value: 4, unit: "dB" },
+        {
+          id: "bass",
+          label: "Bass",
+          min: -12,
+          max: 12,
+          step: 1,
+          value: 3,
+          unit: "dB",
+        },
+        {
+          id: "mid",
+          label: "Mid",
+          min: -12,
+          max: 12,
+          step: 1,
+          value: -2,
+          unit: "dB",
+        },
+        {
+          id: "treble",
+          label: "Treble",
+          min: -12,
+          max: 12,
+          step: 1,
+          value: 4,
+          unit: "dB",
+        },
       ],
       actions: [
         { id: "reset", label: "Flat", variant: "ghost" },
@@ -117,7 +194,15 @@ export const parameterSliderPresets: Record<
     data: {
       id: "parameter-slider-single",
       sliders: [
-        { id: "blur", label: "Background Blur", min: 0, max: 100, step: 5, value: 35, unit: "%" },
+        {
+          id: "blur",
+          label: "Background Blur",
+          min: 0,
+          max: 100,
+          step: 5,
+          value: 35,
+          unit: "%",
+        },
       ],
       actions: [
         { id: "reset", label: "Reset", variant: "ghost" },
@@ -132,9 +217,33 @@ export const parameterSliderPresets: Record<
     data: {
       id: "parameter-slider-video-export",
       sliders: [
-        { id: "bitrate", label: "Bitrate", min: 1, max: 50, step: 0.5, value: 24, unit: "Mbps", precision: 1 },
-        { id: "keyframe", label: "Keyframe Interval", min: 1, max: 10, step: 1, value: 2, unit: "sec" },
-        { id: "quality", label: "CRF Quality", min: 0, max: 51, step: 1, value: 18 },
+        {
+          id: "bitrate",
+          label: "Bitrate",
+          min: 1,
+          max: 50,
+          step: 0.5,
+          value: 24,
+          unit: "Mbps",
+          precision: 1,
+        },
+        {
+          id: "keyframe",
+          label: "Keyframe Interval",
+          min: 1,
+          max: 10,
+          step: 1,
+          value: 2,
+          unit: "sec",
+        },
+        {
+          id: "quality",
+          label: "CRF Quality",
+          min: 0,
+          max: 51,
+          step: 1,
+          value: 18,
+        },
       ],
       actions: [
         { id: "reset", label: "Defaults", variant: "ghost" },

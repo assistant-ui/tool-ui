@@ -167,4 +167,3 @@ export async function getStocks(
 
   return stocks;
 }
-

@@ -18,11 +18,7 @@ import type { TimeCheckpoint } from "./types";
 export default function WeatherTuningPage() {
   const state = useTuningState();
   const [viewMode, setViewMode] = useState<ViewMode>("time");
-  const {
-    selectedCondition,
-    setSelectedCondition,
-    goToCheckpoint,
-  } = state;
+  const { selectedCondition, setSelectedCondition, goToCheckpoint } = state;
 
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
@@ -71,11 +67,7 @@ export default function WeatherTuningPage() {
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [
-    selectedCondition,
-    setSelectedCondition,
-    goToCheckpoint,
-  ]);
+  }, [selectedCondition, setSelectedCondition, goToCheckpoint]);
 
   const selectedParams = state.selectedCondition
     ? state.getParamsForCondition(state.selectedCondition)
@@ -200,14 +192,17 @@ export default function WeatherTuningPage() {
             </div>
           ) : (
             <div className="min-h-0 flex-1 overflow-hidden p-6">
-              {state.selectedCondition && selectedParams && selectedCanvasProps && selectedBaseParams ? (
+              {state.selectedCondition &&
+              selectedParams &&
+              selectedCanvasProps &&
+              selectedBaseParams ? (
                 <DetailEditor
                   condition={state.selectedCondition}
                   params={selectedParams}
                   canvasProps={selectedCanvasProps}
                   baseParams={selectedBaseParams}
                   checkpoints={state.getConditionCheckpoints(
-                    state.selectedCondition
+                    state.selectedCondition,
                   )}
                   activeEditCheckpoint={state.activeEditCheckpoint}
                   isPreviewing={state.isPreviewing}
@@ -220,7 +215,9 @@ export default function WeatherTuningPage() {
                   }
                   onToggleGroup={state.toggleGroup}
                   onReset={() => state.resetCondition(state.selectedCondition!)}
-                  onSignOff={() => state.toggleSignOff(state.selectedCondition!)}
+                  onSignOff={() =>
+                    state.toggleSignOff(state.selectedCondition!)
+                  }
                   onCheckpointClick={(checkpoint) =>
                     state.goToCheckpoint(state.selectedCondition!, checkpoint)
                   }
@@ -231,20 +228,20 @@ export default function WeatherTuningPage() {
                     state.copyLayerFromCondition(
                       state.selectedCondition!,
                       targetCondition,
-                      layerKey
+                      layerKey,
                     )
                   }
                   onCopyLayerToAll={(layerKey) =>
                     state.copyLayerToAllConditions(
                       state.selectedCondition!,
-                      layerKey
+                      layerKey,
                     )
                   }
                   onCopyCheckpoint={(targetCheckpoints) =>
                     state.copyCheckpointToCheckpoints(
                       state.selectedCondition!,
                       state.activeEditCheckpoint,
-                      targetCheckpoints
+                      targetCheckpoints,
                     )
                   }
                 />

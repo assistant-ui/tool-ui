@@ -41,7 +41,8 @@ export const instagramPostPresets: Record<
         author: {
           name: "Alex Rivera",
           handle: "alexrivera",
-          avatarUrl: "https://images.unsplash.com/photo-1695840358933-16dd7baa6dfb?w=200&h=200&fit=crop",
+          avatarUrl:
+            "https://images.unsplash.com/photo-1695840358933-16dd7baa6dfb?w=200&h=200&fit=crop",
           verified: true,
         },
         text: "Golden hour in the city. Sometimes you just have to stop and appreciate the view.",

@@ -691,20 +691,23 @@ export const previewConfigs: Record<
     },
     renderComponent: ({ data, state, setState }) => {
       const orderData = data as Parameters<typeof OrderSummary>[0];
-      const decisionActions =
-        (resolveActionItems(
-          toRecord(data)?.["decisionActions"],
-        ) as DecisionAction[] | null) ?? [
-          { id: "cancel", label: "Cancel", variant: "outline" },
-          { id: "confirm", label: "Purchase", variant: "default" },
-        ];
+      const decisionActions = (resolveActionItems(
+        toRecord(data)?.["decisionActions"],
+      ) as DecisionAction[] | null) ?? [
+        { id: "cancel", label: "Cancel", variant: "outline" },
+        { id: "confirm", label: "Purchase", variant: "default" },
+      ];
       const receiptChoice =
-        (state.selection as Parameters<typeof OrderSummary>[0]["choice"] | undefined) ??
-        undefined;
+        (state.selection as
+          | Parameters<typeof OrderSummary>[0]["choice"]
+          | undefined) ?? undefined;
 
       if (orderData.choice ?? receiptChoice) {
         return (
-          <DynamicOrderSummary {...orderData} choice={orderData.choice ?? receiptChoice} />
+          <DynamicOrderSummary
+            {...orderData}
+            choice={orderData.choice ?? receiptChoice}
+          />
         );
       }
 

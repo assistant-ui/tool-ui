@@ -151,7 +151,10 @@ function useSceneTimeline({
     if (!shouldScheduleCompletion) return;
 
     hasScheduledCompletion.current = true;
-    const timeoutId = window.setTimeout(onComplete, holdDuration ?? TIMING.sceneHold);
+    const timeoutId = window.setTimeout(
+      onComplete,
+      holdDuration ?? TIMING.sceneHold,
+    );
     return () => window.clearTimeout(timeoutId);
   }, [preambleReady, showTool, onComplete, reducedMotion, holdDuration]);
 
@@ -293,7 +296,7 @@ function AnimatedProgressTracker({ className }: { className?: string }) {
           : ("pending" as const),
   }));
 
-  const elapsedTime = PROGRESS_TRACKER_DATA.elapsedTime! + (currentStep * 12000);
+  const elapsedTime = PROGRESS_TRACKER_DATA.elapsedTime! + currentStep * 12000;
 
   return (
     <ProgressTracker
@@ -462,10 +465,20 @@ function createSceneConfigs(reducedMotion: boolean): SceneConfig[] {
             conditionCode: "thunderstorm",
           }}
           forecast={[
-            { label: "Tue", tempMin: 50, tempMax: 56, conditionCode: "heavy-rain" },
+            {
+              label: "Tue",
+              tempMin: 50,
+              tempMax: 56,
+              conditionCode: "heavy-rain",
+            },
             { label: "Wed", tempMin: 49, tempMax: 55, conditionCode: "rain" },
             { label: "Thu", tempMin: 51, tempMax: 60, conditionCode: "cloudy" },
-            { label: "Fri", tempMin: 53, tempMax: 64, conditionCode: "partly-cloudy" },
+            {
+              label: "Fri",
+              tempMin: 53,
+              tempMax: 64,
+              conditionCode: "partly-cloudy",
+            },
             { label: "Sat", tempMin: 55, tempMax: 68, conditionCode: "clear" },
           ]}
           time={{ localTimeOfDay: 23 / 24 }}
@@ -497,7 +510,7 @@ function createSceneConfigs(reducedMotion: boolean): SceneConfig[] {
               value: 4,
               unit: "dB",
               fillClassName: "bg-fuchsia-500/30 dark:bg-fuchsia-400/35",
-              handleClassName: "bg-fuchsia-500 dark:bg-fuchsia-400"
+              handleClassName: "bg-fuchsia-500 dark:bg-fuchsia-400",
             },
             {
               id: "mid",
@@ -508,7 +521,7 @@ function createSceneConfigs(reducedMotion: boolean): SceneConfig[] {
               value: -1,
               unit: "dB",
               fillClassName: "bg-cyan-500/30 dark:bg-cyan-400/35",
-              handleClassName: "bg-cyan-500 dark:bg-cyan-400"
+              handleClassName: "bg-cyan-500 dark:bg-cyan-400",
             },
             {
               id: "treble",
@@ -519,7 +532,7 @@ function createSceneConfigs(reducedMotion: boolean): SceneConfig[] {
               value: 3,
               unit: "dB",
               fillClassName: "bg-violet-500/30 dark:bg-violet-400/35",
-              handleClassName: "bg-violet-500 dark:bg-violet-400"
+              handleClassName: "bg-violet-500 dark:bg-violet-400",
             },
           ]}
           actions={PARAMETER_SLIDER_DATA.actions}
@@ -815,7 +828,10 @@ function AnimatedScene({
 
 export function ChatShowcase() {
   const reducedMotion = useReducedMotion();
-  const sceneConfigs = useMemo(() => createSceneConfigs(reducedMotion), [reducedMotion]);
+  const sceneConfigs = useMemo(
+    () => createSceneConfigs(reducedMotion),
+    [reducedMotion],
+  );
 
   const [sceneIndex, setSceneIndex] = useState(0);
   const [sceneRunId, setSceneRunId] = useState(0);

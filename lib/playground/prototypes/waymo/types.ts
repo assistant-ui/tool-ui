@@ -21,8 +21,8 @@ export interface Location {
 export interface PaymentMethod {
   id: string;
   type: "card" | "apple_pay" | "google_pay";
-  brand?: string;  // "visa", "mastercard", etc
-  last4?: string;  // last 4 digits
+  brand?: string; // "visa", "mastercard", etc
+  last4?: string; // last 4 digits
   isDefault: boolean;
 }
 
@@ -46,10 +46,10 @@ export interface RideQuote {
     isEstimate: boolean;
   };
   vehicleInfo: {
-    type: string;  // "Waymo One"
+    type: string; // "Waymo One"
     capacity: number;
   };
-  expiresAt: string;  // ISO8601
+  expiresAt: string; // ISO8601
 }
 
 export interface BookedTrip {
@@ -62,7 +62,7 @@ export interface BookedTrip {
     amount: number;
     currency: string;
   };
-  paymentSummary: string;  // "$12.50 charged to Apple Pay (...4242)"
+  paymentSummary: string; // "$12.50 charged to Apple Pay (...4242)"
   vehicle?: {
     make: string;
     model: string;
@@ -89,7 +89,7 @@ export interface GetQuoteInput {
 
 export interface BookTripInput {
   quoteId: string;
-  paymentMethodId?: string;  // uses default if not specified
+  paymentMethodId?: string; // uses default if not specified
 }
 
 // Tool UI message format

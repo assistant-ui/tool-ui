@@ -7,7 +7,12 @@ interface XPostPresetData {
   localActions?: ActionsProp;
 }
 
-export type XPostPresetName = "basic" | "quoted" | "media" | "link" | "footer-actions";
+export type XPostPresetName =
+  | "basic"
+  | "quoted"
+  | "media"
+  | "link"
+  | "footer-actions";
 
 function generateXPostCode(data: XPostPresetData): string {
   const props: string[] = [];
@@ -41,7 +46,8 @@ export const xPostPresets: Record<
         author: {
           name: "Athia Zohra",
           handle: "athiazohra",
-          avatarUrl: "https://images.unsplash.com/photo-1753288695169-e51f5a3ff24f?w=200&h=200&fit=crop",
+          avatarUrl:
+            "https://images.unsplash.com/photo-1753288695169-e51f5a3ff24f?w=200&h=200&fit=crop",
           verified: true,
         },
         text: "Wild to think: in the 1940s we literally rewired programs by hand. Today, we ship apps worldwide with a single command.",
@@ -59,7 +65,8 @@ export const xPostPresets: Record<
         author: {
           name: "Athia Zohra",
           handle: "athiazohra",
-          avatarUrl: "https://images.unsplash.com/photo-1753288695169-e51f5a3ff24f?w=200&h=200&fit=crop",
+          avatarUrl:
+            "https://images.unsplash.com/photo-1753288695169-e51f5a3ff24f?w=200&h=200&fit=crop",
           verified: true,
         },
         text: "This is a great thread on the history of computing.",
@@ -118,8 +125,10 @@ export const xPostPresets: Record<
         linkPreview: {
           url: "https://web.dev/articles/css-nesting",
           title: "CSS Nesting",
-          description: "Learn how to use native CSS nesting in your stylesheets.",
-          imageUrl: "https://images.unsplash.com/photo-1507721999472-8ed4421c4af2?w=600&h=300&fit=crop",
+          description:
+            "Learn how to use native CSS nesting in your stylesheets.",
+          imageUrl:
+            "https://images.unsplash.com/photo-1507721999472-8ed4421c4af2?w=600&h=300&fit=crop",
           domain: "web.dev",
         },
         stats: { likes: 156 },

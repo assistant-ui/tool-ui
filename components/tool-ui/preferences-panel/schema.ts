@@ -66,23 +66,21 @@ const PreferencesPanelBaseSchema = z.object({
   sections: z.array(PreferenceSectionSchema).min(1),
 });
 
-export const SerializablePreferencesPanelSchema = PreferencesPanelBaseSchema
-  .extend({
+export const SerializablePreferencesPanelSchema =
+  PreferencesPanelBaseSchema.extend({
     actions: z
       .union([
         z.array(SerializableActionSchema),
         SerializableActionsConfigSchema,
       ])
       .optional(),
-  })
-  .strict();
+  }).strict();
 
-export const SerializablePreferencesPanelReceiptSchema = PreferencesPanelBaseSchema
-  .extend({
+export const SerializablePreferencesPanelReceiptSchema =
+  PreferencesPanelBaseSchema.extend({
     choice: z.record(z.string(), z.union([z.string(), z.boolean()])),
     error: z.record(z.string(), z.string()).optional(),
-  })
-  .strict();
+  }).strict();
 
 export type SerializablePreferencesPanel = z.infer<
   typeof SerializablePreferencesPanelSchema
@@ -138,8 +136,7 @@ export interface PreferencesPanelProps extends Omit<
   onBeforeAction?: EmbeddedActionsProps<PreferencesValue>["onBeforeAction"];
 }
 
-export interface PreferencesPanelReceiptProps
-  extends SerializablePreferencesPanelReceipt {
+export interface PreferencesPanelReceiptProps extends SerializablePreferencesPanelReceipt {
   className?: string;
 }
 

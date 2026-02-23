@@ -1,4 +1,7 @@
-import type { PrecipitationLevel, WeatherConditionCode } from "@/components/tool-ui/weather-widget/runtime";
+import type {
+  PrecipitationLevel,
+  WeatherConditionCode,
+} from "@/components/tool-ui/weather-widget/runtime";
 import { snapTimeOfDayToNearestCheckpoint } from "@/components/tool-ui/weather-widget/generated/weather-runtime-core.generated";
 
 export interface ProductionHarnessRuntimeInput {

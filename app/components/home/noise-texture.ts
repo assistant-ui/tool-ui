@@ -3,7 +3,10 @@
  * @param size - Size of the noise tile (default: 64px)
  * @param opacity - Opacity of the noise (0-1, default: 0.02)
  */
-export function generateNoiseDataUri(size: number = 64, opacity: number = 0.02): string {
+export function generateNoiseDataUri(
+  size: number = 64,
+  opacity: number = 0.02,
+): string {
   // Create a minimal noise pattern using SVG
   // This is more efficient than canvas and works in SSR
   const svg = `
@@ -28,6 +31,6 @@ export function generateNoiseDataUri(size: number = 64, opacity: number = 0.02):
 export function getNoiseOverlayStyle(opacity: number = 0.02) {
   return {
     backgroundImage: `url("${generateNoiseDataUri(64, opacity)}")`,
-    backgroundBlendMode: 'overlay' as const,
+    backgroundBlendMode: "overlay" as const,
   };
 }

@@ -32,7 +32,8 @@ export function useHeadingsObserver(
     const scrollHeight = container.scrollHeight;
     const clientHeight = container.clientHeight;
     const maxScroll = scrollHeight - clientHeight;
-    const isAtMaxScroll = maxScroll > 0 && container.scrollTop >= maxScroll - 10;
+    const isAtMaxScroll =
+      maxScroll > 0 && container.scrollTop >= maxScroll - 10;
 
     if (isAtMaxScroll) {
       const lastHeading = headings[headings.length - 1];

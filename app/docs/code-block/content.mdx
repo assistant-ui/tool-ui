@@ -89,9 +89,7 @@ export const toolkit: Toolkit = {
     type: "backend",
     render: createResultToolRenderer({
       safeParse: safeParseSerializableCodeBlock,
-      render: (parsedResult) => (
-        <CodeBlock {...parsedResult} />
-      ),
+      render: (parsedResult) => <CodeBlock {...parsedResult} />,
     }),
   },
 };

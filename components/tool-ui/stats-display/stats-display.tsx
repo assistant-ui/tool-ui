@@ -7,7 +7,12 @@ import {
   CardDescription,
   CardContent,
 } from "./_adapter";
-import type { StatsDisplayProps, StatItem, StatFormat, StatDiff } from "./schema";
+import type {
+  StatsDisplayProps,
+  StatItem,
+  StatFormat,
+  StatDiff,
+} from "./schema";
 import { Sparkline } from "./sparkline";
 
 interface FormattedValueProps {
@@ -35,10 +40,16 @@ function FormattedValue({ value, format, locale }: FormattedValueProps) {
           <span className="font-light tabular-nums" aria-label={fullNumber}>
             {parts.map((part, i) =>
               part.type === "compact" ? (
-                <span key={i} className="ml-0.5 text-[0.65em] opacity-80" aria-hidden="true">{part.value}</span>
+                <span
+                  key={i}
+                  className="ml-0.5 text-[0.65em] opacity-80"
+                  aria-hidden="true"
+                >
+                  {part.value}
+                </span>
               ) : (
                 <span key={i}>{part.value}</span>
-              )
+              ),
             )}
           </span>
         );
@@ -65,7 +76,11 @@ function FormattedValue({ value, format, locale }: FormattedValueProps) {
         minimumFractionDigits: decimals,
         maximumFractionDigits: decimals,
       }).format(value);
-      return <span className="font-light tabular-nums" aria-label={spokenValue}>{formatted}</span>;
+      return (
+        <span className="font-light tabular-nums" aria-label={spokenValue}>
+          {formatted}
+        </span>
+      );
     }
     case "percent": {
       const decimals = format.decimals ?? 2;
@@ -73,9 +88,14 @@ function FormattedValue({ value, format, locale }: FormattedValueProps) {
       const numeric = basis === "fraction" ? value * 100 : value;
       const formatted = numeric.toFixed(decimals);
       return (
-        <span className="font-light tabular-nums" aria-label={`${formatted} percent`}>
+        <span
+          className="font-light tabular-nums"
+          aria-label={`${formatted} percent`}
+        >
           {formatted}
-          <span className="ml-0.5 text-[0.65em] opacity-80" aria-hidden="true">%</span>
+          <span className="ml-0.5 text-[0.65em] opacity-80" aria-hidden="true">
+            %
+          </span>
         </span>
       );
     }
@@ -115,10 +135,20 @@ function DeltaValue({ diff }: DeltaValueProps) {
   const display = `${sign}${formatted}%`;
 
   return (
-    <span className={cn("inline-flex items-center gap-1 rounded-full px-1.5 py-0.5 text-xs font-semibold tabular-nums", colorClass, bgClass)}>
-      {!upIsPositive && <span className="text-[0.9em]">{isGood ? "↓" : "↑"}</span>}
+    <span
+      className={cn(
+        "inline-flex items-center gap-1 rounded-full px-1.5 py-0.5 text-xs font-semibold tabular-nums",
+        colorClass,
+        bgClass,
+      )}
+    >
+      {!upIsPositive && (
+        <span className="text-[0.9em]">{isGood ? "↓" : "↑"}</span>
+      )}
       {display}
-      {label && <span className="text-muted-foreground font-normal">{label}</span>}
+      {label && (
+        <span className="text-muted-foreground font-normal">{label}</span>
+      )}
     </span>
   );
 }
@@ -130,7 +160,12 @@ interface StatCardProps {
   index?: number;
 }
 
-function StatCard({ stat, locale, isSingle = false, index = 0 }: StatCardProps) {
+function StatCard({
+  stat,
+  locale,
+  isSingle = false,
+  index = 0,
+}: StatCardProps) {
   const sparklineColor = stat.sparkline?.color ?? "var(--muted-foreground)";
   const hasSparkline = Boolean(stat.sparkline);
   const baseDelay = index * 175;
@@ -139,7 +174,7 @@ function StatCard({ stat, locale, isSingle = false, index = 0 }: StatCardProps) 
     <div
       className={cn(
         "relative flex min-h-28 flex-col gap-1 px-6",
-        isSingle ? "justify-center" : "justify-end"
+        isSingle ? "justify-center" : "justify-end",
       )}
     >
       {hasSparkline && (
@@ -162,10 +197,12 @@ function StatCard({ stat, locale, isSingle = false, index = 0 }: StatCardProps) 
         className="relative flex items-baseline gap-2 pb-2 animate-in fade-in slide-in-from-bottom-2 duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] fill-mode-both"
         style={{ animationDelay: `${baseDelay + 150}ms` }}
       >
-        <span className={cn(
-          "font-light tracking-normal",
-          isSingle ? "text-5xl" : "text-3xl"
-        )}>
+        <span
+          className={cn(
+            "font-light tracking-normal",
+            isSingle ? "text-5xl" : "text-3xl",
+          )}
+        >
           <FormattedValue
             value={stat.value}
             format={stat.format}
@@ -186,7 +223,9 @@ export function StatsDisplay({
   className,
   locale: localeProp,
 }: StatsDisplayProps) {
-  const locale = localeProp ?? (typeof navigator !== "undefined" ? navigator.language : undefined);
+  const locale =
+    localeProp ??
+    (typeof navigator !== "undefined" ? navigator.language : undefined);
   const hasHeader = Boolean(title || description);
   const isSingle = stats.length === 1;
 
@@ -197,7 +236,7 @@ export function StatsDisplay({
       className={cn(
         "w-full min-w-80 max-w-xl",
         isSingle && "max-w-sm",
-        className
+        className,
       )}
     >
       <Card className={cn("overflow-clip !pb-0 !pt-2", hasHeader && "!gap-0")}>
@@ -223,10 +262,15 @@ export function StatsDisplay({
                 key={stat.key}
                 className={cn(
                   "overflow-clip py-3 first:pt-0 @[440px]:py-3 @[440px]:first:pt-3 @[440px]:border-l @[440px]:border-t @[440px]:border-border",
-                  index > 0 && "border-border border-t"
+                  index > 0 && "border-border border-t",
                 )}
               >
-                <StatCard stat={stat} locale={locale} isSingle={isSingle} index={index} />
+                <StatCard
+                  stat={stat}
+                  locale={locale}
+                  isSingle={isSingle}
+                  index={index}
+                />
               </div>
             ))}
           </div>

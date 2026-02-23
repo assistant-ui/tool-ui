@@ -9,7 +9,7 @@ function generateSineEasedGradient(
   centerPosition: number,
   peakOpacity: number,
   spreadWidth: number,
-  steps: number = 128
+  steps: number = 128,
 ): string {
   const stops: string[] = [];
 
@@ -21,7 +21,9 @@ function generateSineEasedGradient(
     const eased = sineValue * sineValue;
     const opacity = peakOpacity * eased;
 
-    stops.push(`rgba(255, 255, 255, ${opacity.toFixed(4)}) ${position.toFixed(1)}%`);
+    stops.push(
+      `rgba(255, 255, 255, ${opacity.toFixed(4)}) ${position.toFixed(1)}%`,
+    );
   }
 
   return `linear-gradient(${angle}deg, ${stops.join(", ")})`;
@@ -67,12 +69,15 @@ export function FauxChatShellAnimated() {
   // Calculate light position based on surface normal (simulates static directional light)
   function calculateLightPosition(rotateX: number, rotateY: number) {
     const baseY = lightPosition;
-    const highlightY = baseY - (rotateX * 0.8) - (rotateY * 0.3);
+    const highlightY = baseY - rotateX * 0.8 - rotateY * 0.3;
     return highlightY;
   }
 
   // Calculate highlight position for resting state
-  const restingLightPos = calculateLightPosition(resting.rotateX, resting.rotateY);
+  const restingLightPos = calculateLightPosition(
+    resting.rotateX,
+    resting.rotateY,
+  );
 
   // Generate gradient centered at calculated position
   const restingLightGradient = generateSineEasedGradient(
@@ -80,7 +85,7 @@ export function FauxChatShellAnimated() {
     restingLightPos,
     lightOpacity,
     lightSpread,
-    32
+    32,
   );
 
   // Animation config
@@ -118,7 +123,7 @@ export function FauxChatShellAnimated() {
           transition={transition}
           style={{
             backgroundImage: `url("${generateNoiseDataUri(64, 0.015)}"), ${restingLightGradient}`,
-            backgroundBlendMode: 'overlay, normal',
+            backgroundBlendMode: "overlay, normal",
           }}
           aria-hidden="true"
         />

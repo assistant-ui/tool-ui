@@ -58,7 +58,6 @@ function Header({
 }) {
   return (
     <header className="flex items-start gap-3">
-      {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src={author.avatarUrl}
         alt={`${author.name} avatar`}
@@ -116,7 +115,6 @@ function PostMedia({ media }: { media: LinkedInPostMedia }) {
   return (
     <div className="overflow-hidden rounded-lg">
       {media.type === "image" ? (
-        // eslint-disable-next-line @next/next/no-img-element
         <img
           src={media.url}
           alt={media.alt}
@@ -143,7 +141,6 @@ function PostLinkPreview({ preview }: { preview: LinkedInPostLinkPreview }) {
   const content = (
     <>
       {preview.imageUrl && (
-        // eslint-disable-next-line @next/next/no-img-element
         <img
           src={preview.imageUrl}
           alt=""
@@ -165,7 +162,9 @@ function PostLinkPreview({ preview }: { preview: LinkedInPostLinkPreview }) {
   );
 
   if (!href) {
-    return <div className="block overflow-hidden rounded-lg border">{content}</div>;
+    return (
+      <div className="block overflow-hidden rounded-lg border">{content}</div>
+    );
   }
 
   return (
@@ -257,11 +256,7 @@ function PostActions({
   );
 }
 
-export function LinkedInPost({
-  post,
-  className,
-  onAction,
-}: LinkedInPostProps) {
+export function LinkedInPost({ post, className, onAction }: LinkedInPostProps) {
   return (
     <div
       className={cn("flex max-w-xl flex-col gap-3", className)}
@@ -283,7 +278,6 @@ export function LinkedInPost({
           onAction={(action) => onAction?.(action, post)}
         />
       </article>
-
     </div>
   );
 }

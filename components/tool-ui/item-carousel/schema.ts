@@ -1,6 +1,10 @@
 import { z } from "zod";
 import { defineToolUiContract } from "../shared/contract";
-import { ActionSchema, SerializableActionSchema, ToolUIIdSchema } from "../shared/schema";
+import {
+  ActionSchema,
+  SerializableActionSchema,
+  ToolUIIdSchema,
+} from "../shared/schema";
 
 export const ItemSchema = z.object({
   id: z.string().min(1),

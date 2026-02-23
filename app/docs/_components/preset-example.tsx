@@ -320,9 +320,7 @@ function generateItemCarouselCode(preset: ItemCarouselPresetName): string {
   props.push(
     `  items={${JSON.stringify(list.items, null, 4).replace(/\n/g, "\n  ")}}`,
   );
-  props.push(
-    `  onItemClick={(itemId) => console.log("Clicked:", itemId)}`,
-  );
+  props.push(`  onItemClick={(itemId) => console.log("Clicked:", itemId)}`);
   props.push(
     `  onItemAction={(itemId, actionId) => console.log("Action:", itemId, actionId)}`,
   );

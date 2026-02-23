@@ -16,49 +16,53 @@ import { AutoLinkChildren, withAutoLink } from "@/lib/docs/auto-link";
 import { TrackedDynamicCodeBlock } from "@/app/docs/_components/tracked-dynamic-codeblock";
 
 const Mermaid = dynamic(() =>
-  import("@/app/components/mdx/mermaid").then((m) => m.Mermaid)
+  import("@/app/components/mdx/mermaid").then((m) => m.Mermaid),
 );
 const ApprovalCardPresetExample = dynamic(() =>
   import("@/app/docs/_components/preset-example").then(
-    (m) => m.ApprovalCardPresetExample
-  )
+    (m) => m.ApprovalCardPresetExample,
+  ),
 );
 const ChartPresetExample = dynamic(() =>
-  import("@/app/docs/_components/preset-example").then((m) => m.ChartPresetExample)
+  import("@/app/docs/_components/preset-example").then(
+    (m) => m.ChartPresetExample,
+  ),
 );
 const OptionListPresetExample = dynamic(() =>
   import("@/app/docs/_components/preset-example").then(
-    (m) => m.OptionListPresetExample
-  )
+    (m) => m.OptionListPresetExample,
+  ),
 );
 const CodeBlockPresetExample = dynamic(() =>
   import("@/app/docs/_components/preset-example").then(
-    (m) => m.CodeBlockPresetExample
-  )
+    (m) => m.CodeBlockPresetExample,
+  ),
 );
 const TerminalPresetExample = dynamic(() =>
   import("@/app/docs/_components/preset-example").then(
-    (m) => m.TerminalPresetExample
-  )
+    (m) => m.TerminalPresetExample,
+  ),
 );
 const PlanPresetExample = dynamic(() =>
-  import("@/app/docs/_components/preset-example").then((m) => m.PlanPresetExample)
+  import("@/app/docs/_components/preset-example").then(
+    (m) => m.PlanPresetExample,
+  ),
 );
 const ItemCarouselPresetExample = dynamic(() =>
   import("@/app/docs/_components/preset-example").then(
-    (m) => m.ItemCarouselPresetExample
-  )
+    (m) => m.ItemCarouselPresetExample,
+  ),
 );
 const QuestionFlowPresetExample = dynamic(() =>
   import("@/app/docs/_components/preset-example").then(
-    (m) => m.QuestionFlowPresetExample
-  )
+    (m) => m.QuestionFlowPresetExample,
+  ),
 );
 const FeatureGrid = dynamic(() =>
-  import("@/app/components/mdx/features").then((m) => m.FeatureGrid)
+  import("@/app/components/mdx/features").then((m) => m.FeatureGrid),
 );
 const Feature = dynamic(() =>
-  import("@/app/components/mdx/features").then((m) => m.Feature)
+  import("@/app/components/mdx/features").then((m) => m.Feature),
 );
 
 export function useMDXComponents(components: MDXComponents): MDXComponents {

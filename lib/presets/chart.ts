@@ -44,7 +44,10 @@ function generateChartCode(data: ChartData): string {
   return `<Chart\n${props.join("\n")}\n/>`;
 }
 
-export const chartPresets: Record<ChartPresetName, PresetWithCodeGen<ChartData>> = {
+export const chartPresets: Record<
+  ChartPresetName,
+  PresetWithCodeGen<ChartData>
+> = {
   revenue: {
     description: "Bar chart with revenue vs expenses",
     data: {

@@ -102,9 +102,10 @@ export const ComponentDocsTabs = memo(function ComponentDocsTabs({
             className="flex h-full min-h-0 flex-1 overflow-hidden"
           >
             {activeTab === "examples"
-              ? examples ?? (
-                  componentId ? <LazyComponentPreview componentId={componentId} /> : null
-                )
+              ? (examples ??
+                (componentId ? (
+                  <LazyComponentPreview componentId={componentId} />
+                ) : null))
               : null}
           </TabsContent>
         </div>

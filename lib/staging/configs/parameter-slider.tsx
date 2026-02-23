@@ -30,7 +30,7 @@ function getSliderElements(
 
   // Find all Radix slider root elements - they have the group/slider class and role=group
   // Radix adds data-orientation to the Root element
-  const sliderRoots = slider.querySelectorAll('[data-orientation]');
+  const sliderRoots = slider.querySelectorAll("[data-orientation]");
 
   if (sliderRoots.length === 0) return [];
 
@@ -41,7 +41,7 @@ function getSliderElements(
     // The label/value overlay is the last div child of root (after Track and Thumb)
     // It contains 2 span children for label and value
     const divChildren = Array.from(root.children).filter(
-      (child) => child.tagName === "DIV"
+      (child) => child.tagName === "DIV",
     );
     const overlayDiv = divChildren.find((div) => {
       const spans = div.querySelectorAll(":scope > span");

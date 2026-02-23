@@ -81,10 +81,12 @@ export function ParameterRow({
   return (
     <div className="group flex items-center gap-2.5 rounded px-1.5 py-1.5 transition-colors hover:bg-accent/30">
       <div className="w-28 shrink-0">
-        <span className={cn(
-          "text-[11px] transition-colors",
-          isChanged ? "text-foreground/80" : "text-muted-foreground/60"
-        )}>
+        <span
+          className={cn(
+            "text-[11px] transition-colors",
+            isChanged ? "text-foreground/80" : "text-muted-foreground/60",
+          )}
+        >
           {label}
         </span>
       </div>
@@ -123,7 +125,7 @@ export function ParameterRow({
             className={cn(
               "w-12 rounded border border-blue-500/50 bg-blue-500/10 px-1 py-0.5",
               "font-mono text-[10px] tabular-nums text-blue-600 dark:text-blue-400",
-              "outline-none ring-1 ring-blue-500/30"
+              "outline-none ring-1 ring-blue-500/30",
             )}
           />
         ) : (
@@ -136,7 +138,7 @@ export function ParameterRow({
               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
               isChanged
                 ? "bg-amber-500/10 text-amber-600/80 dark:text-amber-400/80"
-                : "text-muted-foreground/40"
+                : "text-muted-foreground/40",
             )}
             aria-label={`Edit ${label}: ${displayValue}`}
           >
@@ -152,7 +154,7 @@ export function ParameterRow({
             "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
             isChanged
               ? "text-muted-foreground/50 opacity-100 hover:bg-accent hover:text-muted-foreground"
-              : "pointer-events-none opacity-0"
+              : "pointer-events-none opacity-0",
           )}
           aria-label={`Reset ${label} to ${baseValue.toFixed(2)}`}
         >
@@ -183,10 +185,12 @@ export function ParameterToggleRow({
   return (
     <div className="group flex items-center gap-2.5 rounded px-1.5 py-1.5 transition-colors hover:bg-accent/30">
       <div className="w-28 shrink-0">
-        <span className={cn(
-          "text-[11px] transition-colors",
-          isChanged ? "text-foreground/80" : "text-muted-foreground/60"
-        )}>
+        <span
+          className={cn(
+            "text-[11px] transition-colors",
+            isChanged ? "text-foreground/80" : "text-muted-foreground/60",
+          )}
+        >
           {label}
         </span>
       </div>
@@ -201,14 +205,14 @@ export function ParameterToggleRow({
           className={cn(
             "relative flex h-4 w-7 items-center rounded-full transition-colors",
             "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
-            value ? "bg-foreground/30" : "bg-muted/50"
+            value ? "bg-foreground/30" : "bg-muted/50",
           )}
         >
           <span
             aria-hidden="true"
             className={cn(
               "absolute size-3 rounded-full bg-white shadow-sm transition-transform",
-              value ? "translate-x-3.5" : "translate-x-0.5"
+              value ? "translate-x-3.5" : "translate-x-0.5",
             )}
           />
         </button>
@@ -218,9 +222,7 @@ export function ParameterToggleRow({
         <span
           className={cn(
             "rounded px-1 py-0.5 text-[10px] transition-colors",
-            value
-              ? "text-foreground/60"
-              : "text-muted-foreground/40"
+            value ? "text-foreground/60" : "text-muted-foreground/40",
           )}
         >
           {value ? "On" : "Off"}
@@ -234,7 +236,7 @@ export function ParameterToggleRow({
             "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
             isChanged
               ? "text-muted-foreground/50 opacity-100 hover:bg-accent hover:text-muted-foreground"
-              : "pointer-events-none opacity-0"
+              : "pointer-events-none opacity-0",
           )}
           aria-label={`Reset ${label} to ${baseValue ? "On" : "Off"}`}
         >

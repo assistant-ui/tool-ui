@@ -29,9 +29,7 @@ export function tryAcquireWeatherWebglCanvasBudgetSlot(
   canvas: HTMLCanvasElement,
 ): boolean {
   if (allocatedWeatherWebglCanvases.has(canvas)) return true;
-  if (
-    allocatedWeatherWebglCanvases.size >= maxConcurrentWeatherWebglCanvases
-  )
+  if (allocatedWeatherWebglCanvases.size >= maxConcurrentWeatherWebglCanvases)
     return false;
   allocatedWeatherWebglCanvases.add(canvas);
   return true;

@@ -21,4 +21,3 @@ describe("mapToolUiOverridesToCompositor", () => {
     expect(result.lightning).toEqual({ sceneIllumination: 0.77 });
   });
 });
-

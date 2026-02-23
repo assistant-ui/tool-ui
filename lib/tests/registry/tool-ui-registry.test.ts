@@ -59,7 +59,9 @@ describe("Tool UI registry artifacts", () => {
     const dataTableAdapter = dataTableItem?.files.find(
       (file) => file.path === "components/tool-ui/data-table/_adapter.tsx",
     );
-    expect(dataTableAdapter?.content).toContain('export { cn } from "@/lib/utils";');
+    expect(dataTableAdapter?.content).toContain(
+      'export { cn } from "@/lib/utils";',
+    );
     expect(dataTableItem?.dependencies?.includes("clsx")).toBe(false);
     expect(dataTableItem?.dependencies?.includes("tailwind-merge")).toBe(false);
     expect(dataTableItem?.dependencies?.includes("zod")).toBe(true);
@@ -84,7 +86,9 @@ describe("Tool UI registry artifacts", () => {
     ]);
 
     for (const [componentName, requiredDependencies] of expectations) {
-      const item = artifacts.items.find((candidate) => candidate.name === componentName);
+      const item = artifacts.items.find(
+        (candidate) => candidate.name === componentName,
+      );
       expect(item, `missing registry item: ${componentName}`).toBeDefined();
 
       for (const dependency of requiredDependencies) {
@@ -127,13 +131,15 @@ describe("Tool UI registry artifacts", () => {
     ] as const;
 
     for (const componentName of componentsRequiringEmbeddedActions) {
-      const item = artifacts.items.find((candidate) => candidate.name === componentName);
+      const item = artifacts.items.find(
+        (candidate) => candidate.name === componentName,
+      );
       expect(item, `missing registry item: ${componentName}`).toBeDefined();
 
       const itemPaths = new Set(item?.files.map((file) => file.path) ?? []);
-      expect(itemPaths.has("components/tool-ui/shared/embedded-actions.ts")).toBe(
-        true,
-      );
+      expect(
+        itemPaths.has("components/tool-ui/shared/embedded-actions.ts"),
+      ).toBe(true);
     }
   });
 
@@ -143,19 +149,22 @@ describe("Tool UI registry artifacts", () => {
       (item) => item.name === "weather-widget",
     );
 
-    expect(weatherWidgetItem, "missing registry item: weather-widget").toBeDefined();
+    expect(
+      weatherWidgetItem,
+      "missing registry item: weather-widget",
+    ).toBeDefined();
 
     const weatherPaths = new Set(
       weatherWidgetItem?.files.map((file) => file.path) ?? [],
     );
     expect(weatherPaths.size).toBe(5);
 
-    expect(weatherPaths.has("components/tool-ui/weather-widget/runtime.ts")).toBe(
-      true,
-    );
-    expect(weatherPaths.has("components/tool-ui/weather-widget/schema-runtime.ts")).toBe(
-      true,
-    );
+    expect(
+      weatherPaths.has("components/tool-ui/weather-widget/runtime.ts"),
+    ).toBe(true);
+    expect(
+      weatherPaths.has("components/tool-ui/weather-widget/schema-runtime.ts"),
+    ).toBe(true);
     expect(
       weatherPaths.has(
         "components/tool-ui/weather-widget/generated/weather-runtime-core.generated.ts",
@@ -225,19 +234,27 @@ describe("Tool UI registry artifacts", () => {
         "components/tool-ui/weather-widget/effects/use-weather-effects-renderer.ts",
       ),
     ).toBe(false);
-    expect(weatherPaths.has("components/tool-ui/weather-widget/weather-widget.generated.js")).toBe(false);
     expect(
-      weatherPaths.has("lib/weather-authoring/weather-widget/weather-widget-container.tsx"),
+      weatherPaths.has(
+        "components/tool-ui/weather-widget/weather-widget.generated.js",
+      ),
+    ).toBe(false);
+    expect(
+      weatherPaths.has(
+        "lib/weather-authoring/weather-widget/weather-widget-container.tsx",
+      ),
     ).toBe(false);
     expect(
       weatherPaths.has(
         "lib/weather-authoring/weather-widget/effects/parameter-mapper.ts",
       ),
     ).toBe(false);
-    expect(weatherPaths.has("components/tool-ui/weather-widget/schema.ts")).toBe(
+    expect(
+      weatherPaths.has("components/tool-ui/weather-widget/schema.ts"),
+    ).toBe(false);
+    expect(weatherPaths.has("components/tool-ui/shared/contract.ts")).toBe(
       false,
     );
-    expect(weatherPaths.has("components/tool-ui/shared/contract.ts")).toBe(false);
     expect(weatherPaths.has("components/tool-ui/shared/parse.ts")).toBe(false);
   });
 });

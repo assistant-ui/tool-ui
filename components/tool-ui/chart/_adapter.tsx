@@ -18,4 +18,10 @@ export {
   ChartLegendContent,
   type ChartConfig,
 } from "@/components/ui/chart";
-export { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
+export {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+} from "@/components/ui/card";

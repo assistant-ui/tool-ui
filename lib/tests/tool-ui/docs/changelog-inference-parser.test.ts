@@ -29,7 +29,9 @@ describe("changelog inference parser", () => {
     const parsed = parseInferredReleaseNotes(output);
     expect(parsed.breakingChanges).toEqual([]);
     expect(parsed.changes).toEqual(["B"]);
-    expect(parsed.migrationPrompt).toBe("Re-install components via npx shadcn@latest add");
+    expect(parsed.migrationPrompt).toBe(
+      "Re-install components via npx shadcn@latest add",
+    );
   });
 
   test("throws when JSON payload is missing required fields", () => {

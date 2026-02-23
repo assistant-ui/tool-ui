@@ -19,7 +19,9 @@ describe("changelog inference prompt", () => {
     expect(prompt).toContain(
       "Cross-component schema migration (global wording)",
     );
-    expect(prompt).toContain('Bad breakingChanges example: ["DataTable moved to /schema entrypoint."]');
+    expect(prompt).toContain(
+      'Bad breakingChanges example: ["DataTable moved to /schema entrypoint."]',
+    );
   });
 
   test("includes component-local example and dynamic evidence sections", () => {
@@ -29,7 +31,8 @@ describe("changelog inference prompt", () => {
         "components/tool-ui/option-list/schema.ts",
         "components/tool-ui/option-list/option-list.tsx",
       ],
-      commitSummary: "- def5678 fix(option-list): tighten selection constraints",
+      commitSummary:
+        "- def5678 fix(option-list): tighten selection constraints",
       changelogTemplateContext: "## 2026-02-11\n\n### Changes\n\n- Example",
     });
 

@@ -23,7 +23,6 @@ export interface XPostProps {
 
 function Avatar({ src, alt }: { src: string; alt: string }) {
   return (
-    // eslint-disable-next-line @next/next/no-img-element
     <img
       src={src}
       alt={alt}
@@ -127,7 +126,6 @@ function PostMedia({
       onClick={() => onOpen?.()}
     >
       {media.type === "image" ? (
-        // eslint-disable-next-line @next/next/no-img-element
         <img
           src={media.url}
           alt={media.alt}
@@ -152,7 +150,6 @@ function PostLinkPreview({ preview }: { preview: XPostLinkPreview }) {
   const content = (
     <>
       {preview.imageUrl && (
-        // eslint-disable-next-line @next/next/no-img-element
         <img
           src={preview.imageUrl}
           alt=""
@@ -200,7 +197,6 @@ function QuotedPostCard({ post }: { post: XPostData }) {
   return (
     <div className="hover:bg-muted/30 mt-2 rounded-xl border p-3 transition-colors">
       <div className="flex min-w-0 items-center gap-1">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={post.author.avatarUrl}
           alt={`${post.author.name} avatar`}
@@ -226,7 +222,6 @@ function QuotedPostCard({ post }: { post: XPostData }) {
       </div>
       {post.text && <p className="mt-1.5">{post.text}</p>}
       {post.media && (
-        // eslint-disable-next-line @next/next/no-img-element
         <img
           src={post.media.url}
           alt={post.media.alt}
@@ -312,11 +307,7 @@ function PostActions({
   );
 }
 
-export function XPost({
-  post,
-  className,
-  onAction,
-}: XPostProps) {
+export function XPost({ post, className, onAction }: XPostProps) {
   return (
     <div
       className={cn("flex max-w-xl flex-col gap-3", className)}

@@ -82,7 +82,7 @@ const getPickupIcon = (option: PickupOption) => {
 // Generate a mock quote based on destination and pickup
 const generateQuote = (
   destinationId: string,
-  pickupOverride?: { label: string; address: string }
+  pickupOverride?: { label: string; address: string },
 ): RideQuoteType => {
   const destination = MOCK_LOCATIONS.find((loc) => loc.id === destinationId);
 
@@ -144,10 +144,9 @@ export function RideQuote({
   } | null>(null);
 
   // Generate quote based on current pickup
-  const quote = result?.quote ?? generateQuote(
-    args.destinationId,
-    currentPickup ?? undefined
-  );
+  const quote =
+    result?.quote ??
+    generateQuote(args.destinationId, currentPickup ?? undefined);
 
   // Simulate async price/ETA calculation
   useEffect(() => {

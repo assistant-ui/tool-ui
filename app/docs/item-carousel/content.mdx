@@ -33,7 +33,11 @@ Render `ItemCarousel` in your UI with tool-compatible props.
 ```tsx
 import { ItemCarousel } from "@/components/tool-ui/item-carousel";
 
-export function Example({ payload }: { payload: React.ComponentProps<typeof ItemCarousel> }) {
+export function Example({
+  payload,
+}: {
+  payload: React.ComponentProps<typeof ItemCarousel>;
+}) {
   return <ItemCarousel {...payload} />;
 }
 ```

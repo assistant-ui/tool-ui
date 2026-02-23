@@ -10,5 +10,8 @@ export const size = ogSize;
 export const contentType = ogContentType;
 
 export default async function Image() {
-  return generateOgImage("Approval Card", "Binary confirmation for agent actions");
+  return generateOgImage(
+    "Approval Card",
+    "Binary confirmation for agent actions",
+  );
 }

@@ -8,10 +8,16 @@ import {
   WeatherEffectsCanvas,
   type WeatherEffectsCanvasProps,
 } from "@/lib/weather-authoring/weather-widget/effects";
-import { WeatherDataOverlay, createWeatherOverlayStubData } from "./weather-data-overlay";
+import {
+  WeatherDataOverlay,
+  createWeatherOverlayStubData,
+} from "./weather-data-overlay";
 import { GlassControls } from "./glass-controls";
 import { CONDITION_LABELS } from "../../weather-compositor/presets";
-import type { FullCompositorParams, GlassParams } from "../../weather-compositor/presets";
+import type {
+  FullCompositorParams,
+  GlassParams,
+} from "../../weather-compositor/presets";
 import { ParameterPanel } from "./parameter-panel";
 import { TIME_CHECKPOINT_ORDER, TIME_CHECKPOINTS } from "../lib/constants";
 import type { ConditionCheckpoints, TimeCheckpoint } from "../types";
@@ -51,7 +57,10 @@ interface DetailEditorProps {
   onSignOff: () => void;
   onCheckpointClick: (checkpoint: TimeCheckpoint) => void;
   onToggleWidgetOverlay: () => void;
-  onCopyLayer?: (targetCondition: WeatherConditionCode, layerKey: LayerKey) => void;
+  onCopyLayer?: (
+    targetCondition: WeatherConditionCode,
+    layerKey: LayerKey,
+  ) => void;
   onCopyLayerToAll?: (layerKey: LayerKey) => void;
   onCopyCheckpoint?: (targetCheckpoints: TimeCheckpoint[]) => void;
 }

@@ -38,7 +38,6 @@ function ItemImage({ src, alt }: { src?: string; alt: string }) {
   }
 
   return (
-    // eslint-disable-next-line @next/next/no-img-element
     <img
       src={src}
       alt={alt}
@@ -271,8 +270,10 @@ function OrderSummaryDisplay(props: OrderSummaryDisplayProps) {
   return <OrderSummaryRoot {...props} variant="summary" />;
 }
 
-export interface OrderSummaryReceiptProps
-  extends Omit<OrderSummaryProps, "choice"> {
+export interface OrderSummaryReceiptProps extends Omit<
+  OrderSummaryProps,
+  "choice"
+> {
   choice: OrderDecision;
 }
 

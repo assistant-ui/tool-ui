@@ -32,25 +32,25 @@ Render `MessageDraft` in your UI with tool-compatible props.
 <div className="[&_pre]:max-h-[30rem] [&_pre]:overflow-y-auto">
 
 ```tsx
-    import { MessageDraft } from "@/components/tool-ui/message-draft";
+import { MessageDraft } from "@/components/tool-ui/message-draft";
 
-    export function Example() {
-      return (
-        <MessageDraft
-          id="message-draft-example"
-          channel="email"
-          subject="Q4 Planning Follow-up"
-          to={["sarah.chen@company.com"]}
-          body={`Hi Sarah,
+export function Example() {
+  return (
+    <MessageDraft
+      id="message-draft-example"
+      channel="email"
+      subject="Q4 Planning Follow-up"
+      to={["sarah.chen@company.com"]}
+      body={`Hi Sarah,
 
 Thanks for joining the planning meeting today. I've attached the updated timeline.
 
 Best,
 Alex`}
-onSend={() => console.log("Sent")}
-onCancel={() => console.log("Cancelled")}
-/>
-);
+      onSend={() => console.log("Sent")}
+      onCancel={() => console.log("Cancelled")}
+    />
+  );
 }
 ```
 
@@ -82,18 +82,18 @@ export const toolkit: Toolkit = {
       idPrefix: "message-draft",
       render: (parsedArgs, { result, addResult }) =>
         result ? (
-            <MessageDraft {...parsedArgs} outcome={result} />
-          ) : (
-            <MessageDraft
-              {...parsedArgs}
-              onSend={async () => {
-                // Perform actual send logic here
-                await sendMessage(parsedArgs);
-                await addResult?.("sent");
-              }}
-              onCancel={() => addResult?.("cancelled")}
-            />
-          ),
+          <MessageDraft {...parsedArgs} outcome={result} />
+        ) : (
+          <MessageDraft
+            {...parsedArgs}
+            onSend={async () => {
+              // Perform actual send logic here
+              await sendMessage(parsedArgs);
+              await addResult?.("sent");
+            }}
+            onCancel={() => addResult?.("cancelled")}
+          />
+        ),
     }),
   },
 };
@@ -128,11 +128,9 @@ Two channel types, each with its own metadata layout.
 
 Shows subject line, To/CC/BCC recipients, and message body.
 
-
 ### Slack
 
 Shows channel or DM target with the Slack icon.
-
 
 ## Send Flow
 
@@ -147,7 +145,6 @@ Configure the countdown length with `undoGracePeriod` (in milliseconds).
 ## Receipt States
 
 Pass `outcome` to render a one-line receipt. Useful for showing the final state in conversation history.
-
 
 ## Props
 

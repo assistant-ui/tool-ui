@@ -20,7 +20,10 @@ describe("weather-effects-canvas WebGL budget guard", () => {
     expect(tryAcquireWeatherWebglCanvasBudgetSlot(canvas)).toBe(true);
     expect(getAllocatedWeatherWebglCanvasCount()).toBe(1);
 
-    const nextSlotState = releaseWeatherWebglBudgetSlotOnInitFailure(canvas, true);
+    const nextSlotState = releaseWeatherWebglBudgetSlotOnInitFailure(
+      canvas,
+      true,
+    );
 
     expect(nextSlotState).toBeNull();
     expect(getAllocatedWeatherWebglCanvasCount()).toBe(0);

@@ -10,10 +10,5 @@ export const metadata: Metadata = {
 export const revalidate = 3600;
 
 export default function LinkPreviewDocsPage() {
-  return (
-    <ComponentDocsTabs
-      docs={<Content />}
-      componentId="link-preview"
-    />
-  );
+  return <ComponentDocsTabs docs={<Content />} componentId="link-preview" />;
 }

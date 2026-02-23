@@ -4,9 +4,7 @@ type GetUserDestinationArgs = {
   promptHint?: string;
 };
 
-type Destination =
-  | typeof DESTINATIONS.home
-  | typeof DESTINATIONS.ferry;
+type Destination = typeof DESTINATIONS.home | typeof DESTINATIONS.ferry;
 
 type GetUserDestinationResult = {
   destination: Destination;

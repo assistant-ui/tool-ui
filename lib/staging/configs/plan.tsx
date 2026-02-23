@@ -89,7 +89,7 @@ function PlanTuningPanel() {
   const handleCompleteAll = () => {
     setIsAnimating(false);
     setTodos((prev) =>
-      prev.map((todo) => ({ ...todo, status: "completed" as const }))
+      prev.map((todo) => ({ ...todo, status: "completed" as const })),
     );
   };
 
@@ -112,7 +112,7 @@ function PlanTuningPanel() {
   const handleSetStatus = (todoId: string, status: PlanTodo["status"]) => {
     setIsAnimating(false);
     setTodos((prev) =>
-      prev.map((todo) => (todo.id === todoId ? { ...todo, status } : todo))
+      prev.map((todo) => (todo.id === todoId ? { ...todo, status } : todo)),
     );
   };
 
@@ -227,9 +227,7 @@ function PlanTuningPanel() {
             <li>• Staggered entrance for new todos (50ms between items)</li>
             <li>• Progress bar celebration: shimmer + glow + pulse at 100%</li>
             <li>• Bouncy chevron rotation with spring physics</li>
-            <li>
-              • Staggered content reveal in accordion (100-150ms delays)
-            </li>
+            <li>• Staggered content reveal in accordion (100-150ms delays)</li>
             <li>• All animations respect prefers-reduced-motion setting</li>
           </ul>
         </div>

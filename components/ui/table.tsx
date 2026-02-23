@@ -39,7 +39,6 @@ function TableBody({ className, ...props }: React.ComponentProps<"tbody">) {
   );
 }
 
-
 function TableRow({ className, ...props }: React.ComponentProps<"tr">) {
   return (
     <tr
@@ -79,12 +78,4 @@ function TableCell({ className, ...props }: React.ComponentProps<"td">) {
   );
 }
 
-
-export {
-  Table,
-  TableHeader,
-  TableBody,
-  TableHead,
-  TableRow,
-  TableCell,
-};
+export { Table, TableHeader, TableBody, TableHead, TableRow, TableCell };

@@ -110,7 +110,8 @@ export const citationPresets: Record<
           id: "citation-stacked-1",
           href: "https://react.dev/reference/react/useState",
           title: "useState – React",
-          snippet: "useState is a React Hook that lets you add a state variable.",
+          snippet:
+            "useState is a React Hook that lets you add a state variable.",
           domain: "react.dev",
           favicon: favicon("react.dev"),
           type: "document",
@@ -119,7 +120,8 @@ export const citationPresets: Record<
           id: "citation-stacked-2",
           href: "https://developer.mozilla.org/en-US/docs/Web/JavaScript",
           title: "JavaScript - MDN Web Docs",
-          snippet: "JavaScript is a lightweight interpreted programming language.",
+          snippet:
+            "JavaScript is a lightweight interpreted programming language.",
           domain: "developer.mozilla.org",
           favicon: favicon("developer.mozilla.org"),
           type: "document",
@@ -137,7 +139,8 @@ export const citationPresets: Record<
           id: "citation-stacked-4",
           href: "https://nodejs.org/docs/latest/api/",
           title: "Node.js Documentation",
-          snippet: "Node.js is a JavaScript runtime built on Chrome's V8 engine.",
+          snippet:
+            "Node.js is a JavaScript runtime built on Chrome's V8 engine.",
           domain: "nodejs.org",
           favicon: favicon("nodejs.org"),
           type: "api",
@@ -174,7 +177,8 @@ export const citationPresets: Record<
           id: "citation-inline-1",
           href: "https://react.dev/reference/react/useState",
           title: "useState – React",
-          snippet: "useState is a React Hook that lets you add a state variable.",
+          snippet:
+            "useState is a React Hook that lets you add a state variable.",
           domain: "react.dev",
           favicon: favicon("react.dev"),
           type: "document",
@@ -183,7 +187,8 @@ export const citationPresets: Record<
           id: "citation-inline-2",
           href: "https://developer.mozilla.org/en-US/docs/Web/JavaScript",
           title: "JavaScript - MDN Web Docs",
-          snippet: "JavaScript is a lightweight interpreted programming language.",
+          snippet:
+            "JavaScript is a lightweight interpreted programming language.",
           domain: "developer.mozilla.org",
           favicon: favicon("developer.mozilla.org"),
           type: "document",
@@ -201,7 +206,8 @@ export const citationPresets: Record<
           id: "citation-inline-4",
           href: "https://nodejs.org/docs/latest/api/",
           title: "Node.js Documentation",
-          snippet: "Node.js is a JavaScript runtime built on Chrome's V8 engine.",
+          snippet:
+            "Node.js is a JavaScript runtime built on Chrome's V8 engine.",
           domain: "nodejs.org",
           favicon: favicon("nodejs.org"),
           type: "api",

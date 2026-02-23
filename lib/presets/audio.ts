@@ -1,4 +1,7 @@
-import type { SerializableAudio, AudioVariant } from "@/components/tool-ui/audio";
+import type {
+  SerializableAudio,
+  AudioVariant,
+} from "@/components/tool-ui/audio";
 import type { SerializableAction } from "@/components/tool-ui/shared";
 import type { PresetWithCodeGen } from "./types";
 
@@ -53,7 +56,9 @@ function generateAudioCode(data: AudioData): string {
   }
 
   if (audio.source) {
-    props.push(`  source={${formatObject(audio.source as Record<string, unknown>)}}`);
+    props.push(
+      `  source={${formatObject(audio.source as Record<string, unknown>)}}`,
+    );
   }
 
   const audioCode = `<Audio\n${props.join("\n")}\n/>`;
@@ -71,7 +76,10 @@ function generateAudioCode(data: AudioData): string {
 
 export type AudioPresetName = "full" | "compact" | "with-actions";
 
-export const audioPresets: Record<AudioPresetName, PresetWithCodeGen<AudioData>> = {
+export const audioPresets: Record<
+  AudioPresetName,
+  PresetWithCodeGen<AudioData>
+> = {
   full: {
     description: "Portrait card with large artwork",
     data: {
@@ -81,7 +89,8 @@ export const audioPresets: Record<AudioPresetName, PresetWithCodeGen<AudioData>>
         src: "https://cdn.pixabay.com/audio/2022/03/10/audio_4dedf5bf94.mp3",
         title: "Morning Forest",
         description: "Dawn chorus recorded in Olympic National Park",
-        artwork: "https://images.unsplash.com/photo-1448375240586-882707db888b?w=400&auto=format&fit=crop",
+        artwork:
+          "https://images.unsplash.com/photo-1448375240586-882707db888b?w=400&auto=format&fit=crop",
         durationMs: 42000,
       },
     } satisfies AudioData,
@@ -97,7 +106,8 @@ export const audioPresets: Record<AudioPresetName, PresetWithCodeGen<AudioData>>
         src: "https://cdn.pixabay.com/audio/2022/03/10/audio_4dedf5bf94.mp3",
         title: "Morning Forest",
         description: "Olympic National Park",
-        artwork: "https://images.unsplash.com/photo-1448375240586-882707db888b?w=400&auto=format&fit=crop",
+        artwork:
+          "https://images.unsplash.com/photo-1448375240586-882707db888b?w=400&auto=format&fit=crop",
         durationMs: 42000,
       },
     } satisfies AudioData,
@@ -112,7 +122,8 @@ export const audioPresets: Record<AudioPresetName, PresetWithCodeGen<AudioData>>
         src: "https://cdn.pixabay.com/audio/2022/03/10/audio_4dedf5bf94.mp3",
         title: "Morning Forest",
         description: "Dawn chorus recorded in Olympic National Park",
-        artwork: "https://images.unsplash.com/photo-1448375240586-882707db888b?w=400&auto=format&fit=crop",
+        artwork:
+          "https://images.unsplash.com/photo-1448375240586-882707db888b?w=400&auto=format&fit=crop",
         durationMs: 42000,
       },
       localActions: [

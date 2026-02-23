@@ -52,7 +52,9 @@ function generateVideoCode(data: VideoData): string {
   }
 
   if (video.source) {
-    props.push(`  source={${formatObject(video.source as Record<string, unknown>)}}`);
+    props.push(
+      `  source={${formatObject(video.source as Record<string, unknown>)}}`,
+    );
   }
 
   const videoCode = `<Video\n${props.join("\n")}\n/>`;
@@ -70,7 +72,10 @@ function generateVideoCode(data: VideoData): string {
 
 export type VideoPresetName = "basic" | "with-poster" | "with-actions";
 
-export const videoPresets: Record<VideoPresetName, PresetWithCodeGen<VideoData>> = {
+export const videoPresets: Record<
+  VideoPresetName,
+  PresetWithCodeGen<VideoData>
+> = {
   basic: {
     description: "Simple video player",
     data: {
@@ -91,7 +96,8 @@ export const videoPresets: Record<VideoPresetName, PresetWithCodeGen<VideoData>>
         id: "video-preview-poster",
         assetId: "video-poster",
         src: "https://archive.org/download/NatureStockVideo/IMG_9500_.mp4",
-        poster: "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=900&auto=format&fit=crop",
+        poster:
+          "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=900&auto=format&fit=crop",
         title: "Forest Canopy",
         description: "Sunlight filtering through the trees.",
         ratio: "16:9",
@@ -113,7 +119,8 @@ export const videoPresets: Record<VideoPresetName, PresetWithCodeGen<VideoData>>
         id: "video-preview-actions",
         assetId: "video-actions",
         src: "https://archive.org/download/NatureStockVideo/IMG_9500_.mp4",
-        poster: "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=900&auto=format&fit=crop",
+        poster:
+          "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=900&auto=format&fit=crop",
         title: "Forest Canopy",
         ratio: "16:9",
         durationMs: 8000,

@@ -10,10 +10,5 @@ export const metadata: Metadata = {
 export const revalidate = 3600;
 
 export default function CitationDocsPage() {
-  return (
-    <ComponentDocsTabs
-      docs={<Content />}
-      componentId="citation"
-    />
-  );
+  return <ComponentDocsTabs docs={<Content />} componentId="citation" />;
 }

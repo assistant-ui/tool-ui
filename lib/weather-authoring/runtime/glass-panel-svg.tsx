@@ -234,7 +234,9 @@ function buildBackdropFilterValue({
  * Dimensions are rounded to integers because the SVG filter is regenerated
  * on size change, and sub-pixel changes would cause unnecessary rebuilds.
  */
-function useElementDimensions(ref: RefObject<HTMLElement | null>): Dimensions | null {
+function useElementDimensions(
+  ref: RefObject<HTMLElement | null>,
+): Dimensions | null {
   const [dimensions, setDimensions] = useState<Dimensions | null>(null);
 
   const updateDimensions = useCallback(() => {
@@ -453,7 +455,16 @@ export function GlassPanelUnderlay({
       backdropFilter,
       WebkitBackdropFilter: backdropFilter,
     };
-  }, [dimensions, radius, depth, strength, chromaticAberration, blur, disabled, supported]);
+  }, [
+    dimensions,
+    radius,
+    depth,
+    strength,
+    chromaticAberration,
+    blur,
+    disabled,
+    supported,
+  ]);
 
   return (
     <div ref={ref} className={className} style={style}>

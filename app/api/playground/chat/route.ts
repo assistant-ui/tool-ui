@@ -24,13 +24,10 @@ const extractSlug = (request: NextRequest): string | null => {
 export async function POST(request: NextRequest) {
   const slug = extractSlug(request);
   if (!slug) {
-    return new Response(
-      JSON.stringify({ error: "Missing prototype slug." }),
-      {
-        status: 400,
-        headers: { "Content-Type": "application/json" },
-      },
-    );
+    return new Response(JSON.stringify({ error: "Missing prototype slug." }), {
+      status: 400,
+      headers: { "Content-Type": "application/json" },
+    });
   }
 
   const prototype = findPrototype(slug);
@@ -48,13 +45,10 @@ export async function POST(request: NextRequest) {
   try {
     body = await request.json();
   } catch {
-    return new Response(
-      JSON.stringify({ error: "Invalid JSON body." }),
-      {
-        status: 400,
-        headers: { "Content-Type": "application/json" },
-      },
-    );
+    return new Response(JSON.stringify({ error: "Invalid JSON body." }), {
+      status: 400,
+      headers: { "Content-Type": "application/json" },
+    });
   }
 
   const messages =
@@ -81,12 +75,14 @@ export async function POST(request: NextRequest) {
             message.role === "assistant" &&
             Array.isArray(message.parts) &&
             message.parts.some(
-              (part) => typeof part?.type === "string" && part.type.startsWith("tool-"),
+              (part) =>
+                typeof part?.type === "string" && part.type.startsWith("tool-"),
             ),
         );
       if (lastAssistantWithTools) {
         const toolParts = lastAssistantWithTools.parts?.filter(
-          (part) => typeof part?.type === "string" && part.type.startsWith("tool-"),
+          (part) =>
+            typeof part?.type === "string" && part.type.startsWith("tool-"),
         );
         console.debug(
           "[playground] forwarding tool parts:",
@@ -104,6 +100,10 @@ export async function POST(request: NextRequest) {
       ? (body as Record<string, unknown>).tools
       : undefined;
 
-  const result = await streamPrototypeResponse(prototype, messages, clientTools);
+  const result = await streamPrototypeResponse(
+    prototype,
+    messages,
+    clientTools,
+  );
   return result.toUIMessageStreamResponse();
 }

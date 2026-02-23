@@ -14,7 +14,8 @@ export async function GET() {
     return Response.json({ ok: true, checkpointOverrides });
   } catch (error) {
     console.error("Failed to recover tuning from repo presets.", error);
-    return new Response("Failed to recover tuning from repo presets.", { status: 500 });
+    return new Response("Failed to recover tuning from repo presets.", {
+      status: 500,
+    });
   }
 }
-

@@ -10,5 +10,8 @@ export const size = ogSize;
 export const contentType = ogContentType;
 
 export default async function Image() {
-  return generateOgImage("Message Draft", "Review and approve messages before sending");
+  return generateOgImage(
+    "Message Draft",
+    "Review and approve messages before sending",
+  );
 }

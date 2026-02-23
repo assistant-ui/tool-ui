@@ -459,7 +459,7 @@ ${GLSL_MAIN}
 function createShader(
   gl: WebGL2RenderingContext,
   type: GLenum,
-  source: string
+  source: string,
 ): WebGLShader | null {
   const shader = gl.createShader(type);
   if (!shader) return null;
@@ -479,7 +479,7 @@ function createShader(
 function createProgram(
   gl: WebGL2RenderingContext,
   vertexShader: WebGLShader,
-  fragmentShader: WebGLShader
+  fragmentShader: WebGLShader,
 ): WebGLProgram | null {
   const program = gl.createProgram();
   if (!program) return null;
@@ -499,7 +499,7 @@ function createProgram(
 
 function getUniformLocations(
   gl: WebGL2RenderingContext,
-  program: WebGLProgram
+  program: WebGLProgram,
 ): UniformLocations {
   const uniformNames: Array<keyof UniformLocations> = [
     "u_time",
@@ -535,15 +535,10 @@ function getUniformLocations(
 
 function setupQuadGeometry(
   gl: WebGL2RenderingContext,
-  program: WebGLProgram
+  program: WebGLProgram,
 ): void {
   const positions = new Float32Array([
-    -1, -1,
-     1, -1,
-    -1,  1,
-    -1,  1,
-     1, -1,
-     1,  1,
+    -1, -1, 1, -1, -1, 1, -1, 1, 1, -1, 1, 1,
   ]);
 
   const positionBuffer = gl.createBuffer();
@@ -557,7 +552,7 @@ function setupQuadGeometry(
 
 function loadMoonTexture(
   gl: WebGL2RenderingContext,
-  onLoad: () => void
+  onLoad: () => void,
 ): WebGLTexture | null {
   const texture = gl.createTexture();
   if (!texture) return null;
@@ -573,7 +568,7 @@ function loadMoonTexture(
     0,
     gl.RGBA,
     gl.UNSIGNED_BYTE,
-    new Uint8Array([128, 128, 128, 255])
+    new Uint8Array([128, 128, 128, 255]),
   );
 
   const image = new Image();
@@ -582,7 +577,11 @@ function loadMoonTexture(
     gl.bindTexture(gl.TEXTURE_2D, texture);
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
     gl.generateMipmap(gl.TEXTURE_2D);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
+    gl.texParameteri(
+      gl.TEXTURE_2D,
+      gl.TEXTURE_MIN_FILTER,
+      gl.LINEAR_MIPMAP_LINEAR,
+    );
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
@@ -595,7 +594,7 @@ function loadMoonTexture(
 
 function updateCanvasSize(
   canvas: HTMLCanvasElement,
-  gl: WebGL2RenderingContext
+  gl: WebGL2RenderingContext,
 ): void {
   const displayWidth = canvas.clientWidth * window.devicePixelRatio;
   const displayHeight = canvas.clientHeight * window.devicePixelRatio;
@@ -702,7 +701,11 @@ export function CelestialCanvas({
     glRef.current = gl;
 
     const vertexShader = createShader(gl, gl.VERTEX_SHADER, VERTEX_SHADER);
-    const fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, FRAGMENT_SHADER);
+    const fragmentShader = createShader(
+      gl,
+      gl.FRAGMENT_SHADER,
+      FRAGMENT_SHADER,
+    );
     if (!vertexShader || !fragmentShader) return false;
 
     const program = createProgram(gl, vertexShader, fragmentShader);
@@ -766,7 +769,10 @@ export function CelestialCanvas({
     gl.activeTexture(gl.TEXTURE0);
     gl.bindTexture(gl.TEXTURE_2D, moonTextureRef.current);
     gl.uniform1i(uniforms.u_moonTexture, 0);
-    gl.uniform1i(uniforms.u_hasMoonTexture, moonTextureLoadedRef.current ? 1 : 0);
+    gl.uniform1i(
+      uniforms.u_hasMoonTexture,
+      moonTextureLoadedRef.current ? 1 : 0,
+    );
 
     gl.drawArrays(gl.TRIANGLES, 0, 6);
 

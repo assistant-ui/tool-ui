@@ -16,10 +16,7 @@
 export { cn } from "@/lib/utils";
 export { Button } from "@/components/ui/button";
 export { Switch } from "@/components/ui/switch";
-export {
-  ToggleGroup,
-  ToggleGroupItem,
-} from "@/components/ui/toggle-group";
+export { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 export {
   Select,
   SelectContent,

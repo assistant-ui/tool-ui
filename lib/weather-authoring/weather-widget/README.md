@@ -13,8 +13,8 @@ Implementation for the "weather-widget" Tool UI surface.
 - Docs page: app/docs/weather-widget/content.mdx
 - Preset payload: lib/presets/weather-widget.ts
 - authoring presets: lib/weather-authoring/presets/tuned-presets.json
-- authoring shaders: lib/weather-authoring/shaders/*.glsl
-- authoring runtime modules: lib/weather-authoring/runtime/*.tsx
+- authoring shaders: lib/weather-authoring/shaders/\*.glsl
+- authoring runtime modules: lib/weather-authoring/runtime/\*.tsx
 - generated runtime artifacts:
   - lib/weather-authoring/weather-widget/effects/generated/tuned-presets.generated.ts
   - lib/weather-authoring/weather-widget/effects/generated/weather-effect-shaders.generated.ts

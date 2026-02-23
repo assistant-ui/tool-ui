@@ -3,9 +3,7 @@ import {
   buildCanvasBaseFromWeather,
   createStudioTimestamp,
 } from "./canvas-resolver-base";
-import {
-  resolveInterpolatedOverridesForTime,
-} from "./checkpoint-overrides";
+import { resolveInterpolatedOverridesForTime } from "./checkpoint-overrides";
 import {
   applyWeatherEffectsOverrides,
   getNearestCheckpoint,

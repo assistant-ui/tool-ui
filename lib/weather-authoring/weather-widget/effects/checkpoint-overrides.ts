@@ -205,7 +205,9 @@ function interpolateWeatherEffectsOverrides(
 export function resolveInterpolatedOverridesForTime(opts: {
   checkpointOverrides: WeatherEffectsCheckpointOverrides;
   timeOfDay: number;
-  getBaseForCheckpoint: (checkpoint: TimeCheckpoint) => WeatherEffectsCanvasProps;
+  getBaseForCheckpoint: (
+    checkpoint: TimeCheckpoint,
+  ) => WeatherEffectsCanvasProps;
 }): WeatherEffectsOverrides | undefined {
   const { before, after, t } = getSurroundingCheckpoints(opts.timeOfDay);
 

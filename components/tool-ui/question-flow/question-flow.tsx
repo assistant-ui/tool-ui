@@ -360,18 +360,27 @@ function StepBodyContent({
         return;
       }
     },
-    [activeIndex, findNextEnabledIndex, focusOptionAt, isExiting, onToggle, optionStates],
+    [
+      activeIndex,
+      findNextEnabledIndex,
+      focusOptionAt,
+      isExiting,
+      onToggle,
+      optionStates,
+    ],
   );
 
   const isTransitioning = transitionDirection !== undefined;
 
-  const enterClass = transitionDirection === "forward"
-    ? "motion-safe:slide-in-from-right-4"
-    : "motion-safe:slide-in-from-left-4";
+  const enterClass =
+    transitionDirection === "forward"
+      ? "motion-safe:slide-in-from-right-4"
+      : "motion-safe:slide-in-from-left-4";
 
-  const exitClass = transitionDirection === "forward"
-    ? "motion-safe:slide-out-to-left-4"
-    : "motion-safe:slide-out-to-right-4";
+  const exitClass =
+    transitionDirection === "forward"
+      ? "motion-safe:slide-out-to-left-4"
+      : "motion-safe:slide-out-to-right-4";
 
   return (
     <div
@@ -383,25 +392,20 @@ function StepBodyContent({
           "motion-safe:animate-out motion-safe:fade-out motion-safe:blur-out-sm motion-safe:duration-250 motion-safe:ease-[var(--cubic-ease-in-out)] motion-safe:fill-mode-forwards",
           exitClass,
         ],
-        !isExiting && isTransitioning && [
-          "motion-safe:animate-in motion-safe:fade-in motion-safe:blur-in-sm motion-safe:duration-250 motion-safe:ease-[var(--cubic-ease-in-out)] motion-safe:fill-mode-both",
-          enterClass,
-        ],
+        !isExiting &&
+          isTransitioning && [
+            "motion-safe:animate-in motion-safe:fade-in motion-safe:blur-in-sm motion-safe:duration-250 motion-safe:ease-[var(--cubic-ease-in-out)] motion-safe:fill-mode-both",
+            enterClass,
+          ],
       )}
       aria-hidden={isExiting}
     >
       <div className="flex flex-col gap-1">
-        <h2
-          id={titleId}
-          className="text-lg font-semibold leading-tight"
-        >
+        <h2 id={titleId} className="text-lg font-semibold leading-tight">
           {title}
         </h2>
         {description && (
-          <p
-            id={descriptionId}
-            className="text-muted-foreground text-sm"
-          >
+          <p id={descriptionId} className="text-muted-foreground text-sm">
             {description}
           </p>
         )}
@@ -461,10 +465,14 @@ function StepContent({
   exitingStepData,
   transitionDirection = "forward",
 }: StepContentProps) {
-  const isTransitioning = exitingStepData !== null && exitingStepData !== undefined;
+  const isTransitioning =
+    exitingStepData !== null && exitingStepData !== undefined;
   const canProceed = selectedIds.size > 0;
   const resolvedStepKey = stepKey ?? "current";
-  const { titleId, descriptionId } = getQuestionFlowStepIds(id, resolvedStepKey);
+  const { titleId, descriptionId } = getQuestionFlowStepIds(
+    id,
+    resolvedStepKey,
+  );
 
   const stepLabel = totalSteps
     ? `Step ${step} of ${totalSteps}`
@@ -496,9 +504,7 @@ function StepContent({
             >
               {stepLabel}
             </span>
-            {totalSteps && (
-              <ProgressBar current={step} total={totalSteps} />
-            )}
+            {totalSteps && <ProgressBar current={step} total={totalSteps} />}
           </div>
         </div>
 
@@ -528,7 +534,9 @@ function StepContent({
             onToggle={onToggle}
             id={id}
             isExiting={false}
-            transitionDirection={exitingStepData ? transitionDirection : undefined}
+            transitionDirection={
+              exitingStepData ? transitionDirection : undefined
+            }
           />
         </div>
 
@@ -636,8 +644,12 @@ function QuestionFlowUpfront({
 }: QuestionFlowUpfrontProps) {
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, string[]>>({});
-  const [exitingStepData, setExitingStepData] = useState<StepBodyData | null>(null);
-  const [transitionDirection, setTransitionDirection] = useState<"forward" | "backward">("forward");
+  const [exitingStepData, setExitingStepData] = useState<StepBodyData | null>(
+    null,
+  );
+  const [transitionDirection, setTransitionDirection] = useState<
+    "forward" | "backward"
+  >("forward");
 
   const currentStep = steps[currentStepIndex];
   const isLastStep = currentStepIndex === steps.length - 1;
@@ -679,10 +691,12 @@ function QuestionFlowUpfront({
   const handleBack = useCallback(() => {
     if (currentStepIndex > 0) {
       const currentStepData = steps[currentStepIndex];
-      const stepOptions: QuestionFlowOption[] = currentStepData.options.map((opt) => ({
-        ...opt,
-        icon: undefined,
-      }));
+      const stepOptions: QuestionFlowOption[] = currentStepData.options.map(
+        (opt) => ({
+          ...opt,
+          icon: undefined,
+        }),
+      );
 
       setExitingStepData({
         stepKey: currentStepData.id,
@@ -706,10 +720,12 @@ function QuestionFlowUpfront({
       onComplete?.(answers);
     } else {
       const currentStepData = steps[currentStepIndex];
-      const stepOptions: QuestionFlowOption[] = currentStepData.options.map((opt) => ({
-        ...opt,
-        icon: undefined,
-      }));
+      const stepOptions: QuestionFlowOption[] = currentStepData.options.map(
+        (opt) => ({
+          ...opt,
+          icon: undefined,
+        }),
+      );
 
       setExitingStepData({
         stepKey: currentStepData.id,
@@ -724,7 +740,15 @@ function QuestionFlowUpfront({
       setCurrentStepIndex(nextIndex);
       onStepChange?.(steps[nextIndex].id);
     }
-  }, [answers, currentSelection.size, currentStepIndex, isLastStep, onComplete, onStepChange, steps]);
+  }, [
+    answers,
+    currentSelection.size,
+    currentStepIndex,
+    isLastStep,
+    onComplete,
+    onStepChange,
+    steps,
+  ]);
 
   const stepOptions: QuestionFlowOption[] = currentStep.options.map((opt) => ({
     ...opt,
@@ -763,5 +787,7 @@ export function QuestionFlow(props: QuestionFlowProps) {
     return <QuestionFlowUpfront {...(props as QuestionFlowUpfrontProps)} />;
   }
 
-  return <QuestionFlowProgressive {...(props as QuestionFlowProgressiveProps)} />;
+  return (
+    <QuestionFlowProgressive {...(props as QuestionFlowProgressiveProps)} />
+  );
 }

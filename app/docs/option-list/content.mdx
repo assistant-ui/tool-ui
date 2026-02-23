@@ -33,7 +33,11 @@ Render `OptionList` in your UI with tool-compatible props.
 ```tsx
 import { OptionList } from "@/components/tool-ui/option-list";
 
-export function Example({ payload }: { payload: React.ComponentProps<typeof OptionList> }) {
+export function Example({
+  payload,
+}: {
+  payload: React.ComponentProps<typeof OptionList>;
+}) {
   return <OptionList {...payload} />;
 }
 ```
@@ -69,19 +73,19 @@ export const toolkit: Toolkit = {
       idPrefix: "format-selection",
       render: (parsedArgs, { result, addResult }) =>
         result ? (
-            <OptionList {...parsedArgs} value={undefined} choice={result} />
-          ) : (
-            <OptionList
-              {...parsedArgs}
-              // Avoid controlled selection in LLM-driven payloads.
-              value={undefined}
-              onAction={(actionId, selection) => {
-                if (actionId === "confirm") {
-                  void addResult?.(selection);
-                }
-              }}
-            />
-          ),
+          <OptionList {...parsedArgs} value={undefined} choice={result} />
+        ) : (
+          <OptionList
+            {...parsedArgs}
+            // Avoid controlled selection in LLM-driven payloads.
+            value={undefined}
+            onAction={(actionId, selection) => {
+              if (actionId === "confirm") {
+                void addResult?.(selection);
+              }
+            }}
+          />
+        ),
     }),
   },
 };

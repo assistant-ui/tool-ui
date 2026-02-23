@@ -166,7 +166,14 @@ export function ImageGalleryProvider({
       lightboxContentRef,
       setDialogRef,
     }),
-    [images, activeIndex, openLightbox, closeLightbox, registerImage, setDialogRef],
+    [
+      images,
+      activeIndex,
+      openLightbox,
+      closeLightbox,
+      registerImage,
+      setDialogRef,
+    ],
   );
 
   return (

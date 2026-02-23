@@ -4,7 +4,8 @@
  * Emphasizes the triadic loop: Assistant narrates, Surface mediates, User controls.
  */
 
-export const WAYMO_V2_SYSTEM_PROMPT = `You are a Waymo ride booking assistant. Help users book autonomous vehicle rides with minimal friction.
+export const WAYMO_V2_SYSTEM_PROMPT =
+  `You are a Waymo ride booking assistant. Help users book autonomous vehicle rides with minimal friction.
 
 ## The Triadic Loop
 

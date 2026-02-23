@@ -56,15 +56,16 @@ export const OrderDecisionSchema = z.object({
 
 export type OrderDecision = z.infer<typeof OrderDecisionSchema>;
 
-export const SerializableOrderSummarySchema = z.object({
-  id: ToolUIIdSchema,
-  role: ToolUIRoleSchema.optional(),
-  title: z.string().optional(),
-  variant: OrderSummaryVariantSchema.optional(),
-  items: OrderItemsSchema,
-  pricing: PricingSchema,
-  choice: OrderDecisionSchema.optional(),
-})
+export const SerializableOrderSummarySchema = z
+  .object({
+    id: ToolUIIdSchema,
+    role: ToolUIRoleSchema.optional(),
+    title: z.string().optional(),
+    variant: OrderSummaryVariantSchema.optional(),
+    items: OrderItemsSchema,
+    pricing: PricingSchema,
+    choice: OrderDecisionSchema.optional(),
+  })
   .strict()
   .superRefine((value, ctx) => {
     if (value.variant === "receipt" && value.choice === undefined) {

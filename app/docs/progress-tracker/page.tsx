@@ -11,9 +11,6 @@ export const revalidate = 3600;
 
 export default function ProgressTrackerDocsPage() {
   return (
-    <ComponentDocsTabs
-      docs={<Content />}
-      componentId="progress-tracker"
-    />
+    <ComponentDocsTabs docs={<Content />} componentId="progress-tracker" />
   );
 }

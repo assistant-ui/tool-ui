@@ -8,9 +8,7 @@ export type Heading = {
   text: string;
 };
 
-export function useExtractHeadings(
-  container: HTMLElement | null,
-): Heading[] {
+export function useExtractHeadings(container: HTMLElement | null): Heading[] {
   const [headings, setHeadings] = useState<Heading[]>([]);
   const pathname = usePathname();
 

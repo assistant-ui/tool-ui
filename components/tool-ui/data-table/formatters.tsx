@@ -68,9 +68,12 @@ export function DeltaValue({ value, options, locale }: DeltaValueProps) {
     maximumFractionDigits: decimals,
   }).format(absValue);
 
-  const display = showSign && !isNeutral 
-    ? (isNegative ? `-${formatted}` : `+${formatted}`) 
-    : formatted;
+  const display =
+    showSign && !isNeutral
+      ? isNegative
+        ? `-${formatted}`
+        : `+${formatted}`
+      : formatted;
 
   const arrow = isPositive ? "↑" : isNegative ? "↓" : "";
 
@@ -153,7 +156,7 @@ export function PercentValue({ value, options, locale }: PercentValueProps) {
   const basis = options?.basis ?? "fraction";
 
   const numeric = basis === "fraction" ? value : value / 100;
-  
+
   const formatted = new Intl.NumberFormat(locale, {
     style: "percent",
     minimumFractionDigits: decimals,
@@ -441,7 +444,9 @@ export function renderFormattedValue({
         <CurrencyValue value={Number(value)} options={fmt} locale={locale} />
       );
     case "percent":
-      return <PercentValue value={Number(value)} options={fmt} locale={locale} />;
+      return (
+        <PercentValue value={Number(value)} options={fmt} locale={locale} />
+      );
     case "date":
       return <DateValue value={String(value)} options={fmt} locale={locale} />;
     case "boolean":

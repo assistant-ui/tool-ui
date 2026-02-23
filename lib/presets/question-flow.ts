@@ -109,7 +109,8 @@ export const questionFlowPresets: Record<
         {
           id: "language",
           title: "Select a programming language",
-          description: "This determines which frameworks and tools are available.",
+          description:
+            "This determines which frameworks and tools are available.",
           options: [
             { id: "python", label: "Python" },
             { id: "typescript", label: "TypeScript" },

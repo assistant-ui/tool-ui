@@ -61,7 +61,10 @@ function generateLinkPreviewCode(data: LinkPreviewData): string {
 
 export type LinkPreviewPresetName = "basic" | "with-image" | "with-actions";
 
-export const linkPreviewPresets: Record<LinkPreviewPresetName, PresetWithCodeGen<LinkPreviewData>> = {
+export const linkPreviewPresets: Record<
+  LinkPreviewPresetName,
+  PresetWithCodeGen<LinkPreviewData>
+> = {
   basic: {
     description: "Simple link preview with title and description",
     data: {
@@ -69,7 +72,8 @@ export const linkPreviewPresets: Record<LinkPreviewPresetName, PresetWithCodeGen
         id: "link-preview-basic",
         href: "https://react.dev/reference/rsc/server-components",
         title: "React Server Components",
-        description: "Server Components are a new type of Component that renders ahead of time.",
+        description:
+          "Server Components are a new type of Component that renders ahead of time.",
         domain: "react.dev",
       },
     } satisfies LinkPreviewData,
@@ -82,8 +86,10 @@ export const linkPreviewPresets: Record<LinkPreviewPresetName, PresetWithCodeGen
         id: "link-preview-image",
         href: "https://en.wikipedia.org/wiki/History_of_computing_hardware",
         title: "A brief history of computing hardware",
-        description: "Mechanical calculators, vacuum tubes, transistors, microprocessors — and what came next.",
-        image: "https://images.unsplash.com/photo-1562408590-e32931084e23?auto=format&fit=crop&q=80&w=2046",
+        description:
+          "Mechanical calculators, vacuum tubes, transistors, microprocessors — and what came next.",
+        image:
+          "https://images.unsplash.com/photo-1562408590-e32931084e23?auto=format&fit=crop&q=80&w=2046",
         domain: "wikipedia.org",
         ratio: "16:9",
       },
@@ -97,8 +103,10 @@ export const linkPreviewPresets: Record<LinkPreviewPresetName, PresetWithCodeGen
         id: "link-preview-actions",
         href: "https://developer.mozilla.org/en-US/docs/Web/API",
         title: "Web APIs | MDN",
-        description: "When writing code for the Web, there are a large number of Web APIs available.",
-        image: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&w=1200",
+        description:
+          "When writing code for the Web, there are a large number of Web APIs available.",
+        image:
+          "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&w=1200",
         domain: "developer.mozilla.org",
         favicon: "https://developer.mozilla.org/favicon.ico",
         ratio: "16:9",

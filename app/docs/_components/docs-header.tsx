@@ -1,9 +1,7 @@
 import { CopyMarkdownButton } from "./copy-markdown-button";
 import { HeaderPreviewTabs } from "./header-preview-tabs";
 import { getMdxAsMarkdown } from "./mdx-to-markdown";
-import {
-  isComponentId,
-} from "@/lib/docs/component-ids";
+import { isComponentId } from "@/lib/docs/component-ids";
 
 type DocsHeaderProps = {
   title: string;

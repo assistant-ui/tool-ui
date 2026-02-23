@@ -7,7 +7,11 @@ interface LinkedInPostPresetData {
   localActions?: ActionsProp;
 }
 
-export type LinkedInPostPresetName = "basic" | "link" | "media" | "footer-actions";
+export type LinkedInPostPresetName =
+  | "basic"
+  | "link"
+  | "media"
+  | "footer-actions";
 
 function generateLinkedInPostCode(data: LinkedInPostPresetData): string {
   const props: string[] = [];
@@ -40,7 +44,8 @@ export const linkedInPostPresets: Record<
         id: "li-post-basic",
         author: {
           name: "Dr. Sarah Chen",
-          avatarUrl: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=200&h=200&fit=crop",
+          avatarUrl:
+            "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=200&h=200&fit=crop",
           headline: "VP of Engineering at TechCorp | Building the future of AI",
         },
         text: "Excited to share that our team just shipped a major update to our ML pipeline. Six months of hard work, countless iterations, and one incredible team.\n\nKey learnings:\n• Start with the problem, not the solution\n• Iterate fast, fail faster\n• Celebrate small wins\n\nProud of everyone who made this possible!",
@@ -64,8 +69,10 @@ export const linkedInPostPresets: Record<
         linkPreview: {
           url: "https://hbr.org/product-management",
           title: "The Future of Product Management",
-          description: "How AI is reshaping the PM role and what skills matter most in 2025.",
-          imageUrl: "https://images.unsplash.com/photo-1552664730-d307ca884978?w=600&h=300&fit=crop",
+          description:
+            "How AI is reshaping the PM role and what skills matter most in 2025.",
+          imageUrl:
+            "https://images.unsplash.com/photo-1552664730-d307ca884978?w=600&h=300&fit=crop",
           domain: "hbr.org",
         },
         stats: { likes: 234 },

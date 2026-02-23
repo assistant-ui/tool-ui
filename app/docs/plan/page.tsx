@@ -10,10 +10,5 @@ export const metadata: Metadata = {
 export const revalidate = 3600;
 
 export default function PlanDocsPage() {
-  return (
-    <ComponentDocsTabs
-      docs={<Content />}
-      componentId="plan"
-    />
-  );
+  return <ComponentDocsTabs docs={<Content />} componentId="plan" />;
 }

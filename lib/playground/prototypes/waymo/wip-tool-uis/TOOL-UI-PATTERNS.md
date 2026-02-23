@@ -19,6 +19,7 @@ This document focuses on the frontend Toolkit/`Tools()` pattern and the interact
 Tools are defined as `ToolDefinition` entries and registered via `Tools({ toolkit })`. This differs from backend-only tools.
 
 **File Structure:**
+
 ```
 lib/playground/prototypes/waymo/
 ├── wip-tool-uis/
@@ -33,6 +34,7 @@ lib/playground/prototypes/waymo/
 Frontend tools are automatically forwarded to the backend via `AssistantChatTransport` and merged with backend tools using the `frontendTools()` helper.
 
 **Backend Flow:**
+
 1. Client sends tool definitions in request body (`tools` field)
 2. API route extracts `clientTools` from body
 3. `frontendTools(clientTools)` converts to AI SDK format
@@ -40,6 +42,7 @@ Frontend tools are automatically forwarded to the backend via `AssistantChatTran
 5. Model sees all tools and can call frontend tools
 
 **Key Files:**
+
 - `app/api/playground/chat/route.ts` - Extracts client tools
 - `lib/playground/runtime.ts` - Merges frontend + backend tools
 
@@ -68,15 +71,16 @@ type FrequentLocation = {
 type SelectFrequentLocationResult = {
   locations: FrequentLocation[];
   prompt: string;
-  selectedLocation?: FrequentLocation;  // ← Key: optional field for receipt mode
+  selectedLocation?: FrequentLocation; // ← Key: optional field for receipt mode
 };
 
 export const SelectFrequentLocationTool: ToolDefinition<
-  Record<string, never>,  // Input args (empty for this tool)
-  SelectFrequentLocationResult  // Result type
+  Record<string, never>, // Input args (empty for this tool)
+  SelectFrequentLocationResult // Result type
 > = {
-  description: "Present user's frequent locations when they request a ride without specifying a destination.",
-  parameters: z.object({}),  // Empty params
+  description:
+    "Present user's frequent locations when they request a ride without specifying a destination.",
+  parameters: z.object({}), // Empty params
 
   execute: async () => {
     // Return initial data (interactive mode)
@@ -92,6 +96,7 @@ export const SelectFrequentLocationTool: ToolDefinition<
 ```
 
 **Key Points:**
+
 - Result type includes **optional** `selectedLocation` field
 - `execute` returns data for interactive mode (no selection yet)
 - `render` receives full props including `result` and `addResult`
@@ -118,8 +123,11 @@ type SelectFrequentLocationResult = {
 
 export const FrequentLocationSelector = ({
   result,
-  addResult
-}: ToolCallMessagePartProps<Record<string, never>, SelectFrequentLocationResult>) => {
+  addResult,
+}: ToolCallMessagePartProps<
+  Record<string, never>,
+  SelectFrequentLocationResult
+>) => {
   if (!result) return null;
 
   // RECEIPT MODE - Show what was selected
@@ -151,10 +159,12 @@ export const FrequentLocationSelector = ({
           key={location.id}
           variant="outline"
           className="w-full"
-          onClick={() => addResult({
-            ...result,
-            selectedLocation: location  // ← Add selection to result
-          })}
+          onClick={() =>
+            addResult({
+              ...result,
+              selectedLocation: location, // ← Add selection to result
+            })
+          }
         >
           <div className="flex flex-col items-start">
             <span className="font-medium">{location.label}</span>
@@ -170,6 +180,7 @@ export const FrequentLocationSelector = ({
 ```
 
 **Key Points:**
+
 - **Props**: Use `ToolCallMessagePartProps<TArgs, TResult>` type
 - **Receipt Detection**: Check `if (result.selectedLocation)`
 - **Transition**: `addResult({ ...result, selectedLocation: location })`
@@ -184,24 +195,25 @@ export const FrequentLocationSelector = ({
 ```tsx
 import { SelectFrequentLocationTool } from "@/lib/playground/prototypes/waymo/select-frequent-location-tool";
 
-export const ChatPane = forwardRef<ChatPaneRef, ChatPaneProps>(({ prototype }, ref) => {
-  const { slug } = prototype;
-  // ... runtime setup ...
+export const ChatPane = forwardRef<ChatPaneRef, ChatPaneProps>(
+  ({ prototype }, ref) => {
+    const { slug } = prototype;
+    // ... runtime setup ...
 
-  return (
-    <AssistantRuntimeProvider runtime={runtime}>
-      {/* Mount Waymo-specific tools */}
-      {slug === "waymo-booking" && <SelectFrequentLocationTool />}
+    return (
+      <AssistantRuntimeProvider runtime={runtime}>
+        {/* Mount Waymo-specific tools */}
+        {slug === "waymo-booking" && <SelectFrequentLocationTool />}
 
-      <ThreadPrimitive.Root>
-        {/* ... chat UI ... */}
-      </ThreadPrimitive.Root>
-    </AssistantRuntimeProvider>
-  );
-});
+        <ThreadPrimitive.Root>{/* ... chat UI ... */}</ThreadPrimitive.Root>
+      </AssistantRuntimeProvider>
+    );
+  },
+);
 ```
 
 **Key Points:**
+
 - Tool component must be inside `AssistantRuntimeProvider`
 - Component returns `null` (doesn't render, just registers tool)
 - Conditionally mount based on prototype slug
@@ -241,12 +253,12 @@ Model automatically continues with selection data
 ```tsx
 const toolkit: Toolkit = {
   some_tool_name: {
-  description: string,        // Shown to model
-  parameters: ZodSchema,      // Input validation
-  execute: (args, context) => TResult | Promise<TResult>,
-  render: (props: ToolCallMessagePartProps) => ReactNode
-  }
-}
+    description: string, // Shown to model
+    parameters: ZodSchema, // Input validation
+    execute: (args, context) => TResult | Promise<TResult>,
+    render: (props: ToolCallMessagePartProps) => ReactNode,
+  },
+};
 ```
 
 ### `ToolCallMessagePartProps<TArgs, TResult>`
@@ -274,6 +286,7 @@ Available props in `render` function:
 **Purpose**: Complete tool execution with a result and automatically continue the conversation.
 
 **Usage**:
+
 ```tsx
 onClick={() => addResult({
   ...result,        // Preserve initial data
@@ -282,6 +295,7 @@ onClick={() => addResult({
 ```
 
 **Effects**:
+
 - Tool status changes to "complete"
 - `result` prop updates with new data
 - Component re-renders (receipt mode)
@@ -301,7 +315,7 @@ import { frontendTools } from "@assistant-ui/react-ai-sdk";
 export async function POST(request: NextRequest) {
   const body = await request.json();
   const messages = body.messages;
-  const clientTools = body.tools;  // ← Frontend tools sent here
+  const clientTools = body.tools; // ← Frontend tools sent here
 
   const result = streamPrototypeResponse(prototype, messages, clientTools);
   return result.toUIMessageStreamResponse();
@@ -334,7 +348,7 @@ export const streamPrototypeResponse = (
     model,
     system: prototype.systemPrompt,
     messages: convertToModelMessages(messages),
-    tools,  // ← Combined toolset
+    tools, // ← Combined toolset
     stopWhen: stepCountIs(100),
   });
 };
@@ -376,6 +390,7 @@ export const MultiStepTool: ToolDefinition = {
 ```
 
 **When to use `context.human()` instead of `addResult`:**
+
 - Multi-step flows (call `human()` multiple times)
 - Execute function needs the user's selection
 - Approval workflows
@@ -417,14 +432,17 @@ Tool Usage:
 ## Common Issues
 
 ### Tool not being called by model
+
 - **Cause**: Frontend tools not forwarded to backend
 - **Fix**: Verify `frontendTools()` is used in `runtime.ts` and `clientTools` extracted in API route
 
 ### UI shows fallback instead of custom component
+
 - **Cause**: Tool component not mounted
 - **Fix**: Ensure tool component is inside `AssistantRuntimeProvider`
 
 ### Receipt mode not showing
+
 - **Cause**: `addResult` not updating the field checked for receipt mode
 - **Fix**: Ensure you spread `...result` and add selection field
 
@@ -435,6 +453,7 @@ Tool Usage:
 **Root Cause**: The assistant-ui `ThreadHistoryAdapter` only persists **new messages**, not **updates to existing messages**. When `addResult()` is called, it updates an existing tool call message part, which doesn't trigger the history adapter's `append()` method. The adapter tracks message IDs and skips re-persisting messages it has already seen.
 
 **Why This Happens**:
+
 1. Tool is called → `execute()` returns initial result → Message created with tool call
 2. History adapter saves this message (message ID added to `historyIds` set)
 3. User interacts → `addResult()` updates the tool result in the **same message**
@@ -443,6 +462,7 @@ Tool Usage:
 6. On page reload → Old result (without user's selection) is loaded
 
 **Format Differences Between Runtime and Storage**:
+
 - **Runtime messages** (from `useAssistantState`):
   - Use `content` array
   - Tool results stored in `result` field
@@ -457,6 +477,7 @@ Tool Usage:
   - **Must match by `toolCallId`, not array index!**
 
 **Solution**: Add a `ToolResultPersistence` component that:
+
 1. Listens to runtime message changes via `useAssistantState`
 2. Compares runtime tool results with stored results in localStorage
 3. Detects when `addResult()` has added data (e.g., `selectedLocation`)
@@ -482,7 +503,7 @@ const ToolResultPersistence = ({ slug }: { slug: string }) => {
 
       // Find this message in storage
       const storedMsgIndex = repo.messages.findIndex(
-        (entry) => entry.message.id === runtimeMsg.id
+        (entry) => entry.message.id === runtimeMsg.id,
       );
 
       if (storedMsgIndex === -1) continue;
@@ -517,7 +538,7 @@ const ToolResultPersistence = ({ slug }: { slug: string }) => {
               // eslint-disable-next-line @typescript-eslint/no-explicit-any
               (part: any) =>
                 part?.type?.startsWith?.("tool-") &&
-                part?.toolCallId === runtimePart.toolCallId
+                part?.toolCallId === runtimePart.toolCallId,
             );
 
             if (storedPart) {
@@ -526,7 +547,9 @@ const ToolResultPersistence = ({ slug }: { slug: string }) => {
               const storedResult = (storedPart as any).output;
               const runtimeResult = runtimePart.result;
 
-              if (JSON.stringify(storedResult) !== JSON.stringify(runtimeResult)) {
+              if (
+                JSON.stringify(storedResult) !== JSON.stringify(runtimeResult)
+              ) {
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 (storedPart as any).output = runtimeResult;
                 hasChanges = true;
@@ -549,12 +572,13 @@ const ToolResultPersistence = ({ slug }: { slug: string }) => {
 <AssistantRuntimeProvider runtime={runtime}>
   <ToolResultPersistence slug={slug} />
   {/* rest of your UI */}
-</AssistantRuntimeProvider>
+</AssistantRuntimeProvider>;
 ```
 
 **Critical Implementation Notes**:
 
 1. **Use `useAssistantState`**, not deprecated `useThread`:
+
    ```tsx
    const messages = useAssistantState(({ thread }) => thread.messages);
    ```
@@ -565,9 +589,10 @@ const ToolResultPersistence = ({ slug }: { slug: string }) => {
    - Indices don't align! Match by ID.
 
 3. **Check type with `startsWith("tool-")`**, not exact equality:
+
    ```tsx
-   part?.type?.startsWith?.("tool-")  // ✅ Matches "tool-select_frequent_location"
-   part?.type === "tool-call"         // ❌ Won't match storage
+   part?.type?.startsWith?.("tool-"); // ✅ Matches "tool-select_frequent_location"
+   part?.type === "tool-call"; // ❌ Won't match storage
    ```
 
 4. **Access correct field names**:
@@ -582,6 +607,7 @@ const ToolResultPersistence = ({ slug }: { slug: string }) => {
    - Use `as any` with `// eslint-disable-next-line @typescript-eslint/no-explicit-any`
 
 **Testing Receipt Persistence**:
+
 - [ ] Call tool → interact → `addResult()` triggered
 - [ ] Receipt shows correctly before refresh
 - [ ] **Refresh page** → receipt still shows (CRITICAL)
@@ -591,6 +617,7 @@ const ToolResultPersistence = ({ slug }: { slug: string }) => {
 - [ ] Thread reset clears persisted data
 
 ### Type errors with `frontendTools`
+
 - **Cause**: Type mismatch between frontend tool format and AI SDK ToolSet
 - **Fix**: Use type assertions: `frontendTools(clientTools as any) as any`
 

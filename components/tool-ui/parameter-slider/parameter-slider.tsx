@@ -9,11 +9,7 @@ import {
   useState,
 } from "react";
 import * as SliderPrimitive from "@radix-ui/react-slider";
-import type {
-  ParameterSliderProps,
-  SliderConfig,
-  SliderValue,
-} from "./schema";
+import type { ParameterSliderProps, SliderConfig, SliderValue } from "./schema";
 import { ActionButtons } from "../shared/action-buttons";
 import { normalizeActionsConfig } from "../shared/actions-config";
 import { useControllableState } from "../shared/use-controllable-state";

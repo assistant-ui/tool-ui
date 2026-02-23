@@ -12,10 +12,17 @@
 "use client";
 
 import type { BookingConfirmationProps } from "../types";
-import { CheckCircle, MapPin, Clock, CreditCard, Car, Share2, Map } from "lucide-react";
+import {
+  CheckCircle,
+  MapPin,
+  Clock,
+  CreditCard,
+  Car,
+  Share2,
+  Map,
+} from "lucide-react";
 
 export function BookingConfirmation({ trip }: BookingConfirmationProps) {
-
   return (
     <div className="rounded-lg border bg-card shadow-sm">
       {/* Success header */}
@@ -42,7 +49,9 @@ export function BookingConfirmation({ trip }: BookingConfirmationProps) {
             </div>
             <div className="flex-1">
               <div className="font-medium">{trip.pickup.name}</div>
-              <div className="text-sm text-muted-foreground">{trip.pickup.address}</div>
+              <div className="text-sm text-muted-foreground">
+                {trip.pickup.address}
+              </div>
             </div>
           </div>
 
@@ -52,7 +61,9 @@ export function BookingConfirmation({ trip }: BookingConfirmationProps) {
             <MapPin className="mt-1 h-4 w-4 text-muted-foreground" />
             <div className="flex-1">
               <div className="font-medium">{trip.dropoff.name}</div>
-              <div className="text-sm text-muted-foreground">{trip.dropoff.address}</div>
+              <div className="text-sm text-muted-foreground">
+                {trip.dropoff.address}
+              </div>
             </div>
           </div>
         </div>

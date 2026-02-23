@@ -60,9 +60,7 @@ const ThreadListItems: FC<ThreadListItemsProps> = ({
   emptyState,
   onReplay,
 }) => {
-  const threadsState = useAuiState(
-    useCallback((state) => state.threads, []),
-  );
+  const threadsState = useAuiState(useCallback((state) => state.threads, []));
   const isLoading = threadsState.isLoading;
   const threadIds = threadsState.threadIds;
 

@@ -10,10 +10,5 @@ export const metadata: Metadata = {
 export const revalidate = 3600;
 
 export default function ChartDocsPage() {
-  return (
-    <ComponentDocsTabs
-      docs={<Content />}
-      componentId="chart"
-    />
-  );
+  return <ComponentDocsTabs docs={<Content />} componentId="chart" />;
 }

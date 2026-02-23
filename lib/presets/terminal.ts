@@ -2,7 +2,14 @@ import type { SerializableTerminal } from "@/components/tool-ui/terminal";
 import type { SerializableAction } from "@/components/tool-ui/shared";
 import type { PresetWithCodeGen } from "./types";
 
-export type TerminalPresetName = "success" | "error" | "build" | "ansiColors" | "collapsible" | "noOutput" | "with-actions";
+export type TerminalPresetName =
+  | "success"
+  | "error"
+  | "build"
+  | "ansiColors"
+  | "collapsible"
+  | "noOutput"
+  | "with-actions";
 
 function escape(value: string): string {
   return value.replace(/\\/g, "\\\\").replace(/"/g, '\\"').replace(/`/g, "\\`");
@@ -56,7 +63,10 @@ function generateTerminalCode(data: TerminalPresetData): string {
 />`;
 }
 
-export const terminalPresets: Record<TerminalPresetName, PresetWithCodeGen<TerminalPresetData>> = {
+export const terminalPresets: Record<
+  TerminalPresetName,
+  PresetWithCodeGen<TerminalPresetData>
+> = {
   success: {
     description: "Successful test run with duration",
     data: {

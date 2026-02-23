@@ -20,13 +20,23 @@ interface SliderRowProps {
   disabled?: boolean;
 }
 
-function SliderRow({ label, value, min, max, step, onChange, disabled }: SliderRowProps) {
+function SliderRow({
+  label,
+  value,
+  min,
+  max,
+  step,
+  onChange,
+  disabled,
+}: SliderRowProps) {
   return (
     <div className="flex items-center gap-3">
-      <span className={cn(
-        "w-24 text-[11px]",
-        disabled ? "text-muted-foreground/30" : "text-muted-foreground/70"
-      )}>
+      <span
+        className={cn(
+          "w-24 text-[11px]",
+          disabled ? "text-muted-foreground/30" : "text-muted-foreground/70",
+        )}
+      >
         {label}
       </span>
       <input
@@ -39,10 +49,12 @@ function SliderRow({ label, value, min, max, step, onChange, disabled }: SliderR
         disabled={disabled}
         className="h-1 flex-1 cursor-pointer appearance-none rounded-full bg-muted/50 disabled:cursor-not-allowed disabled:opacity-30 [&::-webkit-slider-thumb]:size-2.5 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-foreground/60"
       />
-      <span className={cn(
-        "w-8 text-right font-mono text-[10px]",
-        disabled ? "text-muted-foreground/30" : "text-muted-foreground/50"
-      )}>
+      <span
+        className={cn(
+          "w-8 text-right font-mono text-[10px]",
+          disabled ? "text-muted-foreground/30" : "text-muted-foreground/50",
+        )}
+      >
         {value}
       </span>
     </div>
@@ -52,7 +64,10 @@ function SliderRow({ label, value, min, max, step, onChange, disabled }: SliderR
 export function GlassControls({ params, onChange }: GlassControlsProps) {
   const [isExpanded, setIsExpanded] = useState(false);
 
-  const updateParam = <K extends keyof GlassParams>(key: K, value: GlassParams[K]) => {
+  const updateParam = <K extends keyof GlassParams>(
+    key: K,
+    value: GlassParams[K],
+  ) => {
     onChange({ ...params, [key]: value });
   };
 
@@ -63,11 +78,17 @@ export function GlassControls({ params, onChange }: GlassControlsProps) {
         className="flex w-full items-center justify-between px-3 py-2 text-left"
       >
         <div className="flex items-center gap-2">
-          <Sparkles className={cn(
-            "size-3.5 transition-colors",
-            params.enabled ? "text-foreground/60" : "text-muted-foreground/30"
-          )} />
-          <span className="text-[11px] font-medium text-foreground/70">Glass Effect</span>
+          <Sparkles
+            className={cn(
+              "size-3.5 transition-colors",
+              params.enabled
+                ? "text-foreground/60"
+                : "text-muted-foreground/30",
+            )}
+          />
+          <span className="text-[11px] font-medium text-foreground/70">
+            Glass Effect
+          </span>
           {!params.enabled && (
             <span className="rounded bg-muted/50 px-1.5 py-0.5 text-[9px] text-muted-foreground/50">
               OFF
@@ -77,7 +98,7 @@ export function GlassControls({ params, onChange }: GlassControlsProps) {
         <ChevronDown
           className={cn(
             "size-3.5 text-muted-foreground/40 transition-transform",
-            isExpanded && "rotate-180"
+            isExpanded && "rotate-180",
           )}
         />
       </button>

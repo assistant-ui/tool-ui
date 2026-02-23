@@ -13,7 +13,7 @@ export function generateSineEasedGradient(
   centerPosition: number,
   peakOpacity: number,
   spreadWidth: number,
-  steps: number = 128
+  steps: number = 128,
 ): string {
   const stops: string[] = [];
 
@@ -27,14 +27,18 @@ export function generateSineEasedGradient(
     const eased = sineValue * sineValue;
     const opacity = peakOpacity * eased;
 
-    stops.push(`rgba(255, 255, 255, ${opacity.toFixed(4)}) ${position.toFixed(1)}%`);
+    stops.push(
+      `rgba(255, 255, 255, ${opacity.toFixed(4)}) ${position.toFixed(1)}%`,
+    );
   }
 
   // No hard transparent stops — sine² already smoothly reaches zero at edges
   return `linear-gradient(${angle}deg, ${stops.join(", ")})`;
 }
 
-function useDirectionalLight(containerRef: React.RefObject<HTMLDivElement | null>) {
+function useDirectionalLight(
+  containerRef: React.RefObject<HTMLDivElement | null>,
+) {
   const [gradientStyle, setGradientStyle] = useState<React.CSSProperties>({});
 
   useEffect(() => {
@@ -46,26 +50,34 @@ function useDirectionalLight(containerRef: React.RefObject<HTMLDivElement | null
       if (!parent) return;
 
       const style = getComputedStyle(parent);
-      const rotateX = parseFloat(style.getPropertyValue("--shell-rotate-x")) || 0;
-      const rotateY = parseFloat(style.getPropertyValue("--shell-rotate-y")) || 0;
+      const rotateX =
+        parseFloat(style.getPropertyValue("--shell-rotate-x")) || 0;
+      const rotateY =
+        parseFloat(style.getPropertyValue("--shell-rotate-y")) || 0;
 
       // Light params from CSS custom properties (with defaults)
-      const baseAngle = parseFloat(style.getPropertyValue("--light-angle")) || 135;
-      const basePosition = parseFloat(style.getPropertyValue("--light-position")) || 35;
+      const baseAngle =
+        parseFloat(style.getPropertyValue("--light-angle")) || 135;
+      const basePosition =
+        parseFloat(style.getPropertyValue("--light-position")) || 35;
       const spread = parseFloat(style.getPropertyValue("--light-spread")) || 40;
-      const opacity = parseFloat(style.getPropertyValue("--light-opacity")) || 0.12;
-      const rotateXFactor = parseFloat(style.getPropertyValue("--light-rotate-x-factor")) || 1.2;
-      const rotateYFactor = parseFloat(style.getPropertyValue("--light-rotate-y-factor")) || 0.8;
+      const opacity =
+        parseFloat(style.getPropertyValue("--light-opacity")) || 0.12;
+      const rotateXFactor =
+        parseFloat(style.getPropertyValue("--light-rotate-x-factor")) || 1.2;
+      const rotateYFactor =
+        parseFloat(style.getPropertyValue("--light-rotate-y-factor")) || 0.8;
 
       // Highlight position shifts based on rotation (light "slides" across surface)
-      const centerPosition = basePosition - rotateX * rotateXFactor - rotateY * rotateYFactor;
+      const centerPosition =
+        basePosition - rotateX * rotateXFactor - rotateY * rotateYFactor;
 
       const gradient = generateSineEasedGradient(
         baseAngle,
         centerPosition,
         opacity,
         spread,
-        32
+        32,
       );
 
       setGradientStyle({ background: gradient });

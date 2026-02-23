@@ -5,6 +5,7 @@ A reference implementation of Tool UIs for ride booking that follows the [Collab
 ## Quick Start
 
 Navigate to `/playground/waymo-demo` to test the golden path:
+
 1. Click "Start Demo: 'I need a ride home'"
 2. See ride quote card
 3. Click "Confirm Ride"
@@ -15,19 +16,25 @@ Navigate to `/playground/waymo-demo` to test the golden path:
 This prototype strictly follows the three-layer architecture:
 
 ### 1. Tools (`tools.ts`)
+
 4 pure functions that return typed mock data:
+
 - `getRiderContext()` - Returns user's home, work, payment methods
 - `getPickupLocation({ hint })` - Returns pickup location with confidence
 - `getQuote({ pickup, dropoff })` - Returns ride quote with price/ETA
 - `bookTrip({ quoteId, paymentMethodId? })` - Books ride and returns confirmation
 
 ### 2. Tool UIs (`components/`)
+
 2 React components that only render:
+
 - `RideQuote` - Interactive (confirm button) → Receipt (confirmed state)
 - `BookingConfirmation` - Receipt only (trip details + actions)
 
 ### 3. Orchestrator (`WaymoDemo.tsx`)
+
 Manages the entire flow:
+
 - Calls tools in sequence
 - Updates message state
 - Decides when to show Tool UIs
@@ -70,6 +77,7 @@ interface ToolUIMessage {
 ## Guidelines Compliance
 
 This prototype demonstrates:
+
 - ✅ **3-layer architecture** - Tools, UI components, orchestrator
 - ✅ **4 tools only** - Chunky capabilities, not conversational steps
 - ✅ **2 Tool UIs** - Minimal set for golden path
@@ -80,6 +88,7 @@ This prototype demonstrates:
 ## Extending
 
 To add a friction variant (after golden path works):
+
 1. Keep the same 4 tools
 2. Reuse existing Tool UIs
 3. Add branch logic in `WaymoDemo.tsx`
@@ -88,6 +97,7 @@ To add a friction variant (after golden path works):
 ## Important
 
 **Do not:**
+
 - Add more tools (stay at 4)
 - Call tools from components
 - Change ToolUIMessage format

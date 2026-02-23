@@ -23,7 +23,12 @@ function main(): void {
     return;
   }
 
-  const changedFiles = runCapture("git", ["diff", "--name-only", "--", "public/r"]);
+  const changedFiles = runCapture("git", [
+    "diff",
+    "--name-only",
+    "--",
+    "public/r",
+  ]);
 
   console.error("\nRegistry artifacts are out of date.");
   if (changedFiles.length > 0) {

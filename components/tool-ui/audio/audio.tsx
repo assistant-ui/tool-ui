@@ -1,4 +1,3 @@
-/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import * as React from "react";
@@ -48,7 +47,12 @@ interface FullPlayerProps {
   controls: PlayerControls;
 }
 
-function FullPlayer({ artwork, title, description, controls }: FullPlayerProps) {
+function FullPlayer({
+  artwork,
+  title,
+  description,
+  controls,
+}: FullPlayerProps) {
   return (
     <div className="flex w-full flex-col">
       {artwork && (
@@ -121,10 +125,16 @@ interface CompactPlayerProps {
   controls: PlayerControls;
 }
 
-function CompactPlayer({ artwork, title, description, controls }: CompactPlayerProps) {
-  const progress = controls.duration > 0
-    ? (controls.currentTime / controls.duration) * 100
-    : 0;
+function CompactPlayer({
+  artwork,
+  title,
+  description,
+  controls,
+}: CompactPlayerProps) {
+  const progress =
+    controls.duration > 0
+      ? (controls.currentTime / controls.duration) * 100
+      : 0;
 
   return (
     <div className="relative flex w-full items-center gap-3 overflow-hidden p-3">
@@ -194,12 +204,7 @@ function CompactPlayer({ artwork, title, description, controls }: CompactPlayerP
 }
 
 function AudioInner(props: AudioProps) {
-  const {
-    variant = "full",
-    className,
-    onMediaEvent,
-    ...serializable
-  } = props;
+  const { variant = "full", className, onMediaEvent, ...serializable } = props;
 
   const {
     id,

@@ -217,7 +217,10 @@ function VideoInner(props: Omit<VideoProps, "defaultMuted">) {
                       onClick={handleOpen}
                       className="bg-black/55 text-white hover:bg-black/70"
                     >
-                      <ExternalLink className="mr-1 h-4 w-4" aria-hidden="true" />
+                      <ExternalLink
+                        className="mr-1 h-4 w-4"
+                        aria-hidden="true"
+                      />
                       Open
                     </Button>
                   )}
@@ -244,13 +247,15 @@ function VideoInner(props: Omit<VideoProps, "defaultMuted">) {
               </p>
             )}
             <div className="text-muted-foreground flex flex-wrap items-center gap-x-3 gap-y-1 text-xs">
-              {sourceLabel && (
-                <span>{sourceLabel}</span>
-              )}
+              {sourceLabel && <span>{sourceLabel}</span>}
               {metadataDomain && <span>{metadataDomain}</span>}
-              {typeof durationMs === "number" && <span>{formatDuration(durationMs)}</span>}
+              {typeof durationMs === "number" && (
+                <span>{formatDuration(durationMs)}</span>
+              )}
               {createdAt && (
-                <time dateTime={createdAt}>{formatCreatedAt(createdAt, locale)}</time>
+                <time dateTime={createdAt}>
+                  {formatCreatedAt(createdAt, locale)}
+                </time>
               )}
             </div>
           </div>

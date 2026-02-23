@@ -12,7 +12,10 @@ function getNumericKeys(value: unknown): string[] {
 
 describe("tuning studio parameter definitions", () => {
   test("covers all numeric params exposed by compositor presets (excluding timeOfDay)", () => {
-    const base = getRawBaseParamsForCondition("clear", new Date().toISOString());
+    const base = getRawBaseParamsForCondition(
+      "clear",
+      new Date().toISOString(),
+    );
 
     const definedByLayer = new Map<string, Set<string>>();
     for (const group of PARAMETER_GROUPS) {
@@ -45,4 +48,3 @@ describe("tuning studio parameter definitions", () => {
     expect(missing).toEqual({});
   });
 });
-

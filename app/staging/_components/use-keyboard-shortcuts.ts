@@ -31,7 +31,6 @@ export function useKeyboardShortcuts() {
         cycleDebugLevel();
         return;
       }
-
     }
 
     window.addEventListener("keydown", handleKeyDown);

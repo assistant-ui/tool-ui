@@ -10,10 +10,5 @@ export const metadata: Metadata = {
 export const revalidate = 3600;
 
 export default function TerminalDocsPage() {
-  return (
-    <ComponentDocsTabs
-      docs={<Content />}
-      componentId="terminal"
-    />
-  );
+  return <ComponentDocsTabs docs={<Content />} componentId="terminal" />;
 }

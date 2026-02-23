@@ -1,8 +1,4 @@
-import {
-  MOCK_NOW,
-  SUGGESTION_REASONS,
-  SUGGESTION_SERVICES,
-} from "./shared";
+import { MOCK_NOW, SUGGESTION_REASONS, SUGGESTION_SERVICES } from "./shared";
 import type { Candidate } from "./shared";
 
 type Suggestion = {

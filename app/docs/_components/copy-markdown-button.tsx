@@ -21,7 +21,14 @@ export function CopyMarkdownButton({ markdown }: CopyMarkdownButtonProps) {
   };
 
   return (
-    <Button type="button" variant="outline" size="sm" onClick={onClick} aria-label="Copy page" className="gap-2">
+    <Button
+      type="button"
+      variant="outline"
+      size="sm"
+      onClick={onClick}
+      aria-label="Copy page"
+      className="gap-2"
+    >
       {checked ? <Check className="size-4" /> : <CopyIcon className="size-4" />}
       {checked ? "Copied" : "Copy Page"}
     </Button>

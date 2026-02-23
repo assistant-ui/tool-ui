@@ -10,7 +10,13 @@
 import type { ToolCallMessagePartProps } from "@assistant-ui/react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Navigation, Home, Briefcase, MapPin, CheckCircle2 } from "lucide-react";
+import {
+  Navigation,
+  Home,
+  Briefcase,
+  MapPin,
+  CheckCircle2,
+} from "lucide-react";
 import type { SelectPickupResult } from "../types";
 import { MOCK_LOCATIONS, MOCK_PICKUP } from "../types";
 

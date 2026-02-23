@@ -10,5 +10,8 @@ export const size = ogSize;
 export const contentType = ogContentType;
 
 export default async function Image() {
-  return generateOgImage("Design Guidelines", "Principles for AI tool interfaces");
+  return generateOgImage(
+    "Design Guidelines",
+    "Principles for AI tool interfaces",
+  );
 }

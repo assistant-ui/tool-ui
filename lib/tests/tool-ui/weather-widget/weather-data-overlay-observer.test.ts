@@ -95,7 +95,9 @@ describe("weather-data-overlay resize observer guard", () => {
     rerender(
       createElement(WeatherDataOverlay, {
         ...baseProps,
-        forecast: [{ label: "Now", conditionCode: "clear", tempMin: 65, tempMax: 78 }],
+        forecast: [
+          { label: "Now", conditionCode: "clear", tempMin: 65, tempMax: 78 },
+        ],
       }),
     );
 

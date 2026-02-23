@@ -12,9 +12,7 @@ import {
   resolveWeatherEffectsCanvasProps,
   type WeatherEffectsCheckpointMode,
 } from "./canvas-resolver";
-import {
-  mapCustomEffectPropsToCanvasProps,
-} from "./effect-compositor-custom-props";
+import { mapCustomEffectPropsToCanvasProps } from "./effect-compositor-custom-props";
 import {
   resolveEffectCanvasDpr,
   resolveEffectQuality,

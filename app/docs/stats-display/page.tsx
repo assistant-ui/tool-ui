@@ -10,10 +10,5 @@ export const metadata: Metadata = {
 export const revalidate = 3600;
 
 export default function StatsDisplayDocsPage() {
-  return (
-    <ComponentDocsTabs
-      docs={<Content />}
-      componentId="stats-display"
-    />
-  );
+  return <ComponentDocsTabs docs={<Content />} componentId="stats-display" />;
 }

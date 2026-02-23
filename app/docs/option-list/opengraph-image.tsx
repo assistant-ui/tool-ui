@@ -10,5 +10,8 @@ export const size = ogSize;
 export const contentType = ogContentType;
 
 export default async function Image() {
-  return generateOgImage("Option List", "Let users select from multiple choices");
+  return generateOgImage(
+    "Option List",
+    "Let users select from multiple choices",
+  );
 }

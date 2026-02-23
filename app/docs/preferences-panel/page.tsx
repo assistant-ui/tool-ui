@@ -11,9 +11,6 @@ export const revalidate = 3600;
 
 export default function PreferencesPanelDocsPage() {
   return (
-    <ComponentDocsTabs
-      docs={<Content />}
-      componentId="preferences-panel"
-    />
+    <ComponentDocsTabs docs={<Content />} componentId="preferences-panel" />
   );
 }

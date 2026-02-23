@@ -51,7 +51,7 @@ function ProgressTrackerTuningPanel() {
               : index === currentStepIndex
                 ? "in-progress"
                 : "pending",
-        }))
+        })),
       );
 
       setElapsedTime((prev) => prev + 12000);
@@ -68,7 +68,7 @@ function ProgressTrackerTuningPanel() {
       SAMPLE_STEPS.map((step, index) => ({
         ...step,
         status: index === 0 ? "in-progress" : "pending",
-      }))
+      })),
     );
     setIsAnimating(true);
   };
@@ -88,7 +88,7 @@ function ProgressTrackerTuningPanel() {
   const setStepStatus = (stepId: string, status: ProgressStep["status"]) => {
     setIsAnimating(false);
     setSteps((prev) =>
-      prev.map((step) => (step.id === stepId ? { ...step, status } : step))
+      prev.map((step) => (step.id === stepId ? { ...step, status } : step)),
     );
   };
 
@@ -106,11 +106,7 @@ function ProgressTrackerTuningPanel() {
         <div className="mb-4 flex items-center justify-between">
           <h3 className="text-lg font-semibold">Animation Controls</h3>
           <div className="flex gap-2">
-            <Button
-              onClick={startAnimation}
-              disabled={isAnimating}
-              size="sm"
-            >
+            <Button onClick={startAnimation} disabled={isAnimating} size="sm">
               {isAnimating ? "Animating..." : "Play Animation"}
             </Button>
             <Button onClick={resetToDefault} variant="outline" size="sm">
@@ -124,10 +120,7 @@ function ProgressTrackerTuningPanel() {
 
         <div className="grid gap-4 sm:grid-cols-3">
           {steps.map((step) => (
-            <div
-              key={step.id}
-              className="rounded-lg border p-4"
-            >
+            <div key={step.id} className="rounded-lg border p-4">
               <div className="mb-3 text-sm font-medium">{step.label}</div>
               <div className="flex flex-col gap-2">
                 <Button
@@ -140,7 +133,9 @@ function ProgressTrackerTuningPanel() {
                 </Button>
                 <Button
                   onClick={() => setStepStatus(step.id, "in-progress")}
-                  variant={step.status === "in-progress" ? "default" : "outline"}
+                  variant={
+                    step.status === "in-progress" ? "default" : "outline"
+                  }
                   size="sm"
                   className="w-full"
                 >
@@ -170,7 +165,9 @@ function ProgressTrackerTuningPanel() {
         <div className="mt-6 rounded-lg bg-muted p-4">
           <h4 className="mb-2 text-sm font-medium">Animation Features</h4>
           <ul className="text-muted-foreground space-y-1 text-sm">
-            <li>• Spring bounce animation on completion with cubic-bezier timing</li>
+            <li>
+              • Spring bounce animation on completion with cubic-bezier timing
+            </li>
             <li>• Checkmark draw-in effect with stroke animation</li>
             <li>• Shimmer effect on active step background</li>
             <li>• 300ms smooth transitions between states</li>

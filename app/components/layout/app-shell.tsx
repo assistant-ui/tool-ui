@@ -24,7 +24,7 @@ function HeaderFrameBase({
       <div
         className={cn(
           "relative z-10 w-full max-w-[1440px] shrink-0 px-4 md:px-8",
-          shouldAnimate && "animate-navbar-fade-in"
+          shouldAnimate && "animate-navbar-fade-in",
         )}
       >
         <ResponsiveHeader rightContent={rightContent} />

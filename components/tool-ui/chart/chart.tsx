@@ -55,9 +55,9 @@ export const Chart = memo(function Chart({
     () =>
       series.map(
         (seriesItem, index) =>
-          seriesItem.color ?? palette[index % palette.length]
+          seriesItem.color ?? palette[index % palette.length],
       ),
-    [series, palette]
+    [series, palette],
   );
 
   const chartConfig: ChartConfig = useMemo(
@@ -69,9 +69,9 @@ export const Chart = memo(function Chart({
             label: seriesItem.label,
             color: seriesColors[index],
           },
-        ])
+        ]),
       ),
-    [series, seriesColors]
+    [series, seriesColors],
   );
 
   const handleDataPointClick = useCallback(
@@ -79,7 +79,7 @@ export const Chart = memo(function Chart({
       seriesKey: string,
       seriesLabel: string,
       payload: Record<string, unknown>,
-      index: number
+      index: number,
     ) => {
       onDataPointClick?.({
         seriesKey,
@@ -90,7 +90,7 @@ export const Chart = memo(function Chart({
         payload,
       });
     },
-    [onDataPointClick, xKey]
+    [onDataPointClick, xKey],
   );
 
   const ChartComponent = type === "bar" ? BarChart : LineChart;

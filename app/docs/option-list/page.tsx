@@ -10,10 +10,5 @@ export const metadata: Metadata = {
 export const revalidate = 3600;
 
 export default function OptionListDocsPage() {
-  return (
-    <ComponentDocsTabs
-      docs={<Content />}
-      componentId="option-list"
-    />
-  );
+  return <ComponentDocsTabs docs={<Content />} componentId="option-list" />;
 }

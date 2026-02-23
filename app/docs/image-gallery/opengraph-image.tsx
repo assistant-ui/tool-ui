@@ -10,5 +10,8 @@ export const size = ogSize;
 export const contentType = ogContentType;
 
 export default async function Image() {
-  return generateOgImage("Image Gallery", "Masonry grid with fullscreen lightbox viewer");
+  return generateOgImage(
+    "Image Gallery",
+    "Masonry grid with fullscreen lightbox viewer",
+  );
 }

@@ -19,7 +19,7 @@ export function ViewModeToggle({ value, onChange }: ViewModeToggleProps) {
           "flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-medium transition-all",
           value === "condition"
             ? "bg-background text-foreground shadow-sm"
-            : "text-muted-foreground hover:text-foreground"
+            : "text-muted-foreground hover:text-foreground",
         )}
       >
         <Sliders className="size-3.5" />
@@ -31,7 +31,7 @@ export function ViewModeToggle({ value, onChange }: ViewModeToggleProps) {
           "flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-medium transition-all",
           value === "parameter"
             ? "bg-background text-foreground shadow-sm"
-            : "text-muted-foreground hover:text-foreground"
+            : "text-muted-foreground hover:text-foreground",
         )}
       >
         <LayoutGrid className="size-3.5" />
@@ -43,7 +43,7 @@ export function ViewModeToggle({ value, onChange }: ViewModeToggleProps) {
           "flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-medium transition-all",
           value === "time"
             ? "bg-background text-foreground shadow-sm"
-            : "text-muted-foreground hover:text-foreground"
+            : "text-muted-foreground hover:text-foreground",
         )}
       >
         <Clock className="size-3.5" />

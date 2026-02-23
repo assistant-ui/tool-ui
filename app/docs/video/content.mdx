@@ -127,8 +127,16 @@ export const toolkit: Toolkit = {
       default: "'cover'",
     },
     durationMs: { description: "Duration in milliseconds", type: "number" },
-    autoPlay: { description: "Auto-play video (muted)", type: "boolean", default: "true" },
-    defaultMuted: { description: "Initial mute state", type: "boolean", default: "true" },
+    autoPlay: {
+      description: "Auto-play video (muted)",
+      type: "boolean",
+      default: "true",
+    },
+    defaultMuted: {
+      description: "Initial mute state",
+      type: "boolean",
+      default: "true",
+    },
     source: {
       description: "Source attribution",
       type: "{ label: string; iconUrl?: string; url?: string }",

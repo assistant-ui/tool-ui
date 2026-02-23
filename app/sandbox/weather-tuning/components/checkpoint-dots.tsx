@@ -34,7 +34,7 @@ export function CheckpointDots({
               size === "sm" ? "size-1" : "size-1.5",
               status === "reviewed"
                 ? "bg-green-500 dark:bg-green-400"
-                : "bg-muted-foreground/30"
+                : "bg-muted-foreground/30",
             )}
             title={`${checkpoint}: ${status}`}
           />

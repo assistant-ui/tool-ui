@@ -11,7 +11,11 @@ import type { ToolCallMessagePartProps } from "@assistant-ui/react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { CheckCircle2, Circle, Car, XCircle } from "lucide-react";
-import type { GetTripStatusResult, TripStep, TripStatus as TripStatusType } from "../types";
+import type {
+  GetTripStatusResult,
+  TripStep,
+  TripStatus as TripStatusType,
+} from "../types";
 import { MOCK_VEHICLE } from "../types";
 
 const StepIcon = ({ status }: { status: TripStep["status"] }) => {
@@ -181,7 +185,8 @@ export function TripStatus({
           <Car className="text-muted-foreground h-5 w-5" />
           <div>
             <div className="text-sm font-medium">
-              {status.vehicle.color} {status.vehicle.make} {status.vehicle.model}
+              {status.vehicle.color} {status.vehicle.make}{" "}
+              {status.vehicle.model}
             </div>
             <div className="text-muted-foreground text-xs">
               {status.vehicle.plate}

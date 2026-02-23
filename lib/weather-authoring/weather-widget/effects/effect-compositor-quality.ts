@@ -46,12 +46,7 @@ export function resolveEffectCanvasDpr(
   if (typeof window === "undefined") return undefined;
 
   const base = window.devicePixelRatio || 1;
-  const cap =
-    quality === "low"
-      ? 1.0
-      : quality === "medium"
-        ? 1.5
-        : 2.0;
+  const cap = quality === "low" ? 1.0 : quality === "medium" ? 1.5 : 2.0;
 
   return Math.max(1, Math.min(base, cap));
 }

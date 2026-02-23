@@ -27,7 +27,10 @@ function shouldSyncRegistry(stagedFiles: string[]): boolean {
 }
 
 function main(): void {
-  const insideWorkTree = spawnSync("git", ["rev-parse", "--is-inside-work-tree"]);
+  const insideWorkTree = spawnSync("git", [
+    "rev-parse",
+    "--is-inside-work-tree",
+  ]);
   if (insideWorkTree.status !== 0) {
     return;
   }
@@ -47,7 +50,9 @@ function main(): void {
     return;
   }
 
-  console.log("Detected Tool UI source changes; regenerating registry artifacts.");
+  console.log(
+    "Detected Tool UI source changes; regenerating registry artifacts.",
+  );
   run("pnpm", ["registry:build"]);
   run("git", ["add", "public/r"]);
 }

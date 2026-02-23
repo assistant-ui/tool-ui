@@ -7,7 +7,8 @@ import type {
   PreferencesValue,
   PreferenceItem,
   PreferenceSection,
-} from "./schema";import { ActionButtons } from "../shared/action-buttons";
+} from "./schema";
+import { ActionButtons } from "../shared/action-buttons";
 import { normalizeActionsConfig } from "../shared/actions-config";
 import { type Action } from "../shared/schema";
 import { useControllableState } from "../shared/use-controllable-state";

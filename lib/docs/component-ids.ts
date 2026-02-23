@@ -29,7 +29,9 @@ export const componentIds = [
 
 export type ComponentId = (typeof componentIds)[number];
 
-export function isComponentId(value: string | undefined | null): value is ComponentId {
+export function isComponentId(
+  value: string | undefined | null,
+): value is ComponentId {
   if (typeof value !== "string") {
     return false;
   }

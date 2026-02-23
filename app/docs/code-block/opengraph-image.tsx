@@ -10,5 +10,8 @@ export const size = ogSize;
 export const contentType = ogContentType;
 
 export default async function Image() {
-  return generateOgImage("Code Block", "Display syntax-highlighted code snippets");
+  return generateOgImage(
+    "Code Block",
+    "Display syntax-highlighted code snippets",
+  );
 }

@@ -25,7 +25,8 @@ function resolveProjectRoot(): string {
 }
 
 async function runCompile(projectRoot: string): Promise<void> {
-  const { written, unchanged } = await writeWeatherRuntimeArtifacts(projectRoot);
+  const { written, unchanged } =
+    await writeWeatherRuntimeArtifacts(projectRoot);
 
   if (written.length === 0) {
     console.log("Weather artifacts are already up to date.");
@@ -89,7 +90,8 @@ function watchAuthoringSources(projectRoot: string): void {
     const absoluteDir = path.join(projectRoot, dir);
 
     watch(absoluteDir, { persistent: true }, (_eventType, fileName) => {
-      const changed = typeof fileName === "string" ? fileName : "(unknown file)";
+      const changed =
+        typeof fileName === "string" ? fileName : "(unknown file)";
       console.log(`Detected change in ${dir}/${changed}`);
       rebuild();
     });

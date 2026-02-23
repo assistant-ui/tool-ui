@@ -15,7 +15,7 @@ export const GetRideQuoteTool: ToolDefinition<
     destinationId: z
       .string()
       .describe(
-        "The ID of the destination (e.g., 'home', 'work', 'ferry-building')"
+        "The ID of the destination (e.g., 'home', 'work', 'ferry-building')",
       ),
   }),
   type: "human",

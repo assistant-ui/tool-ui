@@ -45,8 +45,9 @@ function validateCodeDiffInputMode(
   }
 }
 
-export const CodeDiffPropsSchema =
-  CodeDiffPropsSchemaBase.superRefine(validateCodeDiffInputMode);
+export const CodeDiffPropsSchema = CodeDiffPropsSchemaBase.superRefine(
+  validateCodeDiffInputMode,
+);
 
 export type CodeDiffProps = z.infer<typeof CodeDiffPropsSchema>;
 
@@ -67,5 +68,4 @@ export const parseSerializableCodeDiff: (
 
 export const safeParseSerializableCodeDiff: (
   input: unknown,
-) => SerializableCodeDiff | null =
-  SerializableCodeDiffSchemaContract.safeParse;
+) => SerializableCodeDiff | null = SerializableCodeDiffSchemaContract.safeParse;

@@ -25,14 +25,20 @@ type TerminalControlledProps = {
 
 type TerminalRootProps = TerminalProps & TerminalControlledProps;
 
-type TerminalHeaderProps = Pick<TerminalProps, "command" | "cwd" | "exitCode"> & {
+type TerminalHeaderProps = Pick<
+  TerminalProps,
+  "command" | "cwd" | "exitCode"
+> & {
   formattedDuration: string | null;
   hasOutput: boolean;
   copiedId: string | null;
   onCopy: () => void;
 };
 
-type TerminalOutputProps = Pick<TerminalProps, "stdout" | "stderr" | "truncated"> & {
+type TerminalOutputProps = Pick<
+  TerminalProps,
+  "stdout" | "stderr" | "truncated"
+> & {
   isCollapsed: boolean;
   shouldCollapse: boolean;
   lineCount: number;
@@ -198,7 +204,8 @@ function TerminalRoot({
   defaultExpanded = false,
   onExpandedChange,
 }: TerminalRootProps) {
-  const [uncontrolledExpanded, setUncontrolledExpanded] = useState(defaultExpanded);
+  const [uncontrolledExpanded, setUncontrolledExpanded] =
+    useState(defaultExpanded);
   const { copiedId, copy } = useCopyToClipboard();
 
   const isExpanded = expanded ?? uncontrolledExpanded;
@@ -259,7 +266,6 @@ function TerminalRoot({
 
         {!hasOutput && <TerminalEmpty />}
       </div>
-
     </div>
   );
 }

@@ -57,7 +57,9 @@ function generateImageCode(data: ImageData): string {
   }
 
   if (image.source) {
-    props.push(`  source={${formatObject(image.source as Record<string, unknown>)}}`);
+    props.push(
+      `  source={${formatObject(image.source as Record<string, unknown>)}}`,
+    );
   }
 
   const imageCode = `<Image\n${props.join("\n")}\n/>`;
@@ -75,7 +77,10 @@ function generateImageCode(data: ImageData): string {
 
 export type ImagePresetName = "basic" | "with-source" | "with-actions";
 
-export const imagePresets: Record<ImagePresetName, PresetWithCodeGen<ImageData>> = {
+export const imagePresets: Record<
+  ImagePresetName,
+  PresetWithCodeGen<ImageData>
+> = {
   basic: {
     description: "Simple image with title and description",
     data: {
@@ -101,7 +106,8 @@ export const imagePresets: Record<ImagePresetName, PresetWithCodeGen<ImageData>>
         src: "https://images.unsplash.com/photo-1504548840739-580b10ae7715?w=1200&auto=format&fit=crop",
         alt: "Vintage mainframe with blinking lights",
         title: "From mainframes to microchips",
-        description: "A snapshot of when rooms were computers — not just what ran inside them.",
+        description:
+          "A snapshot of when rooms were computers — not just what ran inside them.",
         ratio: "4:3",
         domain: "unsplash.com",
         createdAt: "2025-02-10T15:30:00.000Z",

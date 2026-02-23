@@ -94,11 +94,7 @@ export const SUGGESTION_SERVICES = ["Standard", "XL", "Premium"] as const;
 
 export const SUGGESTION_REASONS = ["frequent", "workday", "recent"] as const;
 
-export const PAYMENT_METHODS = [
-  "apple_pay",
-  "google_pay",
-  "card",
-] as const;
+export const PAYMENT_METHODS = ["apple_pay", "google_pay", "card"] as const;
 
 export type PaymentMethod = (typeof PAYMENT_METHODS)[number];
 

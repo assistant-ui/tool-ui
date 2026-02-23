@@ -11,10 +11,7 @@ import {
 import { getNearestCheckpoint } from "./effects/tuning";
 import { TUNED_WEATHER_EFFECTS_CHECKPOINT_OVERRIDES } from "./effects/generated/tuned-presets.generated";
 import type { WeatherWidgetRuntimeProps } from "./schema-runtime";
-import {
-  resolveWeatherTime,
-  snapTimeOfDayToNearestCheckpoint,
-} from "./time";
+import { resolveWeatherTime, snapTimeOfDayToNearestCheckpoint } from "./time";
 import { WeatherDataOverlay } from "./weather-data-overlay";
 
 export function WeatherWidget({
@@ -34,15 +31,22 @@ export function WeatherWidget({
       return false;
     }
 
-    return window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches ?? false;
+    return (
+      window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches ?? false
+    );
   });
 
   useEffect(() => {
-    if (typeof window === "undefined" || typeof window.matchMedia !== "function") {
+    if (
+      typeof window === "undefined" ||
+      typeof window.matchMedia !== "function"
+    ) {
       return;
     }
 
-    const mediaQueryList = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const mediaQueryList = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    );
     setPrefersReducedMotion(mediaQueryList.matches);
 
     const handleMotionPreferenceChange = (event: MediaQueryListEvent) => {
@@ -52,7 +56,10 @@ export function WeatherWidget({
     if (typeof mediaQueryList.addEventListener === "function") {
       mediaQueryList.addEventListener("change", handleMotionPreferenceChange);
       return () => {
-        mediaQueryList.removeEventListener("change", handleMotionPreferenceChange);
+        mediaQueryList.removeEventListener(
+          "change",
+          handleMotionPreferenceChange,
+        );
       };
     }
 
@@ -77,7 +84,10 @@ export function WeatherWidget({
     checkpointOverrides && "glass" in checkpointOverrides
       ? checkpointOverrides.glass
       : undefined;
-  const brightness = getSceneBrightnessFromTimeOfDay(timeOfDay, current.conditionCode);
+  const brightness = getSceneBrightnessFromTimeOfDay(
+    timeOfDay,
+    current.conditionCode,
+  );
   const weatherTheme = getWeatherTheme(brightness);
   const isWeatherDark = weatherTheme === "dark";
   const backgroundClass = isWeatherDark

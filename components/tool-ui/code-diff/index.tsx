@@ -4,7 +4,4 @@ export type {
   CodeDiffComposedProps,
   CodeDiffSectionProps,
 } from "./code-diff";
-export type {
-  CodeDiffProps,
-  SerializableCodeDiff,
-} from "./schema";
+export type { CodeDiffProps, SerializableCodeDiff } from "./schema";

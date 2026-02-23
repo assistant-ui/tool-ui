@@ -8,7 +8,9 @@ describe("snow fall-speed tuning range", () => {
     const snowGroup = PARAMETER_GROUPS.find((group) => group.layer === "snow");
     expect(snowGroup).toBeDefined();
 
-    const fallSpeed = snowGroup?.params.find((param) => param.key === "fallSpeed");
+    const fallSpeed = snowGroup?.params.find(
+      (param) => param.key === "fallSpeed",
+    );
     expect(fallSpeed).toBeDefined();
     expect(fallSpeed?.max).toBe(SNOW_FALL_SPEED_MAX);
     expect(SNOW_FALL_SPEED_MAX).toBeGreaterThan(3);

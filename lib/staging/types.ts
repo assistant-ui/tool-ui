@@ -9,9 +9,7 @@ export interface StagingConfig {
     level: DebugLevel;
     componentRef: RefObject<HTMLElement | null>;
   }) => ReactNode;
-  renderTuningPanel?: (props: {
-    data: Record<string, unknown>;
-  }) => ReactNode;
+  renderTuningPanel?: (props: { data: Record<string, unknown> }) => ReactNode;
 }
 
 export type { ComponentId };

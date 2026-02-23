@@ -1,4 +1,3 @@
-/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import * as React from "react";
@@ -21,11 +20,7 @@ export interface ImageProps extends SerializableImage {
 }
 
 export function Image(props: ImageProps) {
-  const {
-    className,
-    onNavigate,
-    ...serializable
-  } = props;
+  const { className, onNavigate, ...serializable } = props;
 
   const {
     id,

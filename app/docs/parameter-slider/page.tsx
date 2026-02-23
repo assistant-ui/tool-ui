@@ -11,9 +11,6 @@ export const revalidate = 3600;
 
 export default function ParameterSliderDocsPage() {
   return (
-    <ComponentDocsTabs
-      docs={<Content />}
-      componentId="parameter-slider"
-    />
+    <ComponentDocsTabs docs={<Content />} componentId="parameter-slider" />
   );
 }

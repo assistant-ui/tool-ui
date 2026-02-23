@@ -19,24 +19,24 @@ function generateMessageDraftCode(data: SerializableMessageDraft): string {
     if (data.from) {
       props.push(`  from="${data.from}"`);
     }
-    props.push(
-      `  to={${JSON.stringify(data.to)}}`,
-    );
+    props.push(`  to={${JSON.stringify(data.to)}}`);
     if (data.cc && data.cc.length > 0) {
-      props.push(
-        `  cc={${JSON.stringify(data.cc)}}`,
-      );
+      props.push(`  cc={${JSON.stringify(data.cc)}}`);
     }
     if (data.bcc && data.bcc.length > 0) {
-      props.push(
-        `  bcc={${JSON.stringify(data.bcc)}}`,
-      );
+      props.push(`  bcc={${JSON.stringify(data.bcc)}}`);
     }
   }
 
   if (data.channel === "slack") {
-    const targetProps = [`type: "${data.target.type}"`, `name: "${data.target.name}"`];
-    if (data.target.type === "channel" && data.target.memberCount !== undefined) {
+    const targetProps = [
+      `type: "${data.target.type}"`,
+      `name: "${data.target.name}"`,
+    ];
+    if (
+      data.target.type === "channel" &&
+      data.target.memberCount !== undefined
+    ) {
       targetProps.push(`memberCount: ${data.target.memberCount}`);
     }
     props.push(`  target={{ ${targetProps.join(", ")} }}`);

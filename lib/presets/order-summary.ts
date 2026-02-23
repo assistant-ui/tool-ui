@@ -18,16 +18,16 @@ function generateOrderSummaryCode(data: SerializableOrderSummary): string {
   }
 
   props.push(
-    `  items={${JSON.stringify(data.items, null, 4).replace(/\n/g, "\n  ")}}`
+    `  items={${JSON.stringify(data.items, null, 4).replace(/\n/g, "\n  ")}}`,
   );
 
   props.push(
-    `  pricing={${JSON.stringify(data.pricing, null, 4).replace(/\n/g, "\n  ")}}`
+    `  pricing={${JSON.stringify(data.pricing, null, 4).replace(/\n/g, "\n  ")}}`,
   );
 
   if (data.choice) {
     props.push(
-      `  choice={${JSON.stringify(data.choice, null, 4).replace(/\n/g, "\n  ")}}`
+      `  choice={${JSON.stringify(data.choice, null, 4).replace(/\n/g, "\n  ")}}`,
     );
   }
 
@@ -82,7 +82,7 @@ export const orderSummaryPresets: Record<
         {
           id: "item-1",
           name: "Standing Desk Frame",
-          description: "Electric height adjustable, 60\" width",
+          description: 'Electric height adjustable, 60" width',
           imageUrl:
             "https://images.unsplash.com/photo-1595515106969-1ce29566ff1c?w=100&h=100&fit=crop",
           quantity: 1,
@@ -91,7 +91,7 @@ export const orderSummaryPresets: Record<
         {
           id: "item-2",
           name: "Bamboo Desktop",
-          description: "60\" x 30\" sustainable bamboo",
+          description: '60" x 30" sustainable bamboo',
           imageUrl:
             "https://images.unsplash.com/photo-1611269154421-4e27233ac5c7?w=100&h=100&fit=crop",
           quantity: 1,

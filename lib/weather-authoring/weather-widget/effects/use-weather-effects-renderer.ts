@@ -191,10 +191,11 @@ export function useWeatherEffectsRenderer(
       }
 
       disposeGL();
-      hasWebglBudgetSlotRef.current = releaseWeatherWebglBudgetSlotOnInitFailure(
-        canvas,
-        hasWebglBudgetSlotRef.current,
-      );
+      hasWebglBudgetSlotRef.current =
+        releaseWeatherWebglBudgetSlotOnInitFailure(
+          canvas,
+          hasWebglBudgetSlotRef.current,
+        );
       return false;
     },
     [disposeGL],
@@ -247,14 +248,26 @@ export function useWeatherEffectsRenderer(
       FULLSCREEN_VERTEX,
       CELESTIAL_FRAGMENT,
     );
-    programsRef.current.cloud = createProgram(gl, FULLSCREEN_VERTEX, CLOUD_FRAGMENT);
-    programsRef.current.rain = createProgram(gl, FULLSCREEN_VERTEX, RAIN_FRAGMENT);
+    programsRef.current.cloud = createProgram(
+      gl,
+      FULLSCREEN_VERTEX,
+      CLOUD_FRAGMENT,
+    );
+    programsRef.current.rain = createProgram(
+      gl,
+      FULLSCREEN_VERTEX,
+      RAIN_FRAGMENT,
+    );
     programsRef.current.lightning = createProgram(
       gl,
       FULLSCREEN_VERTEX,
       LIGHTNING_FRAGMENT,
     );
-    programsRef.current.snow = createProgram(gl, FULLSCREEN_VERTEX, SNOW_FRAGMENT);
+    programsRef.current.snow = createProgram(
+      gl,
+      FULLSCREEN_VERTEX,
+      SNOW_FRAGMENT,
+    );
     programsRef.current.composite = createProgram(
       gl,
       FULLSCREEN_VERTEX,
@@ -337,7 +350,11 @@ export function useWeatherEffectsRenderer(
           gl.TEXTURE_MIN_FILTER,
           gl.LINEAR_MIPMAP_LINEAR,
         );
-        glCurrent.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+        glCurrent.texParameteri(
+          gl.TEXTURE_2D,
+          gl.TEXTURE_MAG_FILTER,
+          gl.LINEAR,
+        );
         glCurrent.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
         glCurrent.texParameteri(
           gl.TEXTURE_2D,
@@ -346,7 +363,10 @@ export function useWeatherEffectsRenderer(
         );
         moonTextureLoadedRef.current = true;
       };
-      image.src = new URL("../assets/moon-texture.jpg", import.meta.url).toString();
+      image.src = new URL(
+        "../assets/moon-texture.jpg",
+        import.meta.url,
+      ).toString();
     }
 
     const positions = new Float32Array([
@@ -625,7 +645,10 @@ export function useWeatherEffectsRenderer(
 
     return () => {
       observer?.disconnect();
-      canvas.removeEventListener("webglcontextlost", onContextLost as EventListener);
+      canvas.removeEventListener(
+        "webglcontextlost",
+        onContextLost as EventListener,
+      );
       canvas.removeEventListener(
         "webglcontextrestored",
         onContextRestored as EventListener,

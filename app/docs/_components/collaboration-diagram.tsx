@@ -41,12 +41,7 @@ export function CollaborationDiagram() {
       </defs>
 
       {/* User circle */}
-      <circle
-        cx="80"
-        cy="100"
-        r="48"
-        fill="#3b82f6"
-      />
+      <circle cx="80" cy="100" r="48" fill="#3b82f6" />
       <text
         x="80"
         y="100"
@@ -84,12 +79,7 @@ export function CollaborationDiagram() {
       </text>
 
       {/* Assistant circle */}
-      <circle
-        cx="520"
-        cy="100"
-        r="48"
-        fill="#8b5cf6"
-      />
+      <circle cx="520" cy="100" r="48" fill="#8b5cf6" />
       <text
         x="520"
         y="100"

@@ -86,7 +86,6 @@ function Header({
 }) {
   return (
     <header className="flex items-center gap-3 p-3">
-      {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src={author.avatarUrl}
         alt={`${author.name} avatar`}
@@ -133,7 +132,6 @@ function MediaGrid({
       onClick={() => onOpen?.(index)}
     >
       {item.type === "image" ? (
-        // eslint-disable-next-line @next/next/no-img-element
         <img
           src={item.url}
           alt={item.alt}
@@ -302,7 +300,6 @@ export function InstagramPost({
           )}
         </div>
       </article>
-
     </div>
   );
 }

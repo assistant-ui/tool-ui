@@ -1,11 +1,6 @@
-import {
-  getTimeOfDay,
-  mapWeatherToEffects,
-} from "./parameter-mapper";
+import { getTimeOfDay, mapWeatherToEffects } from "./parameter-mapper";
 import type { WeatherEffectParams } from "./types";
-import type {
-  WeatherEffectsCanvasProps,
-} from "./weather-effects-types";
+import type { WeatherEffectsCanvasProps } from "./weather-effects-types";
 import type {
   WeatherCompositorParams,
   WeatherStudioCompositorParams,

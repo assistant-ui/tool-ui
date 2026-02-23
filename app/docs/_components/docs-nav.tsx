@@ -13,10 +13,7 @@ import {
   type ComponentCategory,
 } from "@/lib/docs/component-registry";
 import { cn } from "@/lib/ui/cn";
-import {
-  CONCEPTS_DOCS_PAGES,
-  GET_STARTED_DOCS_PAGES,
-} from "./docs-pages";
+import { CONCEPTS_DOCS_PAGES, GET_STARTED_DOCS_PAGES } from "./docs-pages";
 
 const STORAGE_KEY = "tool-ui-components-nav-collapsed:v1";
 
@@ -56,9 +53,12 @@ export function DocsNav() {
   }, []);
 
   React.useEffect(() => {
-    const component = componentsRegistry.find((entry) => entry.path === pathname);
+    const component = componentsRegistry.find(
+      (entry) => entry.path === pathname,
+    );
     if (component) {
-      const source = previousPathRef.current === "/docs/gallery" ? "gallery" : "direct";
+      const source =
+        previousPathRef.current === "/docs/gallery" ? "gallery" : "direct";
       analytics.component.viewed(component.id, source);
     }
 
@@ -109,7 +109,9 @@ export function DocsNav() {
             className={buildLinkClasses(isGalleryActive)}
             title={collapsed ? "Gallery" : undefined}
             onMouseDown={handleLinkMouseDown}
-            onClick={() => analytics.docs.navigationClicked("Gallery", galleryPath)}
+            onClick={() =>
+              analytics.docs.navigationClicked("Gallery", galleryPath)
+            }
           >
             {!collapsed && (
               <div className="flex flex-col overflow-hidden">
@@ -139,7 +141,9 @@ export function DocsNav() {
                 className={buildLinkClasses(isActive)}
                 title={collapsed ? page.label : undefined}
                 onMouseDown={handleLinkMouseDown}
-                onClick={() => analytics.docs.navigationClicked(page.label, page.path)}
+                onClick={() =>
+                  analytics.docs.navigationClicked(page.label, page.path)
+                }
               >
                 {!collapsed && (
                   <div className="overflow-hidden">
@@ -166,7 +170,9 @@ export function DocsNav() {
                 className={buildLinkClasses(isActive)}
                 title={collapsed ? page.label : undefined}
                 onMouseDown={handleLinkMouseDown}
-                onClick={() => analytics.docs.navigationClicked(page.label, page.path)}
+                onClick={() =>
+                  analytics.docs.navigationClicked(page.label, page.path)
+                }
               >
                 {!collapsed && (
                   <div className="overflow-hidden">

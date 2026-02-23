@@ -368,11 +368,7 @@ const actionsData: GenericRow[] = [
   },
 ];
 
-export type DataTablePresetName =
-  | "stocks"
-  | "tasks"
-  | "links-tags"
-  | "actions";
+export type DataTablePresetName = "stocks" | "tasks" | "links-tags" | "actions";
 
 export const dataTablePresets: Record<
   DataTablePresetName,
@@ -399,7 +395,8 @@ export const dataTablePresets: Record<
     generateExampleCode: generateDataTableCode,
   },
   "links-tags": {
-    description: "Compact link and tag formatting without wide resource metadata",
+    description:
+      "Compact link and tag formatting without wide resource metadata",
     data: {
       id: "data-table-preview-links-tags",
       columns: linksTagsColumns,
@@ -409,7 +406,8 @@ export const dataTablePresets: Record<
     generateExampleCode: generateDataTableCode,
   },
   actions: {
-    description: "Support queue with external local actions and wait indicators",
+    description:
+      "Support queue with external local actions and wait indicators",
     data: {
       id: "data-table-preview-actions",
       columns: actionsColumns,

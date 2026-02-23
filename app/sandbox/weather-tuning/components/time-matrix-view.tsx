@@ -41,10 +41,7 @@ const PARAMETER_GROUP_ICONS: Record<string, LucideIcon> = {
   Post: SlidersHorizontal,
 };
 
-const PARAMETER_GROUP_COLORS: Record<
-  string,
-  { dot: string; text: string }
-> = {
+const PARAMETER_GROUP_COLORS: Record<string, { dot: string; text: string }> = {
   Sky: { dot: "text-sky-500/80", text: "text-sky-500/80" },
   "Sun Rays": { dot: "text-amber-500/80", text: "text-amber-500/80" },
   Clouds: { dot: "text-slate-400/80", text: "text-slate-400/80" },
@@ -175,51 +172,53 @@ function ParameterTimeRow({
         <div className="flex items-center gap-2 text-xs text-muted-foreground/70">
           <span>{param.label}</span>
         </div>
-      {values.map(({ checkpoint, value, baseValue }) => {
-        if (typeof value !== "number" || typeof baseValue !== "number") {
-          return (
-            <div key={checkpoint} className="text-xs text-muted-foreground/40">
-              —
-            </div>
-          );
-        }
+        {values.map(({ checkpoint, value, baseValue }) => {
+          if (typeof value !== "number" || typeof baseValue !== "number") {
+            return (
+              <div
+                key={checkpoint}
+                className="text-xs text-muted-foreground/40"
+              >
+                —
+              </div>
+            );
+          }
 
-        return (
-          <CheckpointSlider
-            key={checkpoint}
-            value={value}
-            baseValue={baseValue}
-            min={param.min}
-            max={param.max}
-            step={param.step}
-            label={`${param.label} ${checkpoint}`}
-            onChange={(next, { bulkAcrossTimes }) => {
-              if (bulkAcrossTimes) {
-                tuningState.bulkUpdateParameterAcrossCheckpoints(
+          return (
+            <CheckpointSlider
+              key={checkpoint}
+              value={value}
+              baseValue={baseValue}
+              min={param.min}
+              max={param.max}
+              step={param.step}
+              label={`${param.label} ${checkpoint}`}
+              onChange={(next, { bulkAcrossTimes }) => {
+                if (bulkAcrossTimes) {
+                  tuningState.bulkUpdateParameterAcrossCheckpoints(
+                    condition,
+                    TIME_CHECKPOINT_ORDER,
+                    layer,
+                    param.key,
+                    next,
+                  );
+                  return;
+                }
+                tuningState.updateParameterAtCheckpoint(
                   condition,
-                  TIME_CHECKPOINT_ORDER,
+                  checkpoint,
                   layer,
                   param.key,
                   next,
                 );
-                return;
-              }
-              tuningState.updateParameterAtCheckpoint(
-                condition,
-                checkpoint,
-                layer,
-                param.key,
-                next,
-              );
-            }}
-          />
-        );
-      })}
+              }}
+            />
+          );
+        })}
       </div>
     </div>
   );
 }
-
 
 function CheckpointPreview({
   condition,
@@ -263,7 +262,10 @@ function CheckpointPreview({
   );
 }
 
-export function TimeMatrixView({ tuningState, condition }: TimeMatrixViewProps) {
+export function TimeMatrixView({
+  tuningState,
+  condition,
+}: TimeMatrixViewProps) {
   return (
     <div className="flex h-full flex-col">
       {/* Keep the widgets always visible while scrolling parameters */}

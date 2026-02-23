@@ -1,6 +1,12 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef, type RefObject } from "react";
+import {
+  useState,
+  useEffect,
+  useCallback,
+  useRef,
+  type RefObject,
+} from "react";
 
 export interface GlassRegion {
   x: number;
@@ -22,7 +28,9 @@ export function useGlassRegion({
   padding = 0,
   enabled = true,
 }: UseGlassRegionOptions): [number, number, number, number] {
-  const [region, setRegion] = useState<[number, number, number, number]>([0, 0, 1, 1]);
+  const [region, setRegion] = useState<[number, number, number, number]>([
+    0, 0, 1, 1,
+  ]);
   const rafRef = useRef<number>(0);
 
   const calculateRegion = useCallback(() => {
@@ -37,10 +45,22 @@ export function useGlassRegion({
       return;
     }
 
-    const x = Math.max(0, (target.left - container.left - padding) / container.width);
-    const y = Math.max(0, (target.top - container.top - padding) / container.height);
-    const width = Math.min(1 - x, (target.width + padding * 2) / container.width);
-    const height = Math.min(1 - y, (target.height + padding * 2) / container.height);
+    const x = Math.max(
+      0,
+      (target.left - container.left - padding) / container.width,
+    );
+    const y = Math.max(
+      0,
+      (target.top - container.top - padding) / container.height,
+    );
+    const width = Math.min(
+      1 - x,
+      (target.width + padding * 2) / container.width,
+    );
+    const height = Math.min(
+      1 - y,
+      (target.height + padding * 2) / container.height,
+    );
 
     setRegion([x, 1 - y - height, width, height]);
   }, [targetRef, containerRef, padding, enabled]);
@@ -86,7 +106,7 @@ export function useGlassRegion({
 
 export function useContainerQuery(
   ref: RefObject<HTMLElement | null>,
-  breakpoints: { name: string; minWidth: number }[]
+  breakpoints: { name: string; minWidth: number }[],
 ): string {
   const [activeBreakpoint, setActiveBreakpoint] = useState<string>("");
 
@@ -117,7 +137,7 @@ export function useContainerQuery(
 }
 
 export function useAdaptiveGlassParams(
-  containerRef: RefObject<HTMLElement | null>
+  containerRef: RefObject<HTMLElement | null>,
 ): {
   refractionScale: number;
   edgeWidth: number;

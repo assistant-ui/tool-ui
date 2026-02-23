@@ -12,7 +12,10 @@ export function getMdxAsMarkdown(mdxPath: string): string {
   let result = rawContent;
 
   // Remove DocsHeader import
-  result = result.replace(/^import\s*\{\s*DocsHeader\s*\}\s*from\s*["'][^"']+["'];?\n?/gm, "");
+  result = result.replace(
+    /^import\s*\{\s*DocsHeader\s*\}\s*from\s*["'][^"']+["'];?\n?/gm,
+    "",
+  );
 
   // Remove DocsHeader component usage
   result = result.replace(/<DocsHeader[^>]*\/>\n?/g, "");

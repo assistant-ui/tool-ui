@@ -1234,7 +1234,12 @@ export default function WeatherCompositorSandbox() {
                       tempMax: 73,
                       conditionCode: "cloudy",
                     },
-                    { label: "Thu", tempMin: 58, tempMax: 68, conditionCode: "rain" },
+                    {
+                      label: "Thu",
+                      tempMin: 58,
+                      tempMax: 68,
+                      conditionCode: "rain",
+                    },
                     {
                       label: "Fri",
                       tempMin: 55,
@@ -1283,16 +1288,36 @@ export default function WeatherCompositorSandbox() {
                   tempMax: 77,
                   conditionCode: "partly-cloudy",
                 },
-                { label: "Wed", tempMin: 61, tempMax: 73, conditionCode: "cloudy" },
-                { label: "Thu", tempMin: 58, tempMax: 68, conditionCode: "rain" },
-                { label: "Fri", tempMin: 55, tempMax: 65, conditionCode: "drizzle" },
+                {
+                  label: "Wed",
+                  tempMin: 61,
+                  tempMax: 73,
+                  conditionCode: "cloudy",
+                },
+                {
+                  label: "Thu",
+                  tempMin: 58,
+                  tempMax: 68,
+                  conditionCode: "rain",
+                },
+                {
+                  label: "Fri",
+                  tempMin: 55,
+                  tempMax: 65,
+                  conditionCode: "drizzle",
+                },
                 {
                   label: "Sat",
                   tempMin: 60,
                   tempMax: 72,
                   conditionCode: "partly-cloudy",
                 },
-                { label: "Sun", tempMin: 63, tempMax: 75, conditionCode: "clear" },
+                {
+                  label: "Sun",
+                  tempMin: 63,
+                  tempMax: 75,
+                  conditionCode: "clear",
+                },
               ]}
               updatedAt={(() => {
                 const date = new Date();

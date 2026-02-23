@@ -37,10 +37,7 @@ const getCategoryIcon = (type: Location["type"]) => {
 export function DestinationPicker({
   result,
   addResult,
-}: ToolCallMessagePartProps<
-  Record<string, never>,
-  SelectDestinationResult
->) {
+}: ToolCallMessagePartProps<Record<string, never>, SelectDestinationResult>) {
   const locations = MOCK_LOCATIONS;
 
   // Receipt state - show what was selected
@@ -81,7 +78,6 @@ export function DestinationPicker({
 
   return (
     <Card className="max-w-md space-y-4 p-4">
-
       {favorites.length > 0 && (
         <div className="space-y-2">
           <div className="text-muted-foreground flex items-center gap-2 text-sm font-medium">

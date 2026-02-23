@@ -142,7 +142,7 @@ function resolveReleaseRange(
     throw new Error(
       [
         "No git release tag found. Changelog generation requires a tagged baseline.",
-        "Create and push an annotated tag first (example: git tag -a v2026.2.13 -m \"Release v2026.2.13\" && git push origin v2026.2.13).",
+        'Create and push an annotated tag first (example: git tag -a v2026.2.13 -m "Release v2026.2.13" && git push origin v2026.2.13).',
       ].join("\n"),
     );
   }
@@ -218,7 +218,10 @@ export function formatCommitSummary(
 
       if (commit.files.length > 0) {
         const fileList = commit.files.slice(0, 12).join(", ");
-        const extra = commit.files.length > 12 ? ` (+${commit.files.length - 12} more)` : "";
+        const extra =
+          commit.files.length > 12
+            ? ` (+${commit.files.length - 12} more)`
+            : "";
         lines.push(`  files: ${fileList}${extra}`);
       }
 

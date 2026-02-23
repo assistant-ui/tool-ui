@@ -9,6 +9,7 @@ This directory contains **Work-In-Progress Tool UI components** for the Waymo Bo
 ## Purpose
 
 The playground serves as a sandbox for:
+
 - Prototyping Tool UIs for specific AI assistant use cases
 - Experimenting with different interaction patterns
 - Validating design decisions before committing to the main library
@@ -25,6 +26,7 @@ A shadcn/ui-based component that displays a user's frequent locations (favorites
 **Use Case:** When a user requests a ride without specifying a destination, this UI presents their most frequently used locations (Home, Work, etc.) for quick selection.
 
 **Features:**
+
 - Categorizes locations into Favorites and Recents
 - Uses contextual icons (Home, Work, generic location)
 - Provides a fallback option to search for different locations
@@ -33,6 +35,7 @@ A shadcn/ui-based component that displays a user's frequent locations (favorites
 ## Promotion Criteria
 
 Tool UIs in this directory may be promoted to the main Tool UI library when they:
+
 - Demonstrate clear value across multiple use cases
 - Have stable APIs and interaction patterns
 - Pass usability testing

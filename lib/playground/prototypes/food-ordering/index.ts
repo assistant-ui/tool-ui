@@ -79,7 +79,8 @@ Be conversational, friendly, and helpful. Ask clarifying questions when needed.`
       description: "Place a delivery or pickup order and receive a summary.",
       uiId: "fallback",
       input: placeOrderInput,
-      execute: async (rawArgs: unknown) => placeOrder(placeOrderInput.parse(rawArgs)),
+      execute: async (rawArgs: unknown) =>
+        placeOrder(placeOrderInput.parse(rawArgs)),
     },
   ],
 };

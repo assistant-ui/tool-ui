@@ -469,7 +469,7 @@ void main() {
 function createShader(
   gl: WebGL2RenderingContext,
   type: number,
-  source: string
+  source: string,
 ): WebGLShader | null {
   const shader = gl.createShader(type);
   if (!shader) return null;
@@ -489,7 +489,7 @@ function createShader(
 function createProgram(
   gl: WebGL2RenderingContext,
   vertexShader: WebGLShader,
-  fragmentShader: WebGLShader
+  fragmentShader: WebGLShader,
 ): WebGLProgram | null {
   const program = gl.createProgram();
   if (!program) return null;
@@ -555,7 +555,11 @@ export function LightningCanvas({
     glRef.current = gl;
 
     const vertexShader = createShader(gl, gl.VERTEX_SHADER, VERTEX_SHADER);
-    const fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, FRAGMENT_SHADER);
+    const fragmentShader = createShader(
+      gl,
+      gl.FRAGMENT_SHADER,
+      FRAGMENT_SHADER,
+    );
     if (!vertexShader || !fragmentShader) return false;
 
     const program = createProgram(gl, vertexShader, fragmentShader);
@@ -570,7 +574,10 @@ export function LightningCanvas({
       glowIntensity: gl.getUniformLocation(program, "u_glowIntensity"),
       flashDuration: gl.getUniformLocation(program, "u_flashDuration"),
       sceneIllumination: gl.getUniformLocation(program, "u_sceneIllumination"),
-      afterglowPersistence: gl.getUniformLocation(program, "u_afterglowPersistence"),
+      afterglowPersistence: gl.getUniformLocation(
+        program,
+        "u_afterglowPersistence",
+      ),
       strikeTime: gl.getUniformLocation(program, "u_strikeTime"),
       strikeSeed: gl.getUniformLocation(program, "u_strikeSeed"),
       debug: gl.getUniformLocation(program, "u_debug"),
@@ -652,7 +659,17 @@ export function LightningCanvas({
     gl.drawArrays(gl.TRIANGLES, 0, 6);
 
     animationFrameRef.current = requestAnimationFrame(render);
-  }, [branchDensity, displacement, glowIntensity, flashDuration, sceneIllumination, afterglowPersistence, autoMode, autoInterval, debug]);
+  }, [
+    branchDensity,
+    displacement,
+    glowIntensity,
+    flashDuration,
+    sceneIllumination,
+    afterglowPersistence,
+    autoMode,
+    autoInterval,
+    debug,
+  ]);
 
   useEffect(() => {
     if (initGL()) {

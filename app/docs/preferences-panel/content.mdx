@@ -102,18 +102,18 @@ export const toolkit: Toolkit = {
       safeParse: safeParseSerializablePreferencesPanel,
       idPrefix: "preferences-panel",
       render: (parsedArgs, { addResult }) => (
-          <PreferencesPanel
-            {...parsedArgs}
-            onAction={async (actionId, values) => {
-              if (actionId === "save") {
-                await addResult({ choice: values });
-                return;
-              }
-              if (actionId === "cancel") {
-                await addResult({ choice: values });
-              }
-            }}
-          />
+        <PreferencesPanel
+          {...parsedArgs}
+          onAction={async (actionId, values) => {
+            if (actionId === "save") {
+              await addResult({ choice: values });
+              return;
+            }
+            if (actionId === "cancel") {
+              await addResult({ choice: values });
+            }
+          }}
+        />
       ),
     }),
   },
@@ -134,7 +134,8 @@ export const toolkit: Toolkit = {
     Save/Cancel buttons prevent accidental changes
   </Feature>
   <Feature icon="CheckCircle2" title="Receipt state">
-    `PreferencesPanel.Receipt` shows confirmed values with per-field error badges
+    `PreferencesPanel.Receipt` shows confirmed values with per-field error
+    badges
   </Feature>
   <Feature icon="Layers" title="Organized sections">
     Group related settings under optional section headings

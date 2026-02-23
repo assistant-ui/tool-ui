@@ -31,9 +31,8 @@ export const CONDITION_GROUPS: ConditionGroup[] = [
 ];
 
 // Flat list for iteration (derived from groups)
-export const WEATHER_CONDITIONS: WeatherConditionCode[] = CONDITION_GROUPS.flatMap(
-  (group) => group.conditions,
-);
+export const WEATHER_CONDITIONS: WeatherConditionCode[] =
+  CONDITION_GROUPS.flatMap((group) => group.conditions);
 
 export const CONDITION_LABELS: Record<WeatherConditionCode, string> = {
   clear: "Clear",
@@ -208,7 +207,9 @@ export interface CompositorStateV4 {
   version: 4;
   activeCondition: WeatherConditionCode;
   globalSettings: GlobalSettings;
-  checkpointOverrides: Partial<Record<WeatherConditionCode, CheckpointOverrides>>;
+  checkpointOverrides: Partial<
+    Record<WeatherConditionCode, CheckpointOverrides>
+  >;
 }
 
 export type CompositorState = CompositorStateV4;

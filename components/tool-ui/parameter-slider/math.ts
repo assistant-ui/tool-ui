@@ -21,7 +21,9 @@ export function sliderRangeToPercent({
   return clampPercent(((value - min) / range) * 100);
 }
 
-export function createSliderValueSnapshot(sliders: SliderConfig[]): SliderValue[] {
+export function createSliderValueSnapshot(
+  sliders: SliderConfig[],
+): SliderValue[] {
   return sliders.map((slider) => ({ id: slider.id, value: slider.value }));
 }
 

@@ -98,7 +98,9 @@ export const toolkit: Toolkit = {
       safeParse: safeParseSerializableOrderSummary,
       idPrefix: "order",
       render: (parsedArgs, { result, addResult }) =>
-        result ? <OrderSummary.Receipt {...parsedArgs} choice={result} /> : (
+        result ? (
+          <OrderSummary.Receipt {...parsedArgs} choice={result} />
+        ) : (
           <ToolUI id={parsedArgs.id}>
             <ToolUI.Surface>
               <OrderSummary.Display {...parsedArgs} />
@@ -179,11 +181,9 @@ When parsing tool payloads with `SerializableOrderSummarySchema`, keep variant s
 - `variant: "summary"` must not include `choice`
 - `variant: "receipt"` must include `choice`
 
-
 ## With Discount
 
 Add `discount` and `discountLabel` to `pricing` to show promotional savings.
-
 
 ## Shared Props
 

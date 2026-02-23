@@ -1,9 +1,25 @@
 "use client";
 
 import { cn } from "@/lib/ui/cn";
-import { Check, Cloud, CloudRain, CloudSnow, Sun, Wind, Zap, CloudFog, CloudHail, Cloudy, CloudDrizzle, Snowflake } from "lucide-react";
+import {
+  Check,
+  Cloud,
+  CloudRain,
+  CloudSnow,
+  Sun,
+  Wind,
+  Zap,
+  CloudFog,
+  CloudHail,
+  Cloudy,
+  CloudDrizzle,
+  Snowflake,
+} from "lucide-react";
 import type { WeatherConditionCode } from "@/lib/weather-authoring/weather-widget/schema";
-import { CONDITION_GROUPS, CONDITION_LABELS } from "../../weather-compositor/presets";
+import {
+  CONDITION_GROUPS,
+  CONDITION_LABELS,
+} from "../../weather-compositor/presets";
 import { CheckpointDots } from "./checkpoint-dots";
 import type { ConditionCheckpoints } from "../types";
 
@@ -86,9 +102,7 @@ export function ConditionSidebar({
                       onClick={() => onSelectCondition(condition)}
                       className={cn(
                         "group relative flex items-center gap-2.5 rounded-md px-2 py-1.5 text-left transition-all",
-                        isSelected
-                          ? "bg-accent/80"
-                          : "hover:bg-accent/40"
+                        isSelected ? "bg-accent/80" : "hover:bg-accent/40",
                       )}
                     >
                       {isSelected && (
@@ -100,13 +114,15 @@ export function ConditionSidebar({
                           "flex size-6 shrink-0 items-center justify-center rounded transition-all",
                           isSelected
                             ? `bg-gradient-to-br ${colorGradient}`
-                            : "bg-muted/50"
+                            : "bg-muted/50",
                         )}
                       >
                         <Icon
                           className={cn(
                             "size-3.5 transition-colors",
-                            isSelected ? "text-white" : "text-muted-foreground/60"
+                            isSelected
+                              ? "text-white"
+                              : "text-muted-foreground/60",
                           )}
                         />
                       </div>
@@ -116,7 +132,9 @@ export function ConditionSidebar({
                           <span
                             className={cn(
                               "truncate text-xs transition-colors",
-                              isSelected ? "text-foreground" : "text-muted-foreground"
+                              isSelected
+                                ? "text-foreground"
+                                : "text-muted-foreground",
                             )}
                           >
                             {label}
@@ -131,7 +149,10 @@ export function ConditionSidebar({
                           )}
                         </div>
                         <div className="mt-0.5">
-                          <CheckpointDots checkpoints={checkpoints[condition]} size="sm" />
+                          <CheckpointDots
+                            checkpoints={checkpoints[condition]}
+                            size="sm"
+                          />
                         </div>
                       </div>
                     </button>

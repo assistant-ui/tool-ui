@@ -95,10 +95,12 @@ function hasMarkdownCodeFence(input: string): boolean {
 
 function toMarkdownCodeFence(input: string, language: string): string {
   const normalized = input.replace(/\r\n/g, "\n").trimEnd();
-  const backtickRuns = Array.from(normalized.matchAll(/`+/g), (match) =>
-    match[0].length,
+  const backtickRuns = Array.from(
+    normalized.matchAll(/`+/g),
+    (match) => match[0].length,
   );
-  const maxBacktickRun = backtickRuns.length > 0 ? Math.max(...backtickRuns) : 0;
+  const maxBacktickRun =
+    backtickRuns.length > 0 ? Math.max(...backtickRuns) : 0;
   const fence = "`".repeat(Math.max(3, maxBacktickRun + 1));
   return `${fence}${language}\n${normalized}\n${fence}`;
 }
@@ -199,13 +201,18 @@ export function upsertReleaseSection({
   if (existing) {
     const before = content.slice(0, existing.start).trimEnd();
     const after = content.slice(existing.end).replace(/^\s+/, "");
-    return `${before}\n\n${nextSection}\n${after ? `\n${after}` : ""}`.trimEnd() + "\n";
+    return (
+      `${before}\n\n${nextSection}\n${after ? `\n${after}` : ""}`.trimEnd() +
+      "\n"
+    );
   }
 
   const insertAt = sections[0]?.start ?? content.length;
   const before = content.slice(0, insertAt).trimEnd();
   const after = content.slice(insertAt).replace(/^\s+/, "");
-  return `${before}\n\n${nextSection}\n${after ? `\n${after}` : ""}`.trimEnd() + "\n";
+  return (
+    `${before}\n\n${nextSection}\n${after ? `\n${after}` : ""}`.trimEnd() + "\n"
+  );
 }
 
 export function validateChangelogStructure(
@@ -215,7 +222,9 @@ export function validateChangelogStructure(
   const sections = parseReleaseSectionBounds(content);
 
   if (sections.length === 0) {
-    errors.push("Changelog must include at least one release section (## YYYY-MM-DD).");
+    errors.push(
+      "Changelog must include at least one release section (## YYYY-MM-DD).",
+    );
     return { ok: false, errors };
   }
 
@@ -274,7 +283,6 @@ export function validateChangelogStructure(
       );
     }
 
-
     if (migrationPromptCount > 1) {
       errors.push(
         `Release "${section.heading}" contains duplicate "### Migration prompt" headings.`,
@@ -286,7 +294,10 @@ export function validateChangelogStructure(
         (subsection) => subsection.heading === "Migration prompt",
       );
       const migrationPromptBody = migrationPromptSection
-        ? sectionContent.slice(migrationPromptSection.headingEnd, migrationPromptSection.end)
+        ? sectionContent.slice(
+            migrationPromptSection.headingEnd,
+            migrationPromptSection.end,
+          )
         : "";
 
       if (!hasMarkdownCodeFence(migrationPromptBody)) {
@@ -312,14 +323,19 @@ export function validateChangelogStructure(
   return { ok: errors.length === 0, errors };
 }
 
-export function readLatestReleaseGeneratedToRef(content: string): string | null {
+export function readLatestReleaseGeneratedToRef(
+  content: string,
+): string | null {
   const sections = parseReleaseSectionBounds(content);
   const latestSection = sections[0];
   if (!latestSection) {
     return null;
   }
 
-  const latestSectionContent = content.slice(latestSection.start, latestSection.end);
+  const latestSectionContent = content.slice(
+    latestSection.start,
+    latestSection.end,
+  );
   const firstSubheadingMatch = latestSectionContent.match(/^###\s+[^\n]+$/m);
   const markerSearchContent = firstSubheadingMatch
     ? latestSectionContent.slice(0, firstSubheadingMatch.index)

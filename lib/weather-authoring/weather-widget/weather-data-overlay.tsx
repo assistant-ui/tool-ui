@@ -15,16 +15,18 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { cn } from "./_adapter";
-import type { ForecastDay, TemperatureUnit, WeatherConditionCode } from "./schema";
+import type {
+  ForecastDay,
+  TemperatureUnit,
+  WeatherConditionCode,
+} from "./schema";
 import {
   getSceneBrightnessFromTimeOfDay,
   getTimeOfDay,
   getWeatherTheme,
   type WeatherTheme,
 } from "./effects/parameter-mapper";
-import {
-  resolveGlassBackdropFilterStyles,
-} from "./effects/glass-style-resolver";
+import { resolveGlassBackdropFilterStyles } from "./effects/glass-style-resolver";
 import { useGlassStyles } from "./effects/glass-panel-svg";
 
 function getPeakIntensity(timeOfDay: number): number {
@@ -320,7 +322,12 @@ export function WeatherDataOverlay({
       container.removeEventListener("mouseleave", handleMouseLeave);
       cancelPendingGlowFrame();
     };
-  }, [reducedMotion, clearGlowIntensity, scheduleGlowState, cancelPendingGlowFrame]);
+  }, [
+    reducedMotion,
+    clearGlowIntensity,
+    scheduleGlowState,
+    cancelPendingGlowFrame,
+  ]);
 
   const roundedTemperature = Math.round(temperature);
   const unitSymbol = unit === "celsius" ? "C" : "F";
@@ -337,7 +344,9 @@ export function WeatherDataOverlay({
   const bgOpacity = baseBgOpacity * (1 - peakIntensity * 0.7);
   const midnightDistance = Math.min(timeOfDay, 1 - timeOfDay);
   const baseBlur = isDark ? 2 + midnightDistance * 38 : 24;
-  const blurAmount = isDark ? baseBlur : baseBlur - peakIntensity * (baseBlur - 8);
+  const blurAmount = isDark
+    ? baseBlur
+    : baseBlur - peakIntensity * (baseBlur - 8);
 
   // Dawn intensity peaks around timeOfDay 0.2-0.3 (morning transition)
   const isDawn = timeOfDay > 0.1 && timeOfDay < 0.4;
@@ -425,11 +434,17 @@ export function WeatherDataOverlay({
               fontFeatureSettings: '"tnum" 1, "case" 1',
             }}
           >
-            <span className="font-medium tabular-nums" style={{ fontSize: hiLoFontSize }}>
+            <span
+              className="font-medium tabular-nums"
+              style={{ fontSize: hiLoFontSize }}
+            >
               <span className={textSubtle}>H </span>
               <span className={textPrimary}>{Math.round(tempHigh)}°</span>
             </span>
-            <span className="font-medium tabular-nums" style={{ fontSize: hiLoFontSize }}>
+            <span
+              className="font-medium tabular-nums"
+              style={{ fontSize: hiLoFontSize }}
+            >
               <span className={textSubtle}>L </span>
               <span className={textPrimary}>{Math.round(tempLow)}°</span>
             </span>

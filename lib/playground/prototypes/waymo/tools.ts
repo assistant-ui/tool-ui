@@ -32,7 +32,7 @@ const MOCK_HOME: Location = {
 const MOCK_WORK: Location = {
   address: "456 Office Blvd, San Francisco, CA 94103",
   lat: 37.7751,
-  lng: -122.4180,
+  lng: -122.418,
   name: "Work",
 };
 
@@ -61,7 +61,9 @@ const MOCK_PAYMENT_METHODS: PaymentMethod[] = [
 ];
 
 // Tool 1: Get rider context
-export async function getRiderContext(options?: { noHome?: boolean }): Promise<RiderContext> {
+export async function getRiderContext(options?: {
+  noHome?: boolean;
+}): Promise<RiderContext> {
   // Simulate network delay
   await new Promise((resolve) => setTimeout(resolve, 300));
 
@@ -117,7 +119,7 @@ export async function resolveAddress(query: string): Promise<Location> {
 
 // Tool 2: Get pickup location
 export async function getPickupLocation(
-  _input: GetPickupLocationInput
+  _input: GetPickupLocationInput,
 ): Promise<GetPickupLocationOutput> {
   // Simulate network delay
   await new Promise((resolve) => setTimeout(resolve, 200));
@@ -145,7 +147,7 @@ export async function getQuote(input: GetQuoteInput): Promise<RideQuote> {
     dropoff: input.dropoff,
     etaMinutes: 5,
     price: {
-      amount: 12.50,
+      amount: 12.5,
       currency: "USD",
       isEstimate: false,
     },
@@ -167,7 +169,9 @@ export async function bookTrip(input: BookTripInput): Promise<BookedTrip> {
 
   // Get the payment method to use
   const paymentMethodId = input.paymentMethodId || MOCK_DEFAULT_PAYMENT.id;
-  const paymentMethod = MOCK_PAYMENT_METHODS.find(pm => pm.id === paymentMethodId) || MOCK_DEFAULT_PAYMENT;
+  const paymentMethod =
+    MOCK_PAYMENT_METHODS.find((pm) => pm.id === paymentMethodId) ||
+    MOCK_DEFAULT_PAYMENT;
 
   // Format payment summary
   let paymentSummary = "$12.50 charged to ";
@@ -186,7 +190,7 @@ export async function bookTrip(input: BookTripInput): Promise<BookedTrip> {
     dropoff: MOCK_HOME,
     etaMinutes: 5,
     price: {
-      amount: 12.50,
+      amount: 12.5,
       currency: "USD",
     },
     paymentSummary,

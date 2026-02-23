@@ -497,7 +497,7 @@ void main() {
 function createShader(
   gl: WebGL2RenderingContext,
   type: number,
-  source: string
+  source: string,
 ): WebGLShader | null {
   const shader = gl.createShader(type);
   if (!shader) return null;
@@ -517,7 +517,7 @@ function createShader(
 function createProgram(
   gl: WebGL2RenderingContext,
   vertexShader: WebGLShader,
-  fragmentShader: WebGLShader
+  fragmentShader: WebGLShader,
 ): WebGLProgram | null {
   const program = gl.createProgram();
   if (!program) return null;
@@ -585,7 +585,7 @@ export function RainCanvas({
     const fragmentShader = createShader(
       gl,
       gl.FRAGMENT_SHADER,
-      FRAGMENT_SHADER
+      FRAGMENT_SHADER,
     );
     if (!vertexShader || !fragmentShader) return false;
 
@@ -601,11 +601,17 @@ export function RainCanvas({
       fallingIntensity: gl.getUniformLocation(program, "u_fallingIntensity"),
       fallingSpeed: gl.getUniformLocation(program, "u_fallingSpeed"),
       fallingAngle: gl.getUniformLocation(program, "u_fallingAngle"),
-      fallingStreakLength: gl.getUniformLocation(program, "u_fallingStreakLength"),
+      fallingStreakLength: gl.getUniformLocation(
+        program,
+        "u_fallingStreakLength",
+      ),
       fallingLayers: gl.getUniformLocation(program, "u_fallingLayers"),
       fallingRefraction: gl.getUniformLocation(program, "u_fallingRefraction"),
       fallingWaviness: gl.getUniformLocation(program, "u_fallingWaviness"),
-      fallingThicknessVar: gl.getUniformLocation(program, "u_fallingThicknessVar"),
+      fallingThicknessVar: gl.getUniformLocation(
+        program,
+        "u_fallingThicknessVar",
+      ),
       debug: gl.getUniformLocation(program, "u_debug"),
     };
 
@@ -662,7 +668,19 @@ export function RainCanvas({
     gl.drawArrays(gl.TRIANGLES, 0, 6);
 
     animationFrameRef.current = requestAnimationFrame(render);
-  }, [glassIntensity, zoom, fallingIntensity, fallingSpeed, fallingAngle, fallingStreakLength, fallingLayers, fallingRefraction, fallingWaviness, fallingThicknessVar, debug]);
+  }, [
+    glassIntensity,
+    zoom,
+    fallingIntensity,
+    fallingSpeed,
+    fallingAngle,
+    fallingStreakLength,
+    fallingLayers,
+    fallingRefraction,
+    fallingWaviness,
+    fallingThicknessVar,
+    debug,
+  ]);
 
   useEffect(() => {
     if (initGL()) {

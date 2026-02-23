@@ -10,5 +10,8 @@ export const size = ogSize;
 export const contentType = ogContentType;
 
 export default async function Image() {
-  return generateOgImage("Image", "Display images with metadata and attribution");
+  return generateOgImage(
+    "Image",
+    "Display images with metadata and attribution",
+  );
 }

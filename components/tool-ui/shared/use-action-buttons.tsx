@@ -48,12 +48,7 @@ export function createActionExecutionLock(): ActionExecutionLock {
 export function useActionButtons(
   options: UseActionButtonsOptions,
 ): UseActionButtonsResult {
-  const {
-    actions,
-    onAction,
-    onBeforeAction,
-    confirmTimeout = 3000,
-  } = options;
+  const { actions, onAction, onBeforeAction, confirmTimeout = 3000 } = options;
 
   const [confirmingActionId, setConfirmingActionId] = useState<string | null>(
     null,
@@ -130,7 +125,8 @@ export function useActionButtons(
         const isThisActionExecuting = executingActionId === action.id;
         const isLoading = action.loading || isThisActionExecuting;
         const isDisabled =
-          action.disabled || (executingActionId !== null && !isThisActionExecuting);
+          action.disabled ||
+          (executingActionId !== null && !isThisActionExecuting);
         const currentLabel =
           isConfirming && action.confirmLabel
             ? action.confirmLabel

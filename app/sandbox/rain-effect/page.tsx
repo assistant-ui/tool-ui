@@ -5,21 +5,63 @@ import { RainCanvas } from "./rain-canvas";
 
 export default function RainEffectSandbox() {
   const fallingRain = useControls("Falling Rain", {
-    fallingIntensity: { value: 0.6, min: 0, max: 1, step: 0.01, label: "Intensity" },
+    fallingIntensity: {
+      value: 0.6,
+      min: 0,
+      max: 1,
+      step: 0.01,
+      label: "Intensity",
+    },
     fallingSpeed: { value: 1.0, min: 0.1, max: 5, step: 0.1, label: "Speed" },
-    fallingAngle: { value: 0.1, min: -1, max: 1, step: 0.01, label: "Wind Angle" },
-    fallingStreakLength: { value: 1.0, min: 0.1, max: 5, step: 0.1, label: "Streak Length" },
+    fallingAngle: {
+      value: 0.1,
+      min: -1,
+      max: 1,
+      step: 0.01,
+      label: "Wind Angle",
+    },
+    fallingStreakLength: {
+      value: 1.0,
+      min: 0.1,
+      max: 5,
+      step: 0.1,
+      label: "Streak Length",
+    },
     fallingLayers: { value: 4, min: 1, max: 6, step: 1, label: "Depth Layers" },
   });
 
   const rainAppearance = useControls("Rain Appearance", {
-    fallingRefraction: { value: 0.4, min: 0, max: 2, step: 0.05, label: "Refraction" },
-    fallingWaviness: { value: 1.0, min: 0, max: 3, step: 0.1, label: "Waviness" },
-    fallingThicknessVar: { value: 1.0, min: 0, max: 3, step: 0.1, label: "Thickness Var" },
+    fallingRefraction: {
+      value: 0.4,
+      min: 0,
+      max: 2,
+      step: 0.05,
+      label: "Refraction",
+    },
+    fallingWaviness: {
+      value: 1.0,
+      min: 0,
+      max: 3,
+      step: 0.1,
+      label: "Waviness",
+    },
+    fallingThicknessVar: {
+      value: 1.0,
+      min: 0,
+      max: 3,
+      step: 0.1,
+      label: "Thickness Var",
+    },
   });
 
   const glassDrops = useControls("Glass Drops", {
-    glassIntensity: { value: 0.5, min: 0, max: 1, step: 0.01, label: "Intensity" },
+    glassIntensity: {
+      value: 0.5,
+      min: 0,
+      max: 1,
+      step: 0.01,
+      label: "Intensity",
+    },
     zoom: { value: 1.0, min: 0.5, max: 3, step: 0.1, label: "Zoom" },
   });
 

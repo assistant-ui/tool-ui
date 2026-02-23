@@ -182,9 +182,21 @@ export function useDebounce<T>(value: T, delay = 250): T {
 };
 
 export const OPTION_LIST_OPTIONS: OptionListOption[] = [
-  { id: "comedy", label: "Something funny", description: "I need a good laugh" },
-  { id: "thriller", label: "Edge-of-seat thriller", description: "Keep me guessing" },
-  { id: "comfort", label: "Feel-good classic", description: "Cozy and familiar" },
+  {
+    id: "comedy",
+    label: "Something funny",
+    description: "I need a good laugh",
+  },
+  {
+    id: "thriller",
+    label: "Edge-of-seat thriller",
+    description: "Keep me guessing",
+  },
+  {
+    id: "comfort",
+    label: "Feel-good classic",
+    description: "Cozy and familiar",
+  },
   { id: "scifi", label: "Mind-bending sci-fi", description: "Make me think" },
 ];
 
@@ -237,9 +249,33 @@ export const ITEM_CAROUSEL_DATA: Omit<SerializableItemCarousel, "id"> = {
 
 export const PARAMETER_SLIDER_DATA: Omit<SerializableParameterSlider, "id"> = {
   sliders: [
-    { id: "bass", label: "Bass", min: -12, max: 12, step: 1, value: 4, unit: "dB" },
-    { id: "mid", label: "Mid", min: -12, max: 12, step: 1, value: -1, unit: "dB" },
-    { id: "treble", label: "Treble", min: -12, max: 12, step: 1, value: 3, unit: "dB" },
+    {
+      id: "bass",
+      label: "Bass",
+      min: -12,
+      max: 12,
+      step: 1,
+      value: 4,
+      unit: "dB",
+    },
+    {
+      id: "mid",
+      label: "Mid",
+      min: -12,
+      max: 12,
+      step: 1,
+      value: -1,
+      unit: "dB",
+    },
+    {
+      id: "treble",
+      label: "Treble",
+      min: -12,
+      max: 12,
+      step: 1,
+      value: 3,
+      unit: "dB",
+    },
   ],
   actions: [
     { id: "reset", label: "Flat", variant: "ghost" },
@@ -303,7 +339,10 @@ export const STATS_DISPLAY_DATA: Omit<SerializableStatsDisplay, "id"> = {
       value: 847300,
       format: { kind: "currency", currency: "USD", decimals: 0 },
       sparkline: {
-        data: [72000, 68000, 74000, 81000, 78000, 85000, 89000, 91000, 86000, 94000, 97000, 102000],
+        data: [
+          72000, 68000, 74000, 81000, 78000, 85000, 89000, 91000, 86000, 94000,
+          97000, 102000,
+        ],
         color: "var(--chart-1)",
       },
       diff: { value: 12.4, decimals: 1 },
@@ -314,7 +353,10 @@ export const STATS_DISPLAY_DATA: Omit<SerializableStatsDisplay, "id"> = {
       value: 24890,
       format: { kind: "number", compact: true },
       sparkline: {
-        data: [18200, 19100, 19800, 20400, 21200, 21900, 22600, 23100, 23800, 24200, 24500, 24890],
+        data: [
+          18200, 19100, 19800, 20400, 21200, 21900, 22600, 23100, 23800, 24200,
+          24500, 24890,
+        ],
         color: "var(--chart-3)",
       },
       diff: { value: 8.2, decimals: 1 },

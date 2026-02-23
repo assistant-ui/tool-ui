@@ -52,7 +52,10 @@ function generateOptionListCode(data: SerializableOptionList): string {
   return `<OptionList\n${props.join("\n")}\n/>`;
 }
 
-export const optionListPresets: Record<OptionListPresetName, PresetWithCodeGen<SerializableOptionList>> = {
+export const optionListPresets: Record<
+  OptionListPresetName,
+  PresetWithCodeGen<SerializableOptionList>
+> = {
   "max-selections": {
     description: "Pick two (you can't have all three)",
     data: {

@@ -10,10 +10,5 @@ export const metadata: Metadata = {
 export const revalidate = 3600;
 
 export default function WeatherWidgetDocsPage() {
-  return (
-    <ComponentDocsTabs
-      docs={<Content />}
-      componentId="weather-widget"
-    />
-  );
+  return <ComponentDocsTabs docs={<Content />} componentId="weather-widget" />;
 }

@@ -12,10 +12,7 @@ import { createHighlighter, type Highlighter } from "shiki";
 import { Copy, Check, ChevronDown, ChevronUp } from "lucide-react";
 import pierreDarkTheme from "../shared/pierre-dark-theme.js";
 import pierreLightTheme from "../shared/pierre-light-theme.js";
-import type {
-  CodeBlockLineNumbersMode,
-  CodeBlockProps,
-} from "./schema";
+import type { CodeBlockLineNumbersMode, CodeBlockProps } from "./schema";
 import { useCopyToClipboard } from "../shared/use-copy-to-clipboard";
 
 import { Button, cn, Collapsible, CollapsibleTrigger } from "./_adapter";
@@ -166,7 +163,9 @@ const CodeBlockContext = createContext<CodeBlockSharedState | null>(null);
 function useCodeBlock(): CodeBlockSharedState {
   const context = use(CodeBlockContext);
   if (!context) {
-    throw new Error("CodeBlock subcomponents must be used within <CodeBlock.Root>.");
+    throw new Error(
+      "CodeBlock subcomponents must be used within <CodeBlock.Root>.",
+    );
   }
   return context;
 }
@@ -202,7 +201,13 @@ function CodeBlockRoot({
   );
 
   const theme = resolvedTheme === "dark" ? "pierre-dark" : "pierre-light";
-  const cacheKey = getCacheKey(code, language, theme, lineNumbers, highlightLines);
+  const cacheKey = getCacheKey(
+    code,
+    language,
+    theme,
+    lineNumbers,
+    highlightLines,
+  );
 
   const [highlightedHtml, setHighlightedHtml] = useState<string | null>(
     () => htmlCache.get(cacheKey) ?? null,
@@ -284,7 +289,15 @@ function CodeBlockRoot({
     return () => {
       cancelled = true;
     };
-  }, [cacheKey, code, language, lineNumbers, theme, highlightLines, resolvedTheme]);
+  }, [
+    cacheKey,
+    code,
+    language,
+    lineNumbers,
+    theme,
+    highlightLines,
+    resolvedTheme,
+  ]);
 
   const lineCount = code.split("\n").length;
   const shouldCollapse = !!maxCollapsedLines && lineCount > maxCollapsedLines;
@@ -315,7 +328,10 @@ function CodeBlockRoot({
   return (
     <CodeBlockContext.Provider value={state}>
       <div
-        className={cn("@container flex w-full min-w-80 flex-col gap-3", className)}
+        className={cn(
+          "@container flex w-full min-w-80 flex-col gap-3",
+          className,
+        )}
         data-tool-ui-id={id}
         data-slot="code-block"
       >
@@ -347,7 +363,9 @@ function CodeBlockHeader({ className }: CodeBlockSectionProps) {
         {filename && (
           <>
             <span className="text-muted-foreground/50">•</span>
-            <span className="text-foreground text-sm font-medium">{filename}</span>
+            <span className="text-foreground text-sm font-medium">
+              {filename}
+            </span>
           </>
         )}
       </div>
@@ -378,13 +396,16 @@ function CodeBlockContent({ className }: CodeBlockSectionProps) {
         className,
       )}
     >
-      {highlightedHtml && <div dangerouslySetInnerHTML={{ __html: highlightedHtml }} />}
+      {highlightedHtml && (
+        <div dangerouslySetInnerHTML={{ __html: highlightedHtml }} />
+      )}
     </div>
   );
 }
 
 function CodeBlockCollapseToggle({ className }: CodeBlockSectionProps) {
-  const { shouldCollapse, isCollapsed, toggleExpanded, lineCount } = useCodeBlock();
+  const { shouldCollapse, isCollapsed, toggleExpanded, lineCount } =
+    useCodeBlock();
 
   if (!shouldCollapse) return null;
 

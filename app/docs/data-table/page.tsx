@@ -10,10 +10,5 @@ export const metadata: Metadata = {
 export const revalidate = 3600;
 
 export default function DataTableDocsPage() {
-  return (
-    <ComponentDocsTabs
-      docs={<Content />}
-      componentId="data-table"
-    />
-  );
+  return <ComponentDocsTabs docs={<Content />} componentId="data-table" />;
 }

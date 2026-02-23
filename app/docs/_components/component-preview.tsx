@@ -46,7 +46,8 @@ export function ComponentPreview({ componentId }: ComponentPreviewProps) {
     setState((prev) => ({ ...prev, ...newState }));
   }, []);
 
-  const preset = config.presets[currentPreset] ?? config.presets[config.defaultPreset];
+  const preset =
+    config.presets[currentPreset] ?? config.presets[config.defaultPreset];
   const selectedPreset = config.presets[currentPreset] ?? preset;
   const code = selectedPreset.generateExampleCode(selectedPreset.data);
 

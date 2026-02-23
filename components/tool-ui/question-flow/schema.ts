@@ -1,5 +1,6 @@
 import { z } from "zod";
-import type { ReactNode } from "react";import { defineToolUiContract } from "../shared/contract";
+import type { ReactNode } from "react";
+import { defineToolUiContract } from "../shared/contract";
 import { ToolUIIdSchema, ToolUIRoleSchema } from "../shared/schema";
 
 export const QuestionFlowOptionSchema = z.object({

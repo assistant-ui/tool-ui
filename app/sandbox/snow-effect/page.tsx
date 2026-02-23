@@ -10,7 +10,13 @@ export default function SnowEffectSandbox() {
   });
 
   const motion = useControls("Motion", {
-    fallSpeed: { value: 0.6, min: 0.2, max: 2, step: 0.05, label: "Fall Speed" },
+    fallSpeed: {
+      value: 0.6,
+      min: 0.2,
+      max: 2,
+      step: 0.05,
+      label: "Fall Speed",
+    },
     windSpeed: { value: 0.3, min: 0, max: 3, step: 0.05, label: "Wind Speed" },
     windAngle: { value: 0.2, min: -1, max: 1, step: 0.05, label: "Wind Angle" },
     windShear: { value: 0.5, min: 0, max: 2, step: 0.05, label: "Wind Shear" },
@@ -21,14 +27,26 @@ export default function SnowEffectSandbox() {
 
   const appearance = useControls("Appearance", {
     flakeSize: { value: 1.0, min: 0.3, max: 3, step: 0.1, label: "Flake Size" },
-    sizeVariation: { value: 0.5, min: 0, max: 1, step: 0.05, label: "Size Variation" },
+    sizeVariation: {
+      value: 0.5,
+      min: 0,
+      max: 1,
+      step: 0.05,
+      label: "Size Variation",
+    },
     opacity: { value: 0.8, min: 0.2, max: 1, step: 0.05, label: "Opacity" },
     glowAmount: { value: 0.5, min: 0, max: 1, step: 0.05, label: "Glow" },
     sparkle: { value: 0.5, min: 0, max: 1, step: 0.05, label: "Sparkle" },
   });
 
   const blizzard = useControls("Blizzard", {
-    visibility: { value: 1.0, min: 0.2, max: 1, step: 0.05, label: "Visibility" },
+    visibility: {
+      value: 1.0,
+      min: 0.2,
+      max: 1,
+      step: 0.05,
+      label: "Visibility",
+    },
   });
 
   const debug = useControls("Debug", {

@@ -10,16 +10,34 @@ describe("rain parameter ranges", () => {
 
     const byKey = new Map(rainGroup?.params.map((param) => [param.key, param]));
 
-    expect(byKey.get("glassIntensity")?.max).toBe(RAIN_PARAM_LIMITS.glassIntensity.max);
+    expect(byKey.get("glassIntensity")?.max).toBe(
+      RAIN_PARAM_LIMITS.glassIntensity.max,
+    );
     expect(byKey.get("zoom")?.max).toBe(RAIN_PARAM_LIMITS.zoom.max);
-    expect(byKey.get("fallingIntensity")?.max).toBe(RAIN_PARAM_LIMITS.fallingIntensity.max);
-    expect(byKey.get("fallingSpeed")?.max).toBe(RAIN_PARAM_LIMITS.fallingSpeed.max);
-    expect(byKey.get("fallingAngle")?.min).toBe(RAIN_PARAM_LIMITS.fallingAngle.min);
-    expect(byKey.get("fallingAngle")?.max).toBe(RAIN_PARAM_LIMITS.fallingAngle.max);
-    expect(byKey.get("fallingStreakLength")?.max).toBe(RAIN_PARAM_LIMITS.fallingStreakLength.max);
-    expect(byKey.get("fallingLayers")?.max).toBe(RAIN_PARAM_LIMITS.fallingLayers.max);
-    expect(byKey.get("fallingRefraction")?.max).toBe(RAIN_PARAM_LIMITS.fallingRefraction.max);
-    expect(byKey.get("fallingWaviness")?.max).toBe(RAIN_PARAM_LIMITS.fallingWaviness.max);
+    expect(byKey.get("fallingIntensity")?.max).toBe(
+      RAIN_PARAM_LIMITS.fallingIntensity.max,
+    );
+    expect(byKey.get("fallingSpeed")?.max).toBe(
+      RAIN_PARAM_LIMITS.fallingSpeed.max,
+    );
+    expect(byKey.get("fallingAngle")?.min).toBe(
+      RAIN_PARAM_LIMITS.fallingAngle.min,
+    );
+    expect(byKey.get("fallingAngle")?.max).toBe(
+      RAIN_PARAM_LIMITS.fallingAngle.max,
+    );
+    expect(byKey.get("fallingStreakLength")?.max).toBe(
+      RAIN_PARAM_LIMITS.fallingStreakLength.max,
+    );
+    expect(byKey.get("fallingLayers")?.max).toBe(
+      RAIN_PARAM_LIMITS.fallingLayers.max,
+    );
+    expect(byKey.get("fallingRefraction")?.max).toBe(
+      RAIN_PARAM_LIMITS.fallingRefraction.max,
+    );
+    expect(byKey.get("fallingWaviness")?.max).toBe(
+      RAIN_PARAM_LIMITS.fallingWaviness.max,
+    );
     expect(byKey.get("fallingThicknessVar")?.max).toBe(
       RAIN_PARAM_LIMITS.fallingThicknessVar.max,
     );

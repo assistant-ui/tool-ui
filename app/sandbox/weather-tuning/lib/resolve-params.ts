@@ -35,6 +35,7 @@ export function resolveCompositorParamsAtTime(opts: {
     opts.getRepoBaseForCheckpoint,
   );
 
-  return userInterpolated ? mergeWithOverrides(baseWithRepo, userInterpolated) : baseWithRepo;
+  return userInterpolated
+    ? mergeWithOverrides(baseWithRepo, userInterpolated)
+    : baseWithRepo;
 }
-

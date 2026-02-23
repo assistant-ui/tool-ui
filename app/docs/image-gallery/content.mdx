@@ -125,7 +125,10 @@ export const toolkit: Toolkit = {
     },
     title: { description: "Gallery header title", type: "string" },
     description: { description: "Gallery header description", type: "string" },
-    onImageClick: { description: "Image click handler", type: "(imageId: string, image: ImageGalleryItem) => void" },
+    onImageClick: {
+      description: "Image click handler",
+      type: "(imageId: string, image: ImageGalleryItem) => void",
+    },
   }}
 />
 
@@ -159,7 +162,10 @@ export const toolkit: Toolkit = {
       required: true,
     },
     title: { description: "Image title (shown in lightbox)", type: "string" },
-    caption: { description: "Image caption (shown in lightbox)", type: "string" },
+    caption: {
+      description: "Image caption (shown in lightbox)",
+      type: "string",
+    },
     source: {
       description: "Source attribution",
       type: "{ label: string; url?: string }",

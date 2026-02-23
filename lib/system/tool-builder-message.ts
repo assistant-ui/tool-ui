@@ -233,7 +233,6 @@ const ProposeTweetToolUI = makeAssistantToolUI<
             \}\`}
           >
             <div className="flex gap-3">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 alt="User"
                 className="h-10 w-10 shrink-0 rounded-full"

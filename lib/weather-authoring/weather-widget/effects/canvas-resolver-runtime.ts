@@ -7,8 +7,7 @@ import {
 } from "./tuning";
 import type { WeatherEffectsCanvasProps } from "./weather-effects-types";
 
-export interface ResolveRuntimeWeatherEffectsCanvasPropsInput
-  extends WeatherEffectParams {
+export interface ResolveRuntimeWeatherEffectsCanvasPropsInput extends WeatherEffectParams {
   tunedPresets?: WeatherEffectsTunedPresets;
   /**
    * Optional explicit time-of-day (0-1) used for nearest checkpoint selection.
