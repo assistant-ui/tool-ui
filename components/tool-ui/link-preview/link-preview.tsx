@@ -1,7 +1,5 @@
-/* eslint-disable @next/next/no-img-element */
 "use client";
 
-import * as React from "react";
 import { Globe } from "lucide-react";
 import { cn } from "./_adapter";
 
@@ -22,11 +20,7 @@ export interface LinkPreviewProps extends SerializableLinkPreview {
 }
 
 export function LinkPreview(props: LinkPreviewProps) {
-  const {
-    className,
-    onNavigate,
-    ...serializable
-  } = props;
+  const { className, onNavigate, ...serializable } = props;
 
   const {
     id,

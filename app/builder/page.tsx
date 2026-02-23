@@ -745,7 +745,6 @@ const EditFileToolUI = makeAssistantTool<
       newText?: string;
     }>;
   },
-  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   {}
 >({
   type: "backend",
@@ -841,7 +840,6 @@ const WriteFileToolUI = makeAssistantTool<
     path?: string;
     content?: string;
   },
-  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   {}
 >({
   type: "backend",
@@ -881,7 +879,6 @@ const ReadFileToolUI = makeAssistantToolUI<
   {
     path?: string;
   },
-  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   {}
 >({
   toolName: "read_file",

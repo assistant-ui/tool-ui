@@ -331,6 +331,7 @@ export default function WeatherWidgetStressPage() {
     remountSeed,
     stress.count,
     stress.fillCells,
+    timeControls.timeOfDay,
     timestamp,
   ]);
 

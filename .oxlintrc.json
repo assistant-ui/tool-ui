@@ -1,0 +1,71 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": [
+    "typescript",
+    "react",
+    "unicorn",
+    "oxc",
+    "import",
+    "jsx-a11y",
+    "nextjs",
+    "vitest"
+  ],
+  "categories": {
+    "correctness": "error"
+  },
+  "rules": {
+    "@typescript-eslint/no-explicit-any": "error",
+    "no-unused-vars": [
+      "error",
+      {
+        "ignoreRestSiblings": true,
+        "argsIgnorePattern": "^_",
+        "varsIgnorePattern": "^_"
+      }
+    ],
+
+    // jsx-a11y: match Next.js defaults (warn, not error) for rules
+    // that fire on component library patterns
+    "jsx-a11y/heading-has-content": "warn",
+    "jsx-a11y/anchor-has-content": "warn",
+    "jsx-a11y/media-has-caption": "warn",
+    "jsx-a11y/no-autofocus": "warn",
+    "jsx-a11y/no-static-element-interactions": "warn",
+    "jsx-a11y/click-events-have-key-events": "warn",
+    "jsx-a11y/prefer-tag-over-role": "warn",
+    "jsx-a11y/iframe-has-title": "warn",
+    "jsx-a11y/aria-role": "warn",
+
+    // tool-ui components use <img> for portability (not Next.js specific)
+    "nextjs/no-img-element": "off",
+
+    // jest rules leak through vitest plugin — disable
+    "jest/valid-expect": "off",
+
+    // false positives: \$ before { in template literals, control chars in sanitizer
+    "no-useless-escape": "warn",
+    "no-control-regex": "warn"
+  },
+  "env": {
+    "browser": true,
+    "builtin": true,
+    "es2024": true,
+    "node": true
+  },
+  "ignorePatterns": [
+    "**/dist/**",
+    "**/node_modules/**",
+    "**/.next/**",
+    "**/out/**",
+    "**/next-env.d.ts",
+    "components/tool-ui/weather-widget/generated/**"
+  ],
+  "settings": {
+    "next": {
+      "rootDir": ["."]
+    },
+    "react": {
+      "version": "19"
+    }
+  }
+}

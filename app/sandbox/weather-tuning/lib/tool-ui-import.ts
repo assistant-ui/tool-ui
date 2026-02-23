@@ -47,7 +47,9 @@ export function mapToolUiOverridesToCompositor(
   }
 
   if (input.lightning && !isEmptyObject(input.lightning)) {
-    const lightning: Record<string, unknown> = { ...(input.lightning as object) };
+    const lightning: Record<string, unknown> = {
+      ...(input.lightning as object),
+    };
     if ("flashIntensity" in lightning) {
       const glowIntensity = lightning.flashIntensity as number | undefined;
       delete lightning.flashIntensity;
@@ -79,14 +81,14 @@ export function mapToolUiOverridesToCompositor(
 
     if (typeof interactions.rainRefractionStrength === "number") {
       out.rain = {
-        ...(out.rain ?? {}),
+        ...out.rain,
         fallingRefraction: interactions.rainRefractionStrength,
       } as ConditionOverrides["rain"];
     }
 
     if (typeof interactions.lightningSceneIllumination === "number") {
       out.lightning = {
-        ...(out.lightning ?? {}),
+        ...out.lightning,
         sceneIllumination: interactions.lightningSceneIllumination,
       } as ConditionOverrides["lightning"];
     }
@@ -117,4 +119,3 @@ export function mapToolUiPresetsToCompositor(
   }
   return out;
 }
-

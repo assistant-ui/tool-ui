@@ -7,10 +7,18 @@ Copy/paste component library (shadcn/ui model) for AI assistant interfaces. User
 ```bash
 pnpm dev          # Dev server (Turbopack)
 pnpm build        # Production build
+pnpm check        # Parallel: typecheck + oxlint + eslint + format check
 pnpm lint:fix     # Fix lint errors (run before committing)
-pnpm typecheck    # TypeScript checking
+pnpm typecheck    # TypeScript checking (tsgo)
 pnpm test         # Run tests (Vitest)
 ```
+
+## Tooling
+
+- **Formatter**: Oxfmt (config: `.oxfmtrc.jsonc`) — Tailwind class sorting + import sorting
+- **Linter**: Oxlint (`.oxlintrc.json`) handles standard rules; ESLint (`eslint.config.ts`) retained only for `no-restricted-syntax`, `no-restricted-imports`, custom `tool-ui/*` rules, and React Compiler hooks
+- **Typecheck**: tsgo (`@typescript/native-preview`) — native TypeScript compiler
+- **Parallel checks**: `pnpm check` runs typecheck + all linters + format in parallel via `npm-run-all2`
 
 ## Stack
 
@@ -24,6 +32,7 @@ pnpm test         # Run tests (Vitest)
 Each component lives in `components/tool-ui/{name}/`. Reference: `components/tool-ui/approval-card/`
 
 Key files:
+
 - `index.tsx` — Barrel exports
 - `{name}.tsx` — Main component
 - `schema.ts` — Zod schema + SerializableX types
@@ -34,6 +43,7 @@ The `shared/` directory contains utilities all components need.
 ### Documentation Site
 
 Interconnected registries:
+
 - Component metadata: `lib/docs/component-registry.ts`
 - Presets (example data): `lib/presets/{component}.ts`
 - Preview rendering: `lib/docs/preview-config.tsx`

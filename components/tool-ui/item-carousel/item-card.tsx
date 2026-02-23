@@ -1,6 +1,5 @@
 "use client";
 
-import * as React from "react";
 import { cn, Button, Card } from "./_adapter";
 import type { Item } from "./schema";
 
@@ -46,7 +45,6 @@ export function ItemCard({ item, onItemClick, onItemAction }: ItemCardProps) {
 
       <div className="bg-muted relative aspect-square w-full overflow-hidden">
         {image ? (
-          // eslint-disable-next-line @next/next/no-img-element
           <img
             src={image}
             alt={name}

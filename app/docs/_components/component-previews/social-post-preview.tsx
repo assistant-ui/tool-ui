@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
+import { useCallback, useMemo, useState, type ReactNode } from "react";
 import { useSearchParams, usePathname, useRouter } from "next/navigation";
 import { ComponentPreviewShell } from "../component-preview-shell";
 import { ChatContextPreview } from "../chat-context-preview";
@@ -214,7 +214,7 @@ export function SocialPostPreview({
       : platformParam && VALID_PLATFORMS.includes(platformParam as Platform)
         ? (platformParam as Platform)
         : currentPlatform;
-    
+
     setCurrentPlatform(nextPlatform);
     setCurrentPreset(getValidPreset(nextPlatform, presetParam));
   }
@@ -283,55 +283,54 @@ export function SocialPostPreview({
   };
 
   const renderedPost =
-    currentPlatform === "x" ? (
-      renderWithLocalActions(
-        xPostPresets[effectivePreset as XPostPresetName].data.post.id,
-        <XPost
-          post={xPostPresets[effectivePreset as XPostPresetName].data.post}
-          onAction={(action, post) => console.log("X action:", action, post.id)}
-        />,
-        resolveActions(
-          xPostPresets[effectivePreset as XPostPresetName].data.localActions,
-        ),
-      )
-    ) : currentPlatform === "instagram" ? (
-      renderWithLocalActions(
-        instagramPostPresets[effectivePreset as InstagramPostPresetName].data
-          .post.id,
-        <InstagramPost
-          post={
-            instagramPostPresets[
-              effectivePreset as InstagramPostPresetName
-            ].data.post
-          }
-          onAction={(action, post) =>
-            console.log("Instagram action:", action, post.id)
-          }
-        />,
-        resolveActions(
-          instagramPostPresets[effectivePreset as InstagramPostPresetName].data
-            .localActions,
-        ),
-      )
-    ) : (
-      renderWithLocalActions(
-        linkedInPostPresets[effectivePreset as LinkedInPostPresetName].data.post
-          .id,
-        <LinkedInPost
-          post={
+    currentPlatform === "x"
+      ? renderWithLocalActions(
+          xPostPresets[effectivePreset as XPostPresetName].data.post.id,
+          <XPost
+            post={xPostPresets[effectivePreset as XPostPresetName].data.post}
+            onAction={(action, post) =>
+              console.log("X action:", action, post.id)
+            }
+          />,
+          resolveActions(
+            xPostPresets[effectivePreset as XPostPresetName].data.localActions,
+          ),
+        )
+      : currentPlatform === "instagram"
+        ? renderWithLocalActions(
+            instagramPostPresets[effectivePreset as InstagramPostPresetName]
+              .data.post.id,
+            <InstagramPost
+              post={
+                instagramPostPresets[effectivePreset as InstagramPostPresetName]
+                  .data.post
+              }
+              onAction={(action, post) =>
+                console.log("Instagram action:", action, post.id)
+              }
+            />,
+            resolveActions(
+              instagramPostPresets[effectivePreset as InstagramPostPresetName]
+                .data.localActions,
+            ),
+          )
+        : renderWithLocalActions(
             linkedInPostPresets[effectivePreset as LinkedInPostPresetName].data
-              .post
-          }
-          onAction={(action, post) =>
-            console.log("LinkedIn action:", action, post.id)
-          }
-        />,
-        resolveActions(
-          linkedInPostPresets[effectivePreset as LinkedInPostPresetName].data
-            .localActions,
-        ),
-      )
-    );
+              .post.id,
+            <LinkedInPost
+              post={
+                linkedInPostPresets[effectivePreset as LinkedInPostPresetName]
+                  .data.post
+              }
+              onAction={(action, post) =>
+                console.log("LinkedIn action:", action, post.id)
+              }
+            />,
+            resolveActions(
+              linkedInPostPresets[effectivePreset as LinkedInPostPresetName]
+                .data.localActions,
+            ),
+          );
 
   const previewContent = (
     <div className="mx-auto w-full max-w-[500px]">{renderedPost}</div>

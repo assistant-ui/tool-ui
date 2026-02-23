@@ -235,7 +235,7 @@ function mergeGroup<T extends object>(
   delta: Partial<T> | undefined,
 ): Partial<T> | undefined {
   if (!base && !delta) return undefined;
-  return { ...(base ?? {}), ...(delta ?? {}) };
+  return { ...base, ...delta };
 }
 
 export function mergeWeatherEffectsOverrides(
@@ -271,10 +271,22 @@ export function mergeTunedPresets(
     if (!baseCheckpoints && !deltaCheckpoints) continue;
 
     const merged: WeatherEffectsCheckpointOverrides = {
-      dawn: mergeWeatherEffectsOverrides(baseCheckpoints?.dawn, deltaCheckpoints?.dawn),
-      noon: mergeWeatherEffectsOverrides(baseCheckpoints?.noon, deltaCheckpoints?.noon),
-      dusk: mergeWeatherEffectsOverrides(baseCheckpoints?.dusk, deltaCheckpoints?.dusk),
-      midnight: mergeWeatherEffectsOverrides(baseCheckpoints?.midnight, deltaCheckpoints?.midnight),
+      dawn: mergeWeatherEffectsOverrides(
+        baseCheckpoints?.dawn,
+        deltaCheckpoints?.dawn,
+      ),
+      noon: mergeWeatherEffectsOverrides(
+        baseCheckpoints?.noon,
+        deltaCheckpoints?.noon,
+      ),
+      dusk: mergeWeatherEffectsOverrides(
+        baseCheckpoints?.dusk,
+        deltaCheckpoints?.dusk,
+      ),
+      midnight: mergeWeatherEffectsOverrides(
+        baseCheckpoints?.midnight,
+        deltaCheckpoints?.midnight,
+      ),
     };
 
     out[condition] = merged;
@@ -283,7 +295,9 @@ export function mergeTunedPresets(
   return out;
 }
 
-function hasAnyOverrideGroups(checkpoints: WeatherEffectsCheckpointOverrides): boolean {
+function hasAnyOverrideGroups(
+  checkpoints: WeatherEffectsCheckpointOverrides,
+): boolean {
   return CHECKPOINTS.some((checkpoint) => {
     const groups = checkpoints[checkpoint];
     return Object.keys(groups).some((key) => {
@@ -294,8 +308,12 @@ function hasAnyOverrideGroups(checkpoints: WeatherEffectsCheckpointOverrides): b
 }
 
 export function buildCanonicalToolUiPresetsForEditedConditions(
-  editedCheckpointOverrides: Partial<Record<WeatherConditionCode, CheckpointOverrides>>,
-  repoCheckpointOverrides: Partial<Record<WeatherConditionCode, CheckpointOverrides>>,
+  editedCheckpointOverrides: Partial<
+    Record<WeatherConditionCode, CheckpointOverrides>
+  >,
+  repoCheckpointOverrides: Partial<
+    Record<WeatherConditionCode, CheckpointOverrides>
+  >,
 ): WeatherEffectsTunedPresets {
   const out: WeatherEffectsTunedPresets = {};
 
@@ -354,11 +372,15 @@ export function replaceEditedConditions(
 }
 
 export function toToolUiDelta(
-  checkpointOverrides: Partial<Record<WeatherConditionCode, CheckpointOverrides>>,
+  checkpointOverrides: Partial<
+    Record<WeatherConditionCode, CheckpointOverrides>
+  >,
 ): WeatherEffectsTunedPresets {
   const out: WeatherEffectsTunedPresets = {};
 
-  for (const condition of Object.keys(checkpointOverrides) as WeatherConditionCode[]) {
+  for (const condition of Object.keys(
+    checkpointOverrides,
+  ) as WeatherConditionCode[]) {
     const byCheckpoint = checkpointOverrides[condition];
     if (!byCheckpoint) continue;
 

@@ -232,23 +232,23 @@ function DataTableLayout({
                 : undefined
             }
           >
-              <Table>
-                {columns.length > 0 && (
-                  <colgroup>
-                    {columns.map((col) => (
-                      <col
-                        key={String(col.key)}
-                        style={col.width ? { width: col.width } : undefined}
-                      />
-                    ))}
-                  </colgroup>
-                )}
-                {data.length === 0 ? (
-                  <DataTableEmpty message={emptyMessage} />
-                ) : (
-                  <DataTableContent />
-                )}
-              </Table>
+            <Table>
+              {columns.length > 0 && (
+                <colgroup>
+                  {columns.map((col) => (
+                    <col
+                      key={String(col.key)}
+                      style={col.width ? { width: col.width } : undefined}
+                    />
+                  ))}
+                </colgroup>
+              )}
+              {data.length === 0 ? (
+                <DataTableEmpty message={emptyMessage} />
+              ) : (
+                <DataTableContent />
+              )}
+            </Table>
           </div>
         </div>
       </div>
@@ -271,26 +271,26 @@ function DataTableLayout({
             ` Columns: ${columns.map((c) => c.label).join(", ")}.`}
         </div>
 
-          {data.length === 0 ? (
-            <div className="text-muted-foreground py-8 text-center">
-              {emptyMessage}
-            </div>
-          ) : (
-            <div className="bg-card flex flex-col overflow-hidden rounded-2xl border shadow-xs">
-              {data.map((row, i) => {
-                const rowKey = rowKeys[i];
-                return (
-                  <DataTableAccordionCard
-                    key={rowKey}
-                    row={row as unknown as DataTableRowData}
-                    index={i}
-                    rowKey={rowKey}
-                    isFirst={i === 0}
-                  />
-                );
-              })}
-            </div>
-          )}
+        {data.length === 0 ? (
+          <div className="text-muted-foreground py-8 text-center">
+            {emptyMessage}
+          </div>
+        ) : (
+          <div className="bg-card flex flex-col overflow-hidden rounded-2xl border shadow-xs">
+            {data.map((row, i) => {
+              const rowKey = rowKeys[i];
+              return (
+                <DataTableAccordionCard
+                  key={rowKey}
+                  row={row as unknown as DataTableRowData}
+                  index={i}
+                  rowKey={rowKey}
+                  isFirst={i === 0}
+                />
+              );
+            })}
+          </div>
+        )}
       </div>
 
       {sortAnnouncement && (
@@ -298,7 +298,6 @@ function DataTableLayout({
           {sortAnnouncement}
         </div>
       )}
-
     </div>
   );
 }

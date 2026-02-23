@@ -76,7 +76,7 @@ function mergeGroup<T extends object>(
   override: Partial<T> | undefined,
 ): Partial<T> | undefined {
   if (!base && !override) return undefined;
-  return { ...(base ?? {}), ...(override ?? {}) };
+  return { ...base, ...override };
 }
 
 /**

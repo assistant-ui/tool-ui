@@ -222,7 +222,7 @@ export function parseNumericLike(input: string): number | null {
   s = s.replace(/^\((.*)\)$/g, "-$1");
 
   // Strip common currency and percent symbols
-  s = s.replace(/[\%$€£¥₩₹₽₺₪₫฿₦₴₡₲₵₸]/g, "");
+  s = s.replace(/[%$€£¥₩₹₽₺₪₫฿₦₴₡₲₵₸]/g, "");
 
   function hasGroupedThousands(value: string, sep: "," | "."): boolean {
     const unsigned = value.replace(/^[+-]/, "");

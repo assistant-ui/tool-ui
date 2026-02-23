@@ -49,7 +49,9 @@ const resolveModel = (identifier: string) => {
   }
   const modelId = rest.join("/");
   if (!modelId) {
-    throw new Error(`Model identifier "${identifier}" is missing the model name`);
+    throw new Error(
+      `Model identifier "${identifier}" is missing the model name`,
+    );
   }
   const resolver = PROVIDERS[provider];
   if (!resolver) {

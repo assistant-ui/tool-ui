@@ -1,0 +1,19 @@
+{
+  "$schema": "https://raw.githubusercontent.com/nicolo-ribaudo/oxfmt/main/npm/oxfmt/schema.json",
+
+  // Match existing Prettier settings
+  "semi": true,
+  "singleQuote": false,
+  "trailingComma": "all",
+  "tabWidth": 2,
+  "printWidth": 80,
+
+  // Tailwind class sorting (v4 entry point)
+  "tailwindcss": {
+    "stylesheet": "./app/styles/globals.css",
+    "functions": ["clsx", "cn"],
+  },
+
+  // Import sorting (bonus — Prettier didn't do this)
+  "importSort": {},
+}

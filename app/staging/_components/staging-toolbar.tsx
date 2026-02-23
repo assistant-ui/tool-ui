@@ -3,15 +3,9 @@
 import { Settings, Sun, Moon, Monitor, Play, Eye } from "lucide-react";
 import { useTheme } from "next-themes";
 import { cn } from "@/lib/ui/cn";
-import {
-  previewConfigs,
-  type ComponentId,
-} from "@/lib/docs/preview-config";
+import { previewConfigs, type ComponentId } from "@/lib/docs/preview-config";
 import { getStagingConfig } from "@/lib/staging/staging-config";
-import {
-  useStagingStore,
-  usePresetNames,
-} from "./use-staging-state";
+import { useStagingStore, usePresetNames } from "./use-staging-state";
 import type { DebugLevel } from "@/lib/staging/types";
 import {
   Select,
@@ -42,7 +36,10 @@ function ComponentSelector() {
   const { componentId, setComponent } = useStagingStore();
 
   return (
-    <Select value={componentId} onValueChange={(v) => setComponent(v as ComponentId)}>
+    <Select
+      value={componentId}
+      onValueChange={(v) => setComponent(v as ComponentId)}
+    >
       <SelectTrigger className="h-8 w-[180px] border-none bg-transparent text-sm font-medium shadow-none focus:ring-0">
         <SelectValue />
       </SelectTrigger>
@@ -103,7 +100,8 @@ function SettingsPopover() {
   const { theme, setTheme } = useTheme();
 
   const stagingConfig = getStagingConfig(componentId);
-  const hasDebugOverlays = stagingConfig?.supportedDebugLevels?.length ?? 0 > 0;
+  const hasDebugOverlays =
+    (stagingConfig?.supportedDebugLevels?.length ?? 0) > 0;
 
   return (
     <Popover>
@@ -136,7 +134,10 @@ function SettingsPopover() {
                 {(stagingConfig?.supportedDebugLevels ?? []).map((level) => (
                   <div key={level} className="flex items-center space-x-2">
                     <RadioGroupItem value={level} id={`debug-${level}`} />
-                    <Label htmlFor={`debug-${level}`} className="text-sm cursor-pointer">
+                    <Label
+                      htmlFor={`debug-${level}`}
+                      className="text-sm cursor-pointer"
+                    >
                       {DEBUG_LEVEL_LABELS[level]}
                     </Label>
                   </div>
@@ -181,7 +182,10 @@ function SettingsPopover() {
 
           <div className="border-t pt-3">
             <p className="text-[10px] text-muted-foreground">
-              Press <kbd className="rounded bg-muted px-1 py-0.5 font-mono">1</kbd>-<kbd className="rounded bg-muted px-1 py-0.5 font-mono">9</kbd> to switch presets
+              Press{" "}
+              <kbd className="rounded bg-muted px-1 py-0.5 font-mono">1</kbd>-
+              <kbd className="rounded bg-muted px-1 py-0.5 font-mono">9</kbd> to
+              switch presets
             </p>
           </div>
         </div>

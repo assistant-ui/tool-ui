@@ -1,10 +1,26 @@
 import { defineConfig, globalIgnores } from "eslint/config";
-import nextVitals from "eslint-config-next/core-web-vitals";
-import nextTs from "eslint-config-next/typescript";
+import tsPlugin from "@typescript-eslint/eslint-plugin";
+import oxlint from "eslint-plugin-oxlint";
+import reactHooks from "eslint-plugin-react-hooks";
+import tsParser from "@typescript-eslint/parser";
 import { toolUiActionModelPlugin } from "./lib/eslint/tool-ui-action-model-plugin";
 
+// ESLint is retained only for rules Oxlint cannot handle:
+//   1. no-restricted-syntax (custom AST selectors)
+//   2. no-restricted-imports (complex overrides with ignores)
+//   3. Custom tool-ui/* plugin rules (JS AST rules)
+//   4. React Compiler hook rules (eslint-plugin-react-hooks)
+// All standard lint rules are handled by Oxlint (see .oxlintrc.json).
+
 const eslintConfig = defineConfig([
-  // Global ignores first
+  // Inline disable comments for rules now handled by Oxlint
+  // appear unused to ESLint — suppress those warnings.
+  {
+    linterOptions: {
+      reportUnusedDisableDirectives: "off",
+    },
+  },
+
   globalIgnores([
     "**/dist/**",
     "**/node_modules/**",
@@ -14,29 +30,37 @@ const eslintConfig = defineConfig([
     "components/tool-ui/weather-widget/generated/**",
   ]),
 
-  // Next.js recommended configs (native flat format in v16, includes React)
-  ...nextVitals,
-  ...nextTs,
-
-  // Custom rules override
+  // TypeScript parser + plugin (plugin registered for disable comment
+  // recognition — all TS rules are enforced by Oxlint, not ESLint)
   {
+    files: ["**/*.ts", "**/*.tsx"],
+    languageOptions: {
+      parser: tsParser,
+    },
+    plugins: {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- plugin type mismatch
+      "@typescript-eslint": tsPlugin as any,
+    },
+  },
+
+  // React hooks / React Compiler rules
+  {
+    files: ["**/*.ts", "**/*.tsx"],
+    plugins: {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- configs shape mismatch
+      "react-hooks": reactHooks as any,
+    },
     rules: {
-      "@typescript-eslint/no-explicit-any": "error",
-      "@typescript-eslint/no-unused-vars": [
-        "error",
-        {
-          ignoreRestSiblings: true,
-          argsIgnorePattern: "^_",
-          varsIgnorePattern: "^_",
-        },
-      ],
-      // Disable strict React Compiler rules that don't fit this codebase's patterns
+      "react-hooks/rules-of-hooks": "error",
+      // Disable strict React Compiler rules that don't fit this codebase
       "react-hooks/refs": "off",
       "react-hooks/immutability": "off",
       "react-hooks/set-state-in-effect": "off",
       "react-hooks/static-components": "off",
     },
   },
+
+  // Oxlint can't handle custom AST selectors
   {
     files: ["components/tool-ui/**/*.ts", "components/tool-ui/**/*.tsx"],
     ignores: ["components/tool-ui/shared/media/safe-navigation.ts"],
@@ -52,9 +76,14 @@ const eslintConfig = defineConfig([
       ],
     },
   },
+
+  // Oxlint can't handle no-restricted-imports with complex overrides
   {
     files: ["components/tool-ui/**/*.ts", "components/tool-ui/**/*.tsx"],
-    ignores: ["components/tool-ui/shared/**/*.ts", "components/tool-ui/shared/**/*.tsx"],
+    ignores: [
+      "components/tool-ui/shared/**/*.ts",
+      "components/tool-ui/shared/**/*.tsx",
+    ],
     rules: {
       "no-restricted-imports": [
         "error",
@@ -92,6 +121,8 @@ const eslintConfig = defineConfig([
       ],
     },
   },
+
+  // Custom tool-ui plugin rules (JS AST rules, can't run in Oxlint)
   {
     files: [
       "components/tool-ui/audio/**/*.{ts,tsx}",
@@ -116,7 +147,11 @@ const eslintConfig = defineConfig([
     },
   },
   {
-    files: ["app/**/*.{ts,tsx}", "components/**/*.{ts,tsx}", "lib/**/*.{ts,tsx}"],
+    files: [
+      "app/**/*.{ts,tsx}",
+      "components/**/*.{ts,tsx}",
+      "lib/**/*.{ts,tsx}",
+    ],
     plugins: {
       "tool-ui": toolUiActionModelPlugin,
     },
@@ -125,6 +160,11 @@ const eslintConfig = defineConfig([
       "tool-ui/decision-actions-require-envelope": "error",
     },
   },
+
+  // Disable core ESLint rules that Oxlint already handles.
+  // Only include configs for plugins still installed in ESLint.
+  ...oxlint.configs["flat/eslint"],
+  ...oxlint.configs["flat/react-hooks"],
 ]);
 
 export default eslintConfig;

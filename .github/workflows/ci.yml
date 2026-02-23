@@ -28,8 +28,14 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Lint (1.0 gates)
-        run: pnpm lint:ci
+      - name: Format check
+        run: pnpm lint:format
+
+      - name: Lint - Oxlint
+        run: pnpm lint:oxlint
+
+      - name: Lint - ESLint custom rules
+        run: pnpm lint:eslint
 
       - name: Typecheck
         run: pnpm typecheck

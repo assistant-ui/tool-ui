@@ -236,17 +236,18 @@ export default function WeatherWidgetProductionHarnessPage() {
     ],
   );
 
+  const { current, updatedAt: payloadUpdatedAt } = payload;
   const runtimeInput = useMemo(
     () =>
       createProductionHarnessRuntimeInput({
-        conditionCode: payload.current.conditionCode,
-        windSpeed: payload.current.windSpeed ?? 0,
-        precipitationLevel: payload.current.precipitationLevel ?? "none",
-        visibility: payload.current.visibility ?? 10000,
-        timestamp: payload.updatedAt ?? updatedAt,
+        conditionCode: current.conditionCode,
+        windSpeed: current.windSpeed ?? 0,
+        precipitationLevel: current.precipitationLevel ?? "none",
+        visibility: current.visibility ?? 10000,
+        timestamp: payloadUpdatedAt ?? updatedAt,
         timeOfDay,
       }),
-    [payload.current, payload.updatedAt, timeOfDay, updatedAt],
+    [current, payloadUpdatedAt, timeOfDay, updatedAt],
   );
 
   const untunedCanvasProps = useMemo(
