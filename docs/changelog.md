@@ -52,7 +52,7 @@ A prompt users copy-paste into their **coding agent** (e.g., Claude Code). Can e
 
 ### Formatting
 
-- Wrap the entire prompt in a `` ```text `` code fence
+- Wrap the entire prompt in a ` ```text ` code fence
 - The validator (`lib/changelog/changelog.ts`) rejects migration prompts without a code fence
 
 ## Writing Style

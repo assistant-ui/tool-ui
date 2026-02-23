@@ -9,17 +9,17 @@ Tool UI is a maintainer-owned copy/paste component library (shadcn/ui model) for
 
 ## Stale Information Detected
 
-| Location | States | Reality | Since |
-|----------|--------|---------|-------|
-| `README.md` (Shadcn Registry section) | Registry artifacts include `lib/ui/cn.ts` | Registry adapters use `@/lib/utils`; `lib/ui/cn.ts` is no longer part of generated install artifacts | 2026-02 |
-| `.claude/plans/plan-sequential-munching-canyon.md` | References `hooks/use-code-gen.ts` TypeScript generation | Tuning flow is apply/recover via repo routes; `use-code-gen.ts` removed | 2026-02 |
-| `.claude/plans/plan-sequential-munching-canyon.md` | Targets deletion of `app/sandbox/weather-compositor/` | `weather-tuning` still imports compositor presets/interpolation modules; compositor remains active | 2026-02 |
-| `.claude/docs/component-workflow.md` | New component contract requires `error-boundary.tsx` | Error-boundary layer was removed from component contracts; index exports no longer include local error boundaries | 2026-02 |
-| `.claude/agents/tool-ui-implementer.md` | Instructs creating `error-boundary.tsx` and using `createToolUiErrorBoundary` | Error-boundary wrappers were removed; component contract now centers on `_adapter`, schema, component, index, README | 2026-02 |
-| `.claude/agents/tool-ui-reviewer.md` | Blocks review if `error-boundary.tsx` is missing | `error-boundary.tsx` is no longer required in component directories | 2026-02 |
-| `.claude/compiled/component-creation.md` | Uses `../shared` barrel and error-boundary scaffolding in canonical template | Current standards forbid `../shared` barrel imports for core logic and remove per-component error boundary scaffolds | 2026-02 |
-| `docs/plans/2026-01-22-feat-wizard-step-component-plan.md` | Active implementation target is `WizardStep` at `components/tool-ui/wizard-step/*` | Implemented component is `QuestionFlow` at `components/tool-ui/question-flow/*` | 2026-01 |
-| `docs/plans/2026-01-23-feat-wizard-step-visual-polish-plan.md` | Polish targets `WizardStep` paths and naming | Final shipped component naming/path is `QuestionFlow` | 2026-01 |
+| Location                                                       | States                                                                             | Reality                                                                                                              | Since   |
+| -------------------------------------------------------------- | ---------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- | ------- |
+| `README.md` (Shadcn Registry section)                          | Registry artifacts include `lib/ui/cn.ts`                                          | Registry adapters use `@/lib/utils`; `lib/ui/cn.ts` is no longer part of generated install artifacts                 | 2026-02 |
+| `.claude/plans/plan-sequential-munching-canyon.md`             | References `hooks/use-code-gen.ts` TypeScript generation                           | Tuning flow is apply/recover via repo routes; `use-code-gen.ts` removed                                              | 2026-02 |
+| `.claude/plans/plan-sequential-munching-canyon.md`             | Targets deletion of `app/sandbox/weather-compositor/`                              | `weather-tuning` still imports compositor presets/interpolation modules; compositor remains active                   | 2026-02 |
+| `.claude/docs/component-workflow.md`                           | New component contract requires `error-boundary.tsx`                               | Error-boundary layer was removed from component contracts; index exports no longer include local error boundaries    | 2026-02 |
+| `.claude/agents/tool-ui-implementer.md`                        | Instructs creating `error-boundary.tsx` and using `createToolUiErrorBoundary`      | Error-boundary wrappers were removed; component contract now centers on `_adapter`, schema, component, index, README | 2026-02 |
+| `.claude/agents/tool-ui-reviewer.md`                           | Blocks review if `error-boundary.tsx` is missing                                   | `error-boundary.tsx` is no longer required in component directories                                                  | 2026-02 |
+| `.claude/compiled/component-creation.md`                       | Uses `../shared` barrel and error-boundary scaffolding in canonical template       | Current standards forbid `../shared` barrel imports for core logic and remove per-component error boundary scaffolds | 2026-02 |
+| `docs/plans/2026-01-22-feat-wizard-step-component-plan.md`     | Active implementation target is `WizardStep` at `components/tool-ui/wizard-step/*` | Implemented component is `QuestionFlow` at `components/tool-ui/question-flow/*`                                      | 2026-01 |
+| `docs/plans/2026-01-23-feat-wizard-step-visual-polish-plan.md` | Polish targets `WizardStep` paths and naming                                       | Final shipped component naming/path is `QuestionFlow`                                                                | 2026-01 |
 
 ## Timeline
 
@@ -28,6 +28,7 @@ Tool UI is a maintainer-owned copy/paste component library (shadcn/ui model) for
 **What changed:** All component docs were normalized so `## Source and Install` appears above `## Key Features`, with a GitHub source link for each component (`components/tool-ui/<id>`).
 
 Highlights:
+
 - Reordered sections across all component docs to surface install instructions first
 - Normalized mixed `## Features`/`## Key Features` headings to `## Key Features`
 - Added docs contract enforcement to prevent regressions in section order and source-link presence
@@ -35,6 +36,7 @@ Highlights:
 **Why:** Make integration steps and source discovery immediately visible for maintainers/copy-paste users.
 
 **Agent impact:** In component docs, place install/source sections before feature callouts. Include both:
+
 - `npx shadcn@latest add https://tool-ui.com/r/<component>.json`
 - GitHub source link to `components/tool-ui/<component>`
 
@@ -47,6 +49,7 @@ Highlights:
 **What changed:** Tool UI components were migrated off repo-private animation keyframes and now rely on Tailwind/tw-animate-compatible classes only.
 
 Highlights:
+
 - Replaced private animation names (e.g. `spring-bounce`, `check-draw`, `fade-blur-in`, `progress-pulse`) in shipped component code
 - Removed inline `@keyframes` from `stats-display/sparkline`
 - Added portability contract tests that fail on private keyframe tokens or inline keyframes in source and generated registry artifacts
@@ -65,6 +68,7 @@ Highlights:
 **What changed:** Registry component adapters were updated to import `cn` from `@/lib/utils`; generated artifacts no longer rely on/emit `lib/ui/cn.ts`.
 
 Highlights:
+
 - Adapter imports switched from `@/lib/ui/cn` to `@/lib/utils`
 - Registry artifact checks updated accordingly
 - Fresh install path validated against root-level shadcn command and hosted component JSON URLs
@@ -72,6 +76,7 @@ Highlights:
 **Why:** Align Tool UI install output with stock shadcn app structure and eliminate repo-specific `cn` scaffolding.
 
 **Agent impact:** For registry-consumed component adapters, expect:
+
 - `import { cn } from "@/lib/utils"`
 - no generated `lib/ui/cn.ts` dependency
 
@@ -86,6 +91,7 @@ Highlights:
 **Why:** Reduce install ambiguity and support a single canonical setup path for consumers.
 
 **Agent impact:** Use only:
+
 - `npx shadcn@latest add https://tool-ui.com/r/<component>.json`
 
 Do not propose ZIP/manual copy workflows.
@@ -99,6 +105,7 @@ Do not propose ZIP/manual copy workflows.
 **What changed:** Tool UI component contracts were tightened around portability boundaries and local adapter ownership.
 
 Highlights:
+
 - Removed per-component `error-boundary.tsx` files and related exports across component directories
 - Normalized component `_adapter.tsx` files to alias-based UI imports
 - Enforced adapter-only UI primitive imports via ESLint (`@/components/ui/*` and `@/lib/ui/cn` are restricted outside `_adapter.tsx`)
@@ -117,6 +124,7 @@ Highlights:
 **What changed:** Shifted docs and tooling to a maintainer-first workflow and added targeted regression contracts for high-risk UI state paths.
 
 Highlights:
+
 - Reframed onboarding/docs around maintainers (`README.md`, `CONTRIBUTING.md`, `app/docs/contributing/content.mdx`, `docs/playground.md`, `docs/tests.md`)
 - Added component-local README coverage and scaffold automation via `pnpm component:new` (`scripts/new-tool-ui-component.ts`)
 - Added `components/tool-ui/index.ts` aggregate export surface
@@ -136,6 +144,7 @@ Highlights:
 **What changed:** Registry generation moved to component-directory discovery with per-item artifacts and minimal dependency closure (instead of relying on prefixed/manual lists and shared monolith assumptions).
 
 Highlights:
+
 - Component discovery from `components/tool-ui/*` (excluding `shared`)
 - Registry items unprefixed (`tool-ui-foo` → `foo`)
 - Shared artifact dependencies inlined per item where needed
@@ -166,6 +175,7 @@ Highlights:
 **What changed:** Weather widget migrated to a strict V3.1 payload contract and removed legacy compatibility layers.
 
 Key contract shifts:
+
 - Canonical parser: `safeParseWeatherWidgetPayload`
 - Payload shape is widget prop contract (+ UI-only props)
 - Deterministic time input is now `time` (`timeBucket` or `localTimeOfDay`)
@@ -186,6 +196,7 @@ Key contract shifts:
 **Why:** Reduce duplicate export logic and keep one source of truth (`components/tool-ui/weather-widget/effects/tuned-presets.ts`).
 
 **Agent impact:** In tuning flows, treat `Apply to repo` as the path to production. Use:
+
 - `POST /api/weather-tuning/apply`
 - `GET /api/weather-tuning/recover`
 
@@ -200,6 +211,7 @@ Do not add/restore parallel clipboard/download codegen paths for production tuni
 **Why:** Components are copy-paste product surface; test fixtures/infra should stay internal to this repo.
 
 **Agent impact:** Place new executable tests in:
+
 - `lib/tests/**` (preferred)
 - `lib/playground/**` (playground-specific)
 
@@ -216,11 +228,13 @@ Tests under `components/tool-ui/**` are out-of-policy and may not run by default
 **Why:** Track component usage, preset selection, and code copying to understand what components and presets are most valuable.
 
 **Files added:**
+
 - `instrumentation-client.ts` — Client-side PostHog initialization
 - `lib/posthog-server.ts` — Server-side PostHog SDK
 - `lib/analytics.ts` — Typed event tracking SDK
 
 **Files modified:**
+
 - `next.config.ts` — Added `/ph/*` proxy rewrites for PostHog
 - `preset-selector.tsx` — Tracks `component_preset_selected`
 - `component-preview-shell.tsx` — Tracks `component_code_copied`, now requires `componentId` prop
@@ -228,6 +242,7 @@ Tests under `components/tool-ui/**` are out-of-policy and may not run by default
 **Agent impact:** When adding new trackable interactions, use `analytics.*` methods from `lib/analytics.ts`. The `ComponentPreviewShell` now requires a `componentId` prop.
 
 **Events tracked:**
+
 - `component_preset_selected` — User selects a preset
 - `component_code_copied` — User copies component code
 - `component_viewed` — User views a component (ready to instrument)
@@ -252,6 +267,7 @@ Tests under `components/tool-ui/**` are out-of-policy and may not run by default
 **Why:** Provide realistic glass distortion effects for weather widget overlays without WebGL complexity. SVG approach composes naturally with DOM, handles transparency correctly, and doesn't require canvas management.
 
 **Technical approach:**
+
 - SVG `feDisplacementMap` filter encodes X/Y displacement via R/G color channels
 - Chromatic aberration displaces RGB channels by different amounts (R most, G middle, B least)
 - Filter embedded as data URI in `backdrop-filter` CSS property
@@ -270,7 +286,9 @@ const glassStyles = useGlassStyles({
 });
 
 // Component wrapper
-<GlassPanel depth={10} strength={40}>content</GlassPanel>
+<GlassPanel depth={10} strength={40}>
+  content
+</GlassPanel>;
 ```
 
 **Files:** `components/tool-ui/weather-widget/effects/glass-panel-svg.tsx`
@@ -366,32 +384,33 @@ const glassStyles = useGlassStyles({
 
 ## Deprecated Patterns
 
-| Don't | Do Instead | Since |
-|-------|------------|-------|
-| Use `confirmed` prop | Use `choice` prop | 2026-01-19 |
-| Use `decision` prop | Use `choice` prop | 2026-01-19 |
-| Add `maxWidth`/`padding` props | Let users customize via `className` | Project inception |
-| Use nested config objects | Use flat props | Project inception |
-| Add Framer Motion to ImageGallery | Use View Transitions API | 2026-01-06 |
-| Use AI SDK v5 patterns | Use AI SDK v6 patterns | 2026-01-26 |
-| Implement WebGL glass effects | Use `useGlassStyles` or `GlassPanel` from glass-panel-svg | 2026-01-29 |
-| Use `ComponentPreviewShell` without `componentId` | Always pass `componentId` prop for analytics | 2026-01-30 |
-| Use weather payload prop `visual` | Use weather payload prop `time` | 2026-02-10 |
-| Use legacy serializable weather parser/types | Use `WeatherWidgetPayloadSchema` + `safeParseWeatherWidgetPayload` | 2026-02-10 |
-| Put executable tests in `components/tool-ui/**` | Put tests in `lib/tests/**` (or `lib/playground/**`) | 2026-02-10 |
-| Use `app/sandbox/weather-tuning/hooks/use-code-gen.ts` export flow | Use apply/recover API routes and `tuned-presets.ts` | 2026-02-10 |
-| Curate registry component lists by hand | Discover from `components/tool-ui/*` and validate with registry tests | 2026-02-10 |
-| Import from `../shared` barrel in core interactive components | Import direct leaf modules from `../shared/*` | 2026-02-10 |
-| Import shadcn primitives (`@/components/ui/*`, `@/lib/ui/cn`) directly in non-adapter component files | Import those primitives from local `./_adapter` files | 2026-02-11 |
-| Require/export per-component `error-boundary.tsx` wrappers | Export component + schema contracts directly; rely on caller/app-level boundaries | 2026-02-11 |
-| Add new components without local READMEs and contract scaffold files | Use `pnpm component:new` and keep the full component directory contract | 2026-02-11 |
-| Depend on registry-shipped `lib/ui/cn.ts` in generated component installs | Use shadcn `@/lib/utils` (`cn`) in adapter output | 2026-02-11 |
-| Use private animation keyframes in `components/tool-ui/**` (e.g. `spring-bounce`, `check-draw`, `fade-blur-in`) | Use Tailwind/tw-animate-compatible classes only | 2026-02-11 |
-| Put `## Source and Install` below features in component docs | Put `## Source and Install` above `## Key Features` and include GitHub source link | 2026-02-11 |
+| Don't                                                                                                           | Do Instead                                                                         | Since             |
+| --------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- | ----------------- |
+| Use `confirmed` prop                                                                                            | Use `choice` prop                                                                  | 2026-01-19        |
+| Use `decision` prop                                                                                             | Use `choice` prop                                                                  | 2026-01-19        |
+| Add `maxWidth`/`padding` props                                                                                  | Let users customize via `className`                                                | Project inception |
+| Use nested config objects                                                                                       | Use flat props                                                                     | Project inception |
+| Add Framer Motion to ImageGallery                                                                               | Use View Transitions API                                                           | 2026-01-06        |
+| Use AI SDK v5 patterns                                                                                          | Use AI SDK v6 patterns                                                             | 2026-01-26        |
+| Implement WebGL glass effects                                                                                   | Use `useGlassStyles` or `GlassPanel` from glass-panel-svg                          | 2026-01-29        |
+| Use `ComponentPreviewShell` without `componentId`                                                               | Always pass `componentId` prop for analytics                                       | 2026-01-30        |
+| Use weather payload prop `visual`                                                                               | Use weather payload prop `time`                                                    | 2026-02-10        |
+| Use legacy serializable weather parser/types                                                                    | Use `WeatherWidgetPayloadSchema` + `safeParseWeatherWidgetPayload`                 | 2026-02-10        |
+| Put executable tests in `components/tool-ui/**`                                                                 | Put tests in `lib/tests/**` (or `lib/playground/**`)                               | 2026-02-10        |
+| Use `app/sandbox/weather-tuning/hooks/use-code-gen.ts` export flow                                              | Use apply/recover API routes and `tuned-presets.ts`                                | 2026-02-10        |
+| Curate registry component lists by hand                                                                         | Discover from `components/tool-ui/*` and validate with registry tests              | 2026-02-10        |
+| Import from `../shared` barrel in core interactive components                                                   | Import direct leaf modules from `../shared/*`                                      | 2026-02-10        |
+| Import shadcn primitives (`@/components/ui/*`, `@/lib/ui/cn`) directly in non-adapter component files           | Import those primitives from local `./_adapter` files                              | 2026-02-11        |
+| Require/export per-component `error-boundary.tsx` wrappers                                                      | Export component + schema contracts directly; rely on caller/app-level boundaries  | 2026-02-11        |
+| Add new components without local READMEs and contract scaffold files                                            | Use `pnpm component:new` and keep the full component directory contract            | 2026-02-11        |
+| Depend on registry-shipped `lib/ui/cn.ts` in generated component installs                                       | Use shadcn `@/lib/utils` (`cn`) in adapter output                                  | 2026-02-11        |
+| Use private animation keyframes in `components/tool-ui/**` (e.g. `spring-bounce`, `check-draw`, `fade-blur-in`) | Use Tailwind/tw-animate-compatible classes only                                    | 2026-02-11        |
+| Put `## Source and Install` below features in component docs                                                    | Put `## Source and Install` above `## Key Features` and include GitHub source link | 2026-02-11        |
 
 ## Trajectory
 
 Based on recent changes, the project is:
+
 - **Standardizing APIs** — Receipt props unified, flat prop patterns enforced
 - **Maintainer-first DX** — onboarding and docs tuned for direct maintenance in this repo
 - **Polishing copy** — Moving from capability demos to believable scenarios

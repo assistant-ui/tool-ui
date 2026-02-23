@@ -103,11 +103,15 @@ Compound wrapper pattern for display components with actions:
 
 ```tsx
 <ToolUI id={surfaceId}>
-  <ToolUI.Surface><DataTable {...props} /></ToolUI.Surface>
+  <ToolUI.Surface>
+    <DataTable {...props} />
+  </ToolUI.Surface>
   <ToolUI.Actions>
     <ToolUI.LocalActions
       actions={[{ id: "export-csv", label: "Export CSV" }]}
-      onAction={(actionId) => { /* side effects only */ }}
+      onAction={(actionId) => {
+        /* side effects only */
+      }}
     />
   </ToolUI.Actions>
 </ToolUI>
@@ -119,11 +123,11 @@ Three components are action-centric exceptions — they keep embedded action pro
 - `onAction(actionId, state)`: runs after the action and receives post-action state.
 - `onBeforeAction(actionId, state)`: guard evaluated before an action runs.
 
-| Component | State type passed to handlers |
-|---|---|
-| `OptionList` | `OptionListSelection` |
-| `ParameterSlider` | `SliderValue[]` |
-| `PreferencesPanel` | `PreferencesValue` |
+| Component          | State type passed to handlers |
+| ------------------ | ----------------------------- |
+| `OptionList`       | `OptionListSelection`         |
+| `ParameterSlider`  | `SliderValue[]`               |
+| `PreferencesPanel` | `PreferencesValue`            |
 
 ESLint enforces this model:
 
@@ -138,7 +142,11 @@ Import from colocated entrypoints, not barrel `index.tsx`:
 ```tsx
 import { DataTable } from "@/components/tool-ui/data-table/data-table";
 import { safeParseSerializableDataTable } from "@/components/tool-ui/data-table/schema";
-import { ToolUI, createDecisionResult, type Action } from "@/components/tool-ui/shared";
+import {
+  ToolUI,
+  createDecisionResult,
+  type Action,
+} from "@/components/tool-ui/shared";
 ```
 
 ## Operational Rules

@@ -37,7 +37,11 @@ Use when the display component needs action buttons (export, copy, navigate) tha
 import { type Toolkit } from "@assistant-ui/react";
 import { DataTable } from "@/components/tool-ui/data-table";
 import { safeParseSerializableDataTable } from "@/components/tool-ui/data-table/schema";
-import { ToolUI, createResultToolRenderer, type Action } from "@/components/tool-ui/shared";
+import {
+  ToolUI,
+  createResultToolRenderer,
+  type Action,
+} from "@/components/tool-ui/shared";
 
 const localActions: Action[] = [
   { id: "export-csv", label: "Export CSV", variant: "secondary" },
@@ -168,7 +172,13 @@ Use when app already has a runtime stack.
 import { Plan } from "@/components/tool-ui/plan";
 import { safeParseSerializablePlan } from "@/components/tool-ui/plan/schema";
 
-function ToolResultView({ toolName, result }: { toolName: string; result: unknown }) {
+function ToolResultView({
+  toolName,
+  result,
+}: {
+  toolName: string;
+  result: unknown;
+}) {
   if (toolName !== "showPlan") return null;
 
   const parsed = safeParseSerializablePlan(result);
