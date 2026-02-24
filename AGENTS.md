@@ -15,13 +15,13 @@ Tool UI is a Next.js 16 documentation/demo site and copy-paste component library
 
 All standard commands are documented in `CLAUDE.md`. Key ones:
 
-| Task | Command |
-|------|---------|
-| Dev server | `pnpm dev` |
-| Lint + typecheck + format | `pnpm check` |
-| Tests (Vitest) | `pnpm test` |
-| Fix lint issues | `pnpm lint:fix` |
-| Typecheck only | `pnpm typecheck` |
+| Task                      | Command          |
+| ------------------------- | ---------------- |
+| Dev server                | `pnpm dev`       |
+| Lint + typecheck + format | `pnpm check`     |
+| Tests (Vitest)            | `pnpm test`      |
+| Fix lint issues           | `pnpm lint:fix`  |
+| Typecheck only            | `pnpm typecheck` |
 
 ### Non-obvious caveats
 
