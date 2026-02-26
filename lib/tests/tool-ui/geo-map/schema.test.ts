@@ -277,4 +277,18 @@ describe("GeoMap schema", () => {
     expect(parsed.routes).toBeUndefined();
     expect(parsed.clustering).toBeUndefined();
   });
+
+  test("ignores unknown presentational props from payloads", () => {
+    const parsed = parseSerializableGeoMap({
+      id: "geo-map-unknown-presentational",
+      markers: [{ id: "legacy-1", lat: 40.7128, lng: -74.006 }],
+      mapClassName: "should-be-stripped",
+      overlayClassName: "should-be-stripped",
+      popupContentClassName: "should-be-stripped",
+    });
+
+    expect(parsed).not.toHaveProperty("mapClassName");
+    expect(parsed).not.toHaveProperty("overlayClassName");
+    expect(parsed).not.toHaveProperty("popupContentClassName");
+  });
 });

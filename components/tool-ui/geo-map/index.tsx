@@ -4,7 +4,6 @@ export {
   type GeoMapFitTarget,
   type GeoMapMarker,
   type GeoMapMarkerIcon,
-  type GeoMapCssVariableName,
   type GeoMapStyle,
   type GeoMapRoute,
   type GeoMapViewport,

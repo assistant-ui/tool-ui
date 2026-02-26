@@ -18,6 +18,7 @@ const popupPropsSpy = vi.fn();
 const tooltipPropsSpy = vi.fn();
 const tileLayerPropsSpy = vi.fn();
 const markerPropsSpy = vi.fn();
+const polylinePropsSpy = vi.fn();
 const mapContainerPropsSpy = vi.fn();
 const mapContainerAttributeSpy = vi.fn();
 
@@ -117,7 +118,13 @@ vi.mock("react-leaflet", () => ({
     markerPropsSpy(props);
     return createElement("div", null, children);
   },
-  Polyline: LeafletWrapper,
+  Polyline: ({
+    children,
+    ...props
+  }: ComponentProps<"div"> & { children?: ReactNode }) => {
+    polylinePropsSpy(props);
+    return createElement("div", null, children);
+  },
   Popup: PopupWrapper,
   TileLayer: (props: unknown) => {
     tileLayerPropsSpy(props);
@@ -148,6 +155,7 @@ describe("GeoMap render behavior", () => {
     tooltipPropsSpy.mockClear();
     tileLayerPropsSpy.mockClear();
     markerPropsSpy.mockClear();
+    polylinePropsSpy.mockClear();
     mapContainerPropsSpy.mockClear();
     mapContainerAttributeSpy.mockClear();
 
@@ -191,6 +199,28 @@ describe("GeoMap render behavior", () => {
       expect(mockMap.setView).toHaveBeenCalledTimes(1);
     });
     expect(mockMap.fitBounds).toHaveBeenCalledTimes(0);
+  });
+
+  test("renders a simple loading shell until the map engine is ready", async () => {
+    render(
+      createElement(GeoMap, {
+        id: "geo-map-loading-shell",
+        markers: [{ id: "truck-31", lat: 32.7157, lng: -117.1611 }],
+      }),
+    );
+
+    expect(
+      document.querySelector('[data-slot="geo-map-loading"]'),
+    ).not.toBeNull();
+
+    await waitFor(() => {
+      expect(tileLayerPropsSpy).toHaveBeenCalled();
+    });
+    await waitFor(() => {
+      expect(
+        document.querySelector('[data-slot="geo-map-loading"]'),
+      ).toBeNull();
+    });
   });
 
   test("does not loop when useMap reference identity changes between renders", async () => {
@@ -334,6 +364,76 @@ describe("GeoMap render behavior", () => {
     });
 
     expect(mockMap.closePopup).toHaveBeenCalledTimes(1);
+  });
+
+  test("calls route click callback from polyline interactions", async () => {
+    const onRouteClick = vi.fn();
+
+    render(
+      createElement(GeoMap, {
+        id: "geo-map-route-click",
+        markers: [{ id: "truck-31", lat: 32.7157, lng: -117.1611 }],
+        routes: [
+          {
+            id: "route-1",
+            points: [
+              { lat: 32.7157, lng: -117.1611 },
+              { lat: 32.7357, lng: -117.1411 },
+            ],
+          },
+        ],
+        onRouteClick,
+      }),
+    );
+
+    await waitFor(() => {
+      expect(polylinePropsSpy).toHaveBeenCalled();
+    });
+
+    const routeProps = polylinePropsSpy.mock.calls[0]?.[0] as
+      | { eventHandlers?: { click?: () => void } }
+      | undefined;
+
+    act(() => {
+      routeProps?.eventHandlers?.click?.();
+    });
+
+    expect(onRouteClick).toHaveBeenCalledTimes(1);
+  });
+
+  test("expands cluster markers by flying to cluster zoom", async () => {
+    render(
+      createElement(GeoMap, {
+        id: "geo-map-cluster-expand",
+        markers: [
+          { id: "cluster-a", lat: 37.7749, lng: -122.4194 },
+          { id: "cluster-b", lat: 37.775, lng: -122.4195 },
+        ],
+        clustering: { enabled: true, minPoints: 2 },
+      }),
+    );
+
+    await waitFor(() => {
+      expect(markerPropsSpy).toHaveBeenCalled();
+    });
+
+    const clusterMarkerProps = markerPropsSpy.mock.calls
+      .map(
+        (call) =>
+          call[0] as { title?: string; eventHandlers?: { click?: () => void } },
+      )
+      .find(
+        (props) =>
+          typeof props.title === "string" &&
+          props.title.startsWith("Cluster containing"),
+      );
+
+    expect(clusterMarkerProps).toBeDefined();
+    act(() => {
+      clusterMarkerProps?.eventHandlers?.click?.();
+    });
+
+    expect(mockMap.flyTo).toHaveBeenCalledTimes(1);
   });
 
   test("accepts css variable overrides for popup and tooltip shell theming", () => {

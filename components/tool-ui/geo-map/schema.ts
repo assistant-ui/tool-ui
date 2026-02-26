@@ -167,52 +167,14 @@ export const GeoMapPropsSchema = z
     });
   });
 
-export type GeoMapCssVariableName =
-  | "--geo-map-canvas-bg"
-  | "--geo-map-tooltip-bg"
-  | "--geo-map-tooltip-fg"
-  | "--geo-map-tooltip-shadow"
-  | "--geo-map-tooltip-radius"
-  | "--geo-map-tooltip-padding"
-  | "--geo-map-tooltip-font-size"
-  | "--geo-map-tooltip-font-weight"
-  | "--geo-map-tooltip-line-height"
-  | "--geo-map-popup-margin-bottom"
-  | "--geo-map-popup-border"
-  | "--geo-map-popup-radius"
-  | "--geo-map-popup-bg"
-  | "--geo-map-popup-fg"
-  | "--geo-map-popup-shadow"
-  | "--geo-map-popup-blur"
-  | "--geo-map-popup-content-padding"
-  | "--geo-map-popup-max-width"
-  | "--geo-map-popup-font-family"
-  | "--geo-map-zoom-bg"
-  | "--geo-map-zoom-fg"
-  | "--geo-map-zoom-border"
-  | "--geo-map-zoom-hover-bg"
-  | "--geo-map-zoom-hover-fg"
-  | "--geo-map-zoom-disabled-bg"
-  | "--geo-map-zoom-disabled-fg"
-  | "--geo-map-zoom-shadow"
-  | "--geo-map-zoom-focus-ring"
-  | "--geo-map-zoom-radius"
-  | "--geo-map-zoom-size"
-  | "--geo-map-zoom-font-size";
-
 export type GeoMapStyle = CSSProperties &
-  Partial<Record<GeoMapCssVariableName, string | number>>;
+  Partial<Record<`--${string}`, string | number>>;
 
 export type GeoMapClientProps = {
   className?: string;
   style?: GeoMapStyle;
-  mapClassName?: string;
-  overlayClassName?: string;
   tooltipClassName?: string;
   popupClassName?: string;
-  popupContentClassName?: string;
-  popupTitleClassName?: string;
-  popupDescriptionClassName?: string;
   onMarkerClick?: (marker: GeoMapMarker) => void;
   onRouteClick?: (route: GeoMapRoute) => void;
 };

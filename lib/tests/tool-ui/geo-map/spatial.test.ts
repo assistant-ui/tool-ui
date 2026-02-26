@@ -1,4 +1,24 @@
-import { describe, expect, test } from "vitest";
+import { describe, expect, test, vi } from "vitest";
+
+vi.mock("@/components/tool-ui/geo-map/_adapter", () => ({
+  CircleMarker: () => null,
+  MapContainer: () => null,
+  Marker: () => null,
+  Polyline: () => null,
+  TileLayer: () => null,
+  ZoomControl: () => null,
+  useMap: () => ({}),
+  useMapEvents: () => ({}),
+}));
+
+vi.mock("@/components/tool-ui/geo-map/geo-map-icons", () => ({
+  createClusterIcon: () => ({}),
+  resolveMarkerIcon: () => null,
+}));
+
+vi.mock("@/components/tool-ui/geo-map/geo-map-overlays", () => ({
+  GeoMapOverlays: () => null,
+}));
 
 import {
   collectFitPoints,
@@ -7,7 +27,7 @@ import {
   splitDatelineBbox,
   toSafeExpansionZoom,
   type GeoMapClusterFeature,
-} from "@/components/tool-ui/geo-map/spatial";
+} from "@/components/tool-ui/geo-map/geo-map-engine";
 
 const markers = [
   { id: "m1", lat: 37.7749, lng: -122.4194 },
