@@ -3,7 +3,6 @@
 import { useMemo, useState } from "react";
 
 import { Popup, Tooltip, cn } from "./_adapter";
-import { GEO_MAP_POPUP_CLASS, GEO_MAP_TOOLTIP_CLASS } from "./geo-map-styles";
 
 function GeoMapPopupContent({
   label,
@@ -87,14 +86,14 @@ export function GeoMapOverlays({
         <Tooltip
           direction="top"
           permanent={tooltipMode === "always"}
-          className={cn(GEO_MAP_TOOLTIP_CLASS, tooltipClassName)}
+          className={cn("geo-map-tooltip", tooltipClassName)}
         >
           <GeoMapTooltipContent text={tooltipContent} />
         </Tooltip>
       )}
       {hasPopup && (
         <Popup
-          className={cn(GEO_MAP_POPUP_CLASS, popupClassName)}
+          className={cn("geo-map-popup", popupClassName)}
           closeButton
           closeOnEscapeKey
           minWidth={0}
