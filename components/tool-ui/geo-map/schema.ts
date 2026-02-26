@@ -126,7 +126,7 @@ export const GeoMapPropsSchema = z
     clustering: GeoMapClusteringSchema.optional(),
     viewport: GeoMapViewportSchema.optional(),
     showZoomControl: z.boolean().optional(),
-    theme: z.enum(["auto", "light", "dark"]).optional(),
+    theme: z.enum(["light", "dark"]).optional(),
   })
   .superRefine((value, ctx) => {
     const seenMarkerIds = new Set<string>();

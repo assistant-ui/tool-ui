@@ -23,7 +23,6 @@ import { createClusterIcon, resolveMarkerIcon } from "./geo-map-icons";
 import { GeoMapOverlays } from "./geo-map-overlays";
 import type { LeafletRuntime } from "./geo-map-runtime";
 import styles from "./geo-map-theme.module.css";
-import { useResolvedTheme } from "./geo-map-theme";
 import {
   areViewportStatesEqual,
   DEFAULT_VIEW_ZOOM,
@@ -94,7 +93,7 @@ export const GeoMap = memo(function GeoMap({
   clustering,
   viewport,
   showZoomControl = true,
-  theme = "auto",
+  theme = "light",
   className,
   style,
   mapClassName,
@@ -149,8 +148,7 @@ export const GeoMap = memo(function GeoMap({
     };
   }, []);
 
-  const resolvedTheme = useResolvedTheme(theme);
-  const tileUrl = resolvedTheme === "dark" ? DARK_TILE_URL : LIGHT_TILE_URL;
+  const tileUrl = theme === "dark" ? DARK_TILE_URL : LIGHT_TILE_URL;
   const isMapReady = isMounted && leafletRuntime !== null;
   const mapAriaLabel = useMemo(
     () => resolveMapAriaLabel(title, description),
@@ -160,10 +158,10 @@ export const GeoMap = memo(function GeoMap({
     () =>
       ({
         "--geo-map-canvas-bg":
-          resolvedTheme === "dark" ? "var(--background)" : "var(--muted)",
+          theme === "dark" ? "var(--background)" : "var(--muted)",
         ...style,
       }) satisfies CSSProperties,
-    [resolvedTheme, style],
+    [style, theme],
   );
 
   useEffect(() => {

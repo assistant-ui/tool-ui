@@ -44,7 +44,7 @@ function generateGeoMapCode(data: GeoMapData): string {
     props.push(`  showZoomControl={false}`);
   }
 
-  if (data.theme && data.theme !== "auto") {
+  if (data.theme === "dark") {
     props.push(`  theme="${data.theme}"`);
   }
 
@@ -219,7 +219,6 @@ export const geoMapPresets: Record<
         zoom: 13,
       },
       showZoomControl: true,
-      theme: "auto",
     } satisfies GeoMapData,
     generateExampleCode: generateGeoMapCode,
   },

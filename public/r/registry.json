@@ -567,11 +567,6 @@
           "target": "components/tool-ui/geo-map/geo-map-theme.module.css"
         },
         {
-          "path": "components/tool-ui/geo-map/geo-map-theme.ts",
-          "type": "registry:lib",
-          "target": "components/tool-ui/geo-map/geo-map-theme.ts"
-        },
-        {
           "path": "components/tool-ui/geo-map/geo-map-viewport.tsx",
           "type": "registry:component",
           "target": "components/tool-ui/geo-map/geo-map-viewport.tsx"

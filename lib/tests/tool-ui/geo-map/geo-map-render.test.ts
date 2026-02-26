@@ -432,14 +432,30 @@ describe("GeoMap render behavior", () => {
     });
   });
 
-  test("uses dark tiles on first render when theme is auto and app theme is dark", async () => {
-    document.documentElement.classList.add("dark");
-
+  test("uses light tiles by default when no theme is provided", async () => {
     render(
       createElement(GeoMap, {
-        id: "geo-map-dark-first-paint",
+        id: "geo-map-default-theme",
         markers: [{ id: "truck-31", lat: 32.7157, lng: -117.1611 }],
-        theme: "auto",
+      }),
+    );
+
+    await waitFor(() => {
+      expect(tileLayerPropsSpy).toHaveBeenCalled();
+    });
+
+    const firstTileLayerProps = tileLayerPropsSpy.mock.calls[0]?.[0] as
+      | { url?: string }
+      | undefined;
+    expect(firstTileLayerProps?.url).toContain("light_all");
+  });
+
+  test("uses dark tiles when theme is explicitly dark", async () => {
+    render(
+      createElement(GeoMap, {
+        id: "geo-map-dark-theme",
+        markers: [{ id: "truck-31", lat: 32.7157, lng: -117.1611 }],
+        theme: "dark",
       }),
     );
 

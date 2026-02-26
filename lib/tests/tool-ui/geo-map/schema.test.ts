@@ -105,6 +105,29 @@ describe("GeoMap schema", () => {
     expect(parsed).not.toBeNull();
   });
 
+  test("accepts explicit light/dark themes and rejects auto theme", () => {
+    const light = safeParseSerializableGeoMap({
+      id: "geo-map-theme-light",
+      markers: [{ lat: 37.7749, lng: -122.4194 }],
+      theme: "light",
+    });
+    expect(light).not.toBeNull();
+
+    const dark = safeParseSerializableGeoMap({
+      id: "geo-map-theme-dark",
+      markers: [{ lat: 37.7749, lng: -122.4194 }],
+      theme: "dark",
+    });
+    expect(dark).not.toBeNull();
+
+    const auto = safeParseSerializableGeoMap({
+      id: "geo-map-theme-auto",
+      markers: [{ lat: 37.7749, lng: -122.4194 }],
+      theme: "auto",
+    });
+    expect(auto).toBeNull();
+  });
+
   test("rejects invalid clustering ranges", () => {
     expect(
       safeParseSerializableGeoMap({
