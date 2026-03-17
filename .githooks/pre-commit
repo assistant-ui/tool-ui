@@ -3,12 +3,4 @@ set -eu
 
 pnpm hooks:pre-commit
 
-# Auto-fix formatting on staged files and re-stage them
-STAGED=$(git diff --cached --name-only --diff-filter=ACMR)
-if [ -n "$STAGED" ]; then
-  WWW_STAGED=$(echo "$STAGED" | grep '^apps/www/' || true)
-  if [ -n "$WWW_STAGED" ]; then
-    echo "$WWW_STAGED" | sed 's|^apps/www/||' | (cd apps/www && xargs oxfmt 2>/dev/null) || true
-    echo "$WWW_STAGED" | xargs git add
-  fi
-fi
+pnpm lint-staged
