@@ -21,9 +21,6 @@ export function HomeHero() {
   const preloadGallery = () => {
     void router.prefetch("/docs/gallery");
   };
-  const preloadBuilder = () => {
-    void router.prefetch("/builder");
-  };
 
   return (
     <div className="flex flex-col gap-7">
@@ -66,7 +63,6 @@ export function HomeHero() {
         Built on Tailwind, Radix, and shadcn/ui. Open Source.
       </motion.p>
       <motion.div
-        className="flex flex-wrap items-center gap-3"
         initial={{ opacity: 0, y: 20, scale: 0.98 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         transition={{ ...smoothSpring, delay: 0.5 }}
@@ -82,28 +78,8 @@ export function HomeHero() {
             onFocus={preloadGallery}
             onClick={() => analytics.cta.clicked("see_components", "home_hero")}
           >
-            View Component Gallery
-          </Link>
-        </Button>
-        <Button
-          asChild
-          variant="outline"
-          className="group border-2 font-medium tracking-wide"
-          size="homeCTA"
-        >
-          <Link
-            href="/builder"
-            onMouseEnter={preloadBuilder}
-            onFocus={preloadBuilder}
-            onClick={() =>
-              analytics.cta.clicked("create_tool_ui", "home_hero")
-            }
-          >
-            Create your own Tool UI
-            <ArrowRight
-              className="size-5 transition-transform group-hover:translate-x-0.5"
-              aria-hidden
-            />
+            See the Components
+            <ArrowRight className="size-5 shrink-0 transition-transform group-hover:translate-x-1" />
           </Link>
         </Button>
       </motion.div>
