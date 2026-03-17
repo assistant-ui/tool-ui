@@ -202,10 +202,7 @@ export function ComponentPreviewShell({
       <div className="relative flex min-h-0 min-w-0 flex-1 flex-col">
         {/* Install commands - above the gray preview, in main column only */}
         <div className="shrink-0 border-b px-4 py-3 sm:px-6 lg:px-6">
-          <InstallCommandBlock
-            componentId={componentId}
-            variant="block"
-          />
+          <InstallCommandBlock componentId={componentId} variant="block" />
         </div>
 
         {/* Mobile toolbar */}
