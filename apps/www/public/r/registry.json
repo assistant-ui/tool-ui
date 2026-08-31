@@ -531,6 +531,7 @@
       "description": "Display geolocated entities and fleet positions.",
       "dependencies": [
         "leaflet",
+        "next",
         "react-leaflet",
         "supercluster",
         "zod"
