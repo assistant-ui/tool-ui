@@ -12,7 +12,7 @@ import {
   ZoomControl,
   useMap,
   useMapEvents,
-} from "./_adapter";
+} from "./_leaflet-adapter";
 import { createClusterIcon, resolveMarkerIcon } from "./geo-map-icons";
 import { GeoMapOverlays } from "./geo-map-overlays";
 import type {

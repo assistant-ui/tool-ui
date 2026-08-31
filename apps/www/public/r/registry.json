@@ -543,6 +543,11 @@
           "target": "components/tool-ui/geo-map/_adapter.tsx"
         },
         {
+          "path": "components/tool-ui/geo-map/_leaflet-adapter.tsx",
+          "type": "registry:component",
+          "target": "components/tool-ui/geo-map/_leaflet-adapter.tsx"
+        },
+        {
           "path": "components/tool-ui/geo-map/geo-map-engine.tsx",
           "type": "registry:component",
           "target": "components/tool-ui/geo-map/geo-map-engine.tsx"
