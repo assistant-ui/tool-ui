@@ -1,6 +1,6 @@
 import { describe, expect, test, vi } from "vitest";
 
-vi.mock("@/components/tool-ui/geo-map/_adapter", () => ({
+vi.mock("@/components/tool-ui/geo-map/_leaflet-adapter", () => ({
   CircleMarker: () => null,
   MapContainer: () => null,
   Marker: () => null,

@@ -2,7 +2,8 @@
 
 import { useMemo, useState } from "react";
 
-import { Popup, Tooltip, cn } from "./_adapter";
+import { cn } from "./_adapter";
+import { Popup, Tooltip } from "./_leaflet-adapter";
 
 function GeoMapPopupContent({
   label,

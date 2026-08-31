@@ -531,6 +531,7 @@
       "description": "Display geolocated entities and fleet positions.",
       "dependencies": [
         "leaflet",
+        "next",
         "react-leaflet",
         "supercluster",
         "zod"
@@ -540,6 +541,11 @@
           "path": "components/tool-ui/geo-map/_adapter.tsx",
           "type": "registry:component",
           "target": "components/tool-ui/geo-map/_adapter.tsx"
+        },
+        {
+          "path": "components/tool-ui/geo-map/_leaflet-adapter.tsx",
+          "type": "registry:component",
+          "target": "components/tool-ui/geo-map/_leaflet-adapter.tsx"
         },
         {
           "path": "components/tool-ui/geo-map/geo-map-engine.tsx",
