@@ -1,10 +1,17 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { memo, useEffect, useState } from "react";
 import { cn } from "./_adapter";
-import { GeoMapEngine } from "./geo-map-engine";
 import styles from "./geo-map-theme.module.css";
 import type { GeoMapProps, GeoMapStyle } from "./schema";
+
+// Leaflet touches `window` at module scope, so the engine must never be
+// evaluated during SSR; every GeoMap consumer inherits this guard.
+const GeoMapEngine = dynamic(
+  () => import("./geo-map-engine").then((m) => m.GeoMapEngine),
+  { ssr: false },
+);
 
 const LIGHT_TILE_URL =
   "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png";
